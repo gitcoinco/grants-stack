@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon -e ts -w src --exec ts-node --transpile-only src/index.ts"
+    "start": "nodemon -e ts -w src --exec babel-node --extensions .ts src/index.ts"
   },
   "devDependencies": {
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.5",
     "@types/node": "^14.0.23",
     "@typescript-eslint/eslint-plugin": "^3.7.0",
@@ -17,7 +20,6 @@
     "lint-staged": ">=10",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "husky": {
