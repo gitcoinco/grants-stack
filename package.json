@@ -1,5 +1,5 @@
 {
-  "name": "starter-node-project-basic",
+  "name": "starter-node-basic",
   "private": true,
   "version": "1.0.0",
   "main": "src/index.ts",
