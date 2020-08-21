@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon -e ts -w src --exec babel-node --extensions .ts src/index.ts"
+    "start": "nodemon -e ts -w src --exec babel-node --extensions .ts src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watch --notify"
   },
   "devDependencies": {
     "@babel/node": "^7.10.5",
