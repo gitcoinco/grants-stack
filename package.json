@@ -38,5 +38,10 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0"
+  },
+  "nodemonConfig": {
+    "events": {
+      "start": "echo -e \"\\x1Bc\""
+    }
   }
 }
