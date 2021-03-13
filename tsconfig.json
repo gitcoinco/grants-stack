@@ -4,6 +4,8 @@
     "module": "commonjs",
     "lib": ["es2019"],
     "strict": true,
+    "outDir": "dist",
+    "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

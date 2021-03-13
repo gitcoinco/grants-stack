@@ -4,12 +4,11 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon -e ts -w src --exec babel-node -r dotenv/config --extensions .ts src/index.ts",
+    "start": "tsc-watch --onSuccess 'node --enable-source-maps -r dotenv/config dist/index.js'",
     "test": "jest",
     "test:watch": "jest --watch --notify"
   },
   "devDependencies": {
-    "@babel/node": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.5",
@@ -20,9 +19,9 @@
     "husky": ">=4",
     "jest": "^26.1.0",
     "lint-staged": ">=10",
-    "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.7"
+    "tsc-watch": "^4.2.9",
+    "typescript": "^4.2.3"
   },
   "husky": {
     "hooks": {
@@ -38,10 +37,5 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0"
-  },
-  "nodemonConfig": {
-    "events": {
-      "start": "echo -e \"\\x1Bc\""
-    }
   }
 }
