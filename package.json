@@ -6,6 +6,7 @@
   "scripts": {
     "start": "tsc-watch --onSuccess 'node --enable-source-maps -r dotenv/config dist/index.js'",
     "test": "jest",
+    "lint": "eslint --cache --max-warnings=0 src",
     "test:watch": "jest --watch --notify",
     "prepare": "husky install"
   },
@@ -14,9 +15,12 @@
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.5",
     "@types/node": "^14.0.23",
-    "@typescript-eslint/eslint-plugin": "^3.7.0",
-    "@typescript-eslint/parser": "^3.7.0",
-    "eslint": "^7.5.0",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.1",
+    "eslint-plugin-prettier": "^3.4.0",
     "husky": "^6.0.0",
     "jest": "^26.1.0",
     "lint-staged": ">=10",
