@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsc-watch --onSuccess 'node --enable-source-maps -r dotenv/config dist/index.js'",
-    "test": "jest",
+    "start:dev": "tsc-watch --onSuccess 'node --enable-source-maps -r dotenv/config dist/index.js'",
     "lint": "eslint --cache --max-warnings=0 src",
+    "test": "jest",
     "test:watch": "jest --watch --notify",
     "prepare": "husky install"
   },
