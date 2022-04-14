@@ -1,19 +1,19 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+const owner = "0x909423e8D0B1163A65C73B6adA89A62a4ec7c544";
+const tokenURI = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+describe("GrantNFT", function () {
+  it("creates a grantt", async function () {
+    const GrantNFT = await ethers.getContractFactory("GrantNFT");
+    const grantNft = await GrantNFT.deploy();
+    await grantNft.deployed();
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    await grantNft.mintGrant(owner, tokenURI);
+    const ownerBalance = await grantNft.balanceOf(owner);
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    console.log({ ownerBalance }, ownerBalance.toString());
+    expect(ownerBalance.toString()).to.equal("1");
   });
 });
