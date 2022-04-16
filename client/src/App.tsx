@@ -1,24 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { RootState } from './reducers';
+import {
+  shallowEqual,
+  useSelector,
+  useDispatch,
+} from 'react-redux';
 import './App.css';
+import { initializeWeb3 } from "./actions/web3";
 
 function App() {
+  const dispatch = useDispatch();
+  const props = useSelector((state: RootState) => ({
+    web3Initialized: state.web3.initialized,
+    web3Error: state.web3.error,
+    chainID: state.web3.chainID,
+    account: state.web3.account,
+  }), shallowEqual);
+
+  useEffect(() => {
+    if (!props.web3Initialized) {
+      dispatch(initializeWeb3());
+    }
+  }, [props.web3Initialized, props.account, props.web3Error]);
+
+  const connectHandler = (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(initializeWeb3());
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {!props.web3Error && <>
+          {props.web3Initialized && <div>
+            Welcome {props.account} (chainID: {props.chainID})
+          </div>}
+        </>}
+
+        {!props.web3Initialized && <div className="my-2">
+          <button onClick={connectHandler}>CONNECT</button>
+        </div>}
       </header>
+
+
+      <div>
+        <p>
+          Hello World
+        </p>
+      </div>
     </div>
   );
 }
