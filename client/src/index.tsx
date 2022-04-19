@@ -1,3 +1,4 @@
+import './browserPatches';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import thunkMiddleware from 'redux-thunk';
