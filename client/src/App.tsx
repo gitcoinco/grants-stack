@@ -31,6 +31,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        {props.web3Error !== undefined && <div>
+          <div className="alert alert-danger col-12 col-lg-8 offset-lg-2" role="alert">
+            {props.web3Error}
+          </div>
+        </div>}
+
         {!props.web3Error && <>
           {props.web3Initialized && <div>
             Welcome {props.account} (chainID: {props.chainID})
