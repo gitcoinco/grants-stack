@@ -37,7 +37,7 @@ function App() {
           </div>}
         </>}
 
-        {!props.web3Initialized && <div className="my-2">
+        {!props.web3Initialized && <div>
           <button onClick={connectHandler}>CONNECT</button>
         </div>}
       </header>
