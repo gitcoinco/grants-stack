@@ -1,5 +1,6 @@
 import {
   Web3Actions,
+  WEB3_INITIALIZING,
   WEB3_INITIALIZED,
   WEB3_ERROR,
   WEB3_CHAIN_ID_LOADED,
@@ -7,6 +8,7 @@ import {
 } from '../actions/web3';
 
 export interface Web3State {
+  initializing: boolean
   initialized: boolean
   chainID: number | undefined
   error: string | undefined
@@ -14,6 +16,7 @@ export interface Web3State {
 }
 
 const initialState: Web3State = {
+  initializing: true,
   initialized: false,
   chainID: undefined,
   error: undefined,
@@ -26,6 +29,16 @@ export const web3Reducer = (state: Web3State = initialState, action: Web3Actions
       return {
         ...state,
         error: undefined,
+        initializing: true,
+        initialized: false,
+      }
+    }
+
+    case WEB3_INITIALIZED: {
+      return {
+        ...state,
+        error: undefined,
+        initializing: false,
         initialized: true,
       }
     }
@@ -33,6 +46,7 @@ export const web3Reducer = (state: Web3State = initialState, action: Web3Actions
     case WEB3_ERROR: {
       return {
         ...state,
+        initializing: false,
         error: action.error,
       }
     }

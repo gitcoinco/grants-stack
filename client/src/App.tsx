@@ -7,21 +7,34 @@ import {
 } from 'react-redux';
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
+import { startIPFS } from "./actions/ipfs";
 
 function App() {
   const dispatch = useDispatch();
+
   const props = useSelector((state: RootState) => ({
     web3Initialized: state.web3.initialized,
     web3Error: state.web3.error,
     chainID: state.web3.chainID,
     account: state.web3.account,
+    ipfsInitializing: state.ipfs.initializing,
+    ipfsInitializationError: state.ipfs.initializationError,
+    ipfsInitialized: state.ipfs.initialized,
   }), shallowEqual);
 
   useEffect(() => {
     if (!props.web3Initialized) {
       dispatch(initializeWeb3());
     }
-  }, [props.web3Initialized, props.account, props.web3Error]);
+
+    if (!props.ipfsInitializing && !props.ipfsInitialized && props.ipfsInitializationError === undefined) {
+      dispatch(startIPFS());
+    }
+  }, [
+    dispatch,
+    props.web3Initialized, props.account, props.web3Error,
+    props.ipfsInitializing, props.ipfsInitializationError, props.ipfsInitialized,
+  ]);
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -29,10 +42,12 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div>
+
+      <div>
+        <h3>WEB3</h3>
         {props.web3Error !== undefined && <div>
-          <div className="alert alert-danger col-12 col-lg-8 offset-lg-2" role="alert">
+          <div>
             {props.web3Error}
           </div>
         </div>}
@@ -46,13 +61,14 @@ function App() {
         {!props.web3Initialized && <div>
           <button onClick={connectHandler}>CONNECT</button>
         </div>}
-      </header>
-
+      </div>
 
       <div>
-        <p>
-          Hello World
-        </p>
+        <h3>IPFS</h3>
+
+        {props.ipfsInitializing && <>
+          <div>initializing...</div>
+        </>}
       </div>
     </div>
   );

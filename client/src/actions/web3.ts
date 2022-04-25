@@ -15,6 +15,11 @@ enum Web3Type {
   Status,
 }
 
+export const WEB3_INITIALIZING = "WEB3_INITIALIZING";
+export interface Web3InitializingAction {
+  type: typeof WEB3_INITIALIZING
+}
+
 export const WEB3_INITIALIZED = "WEB3_INITIALIZED";
 export interface Web3InitializedAction {
   type: typeof WEB3_INITIALIZED
@@ -40,11 +45,15 @@ export interface Web3AccountLoadedAction {
 }
 
 export type Web3Actions =
+  Web3InitializingAction |
   Web3InitializedAction |
   Web3ErrorAction |
   Web3ChainIDLoadedAction |
   Web3AccountLoadedAction;
 
+export const web3Initializing = (): Web3Actions => ({
+  type: WEB3_INITIALIZING,
+});
 
 export const web3Initialized = (t: Web3Type): Web3Actions => ({
   type: WEB3_INITIALIZED,
@@ -99,6 +108,7 @@ export const initializeWeb3 = () => {
 
 const loadWeb3Data = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
+    dispatch(web3Initializing());
     const t: Web3Type = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
     dispatch(web3Initialized(t));
 
