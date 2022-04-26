@@ -89,6 +89,7 @@ declare global {
 export const initializeWeb3 = () => {
   if (window.ethereum) {
     return (dispatch: Dispatch, getState: () => RootState) => {
+      dispatch(web3Initializing());
       window.ethereum.request({ method: 'eth_requestAccounts' })
       .then(() => {
         //FIXME: fix dispatch<any>
@@ -108,7 +109,6 @@ export const initializeWeb3 = () => {
 
 const loadWeb3Data = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(web3Initializing());
     const t: Web3Type = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
     dispatch(web3Initialized(t));
 

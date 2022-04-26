@@ -16,7 +16,7 @@ export interface Web3State {
 }
 
 const initialState: Web3State = {
-  initializing: true,
+  initializing: false,
   initialized: false,
   chainID: undefined,
   error: undefined,
@@ -25,7 +25,7 @@ const initialState: Web3State = {
 
 export const web3Reducer = (state: Web3State = initialState, action: Web3Actions): Web3State => {
   switch (action.type) {
-    case WEB3_INITIALIZED: {
+    case WEB3_INITIALIZING: {
       return {
         ...state,
         error: undefined,
