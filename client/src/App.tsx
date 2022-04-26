@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { RootState } from './reducers';
 import {
   shallowEqual,
@@ -7,10 +7,11 @@ import {
 } from 'react-redux';
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
-import { startIPFS } from "./actions/ipfs";
+import { startIPFS, saveFileToIPFS } from "./actions/ipfs";
 
 function App() {
   const dispatch = useDispatch();
+  const textArea = useRef<HTMLTextAreaElement>(null);
 
   const props = useSelector((state: RootState) => ({
     web3Initializing: state.web3.initializing,
@@ -21,6 +22,7 @@ function App() {
     ipfsInitializing: state.ipfs.initializing,
     ipfsInitializationError: state.ipfs.initializationError,
     ipfsInitialized: state.ipfs.initialized,
+    ipfsLastFileSavedURL: state.ipfs.lastFileSavedURL,
   }), shallowEqual);
 
   useEffect(() => {
@@ -38,6 +40,12 @@ function App() {
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(initializeWeb3());
+  }
+
+  const saveHandler = () => {
+    if (textArea.current !== null) {
+      dispatch(saveFileToIPFS("test.txt", textArea.current.value));
+    }
   }
 
   return (
@@ -71,6 +79,22 @@ function App() {
           <div>Initialized</div>
         </>}
       </div>
+
+      {props.ipfsInitialized && <div>
+        <h3>Test IPFS</h3>
+        <div>
+          <textarea cols={40} rows={20} ref={textArea}>
+          </textarea>
+        </div>
+        <div>
+          <button onClick={saveHandler}>
+            Save
+          </button>
+        </div>
+        {props.ipfsLastFileSavedURL && <div>
+          Last file save at <a target="_blank" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a>
+        </div>}
+      </div>}
     </div>
   );
 }

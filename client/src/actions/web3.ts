@@ -89,6 +89,11 @@ declare global {
 export const initializeWeb3 = () => {
   if (window.ethereum) {
     return (dispatch: Dispatch, getState: () => RootState) => {
+      const state = getState();
+      if(state.web3.initializing || state.web3.initialized) {
+        return;
+      }
+
       dispatch(web3Initializing());
       window.ethereum.request({ method: 'eth_requestAccounts' })
       .then(() => {

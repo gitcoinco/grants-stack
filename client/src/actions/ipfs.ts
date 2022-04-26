@@ -22,10 +22,17 @@ export interface IPFSInitializedAction {
   type: typeof IPFS_INITIALIZED
 }
 
+export const IPFS_FILE_SAVED = "IPFS_FILE_SAVED";
+export interface IPFSFileSavedAction {
+  type: typeof IPFS_FILE_SAVED,
+  url: string
+}
+
 export type IPFSActions =
   IPFSInitializingAction |
   IPFSInitializationErrorAction |
-  IPFSInitializedAction;
+  IPFSInitializedAction |
+  IPFSFileSavedAction;
 
 const ipfsInitializing = (): IPFSActions => ({
   type: IPFS_INITIALIZING,
@@ -40,9 +47,18 @@ const ipfsInitialized = (): IPFSActions => ({
   type: IPFS_INITIALIZED,
 });
 
+const ipfsFileSaved = (url: string): IPFSActions => ({
+  type: IPFS_FILE_SAVED,
+  url,
+});
+
 export const startIPFS = () => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
+    if(state.ipfs.initializing || state.ipfs.initialized) {
+      return;
+    }
+
     if (ipfs !== null) {
       console.log('IPFS already started');
       return;
@@ -61,14 +77,26 @@ export const startIPFS = () => {
         return;
       }
 
+      console.error("ipfs error:", error)
+
       ipfs = null;
       dispatch(ipfsInitializationError(error));
     } finally {
-      const res = await ipfs!.add({
-        path: 'hello.txt',
-        content: `Hello World ${new Date()}`
-      })
-      console.log("%%%", res.cid.toString())
     }
   };
 };
+
+export const saveFileToIPFS = (path: string, content: string) => {
+  return async (dispatch: Dispatch, getState: () => RootState) => {
+    if (ipfs === null) {
+      return;
+    }
+
+    const res = await ipfs!.add({
+      path,
+      content,
+    })
+
+    dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+  }
+}
