@@ -26,15 +26,11 @@ function App() {
   }), shallowEqual);
 
   useEffect(() => {
-    if (!props.web3Initialized && !props.web3Initializing) {
-      dispatch(initializeWeb3());
-    }
+    dispatch(initializeWeb3());
   }, [dispatch]);
 
   useEffect(() => {
-    if (!props.ipfsInitializing && !props.ipfsInitialized && props.ipfsInitializationError === undefined) {
-      dispatch(startIPFS());
-    }
+    dispatch(startIPFS());
   }, [dispatch]);
 
   const connectHandler = (e: React.MouseEvent) => {
