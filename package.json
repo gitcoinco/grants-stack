@@ -1,5 +1,4 @@
 {
-  "homepage": "/grants-hub",
   "dependencies": {
     "hardhat": "^2.9.3"
   },
