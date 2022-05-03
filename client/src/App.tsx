@@ -29,13 +29,13 @@ function App() {
     if (!props.web3Initialized && !props.web3Initializing) {
       dispatch(initializeWeb3());
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!props.ipfsInitializing && !props.ipfsInitialized && props.ipfsInitializationError === undefined) {
       dispatch(startIPFS());
     }
-  }, []);
+  }, [dispatch]);
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -92,7 +92,7 @@ function App() {
           </button>
         </div>
         {props.ipfsLastFileSavedURL && <div>
-          Last file save at <a target="_blank" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a>
+          Last file save at <a target="_blank" rel="noreferrer" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a>
         </div>}
       </div>}
     </div>
