@@ -1,9 +1,9 @@
-import Web3 from 'web3';
+import { Web3Provider } from "@ethersproject/providers";
 
 export interface Global {
-  web3: Web3 | undefined
+  web3Provider: Web3Provider | undefined
 }
 
 export const global: Global = {
-  web3: undefined,
+  web3Provider: undefined,
 };

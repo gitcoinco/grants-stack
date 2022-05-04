@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import { ethers } from 'ethers'
 import { global } from '../global';
 import {
   Dispatch,
@@ -96,7 +96,14 @@ export const initializeWeb3 = () => {
 
       dispatch(web3Initializing());
       window.ethereum.request({ method: 'eth_requestAccounts' })
-      .then(() => {
+      .then((accounts: Array<string>) => {
+        const t: Web3Type = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
+        dispatch(web3Initialized(t));
+
+        if (accounts.length > 0) {
+          dispatch(web3AccountLoaded(accounts[0]))
+        }
+
         //FIXME: fix dispatch<any>
         window.ethereum.on('chainChanged', () => window.location.reload());
         dispatch<any>(loadWeb3Data());
@@ -114,23 +121,14 @@ export const initializeWeb3 = () => {
 
 const loadWeb3Data = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const t: Web3Type = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
-    dispatch(web3Initialized(t));
-
-    global.web3 = new Web3(window.ethereum);
-    global.web3!.eth.getChainId().then((id: number) => {
-      if (id !== VALID_CHAIN_ID && id !== LOCAL_CHAIN_ID) {
+    global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+    global.web3Provider!.getNetwork().then(({ chainId }) => {
+      if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
         dispatch(web3Error(`wrong network, please connect to ${VALID_NETWORK_NAME}`));
         return;
       }
 
-      dispatch(web3ChainIDLoaded(id))
-    });
-
-    global.web3!.eth.getAccounts().then((accounts: string[]) => {
-      if (accounts.length > 0) {
-        dispatch(web3AccountLoaded(accounts[0]))
-      }
+      dispatch(web3ChainIDLoaded(chainId))
     });
   }
 }
