@@ -9,6 +9,13 @@ import {
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
 import { startIPFS, saveFileToIPFS } from "./actions/ipfs";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
+import { CreatGrant } from './components/CreateGrant'
+import { Header } from './components/Header'
 
 function App() {
   const dispatch = useDispatch();
@@ -47,6 +54,14 @@ function App() {
 
   return (
     <div>
+      <BrowserRouter>
+        <div>
+          <Header />
+        </div>
+        <Routes>
+          <Route path="create" element={<CreatGrant />} />
+        </Routes>
+      </BrowserRouter>
       <div>
         <h3>WEB3</h3>
         {props.web3Error !== undefined && <div>
