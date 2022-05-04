@@ -5,8 +5,8 @@ import {
 } from 'redux';
 import { RootState } from '../reducers';
 
-export const VALID_NETWORK_NAME = "Rinkeby";
-export const VALID_CHAIN_ID = 4;
+export const VALID_NETWORK_NAME = "Goerli";
+export const VALID_CHAIN_ID = 5;
 export const LOCAL_CHAIN_ID = 1337;
 
 enum Web3Type {
@@ -123,6 +123,7 @@ const loadWeb3Data = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     global.web3Provider!.getNetwork().then(({ chainId }) => {
+      console.log({ chainId })
       if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
         dispatch(web3Error(`wrong network, please connect to ${VALID_NETWORK_NAME}`));
         return;
