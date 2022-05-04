@@ -25,7 +25,7 @@ contract GrantNFT is ERC721URIStorage, Ownable {
 
   function updateGrant(uint256 tokenId, string memory newURI) public {
     address owner = ownerOf(tokenId);
-    console.log(owner, "Ownerrr");
     require(msg.sender == owner, "You are not the owner");
+    _setTokenURI(tokenId, newURI);
   }
 }
