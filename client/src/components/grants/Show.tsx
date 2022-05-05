@@ -6,6 +6,9 @@ import {
   // useSelector,
   useDispatch,
 } from 'react-redux';
+import {
+  grantsPath
+} from "../../routes";
 
 function GrantsList() {
   const dispatch = useDispatch();
@@ -28,7 +31,7 @@ function GrantsList() {
         Grant #{id}
       </div>
       <div>
-        <Link to="/grants">Back to grants list</Link>
+        <Link to={ grantsPath() }>Back to grants list</Link>
       </div>
     </div>
   );

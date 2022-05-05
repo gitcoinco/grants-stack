@@ -16,6 +16,7 @@ import GrantsShow from "./components/grants/Show";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
+import { slugs } from "./routes";
 
 const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => action => {
   console.log('dispatch', action);
@@ -47,9 +48,6 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-
-const rootSlug = process.env.NODE_ENV === "production" ? "/grants-hub" : "";
-
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -57,10 +55,9 @@ root.render(
         <Layout>
           <ReduxRouter history={browserHistory} store={store}>
             <Routes>
-              <Route path={`${rootSlug}/`} element={<App />} />
-              <Route path={`${rootSlug}/grants`} element={<GrantsList />} />
-              <Route path={`${rootSlug}/grants/:id`} element={<GrantsShow />} />
-              <Route path={`${rootSlug}/test`} element={<>test</>} />
+              <Route path={slugs.root} element={<App />} />
+              <Route path={slugs.grants} element={<GrantsList />} />
+              <Route path={slugs.grant} element={<GrantsShow />} />
             </Routes>
           </ReduxRouter>
         </Layout>

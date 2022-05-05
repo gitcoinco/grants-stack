@@ -9,6 +9,9 @@ import {
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
 import { startIPFS, saveFileToIPFS } from "./actions/ipfs";
+import {
+  grantsPath
+} from "./routes";
 
 function App() {
   const dispatch = useDispatch();
@@ -94,8 +97,7 @@ function App() {
       </div>}
 
       <ul>
-        <li><Link to="/test">Test Link</Link></li>
-        <li><Link to="/grants">Grants</Link></li>
+        <li><Link to={ grantsPath() }>Grants</Link></li>
       </ul>
     </div>
   );
