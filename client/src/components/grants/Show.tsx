@@ -1,17 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import { RootState } from '../../reducers';
+import React, { useEffect } from 'react';
+// import { RootState } from '../../reducers';
 import { Link, useParams } from "react-router-dom";
 import {
-  shallowEqual,
-  useSelector,
+  // shallowEqual,
+  // useSelector,
   useDispatch,
 } from 'react-redux';
 
 function GrantsList() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const props = useSelector((state: RootState) => ({
-  }), shallowEqual);
+  // const props = useSelector((state: RootState) => ({
+  // }), shallowEqual);
 
   useEffect(() => {
     // load grant

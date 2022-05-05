@@ -4,7 +4,7 @@ interface Props {
   children: JSX.Element
 }
 
-export default function(ownProps: Props) {
+function Layout(ownProps: Props) {
   return <div>
     <header>
       HEADER
@@ -21,3 +21,5 @@ export default function(ownProps: Props) {
     </footer>
   </div>;
 }
+
+export default Layout;
