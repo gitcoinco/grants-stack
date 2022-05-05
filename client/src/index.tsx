@@ -10,6 +10,7 @@ import { createRouterMiddleware } from "@lagunovsky/redux-react-router";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
+import Layout from "./components/Layout";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
@@ -47,12 +48,14 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <ReduxRouter history={browserHistory} store={store}>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/test" element={<>test</>} />
-          </Routes>
-        </ReduxRouter>
+        <Layout>
+          <ReduxRouter history={browserHistory} store={store}>
+            <Routes>
+              <Route path="/" element={<App />} />
+              <Route path="/test" element={<>test</>} />
+            </Routes>
+          </ReduxRouter>
+        </Layout>
       </Provider>
     </ErrorBoundary>
   </React.StrictMode>
