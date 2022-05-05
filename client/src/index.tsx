@@ -46,6 +46,10 @@ const store = createStore(
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+
+const rootSlug = process.env.NODE_ENV === "production" ? "/grants-hub" : "";
+
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
@@ -53,10 +57,10 @@ root.render(
         <Layout>
           <ReduxRouter history={browserHistory} store={store}>
             <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/grants" element={<GrantsList />} />
-              <Route path="/grants/:id" element={<GrantsShow />} />
-              <Route path="/test" element={<>test</>} />
+              <Route path={`${rootSlug}/`} element={<App />} />
+              <Route path={`${rootSlug}/grants`} element={<GrantsList />} />
+              <Route path={`${rootSlug}/grants/:id`} element={<GrantsShow />} />
+              <Route path={`${rootSlug}/test`} element={<>test</>} />
             </Routes>
           </ReduxRouter>
         </Layout>
