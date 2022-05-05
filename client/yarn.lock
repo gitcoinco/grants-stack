@@ -1787,6 +1787,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@lagunovsky/redux-react-router@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@lagunovsky/redux-react-router/-/redux-react-router-2.2.0.tgz#3b4af0987e42eba07a04e0ecf097428b17be7652"
+  integrity sha512-37fkKOdLAzJF6b8wyFwwxzGOwAE1o7F5qb2q06a3xq3Y0INdfuak9nWEPqd1G9RsLvX4ZYH2Oin/7eLwLXspoA==
+
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.3.tgz#0300943770e04231041a51bd39f0439b5c7ab4f0"
