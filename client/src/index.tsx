@@ -11,6 +11,7 @@ import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 import Layout from "./components/Layout";
+import GrantsList from "./components/grants/List";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
@@ -52,6 +53,7 @@ root.render(
           <ReduxRouter history={browserHistory} store={store}>
             <Routes>
               <Route path="/" element={<App />} />
+              <Route path="/grants" element={<GrantsList />} />
               <Route path="/test" element={<>test</>} />
             </Routes>
           </ReduxRouter>

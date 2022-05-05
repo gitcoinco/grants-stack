@@ -93,9 +93,10 @@ function App() {
         </div>}
       </div>}
 
-      <div>
-        <Link to="/test">Test Link</Link>
-      </div>
+      <ul>
+        <li><Link to="/test">Test Link</Link></li>
+        <li><Link to="/grants">Grants</Link></li>
+      </ul>
     </div>
   );
 }
