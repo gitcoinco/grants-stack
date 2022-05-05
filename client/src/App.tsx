@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { RootState } from './reducers';
+import { Link } from "react-router-dom";
 import {
   shallowEqual,
   useSelector,
@@ -91,6 +92,10 @@ function App() {
           Last file save at <a target="_blank" rel="noreferrer" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a>
         </div>}
       </div>}
+
+      <div>
+        <Link to="/test">Test Link</Link>
+      </div>
     </div>
   );
 }
