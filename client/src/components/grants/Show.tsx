@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { RootState } from '../../reducers';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   shallowEqual,
   useSelector,
@@ -9,27 +9,27 @@ import {
 
 function GrantsList() {
   const dispatch = useDispatch();
+  const { id } = useParams();
   const props = useSelector((state: RootState) => ({
   }), shallowEqual);
 
   useEffect(() => {
-    // load grants
-    console.log("-- loading grants");
+    // load grant
+    console.log("-- loading grant");
     return () => {
-      // unload grants
-      console.log("-- unloading grants");
+      // unload grant
+      console.log("-- unloading grant");
     }
   }, [dispatch]);
 
   return (
     <div>
-      <ul>
-        <li><Link to="/grants/1">Test Grant 1</Link></li>
-        <li><Link to="/grants/2">Test Grant 2</Link></li>
-        <li><Link to="/grants/2">Test Grant 3</Link></li>
-      </ul>
-
-      <Link to="/">Home</Link>
+      <div>
+        Grant #{id}
+      </div>
+      <div>
+        <Link to="/grants">Back to grants list</Link>
+      </div>
     </div>
   );
 }

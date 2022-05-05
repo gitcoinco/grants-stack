@@ -12,6 +12,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 import Layout from "./components/Layout";
 import GrantsList from "./components/grants/List";
+import GrantsShow from "./components/grants/Show";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
@@ -54,6 +55,7 @@ root.render(
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/grants" element={<GrantsList />} />
+              <Route path="/grants/:id" element={<GrantsShow />} />
               <Route path="/test" element={<>test</>} />
             </Routes>
           </ReduxRouter>

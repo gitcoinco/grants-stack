@@ -80,7 +80,7 @@ function App() {
       {props.ipfsInitialized && <div>
         <h3>Test IPFS</h3>
         <div>
-          <textarea cols={40} rows={20} ref={textArea}>
+          <textarea cols={40} rows={5} ref={textArea}>
           </textarea>
         </div>
         <div>
