@@ -16,6 +16,7 @@ import GrantsShow from "./components/grants/Show";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
+import { CreatGrant } from './components/CreateGrant'
 
 const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => action => {
   console.log('dispatch', action);
@@ -57,6 +58,7 @@ root.render(
               <Route path="/grants" element={<GrantsList />} />
               <Route path="/grants/:id" element={<GrantsShow />} />
               <Route path="/test" element={<>test</>} />
+              <Route path="/create" element={<CreatGrant />} />
             </Routes>
           </ReduxRouter>
         </Layout>
