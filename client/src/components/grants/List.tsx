@@ -7,7 +7,8 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  grantPath
+  grantPath,
+  rootPath
 } from "../../routes";
 
 function GrantsList() {
@@ -32,7 +33,7 @@ function GrantsList() {
         <li><Link to={ grantPath(3) }>Test Grant 3</Link></li>
       </ul>
 
-      <Link to="{ rootPath() }">Home</Link>
+      <Link to={ rootPath() }>Home</Link>
     </div>
   );
 }
