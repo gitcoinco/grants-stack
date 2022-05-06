@@ -11,11 +11,12 @@ import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 import Layout from "./components/Layout";
-import GrantsList from "./components/grants/List";
-import GrantsShow from "./components/grants/Show";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
+import { slugs } from "./routes";
+import GrantsList from "./components/grants/List";
+import GrantsShow from "./components/grants/Show";
 import { CreatGrant } from './components/CreateGrant'
 
 const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => action => {
@@ -55,11 +56,10 @@ root.render(
         <ReduxRouter history={browserHistory} store={store}>
           <Layout>
             <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/grants" element={<GrantsList />} />
-              <Route path="/grants/:id" element={<GrantsShow />} />
-              <Route path="/test" element={<>test</>} />
-              <Route path="/create" element={<CreatGrant />} />
+              <Route path={slugs.root} element={<App />} />
+              <Route path={slugs.grants} element={<GrantsList />} />
+              <Route path={slugs.grant} element={<GrantsShow />} />
+              <Route path={slugs.newGrant} element={<CreatGrant />} />
             </Routes>
           </Layout>
         </ReduxRouter>
