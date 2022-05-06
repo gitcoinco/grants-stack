@@ -9,13 +9,6 @@ import {
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
 import { startIPFS, saveFileToIPFS } from "./actions/ipfs";
-import {
-  BrowserRouter,
-  Routes,
-  Route
-} from "react-router-dom";
-import { CreatGrant } from './components/CreateGrant'
-import { Header } from './components/Header'
 
 function App() {
   const dispatch = useDispatch();
