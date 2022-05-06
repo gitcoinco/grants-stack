@@ -123,7 +123,6 @@ const loadWeb3Data = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     global.web3Provider!.getNetwork().then(({ chainId }) => {
-      console.log({ chainId })
       if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
         dispatch(web3Error(`wrong network, please connect to ${VALID_NETWORK_NAME}`));
         return;
