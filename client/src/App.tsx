@@ -92,12 +92,6 @@ function App() {
           Last file save at <a target="_blank" rel="noreferrer" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a>
         </div>}
       </div>}
-
-      <ul>
-        <li><Link to="/test">Test Link</Link></li>
-        <li><Link to="/grants">Grants</Link></li>
-        <li><Link to="/create">Create a Grant</Link></li>
-      </ul>
     </div>
   );
 }

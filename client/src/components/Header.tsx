@@ -7,6 +7,10 @@ import {
   useDispatch,
 } from 'react-redux';
 import { initializeWeb3 } from "../actions/web3";
+import {
+  grantsPath,
+  newGrantPath
+} from "../routes";
 
 export function Header() {
   const dispatch = useDispatch();
@@ -42,9 +46,8 @@ export function Header() {
         </div>}
       </div>
       <ul>
-        <li><Link to="/test">Test Link</Link></li>
-        <li><Link to="/grants">Grants</Link></li>
-        <li><Link to="/create">Create a Grant</Link></li>
+        <li><Link to={ grantsPath() }>Grants</Link></li>
+        <li><Link to={ newGrantPath() }>Create a Grant</Link></li>
       </ul>
     </header>
   )
