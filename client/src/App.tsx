@@ -97,7 +97,9 @@ function App() {
       </div>}
 
       <ul>
-        <li><Link to={ grantsPath() }>Grants</Link></li>
+        <li><Link to="/test">Test Link</Link></li>
+        <li><Link to="/grants">Grants</Link></li>
+        <li><Link to="/create">Create a Grant</Link></li>
       </ul>
     </div>
   );

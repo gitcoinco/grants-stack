@@ -1,4 +1,5 @@
 import React from "react";
+import { Header } from './Header'
 
 interface Props {
   children: JSX.Element
@@ -6,9 +7,7 @@ interface Props {
 
 function Layout(ownProps: Props) {
   return <div>
-    <header>
-      HEADER
-    </header>
+    <Header />
     <hr />
 
     <main>

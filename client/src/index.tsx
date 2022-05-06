@@ -16,7 +16,7 @@ import GrantsShow from "./components/grants/Show";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { browserHistory } from "./history";
-import { slugs } from "./routes";
+import { CreatGrant } from './components/CreateGrant'
 
 const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => action => {
   console.log('dispatch', action);
@@ -52,15 +52,17 @@ root.render(
   // <React.StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <Layout>
-          <ReduxRouter history={browserHistory} store={store}>
+        <ReduxRouter history={browserHistory} store={store}>
+          <Layout>
             <Routes>
-              <Route path={slugs.root} element={<App />} />
-              <Route path={slugs.grants} element={<GrantsList />} />
-              <Route path={slugs.grant} element={<GrantsShow />} />
+              <Route path="/" element={<App />} />
+              <Route path="/grants" element={<GrantsList />} />
+              <Route path="/grants/:id" element={<GrantsShow />} />
+              <Route path="/test" element={<>test</>} />
+              <Route path="/create" element={<CreatGrant />} />
             </Routes>
-          </ReduxRouter>
-        </Layout>
+          </Layout>
+        </ReduxRouter>
       </Provider>
     </ErrorBoundary>
   // </React.StrictMode>
