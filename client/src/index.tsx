@@ -51,8 +51,8 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <Layout>
-          <ReduxRouter history={browserHistory} store={store}>
+        <ReduxRouter history={browserHistory} store={store}>
+          <Layout>
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/grants" element={<GrantsList />} />
@@ -60,8 +60,8 @@ root.render(
               <Route path="/test" element={<>test</>} />
               <Route path="/create" element={<CreatGrant />} />
             </Routes>
-          </ReduxRouter>
-        </Layout>
+          </Layout>
+        </ReduxRouter>
       </Provider>
     </ErrorBoundary>
   </React.StrictMode>

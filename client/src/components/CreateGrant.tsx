@@ -7,9 +7,9 @@ import {
   useSelector,
   useDispatch,
 } from 'react-redux';
-import { Dispatch } from 'redux';
+import { GrantPreview } from './GrantPreview'
 
-interface FormInputs {
+export interface FormInputs {
   title: string
   description: string
   website: string
@@ -102,13 +102,14 @@ export function CreatGrant() {
       if (typeof value === 'string') {
         return value.length > 0
       }
+      return false
     })
     setDisabled(validValues.length !== 5 || !props.ipfsInitialized)
-  }, [formInputs])
+  }, [formInputs, props.ipfsInitialized])
 
   if (props.ipfsLastFileSavedURL) {
     return (
-      <div>Your grant data has been saved to IPFS! And can be accessed here: <a target="_blank" rel="noreferrer" href={props.ipfsLastFileSavedURL}>{props.ipfsLastFileSavedURL}</a></div>
+      <GrantPreview grant={formInputs} url={props.ipfsLastFileSavedURL} />
     )
   }
   return (
