@@ -9,9 +9,6 @@ import {
 import './App.css';
 import { initializeWeb3 } from "./actions/web3";
 import { startIPFS, saveFileToIPFS } from "./actions/ipfs";
-import {
-  grantsPath
-} from "./routes";
 
 function App() {
   const dispatch = useDispatch();
