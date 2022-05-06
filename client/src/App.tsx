@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { RootState } from './reducers';
-import { Link } from "react-router-dom";
 import {
   shallowEqual,
   useSelector,
