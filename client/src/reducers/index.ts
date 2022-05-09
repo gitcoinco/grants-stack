@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { createRouterReducer, ReduxRouterState } from "@lagunovsky/redux-react-router";
-import { browserHistory } from "../history";
+import { history } from "../history";
 import {
   Web3State,
   web3Reducer,
@@ -17,7 +17,7 @@ export interface RootState {
 }
 
 export const createRootReducer = () => combineReducers({
-  router: createRouterReducer(browserHistory),
+  router: createRouterReducer(history),
   web3: web3Reducer,
   ipfs: ipfsReducer,
 });

@@ -1,4 +1,4 @@
-const rootSlug = process.env.NODE_ENV === "production" ? "/grants-hub" : "";
+const rootSlug = "";//process.env.NODE_ENV === "production" ? "/grants-hub" : "";
 
 export const slugs = {
   root: `${rootSlug}/`,

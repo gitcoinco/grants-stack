@@ -13,7 +13,7 @@ import './index.css';
 import Layout from "./components/Layout";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { browserHistory } from "./history";
+import { history } from "./history";
 import { slugs } from "./routes";
 import GrantsList from "./components/grants/List";
 import GrantsShow from "./components/grants/Show";
@@ -26,7 +26,7 @@ const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => 
   return returnValue;
 }
 
-const routerMiddleware = createRouterMiddleware(browserHistory);
+const routerMiddleware = createRouterMiddleware(history);
 
 let middlewares: Middleware[] = [
   thunkMiddleware,
@@ -53,7 +53,7 @@ root.render(
   // <React.StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <ReduxRouter history={browserHistory} store={store}>
+        <ReduxRouter history={history} store={store}>
           <Layout>
             <Routes>
               <Route path={slugs.root} element={<App />} />
