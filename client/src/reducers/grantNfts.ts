@@ -1,8 +1,8 @@
 import {
   GrantActions,
-  GRANT_CREATED
+  GRANT_CREATED,
+  GRANT_TX_STATUS
 } from '../actions/grantNfts'
-import { grantsPath } from '../routes'
 
 interface Grant {
   id: number,
@@ -10,10 +10,12 @@ interface Grant {
 }
 export interface GrantState {
   grants: Grant[]
+  txStatus: string | null
 }
 
 const initialState: GrantState = {
-  grants: []
+  grants: [],
+  txStatus: null
 }
 
 export const grantReducer = (state: GrantState = initialState, action: GrantActions): GrantState => {
@@ -25,6 +27,12 @@ export const grantReducer = (state: GrantState = initialState, action: GrantActi
           ipfsHash: action.txHash,
           id: 1
         }]
+      }
+    }
+    case GRANT_TX_STATUS: {
+      return {
+        ...state,
+        txStatus: action.status
       }
     }
     default: {
