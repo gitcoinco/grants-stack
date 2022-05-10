@@ -4,9 +4,10 @@ import {
   GRANT_TX_STATUS
 } from '../actions/grantNfts'
 
-interface Grant {
+export interface Grant {
   id: number,
-  ipfsHash: string
+  ipfsHash: string,
+  owner?: string
 }
 export interface GrantState {
   grants: Grant[]
@@ -24,8 +25,9 @@ export const grantReducer = (state: GrantState = initialState, action: GrantActi
       return {
         ...state,
         grants: [...state.grants, {
-          ipfsHash: action.txHash,
-          id: 1
+          id: action.id,
+          ipfsHash: action.ipfsHash,
+          owner: action.owner
         }]
       }
     }

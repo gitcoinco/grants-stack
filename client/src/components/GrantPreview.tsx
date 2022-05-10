@@ -12,7 +12,7 @@ import {
 function Loading({status}: { status: string }) {
   if (status === 'initiated') {
     return (
-      <div style={{color: 'yellow'}}>Your transaction is pending! Hold tight, we will let you know once your grant has been created</div>
+      <div style={{color: 'yellow', background: 'grey'}}>Your transaction is pending! Hold tight, we will let you know once your grant has been created</div>
     )
   }
   return (

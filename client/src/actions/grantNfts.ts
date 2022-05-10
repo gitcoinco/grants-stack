@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, BigNumber } from 'ethers'
 import { global } from '../global';
 import {
   Dispatch,
@@ -7,6 +7,8 @@ import { RootState } from '../reducers';
 import { notWeb3Browser } from './web3'
 import GrantNFTABI from '../contracts/abis/GrantNFT.json'
 import { Rinkeby } from '../contracts/deployments' 
+import { Grant } from '../reducers/grantNfts'
+import { parseMintEvents } from './utils/grants'
 
 export type GrantActions = GrantCreated | GrantTXStatus
 
@@ -24,11 +26,15 @@ export const grantTXStatus = (status: string): GrantActions => ({
 export const GRANT_CREATED = "GRANT_CREATED";
 export interface GrantCreated {
   type: typeof GRANT_CREATED
-  txHash: string
+  id: number
+  ipfsHash: string
+  owner?: string
 }
-export const grantCreated = (txHash: string): GrantActions => ({
+export const grantCreated = ({ id,ipfsHash, owner }: Grant): GrantActions => ({
   type: GRANT_CREATED,
-  txHash
+  id,
+  ipfsHash,
+  owner
 });
 
 export const mintGrant = () => {
@@ -43,8 +49,11 @@ export const mintGrant = () => {
           dispatch(grantTXStatus('initiated'))
           const txStatus = await mintTx.wait()
           if (txStatus.status) {
-            dispatch(grantTXStatus('complete'))
-            dispatch(grantCreated(state.ipfs.lastFileSavedURL))
+            const grantData = parseMintEvents(txStatus.events)
+            if (!(grantData instanceof Error)) {
+              dispatch(grantTXStatus('complete'))
+              dispatch(grantCreated(grantData)) 
+            }
           } else {
             throw Error('Unable to mint TX')
           }
