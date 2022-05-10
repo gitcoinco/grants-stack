@@ -1,5 +1,5 @@
 import { parseMintEvents } from './utils/grants'
-import { Grant } from '../reducers/grantNfts'
+import { Grant } from '../reducers/grants'
 
 
 const mockedEvents = [

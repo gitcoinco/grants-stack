@@ -2,7 +2,7 @@ import {
   GrantActions,
   GRANT_CREATED,
   GRANT_TX_STATUS
-} from '../actions/grantNfts'
+} from '../actions/grants'
 
 export interface Grant {
   id: number,

@@ -1,4 +1,4 @@
-import { ethers, BigNumber } from 'ethers'
+import { ethers } from 'ethers'
 import { global } from '../global';
 import {
   Dispatch,
@@ -7,7 +7,7 @@ import { RootState } from '../reducers';
 import { notWeb3Browser } from './web3'
 import GrantNFTABI from '../contracts/abis/GrantNFT.json'
 import { Rinkeby } from '../contracts/deployments' 
-import { Grant } from '../reducers/grantNfts'
+import { Grant } from '../reducers/grants'
 import { parseMintEvents } from './utils/grants'
 
 export type GrantActions = GrantCreated | GrantTXStatus

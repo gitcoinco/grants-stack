@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { Grant } from '../../reducers/grantNfts'
+import { Grant } from '../../reducers/grants'
 
 type GrantArgs = string | {
   type: string;

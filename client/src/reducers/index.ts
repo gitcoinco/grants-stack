@@ -12,7 +12,7 @@ import {
 import {
   GrantState,
   grantReducer
-} from './grantNfts'
+} from './grants'
 
 export interface RootState {
   web3: Web3State,
