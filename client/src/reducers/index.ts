@@ -9,10 +9,15 @@ import {
   IPFSState,
   ipfsReducer,
 } from './ipfs';
+import {
+  GrantState,
+  grantReducer
+} from './grantNfts'
 
 export interface RootState {
   web3: Web3State,
   ipfs: IPFSState,
+  grants: GrantState,
   router: ReduxRouterState,
 }
 
@@ -20,4 +25,5 @@ export const createRootReducer = () => combineReducers({
   router: createRouterReducer(browserHistory),
   web3: web3Reducer,
   ipfs: ipfsReducer,
+  grants: grantReducer
 });

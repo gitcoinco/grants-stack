@@ -22,18 +22,24 @@ export const grantCreated = (txHash: string): GrantActions => ({
 });
 
 export const mintGrant = () => {
-  if (window.ethereum && global.web3Provider) {
-    return async (dispatch: Dispatch, getState: () => RootState) => {
-      const state = getState();
-      const signer = global.web3Provider?.getSigner()
-      const grantNFTContract = new ethers.Contract(Rinkeby.grantNft, GrantNFTABI.abi, signer)
-      const mintTx = await grantNFTContract.mintGrant(state.web3.account, state.ipfs.lastFileSavedURL)
+  try {
+    if (window.ethereum && global.web3Provider) {
+      return async (dispatch: Dispatch, getState: () => RootState) => {
+        const state = getState();
+        const signer = global.web3Provider?.getSigner()
+        const grantNFTContract = new ethers.Contract(Rinkeby.grantNft, GrantNFTABI.abi, signer)
+        if (state.ipfs.lastFileSavedURL) {
+          const mintTx = await grantNFTContract.mintGrant(state.web3.account, state.ipfs.lastFileSavedURL)
 
-      if (mintTx.hash) {
-        dispatch(grantCreated(mintTx.hash))
+          if (mintTx.hash) {
+            dispatch(grantCreated(state.ipfs.lastFileSavedURL))
+          } else {
+            throw Error('Unable to mint TX')
+          }
+        }
       }
     }
-  } else {
+  } catch (e) {
     return notWeb3Browser();
   }
 }
