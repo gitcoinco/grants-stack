@@ -6,7 +6,7 @@ import {
 import { RootState } from '../reducers';
 import { notWeb3Browser } from './web3'
 import GrantNFTABI from '../contracts/abis/GrantNFT.json'
-import { Goerli } from '../contracts/deployments' 
+import { Rinkeby } from '../contracts/deployments' 
 
 export const GRANT_CREATED = "GRANT_CREATED";
 export interface GrantCreated {
@@ -26,7 +26,7 @@ export const mintGrant = () => {
     return async (dispatch: Dispatch, getState: () => RootState) => {
       const state = getState();
       const signer = global.web3Provider?.getSigner()
-      const grantNFTContract = new ethers.Contract(Goerli.grantNft, GrantNFTABI.abi, signer)
+      const grantNFTContract = new ethers.Contract(Rinkeby.grantNft, GrantNFTABI.abi, signer)
       const mintTx = await grantNFTContract.mintGrant(state.web3.account, state.ipfs.lastFileSavedURL)
 
       if (mintTx.hash) {
