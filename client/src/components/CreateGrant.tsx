@@ -7,7 +7,7 @@ import {
   useSelector,
   useDispatch,
 } from 'react-redux';
-import { GrantPreview } from './GrantPreview'
+import GrantPreview from './GrantPreview'
 
 export interface FormInputs {
   title: string
