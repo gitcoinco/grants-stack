@@ -1,4 +1,4 @@
-import hre, { ethers, upgrades } from "hardhat";
+import hre, { ethers } from "hardhat";
 import { prompt } from "../../lib/utils";
 
 async function main() {
@@ -13,7 +13,7 @@ async function main() {
   await prompt("do you want to deploy the GrantsRegistry contract?");
 
   const GrantsRegistry = await ethers.getContractFactory("GrantsRegistry");
-  const instance = await upgrades.deployProxy(GrantsRegistry, []);
+  const instance = await GrantsRegistry.deploy();
   await instance.deployed();
 
   console.log("GrantsRegistry deployed to:", instance.address);
