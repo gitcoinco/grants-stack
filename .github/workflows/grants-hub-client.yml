@@ -13,11 +13,12 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install and Build 🔧
+      - name: Install, Build, and Test 🔧
         run: |
           cd client
           yarn install
           yarn build
+          yarn test
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
