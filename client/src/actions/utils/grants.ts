@@ -1,15 +1,17 @@
-import { BigNumber } from 'ethers'
-import { Grant } from '../../reducers/grants'
+import { BigNumber } from "ethers";
+import { NewGrant } from "../../reducers/newGrant";
 
 type GrantArgs = string | {
   type: string;
   hex: string;
 }
+
 interface GrantEvent {
   event: string
   args: GrantArgs[]
 }
-export const parseMintEvents = (events: GrantEvent[]): Grant | Error => {
+
+export const parseMintEvents = (events: GrantEvent[]): NewGrant | Error => {
   const createdEvent = events.find(event => event.event === 'GrantCreated')
   if (!createdEvent) {
     throw new Error('Unable to find created event')
