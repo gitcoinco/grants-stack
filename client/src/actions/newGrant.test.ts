@@ -1,5 +1,5 @@
 import { parseMintEvents } from "./utils/grants";
-import { Grant } from "../reducers/grants";
+import { NewGrant } from "../reducers/newGrant";
 
 const mockedEvents = [
   {
@@ -28,7 +28,7 @@ const mockedEvents = [
 
 describe("Grant Nft Action", () => {
   it("parseMintEvents returns grant data from tx hash", () => {
-    const grantData: Grant | Error = parseMintEvents(mockedEvents);
+    const grantData: NewGrant | Error = parseMintEvents(mockedEvents);
 
     expect(grantData).toEqual({
       id: 12,
