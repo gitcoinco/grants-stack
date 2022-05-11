@@ -5,7 +5,7 @@ import {
   WEB3_ERROR,
   WEB3_CHAIN_ID_LOADED,
   WEB3_ACCOUNT_LOADED,
-} from '../actions/web3';
+} from "../actions/web3";
 
 export interface Web3State {
   initializing: boolean
@@ -67,4 +67,4 @@ export const web3Reducer = (state: Web3State = initialState, action: Web3Actions
   }
 
   return state;
-}
+};
