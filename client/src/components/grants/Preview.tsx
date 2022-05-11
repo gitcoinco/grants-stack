@@ -1,14 +1,14 @@
 // import { useEffect} from 'react'
-import { FormInputs } from './CreateGrant'
-import { Link } from 'react-router-dom'
-import { mintGrant } from '../actions/grants'
-import { RootState } from '../reducers';
+import { FormInputs } from "./New";
+import { Link } from "react-router-dom";
+import { mintGrant } from "../../actions/grants";
+import { RootState } from "../../reducers";
 import {
   shallowEqual,
   useSelector,
   useDispatch,
-} from 'react-redux';
-import { Grant } from '../reducers/grants'
+} from "react-redux";
+import { Grant } from "../../reducers/grants";
 
 function Loading({status, grants}: { status: string, grants: Grant[] }) {
   if (status === 'initiated') {
@@ -24,12 +24,13 @@ function Loading({status, grants}: { status: string, grants: Grant[] }) {
 }
 
 function GrantPreview({ grant, url }: { grant: FormInputs, url: string }) {
+  const dispatch = useDispatch();
+
   const props = useSelector((state: RootState) => ({
     txStatus: state.grants.txStatus,
     grants: state.grants.grants
   }), shallowEqual);
 
-  const dispatch = useDispatch();
   return (
     <>
       <div>Your grant data has been saved to IPFS! And can be accessed here: <a target="_blank" rel="noreferrer" href={url}>{url}</a></div>
@@ -38,7 +39,7 @@ function GrantPreview({ grant, url }: { grant: FormInputs, url: string }) {
           return (
             <p key={key}>{key}: {value ? 'Yes': 'No'}</p>
           )
-        } 
+        }
         return (
           <p key={key}>{key}: {value}</p>
         )

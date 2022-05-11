@@ -17,7 +17,7 @@ import { history } from "./history";
 import { slugs } from "./routes";
 import GrantsList from "./components/grants/List";
 import GrantsShow from "./components/grants/Show";
-import { CreatGrant } from './components/CreateGrant'
+import CreatGrant from './components/grants/New'
 
 const logger: Middleware = ({ getState }: MiddlewareAPI) => (next: Dispatch) => action => {
   console.log('dispatch', action);
