@@ -10,20 +10,26 @@ import {
   ipfsReducer,
 } from "./ipfs";
 import {
+  GrantsState,
+  grantsReducer
+} from "./grants";
+import {
   NewGrantState,
   newGrantReducer
 } from "./newGrant";
 
 export interface RootState {
+  router: ReduxRouterState,
   web3: Web3State,
   ipfs: IPFSState,
-  newGrant: NewGrantState,
-  router: ReduxRouterState,
+  grants: GrantsState,
+  newGrant: NewGrantState
 }
 
 export const createRootReducer = () => combineReducers({
   router: createRouterReducer(history),
   web3: web3Reducer,
   ipfs: ipfsReducer,
+  grants: grantsReducer,
   newGrant: newGrantReducer
 });
