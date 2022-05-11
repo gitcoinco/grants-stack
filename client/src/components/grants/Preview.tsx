@@ -1,16 +1,16 @@
 // import { useEffect} from 'react'
 import { FormInputs } from "./New";
 import { Link } from "react-router-dom";
-import { mintGrant } from "../../actions/grants";
+import { mintGrant } from "../../actions/newGrant";
 import { RootState } from "../../reducers";
 import {
   shallowEqual,
   useSelector,
   useDispatch,
 } from "react-redux";
-import { Grant } from "../../reducers/grants";
+import { NewGrant } from "../../reducers/newGrant";
 
-function Loading({status, grants}: { status: string, grants: Grant[] }) {
+function Loading({status, grants}: { status: string, grants: NewGrant[] }) {
   if (status === 'initiated') {
     return (
       <div style={{color: 'yellow', background: 'grey'}}>Your transaction is pending! Hold tight, we will let you know once your grant has been created</div>
@@ -27,8 +27,8 @@ function GrantPreview({ grant, url }: { grant: FormInputs, url: string }) {
   const dispatch = useDispatch();
 
   const props = useSelector((state: RootState) => ({
-    txStatus: state.grants.txStatus,
-    grants: state.grants.grants
+    txStatus: state.newGrant.txStatus,
+    grants: state.newGrant.grants
   }), shallowEqual);
 
   return (

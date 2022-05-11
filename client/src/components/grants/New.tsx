@@ -109,6 +109,7 @@ function NewGrant() {
   }, [formInputs, props.ipfsInitialized]);
 
   if (props.ipfsLastFileSavedURL) {
+    // FIXME: we could check something like state.newGrant.saved to see if it has been saved
     return (
       <GrantPreview grant={formInputs} url={props.ipfsLastFileSavedURL} />
     )

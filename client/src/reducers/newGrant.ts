@@ -1,27 +1,27 @@
 import {
-  GrantActions,
-  GRANT_CREATED,
-  GRANT_TX_STATUS
-} from '../actions/grants'
+  NewGrantActions,
+  NEW_GRANT_CREATED,
+  NEW_GRANT_TX_STATUS
+} from "../actions/newGrant";
 
-export interface Grant {
+export interface NewGrant {
   id: number,
   ipfsHash: string,
   owner?: string
 }
-export interface GrantState {
-  grants: Grant[]
+export interface NewGrantState {
+  grants: NewGrant[]
   txStatus: string | null
 }
 
-const initialState: GrantState = {
+const initialState: NewGrantState = {
   grants: [],
   txStatus: null
 }
 
-export const grantReducer = (state: GrantState = initialState, action: GrantActions): GrantState => {
+export const newGrantReducer = (state: NewGrantState = initialState, action: NewGrantActions): NewGrantState => {
   switch (action.type) {
-    case GRANT_CREATED: {
+    case NEW_GRANT_CREATED: {
       return {
         ...state,
         grants: [...state.grants, {
@@ -31,14 +31,14 @@ export const grantReducer = (state: GrantState = initialState, action: GrantActi
         }]
       }
     }
-    case GRANT_TX_STATUS: {
+
+    case NEW_GRANT_TX_STATUS: {
       return {
         ...state,
         txStatus: action.status
       }
     }
-    default: {
-      return initialState
-    }
   }
+
+  return initialState;
 }

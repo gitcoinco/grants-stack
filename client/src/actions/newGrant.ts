@@ -1,37 +1,38 @@
-import { ethers } from 'ethers'
-import { global } from '../global';
+import { ethers } from "ethers";
+import { global } from "../global";
 import {
   Dispatch,
-} from 'redux';
-import { RootState } from '../reducers';
-import { notWeb3Browser } from './web3'
-import GrantNFTABI from '../contracts/abis/GrantNFT.json'
-import { Rinkeby } from '../contracts/deployments' 
-import { Grant } from '../reducers/grants'
-import { parseMintEvents } from './utils/grants'
+} from "redux";
+import { RootState } from "../reducers";
+import { notWeb3Browser } from "./web3"
+import GrantNFTABI from "../contracts/abis/GrantNFT.json";
+import { Rinkeby } from "../contracts/deployments";
+import { NewGrant } from "../reducers/newGrant";
+import { parseMintEvents } from "./utils/grants";
 
-export type GrantActions = GrantCreated | GrantTXStatus
-
-export const GRANT_TX_STATUS = "GRANT_TX_STATUS";
-export interface GrantTXStatus {
-  type: typeof GRANT_TX_STATUS
+export const NEW_GRANT_TX_STATUS = "NEW_GRANT_TX_STATUS";
+export interface NewGrantTXStatus {
+  type: typeof NEW_GRANT_TX_STATUS
   status: string
 }
-export const grantTXStatus = (status: string): GrantActions => ({
-  type: GRANT_TX_STATUS,
-  status,
-})
 
-
-export const GRANT_CREATED = "GRANT_CREATED";
+export const NEW_GRANT_CREATED = "NEW_GRANT_CREATED";
 export interface GrantCreated {
-  type: typeof GRANT_CREATED
+  type: typeof NEW_GRANT_CREATED
   id: number
   ipfsHash: string
   owner?: string
 }
-export const grantCreated = ({ id,ipfsHash, owner }: Grant): GrantActions => ({
-  type: GRANT_CREATED,
+
+export type NewGrantActions = GrantCreated | NewGrantTXStatus;
+
+export const grantTXStatus = (status: string): NewGrantActions => ({
+  type: NEW_GRANT_TX_STATUS,
+  status,
+});
+
+export const grantCreated = ({ id,ipfsHash, owner }: NewGrant): NewGrantActions => ({
+  type: NEW_GRANT_CREATED,
   id,
   ipfsHash,
   owner
@@ -52,7 +53,7 @@ export const mintGrant = () => {
             const grantData = parseMintEvents(txStatus.events)
             if (!(grantData instanceof Error)) {
               dispatch(grantTXStatus('complete'))
-              dispatch(grantCreated(grantData)) 
+              dispatch(grantCreated(grantData))
             }
           } else {
             throw Error('Unable to mint TX')
