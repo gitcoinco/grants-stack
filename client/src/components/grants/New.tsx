@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { TextInput, RadioInput } from './inputs'
-import { startIPFS, saveFileToIPFS } from "./../actions/ipfs";
-import { RootState } from '../reducers';
+import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
+import { RootState } from "../../reducers";
 import {
   shallowEqual,
   useSelector,
   useDispatch,
-} from 'react-redux';
-import GrantPreview from './GrantPreview'
+} from "react-redux";
+import GrantPreview from "./Preview";
 
 export interface FormInputs {
   title: string
@@ -27,7 +27,9 @@ type RadioInputProps = {
   value: boolean
 }
 
-export function CreatGrant() {
+function NewGrant() {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(startIPFS());
   });
@@ -37,11 +39,9 @@ export function CreatGrant() {
     ipfsInitialized: state.ipfs.initialized,
   }), shallowEqual);
 
-  const dispatch = useDispatch();
   const saveGrantDataToIPFS = () => {
     dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
   }
-  
 
   const textInputs: TextInputProps[] = [
     {
@@ -66,7 +66,6 @@ export function CreatGrant() {
     }
   ]
 
-
   const radioInputs: RadioInputProps[] = [
     {
       name: 'receivedFunding',
@@ -77,6 +76,7 @@ export function CreatGrant() {
       value: false
     }
   ]
+
   const [formInputs, setFormInputs] = useState<FormInputs>({
     title: '',
     description: '',
@@ -84,7 +84,8 @@ export function CreatGrant() {
     chain: '',
     wallet: '',
     receivedFunding: false
-  })
+  });
+
   const [disabled, setDisabled] = useState(true)
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
@@ -105,13 +106,14 @@ export function CreatGrant() {
       return false
     })
     setDisabled(validValues.length !== 5 || !props.ipfsInitialized)
-  }, [formInputs, props.ipfsInitialized])
+  }, [formInputs, props.ipfsInitialized]);
 
   if (props.ipfsLastFileSavedURL) {
     return (
       <GrantPreview grant={formInputs} url={props.ipfsLastFileSavedURL} />
     )
   }
+
   return (
     <form onSubmit={e => e.preventDefault()}>
       {textInputs.map((input) => (
@@ -140,3 +142,5 @@ export function CreatGrant() {
     </form>
   )
 }
+
+export default NewGrant;
