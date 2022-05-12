@@ -44,7 +44,7 @@ export const prompt = async (question: string) => {
   console.log();
 };
 
-export const prettyNum = (_n: number) => {
+export const prettyNum = (_n: number | string) => {
   const n = _n.toString();
   let s = "";
   for (let i = 0; i < n.length; i++) {
