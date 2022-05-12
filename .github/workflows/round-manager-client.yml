@@ -17,6 +17,8 @@ jobs:
         run: |
           cd packages/round-manager
           yarn install
+          cd frontend
+          yarn install
 
       - name: RM-Hardhat 
         run: |
