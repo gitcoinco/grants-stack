@@ -26,15 +26,24 @@ const config: HardhatUserConfig = {
 
   networks: {
     rinkeby: {
-      url: process.env.ETHERSCAN_API_KEY || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      url: process.env.RINKEBY_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      }
+    },
+
+    ropsten: {
+      url: process.env.ROPSTEN_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      }
     },
 
     goerli: {
       url: process.env.GOERLI_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      }
     },
   },
 
