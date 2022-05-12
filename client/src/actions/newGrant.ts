@@ -5,8 +5,8 @@ import {
 } from "redux";
 import { RootState } from "../reducers";
 import { notWeb3Browser } from "./web3"
-import GrantNFTABI from "../contracts/abis/GrantNFT.json";
-import { Rinkeby } from "../contracts/deployments";
+import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
+import { addressesByChainID } from "../contracts/deployments";
 import { NewGrant } from "../reducers/newGrant";
 import { parseMintEvents } from "./utils/grants";
 
@@ -39,29 +39,25 @@ export const grantCreated = ({ id,ipfsHash, owner }: NewGrant): NewGrantActions 
 });
 
 export const mintGrant = () => {
-  try {
-    if (window.ethereum && global.web3Provider) {
-      return async (dispatch: Dispatch, getState: () => RootState) => {
-        const state = getState();
-        const signer = global.web3Provider?.getSigner()
-        const grantNFTContract = new ethers.Contract(Rinkeby.grantNft, GrantNFTABI.abi, signer)
-        if (state.ipfs.lastFileSavedURL) {
-          const mintTx = await grantNFTContract.mintGrant(state.web3.account, state.ipfs.lastFileSavedURL)
-          dispatch(grantTXStatus('initiated'))
-          const txStatus = await mintTx.wait()
-          if (txStatus.status) {
-            const grantData = parseMintEvents(txStatus.events)
-            if (!(grantData instanceof Error)) {
-              dispatch(grantTXStatus('complete'))
-              dispatch(grantCreated(grantData))
-            }
-          } else {
-            throw Error('Unable to mint TX')
-          }
+  return async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const chainID = state.web3.chainID;
+    const addresses = addressesByChainID(chainID!);
+    const signer = global.web3Provider?.getSigner()
+    const grantNFTContract = new ethers.Contract(addresses.grantNft, GrantsRegistryABI, signer)
+    if (state.ipfs.lastFileSavedURL) {
+      const mintTx = await grantNFTContract.mintGrant(state.web3.account, state.ipfs.lastFileSavedURL)
+      dispatch(grantTXStatus('initiated'))
+      const txStatus = await mintTx.wait()
+      if (txStatus.status) {
+        const grantData = parseMintEvents(txStatus.events)
+        if (!(grantData instanceof Error)) {
+          dispatch(grantTXStatus('complete'))
+          dispatch(grantCreated(grantData))
         }
+      } else {
+        throw Error('Unable to mint TX')
       }
     }
-  } catch (e) {
-    return notWeb3Browser();
   }
 }

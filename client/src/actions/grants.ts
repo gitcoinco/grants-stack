@@ -2,10 +2,10 @@ import {
   Dispatch,
 } from 'redux';
 import { RootState } from '../reducers';
-import GrantNFTABI from "../contracts/abis/GrantNFT.json";
+import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 import { global } from "../global";
 import { ethers } from "ethers";
-import { Rinkeby } from "../contracts/deployments";
+import { addressesByChainID } from "../contracts/deployments";
 
 export const GRANTS_LOADING = "GRANTS_LOADING";
 export interface GrantsLoadingAction {
@@ -44,8 +44,12 @@ const grantsUnload = () => ({
 export const loadGrants = () => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantsLoading());
+
+    const state = getState();
+    const chainID = state.web3.chainID;
+    const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider!.getSigner();
-    const contract = new ethers.Contract(Rinkeby.grantNft, GrantNFTABI.abi, signer);
+    const contract = new ethers.Contract(addresses.grantsRegistry, GrantsRegistryABI, signer);
     const filter = contract.filters.GrantCreated(null, null, null);
     // FIXME: filter by grant owner
     const res = await contract.queryFilter(filter);
