@@ -1,6 +1,19 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "start": "yarn rm-app-start",
+    "build": "yarn rm-app-build",
+    "compile": "yarn rm-hh-compile",
+    "test": "yarn rm-hh-test && yarn rm-app-test",
+
+    "// round manager script": "====== round manager specific ======",
+    "rm-hh-test": "cd packages/round-manager; yarn run hh-test",
+    "rm-hh-compile": "cd packages/round-manager; yarn hh-compile",
+    "rm-app-build": "cd packages/round-manager; yarn app-build",
+    "rm-app-start": "cd packages/round-manager; yarn app-start",
+    "rm-app-test": "cd packages/round-manager; yarn app-test"
+  },
   "devDependencies": {
     "lerna": "^4.0.0"
   }

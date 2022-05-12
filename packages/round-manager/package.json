@@ -2,14 +2,15 @@
   "name": "hardhat-project",
   "scripts": {
     "// hardhat script": "====== scripts specific hardhat ======",
-    "hh-compile": "npx hardhat compile",
-    "hh-clean": "npx hardhart clean",
-    "hh-test": "npx hardhat test",
-    "hh-coverage": "npx hardhat test",
+    "hh-compile": "yarn hardhat compile",
+    "hh-clean": "yarn hardhart clean",
+    "hh-test": "yarn hardhat test",
+    "hh-coverage": "yarn hardhat test",
 
     "// frontend script": "====== scripts specific to frontend ======",
-    "app-start": "cd frontend && npx react-scripts start",
-    "app-build": "cd frontend && npx react-scripts build"
+    "app-start": "cd frontend && yarn start",
+    "app-build": "cd frontend && yarn build",
+    "app-test": "cd frontend && yarn test"
   },
 
   "devDependencies": {
