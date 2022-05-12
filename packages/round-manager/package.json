@@ -1,5 +1,17 @@
 {
   "name": "hardhat-project",
+  "scripts": {
+    "// hardhat script": "====== scripts specific hardhat ======",
+    "hh-compile": "npx hardhat compile",
+    "hh-clean": "npx hardhart clean",
+    "hh-test": "npx hardhat test",
+    "hh-coverage": "npx hardhat test",
+
+    "// frontend script": "====== scripts specific to frontend ======",
+    "app-start": "cd frontend && npx react-scripts start",
+    "app-build": "cd frontend && npx react-scripts build"
+  },
+
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
