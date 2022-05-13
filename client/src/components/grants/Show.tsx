@@ -1,37 +1,92 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { addressesByChainID } from "../../contracts/deployments";
+import GrantsRegistryABI from "../../contracts/abis/GrantsRegistry.json";
 // import { RootState } from '../../reducers';
 import { Link, useParams } from "react-router-dom";
-import {
-  // shallowEqual,
-  // useSelector,
-  useDispatch,
-} from 'react-redux';
-import {
-  grantsPath
-} from "../../routes";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { grantsPath } from "../../routes";
+import { RootState } from "../../reducers";
+import { global } from "../../global";
+
+interface MetaData {
+  title: string;
+  description: string;
+  website: string;
+  chain: string;
+  wallet: string;
+  receivedFunding: boolean;
+}
 
 function GrantsList() {
   const dispatch = useDispatch();
+  const props = useSelector(
+    (state: RootState) => ({
+      chainID: state.web3.chainID,
+    }),
+    shallowEqual
+  );
+
   const { id } = useParams();
-  // const props = useSelector((state: RootState) => ({
-  // }), shallowEqual);
+  const [metaData, setMetaData] = useState<MetaData>({
+    title: "",
+    description: "",
+    website: "",
+    chain: "",
+    wallet: "",
+    receivedFunding: false,
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // load grant
-    console.log("-- loading grant");
-    return () => {
-      // unload grant
-      console.log("-- unloading grant");
+    async function fetchGrantData() {
+      const chainID = props.chainID;
+
+      const addresses = addressesByChainID(chainID!);
+      const signer = global.web3Provider!.getSigner();
+      setLoading(true);
+      const grantRegistry = new ethers.Contract(
+        addresses.grantsRegistry,
+        GrantsRegistryABI,
+        signer
+      );
+      const metadataUri: string = await grantRegistry.grantMetaData(Number(id));
+
+      const metaDataResponse = await fetch(metadataUri);
+      const metaData = await metaDataResponse.json();
+
+      setMetaData(metaData);
+      setLoading(false);
     }
-  }, [dispatch]);
+
+    fetchGrantData();
+  }, [dispatch, id, props.chainID]);
 
   return (
     <div>
+      <div>Grant #{id}</div>
+      {loading ? (
+        <div>Loading grant data from IPFS</div>
+      ) : (
+        <>
+          {Object.entries(metaData).map(([key, value]) => {
+            if (key === "receivedFunding") {
+              return (
+                <p key={key}>
+                  {key}: {value ? "Yes" : "No"}
+                </p>
+              );
+            }
+            return (
+              <p key={key}>
+                {key}: {value}
+              </p>
+            );
+          })}
+        </>
+      )}
       <div>
-        Grant #{id}
-      </div>
-      <div>
-        <Link to={ grantsPath() }>Back to grants list</Link>
+        <Link to={grantsPath()}>Back to grants list</Link>
       </div>
     </div>
   );

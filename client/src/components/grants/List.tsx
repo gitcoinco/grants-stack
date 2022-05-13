@@ -1,45 +1,44 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 // import { RootState } from '../../reducers';
 import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
-import {
-  shallowEqual,
-  useSelector,
-  useDispatch,
-} from 'react-redux';
-import {
-  grantPath,
-} from "../../routes";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { grantPath } from "../../routes";
 import { loadGrants, unloadGrants } from "../../actions/grants";
-import { GrantsListItem } from "../../reducers/grants";
 
 function GrantsList() {
   const dispatch = useDispatch();
-  const props = useSelector((state: RootState) => ({
-    loading: state.grants.loading,
-    grants: state.grants.grants
-  }), shallowEqual);
+  const props = useSelector(
+    (state: RootState) => ({
+      loading: state.grants.loading,
+      grants: state.grants.grants,
+      chainID: state.web3.chainID,
+    }),
+    shallowEqual
+  );
 
   useEffect(() => {
-    dispatch(loadGrants());
-    return () => {
-      dispatch(unloadGrants());
+    if (props.chainID) {
+      dispatch(loadGrants());
+      return () => {
+        dispatch(unloadGrants());
+      };
     }
-  }, [dispatch]);
+  }, [dispatch, props.chainID]);
 
   return (
     <div>
-      {props.loading && <>
-      loading...
-      </>}
+      {props.loading && <>loading...</>}
 
-      {!props.loading && <ul>
-        {props.grants.map((item: GrantsListItem, i: number) => (
-          <li key={item.uri}>
-            <Link to={ grantPath(1) }>{item.uri}</Link>
-          </li>
-        ))}
-      </ul>}
+      {!props.loading && (
+        <ul>
+          {props.grants.map((item: number, i: number) => (
+            <li key={item}>
+              <Link to={grantPath(item)}>Grant #{item}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

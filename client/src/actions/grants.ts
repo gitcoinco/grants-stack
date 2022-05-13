@@ -1,44 +1,42 @@
-import {
-  Dispatch,
-} from 'redux';
-import { RootState } from '../reducers';
+import { Dispatch } from "redux";
+import { RootState } from "../reducers";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 import { global } from "../global";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { addressesByChainID } from "../contracts/deployments";
 
 export const GRANTS_LOADING = "GRANTS_LOADING";
 export interface GrantsLoadingAction {
-  type: typeof GRANTS_LOADING
+  type: typeof GRANTS_LOADING;
 }
 
 export const GRANTS_LOADED = "GRANTS_LOADED";
 export interface GrantsLoadedAction {
-  type: typeof GRANTS_LOADED
-  grantsURIs: string[]
+  type: typeof GRANTS_LOADED;
+  grants: number[];
 }
 
 export const GRANTS_UNLOADED = "GRANTS_UNLOADED";
 export interface GrantsUnloadedAction {
-  type: typeof GRANTS_UNLOADED
+  type: typeof GRANTS_UNLOADED;
 }
 
 export type GrantsActions =
-  GrantsLoadingAction |
-  GrantsLoadedAction |
-  GrantsUnloadedAction;
+  | GrantsLoadingAction
+  | GrantsLoadedAction
+  | GrantsUnloadedAction;
 
 const grantsLoading = () => ({
-  type: GRANTS_LOADING
+  type: GRANTS_LOADING,
 });
 
-const grantsLoaded = (grantsURIs: string[]) => ({
+const grantsLoaded = (grants: number[]) => ({
   type: GRANTS_LOADED,
-  grantsURIs
+  grants,
 });
 
 const grantsUnload = () => ({
-  type: GRANTS_UNLOADED
+  type: GRANTS_UNLOADED,
 });
 
 export const loadGrants = () => {
@@ -47,17 +45,22 @@ export const loadGrants = () => {
 
     const state = getState();
     const chainID = state.web3.chainID;
+
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider!.getSigner();
-    const contract = new ethers.Contract(addresses.grantsRegistry, GrantsRegistryABI, signer);
-    const filter = contract.filters.GrantCreated(null, null, null);
-    // FIXME: filter by grant owner
+    const contract = new ethers.Contract(
+      addresses.grantsRegistry,
+      GrantsRegistryABI,
+      signer
+    );
+
+    const filter = contract.filters.GrantCreated(state.web3.account);
     const res = await contract.queryFilter(filter);
-    const uris = res.map((x: any) => x.args.tokenURI);
+    const uris = res.map((x: any) => BigNumber.from(x.args.grantId).toNumber());
     dispatch(grantsLoaded(uris));
   };
 };
 
 export const unloadGrants = () => {
   return grantsUnload();
-}
+};
