@@ -1,50 +1,106 @@
-# Round Manager
+# grants-round/contracts
 
-This package once deployed would provide enable user to perform all tasks required to run a round.
+hardhat is the environment used to compile, deploy, test and debug the grants-round contract.
 
+## Directory Structure
 
-## Commands
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
+```
+.
+├── contracts                   # Smart contracts
+├── scripts                     # Deploy scripts for smart contracts
+├── test                        # Test for smart contracts
+├── .env.example                # .env template
+├── .eslintrc.js                # Eslint config
+├── .prettierrc                 # Prettier config
+├── .solhint.json               # Solhint config
+├── hardhat.config.json         # Hardhat configuration
+├── package.json                # Package configuration
+├── tsconfig.json               # Typescript configuration
+└── README.md
 ```
 
-# Etherscan verification
+## Usage
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+### Pre Requisites
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+Before running any command, make sure to install dependencies:
 
-```shell
-hardhat run --network ropsten scripts/deploy.ts
+```sh
+$ yarn install
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+### Compile
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+Compile the smart contracts with Hardhat:
+
+```sh
+$ yarn clearn
+$ yarn build
 ```
 
-# Performance optimizations
+### TypeChain
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+Compile the smart contracts and generate TypeChain artifacts:
+
+```sh
+$ yarn typechain
+```
+
+### Lint Solidity
+
+Lint the Solidity code:
+
+```sh
+$ yarn lint:sol
+```
+
+### Lint TypeScript
+
+Lint the TypeScript code:
+
+```sh
+$ yarn lint:ts
+```
+
+### Test
+
+Run the Mocha tests:
+
+```sh
+$ yarn test
+```
+
+### Coverage
+
+Generate the code coverage report:
+
+```sh
+$ yarn coverage
+```
+
+### Report Gas
+
+See the gas usage per unit test and average gas per method call:
+
+```sh
+$ REPORT_GAS=true yarn test
+```
+
+### Clean
+
+Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
+
+```sh
+$ yarn clean
+```
+
+### Deployment
+
+To test deploying the contracts locally, first start a localhost hardhat network.
+
+```sh
+$ yarn app:node
+```
 
 
 Note: This package skeleton was generated using hardhat advanced generator
