@@ -3,6 +3,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 const testMetadata = "test-metadata";
+const updatedMetadata = "updated-metadata";
 describe("GrantsRegistry", function () {
   before(async function () {
     [this.owner, this.grantRecipient, ...this.accounts] =
@@ -36,9 +37,12 @@ describe("GrantsRegistry", function () {
     const grant = await this.contract.grants(0);
     expect(grant.metadata).to.equal(testMetadata);
 
-    const updatedMetadata = "updated-metadata";
     await this.contract.updateGrant(grant.id, updatedMetadata);
     const updatedGrant = await this.contract.grants(0);
     expect(updatedGrant.metadata).to.equal(updatedMetadata);
+  });
+  it("returns token metadata from token id", async function () {
+    const tokenUri = await this.contract.grantMetaData(0);
+    expect(tokenUri).to.equal("updated-metadata");
   });
 });
