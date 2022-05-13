@@ -2,20 +2,28 @@ const hre = require("hardhat");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const testMetadata = "test-metadata";
+const updatedMetadata = "updated-metadata";
 describe("GrantsRegistry", function () {
-  before(async function() {
-    [this.owner, this.grantRecipient, ...this.accounts] = await ethers.getSigners();
+  before(async function () {
+    [this.owner, this.grantRecipient, ...this.accounts] =
+      await ethers.getSigners();
 
-    const GrantsRegistry = await hre.ethers.getContractFactory("GrantsRegistry", this.owner);
+    const GrantsRegistry = await hre.ethers.getContractFactory(
+      "GrantsRegistry",
+      this.owner
+    );
     this.contract = await GrantsRegistry.deploy();
     await this.contract.deployed();
   });
 
   it("creates a new grants and adds it to the grants list", async function () {
-    const testMetadata = "test-metadata";
-
     expect(await this.contract.grantsLength()).to.equal("0");
-    await this.contract.createGrant(this.owner.address, testMetadata, this.grantRecipient.address);
+    await this.contract.createGrant(
+      this.owner.address,
+      testMetadata,
+      this.grantRecipient.address
+    );
     expect(await this.contract.grantsLength()).to.equal("1");
 
     const grant = await this.contract.grants(0);
@@ -23,5 +31,18 @@ describe("GrantsRegistry", function () {
     expect(grant.recipient).to.equal(this.grantRecipient.address);
     expect(grant.owner).to.equal(this.owner.address);
     expect(grant.metadata).to.equal(testMetadata);
+  });
+
+  it("updates a grant by id", async function () {
+    const grant = await this.contract.grants(0);
+    expect(grant.metadata).to.equal(testMetadata);
+
+    await this.contract.updateGrant(grant.id, updatedMetadata);
+    const updatedGrant = await this.contract.grants(0);
+    expect(updatedGrant.metadata).to.equal(updatedMetadata);
+  });
+  it("returns token metadata from token id", async function () {
+    const tokenUri = await this.contract.grantMetaData(0);
+    expect(tokenUri).to.equal("updated-metadata");
   });
 });
