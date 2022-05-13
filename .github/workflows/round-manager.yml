@@ -1,4 +1,4 @@
-name: Grants Round Manager build and deploy to gh-pages
+name: package/round-manager - Build -> Test -> Deploy
 on:
   push:
     branches:
@@ -8,32 +8,27 @@ jobs:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
       - name: Install Dependencies
         run: |
-          cd packages/round-manager
           yarn install
-          cd frontend
+          cd packages/round-manager
           yarn install
 
-      - name: RM-Hardhat 
+      - name: Build Round Manager
         run: |
-          cd packages/round-manager
-          yarn hh-compile
-          yarn hh-test
+          yarn rm-build
           
-      - name: RM-Frontend
+      - name: Test Round Manager
         run: |
-          cd packages/round-manager
-          yarn app-build
-          yarn hh-test
+          yarn rm-test
           
-      - name: Deploy RM-Frontend
+      - name: Deploy Round Manager
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: packages/round-manager/frontend/build # The folder the action should deploy.
+          folder: packages/round-manager/build # The folder the action should deploy.
