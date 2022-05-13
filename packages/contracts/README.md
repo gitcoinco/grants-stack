@@ -34,7 +34,7 @@ $ yarn install
 Compile the smart contracts with Hardhat:
 
 ```sh
-$ yarn clearn
+$ yarn clean
 $ yarn build
 ```
 
