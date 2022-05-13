@@ -1,8 +1,8 @@
-import { Dispatch } from "redux";
+import { Dispatch } from "@reduxjs/toolkit";
+import { ethers, BigNumber } from "ethers";
 import { RootState } from "../reducers";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 import { global } from "../global";
-import { ethers, BigNumber } from "ethers";
 import { addressesByChainID } from "../contracts/deployments";
 
 export const GRANTS_LOADING = "GRANTS_LOADING";
@@ -39,12 +39,12 @@ const grantsUnload = () => ({
   type: GRANTS_UNLOADED,
 });
 
-export const loadGrants = () => {
-  return async (dispatch: Dispatch, getState: () => RootState) => {
+export const loadGrants =
+  () => async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantsLoading());
 
     const state = getState();
-    const chainID = state.web3.chainID;
+    const { chainID } = state.web3;
 
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider!.getSigner();
@@ -59,8 +59,5 @@ export const loadGrants = () => {
     const uris = res.map((x: any) => BigNumber.from(x.args.grantId).toNumber());
     dispatch(grantsLoaded(uris));
   };
-};
 
-export const unloadGrants = () => {
-  return grantsUnload();
-};
+export const unloadGrants = () => grantsUnload();

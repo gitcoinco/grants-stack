@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 interface Props {
-  children: JSX.Element
+  children: JSX.Element;
 }
 
 interface State {
-  hasError: boolean
+  hasError: boolean;
 }
 
 class ErrorBoundary extends React.Component<Props, State> {
@@ -14,22 +14,26 @@ class ErrorBoundary extends React.Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: any) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
+  componentDidCatch(error: any) {
     console.error(error);
   }
 
   render() {
-    if (this.state.hasError) {
-      return <div>
-        <p>Something went wrong.</p>
-      </div>;
+    const { hasError } = this.state;
+    const { children } = this.props;
+    if (hasError) {
+      return (
+        <div>
+          <p>Something went wrong.</p>
+        </div>
+      );
     }
 
-    return this.props.children;
+    return children;
   }
 }
 

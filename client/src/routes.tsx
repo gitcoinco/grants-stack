@@ -3,7 +3,7 @@ export const slugs = {
   grants: `/grants`,
   grant: `/grants/:id`,
   newGrant: `/grants/new`,
-}
+};
 
 export const rootPath = () => slugs.root;
 

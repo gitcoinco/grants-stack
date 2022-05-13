@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { Link, useParams } from "react-router-dom";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { addressesByChainID } from "../../contracts/deployments";
 import GrantsRegistryABI from "../../contracts/abis/GrantsRegistry.json";
 // import { RootState } from '../../reducers';
-import { Link, useParams } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { grantsPath } from "../../routes";
 import { RootState } from "../../reducers";
 import { global } from "../../global";
@@ -40,7 +40,7 @@ function GrantsList() {
 
   useEffect(() => {
     async function fetchGrantData() {
-      const chainID = props.chainID;
+      const { chainID } = props;
 
       const addresses = addressesByChainID(chainID!);
       const signer = global.web3Provider!.getSigner();
@@ -53,9 +53,9 @@ function GrantsList() {
       const metadataUri: string = await grantRegistry.grantMetaData(Number(id));
 
       const metaDataResponse = await fetch(metadataUri);
-      const metaData = await metaDataResponse.json();
+      const metaDataValues = await metaDataResponse.json();
 
-      setMetaData(metaData);
+      setMetaData(metaDataValues);
       setLoading(false);
     }
 

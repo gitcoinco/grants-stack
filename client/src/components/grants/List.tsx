@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 // import { RootState } from '../../reducers';
 import { Link } from "react-router-dom";
-import { RootState } from "../../reducers";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../reducers";
 import { grantPath } from "../../routes";
 import { loadGrants, unloadGrants } from "../../actions/grants";
 
@@ -20,10 +20,10 @@ function GrantsList() {
   useEffect(() => {
     if (props.chainID) {
       dispatch(loadGrants());
-      return () => {
-        dispatch(unloadGrants());
-      };
     }
+    return () => {
+      dispatch(unloadGrants());
+    };
   }, [dispatch, props.chainID]);
 
   return (
@@ -32,7 +32,7 @@ function GrantsList() {
 
       {!props.loading && (
         <ul>
-          {props.grants.map((item: number, i: number) => (
+          {props.grants.map((item: number) => (
             <li key={item}>
               <Link to={grantPath(item)}>Grant #{item}</Link>
             </li>
