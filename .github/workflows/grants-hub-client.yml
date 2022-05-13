@@ -18,7 +18,6 @@ jobs:
           cd client
           yarn install
           yarn build
-          yarn test
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
