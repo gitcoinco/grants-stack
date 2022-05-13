@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPLv3",
   "engines" : {
     "npm" : ">=8.5.5",
     "node" : ">=16.15.0"
