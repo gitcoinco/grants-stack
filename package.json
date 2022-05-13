@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "engines" : {
+    "npm" : ">=8.5.5",
+    "node" : ">=16.15.0"
+  },
   "scripts": {
     "start": "yarn rm-app-start",
     "build": "yarn rm-app-build",
