@@ -50,9 +50,12 @@ function GrantsList() {
         GrantsRegistryABI,
         signer
       );
-      const metadataUri: string = await grantRegistry.grantMetaData(Number(id));
+      const grant: { metadata: string } = await grantRegistry.grants(
+        Number(id)
+      );
+      console.log({ grant });
 
-      const metaDataResponse = await fetch(metadataUri);
+      const metaDataResponse = await fetch(grant.metadata);
       const metaDataValues = await metaDataResponse.json();
 
       setMetaData(metaDataValues);

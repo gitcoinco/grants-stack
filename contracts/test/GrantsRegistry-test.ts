@@ -33,16 +33,12 @@ describe("GrantsRegistry", function () {
     expect(grant.metadata).to.equal(testMetadata);
   });
 
-  it("updates a grant by id", async function () {
+  it("updates grant metadata", async function () {
     const grant = await this.contract.grants(0);
     expect(grant.metadata).to.equal(testMetadata);
 
-    await this.contract.updateGrant(grant.id, updatedMetadata);
+    await this.contract.updateMetadata(grant.id, updatedMetadata);
     const updatedGrant = await this.contract.grants(0);
     expect(updatedGrant.metadata).to.equal(updatedMetadata);
-  });
-  it("returns token metadata from token id", async function () {
-    const tokenUri = await this.contract.grantMetaData(0);
-    expect(tokenUri).to.equal("updated-metadata");
   });
 });
