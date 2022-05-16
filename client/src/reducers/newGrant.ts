@@ -14,7 +14,7 @@ export interface NewGrantState {
   txStatus: string | null;
 }
 
-const initialState: NewGrantState = {
+export const initialState: NewGrantState = {
   grants: [],
   txStatus: null,
 };

@@ -40,16 +40,16 @@ export const grantCreated = ({
 
 export const createGrant =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    const signer = global.web3Provider?.getSigner();
-    const grantRegistry = new ethers.Contract(
-      addresses.grantsRegistry,
-      GrantsRegistryABI,
-      signer
-    );
-    if (state.ipfs.lastFileSavedURL) {
+    try {
+      const state = getState();
+      const { chainID } = state.web3;
+      const addresses = addressesByChainID(chainID!);
+      const signer = global.web3Provider?.getSigner();
+      const grantRegistry = new ethers.Contract(
+        addresses.grantsRegistry,
+        GrantsRegistryABI,
+        signer
+      );
       const creationTx = await grantRegistry.createGrant(
         state.web3.account,
         state.ipfs.lastFileSavedURL,
@@ -59,8 +59,9 @@ export const createGrant =
       const txStatus = await creationTx.wait();
       if (txStatus.status) {
         dispatch(grantTXStatus("complete"));
-      } else {
-        throw Error("Unable to create grant");
       }
+    } catch (e) {
+      console.log({ e });
+      dispatch(grantTXStatus("error"));
     }
   };

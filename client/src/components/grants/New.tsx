@@ -88,7 +88,6 @@ function NewGrant() {
   const [disabled, setDisabled] = useState(true);
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log({ event });
     let value: boolean | string;
     if (event.target.name === "receivedFunding") {
       value = event.target.value === "true";
