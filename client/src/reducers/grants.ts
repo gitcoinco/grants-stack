@@ -29,7 +29,7 @@ export const grantsReducer = (
     }
 
     case GRANTS_LOADED: {
-      const grants: number[] = action.grants;
+      const { grants } = action;
 
       return {
         ...state,

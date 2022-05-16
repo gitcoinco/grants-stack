@@ -7,10 +7,10 @@ import {
 } from "../actions/ipfs";
 
 export interface IPFSState {
-  initializing: boolean
-  initialized: boolean
-  initializationError: string | undefined
-  lastFileSavedURL: string | undefined
+  initializing: boolean;
+  initialized: boolean;
+  initializationError: string | undefined;
+  lastFileSavedURL: string | undefined;
 }
 
 const initialState: IPFSState = {
@@ -20,14 +20,17 @@ const initialState: IPFSState = {
   lastFileSavedURL: undefined,
 };
 
-export const ipfsReducer = (state: IPFSState = initialState, action: IPFSActions): IPFSState => {
+export const ipfsReducer = (
+  state: IPFSState = initialState,
+  action: IPFSActions
+): IPFSState => {
   switch (action.type) {
     case IPFS_INITIALIZING: {
       return {
         ...state,
         initializing: true,
         initialized: false,
-      }
+      };
     }
 
     case IPFS_INITIALIZATION_ERROR: {
@@ -36,7 +39,7 @@ export const ipfsReducer = (state: IPFSState = initialState, action: IPFSActions
         initializing: true,
         initialized: false,
         initializationError: action.error,
-      }
+      };
     }
 
     case IPFS_INITIALIZED: {
@@ -44,16 +47,16 @@ export const ipfsReducer = (state: IPFSState = initialState, action: IPFSActions
         ...state,
         initializing: false,
         initialized: true,
-      }
+      };
     }
 
     case IPFS_FILE_SAVED: {
       return {
         ...state,
         lastFileSavedURL: action.url,
-      }
+      };
     }
   }
 
   return state;
-}
+};

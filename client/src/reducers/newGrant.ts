@@ -44,7 +44,9 @@ export const newGrantReducer = (
         txStatus: action.status,
       };
     }
-  }
 
-  return initialState;
+    default: {
+      return state;
+    }
+  }
 };

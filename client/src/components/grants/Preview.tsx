@@ -1,13 +1,12 @@
 // import { useEffect} from 'react'
-import { FormInputs } from "./New";
 import { Link } from "react-router-dom";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { FormInputs } from "./New";
 import { createGrant } from "../../actions/newGrant";
 import { RootState } from "../../reducers";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { NewGrant } from "../../reducers/newGrant";
 import { grantsPath } from "../../routes";
 
-function Loading({ status, grants }: { status: string; grants: NewGrant[] }) {
+function Loading({ status }: { status: string }) {
   if (status === "initiated") {
     return (
       <div style={{ color: "yellow", background: "grey" }}>
@@ -63,12 +62,12 @@ function GrantPreview({ grant, url }: { grant: FormInputs; url: string }) {
       {!props.txStatus ? (
         <>
           <div>Does everything look good?</div>
-          <button onClick={(e) => dispatch(createGrant())}>
+          <button type="button" onClick={() => dispatch(createGrant())}>
             Save and Publish
           </button>
         </>
       ) : (
-        <Loading status={props.txStatus} grants={props.grants} />
+        <Loading status={props.txStatus} />
       )}
       <Link to="/">Return to home page</Link>
     </>

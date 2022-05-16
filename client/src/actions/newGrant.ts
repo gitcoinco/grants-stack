@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
+import { Dispatch } from "@reduxjs/toolkit";
 import { global } from "../global";
-import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
@@ -38,10 +38,10 @@ export const grantCreated = ({
   owner,
 });
 
-export const createGrant = () => {
-  return async (dispatch: Dispatch, getState: () => RootState) => {
+export const createGrant =
+  () => async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const chainID = state.web3.chainID;
+    const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider?.getSigner();
     const grantRegistry = new ethers.Contract(
@@ -64,4 +64,3 @@ export const createGrant = () => {
       }
     }
   };
-};
