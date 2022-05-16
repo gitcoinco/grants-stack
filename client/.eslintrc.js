@@ -21,7 +21,8 @@ module.exports = {
     "@typescript-eslint/default-param-last": "off",
     "import/no-cycle": "off",
     "import/no-extraneous-dependencies": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "max-len": ["error", { "code": 110 }]
   },
   ignorePatterns: ["node_modules/"],
 };
