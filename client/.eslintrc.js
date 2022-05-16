@@ -22,7 +22,8 @@ module.exports = {
     "import/no-cycle": "off",
     "import/no-extraneous-dependencies": "off",
     "react/prop-types": "off",
-    "max-len": ["error", { "code": 110 }]
+    "max-len": ["error", { "code": 110 }],
+    "no-console": "off"
   },
   ignorePatterns: ["node_modules/"],
 };
