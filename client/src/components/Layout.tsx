@@ -47,7 +47,7 @@ function Layout(ownProps: Props) {
       <hr />
 
       <main>
-        {!props.web3Error && props.web3Initialized && children}
+        {!props.web3Error && props.web3Initialized && props.chainID && children}
 
         {props.web3Error !== undefined && (
           <div>

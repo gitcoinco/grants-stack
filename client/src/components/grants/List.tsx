@@ -18,13 +18,11 @@ function GrantsList() {
   );
 
   useEffect(() => {
-    if (props.chainID) {
-      dispatch(loadGrants());
-    }
+    dispatch(loadGrants());
     return () => {
       dispatch(unloadGrants());
     };
-  }, [dispatch, props.chainID]);
+  }, [dispatch]);
 
   return (
     <div>
