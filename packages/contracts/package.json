@@ -1,9 +1,9 @@
 {
   "name": "hardhat-project",
   "license": "AGPL-3.0-only",
-  "engines" : {
-    "npm" : ">=8.5.5",
-    "node" : ">=16.15.0"
+  "engines": {
+    "npm": ">=8.5.5",
+    "node": ">=16.15.0"
   },
   "scripts": {
     "compile": "yarn hardhat compile",
@@ -42,5 +42,9 @@
     "ts-node": "^10.7.0",
     "typechain": "^5.2.0",
     "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
+    "@optionality.io/clone-factory": "^0.2.1"
   }
 }
