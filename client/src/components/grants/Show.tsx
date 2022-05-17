@@ -9,9 +9,10 @@ function GrantsList() {
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
-      chainID: state.web3.chainID,
       loading: state.currentGrant.loading,
       currentGrant: state.currentGrant.currentGrant,
+      ipfsInitialized: state.ipfs.initialized,
+      ipfsInitializationError: state.ipfs.initializationError,
     }),
     shallowEqual
   );
@@ -19,32 +20,40 @@ function GrantsList() {
   const { id } = useParams();
 
   useEffect(() => {
-    if (id) {
+    if (props.ipfsInitialized && id) {
       dispatch(fetchGrantData(Number(id)));
     }
-  }, [dispatch, id, props.chainID]);
+  }, [dispatch, props.ipfsInitialized, id]);
 
-  const { loading, currentGrant } = props;
+  if (props.ipfsInitializationError) {
+    return <>Error initializing IPFS. Reload the page and try again.</>;
+  }
 
-  console.log({ currentGrant });
+  if (!props.ipfsInitialized) {
+    return <>Initializing ipfs...</>;
+  }
+
+  if (props.loading && props.currentGrant === undefined) {
+    return <>Loading grant data from IPFS... </>;
+  }
 
   return (
     <div>
-      <div>Grant #{currentGrant?.chain}</div>
-      {loading ? (
-        <div>Loading grant data from IPFS</div>
-      ) : (
+      {props.currentGrant && (
         <>
-          <p>Title: {currentGrant?.title}</p>
-          <p>Description: {currentGrant?.description}</p>
-          <p>Webstie: {currentGrant?.website}</p>
-          <p>Chain: {currentGrant?.chain}</p>
-          <p>Wallet: {currentGrant?.wallet}</p>
+          <div>Grant #{props.currentGrant.chain}</div>
+          <p>Title: {props.currentGrant.title}</p>
+          <p>Description: {props.currentGrant.description}</p>
+          <p>Webstie: {props.currentGrant.website}</p>
+          <p>Chain: {props.currentGrant.chain}</p>
+          <p>Wallet: {props.currentGrant.wallet}</p>
           <p>
-            Received Funding: {currentGrant?.receivedFunding ? "Yes" : "No"}
+            Received Funding:{" "}
+            {props.currentGrant.receivedFunding ? "Yes" : "No"}
           </p>
         </>
       )}
+
       <div>
         <Link to={grantsPath()}>Back to grants list</Link>
       </div>
