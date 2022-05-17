@@ -1,8 +1,7 @@
-import { IPFS, create as IPFSCreate } from "ipfs-core";
+import { create as IPFSCreate } from "ipfs-core";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
-
-let ipfs: IPFS | null = null;
+import { global } from "../global";
 
 export const IPFS_INITIALIZING = "IPFS_INITIALIZING";
 export interface IPFSInitializingAction {
@@ -57,7 +56,7 @@ export const startIPFS =
       return;
     }
 
-    if (ipfs !== null) {
+    if (global.ipfs !== undefined) {
       console.log("IPFS already started");
       return;
     }
@@ -66,7 +65,7 @@ export const startIPFS =
 
     try {
       console.time("IPFS started");
-      ipfs = await IPFSCreate();
+      global.ipfs = await IPFSCreate();
       console.timeEnd("IPFS started");
       dispatch(ipfsInitialized());
     } catch (error) {
@@ -77,18 +76,18 @@ export const startIPFS =
 
       console.error("ipfs error:", error);
 
-      ipfs = null;
+      global.ipfs = undefined;
       dispatch(ipfsInitializationError(error));
     }
   };
 
 export const saveFileToIPFS =
   (path: string, content: string) => async (dispatch: Dispatch) => {
-    if (ipfs === null) {
+    if (global.ipfs === undefined) {
       return;
     }
 
-    const res = await ipfs!.add({
+    const res = await global.ipfs!.add({
       path,
       content,
     });

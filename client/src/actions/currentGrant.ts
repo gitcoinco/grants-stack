@@ -44,10 +44,26 @@ export const fetchGrantData =
       );
 
       const grant: { metadata: string } = await grantRegistry.grants(id);
+      if (grant === null) {
+        // FIXME: dispatch "not found"
+        return;
+      }
 
-      const metaDataResponse = await fetch(grant.metadata);
-      const metaDataValues: MetaData = await metaDataResponse.json();
-      dispatch(currentGrantFetched(metaDataValues));
+      const matches = grant.metadata.match(/^https:\/\/ipfs.io\/ipfs\/(.+)$/);
+      if (matches === null) {
+        return;
+      }
+
+      const cid = matches[1];
+      console.log("fetching", cid);
+
+      // FIXME: it doesn't fetch the data
+      const metaDataResponse = await global.ipfs!.get(cid);
+      console.log("meta", metaDataResponse);
+      // const metaDataValues: MetaData = await metaDataResponse.json();
+      // dispatch(currentGrantFetched(metaDataValues));
+
+      // FIXME: maybe currentGrantFetched can set loading to false directly
       dispatch(currentGrantLoading(false));
     } catch (e) {
       console.log({ e });
