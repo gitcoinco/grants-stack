@@ -43,9 +43,7 @@ export const fetchGrantData =
         signer
       );
 
-      const grant: { metadata: string } = await grantRegistry.grants(
-        Number(id)
-      );
+      const grant: { metadata: string } = await grantRegistry.grants(id);
 
       const metaDataResponse = await fetch(grant.metadata);
       const metaDataValues: MetaData = await metaDataResponse.json();
