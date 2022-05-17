@@ -1,91 +1,48 @@
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { addressesByChainID } from "../../contracts/deployments";
-import GrantsRegistryABI from "../../contracts/abis/GrantsRegistry.json";
-// import { RootState } from '../../reducers';
 import { grantsPath } from "../../routes";
 import { RootState } from "../../reducers";
-import { global } from "../../global";
-
-interface MetaData {
-  title: string;
-  description: string;
-  website: string;
-  chain: string;
-  wallet: string;
-  receivedFunding: boolean;
-}
+import { fetchGrantData } from "../../actions/currentGrant";
 
 function GrantsList() {
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
       chainID: state.web3.chainID,
+      loading: state.currentGrant.loading,
+      currentGrant: state.currentGrant.currentGrant,
     }),
     shallowEqual
   );
 
   const { id } = useParams();
-  const [metaData, setMetaData] = useState<MetaData>({
-    title: "",
-    description: "",
-    website: "",
-    chain: "",
-    wallet: "",
-    receivedFunding: false,
-  });
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchGrantData() {
-      const { chainID } = props;
-
-      const addresses = addressesByChainID(chainID!);
-      const signer = global.web3Provider!.getSigner();
-      setLoading(true);
-      const grantRegistry = new ethers.Contract(
-        addresses.grantsRegistry,
-        GrantsRegistryABI,
-        signer
-      );
-      const grant: { metadata: string } = await grantRegistry.grants(
-        Number(id)
-      );
-      console.log({ grant });
-
-      const metaDataResponse = await fetch(grant.metadata);
-      const metaDataValues = await metaDataResponse.json();
-
-      setMetaData(metaDataValues);
-      setLoading(false);
+    if (id) {
+      dispatch(fetchGrantData(Number(id)));
     }
-
-    fetchGrantData();
   }, [dispatch, id, props.chainID]);
+
+  const { loading, currentGrant } = props;
+
+  console.log({ currentGrant });
 
   return (
     <div>
-      <div>Grant #{id}</div>
+      <div>Grant #{currentGrant?.chain}</div>
       {loading ? (
         <div>Loading grant data from IPFS</div>
       ) : (
         <>
-          {Object.entries(metaData).map(([key, value]) => {
-            if (key === "receivedFunding") {
-              return (
-                <p key={key}>
-                  {key}: {value ? "Yes" : "No"}
-                </p>
-              );
-            }
-            return (
-              <p key={key}>
-                {key}: {value}
-              </p>
-            );
-          })}
+          <p>Title: {currentGrant?.title}</p>
+          <p>Description: {currentGrant?.description}</p>
+          <p>Webstie: {currentGrant?.website}</p>
+          <p>Chain: {currentGrant?.chain}</p>
+          <p>Wallet: {currentGrant?.wallet}</p>
+          <p>
+            Received Funding: {currentGrant?.receivedFunding ? "Yes" : "No"}
+          </p>
         </>
       )}
       <div>
