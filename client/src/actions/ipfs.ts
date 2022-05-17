@@ -1,5 +1,5 @@
 import { IPFS, create as IPFSCreate } from "ipfs-core";
-import { Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 
 let ipfs: IPFS | null = null;

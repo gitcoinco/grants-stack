@@ -9,7 +9,7 @@ import {
   Middleware,
   MiddlewareAPI,
   Dispatch,
-} from "@reduxjs/toolkit";
+} from "redux";
 import {
   createRouterMiddleware,
   ReduxRouter,

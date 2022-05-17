@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";

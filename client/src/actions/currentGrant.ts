@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { MetaData } from "../types";
 import { global } from "../global";

@@ -6,7 +6,6 @@
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@lagunovsky/redux-react-router": "^2.2.0",
-    "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
