@@ -10,7 +10,7 @@ export interface CurrentGrantState {
   currentGrant: MetaData | null;
 }
 
-const initialState: CurrentGrantState = {
+export const initialState: CurrentGrantState = {
   loading: false,
   currentGrant: null,
 };
