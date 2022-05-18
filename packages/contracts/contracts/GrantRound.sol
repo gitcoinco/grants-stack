@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 
 /**
  * @notice Contract deployed per Grant Round
  */
-contract GrantRound is AccessControl, ReentrancyGuard {
+contract GrantRound is AccessControl, ReentrancyGuard, Initializable {
 
   // --- Libraries ---
   using Address for address;
@@ -36,7 +36,7 @@ contract GrantRound is AccessControl, ReentrancyGuard {
   // --- Data ---
 
   /// @notice Token used to payout match amounts at the end of a round
-  IERC20 public immutable token;
+  IERC20 public token;
 
   /// @notice URL pointing to grant round metadata (for off-chain use)
   string public metaPtr;
@@ -72,11 +72,11 @@ contract GrantRound is AccessControl, ReentrancyGuard {
    * @param _metaPtr URL pointing to the grant round metadata
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
-  constructor(
+  function initialize(
     IERC20 _token,
     string memory _metaPtr,
     address[] memory _roundOperators
-  ) {
+  ) public initializer {
 
     token = _token;
     metaPtr = _metaPtr;
