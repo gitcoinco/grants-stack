@@ -16,7 +16,7 @@ contract GrantsRegistry {
     constructor() {}
 
     event GrantCreated(address indexed owner, uint96 indexed grantId);
-    event GrantUpdated(address indexed owner, uint96 indexed grantId);
+    event MetaDataUpdated(address indexed owner, uint96 indexed grantId);
 
     function createGrant(
         address owner,
@@ -36,19 +36,15 @@ contract GrantsRegistry {
         emit GrantCreated(owner, grantId);
     }
 
-    function updateGrant(uint96 id, string memory metadata) public {
+    function updateMetadata(uint96 id, string memory metadata) public {
         Grant memory grant = grants[id];
         require(msg.sender == grant.owner, "You are not the owner");
         grant.metadata = metadata;
         grants[id] = grant;
-        emit GrantUpdated(grant.owner, id);
+        emit MetaDataUpdated(grant.owner, id);
     }
 
     function grantsLength() public view returns (uint256) {
         return grants.length;
-    }
-
-    function grantMetaData(uint96 id) public view returns (string memory) {
-        return grants[id].metadata;
     }
 }

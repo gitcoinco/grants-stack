@@ -1,4 +1,4 @@
-import { Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from "redux";
 import { ethers, BigNumber } from "ethers";
 import { RootState } from "../reducers";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";

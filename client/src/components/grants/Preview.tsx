@@ -15,6 +15,13 @@ function Loading({ status }: { status: string }) {
       </div>
     );
   }
+  if (status === "error") {
+    return (
+      <div style={{ color: "red", background: "grey" }}>
+        There was an error processing your transaction. Please try again
+      </div>
+    );
+  }
   return (
     <div style={{ color: "green" }}>
       Your grant has been published has been published! View your grants{" "}

@@ -1,90 +1,59 @@
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { addressesByChainID } from "../../contracts/deployments";
-import GrantsRegistryABI from "../../contracts/abis/GrantsRegistry.json";
-// import { RootState } from '../../reducers';
 import { grantsPath } from "../../routes";
 import { RootState } from "../../reducers";
-import { global } from "../../global";
-
-interface MetaData {
-  title: string;
-  description: string;
-  website: string;
-  chain: string;
-  wallet: string;
-  receivedFunding: boolean;
-}
+import { fetchGrantData } from "../../actions/currentGrant";
 
 function GrantsList() {
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
-      chainID: state.web3.chainID,
+      loading: state.currentGrant.loading,
+      currentGrant: state.currentGrant.currentGrant,
+      ipfsInitialized: state.ipfs.initialized,
+      ipfsInitializationError: state.ipfs.initializationError,
     }),
     shallowEqual
   );
 
   const { id } = useParams();
-  const [metaData, setMetaData] = useState<MetaData>({
-    title: "",
-    description: "",
-    website: "",
-    chain: "",
-    wallet: "",
-    receivedFunding: false,
-  });
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchGrantData() {
-      const { chainID } = props;
-
-      const addresses = addressesByChainID(chainID!);
-      const signer = global.web3Provider!.getSigner();
-      setLoading(true);
-      const grantRegistry = new ethers.Contract(
-        addresses.grantsRegistry,
-        GrantsRegistryABI,
-        signer
-      );
-      const metadataUri: string = await grantRegistry.grantMetaData(Number(id));
-
-      const metaDataResponse = await fetch(metadataUri);
-      const metaDataValues = await metaDataResponse.json();
-
-      setMetaData(metaDataValues);
-      setLoading(false);
+    if (props.ipfsInitialized && id) {
+      dispatch(fetchGrantData(Number(id)));
     }
+  }, [dispatch, props.ipfsInitialized, id]);
 
-    fetchGrantData();
-  }, [dispatch, id, props.chainID]);
+  if (props.ipfsInitializationError) {
+    return <>Error initializing IPFS. Reload the page and try again.</>;
+  }
+
+  if (!props.ipfsInitialized) {
+    return <>Initializing ipfs...</>;
+  }
+
+  if (props.loading && props.currentGrant === undefined) {
+    return <>Loading grant data from IPFS... </>;
+  }
 
   return (
     <div>
-      <div>Grant #{id}</div>
-      {loading ? (
-        <div>Loading grant data from IPFS</div>
-      ) : (
+      {props.currentGrant && (
         <>
-          {Object.entries(metaData).map(([key, value]) => {
-            if (key === "receivedFunding") {
-              return (
-                <p key={key}>
-                  {key}: {value ? "Yes" : "No"}
-                </p>
-              );
-            }
-            return (
-              <p key={key}>
-                {key}: {value}
-              </p>
-            );
-          })}
+          <div>Grant #{props.currentGrant.chain}</div>
+          <p>Title: {props.currentGrant.title}</p>
+          <p>Description: {props.currentGrant.description}</p>
+          <p>Webstie: {props.currentGrant.website}</p>
+          <p>Chain: {props.currentGrant.chain}</p>
+          <p>Wallet: {props.currentGrant.wallet}</p>
+          <p>
+            Received Funding:{" "}
+            {props.currentGrant.receivedFunding ? "Yes" : "No"}
+          </p>
         </>
       )}
+
       <div>
         <Link to={grantsPath()}>Back to grants list</Link>
       </div>
