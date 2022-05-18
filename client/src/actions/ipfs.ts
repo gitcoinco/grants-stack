@@ -1,4 +1,4 @@
-import { create as IPFSCreate } from "ipfs-http-client";
+import { create as IPFSCreate } from "ipfs-core";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
 import { global } from "../global";
