@@ -3,7 +3,6 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
 import Header from "./Header";
 import { initializeWeb3 } from "../actions/web3";
-import { startIPFS } from "../actions/ipfs";
 
 interface Props {
   children: JSX.Element;
@@ -29,10 +28,6 @@ function Layout(ownProps: Props) {
 
   useEffect(() => {
     dispatch(initializeWeb3());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(startIPFS());
   }, [dispatch]);
 
   const connectHandler = (e: React.MouseEvent) => {

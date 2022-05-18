@@ -24,6 +24,7 @@ import { slugs } from "./routes";
 import GrantsList from "./components/grants/List";
 import GrantsShow from "./components/grants/Show";
 import CreatGrant from "./components/grants/New";
+import { startIPFS } from "./actions/ipfs";
 
 const logger: Middleware =
   ({ getState }: MiddlewareAPI) =>
@@ -44,6 +45,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
+store.dispatch<any>(startIPFS());
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
