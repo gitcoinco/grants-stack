@@ -44,7 +44,6 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.6.0",
-    "@optionality.io/clone-factory": "^0.2.1"
+    "@openzeppelin/contracts": "^4.6.0"
   }
 }

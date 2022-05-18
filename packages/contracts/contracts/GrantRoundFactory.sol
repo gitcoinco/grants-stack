@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "./GrantRound.sol";
-import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GrantRoundFactory is Ownable, CloneFactory {
+contract GrantRoundFactory is Ownable {
 
   address public grantRoundContract;
 
@@ -18,6 +18,7 @@ contract GrantRoundFactory is Ownable, CloneFactory {
   event GrantRoundCreated(address grantRoundAddress);
 
 
+  // --- Core methods ---
   function updateGrantRoundContract(address _grantRoundContract) public onlyOwner {
     grantRoundContract = _grantRoundContract;
 
@@ -26,23 +27,15 @@ contract GrantRoundFactory is Ownable, CloneFactory {
 
   function create(
     IERC20 _token,
-    string _metaPtr,
-    address[] _roundManagers
-  ) {
-    address clone = createClone(grantRoundContract);
-    GrantRound(clone).init(_token, _metaPtr, _roundManagers);
+    string calldata _metaPtr,
+    address[] calldata _roundOperators
+  ) external returns (address) {
+    address clone = Clones.clone(grantRoundContract);
+    GrantRound(clone).initialize(_token, _metaPtr, _roundOperators);
 
-    GrantRoundCreated(clone);
+    emit GrantRoundCreated(clone);
+
+    return clone;
   }
 
 }
-
-/**
-  Questions:
-  - How do we handle multi chain round.
-  - Assuming factory is on chain X and we want to deploy round on chain Y
-    Wouldn't this be an tricky cause Factory would have to handle cross chain deployment
-  - Alternative: The factory could be repurposed to GrantRoundRegistry : 
-    which the backend would call after it's deployed a GrantRound
-    Another issue is if this could be invoked by anyone -> how do we avoid spamming ?s 
- */
