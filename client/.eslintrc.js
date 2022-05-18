@@ -23,7 +23,14 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "react/prop-types": "off",
     "max-len": ["error", { "code": 110 }],
-    "no-console": "off"
+    "no-console": "off",
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      // "ForOfStatement", // used for async iterators
+      "LabeledStatement",
+      "WithStatement",
+    ],
   },
   ignorePatterns: ["node_modules/"],
 };
