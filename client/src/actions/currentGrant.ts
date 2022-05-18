@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
-import { MetaData } from "../types";
+import { Metadata } from "../types";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
@@ -9,7 +9,7 @@ import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 export const CURRENT_GRANT_FETCHED = "CURRENT_GRANT_FETCHED";
 export interface GrantFetched {
   type: typeof CURRENT_GRANT_FETCHED;
-  data: MetaData;
+  data: Metadata;
 }
 export const CURRENT_GRANT_LOADING = "CURRENT_GRANT_LOADING";
 export interface GrantLoading {
@@ -18,7 +18,7 @@ export interface GrantLoading {
 }
 
 export type CurrentGrantActions = GrantFetched | GrantLoading;
-export const currentGrantFetched = (data: MetaData): CurrentGrantActions => ({
+export const currentGrantFetched = (data: Metadata): CurrentGrantActions => ({
   type: CURRENT_GRANT_FETCHED,
   data,
 });
@@ -57,15 +57,19 @@ export const fetchGrantData =
       const cid = matches[1];
       console.log("fetching", cid);
 
-      // FIXME: it doesn't fetch the data
-      const metaDataResponse = await global.ipfs!.get(cid);
-      console.log("meta", metaDataResponse);
-      // const metaDataValues: MetaData = await metaDataResponse.json();
-      // dispatch(currentGrantFetched(metaDataValues));
+      const chunks = [];
+      const source = await global.ipfs!.cat(cid);
+      const decoder = new TextDecoder();
 
-      // FIXME: maybe currentGrantFetched can set loading to false directly
-      dispatch(currentGrantLoading(false));
+      for await (const chunk of source) {
+        chunks.push(decoder.decode(chunk));
+      }
+
+      const content = chunks.join("");
+      const metadata: Metadata = JSON.parse(content);
+      dispatch(currentGrantFetched(metadata));
     } catch (e) {
+      // FIXME: dispatch an error to show in the UI
       console.log({ e });
       dispatch(currentGrantLoading(false));
     }

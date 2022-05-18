@@ -3,16 +3,16 @@ import {
   CURRENT_GRANT_FETCHED,
   CURRENT_GRANT_LOADING,
 } from "../actions/currentGrant";
-import { MetaData } from "../types";
+import { Metadata } from "../types";
 
 export interface CurrentGrantState {
   loading: boolean;
-  currentGrant: MetaData | null;
+  currentGrant: Metadata | undefined;
 }
 
 export const initialState: CurrentGrantState = {
   loading: false,
-  currentGrant: null,
+  currentGrant: undefined,
 };
 
 export const currentGrantReducer = (
@@ -24,6 +24,7 @@ export const currentGrantReducer = (
       return {
         ...state,
         currentGrant: action.data,
+        loading: false,
       };
     }
     case CURRENT_GRANT_LOADING: {

@@ -3,7 +3,7 @@ import {
   currentGrantFetched,
   currentGrantLoading,
 } from "../actions/currentGrant";
-import { MetaData } from "../types";
+import { Metadata } from "../types";
 import { currentGrantReducer, initialState } from "./currentGrant";
 
 describe("newGrant reducer", () => {
@@ -27,7 +27,7 @@ describe("newGrant reducer", () => {
   });
 
   it("saves current grant to store", () => {
-    const currentGrant: MetaData = {
+    const currentGrant: Metadata = {
       title: "Title",
       description: "Description",
       website: "www.grant.com",
