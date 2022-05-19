@@ -24,6 +24,7 @@ import { slugs } from "./routes";
 import GrantsList from "./components/grants/List";
 import GrantsShow from "./components/grants/Show";
 import CreatGrant from "./components/grants/New";
+import Landing from "./components/grants/Landing";
 import { startIPFS } from "./actions/ipfs";
 
 const logger: Middleware =
@@ -58,7 +59,7 @@ root.render(
       <ReduxRouter history={history} store={store}>
         <Layout>
           <Routes>
-            <Route path={slugs.root} element={<div>Home</div>} />
+            <Route path={slugs.root} element={<Landing />} />
             <Route path={slugs.grants} element={<GrantsList />} />
             <Route path={slugs.grant} element={<GrantsShow />} />
             <Route path={slugs.newGrant} element={<CreatGrant />} />
