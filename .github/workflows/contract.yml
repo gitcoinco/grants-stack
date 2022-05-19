@@ -1,6 +1,7 @@
 name: package/contracts - Build -> Test
 on:
   push:
+  pull_request:
     branches:
       - main
 jobs:

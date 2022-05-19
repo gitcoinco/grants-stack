@@ -1,6 +1,7 @@
 name: package/round-manager - Build -> Test
 on:
   push:
+  pull_request:
     branches:
       - main
 jobs:
