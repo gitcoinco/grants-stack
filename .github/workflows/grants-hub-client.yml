@@ -18,6 +18,7 @@ jobs:
           cd client
           yarn install
           yarn lint
+          yarn test
           yarn build
 
       - name: Deploy 🚀
