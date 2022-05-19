@@ -1,9 +1,10 @@
 name: Grants Hub Client test and lint for PR
 on:
-  push:
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
