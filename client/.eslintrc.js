@@ -31,6 +31,7 @@ module.exports = {
       "LabeledStatement",
       "WithStatement",
     ],
+    "eol-last": ["error", "always"]
   },
   ignorePatterns: ["node_modules/"],
 };

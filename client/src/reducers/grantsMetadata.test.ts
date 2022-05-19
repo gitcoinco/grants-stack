@@ -4,7 +4,7 @@ import {
   grantMetadataLoading,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
-import { grantsMetadataReducer, initialState } from "./grantsMetadata";
+import { grantsMetadataReducer } from "./grantsMetadata";
 
 describe("newGrant reducer", () => {
   let store: Store;
