@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { AppDispatch } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
 
 export const VALID_NETWORK_NAME = "Goerli";
 export const VALID_CHAIN_ID = 5;
@@ -109,12 +110,13 @@ const loadWeb3Data = () => (dispatch: AppDispatch) => {
 
 // Dispatches Web3Actions while attempting to initialize web3 instance on the browser
 export const initializeWeb3 = () => {
-  
+
   if (!window.ethereum) {
     return notWeb3Browser();
   }
 
-  return (dispatch: AppDispatch, getState: () => RootState) => {
+  return (dispatch = useAppDispatch(), getState: () => RootState) => {
+
     const state = getState();
 
     if (state.web3.initializing || state.web3.initialized) {
@@ -140,8 +142,7 @@ export const initializeWeb3 = () => {
 
         window.ethereum.on("accountsChanged", () => window.location.reload());
 
-        // FIXME: fix dispatch<any>
-        dispatch<any>(loadWeb3Data());
+        dispatch(loadWeb3Data());
       })
       .catch((err: string) => {
         console.log("error", err);
