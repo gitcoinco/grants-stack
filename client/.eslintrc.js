@@ -22,7 +22,7 @@ module.exports = {
     "import/no-cycle": "off",
     "import/no-extraneous-dependencies": "off",
     "react/prop-types": "off",
-    "max-len": ["error", { "code": 110 }],
+    "max-len": ["error", { "code": 150 }],
     "no-console": "off",
     "no-restricted-syntax": [
       "error",
@@ -31,6 +31,7 @@ module.exports = {
       "LabeledStatement",
       "WithStatement",
     ],
+    "eol-last": ["error", "always"]
   },
   ignorePatterns: ["node_modules/"],
 };

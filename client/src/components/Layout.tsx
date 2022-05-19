@@ -37,11 +37,9 @@ function Layout(ownProps: Props) {
   const { children } = ownProps;
 
   return (
-    <div>
+    <div className="flex flex-col h-full relative">
       <Header />
-      <hr />
-
-      <main>
+      <main className="container mx-auto bg-light-primary dark:bg-dark-primary h-full">
         {!props.web3Error && props.web3Initialized && props.chainID && children}
 
         {props.web3Error !== undefined && (
@@ -56,9 +54,6 @@ function Layout(ownProps: Props) {
           </button>
         )}
       </main>
-
-      <hr />
-      <footer>FOOTER</footer>
     </div>
   );
 }

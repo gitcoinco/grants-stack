@@ -1,0 +1,9 @@
+button.base-btn {
+  @apply rounded px-5 py-2.5 my-2;
+}
+.base-btn.primary {
+  @apply text-dark-primary bg-light-primary dark:bg-light-primary dark:text-dark-primary;
+}
+.base-btn.outline {
+  @apply rounded px-5 py-2.5 m-2 border-light-primary text-dark-primary bg-light-primary border-solid dark:border-2 dark:border-dark-primary dark:text-light-primary dark:bg-dark-primary
+}

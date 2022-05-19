@@ -25,7 +25,7 @@ function GrantsList() {
   }, [dispatch]);
 
   return (
-    <div>
+    <div className="container mx-auto">
       {props.loading && <>loading...</>}
 
       {!props.loading && (
