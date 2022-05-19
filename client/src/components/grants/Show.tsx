@@ -3,21 +3,21 @@ import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { grantsPath } from "../../routes";
 import { RootState } from "../../reducers";
-import { fetchGrantData } from "../../actions/currentGrant";
+import { fetchGrantData } from "../../actions/grantsMetadata";
 
 function GrantsList() {
   const dispatch = useDispatch();
-  const props = useSelector(
-    (state: RootState) => ({
-      loading: state.currentGrant.loading,
-      currentGrant: state.currentGrant.currentGrant,
+  const { id } = useParams();
+
+  const props = useSelector((state: RootState) => {
+    const grantMetadata = state.grantsMetadata[Number(id)];
+    return {
+      loading: grantMetadata ? grantMetadata.loading : false,
+      currentGrant: grantMetadata?.metadata,
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
-    }),
-    shallowEqual
-  );
-
-  const { id } = useParams();
+    };
+  }, shallowEqual);
 
   useEffect(() => {
     if (props.ipfsInitialized && id) {

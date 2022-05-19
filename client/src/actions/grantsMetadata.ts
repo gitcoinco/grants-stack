@@ -6,32 +6,32 @@ import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
 
-export const CURRENT_GRANT_FETCHED = "CURRENT_GRANT_FETCHED";
+export const GRANT_METADATA_FETCHED = "GRANT_METADATA_FETCHED";
 export interface GrantFetched {
-  type: typeof CURRENT_GRANT_FETCHED;
+  type: typeof GRANT_METADATA_FETCHED;
   data: Metadata;
 }
-export const CURRENT_GRANT_LOADING = "CURRENT_GRANT_LOADING";
+export const GRANT_METADATA_LOADING = "GRANT_METADATA_LOADING";
 export interface GrantLoading {
-  type: typeof CURRENT_GRANT_LOADING;
-  status: boolean;
+  type: typeof GRANT_METADATA_LOADING;
+  id: number;
 }
 
-export type CurrentGrantActions = GrantFetched | GrantLoading;
-export const currentGrantFetched = (data: Metadata): CurrentGrantActions => ({
-  type: CURRENT_GRANT_FETCHED,
+export type GrantMetadataActions = GrantFetched | GrantLoading;
+export const grantMetadataFetched = (data: Metadata): GrantMetadataActions => ({
+  type: GRANT_METADATA_FETCHED,
   data,
 });
 
-export const currentGrantLoading = (status: boolean): CurrentGrantActions => ({
-  type: CURRENT_GRANT_LOADING,
-  status,
+export const grantMetadataLoading = (id: number): GrantMetadataActions => ({
+  type: GRANT_METADATA_LOADING,
+  id,
 });
 
 export const fetchGrantData =
   (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
     try {
-      dispatch(currentGrantLoading(true));
+      dispatch(grantMetadataLoading(id));
       const state = getState();
       const { chainID } = state.web3;
       const addresses = addressesByChainID(chainID!);
@@ -67,10 +67,14 @@ export const fetchGrantData =
 
       const content = chunks.join("");
       const metadata: Metadata = JSON.parse(content);
-      dispatch(currentGrantFetched(metadata));
+      dispatch(
+        grantMetadataFetched({
+          ...metadata,
+          id,
+        })
+      );
     } catch (e) {
       // FIXME: dispatch an error to show in the UI
       console.log({ e });
-      dispatch(currentGrantLoading(false));
     }
   };
