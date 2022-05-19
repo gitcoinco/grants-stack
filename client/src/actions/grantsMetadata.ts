@@ -89,7 +89,16 @@ export const fetchGrantData =
     const chunks = [];
 
     dispatch(grantMetadataLoading(id));
-    const source = await global.ipfs!.cat(cid);
+
+    let source;
+    try {
+      source = await global.ipfs!.cat(cid);
+    } catch (e) {
+      // FIXME: dispatch "ipfs error"
+      console.error(e);
+      return;
+    }
+
     const decoder = new TextDecoder();
 
     for await (const chunk of source) {
@@ -97,7 +106,16 @@ export const fetchGrantData =
     }
 
     const content = chunks.join("");
-    const metadata: Metadata = JSON.parse(content);
+
+    let metadata: Metadata;
+    try {
+      metadata = JSON.parse(content);
+    } catch (e) {
+      // FIXME: dispatch JSON error
+      console.error(e);
+      return;
+    }
+
     dispatch(
       grantMetadataFetched({
         ...metadata,
