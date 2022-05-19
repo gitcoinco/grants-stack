@@ -16,7 +16,7 @@ import {
 } from "@lagunovsky/redux-react-router";
 import { createRootReducer } from "./reducers";
 import ErrorBoundary from "./components/ErrorBoundary";
-import "./index.css";
+import "./styles/index.css";
 import Layout from "./components/Layout";
 import reportWebVitals from "./reportWebVitals";
 import history from "./history";
