@@ -4,7 +4,7 @@ const chains: { [key: number]: string } = {
 
 export const addresses: { [key: string]: any } = {
   goerli: {
-    grantsRegistry: "0x103f030d4fFa9BFdDbAc853F3021B9d82D17b90A",
+    grantsRegistry: "0x85F7332dA521AfeAd9452840C3415Ce6c6E304df",
     grantNft: "0x1387FC00bf4a351B65d34cCD2acC4e8CB50ef0eF",
   },
 

@@ -39,7 +39,7 @@
         "type": "uint96"
       }
     ],
-    "name": "GrantUpdated",
+    "name": "MetaDataUpdated",
     "type": "event"
   },
   {
@@ -63,25 +63,6 @@
     "name": "createGrant",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint96",
-        "name": "id",
-        "type": "uint96"
-      }
-    ],
-    "name": "grantMetaData",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -144,7 +125,7 @@
         "type": "string"
       }
     ],
-    "name": "updateGrant",
+    "name": "updateMetadata",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
