@@ -1,7 +1,21 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
-@import "./Button";
 @import "tailwindcss/utilities";
 
-@import "./typography.css";
+@import "./Button";
 @import "./Layout";
+
+@layer base {
+  h1 {
+    @apply text-7xl text-dark-primary dark:text-light-primary font-semibold
+  }
+  h2 {
+    @apply text-5xl text-dark-primary dark:text-light-primary
+  }
+  h3 {
+    @apply text-2xl text-dark-primary dark:text-light-primary font-extralight
+  }
+  p {
+    @apply text-dark-primary dark:text-light-primary font-extralight
+  }
+}
