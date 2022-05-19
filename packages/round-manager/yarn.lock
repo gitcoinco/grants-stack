@@ -1861,6 +1861,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@lagunovsky/redux-react-router@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@lagunovsky/redux-react-router/-/redux-react-router-3.1.0.tgz#22f892006f564c06710c892e4ac75bb61f3e6ecb"
+  integrity sha512-6/8j/LcQOgXQfWEVIcx2RaSDrn/1eTQwiE8MfJJddvNhBB4RRergCLuTvXIXtf5Uk5aSWX4B3My017wNHNvw9g==
+
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
