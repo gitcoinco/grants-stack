@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { global } from "../global";
-import { Dispatch } from "redux";
 import { RootState } from "../reducers";
+import { AppDispatch } from "../app/store";
 
 export const VALID_NETWORK_NAME = "Goerli";
 export const VALID_CHAIN_ID = 5;
@@ -93,7 +93,7 @@ declare global {
 }
 
 
-const loadWeb3Data = () => (dispatch: Dispatch) => {
+const loadWeb3Data = () => (dispatch: AppDispatch) => {
   global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
   global.web3Provider!.getNetwork().then(({ chainId }) => {
     if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
@@ -114,7 +114,7 @@ export const initializeWeb3 = () => {
     return notWeb3Browser();
   }
 
-  return (dispatch: Dispatch, getState: () => RootState) => {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const state = getState();
 
     if (state.web3.initializing || state.web3.initialized) {

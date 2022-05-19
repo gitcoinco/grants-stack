@@ -1,53 +1,20 @@
 import React from 'react';
 import ReactDOM from "react-dom/client";
 import { Provider } from 'react-redux';
-import {
-  Middleware,
-  MiddlewareAPI,
-  Dispatch,
-} from "redux";
-
-import {
-  createRouterMiddleware,
-  ReduxRouter,
-} from "@lagunovsky/redux-react-router";
-
-import thunkMiddleware from "redux-thunk";
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { store } from  './app/store';
 import { Route, Routes } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
-import './index.css';
 import history from "./history";
+
+import './index.css';
+
 
 // Routes
 import NewRound from './components/newRound/NewRound';
 import ViewRound from './components/viewRound/ViewRound';
 import Dashboard from './components/dashboard/Dashboard';
-import { configureStore } from '@reduxjs/toolkit';
-import { createRootReducer } from './reducers';
 
-
-const logger: Middleware =
-  ({ getState }: MiddlewareAPI) =>
-  (next: Dispatch) =>
-  (action) => {
-    console.log("dispatch", action);
-    const returnValue = next(action);
-    console.log("state", getState());
-    return returnValue;
-  };
-
-const routerMiddleware = createRouterMiddleware(history);
-
-let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
-
-if (process.env.NODE_ENV !== "production") {
-  middlewares = [...middlewares, logger];
-}
-
-const store = configureStore({
-  reducer: createRootReducer(),
-  middleware: middlewares
-});
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
