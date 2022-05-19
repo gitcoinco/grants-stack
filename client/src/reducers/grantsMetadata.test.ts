@@ -21,6 +21,7 @@ describe("newGrant reducer", () => {
 
   it("saves current grant to store", () => {
     const grantMetadata: Metadata = {
+      uri: "0x1234",
       id: 1,
       title: "Title",
       description: "Description",

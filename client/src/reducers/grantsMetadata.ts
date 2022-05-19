@@ -1,7 +1,8 @@
 import {
   GrantMetadataActions,
-  GRANT_METADATA_FETCHED,
+  GRANT_METADATA_LOADING_URI,
   GRANT_METADATA_LOADING,
+  GRANT_METADATA_FETCHED,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
 
@@ -19,12 +20,12 @@ export const grantsMetadataReducer = (
   action: GrantMetadataActions
 ): GrantsMetadataState => {
   switch (action.type) {
-    case GRANT_METADATA_FETCHED: {
+    case GRANT_METADATA_LOADING_URI: {
       return {
         ...state,
-        [action.data.id]: {
-          loading: false,
-          metadata: action.data,
+        [action.id]: {
+          ...state[action.id],
+          loading: true,
         },
       };
     }
@@ -33,8 +34,20 @@ export const grantsMetadataReducer = (
       return {
         ...state,
         [action.id]: {
+          ...state[action.id],
           loading: true,
           metadata: undefined,
+        },
+      };
+    }
+
+    case GRANT_METADATA_FETCHED: {
+      return {
+        ...state,
+        [action.data.id]: {
+          ...state[action.data.id],
+          loading: false,
+          metadata: action.data,
         },
       };
     }

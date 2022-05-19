@@ -1,5 +1,6 @@
 export interface Metadata {
-  id: number
+  uri: string;
+  id: number;
   title: string;
   description: string;
   website: string;
