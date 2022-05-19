@@ -2,20 +2,27 @@ import { Store, combineReducers, createStore } from "redux";
 import {
   grantMetadataFetched,
   grantMetadataLoading,
+  grantMetadataLoadingURI,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
 import { grantsMetadataReducer } from "./grantsMetadata";
 
-describe("newGrant reducer", () => {
+const grantId = 1;
+
+describe("grantsMetaData reducer", () => {
   let store: Store;
   beforeEach(() => {
-    store = createStore(combineReducers({ newGrant: grantsMetadataReducer }));
+    store = createStore(
+      combineReducers({ grantsMetaData: grantsMetadataReducer })
+    );
   });
 
   it("sets loading status", () => {
-    store.dispatch(grantMetadataLoading(1));
-    expect(store.getState().grantsMetadata[1]).toEqual({
+    store.dispatch(grantMetadataLoadingURI(1));
+    store.dispatch(grantMetadataLoading(grantId));
+    expect(store.getState().grantsMetaData[1]).toEqual({
       loading: true,
+      metadata: undefined,
     });
   });
 
@@ -30,8 +37,15 @@ describe("newGrant reducer", () => {
       wallet: "0x000",
       receivedFunding: false,
     };
-    store.dispatch(grantMetadataFetched(grantMetadata));
-    expect(store.getState().grants[1]).toEqual({
+    store.dispatch(
+      grantMetadataFetched({
+        ...grantMetadata,
+        uri: grantMetadata.uri,
+        id: grantId,
+      })
+    );
+
+    expect(store.getState().grantsMetaData[1]).toEqual({
       loading: false,
       metadata: grantMetadata,
     });
