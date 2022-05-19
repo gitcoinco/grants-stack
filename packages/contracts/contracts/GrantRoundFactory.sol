@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "./GrantRound.sol";
+import "./GrantRoundImplementation.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -31,7 +31,7 @@ contract GrantRoundFactory is Ownable {
     address[] calldata _roundOperators
   ) external returns (address) {
     address clone = Clones.clone(grantRoundContract);
-    GrantRound(clone).initialize(_token, _metaPtr, _roundOperators);
+    GrantRoundImplementation(clone).initialize(_token, _metaPtr, _roundOperators);
 
     emit GrantRoundCreated(clone);
 

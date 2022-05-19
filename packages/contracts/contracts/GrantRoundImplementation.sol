@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 /**
  * @notice Contract deployed per Grant Round
  */
-contract GrantRound is AccessControl, ReentrancyGuard, Initializable {
+contract GrantRoundImplementation is AccessControl, ReentrancyGuard, Initializable {
 
   // --- Libraries ---
   using Address for address;
