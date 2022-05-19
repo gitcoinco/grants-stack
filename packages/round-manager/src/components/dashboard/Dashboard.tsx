@@ -23,12 +23,12 @@ function Dashboard() {
   );
 
   useEffect(() => {
-    dispatch(initializeWeb3());
+    dispatch<any>(initializeWeb3());
   }, [dispatch]);
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
-    dispatch(initializeWeb3());
+    dispatch<any>(initializeWeb3());
   };
 
   return (

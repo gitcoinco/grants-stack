@@ -136,8 +136,11 @@ export const initializeWeb3 = () => {
           dispatch(web3AccountLoaded(accounts[0]));
         }
 
-        // FIXME: fix dispatch<any>
         window.ethereum.on("chainChanged", () => window.location.reload());
+
+        window.ethereum.on("accountsChanged", () => window.location.reload());
+
+        // FIXME: fix dispatch<any>
         dispatch<any>(loadWeb3Data());
       })
       .catch((err: string) => {
@@ -146,5 +149,5 @@ export const initializeWeb3 = () => {
       });
 
   }
-  
+
 }
