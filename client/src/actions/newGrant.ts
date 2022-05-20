@@ -38,8 +38,9 @@ export const grantCreated = ({
   owner,
 });
 
-export const createGrant =
-  () => async (dispatch: Dispatch, getState: () => RootState) => {
+export const publishGrant =
+  (grantId?: string) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();
       const { chainID } = state.web3;
@@ -50,13 +51,22 @@ export const createGrant =
         GrantsRegistryABI,
         signer
       );
-      const creationTx = await grantRegistry.createGrant(
-        state.web3.account,
-        state.ipfs.lastFileSavedURL,
-        state.web3.account
-      );
+      let projectTx;
+      if (grantId) {
+        projectTx = await grantRegistry.updateMetadata(
+          grantId,
+          state.ipfs.lastFileSavedURL
+        );
+      } else {
+        projectTx = await grantRegistry.createGrant(
+          state.web3.account,
+          state.ipfs.lastFileSavedURL,
+          state.web3.account
+        );
+      }
+
       dispatch(grantTXStatus("initiated"));
-      const txStatus = await creationTx.wait();
+      const txStatus = await projectTx.wait();
       if (txStatus.status) {
         dispatch(grantTXStatus("complete"));
       }
