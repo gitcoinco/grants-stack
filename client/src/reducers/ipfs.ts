@@ -9,6 +9,7 @@ import {
 export interface IPFSState {
   initializing: boolean;
   initialized: boolean;
+  newFileSaved: boolean;
   initializationError: string | undefined;
   lastFileSavedURL: string | undefined;
 }
@@ -16,6 +17,7 @@ export interface IPFSState {
 const initialState: IPFSState = {
   initializing: false,
   initialized: false,
+  newFileSaved: false,
   initializationError: undefined,
   lastFileSavedURL: undefined,
 };
@@ -54,9 +56,11 @@ export const ipfsReducer = (
       return {
         ...state,
         lastFileSavedURL: action.url,
+        newFileSaved: true,
       };
     }
+    default: {
+      return state;
+    }
   }
-
-  return state;
 };
