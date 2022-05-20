@@ -85,8 +85,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   // /TODO
 
   return (
-    <>
-      <form className="w-1/2" onSubmit={(e) => e.preventDefault()}>
+    <div className="border border-solid border-dark-primary rounded text-dark-primary p-4">
+      <form onSubmit={(e) => e.preventDefault()}>
         <TextInput
           label="Title"
           name="title"
@@ -147,7 +147,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           {props.txStatus && <TXLoading status={props.txStatus} />}
         </>
       )}
-    </>
+    </div>
   );
 }
 

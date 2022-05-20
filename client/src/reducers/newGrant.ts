@@ -2,6 +2,7 @@ import {
   NewGrantActions,
   NEW_GRANT_CREATED,
   NEW_GRANT_TX_STATUS,
+  RESET_TX_STATUS,
 } from "../actions/newGrant";
 
 export interface NewGrant {
@@ -42,6 +43,13 @@ export const newGrantReducer = (
       return {
         ...state,
         txStatus: action.status,
+      };
+    }
+
+    case RESET_TX_STATUS: {
+      return {
+        ...state,
+        txStatus: null,
       };
     }
 
