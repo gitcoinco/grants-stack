@@ -7,11 +7,17 @@ interface ButtonProps {
   onClick: () => void;
   children: React.ReactNode;
   variant: typeof buttonTypes[keyof typeof buttonTypes];
+  disabled?: boolean;
 }
 
-function Button({ onClick, children, variant }: ButtonProps) {
+function Button({ onClick, children, variant, disabled }: ButtonProps) {
   return (
-    <button type="button" onClick={onClick} className={`base-btn ${variant}`}>
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      className={`base-btn ${variant}`}
+      type="button"
+    >
       {children}
     </button>
   );

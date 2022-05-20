@@ -53,9 +53,9 @@ export default function Header() {
       )}
       {!props.web3Initialized && (
         <div>
-          <button type="button" onClick={connectHandler}>
+          <Button variant="outline" onClick={() => connectHandler}>
             CONNECT
-          </button>
+          </Button>
         </div>
       )}
     </header>
