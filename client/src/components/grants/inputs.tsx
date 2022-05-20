@@ -7,8 +7,8 @@ type InputProps = {
 
 type RadioInputProps = {
   name: string;
-  value: boolean;
-  existingValue?: boolean;
+  value: string;
+  currentValue?: string;
   changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
@@ -31,17 +31,17 @@ export function TextInput(props: InputProps) {
 }
 
 export function RadioInput(props: RadioInputProps) {
-  const { name, value, existingValue, changeHandler } = props;
+  const { name, value, currentValue, changeHandler } = props;
   return (
     <div style={{ display: "block" }}>
       <input
         type="radio"
-        id={String(value)}
         name={name}
-        value={String(existingValue)}
+        value={value}
+        checked={value === currentValue}
         onChange={changeHandler}
       />{" "}
-      {value ? "Yes" : "No"}
+      {value}
     </div>
   );
 }
