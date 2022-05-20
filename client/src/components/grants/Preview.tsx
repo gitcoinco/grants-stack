@@ -1,10 +1,11 @@
 // import { useEffect} from 'react'
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { FormInputs } from "./New";
-import { createGrant } from "../../actions/newGrant";
+import { FormInputs } from "../base/ProjectForm";
+import { publishGrant } from "../../actions/newGrant";
 import { RootState } from "../../reducers";
 import { grantsPath } from "../../routes";
+import Button from "../base/Button";
 
 function Loading({ status }: { status: string }) {
   if (status === "initiated") {
@@ -30,13 +31,16 @@ function Loading({ status }: { status: string }) {
   );
 }
 
-function GrantPreview({ grant, url }: { grant: FormInputs; url: string }) {
+function GrantPreview({ grant }: { grant: FormInputs }) {
   const dispatch = useDispatch();
+  const params = useParams();
 
   const props = useSelector(
     (state: RootState) => ({
+      id: params.id,
       txStatus: state.newGrant.txStatus,
       grants: state.newGrant.grants,
+      lastFileSave: state.ipfs.lastFileSavedURL,
     }),
     shallowEqual
   );
@@ -45,8 +49,8 @@ function GrantPreview({ grant, url }: { grant: FormInputs; url: string }) {
     <>
       <div>
         Your grant data has been saved to IPFS! And can be accessed here:{" "}
-        <a target="_blank" rel="noreferrer" href={url}>
-          {url}
+        <a target="_blank" rel="noreferrer" href={props.lastFileSave}>
+          {props.lastFileSave}
         </a>
       </div>
       <div>
@@ -69,9 +73,12 @@ function GrantPreview({ grant, url }: { grant: FormInputs; url: string }) {
       {!props.txStatus ? (
         <>
           <div>Does everything look good?</div>
-          <button type="button" onClick={() => dispatch(createGrant())}>
-            Save and Publish
-          </button>
+          <Button
+            variant="outline"
+            onClick={() => dispatch(publishGrant(props.id))}
+          >
+            Publish your Project
+          </Button>
         </>
       ) : (
         <Loading status={props.txStatus} />

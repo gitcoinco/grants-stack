@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { grantsPath, editPath } from "../../routes";
+import { useParams } from "react-router-dom";
+import ProjectForm from "../base/ProjectForm";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 
-function Project() {
-  const dispatch = useDispatch();
-  // FIXME: params.id doesn't change if the location hash is changed manually.
+function NewProject() {
   const params = useParams();
+  const dispatch = useDispatch();
 
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[Number(params.id)];
@@ -21,6 +20,7 @@ function Project() {
     };
   }, shallowEqual);
 
+  // TODO: feels like this could be extracted to a component
   useEffect(() => {
     if (props.ipfsInitialized && params.id) {
       dispatch(fetchGrantData(Number(params.id)));
@@ -38,31 +38,14 @@ function Project() {
   if (props.loading && props.currentGrant === undefined) {
     return <>Loading grant data from IPFS... </>;
   }
+  // /TODO
 
   return (
-    <div>
-      {props.currentGrant && (
-        <>
-          <div>Grant #{props.currentGrant.chain}</div>
-          <p>Title: {props.currentGrant.title}</p>
-          <p>Description: {props.currentGrant.description}</p>
-          <p>Webstie: {props.currentGrant.website}</p>
-          <p>Chain: {props.currentGrant.chain}</p>
-          <p>Wallet: {props.currentGrant.wallet}</p>
-          <p>
-            Received Funding:{" "}
-            {props.currentGrant.receivedFunding ? "Yes" : "No"}
-          </p>
-        </>
-      )}
-
-      {props.id && <Link to={editPath(props.id)}>Edit Grant #{props.id}</Link>}
-
-      <div>
-        <Link to={grantsPath()}>Back to grants list</Link>
-      </div>
-    </div>
+    <>
+      <h3>Edit a Project</h3>
+      <ProjectForm existingGrantId={props.id} />
+    </>
   );
 }
 
-export default Project;
+export default NewProject;
