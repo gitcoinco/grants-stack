@@ -31,7 +31,8 @@ module.exports = {
       "LabeledStatement",
       "WithStatement",
     ],
-    "eol-last": ["error", "always"]
+    "eol-last": ["error", "always"],
+    "react/require-default-props": "off"
   },
   ignorePatterns: ["node_modules/"],
 };
