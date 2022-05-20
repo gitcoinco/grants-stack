@@ -5,7 +5,7 @@ import ProjectForm from "../base/ProjectForm";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 
-function NewProject() {
+function EditProject() {
   const params = useParams();
   const dispatch = useDispatch();
 
@@ -48,4 +48,4 @@ function NewProject() {
   );
 }
 
-export default NewProject;
+export default EditProject;
