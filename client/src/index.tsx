@@ -22,8 +22,9 @@ import reportWebVitals from "./reportWebVitals";
 import history from "./history";
 import { slugs } from "./routes";
 import GrantsList from "./components/grants/List";
-import GrantsShow from "./components/grants/Show";
-import CreatGrant from "./components/grants/New";
+import Project from "./components/grants/Show";
+import NewProject from "./components/grants/New";
+import EditProject from "./components/grants/Edit";
 import Landing from "./components/grants/Landing";
 import { startIPFS } from "./actions/ipfs";
 
@@ -61,8 +62,9 @@ root.render(
           <Routes>
             <Route path={slugs.root} element={<Landing />} />
             <Route path={slugs.grants} element={<GrantsList />} />
-            <Route path={slugs.grant} element={<GrantsShow />} />
-            <Route path={slugs.newGrant} element={<CreatGrant />} />
+            <Route path={slugs.grant} element={<Project />} />
+            <Route path={slugs.newGrant} element={<NewProject />} />
+            <Route path={slugs.edit} element={<EditProject />} />
           </Routes>
         </Layout>
       </ReduxRouter>
