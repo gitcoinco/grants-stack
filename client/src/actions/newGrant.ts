@@ -20,7 +20,19 @@ export interface GrantCreated {
   owner?: string;
 }
 
-export type NewGrantActions = GrantCreated | NewGrantTXStatus;
+export const RESET_TX_STATUS = "RESET_TX_STATUS";
+export interface IPFSResetTXStatus {
+  type: typeof RESET_TX_STATUS;
+}
+
+export type NewGrantActions =
+  | GrantCreated
+  | NewGrantTXStatus
+  | IPFSResetTXStatus;
+
+export const resetTXStatus = (): NewGrantActions => ({
+  type: RESET_TX_STATUS,
+});
 
 export const grantTXStatus = (status: string): NewGrantActions => ({
   type: NEW_GRANT_TX_STATUS,
