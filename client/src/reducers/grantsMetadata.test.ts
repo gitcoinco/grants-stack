@@ -35,7 +35,7 @@ describe("grantsMetaData reducer", () => {
       website: "www.grant.com",
       chain: "ethereum",
       wallet: "0x000",
-      receivedFunding: false,
+      receivedFunding: "Yes",
     };
     store.dispatch(
       grantMetadataFetched({

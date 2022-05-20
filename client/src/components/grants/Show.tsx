@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { grantsPath } from "../../routes";
+import { grantsPath, editPath } from "../../routes";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 
-function GrantsList() {
+function Project() {
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
@@ -56,6 +56,8 @@ function GrantsList() {
         </>
       )}
 
+      {props.id && <Link to={editPath(props.id)}>Edit Grant #{props.id}</Link>}
+
       <div>
         <Link to={grantsPath()}>Back to grants list</Link>
       </div>
@@ -63,4 +65,4 @@ function GrantsList() {
   );
 }
 
-export default GrantsList;
+export default Project;

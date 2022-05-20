@@ -3,12 +3,16 @@ import {
   IPFS_INITIALIZATION_ERROR,
   IPFS_INITIALIZED,
   IPFS_FILE_SAVED,
+  IPFS_SAVING_FILE,
+  RESET_FILE_STATUS,
   IPFSActions,
 } from "../actions/ipfs";
 
 export interface IPFSState {
   initializing: boolean;
   initialized: boolean;
+  newFileSaved: boolean;
+  ipfsSavingFile: boolean;
   initializationError: string | undefined;
   lastFileSavedURL: string | undefined;
 }
@@ -16,6 +20,8 @@ export interface IPFSState {
 const initialState: IPFSState = {
   initializing: false,
   initialized: false,
+  newFileSaved: false,
+  ipfsSavingFile: false,
   initializationError: undefined,
   lastFileSavedURL: undefined,
 };
@@ -54,9 +60,29 @@ export const ipfsReducer = (
       return {
         ...state,
         lastFileSavedURL: action.url,
+        newFileSaved: true,
+        ipfsSavingFile: false,
       };
     }
-  }
 
-  return state;
+    case IPFS_SAVING_FILE: {
+      return {
+        ...state,
+        ipfsSavingFile: true,
+      };
+    }
+
+    case RESET_FILE_STATUS: {
+      return {
+        ...state,
+        newFileSaved: false,
+        ipfsSavingFile: false,
+        lastFileSavedURL: undefined,
+      };
+    }
+
+    default: {
+      return state;
+    }
+  }
 };

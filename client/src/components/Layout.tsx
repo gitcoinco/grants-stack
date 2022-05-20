@@ -3,6 +3,7 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
 import Header from "./Header";
 import { initializeWeb3 } from "../actions/web3";
+import Button from "./base/Button";
 
 interface Props {
   children: JSX.Element;
@@ -49,9 +50,9 @@ function Layout(ownProps: Props) {
         )}
 
         {!props.web3Initialized && (
-          <button type="button" onClick={connectHandler}>
+          <Button variant="outline" onClick={() => connectHandler}>
             CONNECT
-          </button>
+          </Button>
         )}
       </main>
     </div>

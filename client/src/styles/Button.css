@@ -1,6 +1,9 @@
 button.base-btn {
   @apply rounded px-5 py-2.5 my-2;
 }
+button.base-btn:disabled {
+  opacity: .3
+}
 .base-btn.primary {
   @apply text-dark-primary bg-light-primary dark:bg-light-primary dark:text-dark-primary;
 }

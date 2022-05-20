@@ -6,5 +6,5 @@ export interface Metadata {
   website: string;
   chain: string;
   wallet: string;
-  receivedFunding: boolean;
+  receivedFunding: string;
 }
