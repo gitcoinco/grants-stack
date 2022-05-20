@@ -48,7 +48,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       return false;
     });
 
-    console.log({ validValues });
     setDisabled(validValues.length < 5 || !props.ipfsInitialized);
   };
 
