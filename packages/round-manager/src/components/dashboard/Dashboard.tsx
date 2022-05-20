@@ -1,17 +1,18 @@
 import { useEffect } from "react";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { shallowEqual } from "react-redux";
 import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 
 
 import './Dashboard.css';
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 function Dashboard() {
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const props = useSelector(
+  const props = useAppSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
       web3Initialized: state.web3.initialized,
@@ -23,12 +24,12 @@ function Dashboard() {
   );
 
   useEffect(() => {
-    dispatch<any>(initializeWeb3());
+    dispatch(initializeWeb3());
   }, [dispatch]);
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
-    dispatch<any>(initializeWeb3());
+    dispatch(initializeWeb3());
   };
 
   return (
