@@ -1,185 +1,153 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { TextInput, RadioInput } from "../grants/inputs";
-import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
+import { RadioInput, TextInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
-import GrantPreview from "../grants/Preview";
-import { Metadata } from "../../types";
+import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button from "./Button";
+import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
+import { publishGrant } from "../../actions/newGrant";
+import TXLoading from "./TXLoading";
 
-export interface FormInputs {
-  title: string;
-  description: string;
-  website: string;
-  chain: string;
-  wallet: string;
-  receivedFunding?: boolean;
-}
-
-type TextInputProps = {
-  label: string;
-  name: keyof Metadata;
-  value?: string;
-};
-type RadioInputProps = {
-  name: string;
-  value: boolean;
-};
-
-function ProjectForm({ existingGrantId }: { existingGrantId?: string }) {
+function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(startIPFS());
-  });
-
   const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(existingGrantId)];
+    const grantMetadata = state.grantsMetadata[Number(currentGrantId)];
     return {
-      currentGrant: grantMetadata,
-      ipfsLastFileSavedURL: state.ipfs.lastFileSavedURL,
+      id: currentGrantId,
+      loading: grantMetadata ? grantMetadata.loading : false,
+      currentGrant: grantMetadata?.metadata,
       ipfsInitialized: state.ipfs.initialized,
-      newFileSaved: state.ipfs.newFileSaved,
+      ipfsInitializationError: state.ipfs.initializationError,
+      savingFile: state.ipfs.ipfsSavingFile,
+      lastFileSaved: state.ipfs.lastFileSavedURL,
+      txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);
 
-  const defaultTextInputs: TextInputProps[] = [
-    {
-      label: "Title",
-      name: "title",
-    },
-    {
-      label: "Description",
-      name: "description",
-    },
-    {
-      label: "Website",
-      name: "website",
-    },
-    {
-      label: "Chain",
-      name: "chain",
-    },
-    {
-      label: "Wallet",
-      name: "wallet",
-    },
-  ];
-
-  const defaultRadioInputs: RadioInputProps[] = [
-    {
-      name: "receivedFunding",
-      value: true,
-    },
-    {
-      name: "receivedFunding",
-      value: false,
-    },
-  ];
-
-  const [formInputs, setFormInputs] = useState<FormInputs>({
+  const [disabled, setDisabled] = useState(true);
+  const [formInputs, setFormInputs] = useState({
     title: "",
     description: "",
     website: "",
     chain: "",
     wallet: "",
-    receivedFunding: false,
+    receivedFunding: "No",
   });
-
-  const [disabled, setDisabled] = useState(true);
-  const [radioInputs, setRadioInputs] = useState(defaultRadioInputs);
-  const [textInputs, setTextInputs] = useState(defaultTextInputs);
-
-  const saveGrantDataToIPFS = () => {
-    dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
+  const publishProject = async () => {
+    await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
+    dispatch(publishGrant(currentGrantId));
   };
 
-  function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
-    let value: boolean | string;
-    if (event.target.name === "receivedFunding") {
-      value = event.target.value === "true";
-    } else {
-      value = event.target.value;
-    }
-
-    const inputs = textInputs.map((input: TextInputProps) => {
-      const currentInput = input;
-      if (
-        input.name !== event.target.name ||
-        event.target.name === "receivedFunding"
-      ) {
-        return input;
-      }
-
-      currentInput.value = event.target.value;
-      return currentInput;
-    });
-    setTextInputs(inputs);
-    setFormInputs({ ...formInputs, [event.target.name]: value });
-  }
-
-  useEffect(() => {
-    if (props?.currentGrant?.metadata) {
-      const { metadata } = props.currentGrant;
-      const existingTextInputs = textInputs.map((input: TextInputProps) => {
-        if (input.name === "receivedFunding" || input.name === "id") {
-          return input;
-        }
-        return {
-          ...input,
-          value: metadata[input.name],
-        };
-      });
-
-      setTextInputs(existingTextInputs);
-    }
-  }, []);
-
-  useEffect(() => {
-    const validValues = Object.values(formInputs).filter((value) => {
-      if (typeof value === "string") {
-        return value.length > 0;
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFormInputs({ ...formInputs, [e.target.name]: value });
+    const validValues = Object.values(formInputs).filter((input) => {
+      if (typeof input === "string") {
+        return input.length > 0;
       }
       return false;
     });
-    setDisabled(validValues.length !== 5 || !props.ipfsInitialized);
-    setRadioInputs(defaultRadioInputs);
-  }, [formInputs, props.ipfsInitialized]);
 
-  if (props.newFileSaved) {
-    // FIXME: we could check something like state.newGrant.saved to see if it has been saved
-    return <GrantPreview grant={formInputs} />;
+    console.log({ validValues });
+    setDisabled(validValues.length < 5 || !props.ipfsInitialized);
+  };
+
+  // TODO: feels like this could be extracted to a component
+  useEffect(() => {
+    dispatch(startIPFS());
+    if (props.ipfsInitialized && currentGrantId) {
+      dispatch(fetchGrantData(Number(currentGrantId)));
+    }
+    const { currentGrant } = props;
+    if (currentGrant) {
+      setFormInputs({
+        title: currentGrant.title,
+        description: currentGrant.description,
+        website: currentGrant.website,
+        chain: currentGrant.chain,
+        wallet: currentGrant.wallet,
+        receivedFunding: currentGrant.receivedFunding,
+      });
+    }
+  }, [dispatch, props.ipfsInitialized, currentGrantId, props.currentGrant]);
+
+  if (props.ipfsInitializationError) {
+    return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
+  if (!props.ipfsInitialized) {
+    return <>Initializing ipfs...</>;
+  }
+
+  if (props.loading && props.currentGrant === undefined) {
+    return <>Loading grant data from IPFS... </>;
+  }
+  // /TODO
+
   return (
-    <form className="w-1/2" onSubmit={(e) => e.preventDefault()}>
-      {textInputs.map((input: TextInputProps) => (
+    <>
+      <form className="w-1/2" onSubmit={(e) => e.preventDefault()}>
         <TextInput
-          key={input.name}
-          label={input.label}
-          name={input.name}
-          value={input.value}
+          label="Title"
+          name="title"
+          value={formInputs.title}
           changeHandler={(e) => handleInput(e)}
         />
-      ))}
-      Have you raised external funding?
-      {formInputs.receivedFunding ? "Yes" : "No"}
-      {radioInputs.map((input: RadioInputProps) => (
+        <TextInput
+          label="Description"
+          name="description"
+          value={formInputs.description}
+          changeHandler={(e) => handleInput(e)}
+        />
+        <TextInput
+          label="Website"
+          name="website"
+          value={formInputs.website}
+          changeHandler={(e) => handleInput(e)}
+        />
+        <TextInput
+          label="Chain"
+          name="chain"
+          value={formInputs.chain}
+          changeHandler={(e) => handleInput(e)}
+        />
+        <TextInput
+          label="Wallet"
+          name="wallet"
+          value={formInputs.wallet}
+          changeHandler={(e) => handleInput(e)}
+        />
+        Have you raised external funding?
+        {formInputs.receivedFunding}
         <RadioInput
-          key={`radio-${input.value}`}
-          name={input.name}
-          value={input.value}
+          name="receivedFunding"
+          value="Yes"
+          currentValue={formInputs.receivedFunding}
           changeHandler={(e) => handleInput(e)}
         />
-      ))}
-      <Button
-        disabled={disabled}
-        variant="outline"
-        onClick={saveGrantDataToIPFS}
-      >
-        Save Data
-      </Button>
-    </form>
+        <RadioInput
+          name="receivedFunding"
+          value="No"
+          currentValue={formInputs.receivedFunding}
+          changeHandler={(e) => handleInput(e)}
+        />
+        <Button disabled={disabled} variant="outline" onClick={publishProject}>
+          Save Data
+        </Button>
+      </form>
+      {props.savingFile && !props.lastFileSaved && (
+        <p>Your file is being saved to IPFS</p>
+      )}
+      {!props.savingFile && props.lastFileSaved && (
+        <>
+          <p>
+            Your file has being saved to IPFS and can be accessed here:{" "}
+            {props.lastFileSaved}
+          </p>
+          {props.txStatus && <TXLoading status={props.txStatus} />}
+        </>
+      )}
+    </>
   );
 }
 
