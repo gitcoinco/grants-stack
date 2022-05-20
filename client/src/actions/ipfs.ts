@@ -19,17 +19,29 @@ export interface IPFSInitializedAction {
   type: typeof IPFS_INITIALIZED;
 }
 
+export const IPFS_SAVING_FILE = "IPFS_SAVING_FILE";
+export interface IPFSSavingFile {
+  type: typeof IPFS_SAVING_FILE;
+}
+
 export const IPFS_FILE_SAVED = "IPFS_FILE_SAVED";
 export interface IPFSFileSavedAction {
   type: typeof IPFS_FILE_SAVED;
   url: string;
 }
 
+export const RESET_FILE_STATUS = "RESET_FILE_STATUS";
+export interface IPFSResetFileStatus {
+  type: typeof RESET_FILE_STATUS;
+}
+
 export type IPFSActions =
   | IPFSInitializingAction
   | IPFSInitializationErrorAction
   | IPFSInitializedAction
-  | IPFSFileSavedAction;
+  | IPFSFileSavedAction
+  | IPFSSavingFile
+  | IPFSResetFileStatus;
 
 const ipfsInitializing = (): IPFSActions => ({
   type: IPFS_INITIALIZING,
@@ -47,6 +59,14 @@ const ipfsInitialized = (): IPFSActions => ({
 const ipfsFileSaved = (url: string): IPFSActions => ({
   type: IPFS_FILE_SAVED,
   url,
+});
+
+const savingFile = (): IPFSActions => ({
+  type: IPFS_SAVING_FILE,
+});
+
+export const resetFileStatus = (): IPFSActions => ({
+  type: RESET_FILE_STATUS,
 });
 
 export const startIPFS =
@@ -83,6 +103,7 @@ export const startIPFS =
 
 export const saveFileToIPFS =
   (path: string, content: string) => async (dispatch: Dispatch) => {
+    dispatch(savingFile());
     if (global.ipfs === undefined) {
       return;
     }
