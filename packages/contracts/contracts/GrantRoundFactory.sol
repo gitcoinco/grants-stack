@@ -26,12 +26,26 @@ contract GrantRoundFactory is Ownable {
   }
 
   function create(
+    IVote _votingContract,
+    uint256 _grantApplicationsStartTime,
+    uint256 _roundStartTime,
+    uint256 _roundEndTime,
     IERC20 _token,
     string calldata _metaPtr,
     address[] calldata _roundOperators
   ) external returns (address) {
+
     address clone = Clones.clone(grantRoundContract);
-    GrantRoundImplementation(clone).initialize(_token, _metaPtr, _roundOperators);
+
+    GrantRoundImplementation(clone).initialize(
+      _votingContract,
+      _grantApplicationsStartTime,
+      _roundStartTime,
+      _roundEndTime,
+      _token,
+      _metaPtr,
+      _roundOperators
+    );
 
     emit GrantRoundCreated(clone);
 
