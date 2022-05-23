@@ -20,16 +20,17 @@ contract BulkVote is IVote, ReentrancyGuard {
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    IERC20 indexed token,         // voting token
+    IERC20  token,                // voting token
     uint256 amount,               // voting amount
     address indexed grantAddress, // grant address
-    address indexed voter         // voter address
+    address indexed voter,        // voter address
+    address indexed grantRoundAddress    // grant round address
   );
 
   // --- Core methods ---
 
   /**
-   * @notice Instantiates a new QFVote
+   * @notice Instantiates a new BulkVote
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
    */
@@ -38,8 +39,8 @@ contract BulkVote is IVote, ReentrancyGuard {
     uint256 _roundEndTime
   ) {
 
-    require(_roundStartTime >= block.timestamp, "QFVote: Start time has already passed");
-    require(_roundStartTime < _roundEndTime , "QFVote: End time must be after start time");
+    require(_roundStartTime >= block.timestamp, "BulkVote: Start time has already passed");
+    require(_roundStartTime < _roundEndTime , "BulkVote: End time must be after start time");
 
     roundStartTime = _roundStartTime;
     roundEndTime = _roundEndTime;
@@ -56,10 +57,10 @@ contract BulkVote is IVote, ReentrancyGuard {
    *
    * @param _votes list of votes
    */
-  function vote(Vote[] calldata _votes) public override nonReentrant {
+  function vote(Vote[] calldata _votes, address grantRoundAddress) public override nonReentrant {
 
-    require(block.timestamp >= roundStartTime, "QFVote: Round has not started");
-    require(block.timestamp <= roundEndTime, "QFVote: Round has ended");
+    require(block.timestamp >= roundStartTime, "BulkVote: Round has not started");
+    require(block.timestamp <= roundEndTime, "BulkVote: Round has ended");
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < _votes.length; i++) {
@@ -77,7 +78,8 @@ contract BulkVote is IVote, ReentrancyGuard {
         IERC20(_votes[i].token),
         _votes[i].amount,
         _votes[i].grantAddress,
-        msg.sender
+        msg.sender,
+        grantRoundAddress
       );
     }
 

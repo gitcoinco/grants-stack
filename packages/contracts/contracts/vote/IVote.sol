@@ -20,5 +20,5 @@ interface IVote {
    *
    * @param _votes list of votes
    */
-  function vote(Vote[] calldata _votes) external;
+  function vote(Vote[] calldata _votes, address grantRoundAddress) external;
 }

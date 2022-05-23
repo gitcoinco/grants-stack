@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 /// @notice Vote object
 struct Vote {
-  address token;          // voting token
-  uint256 amount;         // voting amount
-  address grantAddress;   // voter address
+  address token;              // voting token
+  uint256 amount;             // voting amount
+  address grantAddress;       // voter address
 }
