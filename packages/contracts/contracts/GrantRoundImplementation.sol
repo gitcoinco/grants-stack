@@ -98,12 +98,14 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   }
 
   // @notice Update metaPtr (only by ROUND_OPERATOR_ROLE)
+  /// @param _newMetaPtr new metaPtr
   function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
     emit MetadataUpdated(metaPtr, _newMetaPtr);
     metaPtr = _newMetaPtr;
   }
 
   /// @notice Update roundStartTime (only by ROUND_OPERATOR_ROLE)
+  /// @param _newRoundStartTime new roundStartTime
   function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: Start time has already passed");
@@ -114,6 +116,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   }
 
   /// @notice Update roundEndTime (only by ROUND_OPERATOR_ROLE)
+  /// @param _newRoundEndTime new roundEndTime
   function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: End time must be after start time");
@@ -124,6 +127,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   }
 
   /// @notice Update grantApplicationsStartTime (only by ROUND_OPERATOR_ROLE)
+  /// @param _newGrantApplicationsStartTime new grantApplicationsStartTime
   function updateGrantApplicationsStartTime(uint256 _newGrantApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newGrantApplicationsStartTime >= roundStartTime, "grantApplicationTime: Should be before round start time");
@@ -133,6 +137,12 @@ contract GrantRoundImplementation is AccessControl, Initializable {
 
     grantApplicationsStartTime = _newGrantApplicationsStartTime;
   }
+
+  /// @notice Invoked by voter to cast votes
+  /// @param _votes list of votes
+  function vote(Vote[] calldata _votes) public {
+    votingContract.vote(_votes);
+  }
 }
 
 /**
@@ -140,7 +150,4 @@ contract GrantRoundImplementation is AccessControl, Initializable {
  * - updateToken(IERC20 token)
  * - updateVotingContract(address _votingContract)
  * - using generic TimeUpdated event / have unique event
- *
- * Pending:
- * - donate function
  */

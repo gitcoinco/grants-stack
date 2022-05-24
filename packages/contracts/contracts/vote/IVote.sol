@@ -19,7 +19,8 @@ interface IVote {
   // --- Core methods ---
 
   /**
-   * @notice Invoked by voter to case their vote for grants during a grant round
+   * @notice Invoked by GrantRoundImplementation to allow voter to case
+   * vote for grants during a grant round.
    *
    * @dev
    * - allows contributor to do cast multiple votes which could be weighted.
