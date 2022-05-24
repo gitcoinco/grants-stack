@@ -9,7 +9,7 @@
     "compile": "yarn hardhat compile",
     "clean": "yarn hardhart clean",
     "test": "yarn hardhat test",
-    "coverage": "yarn hardhat test"
+    "coverage": "yarn hardhat coverage"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
