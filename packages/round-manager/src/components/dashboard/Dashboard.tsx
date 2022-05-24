@@ -35,7 +35,7 @@ function Dashboard() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Round Manager</h1>
+        <h1 className="text-5xl font-bold">Round Manager</h1>
 
         <div>
           <p>Web3 Flow</p>
