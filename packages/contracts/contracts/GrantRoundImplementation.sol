@@ -81,6 +81,11 @@ contract GrantRoundImplementation is AccessControl, Initializable {
     address[] memory _roundOperators
   ) public initializer {
 
+    require(_roundStartTime >= block.timestamp, "initialize: start time has already passed");
+    require(_roundEndTime > _roundStartTime, "initialize: start time should be before end time");
+    require(_roundEndTime > _grantApplicationsStartTime, "initialize: application start time should be before end time");
+
+
     votingContract = _votingContract;
     grantApplicationsStartTime = _grantApplicationsStartTime;
     roundStartTime = _roundStartTime;
@@ -108,7 +113,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   /// @param _newRoundStartTime new roundStartTime
   function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: Start time has already passed");
+    require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
 
     emit TimeUpdated("roundStartTime", roundStartTime, _newRoundStartTime);
 
@@ -119,7 +124,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   /// @param _newRoundEndTime new roundEndTime
   function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: End time must be after start time");
+    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time must be after start time");
 
     emit TimeUpdated("roundEndTime", roundEndTime, _newRoundEndTime);
 
@@ -147,7 +152,5 @@ contract GrantRoundImplementation is AccessControl, Initializable {
 
 /**
  * Debate need for
- * - updateToken(IERC20 token)
- * - updateVotingContract(address _votingContract)
  * - using generic TimeUpdated event / have unique event
  */
