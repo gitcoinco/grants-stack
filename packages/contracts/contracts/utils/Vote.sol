@@ -6,4 +6,5 @@ struct Vote {
   address token;              // voting token
   uint256 amount;             // voting amount
   address grantAddress;       // voter address
+  address voterAddress;       // voter address
 }

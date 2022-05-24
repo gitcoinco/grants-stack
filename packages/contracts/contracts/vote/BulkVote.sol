@@ -4,63 +4,40 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./IVote.sol";
 
-
+/**
+ * Allows voters to cast multiple weighted votes to grants with one transaction
+ * This is inspired from BulkCheckout documented over at:
+ * https://github.com/gitcoinco/BulkTransactions/blob/master/contracts/BulkCheckout.sol
+ *
+ * Emits event upon every transfer.
+ */
 contract BulkVote is IVote, ReentrancyGuard {
   
-  // --- Data ---
-
-  /// @notice Unix timestamp of the start of the round
-  uint256 public roundStartTime;
-
-  /// @notice Unix timestamp of the end of the round
-  uint256 public roundEndTime;
-
-
   // --- Event ---
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    IERC20  token,                // voting token
-    uint256 amount,               // voting amount
-    address indexed grantAddress, // grant address
-    address indexed voter,        // voter address
-    address indexed grantRoundAddress    // grant round address
+    IERC20  token,                    // voting token
+    uint256 amount,                   // voting amount
+    address indexed voter,            // voter address
+    address indexed grantAddress,     // grant address
+    address indexed grantRoundAddress // grant round address
   );
 
   // --- Core methods ---
 
   /**
-   * @notice Instantiates a new BulkVote
-   * @param _roundStartTime Unix timestamp of the start of the round
-   * @param _roundEndTime Unix timestamp of the end of the round
-   */
-  constructor(
-    uint256 _roundStartTime,
-    uint256 _roundEndTime
-  ) {
-
-    require(_roundStartTime >= block.timestamp, "BulkVote: Start time has already passed");
-    require(_roundStartTime < _roundEndTime , "BulkVote: End time must be after start time");
-
-    roundStartTime = _roundStartTime;
-    roundEndTime = _roundEndTime;
-  }
-
-
-  /**
-   * @notice Invoked by voter to contribute to grants
+   * @notice Invoked by GrantRoundImplementation which allows
+   * a voted to cast weighted votes to multiple grants during a
+   * grant round
    *
    * @dev
-   * - allows voters to do a bulk votes.
-   * - more contributions -> higher the gas
-   * - expected to be invoked from the round explorer
+   * - more voters -> higher the gas
+   * - his would be triggered when a voter casts their vote via round explorer
    *
    * @param _votes list of votes
    */
-  function vote(Vote[] calldata _votes, address grantRoundAddress) public override nonReentrant {
-
-    require(block.timestamp >= roundStartTime, "BulkVote: Round has not started");
-    require(block.timestamp <= roundEndTime, "BulkVote: Round has ended");
+  function vote(Vote[] calldata _votes) external override nonReentrant {
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < _votes.length; i++) {
@@ -68,7 +45,7 @@ contract BulkVote is IVote, ReentrancyGuard {
       /// @dev erc20 transfer to grant address
       SafeERC20.safeTransferFrom(
         IERC20(_votes[i].token),
-        msg.sender,
+        _votes[i].voterAddress,
         _votes[i].grantAddress,
         _votes[i].amount
       );
@@ -77,9 +54,9 @@ contract BulkVote is IVote, ReentrancyGuard {
       emit Voted(
         IERC20(_votes[i].token),
         _votes[i].amount,
+        _votes[i].voterAddress,
         _votes[i].grantAddress,
-        msg.sender,
-        grantRoundAddress
+        msg.sender
       );
     }
 

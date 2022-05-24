@@ -10,8 +10,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "./vote/IVote.sol";
 
+import "./utils/MetaPtr.sol";
+
 /**
- * @notice Contract deployed per Grant Round
+ * @notice Contract deployed per Grant Round which would managed by
+ * a group of ROUND_OPERATOR via the GrantRoundFactory
+ *
  */
 contract GrantRoundImplementation is AccessControl, Initializable {
 
@@ -24,8 +28,19 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   /// @notice round operator role
   bytes32 public constant ROUND_OPERATOR_ROLE = keccak256("ROUND_OPERATOR");
 
+
+  // --- Events ---
+
+  /// @notice Emitted when a grant round metadata pointer is updated
+  event MetadataUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
+
+  /// @notice Emitted when a grant round timings are updated
+  event TimeUpdated(string typeOfTime, uint256 oldTime, uint256 newTime);
+
+
   // --- Data ---
 
+  /// @notice Voting Contract Address
   IVote public votingContract;
 
   /// @notice Unix timestamp after where grants can apply
@@ -41,7 +56,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
   IERC20 public token;
 
   /// @notice URL pointing to grant round metadata (for off-chain use)
-  string public metaPtr;
+  MetaPtr public metaPtr;
 
 
   // --- Core methods ---
@@ -62,7 +77,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
     uint256 _roundStartTime,
     uint256 _roundEndTime,
     IERC20 _token,
-    string memory _metaPtr,
+    MetaPtr memory _metaPtr,
     address[] memory _roundOperators
   ) public initializer {
 
@@ -82,5 +97,50 @@ contract GrantRoundImplementation is AccessControl, Initializable {
     }
   }
 
-  // METHODS TO UPDATE VARIABLE
+  // @notice Update metaPtr (only by ROUND_OPERATOR_ROLE)
+  function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+    emit MetadataUpdated(metaPtr, _newMetaPtr);
+    metaPtr = _newMetaPtr;
+  }
+
+  /// @notice Update roundStartTime (only by ROUND_OPERATOR_ROLE)
+  function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+
+    require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: Start time has already passed");
+
+    emit TimeUpdated("roundStartTime", roundStartTime, _newRoundStartTime);
+
+    roundStartTime = _newRoundStartTime;
+  }
+
+  /// @notice Update roundEndTime (only by ROUND_OPERATOR_ROLE)
+  function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+
+    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: End time must be after start time");
+
+    emit TimeUpdated("roundEndTime", roundEndTime, _newRoundEndTime);
+
+    roundEndTime = _newRoundEndTime;
+  }
+
+  /// @notice Update grantApplicationsStartTime (only by ROUND_OPERATOR_ROLE)
+  function updateGrantApplicationsStartTime(uint256 _newGrantApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+
+    require(_newGrantApplicationsStartTime >= roundStartTime, "grantApplicationTime: Should be before round start time");
+    require(_newGrantApplicationsStartTime < roundEndTime, "grantApplicationTime: Should be before round end time");
+
+    emit TimeUpdated("grantApplicationsStartTime", grantApplicationsStartTime, _newGrantApplicationsStartTime);
+
+    grantApplicationsStartTime = _newGrantApplicationsStartTime;
+  }
 }
+
+/**
+ * Debate need for
+ * - updateToken(IERC20 token)
+ * - updateVotingContract(address _votingContract)
+ * - using generic TimeUpdated event / have unique event
+ *
+ * Pending:
+ * - donate function
+ */

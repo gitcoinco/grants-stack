@@ -3,22 +3,31 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+
 import "../utils/Vote.sol";
 
+/**
+ * @notice Defines the interface for voting algorithms on grants
+ * within a round. Any new voting algorithm would be expected to
+ * implement this interface.
+ * Every IVote implementation would ideally be deployed once per chain
+ * and be invoked by the GrantRoundImplementation contract
+ *
+ */
 interface IVote {
-  
+
   // --- Core methods ---
 
   /**
-   * @notice Invoked by contributor to contribute to grants
+   * @notice Invoked by voter to case their vote for grants during a grant round
    *
    * @dev
-   * - allows contributor to do a bulk support.
-   * - more contributions -> higher the gas
-   * - can be invoked only when round is LIVE
-   * - expected to be invoked from the round explorer
+   * - allows contributor to do cast multiple votes which could be weighted.
+   * - should be invoked by GrantRoundImplementation contract
+   * - ideally IVote implementation should emit events after a vote is cast
+   * - this would be triggered when a voter casts their vote via round explorer
    *
    * @param _votes list of votes
    */
-  function vote(Vote[] calldata _votes, address grantRoundAddress) external;
+  function vote(Vote[] calldata _votes) external;
 }
