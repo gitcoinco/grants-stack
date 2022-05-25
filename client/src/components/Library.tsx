@@ -35,13 +35,13 @@ function Library() {
           onClick={() => console.log("button")}
           variant={ButtonVariants.outlineDanger}
         >
-          <Plus color={colors["danger-background"]} /> Outline Logo
+          <Plus color={colors["danger-background"]} /> Danger Outline
         </Button>
         <Button
           onClick={() => console.log("button")}
           variant={ButtonVariants.danger}
         >
-          <Plus color={colors["quaternary-text"]} /> Outline Logo
+          Danger
         </Button>
       </div>
     </div>
