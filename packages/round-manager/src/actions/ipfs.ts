@@ -1,0 +1,118 @@
+import { create as IPFSCreate } from "ipfs-core";
+import { global } from "../global";
+import { RootState } from "../reducers";
+import { AppDispatch } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
+
+export const IPFS_INITIALIZING = "IPFS_INITIALIZING";
+export interface IPFSInitializingAction {
+  type: typeof IPFS_INITIALIZING;
+}
+
+export const IPFS_INITIALIZATION_ERROR = "IPFS_INITIALIZATION_ERROR";
+export interface IPFSInitializationErrorAction {
+  type: typeof IPFS_INITIALIZATION_ERROR;
+  error: any;
+}
+
+export const IPFS_INITIALIZED = "IPFS_INITIALIZED";
+export interface IPFSInitializedAction {
+  type: typeof IPFS_INITIALIZED;
+}
+
+export const IPFS_SAVING_FILE = "IPFS_SAVING_FILE";
+export interface IPFSSavingFile {
+  type: typeof IPFS_SAVING_FILE;
+}
+
+export const IPFS_FILE_SAVED = "IPFS_FILE_SAVED";
+export interface IPFSFileSavedAction {
+  type: typeof IPFS_FILE_SAVED;
+  url: string;
+}
+
+export const RESET_FILE_STATUS = "RESET_FILE_STATUS";
+export interface IPFSResetFileStatus {
+  type: typeof RESET_FILE_STATUS;
+}
+
+export type IPFSActions =
+  | IPFSInitializingAction
+  | IPFSInitializationErrorAction
+  | IPFSInitializedAction
+  | IPFSFileSavedAction
+  | IPFSSavingFile
+  | IPFSResetFileStatus;
+
+const ipfsInitializing = (): IPFSActions => ({
+  type: IPFS_INITIALIZING,
+});
+
+const ipfsInitializationError = (error: any): IPFSActions => ({
+  type: IPFS_INITIALIZATION_ERROR,
+  error,
+});
+
+const ipfsInitialized = (): IPFSActions => ({
+  type: IPFS_INITIALIZED,
+});
+
+const ipfsFileSaved = (url: string): IPFSActions => ({
+  type: IPFS_FILE_SAVED,
+  url,
+});
+
+const savingFile = (): IPFSActions => ({
+  type: IPFS_SAVING_FILE,
+});
+
+export const resetFileStatus = (): IPFSActions => ({
+  type: RESET_FILE_STATUS,
+});
+
+export const startIPFS =
+  () => async (dispatch = useAppDispatch(), getState: () => RootState) => {
+    const state = getState();
+    if (state.ipfs.initializing || state.ipfs.initialized) {
+      return;
+    }
+
+    if (global.ipfs !== undefined) {
+      console.log("IPFS already started");
+      return;
+    }
+
+    dispatch(ipfsInitializing());
+
+    try {
+      console.time("IPFS started");
+      global.ipfs = await IPFSCreate();
+      console.timeEnd("IPFS started");
+      dispatch(ipfsInitialized());
+    } catch (error) {
+      if (error === "LockExistsError") {
+        dispatch(ipfsInitialized());
+        return;
+      }
+
+      console.error("ipfs error:", error);
+
+      global.ipfs = undefined;
+      dispatch(ipfsInitializationError(error));
+    }
+  };
+
+export const saveFileToIPFS =
+  (path: string, content: string) => async (dispatch: AppDispatch) => {
+    dispatch(savingFile());
+    if (global.ipfs === undefined) {
+      return;
+    }
+
+    const res = await global.ipfs!.add({
+      path,
+      content,
+    });
+
+    dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+  };
