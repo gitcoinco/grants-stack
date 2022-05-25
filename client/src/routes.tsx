@@ -4,6 +4,7 @@ export const slugs = {
   grant: `/grants/:id`,
   edit: `/edit/:id`,
   newGrant: `/grants/new`,
+  components: `/components`,
 };
 
 export const rootPath = () => slugs.root;
