@@ -26,8 +26,8 @@ contract GrantRoundFactory is Ownable {
 
   // --- Event ---
 
-  /// @notice Emitted when a GrantRound contract is upgradeds
-  event GrantRoundContractUpgraded(address grantRoundAddress);
+  /// @notice Emitted when a GrantRound contract is updated
+  event GrantRoundContractUpdated(address grantRoundAddress);
 
   /// @notice Emitted when a new GrantRound is created
   event GrantRoundCreated(address grantRoundAddress);
@@ -44,7 +44,7 @@ contract GrantRoundFactory is Ownable {
   function updateGrantRoundContract(address _grantRoundContract) public onlyOwner {
     grantRoundContract = _grantRoundContract;
 
-    emit GrantRoundContractUpgraded(_grantRoundContract);
+    emit GrantRoundContractUpdated(_grantRoundContract);
   }
 
   /**

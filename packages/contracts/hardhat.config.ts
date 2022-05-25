@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
@@ -8,6 +9,13 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 
 dotenv.config();
+
+const chainIds = {
+  hardhat: 31337,
+  mainnet: 1,
+  goerli: 5,
+};
+
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -19,17 +27,43 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+
+let deployPrivateKey = process.env.DEPLOYER_PRIVATE_KEY as string;
+if (!deployPrivateKey) {
+  console.warn("Please set your DEPLOYER_PRIVATE_KEY in a .env file");
+  deployPrivateKey =
+    "0x0000000000000000000000000000000000000000000000000000000000000001";
+}
+
+
+const infuraIdKey = process.env.INFURA_ID as string;
+if (!infuraIdKey) {
+  console.warn("Please set your INFURA_ID in a .env file");
+}
+
+
+function createTestnetConfig(
+  network: keyof typeof chainIds
+): NetworkUserConfig {
+  const url: string = `https://${network}.infura.io/v3/${infuraIdKey}`;
+  return {
+    accounts: [deployPrivateKey],
+    chainId: chainIds[network],
+    allowUnlimitedContractSize: true,
+    url,
+  };
+}
+
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    ropsten: {
-      url: process.env.ROPSTEN_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    mainnet: {
+      url: `https://mainnet.infura.io/v3/${infuraIdKey}`,
+      chainId: chainIds['mainnet'],
+      accounts: [deployPrivateKey]
     },
+    goerli: createTestnetConfig("goerli")
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
