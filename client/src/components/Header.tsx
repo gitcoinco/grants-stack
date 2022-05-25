@@ -4,7 +4,7 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
 import { initializeWeb3 } from "../actions/web3";
 import { grantsPath, newGrantPath } from "../routes";
-import Button from "./base/Button";
+import Button, { ButtonVariants } from "./base/Button";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ export default function Header() {
         />
       </div>
       {!props.web3Initialized && (
-        <Button variant="outline" onClick={() => connectHandler}>
+        <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
           Connect Wallet
         </Button>
       )}
@@ -48,10 +48,16 @@ export default function Header() {
             </p>
           </div>
           <div>
-            <Button variant="outline" onClick={() => connectHandler}>
+            <Button
+              variant={ButtonVariants.outline}
+              onClick={() => connectHandler}
+            >
               <Link to={grantsPath()}>Grants</Link>
             </Button>
-            <Button variant="outline" onClick={() => connectHandler}>
+            <Button
+              variant={ButtonVariants.outline}
+              onClick={() => connectHandler}
+            >
               <Link to={newGrantPath()}>Create a Grant</Link>
             </Button>
           </div>
@@ -59,7 +65,10 @@ export default function Header() {
       )}
       {!props.web3Initialized && (
         <div>
-          <Button variant="outline" onClick={() => connectHandler}>
+          <Button
+            variant={ButtonVariants.outline}
+            onClick={() => connectHandler}
+          >
             CONNECT
           </Button>
         </div>

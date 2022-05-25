@@ -3,7 +3,7 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RadioInput, TextInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import Button from "./Button";
+import Button, { ButtonVariants } from "./Button";
 import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
 import { publishGrant } from "../../actions/newGrant";
 import TXLoading from "./TXLoading";
@@ -84,7 +84,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   // /TODO
 
   return (
-    <div className="border border-solid border-dark-primary rounded text-dark-primary p-4">
+    <div className="border border-solid border-secondary-background rounded text-primary-text p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         <TextInput
           label="Title"
@@ -130,7 +130,11 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           currentValue={formInputs.receivedFunding}
           changeHandler={(e) => handleInput(e)}
         />
-        <Button disabled={disabled} variant="outline" onClick={publishProject}>
+        <Button
+          disabled={disabled}
+          variant={ButtonVariants.outline}
+          onClick={publishProject}
+        >
           Save Data
         </Button>
       </form>

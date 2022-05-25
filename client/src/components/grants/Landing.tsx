@@ -1,11 +1,18 @@
-import { useSelector } from "react-redux";
-import Button from "../base/Button";
+import { useSelector, useDispatch } from "react-redux";
+import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
+import { initializeWeb3 } from "../../actions/web3";
 
 function Landing() {
+  const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Initialized: state.web3.initialized,
+    web3Error: state.web3.error,
   }));
+
+  const connectHandler = () => {
+    dispatch(initializeWeb3());
+  };
 
   return (
     <div className="container mx-auto flex flex-col h-full justify-center">
@@ -16,9 +23,17 @@ function Landing() {
       </p>
       {!props.web3Initialized && (
         <div className="mt-8">
-          <Button onClick={() => console.log("click")} variant="outline">
+          <Button
+            onClick={() => connectHandler()}
+            variant={ButtonVariants.primary}
+          >
             Connect Wallet
           </Button>
+          {props.web3Error !== undefined && (
+            <div>
+              <div>{props.web3Error}</div>
+            </div>
+          )}
         </div>
       )}
     </div>
