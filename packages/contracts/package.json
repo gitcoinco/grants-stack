@@ -9,7 +9,13 @@
     "compile": "yarn hardhat compile",
     "clean": "yarn hardhart clean",
     "test": "yarn hardhat test",
-    "coverage": "yarn hardhat coverage"
+    "coverage": "yarn hardhat coverage",
+
+    "// round-deploy-scripts": "//-- Round deploy Script --//",
+    "goerli-deploy-round": "yarn hardhat run scripts/deployGrantRoundImplementation.ts --network goerli",
+    "goerli-deploy-factory": "yarn hardhat run scripts/deployGrantRoundFactory.ts --network goerli",
+    "goerli-deploy-updateRound": "yarn hardhat run scripts/updateGrantRoundImplementation.ts --network goerli"
+
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
