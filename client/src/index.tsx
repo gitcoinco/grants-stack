@@ -26,6 +26,7 @@ import Project from "./components/grants/Show";
 import NewProject from "./components/grants/New";
 import EditProject from "./components/grants/Edit";
 import Landing from "./components/grants/Landing";
+import ComponentLibrary from "./components/Library";
 import { startIPFS } from "./actions/ipfs";
 
 const logger: Middleware =
@@ -65,6 +66,7 @@ root.render(
             <Route path={slugs.grant} element={<Project />} />
             <Route path={slugs.newGrant} element={<NewProject />} />
             <Route path={slugs.edit} element={<EditProject />} />
+            <Route path={slugs.components} element={<ComponentLibrary />} />
           </Routes>
         </Layout>
       </ReduxRouter>
