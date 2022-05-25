@@ -10,13 +10,9 @@ function Landing() {
   return (
     <div className="container mx-auto flex flex-col h-full justify-center">
       <h1 className="mb-8">Grant Hub</h1>
-      <h3 className="mb-4">
-        The one place to manage your project across multiple grants programs.
-      </h3>
       <p>
-        Grant owners can create and manage grants across multiple rounds. Grants
-        rounds are tied to a deep, flexible registry to easily find and
-        distribute capital across the most impactful projects.
+        Manage projects that generate maximum impact and receive funds matching
+        from Gitcoin, partner DAO, or independent grant program rounds.
       </p>
       {!props.web3Initialized && (
         <div className="mt-8">
