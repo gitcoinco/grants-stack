@@ -14,7 +14,11 @@
     "// round-deploy-scripts": "//-- Round deploy Script --//",
     "goerli-deploy-round": "yarn hardhat run scripts/deployGrantRoundImplementation.ts --network goerli",
     "goerli-deploy-factory": "yarn hardhat run scripts/deployGrantRoundFactory.ts --network goerli",
-    "goerli-deploy-updateRound": "yarn hardhat run scripts/updateGrantRoundImplementation.ts --network goerli"
+    "goerli-deploy-update-round": "yarn hardhat run scripts/updateGrantRoundImplementation.ts --network goerli",
+    "goerli-deploy-create-round": "yarn hardhat run scripts/createGrantRound.ts --network goerli",
+
+    "// vote-deploy-scripts": "//-- Voting deploy Script --//",
+    "goerli-deploy-bulk-vote": "yarn hardhat run scripts/deployBulkVote.ts --network goerli"
 
   },
   "devDependencies": {
