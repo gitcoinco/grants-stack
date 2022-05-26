@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { grantPath } from "../../routes";
-import { loadProjects, unloadProjects } from "../../actions/grants";
+import { loadProjects, unloadProjects } from "../../actions/projects";
 
 function GrantsList() {
   const dispatch = useDispatch();

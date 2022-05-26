@@ -3,7 +3,7 @@ import {
   PROJECTS_LOADING,
   PROJECTS_LOADED,
   PROJECTS_UNLOADED,
-} from "../actions/grants";
+} from "../actions/projects";
 
 export interface ProjectsState {
   loading: boolean;

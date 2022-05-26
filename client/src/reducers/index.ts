@@ -6,7 +6,7 @@ import {
 import history from "../history";
 import { Web3State, web3Reducer } from "./web3";
 import { IPFSState, ipfsReducer } from "./ipfs";
-import { ProjectsState, projectsReducer } from "./grants";
+import { ProjectsState, projectsReducer } from "./projects";
 import { NewGrantState, newGrantReducer } from "./newGrant";
 import { GrantsMetadataState, grantsMetadataReducer } from "./grantsMetadata";
 
