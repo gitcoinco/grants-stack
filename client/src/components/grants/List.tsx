@@ -4,23 +4,23 @@ import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { grantPath } from "../../routes";
-import { loadGrants, unloadGrants } from "../../actions/grants";
+import { loadProjects, unloadProjects } from "../../actions/grants";
 
 function GrantsList() {
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
-      loading: state.grants.loading,
-      grants: state.grants.grants,
+      loading: state.projects.loading,
+      grants: state.projects.projects,
       chainID: state.web3.chainID,
     }),
     shallowEqual
   );
 
   useEffect(() => {
-    dispatch(loadGrants());
+    dispatch(loadProjects());
     return () => {
-      dispatch(unloadGrants());
+      dispatch(unloadProjects());
     };
   }, [dispatch]);
 

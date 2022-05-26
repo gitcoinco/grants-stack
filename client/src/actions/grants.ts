@@ -5,43 +5,43 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 
-export const GRANTS_LOADING = "GRANTS_LOADING";
-export interface GrantsLoadingAction {
-  type: typeof GRANTS_LOADING;
+export const PROJECTS_LOADING = "PROJECTS_LOADING";
+interface ProjectsLoadingAction {
+  type: typeof PROJECTS_LOADING;
 }
 
-export const GRANTS_LOADED = "GRANTS_LOADED";
-export interface GrantsLoadedAction {
-  type: typeof GRANTS_LOADED;
-  grants: number[];
+export const PROJECTS_LOADED = "PROJECTS_LOADED";
+interface ProjectsLoadedAction {
+  type: typeof PROJECTS_LOADED;
+  projects: number[];
 }
 
-export const GRANTS_UNLOADED = "GRANTS_UNLOADED";
-export interface GrantsUnloadedAction {
-  type: typeof GRANTS_UNLOADED;
+export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
+export interface ProjectsUnloadedAction {
+  type: typeof PROJECTS_UNLOADED;
 }
 
-export type GrantsActions =
-  | GrantsLoadingAction
-  | GrantsLoadedAction
-  | GrantsUnloadedAction;
+export type ProjectsActions =
+  | ProjectsLoadingAction
+  | ProjectsLoadedAction
+  | ProjectsUnloadedAction;
 
-const grantsLoading = () => ({
-  type: GRANTS_LOADING,
+const projectsLoading = () => ({
+  type: PROJECTS_LOADING,
 });
 
-const grantsLoaded = (grants: number[]) => ({
-  type: GRANTS_LOADED,
-  grants,
+const projectsLoaded = (projects: number[]) => ({
+  type: PROJECTS_LOADED,
+  projects,
 });
 
-const grantsUnload = () => ({
-  type: GRANTS_UNLOADED,
+const projectsUnload = () => ({
+  type: PROJECTS_UNLOADED,
 });
 
-export const loadGrants =
+export const loadProjects =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(grantsLoading());
+    dispatch(projectsLoading());
 
     const state = getState();
     const { chainID } = state.web3;
@@ -59,7 +59,7 @@ export const loadGrants =
     const projectIds = res.map((x: any) =>
       BigNumber.from(x.args[1]).toNumber()
     );
-    dispatch(grantsLoaded(projectIds));
+    dispatch(projectsLoaded(projectIds));
   };
 
-export const unloadGrants = () => grantsUnload();
+export const unloadProjects = () => projectsUnload();

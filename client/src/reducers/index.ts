@@ -6,7 +6,7 @@ import {
 import history from "../history";
 import { Web3State, web3Reducer } from "./web3";
 import { IPFSState, ipfsReducer } from "./ipfs";
-import { GrantsState, grantsReducer } from "./grants";
+import { ProjectsState, projectsReducer } from "./grants";
 import { NewGrantState, newGrantReducer } from "./newGrant";
 import { GrantsMetadataState, grantsMetadataReducer } from "./grantsMetadata";
 
@@ -14,7 +14,7 @@ export interface RootState {
   router: ReduxRouterState;
   web3: Web3State;
   ipfs: IPFSState;
-  grants: GrantsState;
+  projects: ProjectsState;
   newGrant: NewGrantState;
   grantsMetadata: GrantsMetadataState;
 }
@@ -24,7 +24,7 @@ export const createRootReducer = () =>
     router: createRouterReducer(history),
     web3: web3Reducer,
     ipfs: ipfsReducer,
-    grants: grantsReducer,
+    projects: projectsReducer,
     newGrant: newGrantReducer,
     grantsMetadata: grantsMetadataReducer,
   });

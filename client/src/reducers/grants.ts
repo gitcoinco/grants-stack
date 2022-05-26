@@ -1,48 +1,48 @@
 import {
-  GrantsActions,
-  GRANTS_LOADING,
-  GRANTS_LOADED,
-  GRANTS_UNLOADED,
+  ProjectsActions,
+  PROJECTS_LOADING,
+  PROJECTS_LOADED,
+  PROJECTS_UNLOADED,
 } from "../actions/grants";
 
-export interface GrantsState {
+export interface ProjectsState {
   loading: boolean;
-  grants: number[];
+  projects: number[];
 }
 
 const initialState = {
   loading: false,
-  grants: [],
+  projects: [],
 };
 
-export const grantsReducer = (
-  state: GrantsState = initialState,
-  action: GrantsActions
-): GrantsState => {
+export const projectsReducer = (
+  state: ProjectsState = initialState,
+  action: ProjectsActions
+): ProjectsState => {
   switch (action.type) {
-    case GRANTS_LOADING: {
+    case PROJECTS_LOADING: {
       return {
         ...state,
         loading: true,
-        grants: [],
+        projects: [],
       };
     }
 
-    case GRANTS_LOADED: {
-      const { grants } = action;
+    case PROJECTS_LOADED: {
+      const { projects } = action;
 
       return {
         ...state,
         loading: false,
-        grants,
+        projects,
       };
     }
 
-    case GRANTS_UNLOADED: {
+    case PROJECTS_UNLOADED: {
       return {
         ...state,
         loading: false,
-        grants: [],
+        projects: [],
       };
     }
     default: {
