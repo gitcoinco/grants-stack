@@ -83,6 +83,10 @@ contract ProjectRegistry {
         emit ProjectCreated(msg.sender, projectID);
     }
 
+    // updateProject (projectID, recipient, metadadata)
+    // addOwner
+    // removeOwner
+
     // Public functions
 
     /**
