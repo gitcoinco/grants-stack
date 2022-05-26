@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
 import { ethers, BigNumber } from "ethers";
 import { RootState } from "../reducers";
-import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
+import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 
@@ -49,8 +49,8 @@ export const loadGrants =
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider!.getSigner();
     const contract = new ethers.Contract(
-      addresses.grantsRegistry,
-      GrantsRegistryABI,
+      addresses.projectRegistry,
+      ProjectRegistryABI,
       signer
     );
 

@@ -4,7 +4,7 @@ import { RootState } from "../reducers";
 import { Metadata } from "../types";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
-import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
+import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -52,15 +52,15 @@ export const fetchGrantData =
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider?.getSigner();
 
-    const grantRegistry = new ethers.Contract(
-      addresses.grantsRegistry,
-      GrantsRegistryABI,
+    const projectRegistry = new ethers.Contract(
+      addresses.projectRegistry,
+      ProjectRegistryABI,
       signer
     );
 
     let grant: { metadata: string };
     try {
-      grant = await grantRegistry.grants(id);
+      grant = await projectRegistry.grants(id);
     } catch (e) {
       // FIXME: dispatch contract interaction error
       console.log(e);

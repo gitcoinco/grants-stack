@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import GrantsRegistryABI from "../contracts/abis/GrantsRegistry.json";
+import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { NewGrant } from "../reducers/newGrant";
 
@@ -58,19 +58,19 @@ export const publishGrant =
       const { chainID } = state.web3;
       const addresses = addressesByChainID(chainID!);
       const signer = global.web3Provider?.getSigner();
-      const grantRegistry = new ethers.Contract(
-        addresses.grantsRegistry,
-        GrantsRegistryABI,
+      const projectRegistry = new ethers.Contract(
+        addresses.projectRegistry,
+        ProjectRegistryABI,
         signer
       );
       let projectTx;
       if (grantId) {
-        projectTx = await grantRegistry.updateMetadata(
+        projectTx = await projectRegistry.updateMetadata(
           grantId,
           state.ipfs.lastFileSavedURL
         );
       } else {
-        projectTx = await grantRegistry.createGrant(
+        projectTx = await projectRegistry.createGrant(
           state.web3.account,
           state.ipfs.lastFileSavedURL,
           state.web3.account
