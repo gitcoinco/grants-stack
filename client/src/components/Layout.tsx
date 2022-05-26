@@ -31,7 +31,7 @@ function Layout(ownProps: Props) {
       <Header />
       <main className="container mx-auto dark:bg-primary-background h-full">
         {!props.web3Error && props.web3Initialized && props.chainID && children}
-
+        {props.web3Error && <p>{props.web3Error}</p>}
         {!props.web3Initialized && <Landing />}
       </main>
     </div>
