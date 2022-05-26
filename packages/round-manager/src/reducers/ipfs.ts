@@ -13,8 +13,8 @@ import {
     initialized: boolean;
     newFileSaved: boolean;
     ipfsSavingFile: boolean;
-    initializationError: string | undefined;
-    lastFileSavedURL: string | undefined;
+    initializationError?: string;
+    lastFileSavedURL?: string;
   }
   
   const initialState: IPFSState = {
@@ -22,8 +22,6 @@ import {
     initialized: false,
     newFileSaved: false,
     ipfsSavingFile: false,
-    initializationError: undefined,
-    lastFileSavedURL: undefined,
   };
   
   export const ipfsReducer = (
@@ -77,7 +75,6 @@ import {
           ...state,
           newFileSaved: false,
           ipfsSavingFile: false,
-          lastFileSavedURL: undefined,
         };
       }
   

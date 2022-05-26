@@ -32,7 +32,6 @@ if (process.env.NODE_ENV !== "production") {
   middlewares = [...middlewares, logger];
 }
 
-
 export const store = configureStore({
   reducer: createRootReducer(),
   middleware: middlewares

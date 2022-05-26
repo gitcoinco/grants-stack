@@ -68,17 +68,17 @@ export const web3Initialized = (t: Web3Type): Web3Actions => ({
 
 export const web3ChainIDLoaded = (chainID: number): Web3Actions => ({
   type: WEB3_CHAIN_ID_LOADED,
-  chainID: chainID
+  chainID
 })
 
 export const web3AccountLoaded = (account: string): Web3Actions => ({
   type: WEB3_ACCOUNT_LOADED,
-  account: account
+  account
 })
 
 export const web3Error = (error: string): Web3Actions => ({
   type: WEB3_ERROR,
-  error: error
+  error
 })
 
 export const notWeb3Browser = (): Web3Actions => ({
