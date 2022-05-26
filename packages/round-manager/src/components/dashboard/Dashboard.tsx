@@ -24,7 +24,7 @@ function Dashboard() {
       account: state.web3.account,
       ipfsInitializing: state.ipfs.initializing,
       ipfsInitialized: state.ipfs.initialized,
-      ipfsError: state.ipfs.initializationError,
+      ipfsError: state.ipfs.error,
       ipfsSavingFile: state.ipfs.ipfsSavingFile,
       ipfsFetchingFile: state.ipfs.ipfsFetchingFile,
       lastFileSavedURL: state.ipfs.lastFileSavedURL,
@@ -90,13 +90,15 @@ function Dashboard() {
             onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => setIpfsData(e.target.value)}
             name="ipfs" rows={5} cols={50}
             placeholder="Paste data/CID to save/fetch data in IPFS here"></textarea><br />
-          <button type="button" disabled={props.ipfsSavingFile} onClick={saveToIPFSHandler}>Save to IPFS</button>&nbsp;
-          <button type="button" disabled={props.ipfsFetchingFile} onClick={fetchFromIPFSHandler}>Fetch from IPFS</button>
+          <button type="button" disabled={props.ipfsSavingFile && !props.ipfsError} onClick={saveToIPFSHandler}>Save to IPFS</button>&nbsp;
+          <button type="button" disabled={props.ipfsFetchingFile && !props.ipfsError} onClick={fetchFromIPFSHandler}>Fetch from IPFS</button>
           <br />
           <p>
             <span>IPFS url: {props.lastFileSavedURL}</span><br />
             <span>IPFS data: {props.lastFileFetched}</span>
           </p>
+          <p style={{ color: 'red' }}>{ props.ipfsError }</p>
+
 
         </div>
         <span>

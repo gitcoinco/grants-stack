@@ -47,6 +47,12 @@ export interface IPFSResetFileStatus {
   type: typeof RESET_FILE_STATUS;
 }
 
+export const IPFS_ERROR = "IPFS_ERROR";
+export interface IPFSErrorAction {
+  type: typeof IPFS_ERROR;
+  error: string;
+}
+
 export type IPFSActions =
   | IPFSInitializingAction
   | IPFSInitializationErrorAction
@@ -55,6 +61,7 @@ export type IPFSActions =
   | IPFSSavingFile
   | IPFSFetchingFile
   | IPFSFileFetchedAction
+  | IPFSErrorAction
   | IPFSResetFileStatus;
 
 const ipfsInitializing = (): IPFSActions => ({
@@ -92,6 +99,11 @@ export const resetFileStatus = (): IPFSActions => ({
   type: RESET_FILE_STATUS,
 });
 
+export const ipfsError = (error: string): IPFSActions => ({
+  type: IPFS_ERROR,
+  error
+})
+
 export const startIPFS =
   () => async (dispatch = useAppDispatch(), getState: () => RootState) => {
     const state = getState();
@@ -126,33 +138,45 @@ export const startIPFS =
 
 export const saveFileToIPFS =
   (content: string, path?: string) => async (dispatch: AppDispatch) => {
-    dispatch(savingFile());
     if (global.ipfs === undefined) {
+      dispatch(resetFileStatus());
       return;
     }
+    dispatch(savingFile());
+    
+    try {
+      const res = await global.ipfs!.add({
+        path,
+        content,
+      });
 
-    const res = await global.ipfs!.add({
-      path,
-      content,
-    });
-
-    dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+      dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+    } catch (e: string | any) {
+      console.log("error", e);
+      dispatch(ipfsError(e.toString()));
+    }
   };
 
 export const fetchFileFromIPFS =
   (cid: string) => async (dispatch: AppDispatch) => {
-    dispatch(fetchingFile());
     if (global.ipfs === undefined) {
+      dispatch(resetFileStatus());
       return;
     }
+    dispatch(fetchingFile());
 
     const stream = global.ipfs!.cat(cid);
     let data = ""
 
-    for await (const chunk of stream) {
-      // chunks of data are returned as a Buffer, convert it back to a string
-      data += chunk.toString()
+    try {
+      for await (const chunk of stream) {
+        // chunks of data are returned as a Buffer, convert it back to a string
+        data += chunk.toString();
+      }
+      dispatch(ipfsFileFetched(data));
+    } catch (e: string | any) {
+      console.log("error", e.toString());
+      dispatch(ipfsError(e.toString()));
     }
 
-    dispatch(ipfsFileFetched(data));
   };

@@ -6,6 +6,7 @@ import {
     IPFS_SAVING_FILE,
     IPFS_FILE_FETCHED,
     IPFS_FETCHING_FILE,
+    IPFS_ERROR,
     RESET_FILE_STATUS,
     IPFSActions,
   } from "../actions/ipfs";
@@ -19,6 +20,7 @@ import {
     initializationError?: string;
     lastFileSavedURL?: string;
     lastFileFetched?: string;
+    error?: string;
   }
   
   const initialState: IPFSState = {
@@ -65,6 +67,7 @@ import {
           lastFileSavedURL: action.url,
           newFileSaved: true,
           ipfsSavingFile: false,
+          error: undefined,
         };
       }
   
@@ -72,6 +75,7 @@ import {
         return {
           ...state,
           ipfsSavingFile: true,
+          error: undefined,
         };
       }
 
@@ -80,6 +84,7 @@ import {
           ...state,
           lastFileFetched: action.data,
           ipfsFetchingFile: false,
+          error: undefined,
         };
       }
   
@@ -87,6 +92,7 @@ import {
         return {
           ...state,
           ipfsFetchingFile: true,
+          error: undefined,
         };
       }
   
@@ -95,6 +101,15 @@ import {
           ...state,
           newFileSaved: false,
           ipfsSavingFile: false,
+          ipfsFetchingFile: false,
+          lastFileFetched: undefined,
+        };
+      }
+
+      case IPFS_ERROR: {
+        return {
+          ...state,
+          error: action.error
         };
       }
   
