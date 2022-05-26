@@ -62,3 +62,6 @@ contract BulkVote is IVote, ReentrancyGuard {
 
   }
 }
+
+/// Discussion
+/// - should contract should be pausable & ownable
