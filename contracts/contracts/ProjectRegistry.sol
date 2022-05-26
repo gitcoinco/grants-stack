@@ -83,7 +83,17 @@ contract ProjectRegistry {
         emit ProjectCreated(msg.sender, projectID);
     }
 
-    // updateProject (projectID, recipient, metadadata)
+    /**
+     * @notice Updates MetaData for singe project
+     * @param projectID ID of previously created project
+     * @param metadata Updated pointer to external metadata
+     */
+     function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external {
+         require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
+         projects[projectID].metadata = metadata;
+         emit MetaDataUpdated(msg.sender, projectID);
+     }
+
     // addOwner
     // removeOwner
 

@@ -2,12 +2,13 @@ const hre = require("hardhat");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-const testMetadata =  { protocol: 1, pointer: "test-metadata" };
-const updatedMetadata =  { protocol: 1, pointer: "updated-metadata" };
+const testMetadata = { protocol: 1, pointer: "test-metadata" };
+const updatedMetadata = { protocol: 1, pointer: "updated-metadata" };
 
 describe("ProjectRegistry", function () {
   before(async function () {
-    [this.owner, this.projectRecipient, ...this.accounts] = await ethers.getSigners();
+    [this.owner, this.projectRecipient, this.nonOwner, ...this.accounts] =
+      await ethers.getSigners();
 
     const ProjectRegistry = await hre.ethers.getContractFactory(
       "ProjectRegistry",
@@ -22,7 +23,7 @@ describe("ProjectRegistry", function () {
 
     await this.contract.createProject(
       this.projectRecipient.address,
-      testMetadata,
+      testMetadata
     );
 
     expect(await this.contract.projectsCount()).to.equal("1");
@@ -40,12 +41,21 @@ describe("ProjectRegistry", function () {
     expect(owners[0]).to.equal(this.owner.address);
   });
 
-  // it("updates project metadata", async function () {
-  //   const project = await this.contract.projects(0);
-  //   expect(project.metadata).to.equal(testMetadata);
+  it("does not allow update of project metadata if not owner", async function () {
+    const project = await this.contract.projects(0);
+    await expect(
+      this.contract
+        .connect(this.nonOwner)
+        .updateProjectMetaData(project.id, updatedMetadata)
+    ).to.be.revertedWith("You do not own this Project");
+  });
 
-  //   await this.contract.updateMetadata(project.id, updatedMetadata);
-  //   const updatedProject = await this.contract.projects(0);
-  //   expect(updatedProject.metadata).to.equal(updatedMetadata);
-  // });
+  it("updates project metadata", async function () {
+    const project = await this.contract.projects(0);
+    await this.contract.updateProjectMetaData(project.id, updatedMetadata);
+    const updatedProject = await this.contract.projects(0);
+    const [protocol, pointer] = updatedProject.metadata;
+    expect(protocol).to.equal(updatedMetadata.protocol);
+    expect(pointer).to.equal(updatedMetadata.pointer);
+  });
 });
