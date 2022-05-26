@@ -65,16 +65,15 @@ export const publishGrant =
       );
       let projectTx;
       if (grantId) {
-        projectTx = await projectRegistry.updateMetadata(
-          grantId,
-          state.ipfs.lastFileSavedURL
-        );
+        projectTx = await projectRegistry.updateProjectMetaData(grantId, {
+          protocol: 1,
+          pointer: state.ipfs.lastFileSavedURL,
+        });
       } else {
-        projectTx = await projectRegistry.createGrant(
-          state.web3.account,
-          state.ipfs.lastFileSavedURL,
-          state.web3.account
-        );
+        projectTx = await projectRegistry.createProject(signer?.getAddress(), {
+          protocol: 1,
+          pointer: state.ipfs.lastFileSavedURL,
+        });
       }
 
       dispatch(grantTXStatus("initiated"));

@@ -54,10 +54,12 @@ export const loadGrants =
       signer
     );
 
-    const filter = contract.filters.GrantCreated(state.web3.account);
+    const filter = contract.filters.ProjectCreated(state.web3.account);
     const res = await contract.queryFilter(filter);
-    const uris = res.map((x: any) => BigNumber.from(x.args.grantId).toNumber());
-    dispatch(grantsLoaded(uris));
+    const projectIds = res.map((x: any) =>
+      BigNumber.from(x.args[1]).toNumber()
+    );
+    dispatch(grantsLoaded(projectIds));
   };
 
 export const unloadGrants = () => grantsUnload();

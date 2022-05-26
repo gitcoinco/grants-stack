@@ -58,9 +58,14 @@ export const fetchGrantData =
       signer
     );
 
-    let grant: { metadata: string };
+    let grant: {
+      metadata: {
+        protocol: number;
+        pointer: string;
+      };
+    };
     try {
-      grant = await projectRegistry.grants(id);
+      grant = await projectRegistry.projects(id);
     } catch (e) {
       // FIXME: dispatch contract interaction error
       console.log(e);
@@ -74,13 +79,18 @@ export const fetchGrantData =
     }
 
     const cachedMetadata = state.grantsMetadata[id]?.metadata;
-    if (cachedMetadata !== undefined && cachedMetadata.uri === grant.metadata) {
+    if (
+      cachedMetadata !== undefined &&
+      cachedMetadata.uri === grant.metadata.pointer
+    ) {
       dispatch(grantMetadataFetched(cachedMetadata));
       return;
     }
 
     // FIXME: remove when grant metadata uri is saved without the full URL
-    const matches = grant.metadata.match(/^https:\/\/ipfs.io\/ipfs\/(.+)$/);
+    const matches = grant.metadata.pointer.match(
+      /^https:\/\/ipfs.io\/ipfs\/(.+)$/
+    );
     if (matches === null) {
       return;
     }
@@ -119,7 +129,7 @@ export const fetchGrantData =
     dispatch(
       grantMetadataFetched({
         ...metadata,
-        uri: grant.metadata,
+        uri: grant.metadata.pointer,
         id,
       })
     );
