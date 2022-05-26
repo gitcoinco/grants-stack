@@ -1,12 +1,14 @@
-const buttonTypes = {
-  primary: "primary",
-  outline: "outline",
-};
+export enum ButtonVariants {
+  primary = "primary",
+  outline = "outline",
+  danger = "danger",
+  outlineDanger = "danger-outline",
+}
 
 interface ButtonProps {
   onClick: () => void;
   children: React.ReactNode;
-  variant: typeof buttonTypes[keyof typeof buttonTypes];
+  variant: ButtonVariants;
   disabled?: boolean;
 }
 
@@ -18,7 +20,7 @@ function Button({ onClick, children, variant, disabled }: ButtonProps) {
       className={`base-btn ${variant}`}
       type="button"
     >
-      {children}
+      <div className="flex">{children}</div>
     </button>
   );
 }

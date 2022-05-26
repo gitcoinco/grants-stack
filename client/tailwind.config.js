@@ -7,11 +7,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "dark-primary": "#0E0333",
-        "light-primary": "#FFFFFF",
-        "dark-secondary": "#261c47",
-        "light-secondary": "#261c47",
-        "red": "red"
+        // Very open to better naming here :)
+        "primary-background": "#6F3FF5",
+        "secondary-background": "#0E0333",
+        "danger-background": "#D03E63",
+        "primary-text": "#0E0333",
+        "secondary-text": "#757087",
+        "tertiary-text": "#E2E0E7",
+        "quaternary-text": "#FFFFFF",
+        "danger-text": "#D03E63",
       }
     }
   },

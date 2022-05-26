@@ -1,28 +1,39 @@
-import { useSelector } from "react-redux";
-import Button from "../base/Button";
+import { useSelector, useDispatch } from "react-redux";
+import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
+import { initializeWeb3 } from "../../actions/web3";
 
 function Landing() {
+  const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Initialized: state.web3.initialized,
+    web3Error: state.web3.error,
   }));
+
+  const connectHandler = () => {
+    dispatch(initializeWeb3());
+  };
 
   return (
     <div className="container mx-auto flex flex-col h-full justify-center">
       <h1 className="mb-8">Grant Hub</h1>
-      <h3 className="mb-4">
-        The one place to manage your project across multiple grants programs.
-      </h3>
       <p>
-        Grant owners can create and manage grants across multiple rounds. Grants
-        rounds are tied to a deep, flexible registry to easily find and
-        distribute capital across the most impactful projects.
+        Manage projects that generate maximum impact and receive funds matching
+        from Gitcoin, partner DAO, or independent grant program rounds.
       </p>
       {!props.web3Initialized && (
         <div className="mt-8">
-          <Button onClick={() => console.log("click")} variant="outline">
+          <Button
+            onClick={() => connectHandler()}
+            variant={ButtonVariants.primary}
+          >
             Connect Wallet
           </Button>
+          {props.web3Error !== undefined && (
+            <div>
+              <div>{props.web3Error}</div>
+            </div>
+          )}
         </div>
       )}
     </div>

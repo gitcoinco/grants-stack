@@ -1,17 +1,14 @@
-import React, { useEffect } from "react";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import Header from "./Header";
-import { initializeWeb3 } from "../actions/web3";
-import Button from "./base/Button";
+import Landing from "./grants/Landing";
 
 interface Props {
   children: JSX.Element;
 }
 
 function Layout(ownProps: Props) {
-  const dispatch = useDispatch();
-
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
@@ -27,33 +24,15 @@ function Layout(ownProps: Props) {
     shallowEqual
   );
 
-  useEffect(() => {
-    dispatch(initializeWeb3());
-  }, [dispatch]);
-
-  const connectHandler = (e: React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(initializeWeb3());
-  };
   const { children } = ownProps;
 
   return (
     <div className="flex flex-col h-full relative">
       <Header />
-      <main className="container mx-auto bg-light-primary dark:bg-dark-primary h-full">
+      <main className="container mx-auto dark:bg-primary-background h-full">
         {!props.web3Error && props.web3Initialized && props.chainID && children}
-
-        {props.web3Error !== undefined && (
-          <div>
-            <div>{props.web3Error}</div>
-          </div>
-        )}
-
-        {!props.web3Initialized && (
-          <Button variant="outline" onClick={() => connectHandler}>
-            CONNECT
-          </Button>
-        )}
+        {props.web3Error && <p>{props.web3Error}</p>}
+        {!props.web3Initialized && <Landing />}
       </main>
     </div>
   );

@@ -1,12 +1,18 @@
 button.base-btn {
-  @apply rounded px-5 py-2.5 my-2;
+  @apply rounded py-2 px-4 my-2 mx-1 outline-0;
 }
 button.base-btn:disabled {
   opacity: .3
 }
 .base-btn.primary {
-  @apply text-dark-primary bg-light-primary dark:bg-light-primary dark:text-dark-primary;
+  @apply text-quaternary-text bg-primary-background dark:bg-primary-background dark:text-primary-text;
 }
 .base-btn.outline {
-  @apply rounded px-5 py-2.5 m-2 border-light-primary text-dark-primary bg-light-primary border-solid dark:border-2 dark:border-dark-primary dark:text-light-primary dark:bg-dark-primary
+  @apply text-secondary-text border-solid border-2 border-tertiary-text;
+}
+.base-btn.danger {
+  @apply text-quaternary-text bg-danger-background
+}
+.base-btn.danger-outline {
+  @apply text-danger-text border-solid border-2 border-tertiary-text
 }

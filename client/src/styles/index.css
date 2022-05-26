@@ -7,15 +7,15 @@
 
 @layer base {
   h1 {
-    @apply text-7xl text-dark-primary dark:text-light-primary font-semibold
+    @apply text-7xl text-primary-text dark:text-primary-text font-semibold
   }
   h2 {
-    @apply text-5xl text-dark-primary dark:text-light-primary
+    @apply text-5xl text-primary-text dark:text-primary-text
   }
   h3 {
-    @apply text-2xl text-dark-primary dark:text-light-primary font-extralight
+    @apply text-2xl text-primary-text dark:text-primary-text font-extralight
   }
   p {
-    @apply text-dark-primary dark:text-light-primary font-extralight
+    @apply text-primary-text dark:text-primary-text font-extralight
   }
 }

@@ -4,7 +4,7 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
 import { initializeWeb3 } from "../actions/web3";
 import { grantsPath, newGrantPath } from "../routes";
-import Button from "./base/Button";
+import Button, { ButtonVariants } from "./base/Button";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -23,37 +23,49 @@ export default function Header() {
     dispatch(initializeWeb3());
   };
   return (
-    <header className="bg-light-primary text-light-primary dark:bg-dark-primary dark:bg-dark-primary-background">
-      {/* TODO: update with right logo */}
-      {/* <img
+    <header className="flex justify-between container mx-auto">
+      <div className="flex">
+        <img
+          className="py-4"
           alt="Gitcoin Logo"
-          src={`${process.env.PUBLIC_URL}/assets/gitcoin-logo.svg`}
-        /> */}
+          src="./assets/gitcoin-logo.svg"
+        />
+        <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
+      </div>
       {!props.web3Initialized && (
-        <Button variant="outline" onClick={() => connectHandler}>
+        <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
           Connect Wallet
         </Button>
       )}
       {!props.web3Error && props.web3Initialized && (
-        <div className="flex justify-between container mx-auto">
+        <>
           <div className="flex flex-col justify-center">
             <p className="p">
               Welcome {props.account} (chainID: {props.chainID})
             </p>
           </div>
           <div>
-            <Button variant="outline" onClick={() => connectHandler}>
+            <Button
+              variant={ButtonVariants.outline}
+              onClick={() => connectHandler}
+            >
               <Link to={grantsPath()}>Grants</Link>
             </Button>
-            <Button variant="outline" onClick={() => connectHandler}>
+            <Button
+              variant={ButtonVariants.outline}
+              onClick={() => connectHandler}
+            >
               <Link to={newGrantPath()}>Create a Grant</Link>
             </Button>
           </div>
-        </div>
+        </>
       )}
       {!props.web3Initialized && (
         <div>
-          <Button variant="outline" onClick={() => connectHandler}>
+          <Button
+            variant={ButtonVariants.outline}
+            onClick={() => connectHandler}
+          >
             CONNECT
           </Button>
         </div>
