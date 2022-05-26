@@ -15,7 +15,6 @@ contract ProjectRegistry {
         string pointer;
     }
 
-
     // The project structs contains the minimal data we need for a project
     struct Project {
         uint96 id;
