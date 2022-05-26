@@ -49,10 +49,7 @@ function Project() {
           <p>Webstie: {props.currentGrant.website}</p>
           <p>Chain: {props.currentGrant.chain}</p>
           <p>Wallet: {props.currentGrant.wallet}</p>
-          <p>
-            Received Funding:{" "}
-            {props.currentGrant.receivedFunding ? "Yes" : "No"}
-          </p>
+          <p>Received Funding: {props.currentGrant.receivedFunding}</p>
         </>
       )}
 
