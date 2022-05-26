@@ -31,6 +31,17 @@ export interface IPFSFileSavedAction {
   url: string;
 }
 
+export const IPFS_FETCHING_FILE = "IPFS_FETCHING_FILE";
+export interface IPFSFetchingFile {
+  type: typeof IPFS_FETCHING_FILE;
+}
+
+export const IPFS_FILE_FETCHED = "IPFS_FILE_FETCHED";
+export interface IPFSFileFetchedAction {
+  type: typeof IPFS_FILE_FETCHED;
+  data: string;
+}
+
 export const RESET_FILE_STATUS = "RESET_FILE_STATUS";
 export interface IPFSResetFileStatus {
   type: typeof RESET_FILE_STATUS;
@@ -42,6 +53,8 @@ export type IPFSActions =
   | IPFSInitializedAction
   | IPFSFileSavedAction
   | IPFSSavingFile
+  | IPFSFetchingFile
+  | IPFSFileFetchedAction
   | IPFSResetFileStatus;
 
 const ipfsInitializing = (): IPFSActions => ({
@@ -64,6 +77,15 @@ const ipfsFileSaved = (url: string): IPFSActions => ({
 
 const savingFile = (): IPFSActions => ({
   type: IPFS_SAVING_FILE,
+});
+
+const ipfsFileFetched = (data: string): IPFSActions => ({
+  type: IPFS_FILE_FETCHED,
+  data,
+});
+
+const fetchingFile = (): IPFSActions => ({
+  type: IPFS_FETCHING_FILE,
 });
 
 export const resetFileStatus = (): IPFSActions => ({
@@ -103,7 +125,7 @@ export const startIPFS =
   };
 
 export const saveFileToIPFS =
-  (path: string, content: string) => async (dispatch: AppDispatch) => {
+  (content: string, path?: string) => async (dispatch: AppDispatch) => {
     dispatch(savingFile());
     if (global.ipfs === undefined) {
       return;
@@ -115,4 +137,22 @@ export const saveFileToIPFS =
     });
 
     dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+  };
+
+export const fetchFileFromIPFS =
+  (cid: string) => async (dispatch: AppDispatch) => {
+    dispatch(fetchingFile());
+    if (global.ipfs === undefined) {
+      return;
+    }
+
+    const stream = global.ipfs!.cat(cid);
+    let data = ""
+
+    for await (const chunk of stream) {
+      // chunks of data are returned as a Buffer, convert it back to a string
+      data += chunk.toString()
+    }
+
+    dispatch(ipfsFileFetched(data));
   };

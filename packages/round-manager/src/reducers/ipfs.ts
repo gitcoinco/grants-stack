@@ -4,6 +4,8 @@ import {
     IPFS_INITIALIZED,
     IPFS_FILE_SAVED,
     IPFS_SAVING_FILE,
+    IPFS_FILE_FETCHED,
+    IPFS_FETCHING_FILE,
     RESET_FILE_STATUS,
     IPFSActions,
   } from "../actions/ipfs";
@@ -13,8 +15,10 @@ import {
     initialized: boolean;
     newFileSaved: boolean;
     ipfsSavingFile: boolean;
+    ipfsFetchingFile: boolean;
     initializationError?: string;
     lastFileSavedURL?: string;
+    lastFileFetched?: string;
   }
   
   const initialState: IPFSState = {
@@ -22,6 +26,7 @@ import {
     initialized: false,
     newFileSaved: false,
     ipfsSavingFile: false,
+    ipfsFetchingFile: false,
   };
   
   export const ipfsReducer = (
@@ -67,6 +72,21 @@ import {
         return {
           ...state,
           ipfsSavingFile: true,
+        };
+      }
+
+      case IPFS_FILE_FETCHED: {
+        return {
+          ...state,
+          lastFileFetched: action.data,
+          ipfsFetchingFile: false,
+        };
+      }
+  
+      case IPFS_FETCHING_FILE: {
+        return {
+          ...state,
+          ipfsFetchingFile: true,
         };
       }
   
