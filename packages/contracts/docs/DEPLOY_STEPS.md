@@ -37,3 +37,11 @@ yarn run goerli-deploy-update-round
 
 ### Payout Setup
 <!-- TODO -->
+
+
+### Contract Verification on etherscan
+
+```
+yarn hardhat clean
+yarn hardhat verify --network goerli <CONTRACT_ADDRESS>
+```
