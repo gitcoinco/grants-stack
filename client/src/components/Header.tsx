@@ -28,12 +28,9 @@ export default function Header() {
         <img
           className="py-4"
           alt="Gitcoin Logo"
-          src={`${process.env.PUBLIC_URL}/assets/gitcoin-logo.svg`}
+          src="./assets/gitcoin-logo.svg"
         />
-        <img
-          alt="Gitcoin Logo Text"
-          src={`${process.env.PUBLIC_URL}/assets/gitcoin-logo-text.svg`}
-        />
+        <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
       {!props.web3Initialized && (
         <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
