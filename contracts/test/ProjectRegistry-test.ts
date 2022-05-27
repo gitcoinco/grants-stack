@@ -7,8 +7,7 @@ const updatedMetadata = { protocol: 1, pointer: "updated-metadata" };
 
 describe("ProjectRegistry", function () {
   before(async function () {
-    [this.owner, this.projectRecipient, this.nonOwner, ...this.accounts] =
-      await ethers.getSigners();
+    [this.owner, this.projectRecipient, this.nonOwner, ...this.accounts] = await ethers.getSigners();
 
     const ProjectRegistry = await hre.ethers.getContractFactory(
       "ProjectRegistry",
@@ -44,9 +43,7 @@ describe("ProjectRegistry", function () {
   it("does not allow update of project metadata if not owner", async function () {
     const project = await this.contract.projects(0);
     await expect(
-      this.contract
-        .connect(this.nonOwner)
-        .updateProjectMetaData(project.id, updatedMetadata)
+      this.contract.connect(this.nonOwner).updateProjectMetaData(project.id, updatedMetadata)
     ).to.be.revertedWith("You do not own this Project");
   });
 
@@ -57,5 +54,37 @@ describe("ProjectRegistry", function () {
     const [protocol, pointer] = updatedProject.metadata;
     expect(protocol).to.equal(updatedMetadata.protocol);
     expect(pointer).to.equal(updatedMetadata.pointer);
+  });
+
+  it("does not allow to add an owner if not owner", async function () {
+    const projectID = 0;
+    const currentOwners = await this.contract.getOwners(projectID);
+    const lastOwner = currentOwners[currentOwners.length - 1];
+    await expect(
+      this.contract.connect(this.nonOwner).addProjectOwner(projectID, this.nonOwner.address)
+    ).to.be.revertedWith("You do not own this Project");
+  });
+
+  it("adds owner to project", async function () {
+    const projectID = 0;
+
+    expect(await this.contract.projectOwnersCount(projectID)).to.equal("1");
+    const prevOwners = await this.contract.getOwners(projectID);
+    expect(prevOwners.length).to.equal(1);
+    expect(prevOwners[0]).to.equal(this.owner.address);
+
+    for (let i = 0; i < 3; i++) {
+      const tx = await this.contract.connect(this.owner).addProjectOwner(projectID, this.accounts[i].address)
+      const rec = await tx.wait();
+      console.log(rec.gasUsed.toString());
+    }
+
+    expect(await this.contract.projectOwnersCount(projectID)).to.equal("4");
+    const owners = await this.contract.getOwners(projectID);
+    expect(owners.length).to.equal(4);
+    expect(owners[0]).to.equal(this.accounts[2].address);
+    expect(owners[1]).to.equal(this.accounts[1].address);
+    expect(owners[2]).to.equal(this.accounts[0].address);
+    expect(owners[3]).to.equal(this.owner.address);
   });
 });

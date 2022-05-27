@@ -83,21 +83,42 @@ contract ProjectRegistry {
         emit ProjectCreated(msg.sender, projectID);
     }
 
+    function addProjectOwner(uint96 projectID, address newOwner) external {
+        require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
+        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "Bad owner");
+
+        OwnersList storage owners = projectsOwners[projectID];
+
+        require(owners.list[newOwner] == address(0), "Already owner");
+
+        owners.list[newOwner] = owners.list[OWNERS_LIST_SENTINEL];
+        owners.list[OWNERS_LIST_SENTINEL] = newOwner;
+        owners.count++;
+    }
+
     /**
      * @notice Updates MetaData for singe project
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
      */
-     function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external {
-         require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
-         projects[projectID].metadata = metadata;
-         emit MetaDataUpdated(msg.sender, projectID);
-     }
+    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external {
+        require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
+        projects[projectID].metadata = metadata;
+        emit MetaDataUpdated(msg.sender, projectID);
+    }
 
     // addOwner
     // removeOwner
 
     // Public functions
+
+    /**
+     * @notice todo
+     * @dev todo
+     */
+    function projectOwnersCount(uint96 projectID) public view returns(uint256) {
+        return projectsOwners[projectID].count;
+    }
 
     /**
      * @notice todo
@@ -118,6 +139,7 @@ contract ProjectRegistry {
         while (current != OWNERS_LIST_SENTINEL) {
             list[index] = current;
             current = owners.list[current];
+            index++;
         }
 
         return list;
