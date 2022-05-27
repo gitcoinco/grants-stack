@@ -88,6 +88,16 @@ contract ProjectRegistry {
     }
 
     /**
+     * @notice Updates MetaData for singe project
+     * @param projectID ID of previously created project
+     * @param metadata Updated pointer to external metadata
+     */
+    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
+        projects[projectID].metadata = metadata;
+        emit MetaDataUpdated(msg.sender, projectID);
+    }
+
+    /**
      * @notice todo
      * @dev todo
      */
@@ -120,16 +130,6 @@ contract ProjectRegistry {
         owners.count--;
     }
 
-    /**
-     * @notice Updates MetaData for singe project
-     * @param projectID ID of previously created project
-     * @param metadata Updated pointer to external metadata
-     */
-    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
-        projects[projectID].metadata = metadata;
-        emit MetaDataUpdated(msg.sender, projectID);
-    }
-
     // Public functions
 
     /**
@@ -144,7 +144,7 @@ contract ProjectRegistry {
      * @notice todo
      * @dev todo
      */
-    function getOwners(uint96 projectID) public view returns(address[] memory) {
+    function getProjectOwners(uint96 projectID) public view returns(address[] memory) {
         OwnersList storage owners = projectsOwners[projectID];
 
         address[] memory list = new address[](owners.count);
