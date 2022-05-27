@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from "react-dom/client";
 import { Provider } from 'react-redux';
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { store } from  './app/store';
+import { store } from './app/store';
 import { Route, Routes } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import history from "./history";
@@ -11,9 +11,9 @@ import './index.css';
 
 
 // Routes
-import NewRound from './components/newRound/NewRound';
-import ViewRound from './components/viewRound/ViewRound';
-import Dashboard from './components/dashboard/Dashboard';
+import NewRound from './features/round/NewRound';
+import ViewRound from './features/round/ViewRound';
+import Program from './features/program/Program';
 
 
 const root = ReactDOM.createRoot(
@@ -27,7 +27,7 @@ root.render(
         <Routes>
 
           {/* Default Route */}
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Program />} />
 
           {/* Round Manager Routes */}
           <Route path="/round/new" element={<NewRound />} />
