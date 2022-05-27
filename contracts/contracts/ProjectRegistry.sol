@@ -87,6 +87,10 @@ contract ProjectRegistry {
         emit ProjectCreated(msg.sender, projectID);
     }
 
+    /**
+     * @notice todo
+     * @dev todo
+     */
     function addProjectOwner(uint96 projectID, address newOwner) external onlyProjectOwner(projectID) {
         require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
 
@@ -100,6 +104,23 @@ contract ProjectRegistry {
     }
 
     /**
+     * @notice todo
+     * @dev todo
+     */
+    function removeProjectOwner(uint96 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
+        require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "bad owner");
+
+        OwnersList storage owners = projectsOwners[projectID];
+
+        require(owners.list[prevOwner] == owner, "bad prevOwner");
+        require(owners.count > 1, "single owner");
+
+        owners.list[prevOwner] = owners.list[owner];
+        delete owners.list[owner];
+        owners.count--;
+    }
+
+    /**
      * @notice Updates MetaData for singe project
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
@@ -108,9 +129,6 @@ contract ProjectRegistry {
         projects[projectID].metadata = metadata;
         emit MetaDataUpdated(msg.sender, projectID);
     }
-
-    // addOwner
-    // removeOwner
 
     // Public functions
 
