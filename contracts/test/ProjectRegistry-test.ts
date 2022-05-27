@@ -44,7 +44,7 @@ describe("ProjectRegistry", function () {
     const project = await this.contract.projects(0);
     await expect(
       this.contract.connect(this.nonOwner).updateProjectMetaData(project.id, updatedMetadata)
-    ).to.be.revertedWith("You do not own this Project");
+    ).to.be.revertedWith("not owner");
   });
 
   it("updates project metadata", async function () {
@@ -62,7 +62,7 @@ describe("ProjectRegistry", function () {
     const lastOwner = currentOwners[currentOwners.length - 1];
     await expect(
       this.contract.connect(this.nonOwner).addProjectOwner(projectID, this.nonOwner.address)
-    ).to.be.revertedWith("You do not own this Project");
+    ).to.be.revertedWith("not owner");
   });
 
   it("adds owner to project", async function () {
@@ -74,9 +74,7 @@ describe("ProjectRegistry", function () {
     expect(prevOwners[0]).to.equal(this.owner.address);
 
     for (let i = 0; i < 3; i++) {
-      const tx = await this.contract.connect(this.owner).addProjectOwner(projectID, this.accounts[i].address)
-      const rec = await tx.wait();
-      console.log(rec.gasUsed.toString());
+      await this.contract.connect(this.owner).addProjectOwner(projectID, this.accounts[i].address)
     }
 
     expect(await this.contract.projectOwnersCount(projectID)).to.equal("4");

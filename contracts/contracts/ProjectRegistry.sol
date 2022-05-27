@@ -60,7 +60,11 @@ contract ProjectRegistry {
     event MetaDataUpdated(address indexed owner, uint96 projectID);
 
     // Modifiers
-    // ...
+
+    modifier onlyProjectOwner(uint96 projectID) {
+        require(projectsOwners[projectID].list[msg.sender] != address(0), "not owner");
+        _;
+    }
 
     constructor() {}
 
@@ -83,13 +87,12 @@ contract ProjectRegistry {
         emit ProjectCreated(msg.sender, projectID);
     }
 
-    function addProjectOwner(uint96 projectID, address newOwner) external {
-        require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
-        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "Bad owner");
+    function addProjectOwner(uint96 projectID, address newOwner) external onlyProjectOwner(projectID) {
+        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
 
         OwnersList storage owners = projectsOwners[projectID];
 
-        require(owners.list[newOwner] == address(0), "Already owner");
+        require(owners.list[newOwner] == address(0), "already owner");
 
         owners.list[newOwner] = owners.list[OWNERS_LIST_SENTINEL];
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
@@ -101,8 +104,7 @@ contract ProjectRegistry {
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
      */
-    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external {
-        require(projectsOwners[projectID].list[msg.sender] != address(0x0), "You do not own this Project");
+    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
         emit MetaDataUpdated(msg.sender, projectID);
     }
