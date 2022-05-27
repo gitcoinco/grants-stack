@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
+import "./utils/MetaPtr.sol";
 
 /**
  * @title ProjectRegistry
@@ -8,13 +9,6 @@ pragma solidity ^0.8.0;
  */
 contract ProjectRegistry {
     // Types
-
-    // The pointer to the external metadadata composed by protocol and pointer
-    struct MetaPtr {
-        uint256 protocol;
-        string pointer;
-    }
-
     // The project structs contains the minimal data we need for a project
     struct Project {
         uint96 id;
