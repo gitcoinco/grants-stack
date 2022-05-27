@@ -29,10 +29,7 @@ export const web3Api = api.injectEndpoints({
 
           global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
 
-          let data = <Web3Instance>{}
-
           const accounts: Array<string> = await window.ethereum.request({ method: "eth_requestAccounts" })
-
 
           const { chainId } = await global.web3Provider!.getNetwork()
 
