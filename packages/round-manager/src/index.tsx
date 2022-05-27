@@ -11,9 +11,11 @@ import './index.css';
 
 
 // Routes
-import NewRound from './features/round/NewRound';
+import CreateRound from './features/round/CreateRound';
 import ViewRound from './features/round/ViewRound';
-import Program from './features/program/Program';
+import Program from './features/program/ListPrograms';
+import CreateProgram from './features/program/CreateProgram';
+import ViewProgram from './features/program/ViewProgram';
 
 
 const root = ReactDOM.createRoot(
@@ -30,8 +32,12 @@ root.render(
           <Route path="/" element={<Program />} />
 
           {/* Round Manager Routes */}
-          <Route path="/round/new" element={<NewRound />} />
-          <Route path="/round/:roundId" element={<ViewRound />} />
+          <Route path="/round/create" element={<CreateRound />} />
+          <Route path="/round/:id" element={<ViewRound />} />
+
+          {/* Program Routes */}
+          <Route path="/program/create" element={<CreateProgram />} />
+          <Route path="/program/:id" element={<ViewProgram />} />
 
         </Routes>
       </ReduxRouter>
