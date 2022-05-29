@@ -8,7 +8,8 @@
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
     "test:watch": "jest --watch --notify",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "typecheck:watch": "tsc --noEmit --watch"
   },
   "devDependencies": {
     "@types/jest": "^26.0.5",
