@@ -81,5 +81,13 @@ To test deploying the contracts locally, first start a localhost hardhat network
 $ yarn app:node
 ```
 
+### Scripts
+
+Contracts written here have deploy scripts written in `scripts/` directory.
+The commands to run them are documented in `package.json`.
+
+Additionally if you are using vscode -> debug scripts are written up in `launch.json`
+to make it easier to debug the script while running them.
+
 
 Note: This package skeleton was generated using hardhat advanced generator
