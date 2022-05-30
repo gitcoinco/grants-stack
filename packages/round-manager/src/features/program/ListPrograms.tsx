@@ -27,7 +27,7 @@ function ListPrograms() {
         </div>
       </main>
       <footer className="text-center mb-auto">
-        <p>Connected wallet: { account }</p>
+        <p>with <span className="text-red-600">&hearts;</span> from Gitcoin | Connected: { account }</p>
       </footer>
     </div>
   );

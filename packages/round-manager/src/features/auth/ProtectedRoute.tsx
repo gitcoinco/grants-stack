@@ -1,17 +1,13 @@
-import { useState } from 'react'
 import { Outlet, useOutletContext } from 'react-router-dom'
 
 import { useGetWeb3Query, Web3Instance } from "../auth/web3Service"
 
 
 export default function ProtectedRoute() {
-  const [skip, setSkip] = useState(true)
-
-  const { data, error, refetch, isSuccess } = useGetWeb3Query(undefined, { skip })
+  const { data, error, refetch, isSuccess } = useGetWeb3Query()
 
   const connectHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    setSkip(false)
     refetch()
   };
 
