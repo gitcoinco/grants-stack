@@ -11,11 +11,12 @@ import './index.css';
 
 
 // Routes
-import CreateRound from './features/round/CreateRound';
-import ViewRound from './features/round/ViewRound';
-import Program from './features/program/ListPrograms';
 import CreateProgram from './features/program/CreateProgram';
+import CreateRound from './features/round/CreateRound';
+import Program from './features/program/ListPrograms';
+import ProtectedRoute from './features/auth/ProtectedRoute';
 import ViewProgram from './features/program/ViewProgram';
+import ViewRound from './features/round/ViewRound';
 
 
 const root = ReactDOM.createRoot(
@@ -27,18 +28,23 @@ root.render(
     <Provider store={store}>
       <ReduxRouter history={history} store={store}>
         <Routes>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
 
-          {/* Default Route */}
-          <Route path="/" element={<Program />} />
+            {/* Default Route */}
+            <Route path="/" element={<Program />} />
 
-          {/* Round Manager Routes */}
-          <Route path="/round/create" element={<CreateRound />} />
-          <Route path="/round/:id" element={<ViewRound />} />
+            {/* Round Manager Routes */}
+            <Route path="/round/create" element={<CreateRound />} />
+            <Route path="/round/:id" element={<ViewRound />} />
 
-          {/* Program Routes */}
-          <Route path="/program/create" element={<CreateProgram />} />
-          <Route path="/program/:id" element={<ViewProgram />} />
+            {/* Program Routes */}
+            <Route path="/program/create" element={<CreateProgram />} />
+            <Route path="/program/:id" element={<ViewProgram />} />
 
+            {/* 404 */}
+            <Route path="*" element={<p>There's nothing here: 404!</p>} />
+          </Route>
         </Routes>
       </ReduxRouter>
     </Provider>
