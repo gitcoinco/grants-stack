@@ -8,9 +8,9 @@ function ListPrograms() {
   const { account } = useWeb3()
 
   return (
-    <div className="container mx-auto px-4 py-24">
+    <div className="container mx-auto px-4 py-16 h-screen">
       <header>
-        <h1 className="text-5xl mb-24">My Programs</h1>
+        <h1 className="text-5xl mb-16">My Programs</h1>
       </header>
       <main className="h-screen">
         <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4">
