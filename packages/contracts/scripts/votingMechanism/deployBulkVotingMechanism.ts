@@ -1,7 +1,7 @@
-// This script deals with deploying the GrantRoundFactory on a given network
+// This script deals with deploying BulkVote on a given network
 import { ethers } from "hardhat";
 import hre from "hardhat";
-import { confirmContinue } from "../utils/script-utils";
+import { confirmContinue } from "../../utils/script-utils";
 
 export async function main() {
 
@@ -9,16 +9,16 @@ export async function main() {
   const blocksToWait = 10;
   
   await confirmContinue({
-    "contract"  : "GrantRoundFactory",
+    "contract"  : "BulkVote",
     "network"   : hre.network.name,
     "chainId"   : hre.network.config.chainId
   });
 
   // Deploy GrantRoundImplementation 
-  const contractFactory = await ethers.getContractFactory("GrantRoundFactory");
+  const contractFactory = await ethers.getContractFactory("BulkVote");
   const contract = await contractFactory.deploy();
 
-  console.log(`Deploying GrantRoundFactory to ${contract.address}....`);
+  console.log(`Deploying BulkVote to ${contract.address}....`);
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
 

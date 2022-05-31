@@ -2,8 +2,8 @@
 // This should be created via the frontend and this script is meant to be used for quick test
 import { ethers } from "hardhat";
 import hre from "hardhat";
-import { confirmContinue } from "../utils/script-utils";
-import { params } from './config/round.config';
+import { confirmContinue } from "../../utils/script-utils";
+import { params } from '../config/round.config';
 
   
 export async function main() {

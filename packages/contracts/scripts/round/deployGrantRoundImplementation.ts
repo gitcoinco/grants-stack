@@ -1,7 +1,7 @@
 // This script deals with deploying the GrantRoundImplementation on a given network
 import { ethers } from "hardhat";
 import hre from 'hardhat';
-import { confirmContinue } from "../utils/script-utils";
+import { confirmContinue } from "../../utils/script-utils";
 
 export async function main() {
 
