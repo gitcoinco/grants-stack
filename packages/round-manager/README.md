@@ -10,10 +10,14 @@ This package serves the app which holds all the features w.r.t to managing a gra
 ├── public                      # public assets
 ├── src
 │   ├── app                     # stores/hooks
-│   ├── features                # components / pages (loaded based on route)
+│   ├── features
+│       ├── auth                # components/services related to authentication/authorization
+│       ├── program             # Program related components/services
+│       ├── round               # Round related components/services 
+│   ├── api.ts                  # empty API service (feature APIs will inject endpoints)
 │   ├── browserPatches.tsx      # browser polyfill
 │   ├── index.tsx               # Routes
-│   ├── index.css               # CSS 
+│   ├── index.css               # CSS
 ├── tsconfig.json               # Typescript documentation 
 ├── craco.json                  # Craco configuration
 ├── package.json                # Package configuration
@@ -42,22 +46,7 @@ You will also see any lint errors in the console.
 $ yarn start
 ```
 
-### Test
-
-Launches the test runner.
-
-```sh
-$ yarn test
-```
-
-### Build
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-```sh
-$ yarn build
-```
-
-
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+
+
+To contribute to this project, fork the project and follow the instructions at `/docs/Dev.md`
