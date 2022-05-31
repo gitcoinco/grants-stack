@@ -1,37 +1,35 @@
-type InputProps = {
-  label: string;
-  name: string;
-  value?: string;
-  changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+import { InputProps, RadioInputProps } from "../../types";
 
-type RadioInputProps = {
-  name: string;
-  value: string;
-  currentValue?: string;
-  changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-export function TextInput(props: InputProps) {
-  const { label, name, value, changeHandler } = props;
+export function TextInput({
+  label,
+  name,
+  value,
+  placeholder,
+  changeHandler,
+}: InputProps) {
   return (
-    <div style={{ display: "block" }}>
-      <label htmlFor={label}>{label}</label>
+    <div className="mt-2">
+      <label className="block text-xs" htmlFor={label}>
+        {label}
+      </label>
       <input
-        className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        id={label}
-        style={{ display: "block" }}
         type="text"
+        id={label}
         name={name}
         value={value ?? ""}
+        placeholder={placeholder}
         onChange={changeHandler}
       />
     </div>
   );
 }
 
-export function RadioInput(props: RadioInputProps) {
-  const { name, value, currentValue, changeHandler } = props;
+export function RadioInput({
+  name,
+  value,
+  currentValue,
+  changeHandler,
+}: RadioInputProps) {
   return (
     <div style={{ display: "block" }}>
       <input
@@ -42,6 +40,60 @@ export function RadioInput(props: RadioInputProps) {
         onChange={changeHandler}
       />{" "}
       {value}
+    </div>
+  );
+}
+
+export function WebsiteInput({
+  label,
+  name,
+  value,
+  changeHandler,
+}: InputProps) {
+  return (
+    <div className="mt-2">
+      <label htmlFor={name} className="block text-xs">
+        {" "}
+        {label}{" "}
+      </label>
+      <div className="mt-1 flex rounded-md shadow-sm">
+        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+          {" "}
+          http://{" "}
+        </span>
+        <input
+          type="text"
+          className="rounded-none rounded-r-md"
+          id={label}
+          name={name}
+          value={value ?? ""}
+          placeholder="www.example.com"
+          onChange={changeHandler}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function TextArea({
+  label,
+  name,
+  value,
+  placeholder,
+  changeHandler,
+}: InputProps) {
+  return (
+    <div className="mt-2">
+      <label className="block text-xs" htmlFor={label}>
+        {label}
+      </label>
+      <textarea
+        id={label}
+        name={name}
+        placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => changeHandler(e)}
+      />
     </div>
   );
 }
