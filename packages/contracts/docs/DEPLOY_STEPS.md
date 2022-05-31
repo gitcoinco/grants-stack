@@ -44,7 +44,7 @@ The section here shows how to set up voting mechanism for the first time on a gi
 
 2. Deploy the BulkVote contract.
 ```shell
-yarn run goerli-deploy-bulk-vote
+yarn run goerli-deploy-bulk-vote-mech
 ```
 
 3. Update `round.config.ts` with deployed contracts based on your network

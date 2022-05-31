@@ -1,8 +1,8 @@
 // This script deals with updating
 import { ethers } from "hardhat";
 import hre from "hardhat";
-import { confirmContinue } from "../utils/script-utils";
-import { params } from './config/round.config';
+import { confirmContinue } from "../../utils/script-utils";
+import { params } from '../config/round.config';
 
 
 export async function main(grantRoundFactoryContract?: string, grantRoundImplementationContract?: string) {
