@@ -2,7 +2,7 @@
 
 The Project Hub will feed a universal grant registry, from which round managers can source grants for their rounds.
 
-This repo contains the smart contracts and UI which will ne used to publish and manager their project/s
+This repo contains the smart contracts and UI which will be used to publish and manage a user's project/s
 
 ## Directory Structure
 
