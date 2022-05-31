@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RadioInput, TextInput } from "../grants/inputs";
+import {
+  TextArea,
+  TextInput,
+  WebsiteInput,
+  RadioInput,
+} from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
@@ -38,7 +43,11 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     dispatch(publishGrant(currentGrantId));
   };
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
     const validValues = Object.values(formInputs).filter((input) => {
@@ -89,16 +98,18 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         <TextInput
           label="Title"
           name="title"
+          placeholder="Stop destruction in Ukraine"
           value={formInputs.title}
           changeHandler={(e) => handleInput(e)}
         />
-        <TextInput
+        <TextArea
           label="Description"
           name="description"
+          placeholder="Describe your project!"
           value={formInputs.description}
           changeHandler={(e) => handleInput(e)}
         />
-        <TextInput
+        <WebsiteInput
           label="Website"
           name="website"
           value={formInputs.website}
