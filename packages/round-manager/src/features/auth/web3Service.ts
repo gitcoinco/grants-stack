@@ -10,7 +10,13 @@ declare global {
 }
 
 export type Web3Instance = {
+  /**
+   * Currently selected address in ETH format i.e 0x...
+   */
   account: string;
+  /**
+   * Chain ID of the currently connected network
+   */
   chainId: number;
 }
 
@@ -37,7 +43,7 @@ export const web3Api = api.injectEndpoints({
             return { error: `wrong network, please connect to ${VALID_NETWORK_NAME}` };
           }
 
-          // reload page on wallet events
+          // Reload page on wallet events
           window.ethereum.on("chainChanged", () => window.location.reload())
           window.ethereum.on("accountsChanged", () => window.location.reload())
           window.ethereum.on("disconnect", () => window.location.reload())

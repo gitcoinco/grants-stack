@@ -1,8 +1,12 @@
 import { Outlet, useOutletContext } from 'react-router-dom'
 
-import { useGetWeb3Query, Web3Instance } from "../auth/web3Service"
+import { useGetWeb3Query, Web3Instance } from "./web3Service"
 
 
+/**
+ * Component for protecting child routes that require web3 wallet instance.
+ * It prompts a user to connect wallet if no web3 instance is found.
+ */
 export default function ProtectedRoute() {
   const { data, error, refetch, isSuccess, isFetching, isLoading } = useGetWeb3Query()
 
@@ -28,6 +32,10 @@ export default function ProtectedRoute() {
   ) : <Outlet context={data} />
 }
 
+
+/**
+ * Wrapper hook to expose wallet auth information to other components
+ */
 export function useWeb3() {
   return useOutletContext<Web3Instance>()
 }
