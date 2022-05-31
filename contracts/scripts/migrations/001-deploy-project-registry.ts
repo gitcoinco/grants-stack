@@ -12,16 +12,16 @@ async function main() {
   console.log(`account: ${account.address}`);
   console.log(`balance: ${prettyNum(balance.toString())}`);
 
-  await prompt("do you want to deploy the GrantsRegistry contract?");
-  console.log("deploying...")
+  await prompt("do you want to deploy the ProjectRegistry contract?");
+  console.log("deploying...");
 
-  const GrantsRegistry = await ethers.getContractFactory("GrantsRegistry");
-  const instance = await GrantsRegistry.deploy();
+  const ProjectRegistry = await ethers.getContractFactory("ProjectRegistry");
+  const instance = await ProjectRegistry.deploy();
   console.log("tx hash", instance.deployTransaction.hash);
-  console.log(instance)
+  console.log(instance);
   await instance.deployed();
 
-  console.log("GrantsRegistry deployed to:", instance.address);
+  console.log("ProjectRegistry deployed to:", instance.address);
 }
 
 main().catch((error) => {

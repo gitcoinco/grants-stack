@@ -1,28 +1,51 @@
-# Advanced Sample Hardhat Project
+# Project Hub Contracts
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+The project hub contracts power the universal grant registry. It allows the creation and editing of projects. These projects can then apply to participate in [Grant Rounds](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts/contracts/utils)
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+# Directory Structure
 
-Try running some of the following tasks:
+```
+.
+├── artifacts
+│   ├── build-info
+│   ├── contracts
+│   │   └── ProjectRegistry.sol
+│   └── hardhat
+│       └── console.sol
+├── contracts
+│   └── utils
+├── coverage
+│   ├── contracts
+│   │   └── utils
+│   └── lcov-report
+│       └── contracts
+│           └── utils
+├── lib
+├── scripts
+│   └── migrations
+├── test
+└── typechain
+    └── factories
+```
+
+# Common Commands
 
 ```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
+yarn hardhat compile
+yarn hardhat clean
+yarn hardhat test
+yarn hardhat node
+yarn hardhat help
+REPORT_GAS=true yarn hardhat test
+yarn hardhat coverage
+yarn hardhat run scripts/deploy.ts
+TS_NODE_FILES=true yarn ts-node scripts/deploy.ts
+yarn eslint '**/*.{js,ts}'
+yarn eslint '**/*.{js,ts}' --fix
+yarn prettier '**/*.{json,sol,md}' --check
+yarn prettier '**/*.{json,sol,md}' --write
+yarn solhint 'contracts/**/*.sol'
+yarn solhint 'contracts/**/*.sol' --fix
 ```
 
 # Etherscan verification
@@ -38,11 +61,5 @@ hardhat run --network ropsten scripts/deploy.ts
 Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
 
 ```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+yarn hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 ```
-
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
-
-

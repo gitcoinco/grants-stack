@@ -1,0 +1,197 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      }
+    ],
+    "name": "MetaDataUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      }
+    ],
+    "name": "ProjectCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct ProjectRegistry.MetaPtr",
+        "name": "metadata",
+        "type": "tuple"
+      }
+    ],
+    "name": "createProject",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      }
+    ],
+    "name": "getOwners",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "",
+        "type": "uint96"
+      }
+    ],
+    "name": "projects",
+    "outputs": [
+      {
+        "internalType": "uint96",
+        "name": "id",
+        "type": "uint96"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct ProjectRegistry.MetaPtr",
+        "name": "metadata",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "projectsCount",
+    "outputs": [
+      {
+        "internalType": "uint96",
+        "name": "",
+        "type": "uint96"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "",
+        "type": "uint96"
+      }
+    ],
+    "name": "projectsOwners",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct ProjectRegistry.MetaPtr",
+        "name": "metadata",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateProjectMetaData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
