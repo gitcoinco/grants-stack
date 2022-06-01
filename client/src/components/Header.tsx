@@ -47,7 +47,7 @@ export default function Header() {
         <Link to={newGrantPath()}>
           <Button variant={ButtonVariants.primary}>
             <Plus color={colors["quaternary-text"]} />
-            Create a Grant
+            New Project
           </Button>
         </Link>
         {props.web3Initialized ? (
