@@ -9,18 +9,23 @@
   h1 {
     @apply text-7xl text-primary-text dark:text-primary-text font-semibold
   }
+
   h2 {
     @apply text-5xl text-primary-text dark:text-primary-text
   }
+
   h3 {
     @apply text-2xl text-primary-text dark:text-primary-text font-extralight
   }
+
   p {
     @apply text-primary-text dark:text-primary-text font-extralight
   }
+
   textarea {
     @apply appearance-none block border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none placeholder:text-sm
   }
+
   input {
     @apply flex-1 block w-full rounded border border-tertiary-text py-2 px-3 focus:outline-none  placeholder:text-sm
   }
