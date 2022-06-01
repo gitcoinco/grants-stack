@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Libre+Franklin:400,600|Miriam+Libre:400");
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
@@ -6,15 +8,22 @@
 @import "./Layout";
 
 @layer base {
+  html {
+    font-family: Libre Franklin;
+  }
+
   h1 {
     @apply text-7xl text-primary-text dark:text-primary-text font-semibold
   }
+
   h2 {
     @apply text-5xl text-primary-text dark:text-primary-text
   }
+
   h3 {
     @apply text-2xl text-primary-text dark:text-primary-text font-extralight
   }
+
   p {
     @apply text-primary-text dark:text-primary-text font-extralight
   }
