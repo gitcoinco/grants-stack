@@ -4,8 +4,6 @@ import "./utils/MetaPtr.sol";
 
 /**
  * @title ProjectRegistry
- * @notice todo
- * @dev todo
  */
 contract ProjectRegistry {
     // Types
@@ -66,8 +64,9 @@ contract ProjectRegistry {
     // External functions
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Creates a new project with recipient and a metadata pointer
+     * @param recipient the recipient address of a grant application
+     * @param metadata the metadata pointer
      */
     function createProject(address recipient, MetaPtr memory metadata) external {
         uint96 projectID = projectsCount++;
