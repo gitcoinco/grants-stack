@@ -6,7 +6,7 @@ export enum ButtonVariants {
 }
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
   variant: ButtonVariants;
   disabled?: boolean;
