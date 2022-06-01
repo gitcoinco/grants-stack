@@ -1,3 +1,40 @@
+### Program Setup
+
+The section here shows how to set up the program for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
+
+
+1. Create an `.env` file and fill out
+    - `INFURA_ID`               : Infura ID for deploying contract
+    - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
+    - `ETHERSCAN_API_KEY`       : API key for etherscan verification
+
+
+2. Deploy the `ProgramFactory` contract
+```shell
+yarn run goerli-deploy-program-factory
+```
+
+3. Deploy the `ProgramImplementation` contract
+```shell
+yarn run goerli-deploy-program-implementation
+```
+
+4. Update `program.config.ts` with deployed contracts based on your network
+```javascript
+export const params: DeployParams = {
+  goerli: {
+    programImplementationContract: 'DEPLOYED_PROGRAM_IMPLEMENTATION_CONTRACT',
+    programFactoryContract: 'DEPLOYED_PROGRAM_FACTORY_CONTRACT',
+    ...
+  },
+};
+```
+
+5. Update `ProgramFactory` to reference the `ProgramImplementation` contract.
+```shell
+yarn run goerli-deploy-update-program
+```
+
 ### GrantRound Setup
 
 The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
@@ -7,14 +44,14 @@ The section here shows how to set up the round manager for the first time on a g
     - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
 
-2. Deploy `GrantRoundFactory`
+2. Deploy the `GrantRoundFactory` contract
 ```shell
-yarn run goerli-deploy-factory
+yarn run goerli-deploy-round-factory
 ```
 
-3. Deploy `GrantRoundImplementation`
+3. Deploy the `GrantRoundImplementation` contract
 ```shell
-yarn run goerli-deploy-round
+yarn run goerli-deploy-round-implementation
 ```
 
 4. Update `round.config.ts` with deployed contracts based on your network
@@ -28,7 +65,7 @@ export const params: DeployParams = {
 };
 ```
 
-5. Update `GrantRoundFactory` to reference the `GrantRoundImplementation`
+5. Update `GrantRoundFactory` to reference the `GrantRoundImplementation` contract
 ```shell
 yarn run goerli-deploy-update-round
 ```

@@ -29,3 +29,18 @@ This is not the exahustive list but instead just shows example of a round deploy
 | Network | Address                                    |
 |---------|--------------------------------------------|
 | goerli  | 0xd8a6336a33a35a66de3c393663aad012e8a1d4cc |
+
+
+
+### ProgramFactory
+
+| Network | Address                                    |
+|---------|--------------------------------------------|
+| goerli  | 0xc2A3EB8b0aaFd6119a47AFa729722D300C94e48b |
+
+
+## ProgramImplementation
+
+| Network | Address                                    |
+|---------|--------------------------------------------|
+| goerli  | 0x585F25C3c2Eb15a32C54E3Aa24361B371206129C |

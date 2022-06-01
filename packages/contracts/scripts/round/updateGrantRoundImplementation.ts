@@ -2,14 +2,14 @@
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
-import { params } from '../config/round.config';
+import { roundParams } from '../config/round.config';
 
 
 export async function main(grantRoundFactoryContract?: string, grantRoundImplementationContract?: string) {
 
   const network = hre.network;
 
-  const networkParams = params[network.name];
+  const networkParams = roundParams[network.name];
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }

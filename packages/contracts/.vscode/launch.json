@@ -34,7 +34,7 @@
             "request": "launch",
             "name": "script: deployGrantRoundFactory",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-factory"],
+            "args": ["goerli-deploy-round-factory"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -64,6 +64,42 @@
             "args": ["goerli-deploy-bulk-vote"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "script: deployProgramImplementation",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-deploy-program-implementation"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "script: deployProgramFactory",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-deploy-program-factory"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "script: updateProgramImplementation",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-deploy-update-program"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "script: createProgram",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-create-program"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
     ]
 }
