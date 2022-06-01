@@ -27,6 +27,7 @@ import NewProject from "./components/grants/New";
 import EditProject from "./components/grants/Edit";
 import Landing from "./components/grants/Landing";
 import { startIPFS } from "./actions/ipfs";
+import { initializeWeb3 } from "./actions/web3";
 
 const logger: Middleware =
   ({ getState }: MiddlewareAPI) =>
@@ -48,6 +49,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
 store.dispatch<any>(startIPFS());
+store.dispatch<any>(initializeWeb3());
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
