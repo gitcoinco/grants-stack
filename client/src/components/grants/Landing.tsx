@@ -36,7 +36,7 @@ function Landing() {
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
       <div className="w-1/2 flex flex-col h-full justify-center container ml-10">
-        <h1 className="mb-8">Project Hub</h1>
+        <h1 className="mb-8">Grant Hub</h1>
         <p>
           Manage projects that generate maximum impact and receive funds
           matching from Gitcoin, partner DAO, or independent grant program
