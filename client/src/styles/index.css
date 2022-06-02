@@ -13,19 +13,22 @@
   }
 
   h1 {
-    @apply text-7xl text-primary-text dark:text-primary-text font-semibold
+    @apply text-7xl text-primary-text dark:text-primary-text;
+    font-family: Miriam Libre;
   }
 
   h2 {
-    @apply text-5xl text-primary-text dark:text-primary-text
+    @apply text-5xl text-primary-text dark:text-primary-text;
+    font-family: Miriam Libre;
   }
 
   h3 {
-    @apply text-2xl text-primary-text dark:text-primary-text font-extralight
+    @apply text-2xl text-primary-text dark:text-primary-text font-extralight;
+    font-family: Miriam Libre;
   }
 
   p {
-    @apply text-primary-text dark:text-primary-text font-extralight
+    @apply text-secondary-text dark:text-primary-text font-thin
   }
 
   textarea {
