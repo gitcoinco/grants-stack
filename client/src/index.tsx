@@ -49,7 +49,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
 store.dispatch<any>(startIPFS());
-store.dispatch<any>(initializeWeb3());
+store.dispatch<any>(initializeWeb3(false));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

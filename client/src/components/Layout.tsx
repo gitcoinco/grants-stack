@@ -1,8 +1,8 @@
 import React from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { RootState } from "../reducers";
-import Header from "./Header";
 import Landing from "./grants/Landing";
+import Header from "./Header";
 
 interface Props {
   children: JSX.Element;
@@ -28,11 +28,20 @@ function Layout(ownProps: Props) {
 
   return (
     <div className="flex flex-col h-full relative">
-      {!props.web3Error && props.web3Initialized && props.chainID && <Header />}
-      <main className="container mx-auto dark:bg-primary-background h-full">
-        {!props.web3Error && props.web3Initialized && props.chainID && children}
-        {!props.web3Initialized && <Landing />}
-      </main>
+      {!props.web3Initialized ? (
+        <Landing />
+      ) : (
+        <>
+          <Header />
+          <main className="container mx-auto dark:bg-primary-background h-full">
+            {!props.web3Error &&
+              props.web3Initialized &&
+              props.chainID &&
+              children}
+            {props.web3Error && <p>{props.web3Error}</p>}
+          </main>
+        </>
+      )}
     </div>
   );
 }
