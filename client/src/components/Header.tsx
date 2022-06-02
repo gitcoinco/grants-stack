@@ -34,7 +34,7 @@ export default function Header() {
           alt="Gitcoin Logo"
           src="./assets/gitcoin-logo.svg"
         />
-        <h3 className="ml-6">Project Hub</h3>
+        <h4 className="ml-6">Project Hub</h4>
       </div>
       {!props.web3Initialized && (
         <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
