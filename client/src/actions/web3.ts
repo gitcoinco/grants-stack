@@ -98,6 +98,31 @@ const loadWeb3Data = () => (dispatch: Dispatch) => {
   });
 };
 
+export const checkConnectionStatus = () => {
+  if (window.ethereum) {
+    return async (dispatch: Dispatch) => {
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_accounts",
+        });
+        if (accounts.length) {
+          const t: Web3Type = window.ethereum.isStatus
+            ? Web3Type.Status
+            : Web3Type.Generic;
+          dispatch(web3Initialized(t));
+          dispatch(web3AccountLoaded(accounts[0]));
+          dispatch<any>(loadWeb3Data());
+        }
+      } catch (e) {
+        console.log({ e });
+        dispatch(web3Error("Unable to connect web3 account"));
+      }
+    };
+  }
+
+  return notWeb3Browser();
+};
+
 export const initializeWeb3 = () => {
   if (window.ethereum) {
     return (dispatch: Dispatch, getState: () => RootState) => {
