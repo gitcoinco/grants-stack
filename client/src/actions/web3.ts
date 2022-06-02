@@ -106,38 +106,22 @@ const loadAccountData = (account: string) => (dispatch: Dispatch) => {
   dispatch(web3AccountLoaded(account));
 };
 
-export const checkConnectionStatus = () => {
-  if (window.ethereum) {
-    return async (dispatch: Dispatch) => {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        if (accounts.length) {
-          dispatch<any>(loadAccountData(accounts[0]));
-          dispatch<any>(loadWeb3Data());
-        }
-      } catch (e) {
-        console.log({ e });
-        dispatch(web3Error("Unable to connect web3 account"));
-      }
-    };
-  }
-
-  return notWeb3Browser();
-};
-
-export const initializeWeb3 = () => {
+export const initializeWeb3 = (requestAccess = true) => {
   if (window.ethereum) {
     return (dispatch: Dispatch, getState: () => RootState) => {
       const state = getState();
-      if (state.web3.initializing || state.web3.initialized) {
+      if (
+        (!requestAccess && state.web3.initializing) ||
+        state.web3.initialized
+      ) {
         return;
       }
 
       dispatch(web3Initializing());
+      const method = requestAccess ? "eth_requestAccounts" : "eth_accounts";
+
       window.ethereum
-        .request({ method: "eth_requestAccounts" })
+        .request({ method })
         .then((accounts: Array<string>) => {
           if (accounts.length > 0) {
             dispatch<any>(loadAccountData(accounts[0]));
