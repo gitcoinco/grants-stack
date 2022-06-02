@@ -5,10 +5,10 @@ function TextLoading() {
         <div className="h-2 bg-text rounded" />
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-4">
-            <div className="h-2 bg-primary-text rounded col-span-2" />
-            <div className="h-2 bg-primary-text rounded col-span-1" />
+            <div className="h-2 bg-secondary-text rounded col-span-2" />
+            <div className="h-2 bg-secondary-text rounded col-span-1" />
           </div>
-          <div className="h-2 bg-primary-text rounded" />
+          <div className="h-2 bg-secondary-text rounded" />
         </div>
       </div>
     </div>
