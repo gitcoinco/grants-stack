@@ -3,8 +3,12 @@ import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
 import { initializeWeb3 } from "../actions/web3";
-import { grantsPath, newGrantPath } from "../routes";
+import { newGrantPath } from "../routes";
 import Button, { ButtonVariants } from "./base/Button";
+import Plus from "../icons/plus";
+import colors from "../styles/colors";
+import { shortAddress } from "../utils/wallet";
+import { ChainLogos, Blockchain } from "../icons/Blockchain";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -17,59 +21,52 @@ export default function Header() {
     }),
     shallowEqual
   );
+  console.log({ props });
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(initializeWeb3());
   };
   return (
-    <header className="flex justify-between container mx-auto">
-      <div className="flex">
+    <header className="justify-between container mx-auto border-b mb-4 sm:flex xs:flex-col sm:h-20 xs:h-40">
+      <div className="flex items-center">
         <img
           className="py-4"
           alt="Gitcoin Logo"
           src="./assets/gitcoin-logo.svg"
         />
-        <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
+        <h3 className="ml-6">Project Hub</h3>
       </div>
       {!props.web3Initialized && (
         <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
           Connect Wallet
         </Button>
       )}
-      {!props.web3Error && props.web3Initialized && (
-        <>
-          <div className="flex flex-col justify-center">
-            <p className="p">
-              Welcome {props.account} (chainID: {props.chainID})
-            </p>
-          </div>
-          <div>
-            <Button
-              variant={ButtonVariants.outline}
-              onClick={() => connectHandler}
-            >
-              <Link to={grantsPath()}>Grants</Link>
-            </Button>
-            <Button
-              variant={ButtonVariants.outline}
-              onClick={() => connectHandler}
-            >
-              <Link to={newGrantPath()}>Create a Grant</Link>
-            </Button>
-          </div>
-        </>
-      )}
-      {!props.web3Initialized && (
-        <div>
+
+      <div className="flex items-center">
+        <Link to={newGrantPath()}>
+          <Button variant={ButtonVariants.primary}>
+            <Plus color={colors["quaternary-text"]} />
+            New Project
+          </Button>
+        </Link>
+        {props.web3Initialized ? (
           <Button
             variant={ButtonVariants.outline}
             onClick={() => connectHandler}
           >
-            CONNECT
+            <Blockchain chain={ChainLogos.ETH} />
+            {props.account ? shortAddress(props.account) : "Connect Wallet"}
           </Button>
-        </div>
-      )}
+        ) : (
+          <Button
+            variant={ButtonVariants.outline}
+            onClick={() => connectHandler}
+          >
+            Connect Wallet
+          </Button>
+        )}
+      </div>
     </header>
   );
 }
