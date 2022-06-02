@@ -98,6 +98,14 @@ const loadWeb3Data = () => (dispatch: Dispatch) => {
   });
 };
 
+const loadAccountData = (account: string) => (dispatch: Dispatch) => {
+  const t: Web3Type = window.ethereum.isStatus
+    ? Web3Type.Status
+    : Web3Type.Generic;
+  dispatch(web3Initialized(t));
+  dispatch(web3AccountLoaded(account));
+};
+
 export const checkConnectionStatus = () => {
   if (window.ethereum) {
     return async (dispatch: Dispatch) => {
@@ -106,11 +114,7 @@ export const checkConnectionStatus = () => {
           method: "eth_accounts",
         });
         if (accounts.length) {
-          const t: Web3Type = window.ethereum.isStatus
-            ? Web3Type.Status
-            : Web3Type.Generic;
-          dispatch(web3Initialized(t));
-          dispatch(web3AccountLoaded(accounts[0]));
+          dispatch<any>(loadAccountData(accounts[0]));
           dispatch<any>(loadWeb3Data());
         }
       } catch (e) {
@@ -135,13 +139,8 @@ export const initializeWeb3 = () => {
       window.ethereum
         .request({ method: "eth_requestAccounts" })
         .then((accounts: Array<string>) => {
-          const t: Web3Type = window.ethereum.isStatus
-            ? Web3Type.Status
-            : Web3Type.Generic;
-          dispatch(web3Initialized(t));
-
           if (accounts.length > 0) {
-            dispatch(web3AccountLoaded(accounts[0]));
+            dispatch<any>(loadAccountData(accounts[0]));
           }
 
           // FIXME: fix dispatch<any>
