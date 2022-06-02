@@ -43,13 +43,10 @@ function Project() {
     <div>
       {props.currentGrant && (
         <>
-          <div>Grant #{props.currentGrant.chain}</div>
+          <div>Grant #{props.id}</div>
           <p>Title: {props.currentGrant.title}</p>
           <p>Description: {props.currentGrant.description}</p>
           <p>Webstie: {props.currentGrant.website}</p>
-          <p>Chain: {props.currentGrant.chain}</p>
-          <p>Wallet: {props.currentGrant.wallet}</p>
-          <p>Received Funding: {props.currentGrant.receivedFunding}</p>
         </>
       )}
 

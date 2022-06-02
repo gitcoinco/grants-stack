@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import {
-  TextArea,
-  TextInput,
-  WebsiteInput,
-  RadioInput,
-} from "../grants/inputs";
+import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
@@ -34,9 +29,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     title: "",
     description: "",
     website: "",
-    chain: "",
-    wallet: "",
-    receivedFunding: "No",
+    challenges: "",
+    roadmap: "",
   });
   const publishProject = async () => {
     await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
@@ -72,9 +66,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         title: currentGrant.title,
         description: currentGrant.description,
         website: currentGrant.website,
-        chain: currentGrant.chain,
-        wallet: currentGrant.wallet,
-        receivedFunding: currentGrant.receivedFunding,
+        challenges: currentGrant.challenges,
+        roadmap: currentGrant.roadmap,
       });
     }
   }, [dispatch, props.ipfsInitialized, currentGrantId, props.currentGrant]);
@@ -93,61 +86,51 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   // /TODO
 
   return (
-    <div className="border border-solid border-secondary-background rounded text-primary-text p-4">
+    <div className="border border-solid border-tertiary-text rounded text-primary-text p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         <TextInput
-          label="Title"
+          label="Project Name"
           name="title"
           placeholder="Stop destruction in Ukraine"
           value={formInputs.title}
           changeHandler={(e) => handleInput(e)}
         />
-        <TextArea
-          label="Description"
-          name="description"
-          placeholder="Describe your project!"
-          value={formInputs.description}
-          changeHandler={(e) => handleInput(e)}
-        />
         <WebsiteInput
-          label="Website"
+          label="Project Website"
           name="website"
           value={formInputs.website}
           changeHandler={(e) => handleInput(e)}
         />
-        <TextInput
-          label="Chain"
-          name="chain"
-          value={formInputs.chain}
+        <TextArea
+          label="Project Description"
+          name="description"
+          placeholder="What is the project about and what kind of impact does it aim to have?"
+          value={formInputs.description}
           changeHandler={(e) => handleInput(e)}
         />
-        <TextInput
-          label="Wallet"
-          name="wallet"
-          value={formInputs.wallet}
+        <TextArea
+          label="Project Roadmap"
+          name="roadmap"
+          placeholder="What are the dependencies and project goals? What are the timelines per milestone or deliverable?"
+          value={formInputs.roadmap}
           changeHandler={(e) => handleInput(e)}
         />
-        Have you raised external funding?
-        {formInputs.receivedFunding}
-        <RadioInput
-          name="receivedFunding"
-          value="Yes"
-          currentValue={formInputs.receivedFunding}
+        <TextArea
+          label="Project Challenges"
+          name="challenges"
+          placeholder="What are some of the risks you see ahead? How do you plan to prepare?"
+          value={formInputs.challenges}
           changeHandler={(e) => handleInput(e)}
         />
-        <RadioInput
-          name="receivedFunding"
-          value="No"
-          currentValue={formInputs.receivedFunding}
-          changeHandler={(e) => handleInput(e)}
-        />
-        <Button
-          disabled={disabled}
-          variant={ButtonVariants.outline}
-          onClick={publishProject}
-        >
-          Save Data
-        </Button>
+        <div className="flex w-full justify-end mt-6">
+          <Button
+            disabled={disabled}
+            variant={ButtonVariants.primary}
+            onClick={publishProject}
+          >
+            Save &amp; Publish
+          </Button>
+        </div>
       </form>
       {props.savingFile && !props.lastFileSaved && (
         <p>Your file is being saved to IPFS</p>
