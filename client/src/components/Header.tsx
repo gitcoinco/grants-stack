@@ -5,10 +5,10 @@ import { RootState } from "../reducers";
 import { initializeWeb3 } from "../actions/web3";
 import { newGrantPath } from "../routes";
 import Button, { ButtonVariants } from "./base/Button";
-import Plus from "../icons/plus";
+import Plus from "./icons/Plus";
 import colors from "../styles/colors";
 import { shortAddress } from "../utils/wallet";
-import { ChainLogos, Blockchain } from "../icons/Blockchain";
+import { ChainLogos, Blockchain } from "./icons/Blockchain";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -21,7 +21,6 @@ export default function Header() {
     }),
     shallowEqual
   );
-  console.log({ props });
 
   const connectHandler = (e: React.MouseEvent) => {
     e.preventDefault();
