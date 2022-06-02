@@ -1,18 +1,29 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
+import { slugs } from "../../routes";
 
 function Landing() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Initialized: state.web3.initialized,
     web3Error: state.web3.error,
+    account: state.web3.account,
   }));
 
   const connectHandler = () => {
     dispatch(initializeWeb3());
   };
+
+  useEffect(() => {
+    if (props.account) {
+      navigate(slugs.grants, { replace: true });
+    }
+  }, [props.account]);
 
   return (
     <div className="flex h-full">
