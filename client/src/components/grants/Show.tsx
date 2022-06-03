@@ -50,15 +50,20 @@ function Project() {
         <>
           <div className="flex justify-between items-center mb-6">
             <h3 className="flex">
-              <Link to={grantsPath()}>
-                <Arrow color={colors["primary-text"]} />
-              </Link>{" "}
+              <div className="pt-2 mr-2">
+                <Link to={grantsPath()}>
+                  <Arrow color={colors["primary-text"]} />
+                </Link>{" "}
+              </div>
               Project Details
             </h3>
             {props.id && (
               <Link to={editPath(props.id)}>
                 <Button variant={ButtonVariants.outline}>
-                  <Pencil color={colors["secondary-text"]} /> Edit
+                  <div className="m-1">
+                    <Pencil color={colors["secondary-text"]} />
+                  </div>
+                  Edit
                 </Button>
               </Link>
             )}

@@ -13,7 +13,10 @@ function NewProject() {
         <div className="flex justify-end">
           <Link to={slugs.grants}>
             <Button variant={ButtonVariants.outlineDanger}>
-              <Cross color={colors["danger-background"]} /> Exit
+              <div className="flex items-center">
+                <Cross color={colors["danger-background"]} />{" "}
+                <span className="pl-2">Exit</span>
+              </div>
             </Button>
           </Link>
           {/* Commenting out until we figure out how drafts will be saved
