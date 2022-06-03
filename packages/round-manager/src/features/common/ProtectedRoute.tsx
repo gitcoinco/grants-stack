@@ -1,6 +1,6 @@
 import { Outlet, useOutletContext } from 'react-router-dom'
 
-import { useGetWeb3Query, Web3Instance } from "./web3Service"
+import { useGetWeb3Query, Web3Instance } from "../api/web3Service"
 
 
 /**

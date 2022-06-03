@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { global } from "../../global"
-import { api } from "../../api"
+import { api } from "."
 
 
 declare global {

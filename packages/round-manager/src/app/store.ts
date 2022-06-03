@@ -14,7 +14,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import thunkMiddleware from "redux-thunk"
 
 import history from "../history"
-import { api } from "../api"
+import { api } from "../features/api"
 
 
 const logger: Middleware =

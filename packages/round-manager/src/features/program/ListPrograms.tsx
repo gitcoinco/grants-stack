@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-import { useWeb3 } from "../auth/ProtectedRoute"
+import { useWeb3 } from "../common/ProtectedRoute"
 
 
 function ListPrograms() {
