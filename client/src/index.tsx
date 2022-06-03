@@ -21,7 +21,7 @@ import Layout from "./components/Layout";
 import reportWebVitals from "./reportWebVitals";
 import history from "./history";
 import { slugs } from "./routes";
-import GrantsList from "./components/grants/List";
+import ProjectsList from "./components/grants/List";
 import Project from "./components/grants/Show";
 import NewProject from "./components/grants/New";
 import EditProject from "./components/grants/Edit";
@@ -63,7 +63,7 @@ root.render(
         <Layout>
           <Routes>
             <Route path={slugs.root} element={<Landing />} />
-            <Route path={slugs.grants} element={<GrantsList />} />
+            <Route path={slugs.grants} element={<ProjectsList />} />
             <Route path={slugs.grant} element={<Project />} />
             <Route path={slugs.newGrant} element={<NewProject />} />
             <Route path={slugs.edit} element={<EditProject />} />
