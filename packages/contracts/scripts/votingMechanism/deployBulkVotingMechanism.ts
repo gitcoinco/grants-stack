@@ -18,7 +18,7 @@ export async function main() {
   const contractFactory = await ethers.getContractFactory("BulkVote");
   const contract = await contractFactory.deploy();
 
-  console.log(`Deploying BulkVote to ${contract.address}....`);
+  console.log(`Deploying BulkVote to ${contract.address}`);
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
 

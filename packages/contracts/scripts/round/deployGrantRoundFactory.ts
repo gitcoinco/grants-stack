@@ -18,7 +18,7 @@ export async function main() {
   const contractFactory = await ethers.getContractFactory("GrantRoundFactory");
   const contract = await contractFactory.deploy();
 
-  console.log(`Deploying GrantRoundFactory to ${contract.address}....`);
+  console.log(`Deploying GrantRoundFactory to ${contract.address}`);
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
 
