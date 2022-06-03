@@ -8,8 +8,8 @@ export function TextInput({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-2">
-      <label className="block text-xs" htmlFor={label}>
+    <div className="mt-6 w-full sm:w-1/2">
+      <label className="block text-xs mb-2" htmlFor={label}>
         {label}
       </label>
       <input
@@ -51,8 +51,8 @@ export function WebsiteInput({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-2">
-      <label htmlFor={name} className="block text-xs">
+    <div className="mt-6 w-full sm:w-2/3">
+      <label htmlFor={name} className="block text-xs mb-2">
         {" "}
         {label}{" "}
       </label>
@@ -83,8 +83,8 @@ export function TextArea({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-2">
-      <label className="block text-xs" htmlFor={label}>
+    <div className="mt-6">
+      <label className="block text-xs mb-2" htmlFor={label}>
         {label}
       </label>
       <textarea

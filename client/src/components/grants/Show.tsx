@@ -4,6 +4,11 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { grantsPath, editPath } from "../../routes";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
+import Button, { ButtonVariants } from "../base/Button";
+import Pencil from "../icons/Pencil";
+import colors from "../../styles/colors";
+import LinkIcon from "../icons/LinkIcon";
+import Arrow from "../icons/Arrow";
 
 function Project() {
   const dispatch = useDispatch();
@@ -43,21 +48,47 @@ function Project() {
     <div>
       {props.currentGrant && (
         <>
-          <div>Grant #{props.currentGrant.chain}</div>
-          <p>Title: {props.currentGrant.title}</p>
-          <p>Description: {props.currentGrant.description}</p>
-          <p>Webstie: {props.currentGrant.website}</p>
-          <p>Chain: {props.currentGrant.chain}</p>
-          <p>Wallet: {props.currentGrant.wallet}</p>
-          <p>Received Funding: {props.currentGrant.receivedFunding}</p>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="flex">
+              <div className="pt-2 mr-2">
+                <Link to={grantsPath()}>
+                  <Arrow color={colors["primary-text"]} />
+                </Link>{" "}
+              </div>
+              Project Details
+            </h3>
+            {props.id && (
+              <Link to={editPath(props.id)}>
+                <Button variant={ButtonVariants.outline}>
+                  <div className="m-1">
+                    <Pencil color={colors["secondary-text"]} />
+                  </div>
+                  Edit
+                </Button>
+              </Link>
+            )}
+          </div>
+          <div className="w-full md:w-2/3">
+            <img
+              className="w-full mb-4"
+              src="./assets/card-img.png"
+              alt="project banner"
+            />
+            <h4 className="mb-4">{props.currentGrant.title}</h4>
+            <div className="flex items-center pb-6 mb-6 border-b">
+              <LinkIcon color={colors["secondary-text"]} />{" "}
+              <p className="ml-1">{props.currentGrant.website}</p>
+              {/* TODO add created at updated timestamp */}
+            </div>
+            <p className="text-xs text-primary-text mb-1">Description</p>
+            <p className="mb-12">{props.currentGrant.description}</p>
+            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
+            <p className="mb-12">{props.currentGrant.roadmap}</p>
+            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
+            <p className="mb-12">{props.currentGrant.challenges}</p>
+          </div>
         </>
       )}
-
-      {props.id && <Link to={editPath(props.id)}>Edit Grant #{props.id}</Link>}
-
-      <div>
-        <Link to={grantsPath()}>Back to grants list</Link>
-      </div>
     </div>
   );
 }
