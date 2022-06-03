@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-// import { RootState } from '../../reducers';
 import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";

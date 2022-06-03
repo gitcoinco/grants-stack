@@ -23,7 +23,17 @@
   }
 
   h3 {
+    @apply text-3xl text-primary-text dark:text-primary-text font-extralight;
+    font-family: Miriam Libre;
+  }
+
+  h4 {
     @apply text-2xl text-primary-text dark:text-primary-text font-extralight;
+    font-family: Miriam Libre;
+  }
+
+  h5 {
+    @apply text-base text-primary-text dark:text-primary-text font-extralight;
     font-family: Miriam Libre;
   }
 
