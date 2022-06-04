@@ -10,6 +10,7 @@ export async function main(grantRoundFactoryContract?: string, grantRoundImpleme
   const network = hre.network;
 
   const networkParams = roundParams[network.name];
+
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }

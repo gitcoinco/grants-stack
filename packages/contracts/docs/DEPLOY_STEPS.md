@@ -35,6 +35,7 @@ export const params: DeployParams = {
 yarn run goerli-deploy-update-program
 ```
 
+
 ### GrantRound Setup
 
 The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
@@ -43,6 +44,7 @@ The section here shows how to set up the round manager for the first time on a g
     - `INFURA_ID`               : Infura ID for deploying contract
     - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
+
 
 2. Deploy the `GrantRoundFactory` contract
 ```shell
