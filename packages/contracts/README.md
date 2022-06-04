@@ -29,6 +29,7 @@ This project is built using hardhat.
 
 ## Terminology
 
+- **Program**: wallets which together form a team
 - **Round Operators**: wallets that have the permission to deploy & manage the round
 - **Voter** : wallets who cast a vote to a grant during the grant round 
 
@@ -47,9 +48,18 @@ These steps would have to be done per chain but there are intended to be deploye
 3. Any interaction in terms of updating parameters etc can be performed against the GrantRoundImplementation contract itself
 
 
-
 The GrantRoundFactory enables us to have upgradable contracts on GrantRoundImplementation
+
+
+## Deploy Steps
+
+To know how the contracts should be setup, refer [DEPLOY_STEPS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEPLOY_STEPS.md)
+
+
+## Chain Deployment List
+
+To know the addresses are deployed on which network. refer [CHAINS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/CHAINS.md)
 
 ## Development
 
-To contribute to this project, fork the project and follow the instructions at `/docs/Dev.md`
+To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEV.md)
