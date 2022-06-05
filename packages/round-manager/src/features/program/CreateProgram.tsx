@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import tw from "tailwind-styled-components"
 
 import { useWeb3 } from "../common/ProtectedRoute"
-import { useCreateProgramMutation, Program } from "../api/programService"
+import { useCreateProgramMutation } from "../api/programService"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 
