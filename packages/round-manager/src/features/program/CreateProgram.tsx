@@ -55,6 +55,14 @@ export default function CreateProgram() {
   const { register, formState, handleSubmit } = useForm<FormData>()
   const { errors } = formState
 
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
+    }
+  })
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const fulfilled = await createProgram({
@@ -66,14 +74,6 @@ export default function CreateProgram() {
       console.error(e)
     }
   }
-
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        navigate('/')
-      }, 2000)
-    }
-  })
 
   return (
     <div className="container mx-auto h-screen px-4 py-16">

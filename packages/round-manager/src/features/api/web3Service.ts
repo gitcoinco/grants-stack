@@ -33,10 +33,14 @@ export const web3Api = api.injectEndpoints({
             return { error: "not a web3 browser" }
           }
 
+          // Instantiate ethers.js provider and signer
           global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+          global.web3Signer = global.web3Provider!.getSigner()
 
-          const accounts: Array<string> = await window.ethereum.request({ method: "eth_requestAccounts" })
+          // Fetch connected accounts
+          const accounts: Array<string> = await global.web3Provider!.send("eth_requestAccounts", [])
 
+          // Fetch network details
           const { chainId } = await global.web3Provider!.getNetwork()
 
           if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {

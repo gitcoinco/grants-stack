@@ -1,12 +1,7 @@
 // import { ethers } from "ethers"
 import { api } from "."
+import { global } from "../../global"
 
-
-declare global {
-  interface Window {
-    ethereum: any;
-  }
-}
 
 export interface Program {
   /**
@@ -27,12 +22,26 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/** Contract ABI for the ProgramFactory in the Human-Readable format */
+const CONTRACT_ABI = [
+  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  "event ProgramContractUpdated(address programContractAddress)",
+  "event ProgramCreated(address programContractAddress)",
+  "function create(tuple(uint256 protocol, string pointer) _metaPtr, address[] _programOperators) returns (address)",
+  "function owner() view returns (address)",
+  "function programContract() view returns (address)",
+  "function renounceOwnership()",
+  "function transferOwnership(address newOwner)",
+  "function updateProgramContract(address _programContract)"
+]
+
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createProgram: builder.mutation<string, Program>({
       queryFn: async (program) => {
         try {
           let res = "TODO"
+          console.log(global.web3Provider)
           await sleep(5000)
 
           return { data: res }
@@ -64,9 +73,9 @@ export const programApi = api.injectEndpoints({
             name: "TODO",
             operatorWallets: []
           }
-          
+
           return { data: res }
-          
+
         } catch (err) {
           console.log("error", err)
           return { error: "Unable to fetch program" }
@@ -80,9 +89,9 @@ export const programApi = api.injectEndpoints({
             name: "TODO",
             operatorWallets: []
           }]
-          
+
           return { data: res }
-          
+
         } catch (err) {
           console.log("error", err)
           return { error: "Unable to fetch programs" }
@@ -93,9 +102,9 @@ export const programApi = api.injectEndpoints({
       queryFn: async (id) => {
         try {
           let res = "TODO"
-    
+
           return { data: res }
-    
+
         } catch (err) {
           console.log("error", err)
           return { error: "Unable to delete program" }
