@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
@@ -12,7 +12,7 @@ import "../utils/MetaPtr.sol";
  * @notice Program which would managed by a group of 
  * PROGRAM_OPERATOR deployed via the ProgramFactory
  */
-contract ProgramImplementation is AccessControl, Initializable {
+contract ProgramImplementation is AccessControlEnumerable, Initializable {
 
   // --- Libraries ---
   using Address for address;

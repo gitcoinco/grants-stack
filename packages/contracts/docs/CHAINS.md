@@ -36,11 +36,11 @@ This is not the exahustive list but instead just shows example of a round deploy
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0xc2A3EB8b0aaFd6119a47AFa729722D300C94e48b |
+| goerli  | 0x0EbD2E2130b73107d0C45fF2E16c93E7e2e10e3a |
 
 
 ## ProgramImplementation
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0x585F25C3c2Eb15a32C54E3Aa24361B371206129C |
+| goerli  | 0x54457339Ca7Cc674f035ed2456d68631672733b7 |
