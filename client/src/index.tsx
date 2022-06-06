@@ -63,7 +63,7 @@ const colors = {
   //   800: '#153e75',
   //   700: '#2a69ac',
   // },
-}
+};
 
 const theme = extendTheme({ colors });
 
