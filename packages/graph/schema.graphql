@@ -1,0 +1,22 @@
+# id = `${programAddress.toHex()}`
+type Program @entity {
+  id: ID!
+  roles: [Role!]! @derivedFrom(field: "program") 
+  accounts: [Account!]! @derivedFrom(field: "program") 
+}
+
+# id = `${program.toHex()}-${role.toHex()}`
+type Role @entity {
+  id: ID!
+  role: String!
+  accounts: [Account!] @derivedFrom(field: "role")
+  program: Program!
+}
+
+# id = `${programAddress.toHex()}`
+type Account @entity {
+  id: ID!
+  address: String!
+  role: Role!
+  program: Program!
+} 

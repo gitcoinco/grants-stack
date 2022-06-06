@@ -11,20 +11,26 @@
     "test": "yarn hardhat test",
     "coverage": "yarn hardhat coverage",
 
+    "export-abi": "yarn run hardhat export-abi",
+    "clear-abi": "yarn run hardhat clear-abi",
+    
     "// progam-deploy-scripts": "//-- Program deploy Script --//",
+    
     "goerli-deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network goerli",
     "goerli-deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network goerli",
     "goerli-link-program-implementation": "yarn hardhat run scripts/program/linkProgramImplementation.ts --network goerli",
     "goerli-create-program": "yarn hardhat run scripts/program/createProgram.ts --network goerli",
     "goerli-upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network goerli",
-
+    
     "// round-deploy-scripts": "//-- Round deploy Script --//",
+
     "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network goerli",
     "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network goerli",
     "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network goerli",
     "goerli-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
+
     "goerli-deploy-bulk-voting-strategy": "yarn hardhat run scripts/votingStrategy/deployBulkVotingStrategy.ts --network goerli"
   },
   "devDependencies": {
@@ -51,6 +57,7 @@
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.5",
     "hardhat": "^2.9.4",
+    "hardhat-abi-exporter": "^2.9.0",
     "hardhat-gas-reporter": "^1.0.8",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.13",

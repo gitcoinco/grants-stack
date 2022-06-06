@@ -8,6 +8,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "hardhat-abi-exporter";
 
 dotenv.config();
 
@@ -56,6 +57,20 @@ function createTestnetConfig(
 }
 
 
+const abiExporter = [
+  {
+    path: './abis/pretty',
+    flat: true,
+    clear: true,
+    pretty: true,
+  },
+  {
+    path: './abis/ugly',
+    flat: true,
+    clear: true,
+  }
+];
+
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
@@ -73,6 +88,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
+  abiExporter: abiExporter,
 };
 
 export default config;

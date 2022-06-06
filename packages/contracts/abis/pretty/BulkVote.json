@@ -1,0 +1,4 @@
+[
+  "event Voted(address,uint256,address indexed,address indexed,address indexed)",
+  "function vote(tuple(address,uint256,address,address)[])"
+]

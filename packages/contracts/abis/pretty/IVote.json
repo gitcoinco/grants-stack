@@ -1,0 +1,3 @@
+[
+  "function vote(tuple(address,uint256,address,address)[])"
+]
