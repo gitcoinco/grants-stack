@@ -91,7 +91,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         <TextInput
           label="Project Name"
           name="title"
-          placeholder="Stop destruction in Ukraine"
+          placeholder="Decentralized Autonomous Markets In California"
           value={formInputs.title}
           changeHandler={(e) => handleInput(e)}
         />
