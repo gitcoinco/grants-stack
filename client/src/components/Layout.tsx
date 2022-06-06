@@ -33,7 +33,7 @@ function Layout(ownProps: Props) {
         title: "Wallet connected",
         status: "success",
         isClosable: true,
-      })
+      });
     }
   }, [props.web3Initialized]);
 
