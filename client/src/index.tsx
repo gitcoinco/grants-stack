@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Route, Routes } from "react-router";
 import thunkMiddleware from "redux-thunk";
 import { Provider } from "react-redux";
+import { extendTheme, ChakraProvider } from "@chakra-ui/react";
 import {
   createStore,
   applyMiddleware,
@@ -55,22 +56,35 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+const colors = {
+  // example:
+  // brand: {
+  //   900: '#1a365d',
+  //   800: '#153e75',
+  //   700: '#2a69ac',
+  // },
+}
+
+const theme = extendTheme({ colors });
+
 root.render(
   // <React.StrictMode>
   <ErrorBoundary>
-    <Provider store={store}>
-      <ReduxRouter history={history} store={store}>
-        <Layout>
-          <Routes>
-            <Route path={slugs.root} element={<Landing />} />
-            <Route path={slugs.grants} element={<ProjectsList />} />
-            <Route path={slugs.grant} element={<Project />} />
-            <Route path={slugs.newGrant} element={<NewProject />} />
-            <Route path={slugs.edit} element={<EditProject />} />
-          </Routes>
-        </Layout>
-      </ReduxRouter>
-    </Provider>
+    <ChakraProvider theme={theme}>
+      <Provider store={store}>
+        <ReduxRouter history={history} store={store}>
+          <Layout>
+            <Routes>
+              <Route path={slugs.root} element={<Landing />} />
+              <Route path={slugs.grants} element={<ProjectsList />} />
+              <Route path={slugs.grant} element={<Project />} />
+              <Route path={slugs.newGrant} element={<NewProject />} />
+              <Route path={slugs.edit} element={<EditProject />} />
+            </Routes>
+          </Layout>
+        </ReduxRouter>
+      </Provider>
+    </ChakraProvider>
   </ErrorBoundary>
   // </React.StrictMode>
 );
