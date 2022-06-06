@@ -30,7 +30,7 @@ contract GrantRoundFactory is Ownable {
   event GrantRoundContractUpdated(address grantRoundAddress);
 
   /// @notice Emitted when a new GrantRound is created
-  event GrantRoundCreated(address indexed grantRoundAddress);
+  event GrantRoundCreated(address indexed grantRoundAddress, address indexed ownedBy);
 
 
   // --- Core methods ---
@@ -55,6 +55,7 @@ contract GrantRoundFactory is Ownable {
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
+    * @param _ownedBy Program which created the contract
    * @param _metaPtr URL pointing to the grant round metadata
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
@@ -64,13 +65,14 @@ contract GrantRoundFactory is Ownable {
     uint256 _roundStartTime,
     uint256 _roundEndTime,
     IERC20 _token,
+    address _ownedBy,
     MetaPtr calldata _metaPtr,
     address[] calldata _roundOperators
   ) external returns (address) {
 
-    address clone = Clones.clone(grantRoundContract);
+    address _clone = Clones.clone(grantRoundContract);
 
-    GrantRoundImplementation(clone).initialize(
+    GrantRoundImplementation(_clone).initialize(
       _votingContract,
       _grantApplicationsStartTime,
       _roundStartTime,
@@ -80,9 +82,9 @@ contract GrantRoundFactory is Ownable {
       _roundOperators
     );
 
-    emit GrantRoundCreated(clone);
+    emit GrantRoundCreated(_clone, _ownedBy);
 
-    return clone;
+    return _clone;
   }
 
 }
