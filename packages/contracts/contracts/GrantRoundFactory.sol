@@ -30,7 +30,7 @@ contract GrantRoundFactory is Ownable {
   event GrantRoundContractUpdated(address grantRoundAddress);
 
   /// @notice Emitted when a new GrantRound is created
-  event GrantRoundCreated(address grantRoundAddress);
+  event GrantRoundCreated(address indexed grantRoundAddress);
 
 
   // --- Core methods ---
