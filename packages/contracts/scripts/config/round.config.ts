@@ -1,14 +1,13 @@
 // Update this file any time a new contract has been deployed
-type NetworkParams = {
+type RoundParams = {
   grantRoundImplementationContract: string;
   grantRoundFactoryContract: string;
   bulkVoteContract: string;
 };
 
-type DeployParams = Record<string, NetworkParams>;
+type DeployParams = Record<string, RoundParams>;
 
-// Any timr
-export const params: DeployParams = {
+export const roundParams: DeployParams = {
   goerli: {
     grantRoundImplementationContract: '0xc2B040cdd5fba17779ca2d81c4214d590Db885A9',
     grantRoundFactoryContract: '0x191DE462AFfcD7c45db63A80756d6eEdD1a66709',
