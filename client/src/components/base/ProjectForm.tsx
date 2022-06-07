@@ -19,7 +19,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
-      lastFileSaved: state.ipfs.lastFileSavedURL,
+      lastFileSaved: state.ipfs.lastFileSavedCID,
       txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);

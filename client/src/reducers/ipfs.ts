@@ -14,7 +14,7 @@ export interface IPFSState {
   newFileSaved: boolean;
   ipfsSavingFile: boolean;
   initializationError: string | undefined;
-  lastFileSavedURL: string | undefined;
+  lastFileSavedCID: string | undefined;
 }
 
 const initialState: IPFSState = {
@@ -23,7 +23,7 @@ const initialState: IPFSState = {
   newFileSaved: false,
   ipfsSavingFile: false,
   initializationError: undefined,
-  lastFileSavedURL: undefined,
+  lastFileSavedCID: undefined,
 };
 
 export const ipfsReducer = (
@@ -59,7 +59,7 @@ export const ipfsReducer = (
     case IPFS_FILE_SAVED: {
       return {
         ...state,
-        lastFileSavedURL: action.url,
+        lastFileSavedCID: action.cid,
         newFileSaved: true,
         ipfsSavingFile: false,
       };
@@ -77,7 +77,7 @@ export const ipfsReducer = (
         ...state,
         newFileSaved: false,
         ipfsSavingFile: false,
-        lastFileSavedURL: undefined,
+        lastFileSavedCID: undefined,
       };
     }
 

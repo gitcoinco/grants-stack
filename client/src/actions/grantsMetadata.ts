@@ -79,31 +79,13 @@ export const fetchGrantData =
       return;
     }
 
-    const cachedMetadata = state.grantsMetadata[id]?.metadata;
-    if (
-      cachedMetadata !== undefined &&
-      cachedMetadata.uri === grant.metadata.pointer
-    ) {
-      dispatch(grantMetadataFetched(cachedMetadata));
-      return;
-    }
-
-    // FIXME: remove when grant metadata uri is saved without the full URL
-    const matches = grant.metadata.pointer.match(
-      /^https:\/\/ipfs.io\/ipfs\/(.+)$/
-    );
-    if (matches === null) {
-      return;
-    }
-
-    const cid = matches[1];
     const chunks = [];
 
     dispatch(grantMetadataLoading(id));
 
     let source;
     try {
-      source = await global.ipfs!.cat(cid);
+      source = await global.ipfs!.cat(grant.metadata.pointer);
     } catch (e) {
       // FIXME: dispatch "ipfs error"
       console.error(e);
@@ -130,7 +112,8 @@ export const fetchGrantData =
     dispatch(
       grantMetadataFetched({
         ...metadata,
-        uri: grant.metadata.pointer,
+        protocol: grant.metadata.protocol,
+        pointer: grant.metadata.pointer,
         id,
       })
     );

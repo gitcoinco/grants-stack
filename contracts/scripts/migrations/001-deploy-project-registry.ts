@@ -18,7 +18,6 @@ async function main() {
   const ProjectRegistry = await ethers.getContractFactory("ProjectRegistry");
   const instance = await ProjectRegistry.deploy();
   console.log("tx hash", instance.deployTransaction.hash);
-  console.log(instance);
   await instance.deployed();
 
   console.log("ProjectRegistry deployed to:", instance.address);

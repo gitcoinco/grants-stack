@@ -20,7 +20,6 @@ function Layout(ownProps: Props) {
       ipfsInitializing: state.ipfs.initializing,
       ipfsInitializationError: state.ipfs.initializationError,
       ipfsInitialized: state.ipfs.initialized,
-      ipfsLastFileSavedURL: state.ipfs.lastFileSavedURL,
     }),
     shallowEqual
   );
