@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-import "../utils/Vote.sol";
-
 /**
  * @notice Defines the interface for voting algorithms on grants
  * within a round. Any new voting algorithm would be expected to
@@ -29,6 +27,7 @@ interface IVote {
    * - this would be triggered when a voter casts their vote via round explorer
    *
    * @param _encodedVotes list of votes
+   * @param _voterAddress voter address
    */
-  function vote(bytes calldata _encodedVotes) external;
+  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external;
 }

@@ -35,28 +35,30 @@ contract BulkVote is IVote, ReentrancyGuard {
    * - his would be triggered when a voter casts their vote via round explorer
    *
    * @param _encodedVotes encoded list of votes
+   * @param _voterAddress voter address
    */
-  function vote(bytes calldata _encodedVotes) external override nonReentrant {
+  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external override nonReentrant {
 
-    Vote[] memory _votes = abi.decode(_encodedVotes, (Vote[]));
 
     /// @dev iterate over multiple donations and transfer funds
-    for (uint256 i = 0; i < _votes.length; i++) {
+    for (uint256 i = 0; i < _encodedVotes.length; i++) {
+
+      (address _token, uint256 _amount, address _grantAddress) = abi.decode(_encodedVotes[i], (address, uint256, address));
 
       /// @dev erc20 transfer to grant address
       SafeERC20.safeTransferFrom(
-        IERC20(_votes[i].token),
-        _votes[i].voterAddress,
-        _votes[i].grantAddress,
-        _votes[i].amount
+        IERC20(_token),
+        _voterAddress,
+        _grantAddress,
+        _amount
       );
 
       /// @dev emit event once transfer is done
       emit Voted(
-        IERC20(_votes[i].token),
-        _votes[i].amount,
-        _votes[i].voterAddress,
-        _votes[i].grantAddress,
+        IERC20(_token),
+        _amount,
+        _voterAddress,
+        _grantAddress,
         msg.sender
       );
     }

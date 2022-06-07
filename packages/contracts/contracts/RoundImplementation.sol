@@ -147,8 +147,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Invoked by voter to cast votes
   /// @param _encodedVotes encoded vote
-  function vote(bytes calldata _encodedVotes) public {
-    votingContract.vote(_encodedVotes);
+  function vote(bytes[] memory _encodedVotes) public {
+    votingContract.vote(_encodedVotes, msg.sender);
   }
 }
 
