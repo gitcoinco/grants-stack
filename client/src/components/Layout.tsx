@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { shallowEqual, useSelector } from "react-redux";
+import { useToast } from "@chakra-ui/react";
 import { RootState } from "../reducers";
 import Landing from "./grants/Landing";
 import Header from "./Header";
@@ -23,6 +24,18 @@ function Layout(ownProps: Props) {
     }),
     shallowEqual
   );
+
+  const toast = useToast();
+
+  useEffect(() => {
+    if (props.web3Initialized) {
+      toast({
+        title: "Wallet connected",
+        status: "success",
+        isClosable: true,
+      })
+    }
+  }, [props.web3Initialized]);
 
   const { children } = ownProps;
 
