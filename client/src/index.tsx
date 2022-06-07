@@ -70,7 +70,7 @@ const theme = extendTheme({ colors });
 root.render(
   // <React.StrictMode>
   <ErrorBoundary>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme} resetCSS={false}>
       <Provider store={store}>
         <ReduxRouter history={history} store={store}>
           <Layout>
