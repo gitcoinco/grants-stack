@@ -45,7 +45,7 @@ export async function main(roundFactoryContract?: string, roundImplementationCon
   const updateTx = await roundFactory.updateRoundContract(roundImplementationContract)
   await updateTx.wait();
 
-  console.log("✅ RoundImplementation Contract linked to Round Contract");
+  console.log("✅ RoundImplementation Contract linked to Round Contract", updateTx.hash);
 }
 
 main().catch((error) => {

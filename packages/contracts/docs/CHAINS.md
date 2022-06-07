@@ -20,7 +20,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6 |
+| goerli  | 0x868CBca73915f842A70cD9584D80a57DB5E690C1 |
 
 
 ## Round
