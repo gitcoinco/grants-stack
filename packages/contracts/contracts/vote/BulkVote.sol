@@ -34,9 +34,11 @@ contract BulkVote is IVote, ReentrancyGuard {
    * - more voters -> higher the gas
    * - his would be triggered when a voter casts their vote via round explorer
    *
-   * @param _votes list of votes
+   * @param _encodedVotes encoded list of votes
    */
-  function vote(Vote[] calldata _votes) external override nonReentrant {
+  function vote(bytes calldata _encodedVotes) external override nonReentrant {
+
+    Vote[] memory _votes = abi.decode(_encodedVotes, (Vote[]));
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < _votes.length; i++) {

@@ -28,7 +28,7 @@ interface IVote {
    * - ideally IVote implementation should emit events after a vote is cast
    * - this would be triggered when a voter casts their vote via round explorer
    *
-   * @param _votes list of votes
+   * @param _encodedVotes list of votes
    */
-  function vote(Vote[] calldata _votes) external;
+  function vote(bytes calldata _encodedVotes) external;
 }
