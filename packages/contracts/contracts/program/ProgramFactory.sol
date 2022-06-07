@@ -17,7 +17,7 @@ contract ProgramFactory is Ownable {
   event ProgramContractUpdated(address programContractAddress);
 
   /// @notice Emitted when a new Program is created
-  event ProgramCreated(address programContractAddress);
+  event ProgramCreated(address indexed programContractAddress);
 
 
   /**

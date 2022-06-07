@@ -48,6 +48,7 @@ export async function main() {
       startTime, // _roundStartTime
       endTime, // _roundEndTime
       '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
+      '0x43b1969ffb76ed334878cee591ffb2c5b5607088', // _ownedBy
       { protocol: 1, pointer: "QmXVTmCGPnkYhCCiT7zyaK3HezVwijue4o7RH6BEY9Rmzu" }, // _metaPtr
       ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123'] // _roundOperators
   );
