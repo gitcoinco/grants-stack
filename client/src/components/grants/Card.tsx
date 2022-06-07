@@ -21,7 +21,7 @@ function Card({ projectId }: { projectId: number }) {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.ipfsInitialized && projectId) {
+    if (props.ipfsInitialized && projectId !== undefined) {
       dispatch(fetchGrantData(projectId));
     }
   }, [dispatch, props.ipfsInitialized, projectId]);

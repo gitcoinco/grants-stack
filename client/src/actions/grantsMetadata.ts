@@ -64,6 +64,7 @@ export const fetchGrantData =
         pointer: string;
       };
     };
+
     try {
       grant = await projectRegistry.projects(id);
     } catch (e) {

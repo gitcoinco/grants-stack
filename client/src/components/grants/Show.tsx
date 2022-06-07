@@ -27,7 +27,7 @@ function Project() {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.ipfsInitialized && params.id) {
+    if (props.ipfsInitialized && params.id !== undefined) {
       dispatch(fetchGrantData(Number(params.id)));
     }
   }, [dispatch, props.ipfsInitialized, params.id]);
