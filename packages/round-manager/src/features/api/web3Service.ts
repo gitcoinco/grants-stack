@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export type Web3Instance = {
+export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
    */
@@ -55,7 +55,7 @@ export const web3Api = api.injectEndpoints({
           return { data: { account: accounts[0], chainId } }
 
         } catch (err) {
-          console.log("error", err);
+          console.log("error", err)
           return { error: "Unable to connect web3 account" }
         }
       },
