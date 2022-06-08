@@ -4,7 +4,7 @@ import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
+import { saveFileToIPFS } from "../../actions/ipfs";
 import { publishGrant } from "../../actions/newGrant";
 import TXLoading from "./TXLoading";
 
@@ -32,6 +32,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+
   const publishProject = async () => {
     await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
     dispatch(publishGrant(currentGrantId));

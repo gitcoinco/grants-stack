@@ -33,7 +33,7 @@ function Project() {
     if (params.id !== undefined && props.currentGrant === undefined) {
       dispatch(fetchGrantData(Number(params.id)));
     }
-  }, [dispatch, props.ipfsInitialized, params.id]);
+  }, [dispatch, props.ipfsInitialized, params.id, props.currentGrant]);
 
   if (props.currentGrant === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;

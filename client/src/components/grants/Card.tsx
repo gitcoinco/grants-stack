@@ -27,7 +27,7 @@ function Card({ projectId }: { projectId: number }) {
     if (projectId !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(projectId));
     }
-  }, [dispatch, props.ipfsInitialized, projectId]);
+  }, [dispatch, props.ipfsInitialized, projectId, props.currentProject]);
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
