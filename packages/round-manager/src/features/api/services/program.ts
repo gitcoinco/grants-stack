@@ -111,7 +111,6 @@ updateProgram: builder.mutation<string, Program>({
           }
 
         }
-        console.log(programs)
 
         return { data: programs }
 

@@ -20,9 +20,12 @@ function ListPrograms() {
   return (
     <div className="container mx-auto px-4 py-16 h-screen">
       <header>
-        <h1 className="text-5xl mb-16">My Programs</h1>
+        <p className="mb-16">
+          <span className="text-5xl">My Programs</span>
+          <span className="float-right truncate">📒: {account}</span>
+        </p>
       </header>
-      <main className="h-screen">
+      <main>
         <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4">
           {programItems}
           {isSuccess &&
@@ -33,11 +36,8 @@ function ListPrograms() {
             </Link>}
           {isLoading && <p>Fetching your grant programs...</p>}
         </div>
-      </main >
-      <footer className="text-center mb-auto">
-        <p>with <span className="text-red-600">&hearts;</span> from Gitcoin | Connected: {account}</p>
-      </footer>
-    </div >
+      </main>
+    </div>
   )
 }
 

@@ -16,7 +16,7 @@ export default function ViewProgram() {
   })
 
   const operatorWalletItems = program!.operatorWallets.map((operatorWallet, index) =>
-    <p className="ml-16" key={index}>{operatorWallet}</p>
+    <p key={index} className="truncate">{operatorWallet}</p>
   )
 
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -27,9 +27,12 @@ export default function ViewProgram() {
   return (
     <div className="container mx-auto px-4 py-16 h-screen">
       <header>
-        <h1 className="text-5xl mb-16">{program!.metadata!.name}</h1>
+        <p className="mb-16">
+          <span className="text-5xl">{program!.metadata!.name}</span>
+          <span className="float-right truncate">📒: {account}</span>
+        </p>
       </header>
-      <main className="h-screen">
+      <main>
         <div>
           <div>
             <h2 className="text-3xl mb-8">Operator Wallets</h2>
@@ -50,10 +53,7 @@ export default function ViewProgram() {
           </div>
           <Button type="button" onClick={goBack}>Back</Button>
         </div>
-      </main >
-      <footer className="text-center mb-auto">
-        <p>with <span className="text-red-600">&hearts;</span> from Gitcoin | Connected: {account}</p>
-      </footer>
+      </main>
     </div >
   )
 }
