@@ -3,6 +3,7 @@ import tw from "tailwind-styled-components"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useCreateProgramMutation } from "../api/programService"
+import { useSaveToIPFSMutation } from "../api/ipfsService"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 
@@ -49,7 +50,20 @@ const Button = tw.button`
 `
 
 export default function CreateProgram() {
-  const [createProgram, { error, isLoading, isSuccess, isError }] = useCreateProgramMutation()
+  const [saveToIPFS, {
+    error: ipfsError,
+    isError: isIPFSError,
+    isLoading: isSavingToIPFS,
+    isSuccess: isSavedToIPFS
+  }] = useSaveToIPFSMutation()
+
+  const [createProgram, {
+    error: programError,
+    isLoading,
+    isSuccess,
+    isError: isProgramError
+  }] = useCreateProgramMutation()
+
   const { account } = useWeb3()
   const navigate = useNavigate()
   const { register, formState, handleSubmit } = useForm<FormData>()
@@ -65,11 +79,17 @@ export default function CreateProgram() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const fulfilled = await createProgram({
-        name: data.name,
+      // Save program metadata to IPFS
+      const metadataIdentifier = await saveToIPFS({
+        content: JSON.stringify({ name: data.name })
+      }).unwrap()
+
+      // Deploy program contract
+      await createProgram({
+        metadataIdentifier,
         operatorWallets: Object.entries(data).slice(1, 4).map(entry => entry[1])
       }).unwrap()
-      console.log(fulfilled)
+
     } catch (e) {
       console.error(e)
     }
@@ -112,8 +132,13 @@ export default function CreateProgram() {
           <Button type="submit" disabled={isLoading || isSuccess}>
             {isLoading ? "Creating..." : "Create"}
           </Button>
-          {isSuccess && <p className="text-green-600">Congratulations! your grant program was successfully created!</p>}
-          {isError && <p className="text-rose-600">Error: {JSON.stringify(error)}!</p>}
+
+          {/* Display relevant status updates */}
+          {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
+          {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
+          {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
+          {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
+          {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
         </form>
       </main>
     </div>
