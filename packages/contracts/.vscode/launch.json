@@ -41,9 +41,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: updateGrantRoundImplementation",
+            "name": "script: linkGrantRoundImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-update-round"],
+            "args": ["goerli-link-round-implementation"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -86,9 +86,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: updateProgramImplementation",
+            "name": "script: linkProgramImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-update-program"],
+            "args": ["goerli-link-program-implementation"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },

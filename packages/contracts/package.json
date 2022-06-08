@@ -14,14 +14,14 @@
     "// progam-deploy-scripts": "//-- Program deploy Script --//",
     "goerli-deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network goerli",
     "goerli-deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network goerli",
-    "goerli-deploy-update-program": "yarn hardhat run scripts/program/updateProgramImplementation.ts --network goerli",
+    "goerli-link-program-implementation": "yarn hardhat run scripts/program/linkProgramImplementation.ts --network goerli",
     "goerli-create-program": "yarn hardhat run scripts/program/createProgram.ts --network goerli",
     "goerli-upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network goerli",
 
     "// round-deploy-scripts": "//-- Round deploy Script --//",
     "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployGrantRoundImplementation.ts --network goerli",
     "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployGrantRoundFactory.ts --network goerli",
-    "goerli-deploy-update-round": "yarn hardhat run scripts/round/updateGrantRoundImplementation.ts --network goerli",
+    "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkGrantRoundImplementation.ts --network goerli",
     "goerli-deploy-create-round": "yarn hardhat run scripts/round/createGrantRound.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
