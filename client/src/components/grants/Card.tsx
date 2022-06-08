@@ -21,7 +21,10 @@ function Card({ projectId }: { projectId: number }) {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.ipfsInitialized && projectId !== undefined) {
+    // called twice
+    // 1 - when it loads or projectId changes (it checks if it's cached in local storage)
+    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
+    if (projectId !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(projectId));
     }
   }, [dispatch, props.ipfsInitialized, projectId]);
