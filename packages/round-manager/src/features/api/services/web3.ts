@@ -1,23 +1,13 @@
 import { ethers } from "ethers"
-import { global } from "../../global"
-import { api } from "."
+import { global } from "../../../global"
+import { api } from ".."
+import { Web3Instance } from "../types"
 
 
 declare global {
   interface Window {
     ethereum: any;
   }
-}
-
-export interface Web3Instance {
-  /**
-   * Currently selected address in ETH format i.e 0x...
-   */
-  account: string;
-  /**
-   * Chain ID of the currently connected network
-   */
-  chainId: number;
 }
 
 const VALID_NETWORK_NAME = "Goerli";

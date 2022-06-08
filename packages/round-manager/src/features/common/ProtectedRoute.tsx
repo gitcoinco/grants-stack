@@ -1,6 +1,7 @@
 import { Outlet, useOutletContext } from 'react-router-dom'
 
-import { useGetWeb3Query, Web3Instance } from "../api/web3Service"
+import { useGetWeb3Query } from "../api/services/web3"
+import { Web3Instance } from "../api/types"
 
 
 /**
@@ -21,11 +22,11 @@ export default function ProtectedRoute() {
         {isFetching || isLoading
           ? <p>Loading...</p>
           : <div>
-              <button className="font-mono border-black border-4 hover:bg-gray-200 font-bold py-4 px-8 rounded" type="button" onClick={connectHandler}>
-                Connect Wallet
-              </button>
-              <p className="text-red-600 mt-4">{error?.toString()}</p>
-            </div>
+            <button className="font-mono border-black border-4 hover:bg-gray-200 font-bold py-4 px-8 rounded" type="button" onClick={connectHandler}>
+              Connect Wallet
+            </button>
+            <p className="text-red-600 mt-4">{error?.toString()}</p>
+          </div>
         }
       </main>
     </div>

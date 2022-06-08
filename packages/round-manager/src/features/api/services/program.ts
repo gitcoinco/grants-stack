@@ -1,23 +1,9 @@
 import { ethers } from "ethers"
-import { api } from "."
-import { global } from "../../global"
-import { programFactoryContract } from "./contracts"
+import { api } from ".."
+import { global } from "../../../global"
+import { programFactoryContract } from "../contracts"
+import { Program } from "../types"
 
-
-export interface Program {
-  /**
-   * The on-chain unique program ID
-   */
-  id?: string;
-  /**
-   * The identifier which represents the program metadata on a decentralized storage
-   */
-  metadataIdentifier: string;
-  /**
-   * Addresses of wallets that will have admin privileges to operate the Grant program
-   */
-  operatorWallets: Array<string>;
-}
 
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({

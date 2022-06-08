@@ -2,8 +2,8 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import tw from "tailwind-styled-components"
 
 import { useWeb3 } from "../common/ProtectedRoute"
-import { useCreateProgramMutation } from "../api/programService"
-import { useSaveToIPFSMutation } from "../api/ipfsService"
+import { useCreateProgramMutation } from "../api/services/program"
+import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 

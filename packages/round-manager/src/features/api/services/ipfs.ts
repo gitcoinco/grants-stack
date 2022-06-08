@@ -1,18 +1,7 @@
-import { global } from "../../global"
-import { api } from "."
 import { create as IPFSCreate } from "ipfs-core"
-
-
-export interface IPFSFile {
-  /**
-   * File content to be saved in IPFS
-   */
-  content: string;
-  /**
-   * Optional path
-   */
-  path?: string;
-}
+import { global } from "../../../global"
+import { api } from ".."
+import { IPFSFile } from "../types"
 
 
 export const ipfsApi = api.injectEndpoints({
