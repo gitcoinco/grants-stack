@@ -1,11 +1,9 @@
-import { ethers } from "ethers"
 import { global } from "../../global"
 import { api } from "."
 import { create as IPFSCreate } from "ipfs-core"
-import { IPFS } from "ipfs-core-types"
 
 
-export interface IPFSFile extends IPFS {
+export interface IPFSFile {
   /**
    * File content to be saved in IPFS
    */
@@ -15,6 +13,7 @@ export interface IPFSFile extends IPFS {
    */
   path?: string;
 }
+
 
 export const ipfsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -60,8 +59,8 @@ export const ipfsApi = api.injectEndpoints({
           for await (const chunk of global.ipfs.cat(cid)) {
             content += decoder.decode(chunk)
           }
-        
-          return { data: content}
+
+          return { data: content }
 
         } catch (err) {
           console.log("error", err)

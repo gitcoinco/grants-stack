@@ -34,17 +34,20 @@ export const web3Api = api.injectEndpoints({
           }
 
           // Instantiate ethers.js provider and signer
-          global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+          global.web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+          console.log("Web3 instance is", global.web3Provider)
           global.web3Signer = global.web3Provider!.getSigner()
-
+          
+          // Fetch network details
+          const { chainId, name } = await global.web3Provider!.getNetwork()
+          console.log(name)
+          
           // Fetch connected accounts
           const accounts: Array<string> = await global.web3Provider!.send("eth_requestAccounts", [])
-
-          // Fetch network details
-          const { chainId } = await global.web3Provider!.getNetwork()
+          console.log("Got accounts", accounts)
 
           if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
-            return { error: `wrong network, please connect to ${VALID_NETWORK_NAME}` };
+            return { error: `wrong network, please connect to ${VALID_NETWORK_NAME}` }
           }
 
           // Reload page on wallet events
