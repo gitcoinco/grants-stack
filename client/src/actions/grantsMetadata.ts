@@ -93,7 +93,6 @@ export const fetchGrantData =
       if (item !== null) {
         try {
           const metadata = JSON.parse(item);
-          console.log("******* fetched from cache")
           dispatch(
             grantMetadataFetched({
               ...metadata,
@@ -104,6 +103,7 @@ export const fetchGrantData =
           );
           return;
         } catch(e) {
+          // FIXME: dispatch error
           console.log("error parsing cached project metadata", e);
         }
       }
@@ -111,7 +111,6 @@ export const fetchGrantData =
 
     // cache not found and ipfs not initialized yet
     if (!state.ipfs.initialized) {
-      console.log("cache not found and ipfs not initialized")
       return;
     }
 
