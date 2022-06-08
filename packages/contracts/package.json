@@ -16,6 +16,7 @@
     "goerli-deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network goerli",
     "goerli-deploy-update-program": "yarn hardhat run scripts/program/updateProgramImplementation.ts --network goerli",
     "goerli-create-program": "yarn hardhat run scripts/program/createProgram.ts --network goerli",
+    "goerli-upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network goerli",
 
     "// round-deploy-scripts": "//-- Round deploy Script --//",
     "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployGrantRoundImplementation.ts --network goerli",
@@ -25,12 +26,12 @@
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
     "goerli-deploy-bulk-voting-mechanism": "yarn hardhat run scripts/vote/deployBulkVotingMechanism.ts --network goerli"
-
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@openzeppelin/hardhat-upgrades": "^1.18.0",
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^2.3.1",
     "@types/chai": "^4.3.1",

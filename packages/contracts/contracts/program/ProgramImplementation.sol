@@ -38,17 +38,19 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
   /**
    * @notice Instantiates a new program
    * @param _metaPtr URL pointing to the program metadata
+   * @param _adminRole Address to be granted DEFAULT_ADMIN_ROLE
    * @param _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
    */
   function initialize(
     MetaPtr memory _metaPtr,
+    address _adminRole,
     address[] memory _programOperators
   ) public initializer {
   
     metaPtr = _metaPtr;
 
     // assign roles
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _grantRole(DEFAULT_ADMIN_ROLE, _adminRole);
 
     // Assigning program operators
     for (uint256 i = 0; i < _programOperators.length; ++i) {

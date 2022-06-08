@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../utils/MetaPtr.sol";
 
 import "./ProgramImplementation.sol";
 
-contract ProgramFactory is Ownable {
+contract ProgramFactory is OwnableUpgradeable {
  
   address public programContract;
 
@@ -19,6 +19,12 @@ contract ProgramFactory is Ownable {
   /// @notice Emitted when a new Program is created
   event ProgramCreated(address indexed programContractAddress);
 
+
+  /// @notice constructor function which ensure deployer is set as owner
+  function initialize() public initializer {
+    __Context_init_unchained();
+    __Ownable_init_unchained();
+  }
 
   /**
    * @notice Allows the owner to update the ProgramImplementation.
@@ -32,7 +38,7 @@ contract ProgramFactory is Ownable {
     emit ProgramContractUpdated(_programContract);
   }
 
-    /**
+  /**
    * @notice Clones ProgramImplmentation and deployed a program and emits an event
    *
    * @param _metaPtr URL pointing to the program metadata
@@ -47,6 +53,7 @@ contract ProgramFactory is Ownable {
 
     ProgramImplementation(clone).initialize(
       _metaPtr,
+      msg.sender,
       _programOperators
     );
 
