@@ -1,6 +1,7 @@
-// import { ethers } from "ethers"
+import { ethers } from "ethers"
 import { api } from "."
 import { global } from "../../global"
+import { programFactoryContract } from "./contracts"
 
 
 export interface Program {
@@ -9,42 +10,39 @@ export interface Program {
    */
   id?: string;
   /**
-   * The name of the program, this can be update
+   * The identifier which represents the program metadata on a decentralized storage
    */
-  name: string;
+  metadataIdentifier: string;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets: Array<string>;
 }
 
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/** Contract ABI for the ProgramFactory in the Human-Readable format */
-const CONTRACT_ABI = [
-  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
-  "event ProgramContractUpdated(address programContractAddress)",
-  "event ProgramCreated(address programContractAddress)",
-  "function create(tuple(uint256 protocol, string pointer) _metaPtr, address[] _programOperators) returns (address)",
-  "function owner() view returns (address)",
-  "function programContract() view returns (address)",
-  "function renounceOwnership()",
-  "function transferOwnership(address newOwner)",
-  "function updateProgramContract(address _programContract)"
-]
-
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createProgram: builder.mutation<string, Program>({
-      queryFn: async (program) => {
+      queryFn: async ({ metadataIdentifier, operatorWallets }) => {
         try {
-          let res = "TODO"
-          console.log(global.web3Provider)
-          await sleep(5000)
+          const programFactory = new ethers.Contract(
+            programFactoryContract.address,
+            programFactoryContract.abi,
+            global.web3Signer
+          )
 
-          return { data: res }
+          // Deploys a new Program contract
+          // Learn about the metadata pointer here: 
+          // https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
+          let tx = await programFactory.create(
+            { protocol: 1, pointer: metadataIdentifier },
+            operatorWallets.filter(e => e !== "")
+          )
+
+          await tx.wait() // wait for transaction receipt
+
+          console.log("Deployed program contract:", tx.hash)
+
+          return { data: tx.hash }
 
         } catch (err) {
           console.log("error", err)
@@ -66,27 +64,11 @@ export const programApi = api.injectEndpoints({
         }
       },
     }),
-    getProgram: builder.query<Program, string>({
-      queryFn: async (id) => {
-        try {
-          let res = {
-            name: "TODO",
-            operatorWallets: []
-          }
-
-          return { data: res }
-
-        } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to fetch program" }
-        }
-      },
-    }),
     listPrograms: builder.query<Program[], void>({
       queryFn: async () => {
         try {
           let res = [{
-            name: "TODO",
+            metadataIdentifier: "TODO",
             operatorWallets: []
           }]
 
@@ -116,7 +98,6 @@ export const programApi = api.injectEndpoints({
 })
 
 export const {
-  useGetProgramQuery,
   useListProgramsQuery,
   useCreateProgramMutation,
   useUpdateProgramMutation,
