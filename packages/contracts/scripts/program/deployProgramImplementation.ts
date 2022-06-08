@@ -15,7 +15,7 @@ export async function main() {
   });
 
   // Deploy ProgramImplementation 
-  const contractFactory = await ethers.getContractFactory("DummyProgramImplementation");
+  const contractFactory = await ethers.getContractFactory("ProgramImplementation");
   const contract = await contractFactory.deploy();
 
   console.log(`Deploying ProgramImplementation to ${contract.address}`);
