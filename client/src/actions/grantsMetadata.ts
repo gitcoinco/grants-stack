@@ -70,7 +70,7 @@ export const fetchGrantData =
       project = await projectRegistry.projects(id);
     } catch (e) {
       // FIXME: dispatch contract interaction error
-      console.log(e);
+      console.error(e);
       return;
     }
 
@@ -101,8 +101,9 @@ export const fetchGrantData =
               id,
             })
           );
+
           return;
-        } catch(e) {
+        } catch (e) {
           // FIXME: dispatch error
           console.log("error parsing cached project metadata", e);
         }
@@ -146,7 +147,7 @@ export const fetchGrantData =
       protocol: project.metadata.protocol,
       pointer: project.metadata.pointer,
       id,
-    }
+    };
 
     dispatch(grantMetadataFetched(item));
     storage.add(cacheKey, JSON.stringify(item));
