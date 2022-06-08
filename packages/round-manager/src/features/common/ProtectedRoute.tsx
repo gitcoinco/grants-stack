@@ -14,7 +14,7 @@ export default function ProtectedRoute() {
   const connectHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     refetch()
-  };
+  }
 
   return !isSuccess ? (
     <div className="flex h-screen">

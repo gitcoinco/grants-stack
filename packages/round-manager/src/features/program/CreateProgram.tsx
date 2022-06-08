@@ -1,53 +1,19 @@
 import { useForm, SubmitHandler } from "react-hook-form"
-import tw from "tailwind-styled-components"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
-import { useNavigate } from "react-router-dom"
-import { useEffect } from "react"
+import { TextInput, Button } from "../common/styles"
 
 
 type FormData = {
   name: string;
   operatorWallet1: string;
   operatorWallet2: string;
-  operatorWallet3: string
+  operatorWallet3: string;
 }
-
-type TextInputProps = {
-  $hasError: boolean
-}
-
-const TextInput = tw.input<TextInputProps>`
-  md:w-96
-  md:h-14
-  w-full
-  border-4
-  border-black
-  px-2
-  my-4
-  text-2xl
-  ${(p: TextInputProps) => (
-    p.$hasError ? "focus:outline-none focus:border-none focus:ring focus:ring-rose-600" : ""
-  )}
-`
-
-const Button = tw.button`
-  md:w-64
-  md:h-14
-  w-full
-  rounded-2xl
-  border-4
-  border-black
-  my-6
-  text-2xl
-  hover:bg-gray-200
-  disabled:bg-slate-50
-  disabled:text-slate-500
-  disabled:border-slate-200
-  disabled:shadow-none
-`
 
 export default function CreateProgram() {
   const [saveToIPFS, {
@@ -72,7 +38,7 @@ export default function CreateProgram() {
   useEffect(() => {
     if (isSuccess) {
       setTimeout(() => {
-        navigate('/')
+        navigate("/")
       }, 2000)
     }
   })
@@ -80,13 +46,16 @@ export default function CreateProgram() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       // Save program metadata to IPFS
-      const metadataIdentifier = await saveToIPFS({
+      const metadataPointer = await saveToIPFS({
         content: JSON.stringify({ name: data.name })
       }).unwrap()
 
       // Deploy program contract
       await createProgram({
-        metadataIdentifier,
+        store: {
+          protocol: 1, // IPFS protocol ID is 1
+          pointer: metadataPointer
+        },
         operatorWallets: Object.entries(data).slice(1, 4).map(entry => entry[1])
       }).unwrap()
 
@@ -129,8 +98,8 @@ export default function CreateProgram() {
             disabled={isLoading}
             placeholder="Operator wallet 3" />
           <br />
-          <Button type="submit" disabled={isLoading || isSuccess}>
-            {isLoading ? "Creating..." : "Create"}
+          <Button type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
+            {isLoading || isSavingToIPFS ? "Creating..." : "Create"}
           </Button>
 
           {/* Display relevant status updates */}
