@@ -9,15 +9,27 @@ export interface Web3Instance {
   chainId: number;
 }
 
+export interface Metadata {
+  /**
+   * The decentralized storage protocol
+   * Read more here: https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
+   */
+   protocol: number;
+   /**
+    * The identifier which represents the program metadata on a decentralized storage
+    */
+   pointer: string;
+}
+
 export interface Program {
   /**
    * The on-chain unique program ID
    */
   id?: string;
-  /**
-   * The identifier which represents the program metadata on a decentralized storage
-   */
-  metadataIdentifier: string;
+  metadata?: {
+    name: string
+  };
+  store?: Metadata;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
@@ -33,4 +45,16 @@ export interface IPFSFile {
    * Optional path
    */
   path?: string;
+}
+
+/** Base Contract interface */
+export interface Contract {
+  /**
+   * Contract address
+   */
+  address?: string;
+  /**
+   * Contract ABI in Human Readable ABI format
+   */
+  abi: Array<string>;
 }
