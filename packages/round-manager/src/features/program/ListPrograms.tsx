@@ -6,7 +6,7 @@ import { useListProgramsQuery } from "../api/services/program"
 
 function ListPrograms() {
   const { account } = useWeb3()
-  const { data: programs, error, isLoading, isSuccess } = useListProgramsQuery(account)
+  const { data: programs, isLoading, isSuccess } = useListProgramsQuery(account)
 
 
   const programItems = programs?.map((program, index) =>
