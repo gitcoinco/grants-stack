@@ -38,11 +38,6 @@ export default function Header() {
           <h3 className="ml-6 mt-1">Grant Hub</h3>
         </div>
       </Link>
-      {!props.web3Initialized && (
-        <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
-          Connect Wallet
-        </Button>
-      )}
 
       <div className="flex items-center">
         <Link to={newGrantPath()}>
@@ -51,22 +46,10 @@ export default function Header() {
             New Project
           </Button>
         </Link>
-        {props.web3Initialized ? (
-          <Button
-            variant={ButtonVariants.outline}
-            onClick={() => connectHandler}
-          >
-            <Blockchain chain={ChainLogos.ETH} />
-            {props.account ? shortAddress(props.account) : "Connect Wallet"}
-          </Button>
-        ) : (
-          <Button
-            variant={ButtonVariants.outline}
-            onClick={() => connectHandler}
-          >
-            Connect Wallet
-          </Button>
-        )}
+        <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
+          <Blockchain chain={ChainLogos.ETH} />
+          {props.account ? shortAddress(props.account) : "Connect Wallet"}
+        </Button>
       </div>
     </header>
   );
