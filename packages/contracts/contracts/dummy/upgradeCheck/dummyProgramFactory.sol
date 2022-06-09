@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../../utils/MetaPtr.sol";
 
@@ -35,7 +35,7 @@ contract DummyProgramFactory is OwnableUpgradeable {
     string calldata _message
   ) external returns (address) {
 
-    address clone = Clones.clone(programContract);
+    address clone = ClonesUpgradeable.clone(programContract);
 
     DummyProgramImplementation(clone).initialize(
       _metaPtr,
