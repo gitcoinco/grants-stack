@@ -127,6 +127,5 @@ export const programApi = api.injectEndpoints({
 export const {
   useListProgramsQuery,
   useCreateProgramMutation,
-  useUpdateProgramMutation,
-  useDeleteProgramMutation
+  useUpdateProgramMutation
 } = programApi
