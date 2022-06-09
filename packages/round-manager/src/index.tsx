@@ -14,7 +14,7 @@ import './index.css';
 import CreateProgram from './features/program/CreateProgram';
 import CreateRound from './features/round/CreateRound';
 import Program from './features/program/ListPrograms';
-import ProtectedRoute from './features/auth/ProtectedRoute';
+import ProtectedRoute from './features/common/ProtectedRoute';
 import ViewProgram from './features/program/ViewProgram';
 import ViewRound from './features/round/ViewRound';
 

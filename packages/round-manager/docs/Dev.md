@@ -111,4 +111,7 @@ UI components access data and states thus,
 const { data, error, refetch, isSuccess, isFetching, isLoading } = useGetWeb3Query()
 ```
 
-Learn more about [Redux Toolkit](https://redux-toolkit.js.org/) and [RTK Query](https://redux-toolkit.js.org/tutorials/rtk-query).
+### Tools
+[Redux Toolkit](https://redux-toolkit.js.org/)
+[RTK Query](https://redux-toolkit.js.org/tutorials/rtk-query)
+[React Hook Form](https://react-hook-form.com/get-started)
