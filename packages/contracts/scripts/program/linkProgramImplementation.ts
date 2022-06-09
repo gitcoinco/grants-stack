@@ -44,7 +44,7 @@ export async function main(programFactoryContract?: string, programImplementatio
   const updateTx = await programFactory.updateProgramContract(programImplementationContract)
   await updateTx.wait();
 
-  console.log("✅ ProgramContract updated");
+  console.log("✅ ProgramImplementation Contract Linked to ProgramFactory contract");
 }
 
 main().catch((error) => {

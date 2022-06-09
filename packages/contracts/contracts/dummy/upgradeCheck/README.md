@@ -40,7 +40,7 @@ User ---- tx ---> Proxy ----------> Implementation_v0
 - Ensure all contracts are verified on etherscan.
 
 - Link V0 Factory to V0 Implementation.
-    - Command: `yarn run goerli-deploy-update-program`
+    - Command: `yarn run goerli-link-program-implementation`
     - Txn: `0x77a52a1d9d2a6e668df381afde93880d6cfd983b42291715598278d6f1bb331a`
 
 - Create a Program
@@ -67,7 +67,7 @@ User ---- tx ---> Proxy ----------> Implementation_v0
     - Implementation: `0x20C251cE3D26E5Cf628fe9016B07958C4614cC29`
 
 - Link V1 Factory to V1 Implementation.
-    - Command: `yarn run goerli-deploy-update-program`
+    - Command: `yarn run goerli-link-program-implementation`
     - Txn: `0x9ce9dac457d5cebc46cb832af0f20f9999d6fdd78f97825b0d047bde35a3a187`
 
 - Create a Program

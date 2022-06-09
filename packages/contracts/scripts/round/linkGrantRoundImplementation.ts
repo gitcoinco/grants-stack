@@ -45,7 +45,7 @@ export async function main(grantRoundFactoryContract?: string, grantRoundImpleme
   const updateTx = await grantRoundFactory.updateGrantRoundContract(grantRoundImplementationContract)
   await updateTx.wait();
 
-  console.log("✅ GrantRoundContract updated");
+  console.log("✅ GrantRoundImplementation Contract linked to GrantRound Contract");
 }
 
 main().catch((error) => {

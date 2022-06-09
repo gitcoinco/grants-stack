@@ -32,7 +32,7 @@ export const params: DeployParams = {
 
 5. Update `ProgramFactory` to reference the `ProgramImplementation` contract.
 ```shell
-yarn run goerli-deploy-update-program
+yarn run goerli-link-program-implementation
 ```
 
 
@@ -69,7 +69,7 @@ export const params: DeployParams = {
 
 5. Update `GrantRoundFactory` to reference the `GrantRoundImplementation` contract
 ```shell
-yarn run goerli-deploy-update-round
+yarn run goerli-link-round-implementation
 ```
 
 ### Voting Setup
