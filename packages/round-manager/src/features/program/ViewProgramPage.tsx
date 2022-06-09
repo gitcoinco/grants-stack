@@ -15,10 +15,6 @@ export default function ViewProgram() {
     pollingInterval: 3000
   })
 
-  const operatorWalletItems = program!.operatorWallets.map((operatorWallet, index) =>
-    <p key={index} className="truncate">{operatorWallet}</p>
-  )
-
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     navigate("/")
@@ -28,7 +24,7 @@ export default function ViewProgram() {
     <div className="container mx-auto px-4 py-16 h-screen">
       <header>
         <p className="mb-16">
-          <span className="text-5xl">{program!.metadata!.name}</span>
+          <span className="text-5xl">{program?.metadata?.name || "..."}</span>
           <span className="float-right truncate">📒: {account}</span>
         </p>
       </header>
@@ -36,7 +32,9 @@ export default function ViewProgram() {
         <div>
           <div>
             <h2 className="text-3xl mb-8">Operator Wallets</h2>
-            {operatorWalletItems}
+            {program?.operatorWallets.map((operatorWallet, index) =>
+              <p key={index} className="truncate">{operatorWallet}</p>
+            ) || <p>Fetching operator wallets...</p>}
           </div><br />
           <h2 className="text-3xl my-8">My Rounds</h2>
           <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
