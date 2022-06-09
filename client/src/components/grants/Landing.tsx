@@ -26,7 +26,7 @@ function Landing() {
   }, [props.account]);
 
   return (
-    <div className="flex h-full">
+    <div className="md:flex h-full">
       <div className="flex absolute top-0 left-10">
         <img
           className="py-4 mr-4"
@@ -35,8 +35,9 @@ function Landing() {
         />
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
-      <div className="w-1/2 flex flex-col h-full justify-center container ml-10">
-        <h1 className="mb-8">Grant Hub</h1>
+      <div className="w-full md:w-1/2 flex flex-col h-2/3 max-w-fit md:h-full justify-center container ml-10">
+        <h1 className="mb-8 hidden md:inline-block">Grant Hub</h1>
+        <h3 className="mb-8 inline-block md:hidden">Grant Hub</h3>
         <p>
           Manage projects that generate maximum impact and receive funds
           matching from Gitcoin, partner DAO, or independent grant program
@@ -59,8 +60,13 @@ function Landing() {
         )}
       </div>
       <img
-        className="w-1/2"
-        src="./assets/landing-background-img.svg"
+        className="w-1/2 hidden md:inline-block"
+        src="./assets/landing-background.svg"
+        alt="Jungle Background"
+      />
+      <img
+        className="h-1/3 w-full inline-block md:hidden"
+        src="./assets/mobile-landing-background.svg"
         alt="Jungle Background"
       />
     </div>
