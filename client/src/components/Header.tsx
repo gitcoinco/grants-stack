@@ -9,8 +9,11 @@ import Plus from "./icons/Plus";
 import colors from "../styles/colors";
 import { shortAddress } from "../utils/wallet";
 import { ChainLogos, Blockchain } from "./icons/Blockchain";
+import Hamburger from "./icons/Hamburger";
 
 export default function Header() {
+  const [navbarOpen, setNavbarOpen] = React.useState(false);
+
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
@@ -26,30 +29,53 @@ export default function Header() {
     e.preventDefault();
     dispatch(initializeWeb3());
   };
-  return (
-    <header className="justify-between container mx-auto border-b mb-4 sm:flex xs:flex-col sm:h-20 xs:h-40">
-      <Link to={grantsPath()}>
-        <div className="flex items-center">
-          <img
-            className="py-4"
-            alt="Gitcoin Logo"
-            src="./assets/gitcoin-logo.svg"
-          />
-          <h3 className="ml-6 mt-1">Grant Hub</h3>
-        </div>
-      </Link>
 
-      <div className="flex items-center">
-        <Link to={newGrantPath()}>
-          <Button variant={ButtonVariants.primary}>
-            <Plus color={colors["quaternary-text"]} />
-            New Project
-          </Button>
-        </Link>
-        <Button variant={ButtonVariants.outline} onClick={() => connectHandler}>
-          <Blockchain chain={ChainLogos.ETH} />
-          {props.account ? shortAddress(props.account) : "Connect Wallet"}
-        </Button>
+  return (
+    <header className="flex items-center justify-between px-2 py-3 mb-3 text-primary-text w-ful border-b container mx-auto">
+      <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
+        <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
+          <Link to={grantsPath()}>
+            <div className="flex items-center">
+              <img
+                className="py-4"
+                alt="Gitcoin Logo"
+                src="./assets/gitcoin-logo.svg"
+              />
+              <h3 className="ml-6 mt-1">Grant Hub</h3>
+            </div>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setNavbarOpen(!navbarOpen)}
+            className="lg:hidden"
+          >
+            <div className="border-solid border rounded border-primary-text p-2">
+              <Hamburger color={colors["primary-text"]} />
+            </div>
+          </button>
+        </div>
+        <div
+          className={`lg:flex flex-grow items-center${
+            navbarOpen ? " flex" : " hidden"
+          }`}
+          id="example-navbar-danger"
+        >
+          <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
+            <Link to={newGrantPath()}>
+              <Button variant={ButtonVariants.primary}>
+                <Plus color={colors["quaternary-text"]} />
+                New Project
+              </Button>
+            </Link>
+            <Button
+              variant={ButtonVariants.outline}
+              onClick={() => connectHandler}
+            >
+              <Blockchain chain={ChainLogos.ETH} />
+              {props.account ? shortAddress(props.account) : "Connect Wallet"}
+            </Button>
+          </div>
+        </div>
       </div>
     </header>
   );
