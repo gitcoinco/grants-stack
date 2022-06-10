@@ -12,7 +12,6 @@ export default function ViewProgram() {
   const { account } = useWeb3()
   const { program } = useListProgramsQuery(account, {
     selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
-    pollingInterval: 3000
   })
 
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,7 +42,7 @@ export default function ViewProgram() {
                 Round Name
               </button>
             </Link>
-            <Link to="/round/create">
+            <Link to={`/round/create?programId=${program?.id}`}>
               <button className="w-60 h-60 rounded-full border-4 border-black hover:bg-gray-200 text-2xl">
                 Create Round
               </button>
