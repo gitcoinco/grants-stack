@@ -87,19 +87,23 @@ export interface Round {
   /**
    * Unix timestamp of the start of the round
    */
-  startTime: number;
+  startTime: Date;
   /**
    * Unix timestamp of the end of the round
    */
-  endTime: number;
+  endTime: Date;
   /**
    * Unix timestamp of when grants can apply to a round
    */
-  applicationStartTime: number;
+  applicationStartTime: Date;
   /**
    * Contract address of the token used to payout match amounts at the end of a round
    */
   token: string;
+  /**
+   * Contract address of the program to which the round belongs
+   */
+   ownedBy: string;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */

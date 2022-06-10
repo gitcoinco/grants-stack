@@ -6,6 +6,9 @@ import { programFactoryContract, programImplementationContract } from "../contra
 import { Program } from "../types"
 
 
+/**
+ * Contract interations API for a Grant Program
+ */
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createProgram: builder.mutation<string, Program>({
@@ -19,7 +22,7 @@ export const programApi = api.injectEndpoints({
 
           // Deploy a new Program contract
           let tx = await programFactory.create(
-            { protocol: metadata!.protocol, pointer: metadata!.pointer },
+            metadata,
             operatorWallets.filter(e => e !== "")
           )
 
@@ -34,7 +37,7 @@ export const programApi = api.injectEndpoints({
           return { error: "Unable to create program" }
         }
       },
-      invalidatesTags: ['Program']
+      invalidatesTags: ["Program"]
     }),
     updateProgram: builder.mutation<string, Program>({
       queryFn: async ({ id, ...program }) => {
