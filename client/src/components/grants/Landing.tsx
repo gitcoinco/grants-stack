@@ -35,9 +35,9 @@ function Landing() {
         />
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
-      <div className="w-full md:w-1/2 flex flex-col h-2/3 max-w-fit md:h-full justify-center container ml-10">
+      <div className="w-full md:w-1/2 flex flex-col h-1/2 max-w-fit md:h-full justify-center container mx-10">
         <h1 className="mb-8 hidden md:inline-block">Grant Hub</h1>
-        <h3 className="mb-8 inline-block md:hidden">Grant Hub</h3>
+        <h3 className="mb-4 pt-20 inline-block md:hidden">Grant Hub</h3>
         <p>
           Manage projects that generate maximum impact and receive funds
           matching from Gitcoin, partner DAO, or independent grant program
@@ -48,6 +48,7 @@ function Landing() {
             <Button
               onClick={() => connectHandler()}
               variant={ButtonVariants.primary}
+              styles={["w-full sm:w-auto mx-w-full ml-0"]}
             >
               Connect Wallet
             </Button>
@@ -65,7 +66,7 @@ function Landing() {
         alt="Jungle Background"
       />
       <img
-        className="h-1/3 w-full inline-block md:hidden"
+        className="h-1/2 w-full inline-block md:hidden"
         src="./assets/mobile-landing-background.svg"
         alt="Jungle Background"
       />
