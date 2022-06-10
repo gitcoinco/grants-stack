@@ -53,6 +53,12 @@ function Layout(ownProps: Props) {
               children}
             {props.web3Error && <p>{props.web3Error}</p>}
           </main>
+          <div className="w-full flex justify-center py-4">
+            <img
+              alt="Built by the Gitcoin Community"
+              src="./assets/footer-img.svg"
+            />
+          </div>
         </>
       )}
     </div>
