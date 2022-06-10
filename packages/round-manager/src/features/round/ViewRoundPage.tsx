@@ -10,8 +10,16 @@ export default function ViewRound() {
   const navigate = useNavigate()
 
   const { account } = useWeb3()
-  const { round } = useListRoundsQuery({ account }, {
-    selectFromResult: ({ data }) => ({ round: data?.find((round) => round.id === id) }),
+  const {
+    round,
+    isLoading: isRoundsLoading,
+    isSuccess: isRoundsFetched
+  } = useListRoundsQuery({ account }, {
+    selectFromResult: ({ data, isLoading, isSuccess }) => ({
+      round: data?.find((round) => round.id === id),
+      isLoading,
+      isSuccess
+    }),
   })
 
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -23,6 +31,11 @@ export default function ViewRound() {
     e.preventDefault()
     navigate(`/round/${id}/applications`)
   }
+
+  const formatDate = (date: Date | undefined) => date?.toLocaleDateString(
+    "en-US",
+    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  )
 
   return (
     <div className="container mx-auto px-4 py-16 h-screen">
@@ -40,39 +53,42 @@ export default function ViewRound() {
               <p key={index} className="truncate">{operatorWallet}</p>
             ) || <p>Fetching operator wallets...</p>}
           </div><br /> */}
+          {isRoundsLoading && <p className="mb-8">Fetching round information...</p>}
           <p className="my-4">
             <span className="text-2xl">Application Start Date: </span>
-            <span>{round?.applicationStartTime.toString()}</span>
+            <span>{formatDate(round?.applicationStartTime) || "..."}</span>
           </p>
           <p className="my-4">
             <span className="text-2xl">Round Start Date: </span>
-            <span>{round?.startTime.toString()}</span>
+            <span>{formatDate(round?.startTime) || "..."}</span>
           </p>
           <p className="my-4">
             <span className="text-2xl">Round End Date: </span>
-            <span>{round?.endTime.toString()}</span>
+            <span>{formatDate(round?.endTime) || "..."}</span>
           </p>
           <p className="my-4">
             <span className="text-2xl">Supported Token for Voting: </span>
-            <a
+            {round?.token ? <a
               href={`https://goerli.etherscan.io/address/${round?.token}`}
               rel="noopener noreferrer"
               target="_blank"
               className="text-blue-600 underline">
               {round?.token}
-            </a>
+            </a> : "..."}
           </p>
           <p className="my-4">
-          <span className="text-2xl">Voting Contract Address: </span>
-            <a
+            <span className="text-2xl">Voting Contract Address: </span>
+            {round?.token ? <a
               href={`https://goerli.etherscan.io/address/${round?.votingContract}`}
               rel="noopener noreferrer"
               target="_blank"
               className="text-blue-600 underline">
               {round?.votingContract}
-            </a>
+            </a> : "..."}
           </p>
-          <Button type="button" onClick={goToApplications}>Review Applications</Button><br />
+          {isRoundsFetched &&
+            <Button type="button" onClick={goToApplications}>Review Applications</Button>
+          }<br />
           <Button type="button" onClick={goBack}>Back</Button>
         </div>
       </main>
