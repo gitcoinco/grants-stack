@@ -27,14 +27,16 @@ function ProjectsList() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col flex-grow h-full">
+    <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
       {props.loading && <>loading...</>}
 
       {!props.loading && (
         <>
           <div className="flex flex-col mt-4">
             <h3>My Projects</h3>
-            <p>Manage projects across multiple grants programs.</p>
+            <p className="text-base">
+              Manage projects across multiple grants programs.
+            </p>
           </div>
           <div className="grow">
             {props.grants.length ? (
