@@ -86,7 +86,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   // /TODO
 
   return (
-    <div className="border border-solid border-tertiary-text rounded text-primary-text p-4">
+    <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         <TextInput
           label="Project Name"
