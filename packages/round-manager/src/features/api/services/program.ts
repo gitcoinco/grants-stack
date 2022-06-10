@@ -87,15 +87,21 @@ export const programApi = api.injectEndpoints({
 
             if (isOperator) {
               // Connected wallet is a Program Operator
-              const metadata = await programImplementation.metaPtr()
 
-              // Fetch operator wallets for the program
-              const operatorCount = await programImplementation.getRoleMemberCount(PROGRAM_OPERATOR_ROLE)
+              // Fetch program data from contract
+              const [
+                metadata,
+                operatorCount
+              ] = await Promise.all([
+                programImplementation.metaPtr(),
+                programImplementation.getRoleMemberCount(PROGRAM_OPERATOR_ROLE)
+              ])
 
-              const operatorWallets = [];
+              let operatorWallets = [];
               for (let i = 0; i < operatorCount; ++i) {
-                operatorWallets.push(await programImplementation.getRoleMember(PROGRAM_OPERATOR_ROLE, i))
+                operatorWallets.push(programImplementation.getRoleMember(PROGRAM_OPERATOR_ROLE, i))
               }
+              operatorWallets = await Promise.all(operatorWallets)
 
               // Fetch metadata from ipfs
               if (global.ipfs === undefined) {
@@ -110,9 +116,12 @@ export const programApi = api.injectEndpoints({
               }
 
               // Add program to response
-              programs.push({ id: event.args![0], metadata: JSON.parse(content), operatorWallets })
+              programs.push({
+                id: event.args![0],
+                metadata: JSON.parse(content),
+                operatorWallets
+              })
             }
-
           }
 
           return { data: programs }

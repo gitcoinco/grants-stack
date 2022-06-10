@@ -1,7 +1,8 @@
 import { ethers } from "ethers"
+import { create as IPFSCreate } from "ipfs-core"
 import { api } from ".."
 import { global } from "../../../global"
-import { roundFactoryContract } from "../contracts"
+import { roundFactoryContract, roundImplementationContract } from "../contracts"
 import { Round } from "../types"
 
 
@@ -28,7 +29,7 @@ export const roundApi = api.injectEndpoints({
             round.token,
             round.ownedBy,
             round.store,
-            round.operatorWallets.filter(e => e !== "")
+            round.operatorWallets!.filter(e => e !== "")
           )
 
           await tx.wait() // wait for transaction receipt
@@ -57,12 +58,99 @@ export const roundApi = api.injectEndpoints({
         }
       },
     }),
-    listRounds: builder.query<string, string>({
-      queryFn: async (account) => {
+    listRounds: builder.query<Round[], { account: string, programId?: string }>({
+      queryFn: async ({ account, programId }) => {
         try {
-          let res = "TODO"
+          account = ethers.utils.getAddress(account)
 
-          return { data: res }
+          const roundFactory = new ethers.Contract(
+            roundFactoryContract.address!,
+            roundFactoryContract.abi,
+            global.web3Provider
+          )
+
+          // Create event filter and query rounds created from past events
+          const filter = roundFactory.filters.GrantRoundCreated(null, programId)
+          const events = await roundFactory.queryFilter(filter)
+
+          const rounds: Round[] = []
+
+          // Loop through past events to filter rounds for which the connected account
+          // has the required operator permission
+          for (const event of events) {
+            const roundImplementation = new ethers.Contract(
+              event.args![0],
+              roundImplementationContract.abi,
+              global.web3Provider
+            )
+
+            const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
+              ethers.utils.toUtf8Bytes("ROUND_OPERATOR")
+            )
+
+            const isOperator = await roundImplementation.hasRole(
+              ROUND_OPERATOR_ROLE, account
+            )
+
+            if (isOperator) {
+              // Connected wallet is a Round Operator
+
+              // Fetch round data from contract
+              const [
+                metadata,
+                applicationStartTime,
+                startTime,
+                endTime,
+                votingContract,
+                token,
+                // operatorCount
+              ] = await Promise.all([
+                roundImplementation.metaPtr(),
+                roundImplementation.grantApplicationsStartTime(),
+                roundImplementation.roundStartTime(),
+                roundImplementation.roundEndTime(),
+                roundImplementation.votingContract(),
+                roundImplementation.token(),
+                // roundImplementation.getRoleMemberCount(ROUND_OPERATOR_ROLE)
+              ])
+
+              // Fetch operator wallets for the round
+              // let operatorWallets = [];
+              // for (let i = 0; i < operatorCount; ++i) {
+              //   operatorWallets.push(roundImplementation.getRoleMember(ROUND_OPERATOR_ROLE, i))
+              // }
+              // operatorWallets = await Promise.all(operatorWallets)
+
+              // Fetch metadata from ipfs
+              if (global.ipfs === undefined) {
+                global.ipfs = await IPFSCreate()
+              }
+
+              const decoder = new TextDecoder()
+              let content = ''
+
+              for await (const chunk of global.ipfs.cat(metadata[1])) {
+                content += decoder.decode(chunk)
+              }
+
+              // Add round to response
+              rounds.push({
+                id: event.args![0],
+                metadata: JSON.parse(content),
+                applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
+                startTime: new Date(startTime.toNumber() * 1000),
+                endTime: new Date(endTime.toNumber() * 1000),
+                votingContract,
+                token,
+                ownedBy: event.args![1],
+                // operatorWallets
+              })
+            }
+          }
+
+          console.log(rounds)
+
+          return { data: rounds }
 
         } catch (err) {
           console.log("error", err)
