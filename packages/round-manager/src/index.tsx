@@ -17,6 +17,7 @@ import Program from "./features/program/ListProgramPage"
 import ProtectedRoute from "./features/common/ProtectedRoute"
 import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRound from "./features/round/ViewRoundPage"
+import ReviewRoundApplications from "./features/round/ReviewApplicationsPage";
 
 
 const root = ReactDOM.createRoot(
@@ -37,6 +38,7 @@ root.render(
             {/* Round Manager Routes */}
             <Route path="/round/create" element={<CreateRound />} />
             <Route path="/round/:id" element={<ViewRound />} />
+            <Route path="/round/:id/applications" element={<ReviewRoundApplications />} />
 
             {/* Program Routes */}
             <Route path="/program/create" element={<CreateProgram />} />
