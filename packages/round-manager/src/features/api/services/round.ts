@@ -148,8 +148,6 @@ export const roundApi = api.injectEndpoints({
             }
           }
 
-          console.log(rounds)
-
           return { data: rounds }
 
         } catch (err) {
