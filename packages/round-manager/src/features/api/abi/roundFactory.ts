@@ -1,6 +1,6 @@
 /** GrantRoundFactory contract ABI in Human Readable ABI Format  */
 
-export default [
+const roundFactory = [
   "event GrantRoundContractUpdated(address grantRoundAddress)",
   "event GrantRoundCreated(address indexed grantRoundAddress, address indexed ownedBy)",
   "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
@@ -11,3 +11,5 @@ export default [
   "function transferOwnership(address newOwner)",
   "function updateGrantRoundContract(address _grantRoundContract)"
 ]
+
+export default roundFactory

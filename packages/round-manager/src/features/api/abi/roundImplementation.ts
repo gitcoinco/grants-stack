@@ -1,6 +1,6 @@
 /** GrantRoundImplementation contract ABI in Human Readable ABI Format  */
 
-export default [
+const roundImplementation = [
   "event Initialized(uint8 version)",
   "event MetadataUpdated(tuple(uint256 protocol, string pointer) oldMetaPtr, tuple(uint256 protocol, string pointer) newMetaPtr)",
   "event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)",
@@ -28,3 +28,5 @@ export default [
   "function vote(tuple(address token, uint256 amount, address grantAddress, address voterAddress)[] _votes)",
   "function votingContract() view returns (address)"
 ]
+
+export default roundImplementation

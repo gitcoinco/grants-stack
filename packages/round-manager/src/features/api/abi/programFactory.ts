@@ -1,6 +1,6 @@
 /** ProgramFactory contract ABI in Human Readable ABI Format  */
 
-export default [
+const programFactory = [
   "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
   "event ProgramContractUpdated(address programContractAddress)",
   "event ProgramCreated(address programContractAddress)",
@@ -11,3 +11,5 @@ export default [
   "function transferOwnership(address newOwner)",
   "function updateProgramContract(address _programContract)"
 ]
+
+export default programFactory

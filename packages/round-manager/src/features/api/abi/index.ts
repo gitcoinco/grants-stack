@@ -4,9 +4,11 @@ import roundFactory  from "./roundFactory"
 import roundImplementation  from "./roundImplementation"
 
 
-export default {
+const abi = {
   programFactory,
   programImplementation,
   roundFactory,
   roundImplementation
 }
+
+export default abi

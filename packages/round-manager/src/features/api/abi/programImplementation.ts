@@ -1,6 +1,6 @@
 /** ProgramImplementation contract ABI in Human Readable ABI Format  */
 
-export default [
+const programImplementation = [
   "event Initialized(uint8 version)",
   "event MetadataUpdated(tuple(uint256 protocol, string pointer) oldMetaPtr, tuple(uint256 protocol, string pointer) newMetaPtr)",
   "event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)",
@@ -20,3 +20,5 @@ export default [
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
   "function updateMetaPtr(tuple(uint256 protocol, string pointer) _newMetaPtr)"
 ]
+
+export default programImplementation
