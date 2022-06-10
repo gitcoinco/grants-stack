@@ -1,8 +1,7 @@
 import { ethers } from "ethers"
-import { create as IPFSCreate } from "ipfs-core"
 import { api } from ".."
 import { global } from "../../../global"
-import { roundFactoryContract, roundImplementationContract } from "../contracts"
+import { roundFactoryContract } from "../contracts"
 import { Round } from "../types"
 
 
@@ -63,7 +62,7 @@ export const roundApi = api.injectEndpoints({
         try {
           let res = "TODO"
 
-          return { data: "round list" }
+          return { data: res }
 
         } catch (err) {
           console.log("error", err)
