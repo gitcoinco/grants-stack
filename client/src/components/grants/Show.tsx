@@ -45,11 +45,11 @@ function Project() {
   }
 
   return (
-    <div>
+    <div className="mx-4 sm:mx-0">
       {props.currentGrant && (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="flex">
+          <div className="flex-col sm:flex justify-between items-center mb-6">
+            <h3 className="flex w-full">
               <div className="pt-2 mr-2">
                 <Link to={grantsPath()}>
                   <Arrow color={colors["primary-text"]} />
@@ -84,7 +84,7 @@ function Project() {
             <p className="mb-12">{props.currentGrant.description}</p>
             <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
             <p className="mb-12">{props.currentGrant.roadmap}</p>
-            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
+            <p className="text-xs text-primary-text mb-1">Project Challenges</p>
             <p className="mb-12">{props.currentGrant.challenges}</p>
           </div>
         </>
