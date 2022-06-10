@@ -50,7 +50,7 @@ function Landing() {
               variant={ButtonVariants.primary}
               styles={["w-full sm:w-auto mx-w-full ml-0"]}
             >
-              Connect Wallet
+              <div className="text-center w-full">Connect Wallet</div>
             </Button>
             {props.web3Error !== undefined && (
               <div>

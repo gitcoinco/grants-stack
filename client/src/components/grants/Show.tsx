@@ -49,7 +49,7 @@ function Project() {
       {props.currentGrant && (
         <>
           <div className="flex-col sm:flex justify-between items-center mb-6">
-            <h3 className="flex w-full">
+            <h3 className="flex w-full mb-4">
               <div className="pt-2 mr-2">
                 <Link to={grantsPath()}>
                   <Arrow color={colors["primary-text"]} />
@@ -59,11 +59,16 @@ function Project() {
             </h3>
             {props.id && (
               <Link to={editPath(props.id)}>
-                <Button variant={ButtonVariants.outline}>
-                  <div className="m-1">
-                    <Pencil color={colors["secondary-text"]} />
+                <Button
+                  variant={ButtonVariants.outline}
+                  styles={["w-full sm:w-auto mx-w-full ml-0"]}
+                >
+                  <div className="flex justify-center w-full">
+                    <div className="m-1">
+                      <Pencil color={colors["secondary-text"]} />
+                    </div>
+                    Edit
                   </div>
-                  Edit
                 </Button>
               </Link>
             )}

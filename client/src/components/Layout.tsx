@@ -44,7 +44,7 @@ function Layout(ownProps: Props) {
       {!props.web3Initialized ? (
         <Landing />
       ) : (
-        <>
+        <div className="flex flex-col">
           <Header />
           <main className="container mx-auto dark:bg-primary-background h-full">
             {!props.web3Error &&
@@ -59,7 +59,7 @@ function Layout(ownProps: Props) {
               src="./assets/footer-img.svg"
             />
           </div>
-        </>
+        </div>
       )}
     </div>
   );
