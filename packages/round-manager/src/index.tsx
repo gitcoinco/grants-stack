@@ -43,7 +43,7 @@ root.render(
             <Route path="/program/:id" element={<ViewProgram />} />
 
             {/* 404 */}
-            <Route path="*" element={<p>There"s nothing here: 404!</p>} />
+            <Route path="*" element={<p>There's nothing here: 404!</p>} />
           </Route>
         </Routes>
       </ReduxRouter>
