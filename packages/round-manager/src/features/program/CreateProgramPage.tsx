@@ -67,7 +67,7 @@ export default function CreateProgram() {
   return (
     <div className="container mx-auto h-screen px-4 py-16">
       <header>
-        <h1 className="text-5xl mb-16">Create a Program</h1>
+        <h1 className="text-5xl mb-16">Create a Grant Program</h1>
       </header>
       <main className="">
         <form onSubmit={handleSubmit(onSubmit)}>

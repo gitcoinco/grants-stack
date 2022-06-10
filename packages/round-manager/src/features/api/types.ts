@@ -21,21 +21,6 @@ export interface Metadata {
    pointer: string;
 }
 
-export interface Program {
-  /**
-   * The on-chain unique program ID
-   */
-  id?: string;
-  metadata?: {
-    name: string
-  };
-  store?: Metadata;
-  /**
-   * Addresses of wallets that will have admin privileges to operate the Grant program
-   */
-  operatorWallets: Array<string>;
-}
-
 export interface IPFSFile {
   /**
    * File content to be saved in IPFS
@@ -57,4 +42,70 @@ export interface Contract {
    * Contract ABI in Human Readable ABI format
    */
   abi: Array<string>;
+}
+
+export interface Program {
+  /**
+   * The on-chain unique program ID
+   */
+  id?: string;
+  /**
+   * Metadata of the Grant Program to be stored off-chain
+   */
+  metadata?: {
+    name: string
+  };
+  /**
+   * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
+   */
+  store?: Metadata;
+  /**
+   * Addresses of wallets that will have admin privileges to operate the Grant program
+   */
+  operatorWallets: Array<string>;
+}
+
+export interface Round {
+  /**
+   * The on-chain unique program ID
+   */
+  id?: string;
+  /**
+   * Metadata of the Grant Round to be stored off-chain
+   */
+  metadata?: {
+    name: string
+  };
+  /**
+   * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
+   */
+  store?: Metadata;
+  /**
+   * Voting contract address
+   */
+  votingContract: string;
+  /**
+   * Unix timestamp of the start of the round
+   */
+  startTime: Date;
+  /**
+   * Unix timestamp of the end of the round
+   */
+  endTime: Date;
+  /**
+   * Unix timestamp of when grants can apply to a round
+   */
+  applicationStartTime: Date;
+  /**
+   * Contract address of the token used to payout match amounts at the end of a round
+   */
+  token: string;
+  /**
+   * Contract address of the program to which the round belongs
+   */
+   ownedBy: string;
+  /**
+   * Addresses of wallets that will have admin privileges to operate the Grant program
+   */
+  operatorWallets: Array<string>;
 }
