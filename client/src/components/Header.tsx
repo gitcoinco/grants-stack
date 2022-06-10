@@ -31,8 +31,8 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between px-2 py-3 mb-3 text-primary-text w-ful border-b container mx-auto">
-      <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
+    <header className="flex items-center justify-between px-2 mb-3 text-primary-text w-full border-0 sm:border-b container mx-auto">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
         <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
           <Link to={grantsPath()}>
             <div className="flex items-center">
