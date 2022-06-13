@@ -13,8 +13,8 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 ├   ├── program                         # program contracts
 ├   ├   ├── ProgramFactory.sol          # factory contract which deploys program
 ├   ├   ├── ProgramImplementation.sol   # program contract
-├   ├── GrantRoundFactory.sol           # factory contract which deploys grant round
-├   ├── GrantRoundImplementation.sol    # grant round contract 
+├   ├── RoundFactory.sol                # factory contract which deploys round
+├   ├── RoundImplementation.sol         # round contract 
 ├   ├── vote                            # voting mechanism
 ├   ├   ├── IVote.sol                   # voting interface
 ├   ├   ├── BulkVote.sol                # bulk voting mechanism
@@ -36,7 +36,7 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 
 - **Program**: wallets which together form a team
 - **Round Operators**: wallets that have the permission to deploy & manage the round
-- **Voter** : wallets who cast a vote to a grant during the grant round 
+- **Voter** : wallets who cast a vote to a grant during the round 
 
 ## General Setup
 
@@ -49,9 +49,9 @@ These steps would have to be done per chain but there are intended to be deploye
 
 **Round**
 1. Deploying all voting mechanism (contracts under `votes/`)
-2. Deploy `GrantRoundFactory`
-3. Deploy `GrantRoundImplementation`
-4. Link `GrantRoundImplementation` to `GrantRoundFactory` contract
+2. Deploy `RoundFactory`
+3. Deploy `RoundImplementation`
+4. Link `RoundImplementation` to `RoundFactory` contract
 
 
 ## Program Setup
@@ -65,12 +65,12 @@ The ProgramFactory enables us to have upgradable contracts on ProgramImplementat
 
 ## Round Setup
 
-1. To create a round, you would not deploy a contract but instead, rely on the create function on the `GrantRoundFactory` to create a new `GrantRoundImplementation` contract.
+1. To create a round, you would not deploy a contract but instead, rely on the create function on the `RoundFactory` to create a new `RoundImplementation` contract.
 2. The user would have to choose a voting mechanism like `BulkVoting` (already deployed via instruction mention in DEPLOY_STEPS.md)
-3. Any interaction in terms of updating parameters etc can be performed against the `GrantRoundImplementation` contract itself
+3. Any interaction in terms of updating parameters etc can be performed against the `RoundImplementation` contract itself
 
 
-The `GrantRoundFactory` enables us to have upgradable contracts on `GrantRoundImplementation`.
+The `RoundFactory` enables us to have upgradable contracts on `RoundImplementation`.
 
 
 ## Deploy Steps

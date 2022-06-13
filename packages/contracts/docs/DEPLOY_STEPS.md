@@ -36,7 +36,7 @@ yarn run goerli-link-program-implementation
 ```
 
 
-### GrantRound Setup
+### Round Setup
 
 The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
 
@@ -46,12 +46,12 @@ The section here shows how to set up the round manager for the first time on a g
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
 
 
-2. Deploy the `GrantRoundFactory` contract
+2. Deploy the `RoundFactory` contract
 ```shell
 yarn run goerli-deploy-round-factory
 ```
 
-3. Deploy the `GrantRoundImplementation` contract
+3. Deploy the `RoundImplementation` contract
 ```shell
 yarn run goerli-deploy-round-implementation
 ```
@@ -60,14 +60,14 @@ yarn run goerli-deploy-round-implementation
 ```javascript
 export const params: DeployParams = {
   goerli: {
-    grantRoundImplementationContract: 'DEPLOYED_ROUND_IMPLEMENTATION_CONTRACT',
-    grantRoundFactoryContract: 'DEPLOYED_ROUND_FACTORY_CONTRACT',
+    roundImplementationContract: 'DEPLOYED_ROUND_IMPLEMENTATION_CONTRACT',
+    roundFactoryContract: 'DEPLOYED_ROUND_FACTORY_CONTRACT',
     ...
   },
 };
 ```
 
-5. Update `GrantRoundFactory` to reference the `GrantRoundImplementation` contract
+5. Update `RoundFactory` to reference the `RoundImplementation` contract
 ```shell
 yarn run goerli-link-round-implementation
 ```

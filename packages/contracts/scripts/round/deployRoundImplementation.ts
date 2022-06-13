@@ -1,4 +1,4 @@
-// This script deals with deploying the GrantRoundImplementation on a given network
+// This script deals with deploying the RoundImplementation on a given network
 import { ethers } from "hardhat";
 import hre from 'hardhat';
 import { confirmContinue } from "../../utils/script-utils";
@@ -9,16 +9,16 @@ export async function main() {
   const blocksToWait = 10;
 
   await confirmContinue({
-    "contract"  : "GrantRoundImplementation",
+    "contract"  : "RoundImplementation",
     "network"   : hre.network.name,
     "chainId"   : hre.network.config.chainId
   });
 
-  // Deploy GrantRoundImplementation 
-  const contractFactory = await ethers.getContractFactory("GrantRoundImplementation");
+  // Deploy RoundImplementation 
+  const contractFactory = await ethers.getContractFactory("RoundImplementation");
   const contract = await contractFactory.deploy();
 
-  console.log(`Deploying GrantRoundImplementation to ${contract.address}`);
+  console.log(`Deploying RoundImplementation to ${contract.address}`);
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed");
 

@@ -1,10 +1,10 @@
 # Protocol IDs
 
 ## Overview
-[Grants Rounds](https://github.com/dcgtc/dgrants/blob/main/contracts/contracts/GrantRound.sol)
+[Round](https://github.com/dcgtc/dgrants/blob/main/contracts/contracts/Round.sol)
 store a [pointer](https://github.com/dcgtc/dgrants/blob/main/contracts/contracts/interfaces/IMetadataPointer.sol)
 to their metadata on-chain.
-This metadata could contain any information which would is not needed to run a round (such as grant round description / list of approved grants / etc)
+This metadata could contain any information which would is not needed to run a round (such as round description / list of approved grants / etc)
 
 The contract stores a reference to this metadata in the following format:
 

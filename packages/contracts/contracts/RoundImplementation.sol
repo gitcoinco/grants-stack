@@ -13,11 +13,11 @@ import "./vote/IVote.sol";
 import "./utils/MetaPtr.sol";
 
 /**
- * @notice Contract deployed per Grant Round which would managed by
- * a group of ROUND_OPERATOR via the GrantRoundFactory
+ * @notice Contract deployed per Round which would managed by
+ * a group of ROUND_OPERATOR via the RoundFactory
  *
  */
-contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
+contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   // --- Libraries ---
   using Address for address;
@@ -31,10 +31,10 @@ contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
 
   // --- Events ---
 
-  /// @notice Emitted when a grant round metadata pointer is updated
+  /// @notice Emitted when a round metadata pointer is updated
   event MetadataUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
-  /// @notice Emitted when a grant round timings are updated
+  /// @notice Emitted when a round timings are updated
   event TimeUpdated(string typeOfTime, uint256 oldTime, uint256 newTime);
 
 
@@ -43,8 +43,8 @@ contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Voting Contract Address
   IVote public votingContract;
 
-  /// @notice Unix timestamp after where grants can apply
-  uint256 public grantApplicationsStartTime;
+  /// @notice Unix timestamp from when round can accept applications
+  uint256 public applicationsStartTime;
 
   /// @notice Unix timestamp of the start of the round
   uint256 public roundStartTime;
@@ -55,26 +55,26 @@ contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Token used to payout match amounts at the end of a round
   IERC20 public token;
 
-  /// @notice URL pointing to grant round metadata (for off-chain use)
+  /// @notice URL pointing to round metadata (for off-chain use)
   MetaPtr public metaPtr;
 
 
   // --- Core methods ---
 
   /**
-   * @notice Instantiates a new grant round
+   * @notice Instantiates a new round
    * @param _votingContract Deployed Voting Contract
-   * @param _grantApplicationsStartTime Unix timestamp from when grants can apply
+   * @param _applicationsStartTime Unix timestamp from when round can accept applications
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
-   * @param _metaPtr URL pointing to the grant round metadata
+   * @param _metaPtr URL pointing to the round metadata
    * @param _adminRole Address to be granted DEFAULT_ADMIN_ROLE
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
     IVote _votingContract,
-    uint256 _grantApplicationsStartTime,
+    uint256 _applicationsStartTime,
     uint256 _roundStartTime,
     uint256 _roundEndTime,
     IERC20 _token,
@@ -85,11 +85,11 @@ contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
 
     require(_roundStartTime >= block.timestamp, "initialize: start time has already passed");
     require(_roundEndTime > _roundStartTime, "initialize: start time should be before end time");
-    require(_roundEndTime > _grantApplicationsStartTime, "initialize: application start time should be before end time");
+    require(_roundEndTime > _applicationsStartTime, "initialize: application start time should be before end time");
 
 
     votingContract = _votingContract;
-    grantApplicationsStartTime = _grantApplicationsStartTime;
+    applicationsStartTime = _applicationsStartTime;
     roundStartTime = _roundStartTime;
     roundEndTime = _roundEndTime;
     token = _token;
@@ -133,16 +133,16 @@ contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
     roundEndTime = _newRoundEndTime;
   }
 
-  /// @notice Update grantApplicationsStartTime (only by ROUND_OPERATOR_ROLE)
-  /// @param _newGrantApplicationsStartTime new grantApplicationsStartTime
-  function updateGrantApplicationsStartTime(uint256 _newGrantApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @notice Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
+  /// @param _newApplicationsStartTime new applicationsStartTime
+  function updateApplicationsStartTime(uint256 _newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newGrantApplicationsStartTime >= roundStartTime, "grantApplicationTime: Should be before round start time");
-    require(_newGrantApplicationsStartTime < roundEndTime, "grantApplicationTime: Should be before round end time");
+    require(_newApplicationsStartTime >= roundStartTime, "applicationTime: Should be before round start time");
+    require(_newApplicationsStartTime < roundEndTime, "applicationTime: Should be before round end time");
 
-    emit TimeUpdated("grantApplicationsStartTime", grantApplicationsStartTime, _newGrantApplicationsStartTime);
+    emit TimeUpdated("applicationsStartTime", applicationsStartTime, _newApplicationsStartTime);
 
-    grantApplicationsStartTime = _newGrantApplicationsStartTime;
+    applicationsStartTime = _newApplicationsStartTime;
   }
 
   /// @notice Invoked by voter to cast votes
