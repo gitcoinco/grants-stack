@@ -86,7 +86,7 @@ export const fetchGrantData =
 
     dispatch(grantMetadataLoading(id));
 
-    const cacheKey = `project-${project.metadata.protocol}-${project.metadata.pointer}`;
+    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
     const storage = new LocalStorage();
     if (storage.supported) {
       const item = storage.get(cacheKey);
