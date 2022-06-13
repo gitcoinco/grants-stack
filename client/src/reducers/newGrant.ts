@@ -11,13 +11,11 @@ export interface NewGrant {
   owner?: string;
 }
 export interface NewGrantState {
-  grants: NewGrant[];
-  txStatus: string | null;
+  txStatus: string | undefined;
 }
 
 export const initialState: NewGrantState = {
-  grants: [],
-  txStatus: null,
+  txStatus: undefined,
 };
 
 export const newGrantReducer = (
@@ -28,14 +26,6 @@ export const newGrantReducer = (
     case NEW_GRANT_CREATED: {
       return {
         ...state,
-        grants: [
-          ...state.grants,
-          {
-            id: action.id,
-            metaData: action.metaData,
-            owner: action.owner,
-          },
-        ],
       };
     }
 
@@ -49,7 +39,7 @@ export const newGrantReducer = (
     case RESET_TX_STATUS: {
       return {
         ...state,
-        txStatus: null,
+        txStatus: undefined,
       };
     }
 
