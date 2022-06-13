@@ -24,7 +24,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     };
   }, shallowEqual);
 
-  const [validated, setValidated] = useState(true);
+  // if currentGrantId is undefined, the form is empty so it's not valid
+  const [validated, setValidated] = useState(currentGrantId !== undefined);
   const [formInputs, setFormInputs] = useState({
     title: "",
     description: "",
