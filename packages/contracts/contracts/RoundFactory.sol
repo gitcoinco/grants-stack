@@ -27,10 +27,10 @@ contract RoundFactory is Ownable {
   // --- Event ---
 
   /// @notice Emitted when a Round contract is updated
-  event RoundContractUpdated(address RoundAddress);
+  event RoundContractUpdated(address roundAddress);
 
   /// @notice Emitted when a new Round is created
-  event RoundCreated(address indexed RoundAddress, address indexed ownedBy);
+  event RoundCreated(address indexed roundAddress, address indexed ownedBy);
 
 
   // --- Core methods ---

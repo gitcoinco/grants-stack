@@ -22,7 +22,7 @@
     "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network goerli",
     "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network goerli",
     "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network goerli",
-    "goerli-deploy-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
+    "goerli-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
     "goerli-deploy-bulk-voting-mechanism": "yarn hardhat run scripts/vote/deployBulkVotingMechanism.ts --network goerli"

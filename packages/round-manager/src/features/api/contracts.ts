@@ -18,13 +18,13 @@ export const programImplementationContract: Contract = {
   abi: abi.programImplementation
 }
 
-/** GrantRoundFactory  */
+/** RoundFactory  */
 export const roundFactoryContract: Contract = {
-  address: "0x2f97819a05051cC0983988B9E49331E679741309",
+  address: "0x8CECC7587d9bC7db93f5a797c90264b6048cc590",
   abi: abi.roundFactory
 }
 
-/** GrantRoundImplementation */
+/** RoundImplementation */
 export const roundImplementationContract: Contract = {
   abi: abi.roundImplementation
 }

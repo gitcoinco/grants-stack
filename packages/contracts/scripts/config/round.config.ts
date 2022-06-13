@@ -9,8 +9,8 @@ type DeployParams = Record<string, RoundParams>;
 
 export const roundParams: DeployParams = {
   goerli: {
-    roundImplementationContract: '0x85387A953d83A149a4f378FA47011C7b6F93d851',
-    roundFactoryContract: '0xC4012787FD2242657C19F006D38c55859F0Ca508',
+    roundImplementationContract: '0x74052bED315C145567E56A022A3D89EfE7deeb1d',
+    roundFactoryContract: '0x8CECC7587d9bC7db93f5a797c90264b6048cc590',
     bulkVoteContract: '0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6'
   },
 };

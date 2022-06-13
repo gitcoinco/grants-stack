@@ -52,7 +52,7 @@
             "request": "launch",
             "name": "script: createRound",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-create-round"],
+            "args": ["goerli-create-round"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
