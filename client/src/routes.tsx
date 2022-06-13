@@ -2,7 +2,7 @@ export const slugs = {
   root: `/`,
   grants: `/grants`,
   grant: `/grants/:id`,
-  edit: `/edit/:id`,
+  edit: `/grants/:id/edit`,
   newGrant: `/grants/new`,
 };
 
@@ -14,4 +14,4 @@ export const newGrantPath = () => slugs.newGrant;
 
 export const grantPath = (id: string | number) => `/grants/${id}`;
 
-export const editPath = (id: string | number) => `/edit/${id}`;
+export const editPath = (id: string | number) => `/grants/${id}/edit`;
