@@ -15,36 +15,36 @@ export async function main() {
     throw new Error(`Invalid network ${network.name}`);
   }
 
-  const grantRoundFactoryContract = networkParams.grantRoundFactoryContract;
-  const grantRoundImplementationContract = networkParams.grantRoundImplementationContract;
+  const roundFactoryContract = networkParams.roundFactoryContract;
+  const roundImplementationContract = networkParams.roundImplementationContract;
 
   
-  if (!grantRoundFactoryContract) {
-    throw new Error(`error: missing grantRoundFactoryContract`);
+  if (!roundFactoryContract) {
+    throw new Error(`error: missing roundFactoryContract`);
   }
 
-  if (!grantRoundImplementationContract) {
-    throw new Error(`error: missing grantRoundImplementationContract`);
+  if (!roundImplementationContract) {
+    throw new Error(`error: missing roundImplementationContract`);
   }
 
 
-  const grantRoundFactory = await ethers.getContractAt('GrantRoundFactory', grantRoundFactoryContract);
+  const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
   await confirmContinue({
-    "info"                              : "create a GrantRound",
-    "grantRoundFactoryContract"         : grantRoundFactoryContract,
-    "grantRoundImplementationContract"  : grantRoundImplementationContract,
-    "network"                           : network.name,
-    "chainId"                           : network.config.chainId
+    "info"                         : "create a Round",
+    "roundFactoryContract"         : roundFactoryContract,
+    "roundImplementationContract"  : roundImplementationContract,
+    "network"                      : network.name,
+    "chainId"                      : network.config.chainId
   });
 
   const startTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
   const applicationStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
   const endTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
-  const roundTx = await grantRoundFactory.create(
+  const roundTx = await roundFactory.create(
       networkParams.bulkVoteContract, // _votingContract
-      applicationStartTime, // _grantApplicationsStartTime
+      applicationStartTime, // _applicationsStartTime
       startTime, // _roundStartTime
       endTime, // _roundEndTime
       '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
@@ -55,7 +55,7 @@ export async function main() {
 
   await roundTx.wait();
 
-  console.log("✅ GrantRound created: ", roundTx.hash);
+  console.log("✅ Round created: ", roundTx.hash);
 }
 
 main().catch((error) => {

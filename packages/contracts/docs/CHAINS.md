@@ -2,14 +2,14 @@
 
 This document lists all the addresses of the contracts that have been deployed on a given network
 
-### GrantRoundFactory
+### RoundFactory
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
 | goerli  | 0xC4012787FD2242657C19F006D38c55859F0Ca508 |
 
 
-## GrantRoundImplementation
+## RoundImplementation
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
@@ -23,7 +23,7 @@ This document lists all the addresses of the contracts that have been deployed o
 | goerli  | 0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6 |
 
 
-## GrantRound
+## Round
 
 This is not the exahustive list but instead just shows example of a round deployed on network
 | Network | Address                                    |

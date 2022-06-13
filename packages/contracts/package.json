@@ -19,10 +19,10 @@
     "goerli-upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network goerli",
 
     "// round-deploy-scripts": "//-- Round deploy Script --//",
-    "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployGrantRoundImplementation.ts --network goerli",
-    "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployGrantRoundFactory.ts --network goerli",
-    "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkGrantRoundImplementation.ts --network goerli",
-    "goerli-deploy-create-round": "yarn hardhat run scripts/round/createGrantRound.ts --network goerli",
+    "goerli-deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network goerli",
+    "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network goerli",
+    "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network goerli",
+    "goerli-deploy-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
     "goerli-deploy-bulk-voting-mechanism": "yarn hardhat run scripts/vote/deployBulkVotingMechanism.ts --network goerli"

@@ -21,15 +21,14 @@ contract BulkVote is IVote, ReentrancyGuard {
     uint256 amount,                   // voting amount
     address indexed voter,            // voter address
     address indexed grantAddress,     // grant address
-    address indexed grantRoundAddress // grant round address
+    address indexed roundAddress      // round address
   );
 
   // --- Core methods ---
 
   /**
-   * @notice Invoked by GrantRoundImplementation which allows
-   * a voted to cast weighted votes to multiple grants during a
-   * grant round
+   * @notice Invoked by RoundImplementation which allows
+   * a voted to cast weighted votes to multiple grants during a round
    *
    * @dev
    * - more voters -> higher the gas

@@ -14,7 +14,7 @@ export async function main() {
     "chainId"   : hre.network.config.chainId
   });
 
-  // Deploy GrantRoundImplementation 
+  // Deploy RoundImplementation 
   const contractFactory = await ethers.getContractFactory("BulkVote");
   const contract = await contractFactory.deploy();
 

@@ -11,7 +11,7 @@ import "../utils/Vote.sol";
  * within a round. Any new voting algorithm would be expected to
  * implement this interface.
  * Every IVote implementation would ideally be deployed once per chain
- * and be invoked by the GrantRoundImplementation contract
+ * and be invoked by the RoundImplementation contract
  *
  */
 interface IVote {
@@ -19,12 +19,12 @@ interface IVote {
   // --- Core methods ---
 
   /**
-   * @notice Invoked by GrantRoundImplementation to allow voter to case
-   * vote for grants during a grant round.
+   * @notice Invoked by RoundImplementation to allow voter to case
+   * vote for grants during a round.
    *
    * @dev
    * - allows contributor to do cast multiple votes which could be weighted.
-   * - should be invoked by GrantRoundImplementation contract
+   * - should be invoked by RoundImplementation contract
    * - ideally IVote implementation should emit events after a vote is cast
    * - this would be triggered when a voter casts their vote via round explorer
    *

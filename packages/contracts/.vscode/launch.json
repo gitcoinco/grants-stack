@@ -23,7 +23,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: deployGrantRoundImplementation",
+            "name": "script: deployRoundImplementation",
             "runtimeExecutable": "yarn",
             "args": ["goerli-deploy-round"],
             "cwd": "${workspaceRoot}",
@@ -32,7 +32,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: deployGrantRoundFactory",
+            "name": "script: deployRoundFactory",
             "runtimeExecutable": "yarn",
             "args": ["goerli-deploy-round-factory"],
             "cwd": "${workspaceRoot}",
@@ -41,7 +41,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: linkGrantRoundImplementation",
+            "name": "script: linkRoundImplementation",
             "runtimeExecutable": "yarn",
             "args": ["goerli-link-round-implementation"],
             "cwd": "${workspaceRoot}",
@@ -50,7 +50,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: createGrantRound",
+            "name": "script: createRound",
             "runtimeExecutable": "yarn",
             "args": ["goerli-deploy-create-round"],
             "cwd": "${workspaceRoot}",
