@@ -4,6 +4,7 @@ import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
+import { ProjectEvent } from "../types";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -13,7 +14,7 @@ interface ProjectsLoadingAction {
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
-  projects: number[];
+  projects: ProjectEvent[];
 }
 
 export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
@@ -30,7 +31,7 @@ const projectsLoading = () => ({
   type: PROJECTS_LOADING,
 });
 
-const projectsLoaded = (projects: number[]) => ({
+const projectsLoaded = (projects: Event[]) => ({
   type: PROJECTS_LOADED,
   projects,
 });
@@ -38,6 +39,28 @@ const projectsLoaded = (projects: number[]) => ({
 const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
+
+function aggregateEvents(
+  created: ProjectEvent[],
+  updated: ProjectEvent[]
+): Event[] {
+  const result = [...created, ...updated].reduce(
+    (prev: any, cur: ProjectEvent) => {
+      console.log({ prev, cur });
+      const value = prev;
+      if (value[cur.id] && cur.block > value[cur.id].block) {
+        value[cur.id] = cur;
+        return value;
+      }
+      value[cur.id] = cur;
+      console.log({ value });
+      return value;
+    },
+    {}
+  );
+
+  return Object.values(result);
+}
 
 export const loadProjects =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
@@ -54,12 +77,25 @@ export const loadProjects =
       signer
     );
 
-    const filter = contract.filters.ProjectCreated(state.web3.account);
-    const res = await contract.queryFilter(filter);
-    const projectIds = res.map((x: any) =>
-      BigNumber.from(x.args[1]).toNumber()
-    );
-    dispatch(projectsLoaded(projectIds));
+    const createdFilter = contract.filters.ProjectCreated(state.web3.account);
+    const metadataFilter = contract.filters.MetaDataUpdated(state.web3.account);
+
+    const metadataEvents = await contract.queryFilter(metadataFilter);
+    const createdEvents = await contract.queryFilter(createdFilter);
+
+    const createdIds: ProjectEvent[] = createdEvents.map((event: any) => ({
+      id: BigNumber.from(event.args[1]).toNumber(),
+      block: event.blockNumber,
+    }));
+
+    const updateIds: ProjectEvent[] = metadataEvents.map((event: any) => ({
+      id: BigNumber.from(event.args[1]).toNumber(),
+      block: event.blockNumber,
+    }));
+
+    const events = aggregateEvents(createdIds, updateIds);
+
+    dispatch(projectsLoaded(events));
   };
 
 export const unloadProjects = () => projectsUnload();

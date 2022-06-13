@@ -4,10 +4,11 @@ import {
   PROJECTS_LOADED,
   PROJECTS_UNLOADED,
 } from "../actions/projects";
+import { ProjectEvent } from "../types";
 
 export interface ProjectsState {
   loading: boolean;
-  projects: number[];
+  projects: ProjectEvent[];
 }
 
 const initialState = {
