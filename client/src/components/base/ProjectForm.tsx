@@ -87,11 +87,17 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
-  if (props.currentGrant === undefined && !props.ipfsInitialized) {
+  if (
+    currentGrantId !== undefined &&
+    props.currentGrant === undefined &&
+    !props.ipfsInitialized
+  ) {
     return <>Initializing ipfs...</>;
   }
 
   if (
+    // if it's undefined we don't have anything to load
+    currentGrantId !== undefined &&
     props.currentGrant === undefined &&
     props.loading &&
     props.currentGrant === undefined
