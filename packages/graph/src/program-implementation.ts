@@ -5,7 +5,11 @@ import {
   RoleRevoked as RoleRevokedEvent
 } from "../generated/templates/ProgramImplementation/ProgramImplementation";
 
-import { Account, Program , Role} from "../generated/schema";
+import {
+  Program,
+  ProgramAccount,
+  ProgramRole
+} from "../generated/schema";
 
 
 function generateID(array: Array<string>): string {
@@ -30,8 +34,8 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   
   // role
   const roleID = [_program, _role].join('-');
-  let role = Role.load(roleID);
-  role = role == null ? new Role(roleID) : role;
+  let role = ProgramRole.load(roleID);
+  role = role == null ? new ProgramRole(roleID) : role;
 
   role.role = _role;
   role.program = program.id;
@@ -40,8 +44,8 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 
   // account
   const accountId =  generateID([_program, _role, _account]);
-  let account = Account.load(accountId);
-  account = account == null ? new Account(accountId) : account;
+  let account = ProgramAccount.load(accountId);
+  account = account == null ? new ProgramAccount(accountId) : account;
 
   account.address = _account;
   account.role = role.id;
@@ -65,13 +69,13 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   
   // role
   const roleID = _program + '-' + _role;
-  let role = Role.load(roleID);
-  role = role == null ? new Role(roleID) : role;
+  let role = ProgramRole.load(roleID);
+  role = role == null ? new ProgramRole(roleID) : role;
 
   // account
   const accountId =  generateID([_program, _role, _account]);
-  let account = Account.load(accountId)
-  account = account == null ? new Account(accountId) : account;
-
-  store.remove('Account', account.id);
+  let account = ProgramAccount.load(accountId)
+  if (account) {
+    store.remove('ProgramAccount', account.id);
+  }
 }

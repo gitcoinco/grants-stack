@@ -28,12 +28,15 @@ export async function main() {
   }
 
 
+  const programContractAddress = "0xA5139f5020551e9dc41caDf595420A99449CeE01";
+
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
   await confirmContinue({
     "info"                         : "create a Round",
     "roundFactoryContract"         : roundFactoryContract,
     "roundImplementationContract"  : roundImplementationContract,
+    "programContractAddress"       : programContractAddress,
     "network"                      : network.name,
     "chainId"                      : network.config.chainId
   });
@@ -48,7 +51,7 @@ export async function main() {
       startTime, // _roundStartTime
       endTime, // _roundEndTime
       '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
-      '0x43b1969ffb76ed334878cee591ffb2c5b5607088', // _ownedBy
+      programContractAddress, // _ownedBy (Program)
       { protocol: 1, pointer: "QmXVTmCGPnkYhCCiT7zyaK3HezVwijue4o7RH6BEY9Rmzu" }, // _metaPtr
       ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123'] // _roundOperators
   );

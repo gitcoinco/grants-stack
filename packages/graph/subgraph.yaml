@@ -7,7 +7,7 @@ dataSources:
     name: Program
     network: goerli
     source:
-      address: "0x1542143A64DcFa25Ddeb3CAf79F538B4a04F3FDd"
+      address: "0xCB08d3a6cAe32443873537D502b22270C77e27e1"
       abi: ProgramFactory
       startBlock: 7015700 
     mapping:
@@ -23,6 +23,28 @@ dataSources:
         - event: ProgramCreated(indexed address)
           handler: handleProgramCreated
       file: ./src/program-factory.ts
+  
+  # RoundFactory
+  - kind: ethereum/contract
+    name: Round
+    network: goerli
+    source:
+      address: "0xC4012787FD2242657C19F006D38c55859F0Ca508"
+      abi: RoundFactory
+      startBlock: 7015700 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Round
+      abis:
+        - name: RoundFactory
+          file: ./abis/RoundFactory.json
+      eventHandlers:
+        - event: GrantRoundCreated(indexed address,indexed address)
+          handler: handleRoundCreated
+      file: ./src/round-factory.ts
     
 templates:
   # ProgramImplementation AccessControl
@@ -36,7 +58,7 @@ templates:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Role
+        - ProgramRole
       abis:
         - name: ProgramImplementation
           file: ./abis/ProgramImplementation.json
@@ -47,29 +69,25 @@ templates:
           handler: handleRoleRevoked
       file: ./src/program-implementation.ts
 
-  # ProgramImplementation
-  # - kind: ethereum/contract
-  #   name: ProgramImplementation
-  #   network: goerli
-  #   source:
-  #     abi: ProgramImplementation 
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.6
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - AccessControl
-  #     abis:
-  #       - name: ProgramImplementation
-  #         file: ./abis/ProgramImplementation.json
-  #       - name: AccessControl
-  #         file: ./node_modules/@openzeppelin/contracts/build/contracts/AccessControl.json
-  #     eventHandlers:
-  #       - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-  #         handler: handleRoleAdminChanged
-  #       - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-  #         handler: handleRoleGranted
-  #       - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-  #         handler: handleRoleRevoked
-
-  #     file: ./node_modules/@openzeppelin/subgraphs/src/datasources/accesscontrol.ts
+  # RoundImplementation AccessControl
+  - kind: ethereum/contract
+    name: RoundImplementation
+    network: goerli
+    source:
+      abi: RoundImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - RoundRole
+      abis:
+        - name: RoundImplementation
+          file: ./abis/RoundImplementation.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/round-implementation.ts
+    

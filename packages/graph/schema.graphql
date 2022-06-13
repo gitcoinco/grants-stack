@@ -1,22 +1,54 @@
-# id = `${programAddress.toHex()}`
+########################
+# ===== Program ===== #
+########################
+
+# id = programAddress.toHex()
 type Program @entity {
   id: ID!
-  roles: [Role!]! @derivedFrom(field: "program") 
-  accounts: [Account!]! @derivedFrom(field: "program") 
+  roles: [ProgramRole!]! @derivedFrom(field: "program") 
+  accounts: [ProgramRole!]! @derivedFrom(field: "program") 
 }
 
-# id = `${program.toHex()}-${role.toHex()}`
-type Role @entity {
+# id = program.toHex()-role.toHex()
+type ProgramRole @entity {
   id: ID!
   role: String!
-  accounts: [Account!] @derivedFrom(field: "role")
+  accounts: [ProgramAccount!] @derivedFrom(field: "role")
   program: Program!
 }
 
-# id = `${programAddress.toHex()}`
-type Account @entity {
+# id = keccak256(Program.id, Role.role, _account.address)
+type ProgramAccount @entity {
   id: ID!
   address: String!
-  role: Role!
+  role: ProgramRole!
   program: Program!
-} 
+}
+
+
+########################
+# ===== Round ===== #
+########################
+
+# id = roundAddress.toHex()
+type Round @entity {
+  id: ID!
+  roles: [RoundRole!]! @derivedFrom(field: "round") 
+  accounts: [RoundAccount!]! @derivedFrom(field: "round") 
+}
+
+# id = round.toHex()-role.toHex()
+type RoundRole @entity {
+  id: ID!
+  role: String!
+  accounts: [RoundAccount!] @derivedFrom(field: "role")
+  round: Round!
+}
+
+# id = keccak256(Round.id, RoundRole.role, _account.address)
+type RoundAccount @entity {
+  id: ID!
+  address: String!
+  role: RoundRole!
+  round: Round!
+}
