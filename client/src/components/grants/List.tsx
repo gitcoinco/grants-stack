@@ -32,7 +32,7 @@ function ProjectsList() {
 
       {!props.loading && (
         <>
-          <div className="flex flex-col mt-4">
+          <div className="flex flex-col mt-4 mb-4">
             <h3>My Projects</h3>
             <p className="text-base">
               Manage projects across multiple grants programs.
