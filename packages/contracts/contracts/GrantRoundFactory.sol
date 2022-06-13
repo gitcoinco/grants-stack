@@ -79,6 +79,7 @@ contract GrantRoundFactory is Ownable {
       _roundEndTime,
       _token,
       _metaPtr,
+      msg.sender,
       _roundOperators
     );
 

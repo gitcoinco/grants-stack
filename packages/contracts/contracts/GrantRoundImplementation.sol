@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -17,7 +17,7 @@ import "./utils/MetaPtr.sol";
  * a group of ROUND_OPERATOR via the GrantRoundFactory
  *
  */
-contract GrantRoundImplementation is AccessControl, Initializable {
+contract GrantRoundImplementation is AccessControlEnumerable, Initializable {
 
   // --- Libraries ---
   using Address for address;
@@ -69,6 +69,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
    * @param _metaPtr URL pointing to the grant round metadata
+   * @param _adminRole Address to be granted DEFAULT_ADMIN_ROLE
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
@@ -78,6 +79,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
     uint256 _roundEndTime,
     IERC20 _token,
     MetaPtr memory _metaPtr,
+    address _adminRole,
     address[] memory _roundOperators
   ) public initializer {
 
@@ -94,7 +96,7 @@ contract GrantRoundImplementation is AccessControl, Initializable {
     metaPtr = _metaPtr;
 
     // assign roles
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _grantRole(DEFAULT_ADMIN_ROLE, _adminRole);
 
     // Assigning round operators
     for (uint256 i = 0; i < _roundOperators.length; ++i) {
