@@ -5,6 +5,7 @@ import { Metadata } from "../types";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+import { LocalStorage } from "../services/Storage";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -58,51 +59,66 @@ export const fetchGrantData =
       signer
     );
 
-    let grant: {
+    let project: {
       metadata: {
         protocol: number;
         pointer: string;
       };
     };
+
     try {
-      grant = await projectRegistry.projects(id);
+      project = await projectRegistry.projects(id);
     } catch (e) {
       // FIXME: dispatch contract interaction error
-      console.log(e);
+      console.error(e);
       return;
     }
 
-    if (grant === null) {
+    // FIXME: the contract will always return a project,
+    // check one field to know if it exists.
+    if (project === null) {
       // FIXME: dispatch "not found"
-      console.error("grant not found");
+      console.error("project not found");
       return;
     }
 
-    const cachedMetadata = state.grantsMetadata[id]?.metadata;
-    if (
-      cachedMetadata !== undefined &&
-      cachedMetadata.uri === grant.metadata.pointer
-    ) {
-      dispatch(grantMetadataFetched(cachedMetadata));
-      return;
-    }
-
-    // FIXME: remove when grant metadata uri is saved without the full URL
-    const matches = grant.metadata.pointer.match(
-      /^https:\/\/ipfs.io\/ipfs\/(.+)$/
-    );
-    if (matches === null) {
-      return;
-    }
-
-    const cid = matches[1];
     const chunks = [];
 
     dispatch(grantMetadataLoading(id));
 
+    const cacheKey = `project-${project.metadata.protocol}-${project.metadata.pointer}`;
+    const storage = new LocalStorage();
+    if (storage.supported) {
+      const item = storage.get(cacheKey);
+      if (item !== null) {
+        try {
+          const metadata = JSON.parse(item);
+          dispatch(
+            grantMetadataFetched({
+              ...metadata,
+              protocol: project.metadata.protocol,
+              pointer: project.metadata.pointer,
+              id,
+            })
+          );
+
+          return;
+        } catch (e) {
+          // FIXME: dispatch error
+          console.log("error parsing cached project metadata", e);
+        }
+      }
+    }
+
+    // cache not found and ipfs not initialized yet
+    if (!state.ipfs.initialized) {
+      return;
+    }
+
+    // if not cached in localstorage
     let source;
     try {
-      source = await global.ipfs!.cat(cid);
+      source = await global.ipfs!.cat(project.metadata.pointer);
     } catch (e) {
       // FIXME: dispatch "ipfs error"
       console.error(e);
@@ -126,11 +142,13 @@ export const fetchGrantData =
       return;
     }
 
-    dispatch(
-      grantMetadataFetched({
-        ...metadata,
-        uri: grant.metadata.pointer,
-        id,
-      })
-    );
+    const item = {
+      ...metadata,
+      protocol: project.metadata.protocol,
+      pointer: project.metadata.pointer,
+      id,
+    };
+
+    dispatch(grantMetadataFetched(item));
+    storage.add(cacheKey, JSON.stringify(item));
   };

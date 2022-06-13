@@ -21,10 +21,13 @@ function Card({ projectId }: { projectId: number }) {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.ipfsInitialized && projectId) {
+    // called twice
+    // 1 - when it loads or projectId changes (it checks if it's cached in local storage)
+    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
+    if (projectId !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(projectId));
     }
-  }, [dispatch, props.ipfsInitialized, projectId]);
+  }, [dispatch, props.ipfsInitialized, projectId, props.currentProject]);
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">

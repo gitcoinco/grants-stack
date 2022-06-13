@@ -64,15 +64,15 @@ export const publishGrant =
         signer
       );
       let projectTx;
-      if (grantId) {
+      if (grantId !== undefined) {
         projectTx = await projectRegistry.updateProjectMetaData(grantId, {
           protocol: 1,
-          pointer: state.ipfs.lastFileSavedURL,
+          pointer: state.ipfs.lastFileSavedCID,
         });
       } else {
         projectTx = await projectRegistry.createProject(signer?.getAddress(), {
           protocol: 1,
-          pointer: state.ipfs.lastFileSavedURL,
+          pointer: state.ipfs.lastFileSavedCID,
         });
       }
 

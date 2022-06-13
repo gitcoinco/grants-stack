@@ -1,5 +1,6 @@
 export interface Metadata {
-  uri: string;
+  protocol: number;
+  pointer: string;
   id: number;
   title: string;
   description: string;

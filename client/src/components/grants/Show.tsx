@@ -27,20 +27,23 @@ function Project() {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.ipfsInitialized && params.id) {
+    // called twice
+    // 1 - when it loads or id changes (it checks if it's cached in local storage)
+    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
+    if (params.id !== undefined && props.currentGrant === undefined) {
       dispatch(fetchGrantData(Number(params.id)));
     }
-  }, [dispatch, props.ipfsInitialized, params.id]);
+  }, [dispatch, props.ipfsInitialized, params.id, props.currentGrant]);
 
-  if (props.ipfsInitializationError) {
+  if (props.currentGrant === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
-  if (!props.ipfsInitialized) {
+  if (props.currentGrant === undefined && !props.ipfsInitialized) {
     return <>Initializing ipfs...</>;
   }
 
-  if (props.loading && props.currentGrant === undefined) {
+  if (props.currentGrant === undefined && props.loading && props.currentGrant) {
     return <>Loading grant data from IPFS... </>;
   }
 

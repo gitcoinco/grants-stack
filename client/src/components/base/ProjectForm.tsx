@@ -4,7 +4,7 @@ import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { startIPFS, saveFileToIPFS } from "../../actions/ipfs";
+import { saveFileToIPFS } from "../../actions/ipfs";
 import { publishGrant } from "../../actions/newGrant";
 import TXLoading from "./TXLoading";
 
@@ -19,12 +19,12 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
-      lastFileSaved: state.ipfs.lastFileSavedURL,
+      lastFileSaved: state.ipfs.lastFileSavedCID,
       txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);
 
-  const [disabled, setDisabled] = useState(true);
+  const [validated, setValidated] = useState(true);
   const [formInputs, setFormInputs] = useState({
     title: "",
     description: "",
@@ -32,6 +32,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+
   const publishProject = async () => {
     await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
     dispatch(publishGrant(currentGrantId));
@@ -51,16 +52,20 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       return false;
     });
 
-    setDisabled(validValues.length < 5 || !props.ipfsInitialized);
+    setValidated(validValues.length === 5);
   };
 
   // TODO: feels like this could be extracted to a component
   useEffect(() => {
-    dispatch(startIPFS());
-    if (props.ipfsInitialized && currentGrantId) {
+    // called twice
+    // 1 - when it loads or id changes (it checks if it's cached in local storage)
+    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
+    if (currentGrantId !== undefined && props.currentGrant === undefined) {
       dispatch(fetchGrantData(Number(currentGrantId)));
     }
+
     const { currentGrant } = props;
+
     if (currentGrant) {
       setFormInputs({
         title: currentGrant.title,
@@ -72,18 +77,21 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     }
   }, [dispatch, props.ipfsInitialized, currentGrantId, props.currentGrant]);
 
-  if (props.ipfsInitializationError) {
+  if (props.currentGrant === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
-  if (!props.ipfsInitialized) {
+  if (props.currentGrant === undefined && !props.ipfsInitialized) {
     return <>Initializing ipfs...</>;
   }
 
-  if (props.loading && props.currentGrant === undefined) {
+  if (
+    props.currentGrant === undefined &&
+    props.loading &&
+    props.currentGrant === undefined
+  ) {
     return <>Loading grant data from IPFS... </>;
   }
-  // /TODO
 
   return (
     <div className="border border-solid border-tertiary-text rounded text-primary-text p-4">
@@ -91,7 +99,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         <TextInput
           label="Project Name"
           name="title"
-          placeholder="Decentralized Autonomous Markets In California"
+          placeholder="What's the project name?"
           value={formInputs.title}
           changeHandler={(e) => handleInput(e)}
         />
@@ -124,11 +132,11 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         />
         <div className="flex w-full justify-end mt-6">
           <Button
-            disabled={disabled}
+            disabled={!validated || !props.ipfsInitialized}
             variant={ButtonVariants.primary}
             onClick={publishProject}
           >
-            Save &amp; Publish
+            {props.ipfsInitialized ? "Save & Publish" : "Initializing IPFS..."}
           </Button>
         </div>
       </form>

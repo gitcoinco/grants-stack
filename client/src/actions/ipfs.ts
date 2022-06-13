@@ -27,7 +27,7 @@ export interface IPFSSavingFile {
 export const IPFS_FILE_SAVED = "IPFS_FILE_SAVED";
 export interface IPFSFileSavedAction {
   type: typeof IPFS_FILE_SAVED;
-  url: string;
+  cid: string;
 }
 
 export const RESET_FILE_STATUS = "RESET_FILE_STATUS";
@@ -56,9 +56,9 @@ const ipfsInitialized = (): IPFSActions => ({
   type: IPFS_INITIALIZED,
 });
 
-const ipfsFileSaved = (url: string): IPFSActions => ({
+const ipfsFileSaved = (cid: string): IPFSActions => ({
   type: IPFS_FILE_SAVED,
-  url,
+  cid,
 });
 
 const savingFile = (): IPFSActions => ({
@@ -113,5 +113,5 @@ export const saveFileToIPFS =
       content,
     });
 
-    dispatch(ipfsFileSaved(`https://ipfs.io/ipfs/${res.cid.toString()}`));
+    dispatch(ipfsFileSaved(res.cid.toString()));
   };

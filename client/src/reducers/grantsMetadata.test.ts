@@ -28,7 +28,8 @@ describe("grantsMetaData reducer", () => {
 
   it("saves current grant to store", () => {
     const grantMetadata: Metadata = {
-      uri: "0x1234",
+      protocol: 1,
+      pointer: "0x1234",
       id: 1,
       title: "Title",
       description: "Description",
@@ -39,7 +40,8 @@ describe("grantsMetaData reducer", () => {
     store.dispatch(
       grantMetadataFetched({
         ...grantMetadata,
-        uri: grantMetadata.uri,
+        protocol: grantMetadata.protocol,
+        pointer: grantMetadata.pointer,
         id: grantId,
       })
     );
