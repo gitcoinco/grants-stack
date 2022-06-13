@@ -45,7 +45,7 @@ function Layout(ownProps: Props) {
   return (
     <div className="flex flex-col min-h-screen relative">
       <Header />
-      <main className="container mx-auto dark:bg-primary-background h-6/8">
+      <main className="container mx-auto dark:bg-primary-background grow">
         {!props.web3Error && props.web3Initialized && props.chainID && children}
         {props.web3Error && <p>{props.web3Error}</p>}
       </main>
