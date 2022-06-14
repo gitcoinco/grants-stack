@@ -23,15 +23,4 @@ describe("newGrant reducer", () => {
       txStatus: complete,
     });
   });
-
-  it("saves a grant to store", () => {
-    const grant: NewGrant = {
-      id: 1,
-      metaData: "ipfs",
-    };
-    store.dispatch(grantCreated(grant));
-    expect(store.getState().newGrant).toEqual({
-      ...initialState,
-    });
-  });
 });
