@@ -40,20 +40,18 @@ const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
 
-function aggregateEvents(
+export function aggregateEvents(
   created: ProjectEvent[],
   updated: ProjectEvent[]
 ): Event[] {
   const result = [...created, ...updated].reduce(
     (prev: any, cur: ProjectEvent) => {
-      console.log({ prev, cur });
       const value = prev;
       if (value[cur.id] && cur.block > value[cur.id].block) {
         value[cur.id] = cur;
         return value;
       }
       value[cur.id] = cur;
-      console.log({ value });
       return value;
     },
     {}
@@ -92,7 +90,7 @@ export const loadProjects =
       id: BigNumber.from(event.args[1]).toNumber(),
       block: event.blockNumber,
     }));
-
+    console.log({ createdIds, updateIds });
     const events = aggregateEvents(createdIds, updateIds);
 
     dispatch(projectsLoaded(events));
