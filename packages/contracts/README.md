@@ -15,9 +15,9 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 ├   ├   ├── ProgramImplementation.sol   # program contract
 ├   ├── RoundFactory.sol                # factory contract which deploys round
 ├   ├── RoundImplementation.sol         # round contract 
-├   ├── vote                            # voting mechanism
-├   ├   ├── IVote.sol                   # voting interface
-├   ├   ├── BulkVote.sol                # bulk voting mechanism
+├   ├── votingStrategy                  # voting strategy
+├   ├   ├── IVotingStrategy.sol         # voting strategy interface
+├   ├   ├── BulkVotingStrategy.sol      # bulk voting strategy
 ├── scripts                             # Deploy scripts for smart contracts
 ├── docs                                # documentation 
 ├── test                                # Test for smart contracts
@@ -48,7 +48,7 @@ These steps would have to be done per chain but there are intended to be deploye
 3. Link `ProgramImplementation` to ProgramFactory contract 
 
 **Round**
-1. Deploying all voting mechanism (contracts under `votes/`)
+1. Deploying all voting strategy (contracts under `votingStrategy/`)
 2. Deploy `RoundFactory`
 3. Deploy `RoundImplementation`
 4. Link `RoundImplementation` to `RoundFactory` contract
@@ -66,7 +66,7 @@ The ProgramFactory enables us to have upgradable contracts on ProgramImplementat
 ## Round Setup
 
 1. To create a round, you would not deploy a contract but instead, rely on the create function on the `RoundFactory` to create a new `RoundImplementation` contract.
-2. The user would have to choose a voting mechanism like `BulkVoting` (already deployed via instruction mention in DEPLOY_STEPS.md)
+2. The user would have to choose a voting strategy like `BulkVotingStrategy` (already deployed via instruction mention in DEPLOY_STEPS.md)
 3. Any interaction in terms of updating parameters etc can be performed against the `RoundImplementation` contract itself
 
 

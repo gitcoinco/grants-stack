@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./IVote.sol";
+import "./IVotingStrategy.sol";
 
 /**
  * Allows voters to cast multiple weighted votes to grants with one transaction
@@ -11,7 +11,7 @@ import "./IVote.sol";
  *
  * Emits event upon every transfer.
  */
-contract BulkVote is IVote, ReentrancyGuard {
+contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
   
   // --- Event ---
 

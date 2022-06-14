@@ -59,9 +59,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: deployBulkVote",
+            "name": "script: deployBulkVotingStrategy",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-bulk-vote"],
+            "args": ["goerli-deploy-bulk-voting-strategy"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
