@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { newGrantPath } from "../../routes";
-import { loadProjects, unloadProjects } from "../../actions/projects";
+import { loadProjects } from "../../actions/projects";
 import Globe from "../icons/Globe";
 import Button, { ButtonVariants } from "../base/Button";
 import Card from "./Card";
@@ -23,9 +23,6 @@ function ProjectsList() {
 
   useEffect(() => {
     dispatch(loadProjects());
-    return () => {
-      dispatch(unloadProjects());
-    };
   }, [dispatch]);
 
   return (
