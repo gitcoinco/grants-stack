@@ -7,7 +7,7 @@ import { Round } from "../types"
 
 
 /**
- * Contract interations API for a Grant Round
+ * Contract interations API for a Round
  */
 export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({

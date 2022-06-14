@@ -76,7 +76,7 @@ export default function CreateRound() {
   return (
     <div className="container mx-auto h-screen px-4 py-16">
       <header>
-        <h1 className="text-5xl mb-16">Create a Grant Round</h1>
+        <h1 className="text-5xl mb-16">Create a Round</h1>
       </header>
       <main>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -146,7 +146,7 @@ export default function CreateRound() {
           {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
           {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
           {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-          {isSuccess && <p className="text-green-600">✅ Congratulations! your grant round was successfully created!</p>}
+          {isSuccess && <p className="text-green-600">✅ Congratulations! your round was successfully created!</p>}
           {(isIPFSError || isRoundError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || roundError)}!</p>}
         </form>
       </main>
