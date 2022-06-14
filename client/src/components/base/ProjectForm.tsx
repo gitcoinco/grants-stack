@@ -45,14 +45,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   ) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
-    const validValues = Object.values(formInputs).filter((input) => {
-      if (typeof input === "string") {
-        return input.length > 0;
-      }
-      return false;
-    });
-
-    setValidated(validValues.length === 5);
   };
 
   // TODO: feels like this could be extracted to a component
@@ -76,6 +68,19 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       });
     }
   }, [dispatch, props.ipfsInitialized, currentGrantId, props.currentGrant]);
+
+  // perform validation after the fields state is updated
+  useEffect(() => {
+    const validValues = Object.values(formInputs).filter((input) => {
+      if (typeof input === "string") {
+        return input.length > 0;
+      }
+
+      return false;
+    });
+
+    setValidated(validValues.length === Object.keys(formInputs).length);
+  }, [formInputs]);
 
   if (props.currentGrant === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
