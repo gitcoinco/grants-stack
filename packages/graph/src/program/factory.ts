@@ -1,13 +1,13 @@
 import { 
   ProgramCreated as ProgramCreatedEvent
-} from "../generated/Program/ProgramFactory";
+} from "../../generated/Program/ProgramFactory";
 
 
 import {
   ProgramImplementation
-} from  "../generated/templates";
+} from  "../../generated/templates";
 
-import { Program} from "../generated/schema";
+import { Program} from "../../generated/schema";
 
 
 export function handleProgramCreated(event: ProgramCreatedEvent): void {

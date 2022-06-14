@@ -3,13 +3,13 @@ import { crypto } from '@graphprotocol/graph-ts'
 import { 
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent
-} from "../generated/templates/ProgramImplementation/ProgramImplementation";
+} from "../../generated/templates/ProgramImplementation/ProgramImplementation";
 
 import {
   Program,
   ProgramAccount,
   ProgramRole
-} from "../generated/schema";
+} from "../../generated/schema";
 
 
 function generateID(array: Array<string>): string {

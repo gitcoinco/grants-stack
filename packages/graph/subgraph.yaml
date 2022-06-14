@@ -22,7 +22,7 @@ dataSources:
       eventHandlers:
         - event: ProgramCreated(indexed address)
           handler: handleProgramCreated
-      file: ./src/program-factory.ts
+      file: ./src/program/factory.ts
   
   # RoundFactory
   - kind: ethereum/contract
@@ -44,7 +44,7 @@ dataSources:
       eventHandlers:
         - event: GrantRoundCreated(indexed address,indexed address)
           handler: handleRoundCreated
-      file: ./src/round-factory.ts
+      file: ./src/round/factory.ts
     
 templates:
   # ProgramImplementation AccessControl
@@ -67,7 +67,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-      file: ./src/program-implementation.ts
+      file: ./src/program/implementation.ts
 
   # RoundImplementation AccessControl
   - kind: ethereum/contract
@@ -89,5 +89,5 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-      file: ./src/round-implementation.ts
+      file: ./src/round/implementation.ts
     
