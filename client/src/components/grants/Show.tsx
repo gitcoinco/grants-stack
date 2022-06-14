@@ -92,15 +92,15 @@ function Project() {
     <div>
       {props.currentProject && (
         <>
-          <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start mb-6 w-full">
-            <h3 className="flex mb-4">
-              <div className="pt-2 mr-2">
-                <Link to={grantsPath()}>
-                  <Arrow color={colors["primary-text"]} />
-                </Link>{" "}
-              </div>
-              Project Details
-            </h3>
+          <div className="flex justify-between items-center mb-6">
+            <Link to={grantsPath()}>
+              <h3 className="flex">
+                <div className="pt-2 mr-2">
+                  <Arrow color={colors["primary-text"]} />{" "}
+                </div>
+                Project Details
+              </h3>
+            </Link>
             {props.id && (
               <Link
                 to={editPath(props.id)}
