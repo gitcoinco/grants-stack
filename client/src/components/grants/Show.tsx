@@ -54,11 +54,6 @@ function Project() {
             currentProject.block
           );
 
-          if (!blockData) {
-            dispatch(loadProjects());
-            return;
-          }
-
           const formattedDate = new Date(
             (blockData?.timestamp ?? 0) * 1000
           ).toLocaleString();
@@ -67,10 +62,14 @@ function Project() {
         }
       }
     }
-    if (props.id) {
+
+    if (props.id && props.projects.length > 0) {
       fetchTimeStamp(props.projects, props.id);
+    } else {
+      // If user reloads Show projects will not exist
+      dispatch(loadProjects());
     }
-  }, [props.id, global, dispatch]);
+  }, [props.id, props.projects, global, dispatch]);
 
   if (props.currentProject === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;

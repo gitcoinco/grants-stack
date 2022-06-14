@@ -90,7 +90,6 @@ export const loadProjects =
       id: BigNumber.from(event.args[1]).toNumber(),
       block: event.blockNumber,
     }));
-    console.log({ createdIds, updateIds });
     const events = aggregateEvents(createdIds, updateIds);
 
     dispatch(projectsLoaded(events));
