@@ -32,7 +32,6 @@ describe("newGrant reducer", () => {
     store.dispatch(grantCreated(grant));
     expect(store.getState().newGrant).toEqual({
       ...initialState,
-      grants: [grant],
     });
   });
 });
