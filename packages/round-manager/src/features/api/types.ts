@@ -71,7 +71,7 @@ export interface Round {
    */
   id?: string;
   /**
-   * Metadata of the Grant Round to be stored off-chain
+   * Metadata of the Round to be stored off-chain
    */
   metadata?: {
     name: string

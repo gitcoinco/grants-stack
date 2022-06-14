@@ -1,6 +1,6 @@
 # round-manager
 
-This package serves the app which holds all the features w.r.t to managing a grant round.
+This package serves the app which holds all the features w.r.t to managing a round.
 
 ## Usage
 

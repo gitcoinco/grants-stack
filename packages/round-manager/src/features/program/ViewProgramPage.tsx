@@ -59,7 +59,7 @@ export default function ViewProgram() {
                   Create Round
                 </button>
               </Link>}
-            {isRoundsLoading && <p>Fetching your grant rounds...</p>}
+            {isRoundsLoading && <p>Fetching your rounds...</p>}
           </div>
           <Button type="button" onClick={goBack}>Back</Button>
         </div>
