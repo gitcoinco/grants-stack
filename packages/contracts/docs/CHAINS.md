@@ -16,7 +16,7 @@ This document lists all the addresses of the contracts that have been deployed o
 | goerli  | 0x74052bED315C145567E56A022A3D89EfE7deeb1d |
 
 
-## BulkVote
+## BulkVotingStrategy
 
 | Network | Address                                    |
 |---------|--------------------------------------------|

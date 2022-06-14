@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "./vote/IVote.sol";
+import "./votingStrategy/IVotingStrategy.sol";
 
 import "./utils/MetaPtr.sol";
 
@@ -40,8 +40,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   // --- Data ---
 
-  /// @notice Voting Contract Address
-  IVote public votingContract;
+  /// @notice Voting Strategy Contract Address
+  IVotingStrategy public votingStrategy;
 
   /// @notice Unix timestamp from when round can accept applications
   uint256 public applicationsStartTime;
@@ -63,7 +63,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /**
    * @notice Instantiates a new round
-   * @param _votingContract Deployed Voting Contract
+   * @param _votingStrategy Deployed Voting Strategy Contract
    * @param _applicationsStartTime Unix timestamp from when round can accept applications
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
@@ -73,7 +73,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
-    IVote _votingContract,
+    IVotingStrategy _votingStrategy,
     uint256 _applicationsStartTime,
     uint256 _roundStartTime,
     uint256 _roundEndTime,
@@ -88,7 +88,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     require(_roundEndTime > _applicationsStartTime, "initialize: application start time should be before end time");
 
 
-    votingContract = _votingContract;
+    votingStrategy = _votingStrategy;
     applicationsStartTime = _applicationsStartTime;
     roundStartTime = _roundStartTime;
     roundEndTime = _roundEndTime;
@@ -148,7 +148,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Invoked by voter to cast votes
   /// @param _encodedVotes encoded vote
   function vote(bytes[] memory _encodedVotes) public {
-    votingContract.vote(_encodedVotes, msg.sender);
+    votingStrategy.vote(_encodedVotes, msg.sender);
   }
 }
 

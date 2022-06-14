@@ -58,7 +58,7 @@ export default function CreateRound() {
       // Deploy round contract
       await createRound({
         ...data,
-        votingContract: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVote contract
+        votingContract: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
         ownedBy: programId!,
         store: {

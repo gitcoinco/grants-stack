@@ -1,4 +1,4 @@
-// yarn hardhat run scripts/votingMechanism/castBulkVote.ts --network goerli
+// yarn hardhat run scripts/votingMechanism/castBulkVotingStrategy.ts --network goerli
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
@@ -21,12 +21,12 @@ export async function main() {
   const grantRoundImplementation = await ethers.getContractAt('GrantRoundImplementation', grantRoundContract);
   
   await confirmContinue({
-    "contract"            : "GrantRoundImplementation Clone",
-    "grantRoundContract"  : grantRoundContract,
-    "votingContract"      : networkParams.bulkVoteContract,
-    "function"            : "vote",
-    "network"             : network.name,
-    "chainId"             : network.config.chainId
+    "contract"                : "GrantRoundImplementation Clone",
+    "grantRoundContract"      : grantRoundContract,
+    "votingStrategyContract"  : networkParams.bulkVotingStrategyContract,
+    "function"                : "vote",
+    "network"                 : network.name,
+    "chainId"                 : network.config.chainId
   });
 
   // Cast Vote

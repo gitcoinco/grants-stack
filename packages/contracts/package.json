@@ -25,7 +25,7 @@
     "goerli-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
-    "goerli-deploy-bulk-voting-mechanism": "yarn hardhat run scripts/votingMechanism/deployBulkVotingMechanism.ts --network goerli"
+    "goerli-deploy-bulk-voting-strategy": "yarn hardhat run scripts/votingStrategy/deployBulkVotingStrategy.ts --network goerli"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",

@@ -74,23 +74,23 @@ yarn run goerli-link-round-implementation
 
 ### Voting Setup
 
-The section here shows how to set up voting mechanism for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the BulkVote contract on goerli
+The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the BulkVotingStrategy contract on goerli
 
 1. Create an `.env` file and fill out
     - `INFURA_ID`               : Infura ID for deploying contract
     - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
 
-2. Deploy the BulkVote contract.
+2. Deploy the BulkVotingStrategy contract.
 ```shell
-yarn run goerli-deploy-bulk-vote-mech
+yarn run goerli-deploy-bulk-voting-strategy
 ```
 
 3. Update `round.config.ts` with deployed contracts based on your network
 ```javascript
 export const params: DeployParams = {
   goerli: {
-    bulkVoteContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
+    BulkVotingStrategyContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
     ...
   },
 };

@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/utils/Address.sol";
  * @notice Defines the interface for voting algorithms on grants
  * within a round. Any new voting algorithm would be expected to
  * implement this interface.
- * Every IVote implementation would ideally be deployed once per chain
+ * Every IVotingStrategy implementation would ideally be deployed once per chain
  * and be invoked by the RoundImplementation contract
  *
  */
-interface IVote {
+interface IVotingStrategy {
 
   // --- Core methods ---
 
@@ -23,7 +23,7 @@ interface IVote {
    * @dev
    * - allows contributor to do cast multiple votes which could be weighted.
    * - should be invoked by RoundImplementation contract
-   * - ideally IVote implementation should emit events after a vote is cast
+   * - ideally IVotingStrategy implementation should emit events after a vote is cast
    * - this would be triggered when a voter casts their vote via round explorer
    *
    * @param _encodedVotes list of votes
