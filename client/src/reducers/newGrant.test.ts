@@ -1,6 +1,6 @@
 import { Store, combineReducers, createStore } from "redux";
-import { grantCreated, grantTXStatus } from "../actions/newGrant";
-import { newGrantReducer, initialState, NewGrant } from "./newGrant";
+import { grantTXStatus } from "../actions/newGrant";
+import { newGrantReducer, initialState } from "./newGrant";
 
 describe("newGrant reducer", () => {
   let store: Store;
