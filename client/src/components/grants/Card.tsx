@@ -7,6 +7,7 @@ import { grantPath } from "../../routes";
 import Lightning from "../icons/Lightning";
 import colors from "../../styles/colors";
 import TextLoading from "../base/TextLoading";
+import { Metadata } from "../../types";
 
 function Card({ projectId }: { projectId: number }) {
   const dispatch = useDispatch();
@@ -29,12 +30,19 @@ function Card({ projectId }: { projectId: number }) {
     }
   }, [dispatch, props.ipfsInitialized, projectId, props.currentProject]);
 
+  const checkProject = (loading: boolean, project?: Metadata) => {
+    if (loading || (project && !project.projectImg)) {
+      return "./assets/card-img.png";
+    }
+    return `https://ipfs.io/ipfs/${project?.projectImg}`;
+  };
+
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={grantPath(projectId)}>
         <img
           className="w-full"
-          src="./assets/card-img.png"
+          src={checkProject(props.loading, props.currentProject)}
           alt="project banner"
         />
         <div className="py-4 relative text-center">
