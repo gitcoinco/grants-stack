@@ -1,5 +1,4 @@
-import { ByteArray, store } from '@graphprotocol/graph-ts';
-import { crypto } from '@graphprotocol/graph-ts'
+import { store } from '@graphprotocol/graph-ts';
 import { 
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent
@@ -10,13 +9,8 @@ import {
   ProgramAccount,
   ProgramRole
 } from "../../generated/schema";
+import { generateID } from '../utils';
 
-
-function generateID(array: Array<string>): string {
-  return crypto.keccak256(
-    ByteArray.fromHexString(array.join('-'))
-  ).toBase58();
-}
 
 /**
  * @dev Handles indexing on RoleGranted event.
@@ -43,7 +37,7 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   role.save();
 
   // account
-  const accountId =  generateID([_program, _role, _account]);
+  const accountId = generateID([_program, _role, _account]);
   let account = ProgramAccount.load(accountId);
   account = account == null ? new ProgramAccount(accountId) : account;
 

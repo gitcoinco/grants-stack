@@ -3,38 +3,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "grantRoundAddress",
-        "type": "address"
-      }
-    ],
-    "name": "GrantRoundContractUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "grantRoundAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "ownedBy",
-        "type": "address"
-      }
-    ],
-    "name": "GrantRoundCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -51,15 +19,60 @@
     "type": "event"
   },
   {
+    "anonymous": false,
     "inputs": [
       {
-        "internalType": "contract IVote",
-        "name": "_votingContract",
+        "indexed": false,
+        "internalType": "address",
+        "name": "roundAddress",
+        "type": "address"
+      }
+    ],
+    "name": "RoundContractUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "roundAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "ownedBy",
+        "type": "address"
+      }
+    ],
+    "name": "RoundCreated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "RoundContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IVotingStrategy",
+        "name": "_votingStrategy",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_grantApplicationsStartTime",
+        "name": "_applicationsStartTime",
         "type": "uint256"
       },
       {
@@ -118,19 +131,6 @@
   },
   {
     "inputs": [],
-    "name": "grantRoundContract",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -166,11 +166,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_grantRoundContract",
+        "name": "_RoundContract",
         "type": "address"
       }
     ],
-    "name": "updateGrantRoundContract",
+    "name": "updateRoundContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
