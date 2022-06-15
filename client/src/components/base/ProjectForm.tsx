@@ -147,11 +147,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           label="Project Logo"
           imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
         />
-        {/* {imgError && (
-          <span className="text-danger-text">
-            Image needs to have an aspect ratio of roughly (3:1)
-          </span>
-        )} */}
         <TextArea
           label="Project Description"
           name="description"
