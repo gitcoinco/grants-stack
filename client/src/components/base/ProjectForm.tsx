@@ -34,7 +34,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
-  // const [imgError, setImgError] = useState(false);
+
   const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
@@ -126,11 +126,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           label="Project Logo"
           imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
         />
-        {/* {imgError && (
-          <span className="text-danger-text">
-            Image needs to have an aspect ratio of roughly (3:1)
-          </span>
-        )} */}
         <TextArea
           label="Project Description"
           name="description"
