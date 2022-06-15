@@ -20,7 +20,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
-      lastFileSaved: state.ipfs.lastFileSavedCID,
+      projectFile: state.ipfs.projectFileSavedCID,
+      projectImg: state.ipfs.projectImgSavedCID,
       txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);
@@ -34,17 +35,22 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+
   const [show, showToast] = useState(false);
 
   const resetStatus = () => {
     dispatch(resetTXStatus());
     dispatch(resetFileStatus());
   };
+  const [imgError, setImgError] = useState(false);
+  const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
-    resetStatus();
-    showToast(true);
-    await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
+    if (projectImg) {
+      await dispatch(saveFileToIPFS("test.txt", projectImg, FileTypes.IMG));
+    }
+
+    await dispatch(saveFileToIPFS("test.txt", formInputs, FileTypes.PROJECT));
     dispatch(publishGrant(currentGrantId));
   };
 
@@ -55,6 +61,41 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   ) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
+  const validateImg = (image: any) => {
+    const width = image?.path[0].naturalWidth;
+    const height = image?.path[0].naturalHeight;
+    const aspectRatio = width / height;
+    // require aspect ratio of roughly 3:1
+    const error = aspectRatio < 2 || aspectRatio > 4;
+    // always set error so that user can correct image and validation passes
+    setImgError(error);
+  };
+
+  const saveImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.currentTarget;
+    if (files) {
+      if (files.length === 0) {
+        return;
+      }
+      const img: HTMLImageElement = document.createElement("img");
+      img.onload = validateImg;
+      img.src = URL.createObjectURL(files[0]);
+
+      if (!imgError) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          const bufferResult = reader.result as ArrayBuffer;
+          if (bufferResult) {
+            const buf = window.Buffer.from(bufferResult);
+            setProjectImg(buf);
+          }
+        };
+
+        reader.readAsArrayBuffer(files[0]);
+      }
+    }
   };
 
   // TODO: feels like this could be extracted to a component
@@ -137,6 +178,12 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           value={formInputs.website}
           changeHandler={(e) => handleInput(e)}
         />
+        <ImageInput label="Project Logo" imgHandler={(e) => saveImage(e)} />
+        {imgError && (
+          <span className="text-danger-text">
+            Image needs to have an aspect ratio of roughly (3:1)
+          </span>
+        )}
         <TextArea
           label="Project Description"
           name="description"

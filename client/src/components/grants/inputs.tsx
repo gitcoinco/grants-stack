@@ -97,3 +97,25 @@ export function TextArea({
     </div>
   );
 }
+
+export function ImageInput({
+  label,
+  imgHandler,
+}: {
+  label: string;
+  imgHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="mt-6">
+      <label className="block text-xs mb-2" htmlFor={label}>
+        {label}
+      </label>
+      <input
+        type="file"
+        name="file"
+        onChange={(e) => imgHandler(e)}
+        accept=".png,.jpg"
+      />
+    </div>
+  );
+}
