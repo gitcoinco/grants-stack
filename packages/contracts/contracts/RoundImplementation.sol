@@ -46,6 +46,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Emitted when a round end time is updated
   event RoundEndTimeUpdated(uint256 oldTime, uint256 newTime);
 
+  /// @notice Emitted when projects metaPtr is updated
+  event ProjectsMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
+
   // --- Data ---
 
   /// @notice Voting Strategy Contract Address
@@ -69,6 +72,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice MetaPtr to the application form schema
   MetaPtr public applicationMetaPtr;
 
+  /// @notice MetaPtr to the projects
+  MetaPtr public projectsMetaPtr;
 
   // --- Core methods ---
 
@@ -121,14 +126,18 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param _newRoundMetaPtr new roundMetaPtr
   function updateRoundMetaPtr(MetaPtr memory _newRoundMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+
     emit RoundMetaPtrUpdated(roundMetaPtr, _newRoundMetaPtr);
+
     roundMetaPtr = _newRoundMetaPtr;
   }
 
   // @notice Update applicationMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param _newApplicationMetaPtr new applicationMetaPtr
   function updateApplicationMetaPtr(MetaPtr memory _newApplicationMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+
     emit ApplicationMetaPtrUpdated(applicationMetaPtr, _newApplicationMetaPtr);
+
     applicationMetaPtr = _newApplicationMetaPtr;
   }
 
@@ -166,9 +175,19 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     applicationsStartTime = _newApplicationsStartTime;
   }
 
+  // @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
+  /// @param _newProjectsMetaPtr new ProjectsMetaPtr
+  function updateProjectsMetaPtr(MetaPtr memory _newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+
+    emit ProjectsMetaPtrUpdated(projectsMetaPtr, _newProjectsMetaPtr);
+
+    projectsMetaPtr = _newProjectsMetaPtr;
+  }
+
   /// @notice Invoked by voter to cast votes
   /// @param _encodedVotes encoded vote
   function vote(bytes[] memory _encodedVotes) public {
+
     votingStrategy.vote(_encodedVotes, msg.sender);
   }
 }
