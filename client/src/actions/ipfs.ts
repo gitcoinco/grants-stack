@@ -24,9 +24,19 @@ export interface IPFSSavingFile {
   type: typeof IPFS_SAVING_FILE;
 }
 
-export const IPFS_FILE_SAVED = "IPFS_FILE_SAVED";
-export interface IPFSFileSavedAction {
-  type: typeof IPFS_FILE_SAVED;
+export enum FileTypes {
+  IMG = "IMG",
+  PROJECT = "PROJECT",
+}
+export const PROJECT_FILE_SAVED = "IPFS_FILE_SAVED";
+export interface ProjectFileSavedAction {
+  type: typeof PROJECT_FILE_SAVED;
+  cid: string;
+}
+
+export const PROJECT_IMG_SAVED = "PROJECT_IMG_SAVED";
+export interface ProjectIMGSavedAction {
+  type: typeof PROJECT_IMG_SAVED;
   cid: string;
 }
 
@@ -39,7 +49,8 @@ export type IPFSActions =
   | IPFSInitializingAction
   | IPFSInitializationErrorAction
   | IPFSInitializedAction
-  | IPFSFileSavedAction
+  | ProjectFileSavedAction
+  | ProjectIMGSavedAction
   | IPFSSavingFile
   | IPFSResetFileStatus;
 
@@ -56,8 +67,13 @@ const ipfsInitialized = (): IPFSActions => ({
   type: IPFS_INITIALIZED,
 });
 
-const ipfsFileSaved = (cid: string): IPFSActions => ({
-  type: IPFS_FILE_SAVED,
+const projectFileSaved = (cid: string): IPFSActions => ({
+  type: PROJECT_FILE_SAVED,
+  cid,
+});
+
+const projectIMGSaved = (cid: string): IPFSActions => ({
+  type: PROJECT_IMG_SAVED,
   cid,
 });
 
@@ -101,17 +117,40 @@ export const startIPFS =
     }
   };
 
+interface Inputs {
+  title: string;
+  description: string;
+  website: string;
+  challenges: string;
+  roadmap: string;
+}
+
 export const saveFileToIPFS =
-  (path: string, content: string) => async (dispatch: Dispatch) => {
+  (path: string, content: Inputs | Buffer, fileType: FileTypes) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
     dispatch(savingFile());
     if (global.ipfs === undefined) {
       return;
     }
 
-    const res = await global.ipfs!.add({
-      path,
-      content,
-    });
+    const fullContent: any = content;
+    if (state.ipfs.projectImgSavedCID) {
+      fullContent.projectImg = state.ipfs.projectImgSavedCID;
+    }
 
-    dispatch(ipfsFileSaved(res.cid.toString()));
+    if (fileType === FileTypes.IMG) {
+      const imgBuffer = fullContent as Buffer;
+      const res = await global.ipfs!.add({
+        path,
+        content: imgBuffer,
+      });
+      dispatch(projectIMGSaved(res.cid.toString()));
+    } else {
+      const res = await global.ipfs!.add({
+        path,
+        content: JSON.stringify(fullContent),
+      });
+      dispatch(projectFileSaved(res.cid.toString()));
+    }
   };
