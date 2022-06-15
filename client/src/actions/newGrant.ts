@@ -67,12 +67,12 @@ export const publishGrant =
       if (grantId !== undefined) {
         projectTx = await projectRegistry.updateProjectMetaData(grantId, {
           protocol: 1,
-          pointer: state.ipfs.lastFileSavedCID,
+          pointer: state.ipfs.projectFileSavedCID,
         });
       } else {
         projectTx = await projectRegistry.createProject(signer?.getAddress(), {
           protocol: 1,
-          pointer: state.ipfs.lastFileSavedCID,
+          pointer: state.ipfs.projectFileSavedCID,
         });
       }
 
