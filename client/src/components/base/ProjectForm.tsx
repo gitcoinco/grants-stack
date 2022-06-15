@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
+import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { saveFileToIPFS, resetFileStatus } from "../../actions/ipfs";
+import { saveFileToIPFS, resetFileStatus, FileTypes } from "../../actions/ipfs";
 import { publishGrant, resetTXStatus } from "../../actions/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
@@ -42,7 +43,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     dispatch(resetTXStatus());
     dispatch(resetFileStatus());
   };
-  const [imgError, setImgError] = useState(false);
   const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
@@ -61,41 +61,6 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   ) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
-  };
-
-  const validateImg = (image: any) => {
-    const width = image?.path[0].naturalWidth;
-    const height = image?.path[0].naturalHeight;
-    const aspectRatio = width / height;
-    // require aspect ratio of roughly 3:1
-    const error = aspectRatio < 2 || aspectRatio > 4;
-    // always set error so that user can correct image and validation passes
-    setImgError(error);
-  };
-
-  const saveImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.currentTarget;
-    if (files) {
-      if (files.length === 0) {
-        return;
-      }
-      const img: HTMLImageElement = document.createElement("img");
-      img.onload = validateImg;
-      img.src = URL.createObjectURL(files[0]);
-
-      if (!imgError) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          const bufferResult = reader.result as ArrayBuffer;
-          if (bufferResult) {
-            const buf = window.Buffer.from(bufferResult);
-            setProjectImg(buf);
-          }
-        };
-
-        reader.readAsArrayBuffer(files[0]);
-      }
-    }
   };
 
   // TODO: feels like this could be extracted to a component
@@ -178,12 +143,15 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           value={formInputs.website}
           changeHandler={(e) => handleInput(e)}
         />
-        <ImageInput label="Project Logo" imgHandler={(e) => saveImage(e)} />
-        {imgError && (
+        <ImageInput
+          label="Project Logo"
+          imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
+        />
+        {/* {imgError && (
           <span className="text-danger-text">
             Image needs to have an aspect ratio of roughly (3:1)
           </span>
-        )}
+        )} */}
         <TextArea
           label="Project Description"
           name="description"
