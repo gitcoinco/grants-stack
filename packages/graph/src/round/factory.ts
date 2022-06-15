@@ -20,10 +20,7 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   }
 
   // link round to program
-  const program = Program.load(event.params.ownedBy.toHex());
-  if (program) {
-    round.program = program.id;
-  }
+  round.program = event.params.ownedBy.toHex();
 
   round.save();
 
