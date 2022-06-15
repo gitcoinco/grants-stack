@@ -96,7 +96,7 @@ export default function ImageInput({
           </button>
         )}
         <div className="w-1/4">
-          <img src={tempImg} alt="Project Logo Preview" />
+          {tempImg && <img src={tempImg} alt="Project Logo Preview" />}
         </div>
       </div>
     </div>
