@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
+import {
+  TextArea,
+  TextInput,
+  WebsiteInput,
+  ImageInput,
+} from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { saveFileToIPFS } from "../../actions/ipfs";
+import { FileTypes, saveFileToIPFS } from "../../actions/ipfs";
 import { publishGrant } from "../../actions/newGrant";
 import TXLoading from "./TXLoading";
 
@@ -19,7 +24,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
-      lastFileSaved: state.ipfs.lastFileSavedCID,
+      projectFile: state.ipfs.projectFileSavedCID,
+      projectImg: state.ipfs.projectImgSavedCID,
       txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);
@@ -32,9 +38,15 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+  const [imgError, setImgError] = useState(false);
+  const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
-    await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
+    if (projectImg) {
+      await dispatch(saveFileToIPFS("test.txt", projectImg, FileTypes.IMG));
+    }
+
+    await dispatch(saveFileToIPFS("test.txt", formInputs, FileTypes.PROJECT));
     dispatch(publishGrant(currentGrantId));
   };
 
@@ -45,6 +57,41 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   ) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
+  const validateImg = (image: any) => {
+    const width = image?.path[0].naturalWidth;
+    const height = image?.path[0].naturalHeight;
+    const aspectRatio = width / height;
+    // require aspect ratio of roughly 3:1
+    const error = aspectRatio < 2 || aspectRatio > 4;
+    // always set error so that user can correct image and validation passes
+    setImgError(error);
+  };
+
+  const saveImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.currentTarget;
+    if (files) {
+      if (files.length === 0) {
+        return;
+      }
+      const img: HTMLImageElement = document.createElement("img");
+      img.onload = validateImg;
+      img.src = URL.createObjectURL(files[0]);
+
+      if (!imgError) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          const bufferResult = reader.result as ArrayBuffer;
+          if (bufferResult) {
+            const buf = window.Buffer.from(bufferResult);
+            setProjectImg(buf);
+          }
+        };
+
+        reader.readAsArrayBuffer(files[0]);
+      }
+    }
   };
 
   // TODO: feels like this could be extracted to a component
@@ -114,6 +161,12 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           value={formInputs.website}
           changeHandler={(e) => handleInput(e)}
         />
+        <ImageInput label="Project Logo" imgHandler={(e) => saveImage(e)} />
+        {imgError && (
+          <span className="text-danger-text">
+            Image needs to have an aspect ratio of roughly (3:1)
+          </span>
+        )}
         <TextArea
           label="Project Description"
           name="description"
@@ -145,14 +198,14 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           </Button>
         </div>
       </form>
-      {props.savingFile && !props.lastFileSaved && (
+      {props.savingFile && !props.projectFile && (
         <p>Your file is being saved to IPFS</p>
       )}
-      {!props.savingFile && props.lastFileSaved && (
+      {!props.savingFile && props.projectFile && (
         <>
           <p>
             Your file has being saved to IPFS and can be accessed here:{" "}
-            {props.lastFileSaved}
+            {props.projectFile}
           </p>
           {props.txStatus && <TXLoading status={props.txStatus} />}
         </>
