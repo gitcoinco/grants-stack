@@ -56,7 +56,8 @@ contract RoundFactory is Ownable {
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
    * @param _ownedBy Program which created the contract
-   * @param _metaPtr URL pointing to the round metadata
+   * @param _roundMetaPtr MetaPtr to the round metadata
+   * @param _applicationMetaPtr MetaPtr to the application form schema
    * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function create(
@@ -66,7 +67,8 @@ contract RoundFactory is Ownable {
     uint256 _roundEndTime,
     IERC20 _token,
     address _ownedBy,
-    MetaPtr calldata _metaPtr,
+    MetaPtr calldata _roundMetaPtr,
+    MetaPtr calldata _applicationMetaPtr,
     address[] calldata _roundOperators
   ) external returns (address) {
 
@@ -78,7 +80,8 @@ contract RoundFactory is Ownable {
       _roundStartTime,
       _roundEndTime,
       _token,
-      _metaPtr,
+      _roundMetaPtr,
+      _applicationMetaPtr,
       msg.sender,
       _roundOperators
     );
