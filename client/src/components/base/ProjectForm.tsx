@@ -4,8 +4,8 @@ import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { saveFileToIPFS } from "../../actions/ipfs";
-import { publishGrant } from "../../actions/newGrant";
+import { saveFileToIPFS, resetFileStatus } from "../../actions/ipfs";
+import { publishGrant, resetTXStatus } from "../../actions/newGrant";
 import TXLoading from "./TXLoading";
 
 function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
@@ -24,7 +24,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     };
   }, shallowEqual);
 
-  const [validated, setValidated] = useState(true);
+  // if currentGrantId is undefined, the form is empty so it's not valid
+  const [validated, setValidated] = useState(currentGrantId !== undefined);
   const [formInputs, setFormInputs] = useState({
     title: "",
     description: "",
@@ -82,15 +83,29 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     setValidated(validValues.length === Object.keys(formInputs).length);
   }, [formInputs]);
 
+  // eslint-disable-next-line
+  useEffect(() => {
+    return () => {
+      dispatch(resetTXStatus());
+      dispatch(resetFileStatus());
+    };
+  }, []);
+
   if (props.currentGrant === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
-  if (props.currentGrant === undefined && !props.ipfsInitialized) {
+  if (
+    currentGrantId !== undefined &&
+    props.currentGrant === undefined &&
+    !props.ipfsInitialized
+  ) {
     return <>Initializing ipfs...</>;
   }
 
   if (
+    // if it's undefined we don't have anything to load
+    currentGrantId !== undefined &&
     props.currentGrant === undefined &&
     props.loading &&
     props.currentGrant === undefined
