@@ -83,7 +83,11 @@ function Project() {
           <div className="w-full md:w-2/3">
             <img
               className="w-full mb-4"
-              src="./assets/card-img.png"
+              src={
+                props.currentGrant.projectImg
+                  ? `https://ipfs.io/ipfs/${props.currentGrant.projectImg}`
+                  : "./assets/card-img.png"
+              }
               alt="project banner"
             />
             <h4 className="mb-4">{props.currentGrant.title}</h4>
