@@ -92,7 +92,7 @@ export default function ImageInput({
           >
             <CloudUpload color={colors["secondary-text"]} />
             <p>Click to Upload or drag and drop</p>
-            <p>PNG or JPG (Recommended: 348x200px)</p>
+            <p>PNG or JPG (Recommended: 1044x600px)</p>
           </button>
         )}
         <div className="w-1/4">
