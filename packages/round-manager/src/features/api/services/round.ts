@@ -70,7 +70,7 @@ export const roundApi = api.injectEndpoints({
           )
 
           // Create event filter and query rounds created from past events
-          const filter = roundFactory.filters.GrantRoundCreated(null, programId)
+          const filter = roundFactory.filters.RoundCreated(null, programId)
           const events = await roundFactory.queryFilter(filter)
 
           const rounds: Round[] = []
@@ -106,7 +106,7 @@ export const roundApi = api.injectEndpoints({
                 // operatorCount
               ] = await Promise.all([
                 roundImplementation.metaPtr(),
-                roundImplementation.grantApplicationsStartTime(),
+                roundImplementation.applicationsStartTime(),
                 roundImplementation.roundStartTime(),
                 roundImplementation.roundEndTime(),
                 roundImplementation.votingContract(),
