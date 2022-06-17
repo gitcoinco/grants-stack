@@ -19,10 +19,10 @@ The application schema would be in the format as listed below:
   "application_schema": [
     {
       "question"            : "String",
-      "type"                : "String",
+      "type"                : "String",                 // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
       "required"            : "Boolean",
       "info"               ?: "String",                 // optional
-      "choices"            ?: ["String", "String", ...] // optional
+      "choices"            ?: ["String"|"Number"]       // optional
     },
     {...}
   ]
