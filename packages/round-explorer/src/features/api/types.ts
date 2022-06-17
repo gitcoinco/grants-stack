@@ -16,7 +16,7 @@ export interface Metadata {
    */
   protocol: number;
   /**
-   * The identifier which represents the program metadata on a decentralized storage
+   * The identifier which represents metadata on a decentralized storage
    */
   pointer: string;
 }
