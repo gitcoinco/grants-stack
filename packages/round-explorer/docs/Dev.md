@@ -9,8 +9,8 @@
 │   ├── app                     # Stores/Hooks
 │   ├── features
 │       ├── auth                # components/services related to authentication/authorization
-│       ├── program             # Program related components/services
-│       ├── round               # Round related components/services 
+│       ├── explorer            # Explorer related components/services
+│       ├── cart                # Cart related components/services 
 │   ├── api.ts                  # Empty API service (feature APIs will inject endpoints)
 │   ├── browserPatches.tsx      # Browser polyfill
 │   ├── index.tsx               # Routes
@@ -38,16 +38,16 @@ It contains the `ProtectedRoute` component and `web3Service` which extends the b
 Global routing configuration is held in `src/index.tsx`. Below is an example of a route definition
 
 ```jsx=
-<Route path="/program/create" element={<CreateProgram />} />
-<Route path="/program/:id" element={<ViewProgram />} />
+<Route path="/" element={<ListGrants />} />
+<Route path="/cart" element={<ListCartItems />} />
 ```
 
 A protected route i.e a routed which requires a user's wallet connection should be within the parent `ProtectedRoute` component route
 
 ```jsx=
 <Route element={<ProtectedRoute />}>
-    <Route path="/program/create" element={<CreateProgram />} />
-    <Route path="/program/:id" element={<ViewProgram />} />
+  <Route path="/" element={<ListGrants />} />
+  <Route path="/cart" element={<ListCartItems />} />
 </Route>
 ```
 
