@@ -17,16 +17,27 @@ export default function ProtectedRoute() {
   }
 
   return !isSuccess ? (
-    <div className="flex h-screen">
-      <main className="m-auto">
-        {isFetching || isLoading
-          ? <p>Loading...</p>
-          : <div>
-            <button className="font-mono border-black border-4 hover:bg-gray-200 font-bold py-4 px-8 rounded" type="button" onClick={connectHandler}>
-              Connect Wallet
-            </button>
-            <p className="text-red-600 mt-4">{error?.toString()}</p>
+    <div>
+      <main className="bg-[#0E0333] h-screen">
+        {!isFetching && !isLoading &&
+          <>
+          <div className="flex left-0 h-full fixed bg-white z-10">
+            <div className="m-auto pl-20">
+              <h1 className="text-6xl my-2.5">Round Manager</h1>
+              <p className="text-base my-4">
+                As a round operator you can manage high-impact<br/>
+                grant programs and distribute funds across different<br/>
+                rounds and voting mechanisms.
+              </p>
+              <button className="bg-[#0E0333] font-bold mt-10 py-4 px-8 rounded text-white" type="button" onClick={connectHandler}>
+                Connect Wallet
+              </button>
+              <p className="text-red-600 mt-4">{error?.toString()}</p>
+            </div>
           </div>
+          <div className="left-0 w-[55%] h-full fixed overflow-x-hidden skew-x-[-10deg] bg-white"></div>
+          <div className="right-0 w-1/2 h-full fixed overflow-x-hidden"></div>
+          </>
         }
       </main>
     </div>
