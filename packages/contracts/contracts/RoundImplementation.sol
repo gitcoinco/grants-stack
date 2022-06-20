@@ -49,6 +49,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Emitted when projects metaPtr is updated
   event ProjectsMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
+  /// @notice Emitted when a project has applied to the round
+  event NewProjectApplication(address indexed project, MetaPtr applicationMetaPtr);
+
+
   // --- Data ---
 
   /// @notice Voting Strategy Contract Address
@@ -175,13 +179,20 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     applicationsStartTime = _newApplicationsStartTime;
   }
 
-  // @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
+  /// @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param _newProjectsMetaPtr new ProjectsMetaPtr
-  function updateProjectsMetaPtr(MetaPtr memory _newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateProjectsMetaPtr(MetaPtr calldata _newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     emit ProjectsMetaPtrUpdated(projectsMetaPtr, _newProjectsMetaPtr);
 
     projectsMetaPtr = _newProjectsMetaPtr;
+  }
+
+  /// @notice Submit a project application
+  /// @param _project project applying for the round
+  /// @param _applicationMetaPtr appliction metaPtr
+  function applyToRound(address _project, MetaPtr calldata _applicationMetaPtr) public {
+    emit NewProjectApplication(_project, _applicationMetaPtr);
   }
 
   /// @notice Invoked by voter to cast votes
