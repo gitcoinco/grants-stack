@@ -3,6 +3,68 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "oldMetaPtr",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "newMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "ApplicationMetaPtrUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "ApplicationStartTimeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint8",
         "name": "version",
@@ -10,6 +72,37 @@
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "project",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "applicationMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "NewProjectApplication",
     "type": "event"
   },
   {
@@ -52,7 +145,7 @@
         "type": "tuple"
       }
     ],
-    "name": "MetadataUpdated",
+    "name": "ProjectsMetaPtrUpdated",
     "type": "event"
   },
   {
@@ -135,10 +228,66 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "typeOfTime",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "oldTime",
+        "type": "uint256"
       },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "RoundEndTimeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "oldMetaPtr",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "newMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "RoundMetaPtrUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       {
         "indexed": false,
         "internalType": "uint256",
@@ -152,7 +301,7 @@
         "type": "uint256"
       }
     ],
-    "name": "TimeUpdated",
+    "name": "RoundStartTimeUpdated",
     "type": "event"
   },
   {
@@ -183,6 +332,24 @@
   },
   {
     "inputs": [],
+    "name": "applicationMetaPtr",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "protocol",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "pointer",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "applicationsStartTime",
     "outputs": [
       {
@@ -192,6 +359,36 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_project",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "_applicationMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "applyToRound",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -339,7 +536,24 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_metaPtr",
+        "name": "_roundMetaPtr",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "_applicationMetaPtr",
         "type": "tuple"
       },
       {
@@ -360,7 +574,7 @@
   },
   {
     "inputs": [],
-    "name": "metaPtr",
+    "name": "projectsMetaPtr",
     "outputs": [
       {
         "internalType": "uint256",
@@ -427,6 +641,24 @@
   },
   {
     "inputs": [],
+    "name": "roundMetaPtr",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "protocol",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "pointer",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "roundStartTime",
     "outputs": [
       {
@@ -473,6 +705,31 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "_newApplicationMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateApplicationMetaPtr",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_newApplicationsStartTime",
         "type": "uint256"
@@ -499,11 +756,11 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_newMetaPtr",
+        "name": "_newProjectsMetaPtr",
         "type": "tuple"
       }
     ],
-    "name": "updateMetaPtr",
+    "name": "updateProjectsMetaPtr",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -517,6 +774,31 @@
       }
     ],
     "name": "updateRoundEndTime",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "_newRoundMetaPtr",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateRoundMetaPtr",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

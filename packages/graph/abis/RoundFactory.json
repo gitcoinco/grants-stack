@@ -109,7 +109,24 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_metaPtr",
+        "name": "_roundMetaPtr",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "_applicationMetaPtr",
         "type": "tuple"
       },
       {
