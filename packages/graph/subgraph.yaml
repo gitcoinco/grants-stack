@@ -89,5 +89,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
+        - event: NewProjectApplication(indexed address,(uint256,string))
+          handler: handleNewProjectApplication
       file: ./src/round/implementation.ts
     
