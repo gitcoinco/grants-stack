@@ -1,5 +1,3 @@
-const { fontFamily } = require('tailwindcss/defaultTheme')
-
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -45,14 +43,6 @@ module.exports = {
           400: '#FFCC00',
           500: '#E1B815',
         },
-      },
-      fontFamily: {
-        display: ["Miriam Libre", "sans-serif"],
-        sans: [
-          "Libre Franklin",
-          "sans-serif",
-          ...fontFamily.sans,
-        ],
       },
     },
   },
