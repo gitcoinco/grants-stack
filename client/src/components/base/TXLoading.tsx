@@ -1,7 +1,7 @@
 import Stars from "../icons/Stars";
 import colors from "../../styles/colors";
 
-function Status(status?: string) {
+function statusMessage(status?: string) {
   switch (status) {
     case undefined:
       return "Please confirm your transaction";
@@ -22,7 +22,7 @@ function TXLoading({ status }: { status?: string }) {
       </div>
       <div>
         <p className="font-semibold text-quaternary-text mr-2 mt-1">
-          {Status(status)}
+          {statusMessage(status)}
         </p>
         {status === "complete" && (
           <p className="text-quaternary-text">Now you can apply for grants.</p>
