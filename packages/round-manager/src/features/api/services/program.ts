@@ -118,9 +118,16 @@ export const programApi = api.injectEndpoints({
               // Add program to response
               programs.push({
                 id: event.args![0],
-                metadata: JSON.parse(content),
+                metadata: {'name': 'Retroctive Funding Goods'},
                 operatorWallets
               })
+
+              programs.push({
+                id: event.args![0],
+                metadata: {'name': 'Another One Goods'},
+                operatorWallets
+              })
+
             }
           }
 
