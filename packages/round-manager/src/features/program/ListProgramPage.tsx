@@ -2,40 +2,75 @@ import { Link } from "react-router-dom"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListProgramsQuery } from "../api/services/program"
+import {
+  ArrowNarrowRightIcon,
+  PlusSmIcon,
+  UserIcon,
+} from "@heroicons/react/solid";
+import { Spinner } from "../common/Spinner";
 
 
 function ListPrograms() {
   const { account } = useWeb3()
   const { data: programs, isLoading, isSuccess } = useListProgramsQuery(account)
 
+  const programList = programs?.map((program, index) => (
+    <div
+      key={program.id}
+      className="relative rounded-sm border border-gray-300 bg-white px-6 py-4 my-4 shadow-lg drop-shadow-sm flex items-center space-x-3"
+    >
 
-  const programItems = programs?.map((program, index) =>
-    <Link to={`/program/${program.id}`} key={index}>
-      <button className="w-60 h-60 border-4 border-black bg-gray-300 hover:bg-gray-200 text-2xl">
-        {program.metadata!.name}
-      </button>
-    </Link>
-  )
+      <div className="flex-1 min-w-0">
+
+        <p className="text-[14px] mb-1 font-medium text-gray-900">
+          {program.metadata!.name}
+        </p>
+
+        <p className="text-[12px] text-gray-500 flex gap-1">
+          <UserIcon className="h-4 w-4 text-black"/>
+          <span>{program.operatorWallets.length}</span>
+          <span>Round Operators</span>
+        </p>
+      </div>
+
+      <Link className="text-[14px] flex gap-2" to={`/program/${program.id}`} key={index}>
+        <span>View Details</span>
+        <ArrowNarrowRightIcon className="h-5 w-5"/>
+      </Link>
+
+    </div>
+  ));
 
   return (
-    <div className="container mx-auto px-4 py-16 h-screen">
-      <header>
-        <p className="mb-16">
-          <span className="text-5xl">My Programs</span>
-          <span className="float-right truncate">📒: {account}</span>
-        </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="mb-8">
+       <h1 className="text-[32px]">My Programs</h1>
+       <h2 className="text-[16px] text-gray-500">
+         Create grant program and manage rounds with independent criteria.
+        </h2>
       </header>
       <main>
-        <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4">
-          {programItems}
-          {isSuccess &&
-            <Link to="/program/create">
-              <button className="w-60 h-60 rounded-full border-4 border-black hover:bg-gray-200 text-2xl">
-                Create Program
-              </button>
-            </Link>}
-          {isLoading && <p>Fetching your grant programs...</p>}
+        <div className="grid">
+          <div className="w-100 md:w-3/4">
+            {programList}
+          </div>
         </div>
+
+        {isSuccess &&
+          <Link to="/program/create">
+            <button
+              type="button"
+              className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true"/>
+               Create Program
+            </button>
+          </Link>
+        }
+
+        {isLoading &&
+          <Spinner text="Fetching Programs" />
+        }
       </main>
     </div>
   )
