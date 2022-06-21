@@ -93,8 +93,9 @@ contract ProjectRegistry {
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Associate a new owner with a project
+     * @param projectID ID of previously created project
+     * @param newOwner address of new project owner
      */
     function addProjectOwner(uint96 projectID, address newOwner) external onlyProjectOwner(projectID) {
         require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
@@ -109,8 +110,10 @@ contract ProjectRegistry {
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Disassociate a new owner with a project
+     * @param projectID ID of previously created project
+     * @param prevOwner Address of previous owner in OwnerList
+     * @param owner Address of new Owner
      */
     function removeProjectOwner(uint96 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
         require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "bad owner");
