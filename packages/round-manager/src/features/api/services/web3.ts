@@ -10,10 +10,6 @@ declare global {
   }
 }
 
-const VALID_NETWORK_NAME = "Goerli";
-const VALID_CHAIN_ID = 5;
-const LOCAL_CHAIN_ID = 1337;
-
 export const web3Api = api.injectEndpoints({
   endpoints: (builder) => ({
     getWeb3: builder.query<Web3Instance, void>({
@@ -35,10 +31,6 @@ export const web3Api = api.injectEndpoints({
           // Fetch connected accounts
           const accounts: Array<string> = await global.web3Provider!.send("eth_requestAccounts", [])
           console.log("Got accounts", accounts)
-
-          if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
-            return { error: `wrong network, please connect to ${VALID_NETWORK_NAME}` }
-          }
 
           // Reload page on wallet events
           window.ethereum.on("chainChanged", () => window.location.reload())
