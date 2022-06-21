@@ -1,0 +1,83 @@
+specVersion: 0.0.4
+schema:
+  file: schema.graphql
+dataSources:
+<<<<<<< HEAD
+  - kind: ethereum/contract
+=======
+<<<<<<< HEAD
+  - kind: ethereum/contract
+=======
+  - kind: ethereum
+>>>>>>> d9018e5 (f)
+>>>>>>> ea5fff0 (chore: base graph setup)
+    name: Program
+    network: goerli
+    source:
+      address: "0x1542143A64DcFa25Ddeb3CAf79F538B4a04F3FDd"
+      abi: ProgramFactory
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ea5fff0 (chore: base graph setup)
+      startBlock: 7015700
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+<<<<<<< HEAD
+=======
+=======
+      startBlock: 7015770
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+>>>>>>> d9018e5 (f)
+>>>>>>> ea5fff0 (chore: base graph setup)
+      language: wasm/assemblyscript
+      entities:
+        - Program
+      abis:
+        - name: ProgramFactory
+          file: Program/abis/ProgramFactory.json
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        - name: ProgramImplementation
+          file: Program/abis/ProgramImplementation.json
+>>>>>>> d9018e5 (f)
+>>>>>>> ea5fff0 (chore: base graph setup)
+      eventHandlers:
+        - event: ProgramCreated(indexed address)
+          handler: handleProgramCreated
+      file: Program/Program.wasm
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ea5fff0 (chore: base graph setup)
+templates:
+  - kind: ethereum/contract
+    name: ProgramImplementation
+    network: goerli
+    source:
+      abi: ProgramImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Role
+      abis:
+        - name: ProgramImplementation
+          file: ProgramImplementation/abis/ProgramImplementation.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: templates/ProgramImplementation/ProgramImplementation.wasm
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> d9018e5 (f)
+>>>>>>> ea5fff0 (chore: base graph setup)

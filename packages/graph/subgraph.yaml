@@ -1,0 +1,75 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  # ProgramFactory
+  - kind: ethereum/contract
+    name: Program
+    network: goerli
+    source:
+      address: "0x1542143A64DcFa25Ddeb3CAf79F538B4a04F3FDd"
+      abi: ProgramFactory
+      startBlock: 7015700 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Program
+      abis:
+        - name: ProgramFactory
+          file: ./abis/ProgramFactory.json
+      eventHandlers:
+        - event: ProgramCreated(indexed address)
+          handler: handleProgramCreated
+      file: ./src/program-factory.ts
+    
+templates:
+  # ProgramImplementation AccessControl
+  - kind: ethereum/contract
+    name: ProgramImplementation
+    network: goerli
+    source:
+      abi: ProgramImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Role
+      abis:
+        - name: ProgramImplementation
+          file: ./abis/ProgramImplementation.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/program-implementation.ts
+
+  # ProgramImplementation
+  # - kind: ethereum/contract
+  #   name: ProgramImplementation
+  #   network: goerli
+  #   source:
+  #     abi: ProgramImplementation 
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.6
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - AccessControl
+  #     abis:
+  #       - name: ProgramImplementation
+  #         file: ./abis/ProgramImplementation.json
+  #       - name: AccessControl
+  #         file: ./node_modules/@openzeppelin/contracts/build/contracts/AccessControl.json
+  #     eventHandlers:
+  #       - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+  #         handler: handleRoleAdminChanged
+  #       - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+  #         handler: handleRoleGranted
+  #       - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+  #         handler: handleRoleRevoked
+
+  #     file: ./node_modules/@openzeppelin/subgraphs/src/datasources/accesscontrol.ts

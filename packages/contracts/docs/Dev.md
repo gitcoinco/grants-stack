@@ -57,6 +57,14 @@ Generate the code coverage report:
 $ yarn coverage
 ```
 
+### Generate ABI
+
+Generate ABI of contracts
+```sh
+yarn run clear-abi
+yarn run export-abi
+```
+
 ### Report Gas
 
 See the gas usage per unit test and average gas per method call:
