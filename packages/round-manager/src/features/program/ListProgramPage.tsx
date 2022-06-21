@@ -6,8 +6,8 @@ import {
   ArrowNarrowRightIcon,
   PlusSmIcon,
   UserIcon,
-} from "@heroicons/react/solid";
-import { Spinner } from "../common/Spinner";
+} from "@heroicons/react/solid"
+import { Spinner } from "../common/Spinner"
 
 
 function ListPrograms() {
@@ -22,18 +22,18 @@ function ListPrograms() {
 
       <div className="flex-1 min-w-0">
 
-        <p className="text-[14px] mb-1 font-medium text-gray-900">
+        <p className="text-sm mb-1 font-medium text-gray-900">
           {program.metadata!.name}
         </p>
 
-        <p className="text-[12px] text-gray-500 flex gap-1">
+        <p className="text-xs text-grey-400 flex gap-1">
           <UserIcon className="h-4 w-4 text-black"/>
           <span>{program.operatorWallets.length}</span>
           <span>Round Operators</span>
         </p>
       </div>
 
-      <Link className="text-[14px] flex gap-2" to={`/program/${program.id}`} key={index}>
+      <Link className="text-sm flex gap-2" to={`/program/${program.id}`} key={index}>
         <span>View Details</span>
         <ArrowNarrowRightIcon className="h-5 w-5"/>
       </Link>
@@ -44,8 +44,8 @@ function ListPrograms() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <header className="mb-8">
-       <h1 className="text-[32px]">My Programs</h1>
-       <h2 className="text-[16px] text-gray-500">
+       <h1 className="text-[32px] text-grey-500">My Programs</h1>
+       <h2 className="text-base text-grey-400">
          Create grant program and manage rounds with independent criteria.
         </h2>
       </header>
@@ -60,7 +60,7 @@ function ListPrograms() {
           <Link to="/program/create">
             <button
               type="button"
-              className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-2.5 py-1.5 border border-white shadow-sm text-xs font-medium rounded text-grey-500 bg-white hover:bg-gray-50"
             >
               <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true"/>
                Create Program

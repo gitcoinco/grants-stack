@@ -7,9 +7,11 @@ type SpinnerProps = {
 
 export function Spinner(props: SpinnerProps) {
   return (
-    <div className="grid">
-      <SpinnerLogo className="w-12 mb-4 mx-auto" />
-      <p className="mx-auto">{ props.text }</p>
+    <div className="flex h-screen">
+      <div className="m-auto">
+        <SpinnerLogo className="mb-4 m-auto" style={{ maxWidth: 100 }} />
+        <p>{props.text}</p>
+      </div>
     </div>
   )
 }
