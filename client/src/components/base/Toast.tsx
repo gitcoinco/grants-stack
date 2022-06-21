@@ -6,10 +6,12 @@ import colors from "../../styles/colors";
 export default function Toast({
   children,
   show,
+  error = false,
   onClose,
 }: {
   children: JSX.Element;
   show: boolean;
+  error?: boolean;
   onClose: () => void;
 }) {
   return (
@@ -28,7 +30,11 @@ export default function Toast({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="p-3 shadow-lg rounded bg-secondary-background flex">
+          <div
+            className={`p-3 shadow-lg rounded flex ${
+              error ? "bg-danger-text" : "bg-secondary-background"
+            }`}
+          >
             <div className="flex items-start">{children}</div>
             <button type="button" onClick={onClose} className="inline-flex">
               <Cross color={colors["quaternary-text"]} />
