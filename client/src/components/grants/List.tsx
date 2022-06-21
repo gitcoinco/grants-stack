@@ -7,6 +7,7 @@ import { loadProjects, unloadProjects } from "../../actions/projects";
 import Globe from "../icons/Globe";
 import Button, { ButtonVariants } from "../base/Button";
 import Card from "./Card";
+import colors from "../../styles/colors";
 
 function ProjectsList() {
   const dispatch = useDispatch();
@@ -46,7 +47,9 @@ function ProjectsList() {
             ) : (
               <div className="flex h-full justify-center items-center">
                 <div className="flex flex-col items-center">
-                  <Globe />
+                  <div className="w-10">
+                    <Globe color={colors["primary-background"]} />
+                  </div>
                   <h4 className="mt-6">No projects</h4>
                   <p className="text-xs mt-6">
                     It looks like you haven&apos;t created any projects yet.
