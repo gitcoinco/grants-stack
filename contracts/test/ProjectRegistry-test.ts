@@ -65,7 +65,6 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to add an owner if not owner", async function () {
     const projectID = 0;
-    const currentOwners = await this.contract.getProjectOwners(projectID);
     await expect(
       this.contract
         .connect(this.nonOwner)
@@ -123,7 +122,6 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove an owner if not owner", async function () {
     const projectID = 0;
-    const currentOwners = await this.contract.getProjectOwners(projectID);
     await expect(
       this.contract
         .connect(this.nonOwner)
@@ -133,7 +131,6 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove owner 0", async function () {
     const projectID = 0;
-    const currentOwners = await this.contract.getProjectOwners(projectID);
     await expect(
       this.contract
         .connect(this.owner)
@@ -143,7 +140,6 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove owner equal to OWNERS_LIST_SENTINEL", async function () {
     const projectID = 0;
-    const currentOwners = await this.contract.getProjectOwners(projectID);
     await expect(
       this.contract
         .connect(this.owner)
@@ -153,7 +149,6 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove owner with bad prevOwner", async function () {
     const projectID = 0;
-    const currentOwners = await this.contract.getProjectOwners(projectID);
     await expect(
       this.contract
         .connect(this.owner)
