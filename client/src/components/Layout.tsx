@@ -37,23 +37,25 @@ function Layout(ownProps: Props) {
   }, [props.web3Initialized]);
 
   const { children } = ownProps;
+  if (!props.web3Initialized) {
+    return <Landing />;
+  }
 
   return (
-    <div className="flex flex-col h-full relative">
-      {!props.web3Initialized ? (
-        <Landing />
-      ) : (
-        <>
-          <Header />
-          <main className="container mx-auto dark:bg-primary-background h-full">
-            {!props.web3Error &&
-              props.web3Initialized &&
-              props.chainID &&
-              children}
-            {props.web3Error && <p>{props.web3Error}</p>}
-          </main>
-        </>
-      )}
+    <div className="flex flex-col min-h-screen relative">
+      <Header />
+      <main className="container mx-auto dark:bg-primary-background grow">
+        {!props.web3Error && props.web3Initialized && props.chainID && children}
+        {props.web3Error && <p>{props.web3Error}</p>}
+      </main>
+      <div className="h-1/8">
+        <div className="w-full flex justify-center py-4">
+          <img
+            alt="Built by the Gitcoin Community"
+            src="./assets/footer-img.svg"
+          />
+        </div>
+      </div>
     </div>
   );
 }

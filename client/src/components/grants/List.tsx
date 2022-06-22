@@ -27,18 +27,20 @@ function ProjectsList() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col flex-grow h-full">
+    <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
       {props.loading && <>loading...</>}
 
       {!props.loading && (
         <>
-          <div className="flex flex-col mt-4">
+          <div className="flex flex-col mt-4 mb-4">
             <h3>My Projects</h3>
-            <p>Manage projects across multiple grants programs.</p>
+            <p className="text-base">
+              Manage projects across multiple grants programs.
+            </p>
           </div>
           <div className="grow">
             {props.grants.length ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 {props.grants.map((item: number) => (
                   <Card projectId={item} key={item} />
                 ))}
