@@ -50,7 +50,7 @@ contract ProjectRegistry {
     // Events
 
     event ProjectCreated(address indexed owner, uint96 projectID);
-    event MetaDataUpdated(address indexed owner, uint96 projectID);
+    event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr);
 
     // Modifiers
 
@@ -79,16 +79,17 @@ contract ProjectRegistry {
         initProjectOwners(projectID);
 
         emit ProjectCreated(msg.sender, projectID);
+        emit MetadataUpdated(projectID, metadata);
     }
 
     /**
-     * @notice Updates MetaData for singe project
+     * @notice Updates Metadata for singe project
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
      */
-    function updateProjectMetaData(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
+    function updateProjectMetadata(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
-        emit MetaDataUpdated(msg.sender, projectID);
+        emit MetadataUpdated(projectID, metadata);
     }
 
     /**
