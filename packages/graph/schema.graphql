@@ -6,7 +6,7 @@
 type Program @entity {
   id: ID!
   roles: [ProgramRole!]! @derivedFrom(field: "program") 
-  accounts: [ProgramAccount!]! @derivedFrom(field: "program") 
+  accounts: [ProgramAccount!]! @derivedFrom(field: "program")
 }
 
 # id = program.toHex()-role.toHex()
@@ -33,6 +33,7 @@ type ProgramAccount @entity {
 # id = roundAddress.toHex()
 type Round @entity {
   id: ID!
+  program: String!
   roles: [RoundRole!]! @derivedFrom(field: "round") 
   accounts: [RoundAccount!]! @derivedFrom(field: "round") 
 }

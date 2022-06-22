@@ -29,7 +29,7 @@ dataSources:
     name: Round
     network: goerli
     source:
-      address: "0xC4012787FD2242657C19F006D38c55859F0Ca508"
+      address: "0x8CECC7587d9bC7db93f5a797c90264b6048cc590"
       abi: RoundFactory
       startBlock: 7015700 
     mapping:
@@ -42,7 +42,7 @@ dataSources:
         - name: RoundFactory
           file: ./abis/RoundFactory.json
       eventHandlers:
-        - event: GrantRoundCreated(indexed address,indexed address)
+        - event: RoundCreated(indexed address,indexed address)
           handler: handleRoundCreated
       file: ./src/round/factory.ts
     

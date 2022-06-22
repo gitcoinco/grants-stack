@@ -182,6 +182,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "applicationsStartTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -244,19 +257,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "grantApplicationsStartTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -301,13 +301,13 @@
   {
     "inputs": [
       {
-        "internalType": "contract IVote",
-        "name": "_votingContract",
+        "internalType": "contract IVotingStrategy",
+        "name": "_votingStrategy",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_grantApplicationsStartTime",
+        "name": "_applicationsStartTime",
         "type": "uint256"
       },
       {
@@ -474,11 +474,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newGrantApplicationsStartTime",
+        "name": "_newApplicationsStartTime",
         "type": "uint256"
       }
     ],
-    "name": "updateGrantApplicationsStartTime",
+    "name": "updateApplicationsStartTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -537,31 +537,9 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "grantAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "voterAddress",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct Vote[]",
-        "name": "_votes",
-        "type": "tuple[]"
+        "internalType": "bytes[]",
+        "name": "_encodedVotes",
+        "type": "bytes[]"
       }
     ],
     "name": "vote",
@@ -571,10 +549,10 @@
   },
   {
     "inputs": [],
-    "name": "votingContract",
+    "name": "votingStrategy",
     "outputs": [
       {
-        "internalType": "contract IVote",
+        "internalType": "contract IVotingStrategy",
         "name": "",
         "type": "address"
       }

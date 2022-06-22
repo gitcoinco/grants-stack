@@ -28,7 +28,7 @@ export async function main() {
   }
 
 
-  const programContractAddress = "0xA5139f5020551e9dc41caDf595420A99449CeE01";
+  const programContractAddress = "0x1564f459600505734cffe7a075691db96e517ae7";
 
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
@@ -46,7 +46,7 @@ export async function main() {
   const endTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
   const roundTx = await roundFactory.create(
-      networkParams.bulkVoteContract, // _votingContract
+      networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
       applicationStartTime, // _applicationsStartTime
       startTime, // _roundStartTime
       endTime, // _roundEndTime
