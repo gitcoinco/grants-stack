@@ -20,5 +20,6 @@ module.exports = {
       "error",
       { ignores: ["modules"] },
     ],
+    "max-len": ["error", { code: 150 }],
   },
 };
