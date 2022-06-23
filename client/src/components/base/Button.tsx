@@ -10,14 +10,15 @@ interface ButtonProps {
   children: React.ReactNode;
   variant: ButtonVariants;
   disabled?: boolean;
+  styles?: string[];
 }
 
-function Button({ onClick, children, variant, disabled }: ButtonProps) {
+function Button({ onClick, children, variant, disabled, styles }: ButtonProps) {
   return (
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`base-btn ${variant}`}
+      className={`base-btn ${variant} ${styles?.join(" ")}`}
       type="button"
     >
       <div className="flex">{children}</div>

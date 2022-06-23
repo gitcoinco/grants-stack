@@ -32,38 +32,38 @@ function Layout(ownProps: Props) {
   }, [props.web3Initialized]);
 
   const { children } = ownProps;
+  if (!props.web3Initialized) {
+    return <Landing />;
+  }
 
   return (
-    <div className="flex flex-col h-full relative">
-      {!props.web3Initialized ? (
-        <Landing />
-      ) : (
+    <div className="flex flex-col min-h-screen relative">
+      <Header />
+      <main className="container mx-auto dark:bg-primary-background grow">
+        {!props.web3Error && props.web3Initialized && props.chainID && children}
+        {props.web3Error && <p>{props.web3Error}</p>}
+      </main>
+      <Toast show={show} onClose={() => showToast(false)}>
         <>
-          <Header />
-          <main className="container mx-auto dark:bg-primary-background h-full">
-            {!props.web3Error &&
-              props.web3Initialized &&
-              props.chainID &&
-              children}
-            {props.web3Error && <p>{props.web3Error}</p>}
-          </main>
-          <Toast show={show} onClose={() => showToast(false)}>
-            <>
-              <div className="w-6 mt-1 mr-2">
-                <Globe color={colors["quaternary-text"]} />
-              </div>
-              <div>
-                <p className="font-semibold text-quaternary-text">
-                  Wallet Connected!
-                </p>
-                <p className="text-quaternary-text">
-                  Welcome to your Project Hub.
-                </p>
-              </div>
-            </>
-          </Toast>
+          <div className="w-6 mt-1 mr-2">
+            <Globe color={colors["quaternary-text"]} />
+          </div>
+          <div>
+            <p className="font-semibold text-quaternary-text">
+              Wallet Connected!
+            </p>
+            <p className="text-quaternary-text">Welcome to your Project Hub.</p>
+          </div>
         </>
-      )}
+      </Toast>
+      <div className="h-1/8">
+        <div className="w-full flex justify-center py-4">
+          <img
+            alt="Built by the Gitcoin Community"
+            src="./assets/footer-img.svg"
+          />
+        </div>
+      </div>
     </div>
   );
 }

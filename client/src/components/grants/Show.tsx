@@ -48,11 +48,11 @@ function Project() {
   }
 
   return (
-    <div>
+    <div className="mx-4 sm:mx-0">
       {props.currentGrant && (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="flex">
+          <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start mb-6 w-full">
+            <h3 className="flex mb-4">
               <div className="pt-2 mr-2">
                 <Link to={grantsPath()}>
                   <Arrow color={colors["primary-text"]} />
@@ -61,16 +61,25 @@ function Project() {
               Project Details
             </h3>
             {props.id && (
-              <Link to={editPath(props.id)}>
-                <Button variant={ButtonVariants.outline}>
-                  <div className="m-1">
-                    <Pencil color={colors["secondary-text"]} />
+              <Link
+                to={editPath(props.id)}
+                className="w-full sm:w-auto mx-w-full ml-0"
+              >
+                <Button
+                  variant={ButtonVariants.outline}
+                  styles={["w-full sm:w-auto mx-w-full ml-0"]}
+                >
+                  <div className="flex justify-center w-full">
+                    <div className="m-1">
+                      <Pencil color={colors["secondary-text"]} />
+                    </div>
+                    Edit
                   </div>
-                  Edit
                 </Button>
               </Link>
             )}
           </div>
+          <div className="w-full md:w-1/3" />
           <div className="w-full md:w-2/3">
             <img
               className="w-full mb-4"
@@ -87,7 +96,7 @@ function Project() {
             <p className="mb-12">{props.currentGrant.description}</p>
             <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
             <p className="mb-12">{props.currentGrant.roadmap}</p>
-            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
+            <p className="text-xs text-primary-text mb-1">Project Challenges</p>
             <p className="mb-12">{props.currentGrant.challenges}</p>
           </div>
         </>
