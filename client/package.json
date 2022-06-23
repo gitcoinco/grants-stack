@@ -8,6 +8,7 @@
     "@craco/craco": "^6.4.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@headlessui/react": "^1.6.5",
     "@lagunovsky/redux-react-router": "^2.2.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",

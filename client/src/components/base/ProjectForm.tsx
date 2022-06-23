@@ -6,6 +6,7 @@ import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
 import { saveFileToIPFS, resetFileStatus } from "../../actions/ipfs";
 import { publishGrant, resetTXStatus } from "../../actions/newGrant";
+import Toast from "./Toast";
 import TXLoading from "./TXLoading";
 
 function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
@@ -33,8 +34,16 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+  const [show, showToast] = useState(false);
+
+  const resetStatus = () => {
+    dispatch(resetTXStatus());
+    dispatch(resetFileStatus());
+  };
 
   const publishProject = async () => {
+    resetStatus();
+    showToast(true);
     await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
     dispatch(publishGrant(currentGrantId));
   };
@@ -86,8 +95,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   // eslint-disable-next-line
   useEffect(() => {
     return () => {
-      dispatch(resetTXStatus());
-      dispatch(resetFileStatus());
+      resetStatus();
     };
   }, []);
 
@@ -160,18 +168,13 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           </Button>
         </div>
       </form>
-      {props.savingFile && !props.lastFileSaved && (
-        <p>Your file is being saved to IPFS</p>
-      )}
-      {!props.savingFile && props.lastFileSaved && (
-        <>
-          <p>
-            Your file has being saved to IPFS and can be accessed here:{" "}
-            {props.lastFileSaved}
-          </p>
-          {props.txStatus && <TXLoading status={props.txStatus} />}
-        </>
-      )}
+      <Toast
+        show={show}
+        onClose={() => showToast(false)}
+        error={props.txStatus === "error"}
+      >
+        <TXLoading status={props.txStatus} />
+      </Toast>
     </div>
   );
 }
