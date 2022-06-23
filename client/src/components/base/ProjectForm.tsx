@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
+import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { saveFileToIPFS, resetFileStatus } from "../../actions/ipfs";
+import { saveFileToIPFS, resetFileStatus, FileTypes } from "../../actions/ipfs";
 import { publishGrant, resetTXStatus } from "../../actions/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
@@ -20,7 +21,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
-      lastFileSaved: state.ipfs.lastFileSavedCID,
+      projectFile: state.ipfs.projectFileSavedCID,
+      projectImg: state.ipfs.projectImgSavedCID,
       txStatus: state.newGrant.txStatus,
     };
   }, shallowEqual);
@@ -34,17 +36,23 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     challenges: "",
     roadmap: "",
   });
+
   const [show, showToast] = useState(false);
 
   const resetStatus = () => {
     dispatch(resetTXStatus());
     dispatch(resetFileStatus());
   };
+  const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
     resetStatus();
     showToast(true);
-    await dispatch(saveFileToIPFS("test.txt", JSON.stringify(formInputs)));
+    if (projectImg) {
+      await dispatch(saveFileToIPFS("test.txt", projectImg, FileTypes.IMG));
+    }
+
+    await dispatch(saveFileToIPFS("test.txt", formInputs, FileTypes.PROJECT));
     dispatch(publishGrant(currentGrantId));
   };
 
@@ -136,6 +144,10 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
           name="website"
           value={formInputs.website}
           changeHandler={(e) => handleInput(e)}
+        />
+        <ImageInput
+          label="Project Logo"
+          imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
         />
         <TextArea
           label="Project Description"

@@ -2,9 +2,10 @@ import {
   IPFS_INITIALIZING,
   IPFS_INITIALIZATION_ERROR,
   IPFS_INITIALIZED,
-  IPFS_FILE_SAVED,
+  PROJECT_FILE_SAVED,
   IPFS_SAVING_FILE,
   RESET_FILE_STATUS,
+  PROJECT_IMG_SAVED,
   IPFSActions,
 } from "../actions/ipfs";
 
@@ -14,7 +15,8 @@ export interface IPFSState {
   newFileSaved: boolean;
   ipfsSavingFile: boolean;
   initializationError: string | undefined;
-  lastFileSavedCID: string | undefined;
+  projectFileSavedCID: string | undefined;
+  projectImgSavedCID: string | undefined;
 }
 
 const initialState: IPFSState = {
@@ -23,7 +25,8 @@ const initialState: IPFSState = {
   newFileSaved: false,
   ipfsSavingFile: false,
   initializationError: undefined,
-  lastFileSavedCID: undefined,
+  projectFileSavedCID: undefined,
+  projectImgSavedCID: undefined,
 };
 
 export const ipfsReducer = (
@@ -56,10 +59,19 @@ export const ipfsReducer = (
       };
     }
 
-    case IPFS_FILE_SAVED: {
+    case PROJECT_FILE_SAVED: {
       return {
         ...state,
-        lastFileSavedCID: action.cid,
+        projectFileSavedCID: action.cid,
+        newFileSaved: true,
+        ipfsSavingFile: false,
+      };
+    }
+
+    case PROJECT_IMG_SAVED: {
+      return {
+        ...state,
+        projectImgSavedCID: action.cid,
         newFileSaved: true,
         ipfsSavingFile: false,
       };
@@ -77,7 +89,7 @@ export const ipfsReducer = (
         ...state,
         newFileSaved: false,
         ipfsSavingFile: false,
-        lastFileSavedCID: undefined,
+        projectFileSavedCID: undefined,
       };
     }
 

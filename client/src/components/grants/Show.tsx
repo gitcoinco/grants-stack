@@ -9,6 +9,7 @@ import Pencil from "../icons/Pencil";
 import colors from "../../styles/colors";
 import LinkIcon from "../icons/LinkIcon";
 import Arrow from "../icons/Arrow";
+import { getProjectImage } from "../../utils/components";
 
 function Project() {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ function Project() {
     return {
       id: params.id,
       loading: grantMetadata ? grantMetadata.loading : false,
-      currentGrant: grantMetadata?.metadata,
+      currentProject: grantMetadata?.metadata,
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
     };
@@ -30,26 +31,30 @@ function Project() {
     // called twice
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
-    if (params.id !== undefined && props.currentGrant === undefined) {
+    if (params.id !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(Number(params.id)));
     }
-  }, [dispatch, props.ipfsInitialized, params.id, props.currentGrant]);
+  }, [dispatch, props.ipfsInitialized, params.id, props.currentProject]);
 
-  if (props.currentGrant === undefined && props.ipfsInitializationError) {
+  if (props.currentProject === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
-  if (props.currentGrant === undefined && !props.ipfsInitialized) {
+  if (props.currentProject === undefined && !props.ipfsInitialized) {
     return <>Initializing ipfs...</>;
   }
 
-  if (props.currentGrant === undefined && props.loading && props.currentGrant) {
+  if (
+    props.currentProject === undefined &&
+    props.loading &&
+    props.currentProject
+  ) {
     return <>Loading grant data from IPFS... </>;
   }
 
   return (
-    <div className="mx-4 sm:mx-0">
-      {props.currentGrant && (
+    <div>
+      {props.currentProject && (
         <>
           <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start mb-6 w-full">
             <h3 className="flex mb-4">
@@ -82,22 +87,26 @@ function Project() {
           <div className="w-full md:w-1/3" />
           <div className="w-full md:w-2/3">
             <img
-              className="w-full mb-4"
-              src="./assets/card-img.png"
+              className="w-full mb-4  h-32 object-contain"
+              src={getProjectImage(props.loading, props.currentProject)}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./assets/card-img.png";
+              }}
               alt="project banner"
             />
-            <h4 className="mb-4">{props.currentGrant.title}</h4>
+            <h4 className="mb-4">{props.currentProject.title}</h4>
             <div className="flex items-center pb-6 mb-6 border-b">
               <LinkIcon color={colors["secondary-text"]} />{" "}
-              <p className="ml-1">{props.currentGrant.website}</p>
+              <p className="ml-1">{props.currentProject.website}</p>
               {/* TODO add created at updated timestamp */}
             </div>
             <p className="text-xs text-primary-text mb-1">Description</p>
-            <p className="mb-12">{props.currentGrant.description}</p>
+            <p className="mb-12">{props.currentProject.description}</p>
             <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
-            <p className="mb-12">{props.currentGrant.roadmap}</p>
-            <p className="text-xs text-primary-text mb-1">Project Challenges</p>
-            <p className="mb-12">{props.currentGrant.challenges}</p>
+            <p className="mb-12">{props.currentProject.roadmap}</p>
+            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
+            <p className="mb-12">{props.currentProject.challenges}</p>
           </div>
         </>
       )}
