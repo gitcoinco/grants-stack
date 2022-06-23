@@ -16,7 +16,7 @@ export const Button = tw.button`
   disabled:border-slate-200
   disabled:shadow-none
   ${({ $variant }: ButtonProps) => (
-    $variant == "outline" ? "bg-white text-grey-500 border" : "bg-grey-500 text-white"
+    $variant === "outline" ? "bg-white text-grey-500 border" : "bg-grey-500 text-white"
   )}
 `
 
