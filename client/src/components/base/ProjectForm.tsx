@@ -46,6 +46,8 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   const [projectImg, setProjectImg] = useState<Buffer | undefined>();
 
   const publishProject = async () => {
+    resetStatus();
+    showToast(true);
     if (projectImg) {
       await dispatch(saveFileToIPFS("test.txt", projectImg, FileTypes.IMG));
     }
