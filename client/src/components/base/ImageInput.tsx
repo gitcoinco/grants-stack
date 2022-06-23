@@ -60,7 +60,7 @@ export default function ImageInput({
       setTempImg(URL.createObjectURL(files[0]));
 
       const reader = new FileReader();
-      reader.onloadend = function () {
+      reader.onloadend = () => {
         const bufferResult = reader.result as ArrayBuffer;
         if (bufferResult) {
           const buf = window.Buffer.from(bufferResult);
