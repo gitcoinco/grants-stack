@@ -89,6 +89,10 @@ function Project() {
             <img
               className="w-full mb-4  h-32 object-contain"
               src={getProjectImage(props.loading, props.currentProject)}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./assets/card-img.png";
+              }}
               alt="project banner"
             />
             <h4 className="mb-4">{props.currentProject.title}</h4>
