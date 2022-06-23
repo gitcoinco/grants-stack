@@ -56,9 +56,18 @@ export async function main() {
       ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123'] // _roundOperators
   );
 
-  await roundTx.wait();
+  const receipt = await roundTx.wait();
+  let roundAddress;
 
-  console.log("✅ Round created: ", roundTx.hash);
+  if (receipt.events) {
+    const event = receipt.events.find(e => e.event === 'RoundCreated');
+    if (event && event.args) {
+      roundAddress = event.args.roundAddress;
+    }
+  }
+
+  console.log("Txn hash: " + roundTx.hash);
+  console.log("✅ Round created: ", roundAddress);
 }
 
 main().catch((error) => {

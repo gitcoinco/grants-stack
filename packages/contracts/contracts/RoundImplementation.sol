@@ -125,6 +125,12 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     for (uint256 i = 0; i < _roundOperators.length; ++i) {
       _grantRole(ROUND_OPERATOR_ROLE, _roundOperators[i]);
     }
+
+    // Emit RoundMetaPtrUpdated event for indexing
+    emit RoundMetaPtrUpdated(roundMetaPtr, _roundMetaPtr);
+
+    // Emit ApplicationMetaPtrUpdated event for indexing
+    emit ApplicationMetaPtrUpdated(applicationMetaPtr, _applicationMetaPtr);
   }
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
