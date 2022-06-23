@@ -1,19 +1,23 @@
 import tw from "tailwind-styled-components"
 
+
+type ButtonProps = {
+  $variant: 'solid' | 'outline'
+}
 export const Button = tw.button`
-  md:w-64
-  md:h-14
-  w-full
-  rounded-2xl
-  border-4
-  border-black
-  my-6
-  text-2xl
-  hover:bg-gray-200
+  bg-grey-500 text-white
+  py-2.5 px-10
+  rounded
+  transition-colors
+  focus:shadow-outline
+  hover:brightness-125
   disabled:bg-slate-50
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none
+  ${({ $variant }: ButtonProps) => (
+    $variant == "outline" ? "bg-white text-grey-500 border" : "bg-grey-500 text-white"
+  )}
 `
 
 type TextInputProps = {
