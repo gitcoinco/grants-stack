@@ -87,7 +87,7 @@ function Project() {
           <div className="w-full md:w-1/3" />
           <div className="w-full md:w-2/3">
             <img
-              className="w-full mb-4"
+              className="w-full mb-4  h-32 object-contain"
               src={getProjectImage(props.loading, props.currentProject)}
               alt="project banner"
             />

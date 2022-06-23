@@ -34,8 +34,12 @@ function Card({ projectId }: { projectId: number }) {
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={grantPath(projectId)}>
         <img
-          className="w-full"
+          className="w-full h-32 object-cover"
           src={getProjectImage(props.loading, props.currentProject)}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "./assets/card-img.png";
+          }}
           alt="project banner"
         />
         <div className="py-4 relative text-center">
