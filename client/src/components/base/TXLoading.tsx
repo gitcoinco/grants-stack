@@ -6,7 +6,7 @@ function statusMessage(status?: string) {
     case undefined:
       return "Please confirm your transaction";
     case "initiated":
-      return "Your Transaction is Processing!";
+      return "Your transaction is processing!";
     case "error":
       return "There was an error processing your transaction. Please try again";
     default:
