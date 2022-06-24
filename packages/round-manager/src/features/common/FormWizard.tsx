@@ -1,42 +1,30 @@
 import { createContext, useState } from "react"
 
-import { Button } from "./styles"
+import { FormStepper } from "./FormStepper"
 
 export interface FormWizardProps {
   initialCurrentStep?: number,
-  steps: Array<() => JSX.Element>,
+  initialData?: object,
+  steps: Array<(props: any) => JSX.Element>,
 }
 
-export const FormContext = createContext({})
+export const FormContext = createContext({} as any)
 
-export default function FormWizard({ initialCurrentStep = 1, steps }: FormWizardProps) {
+export function FormWizard({ initialCurrentStep = 1, initialData = {}, steps }: FormWizardProps) {
   const [currentStep, setCurrentStep] = useState(initialCurrentStep)
   const [formData, setFormData] = useState({})
-  const [canSubmit, setCanSubmit] = useState(false)
 
   const Content = steps[currentStep - 1]
-
-  const next = () => setCanSubmit(true)
-  const prev = () => setCurrentStep(currentStep - 1)
 
   return (
     <FormContext.Provider
       value={{
-        steps,
-        canSubmit,
         currentStep, setCurrentStep,
+        stepsCount: steps.length,
         formData, setFormData,
-        totalSteps: steps.length,
       }}
     >
-      <div className="border border-grey-100 px-6 pt-6 pb-3.5">
-        <Content />
-
-        <div className="space-x-4 mt-6">
-          {currentStep > 1 && <Button $variant="outline" onClick={prev}>Previous</Button>}
-          <Button $variant="solid" onClick={next}>{currentStep === steps.length ? "Deploy" : "Next"}</Button>
-        </div>
-      </div>
+      <Content stepper={FormStepper} initialData={initialData} />
     </FormContext.Provider>
   )
 }
