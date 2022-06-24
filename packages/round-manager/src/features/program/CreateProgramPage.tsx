@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
-import { TextInput, Button } from "../common/styles"
+import { Input, Button } from "../common/styles"
 
 
 type FormData = {
@@ -71,14 +71,14 @@ export default function CreateProgram() {
       </header>
       <main className="">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInput
+          <Input
             {...register("name", { required: true })}
             $hasError={errors.name}
             type="text"
             disabled={isLoading}
             placeholder="Program name" />
           <br />
-          <TextInput
+          <Input
             {...register("operatorWallet1", { required: true })}
             $hasError={errors.operatorWallet1}
             type="text"
@@ -86,13 +86,13 @@ export default function CreateProgram() {
             placeholder="Operator wallet 1"
             defaultValue={account} />
           <br />
-          <TextInput
+          <Input
             {...register("operatorWallet2")}
             type="text"
             disabled={isLoading}
             placeholder="Operator wallet 2" />
           <br />
-          <TextInput
+          <Input
             {...register("operatorWallet3")}
             type="text"
             disabled={isLoading}

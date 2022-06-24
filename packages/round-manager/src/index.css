@@ -6,6 +6,7 @@
 
 @layer base {
   html {
+    @apply text-grey-500;
     font-family: Libre Franklin;
   }
 
@@ -40,6 +41,6 @@
   }
 
   p {
-    @apply text-base
+    @apply text-base;
   }
 }

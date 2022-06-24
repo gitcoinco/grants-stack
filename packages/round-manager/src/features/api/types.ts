@@ -109,3 +109,8 @@ export interface Round {
    */
   operatorWallets?: Array<string>;
 }
+
+/** This non-nested interface exists for form validation */
+export interface RoundForm extends Round {
+  name?: string;
+}

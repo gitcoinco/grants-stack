@@ -20,20 +20,16 @@ export const Button = tw.button`
   )}
 `
 
-type TextInputProps = {
+type InputProps = {
   $hasError: boolean
 }
 
-export const TextInput = tw.input<TextInputProps>`
-  md:w-96
-  md:h-14
-  w-full
-  border-4
-  border-black
-  px-2
-  my-4
-  text-2xl
-  ${(p: TextInputProps) => (
-    p.$hasError ? "focus:outline-none focus:border-none focus:ring focus:ring-rose-600" : ""
+export const Input = tw.input<InputProps>`
+  block
+  my-1 w-full sm:text-sm border-gray-300
+  shadow-sm rounded-md
+  focus:ring-indigo-500 focus:border-indigo-500 
+  ${({ $hasError }: InputProps) => (
+    $hasError ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500" : ""
   )}
 `
