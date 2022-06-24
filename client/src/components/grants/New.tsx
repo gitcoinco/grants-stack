@@ -14,7 +14,7 @@ function NewProject() {
   return (
     <div className="mx-4">
       <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Edit Project</h3>
+        <h3 className="mb-2">Create Project</h3>
         <div className="w-full mb-2 inline-block sm:hidden">
           <p>Tell us what you’re working on.</p>
         </div>
