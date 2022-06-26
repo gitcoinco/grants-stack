@@ -35,7 +35,7 @@ export default function ProtectedRoute() {
                   grant programs and distribute funds across different<br />
                   rounds and voting mechanisms.
                 </p>
-                <button type="button" className="bg-grey-500 font-bold mt-8 py-4 px-8 rounded text-white" onClick={connectHandler}>
+                <button type="button" className="bg-grey-500 mt-8 py-4 px-8 rounded text-white" onClick={connectHandler}>
                   Connect Wallet
                 </button>
               </div>
