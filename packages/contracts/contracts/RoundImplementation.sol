@@ -38,7 +38,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   event ApplicationMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
   /// @notice Emitted when application start time is updated
-  event ApplicationStartTimeUpdated(uint256 oldTime, uint256 newTime);
+  event ApplicationsStartTimeUpdated(uint256 oldTime, uint256 newTime);
 
   /// @notice Emitted when a round start time is updated
   event RoundStartTimeUpdated(uint256 oldTime, uint256 newTime);
@@ -105,9 +105,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     address[] memory _roundOperators
   ) public initializer {
 
-    require(_roundStartTime >= block.timestamp, "initialize: start time has already passed");
-    require(_roundEndTime > _roundStartTime, "initialize: start time should be before end time");
-    require(_roundEndTime > _applicationsStartTime, "initialize: application start time should be before end time");
+    require(_applicationsStartTime >= block.timestamp, "initialize: applications start time has already passed");
+    require(_roundStartTime > _applicationsStartTime, "initialize: round start time must be after application start time");
+    require(_roundEndTime > _roundStartTime, "initialize: end time must be after start time");
 
 
     votingStrategy = _votingStrategy;
@@ -115,7 +115,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     roundStartTime = _roundStartTime;
     roundEndTime = _roundEndTime;
     token = _token;
+
+    // Emit RoundMetaPtrUpdated event for indexing
+    emit RoundMetaPtrUpdated(roundMetaPtr, _roundMetaPtr);
     roundMetaPtr = _roundMetaPtr;
+
+    // Emit ApplicationMetaPtrUpdated event for indexing
+    emit ApplicationMetaPtrUpdated(applicationMetaPtr, _applicationMetaPtr);
     applicationMetaPtr = _applicationMetaPtr;
 
     // assign roles
@@ -125,12 +131,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     for (uint256 i = 0; i < _roundOperators.length; ++i) {
       _grantRole(ROUND_OPERATOR_ROLE, _roundOperators[i]);
     }
-
-    // Emit RoundMetaPtrUpdated event for indexing
-    emit RoundMetaPtrUpdated(roundMetaPtr, _roundMetaPtr);
-
-    // Emit ApplicationMetaPtrUpdated event for indexing
-    emit ApplicationMetaPtrUpdated(applicationMetaPtr, _applicationMetaPtr);
   }
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
@@ -155,7 +155,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param _newRoundStartTime new roundStartTime
   function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
+    require(_newRoundStartTime > applicationsStartTime, "updateRoundStartTime: start time must be after application start time");
+    require(_newRoundStartTime < roundEndTime, "updateRoundStartTime: start time must be before round end time");
 
     emit RoundStartTimeUpdated(roundStartTime, _newRoundStartTime);
 
@@ -177,10 +178,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param _newApplicationsStartTime new applicationsStartTime
   function updateApplicationsStartTime(uint256 _newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newApplicationsStartTime >= roundStartTime, "applicationTime: Should be before round start time");
-    require(_newApplicationsStartTime < roundEndTime, "applicationTime: Should be before round end time");
+    require(_newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
+    require(_newApplicationsStartTime < roundStartTime, "updateApplicationsStartTime: should be before round start time");
 
-    emit ApplicationStartTimeUpdated(applicationsStartTime, _newApplicationsStartTime);
+    emit ApplicationsStartTimeUpdated(applicationsStartTime, _newApplicationsStartTime);
 
     applicationsStartTime = _newApplicationsStartTime;
   }

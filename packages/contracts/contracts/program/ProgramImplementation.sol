@@ -47,6 +47,8 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
     address[] memory _programOperators
   ) public initializer {
   
+    // Emit MetadataUpdated event for indexing
+    emit MetadataUpdated(metaPtr, _metaPtr);
     metaPtr = _metaPtr;
 
     // assign roles
@@ -56,9 +58,6 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
     for (uint256 i = 0; i < _programOperators.length; ++i) {
       _grantRole(PROGRAM_OPERATOR_ROLE, _programOperators[i]);
     }
-
-    // Emit MetadataUpdated event for indexing
-    emit MetadataUpdated(metaPtr, _metaPtr);
   }
 
   // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
