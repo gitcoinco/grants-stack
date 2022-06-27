@@ -17,6 +17,16 @@ describe("ProjectRegistry", function () {
     await this.contract.deployed();
   });
 
+  it("allows to initilize once", async function () {
+    await this.contract.connect(this.owner).initialize();
+  });
+
+  it("doesn't allow to initilize again", async function () {
+    await expect(
+      this.contract.connect(this.owner).initialize()
+    ).to.be.revertedWith("contract is already initialized");
+  });
+
   it("creates a new project and adds it to the projects list", async function () {
     expect(await this.contract.projectsCount()).to.equal("0");
 
@@ -39,12 +49,14 @@ describe("ProjectRegistry", function () {
 
   it("does not allow update of project metadata if not owner", async function () {
     const project = await this.contract.projects(0);
-    await expect(this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)).to.be.revertedWith("not owner");
+    await expect(
+      this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)
+    ).to.be.revertedWith("not owner");
   });
 
   it("updates project metadata", async function () {
     const project = await this.contract.projects(0);
-    await this.contract.updateProjectMetadata(project.id, updatedMetadata);
+    await this.contract.connect(this.owner).updateProjectMetadata(project.id, updatedMetadata);
     const updatedProject = await this.contract.projects(0);
     const [protocol, pointer] = updatedProject.metadata;
     expect(protocol).to.equal(updatedMetadata.protocol);
@@ -78,7 +90,7 @@ describe("ProjectRegistry", function () {
   it("adds owner to project", async function () {
     const projectID = 0;
 
-    expect(await this.contract.projectOwnersCount(projectID)).to.equal("1");
+    expect(await this.contract.connect(this.owner).projectOwnersCount(projectID)).to.equal("1");
     const prevOwners = await this.contract.getProjectOwners(projectID);
     expect(prevOwners.length).to.equal(1);
     expect(prevOwners[0]).to.equal(this.owner.address);
