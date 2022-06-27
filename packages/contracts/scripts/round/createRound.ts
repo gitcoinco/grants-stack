@@ -40,15 +40,15 @@ export async function main() {
     "chainId"                      : network.config.chainId
   });
 
-  const startTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
-  const applicationStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
-  const endTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
+  const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+  const roundStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
+  const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
   const roundTx = await roundFactory.create(
       networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
-      applicationStartTime, // _applicationsStartTime
-      startTime, // _roundStartTime
-      endTime, // _roundEndTime
+      applicationsStartTime, // _applicationsStartTime
+      roundStartTime, // _roundStartTime
+      roundEndTime, // _roundEndTime
       '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
       programContractAddress, // _ownedBy (Program)
       { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
