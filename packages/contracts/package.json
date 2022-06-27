@@ -28,6 +28,7 @@
     "goerli-deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network goerli",
     "goerli-link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network goerli",
     "goerli-create-round": "yarn hardhat run scripts/round/createRound.ts --network goerli",
+    "goerli-update-project-metaptr": "yarn hardhat run scripts/round/updateProjectMetaPtr.ts --network goerli",
 
     "// vote-deploy-scripts": "//-- Voting deploy Script --//",
 

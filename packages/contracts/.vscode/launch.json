@@ -59,6 +59,15 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "script: setProjectMetaPtr",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-update-project-metaptr"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "script: deployBulkVotingStrategy",
             "runtimeExecutable": "yarn",
             "args": ["goerli-deploy-bulk-voting-strategy"],
