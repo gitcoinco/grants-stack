@@ -47,6 +47,8 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
     address[] memory _programOperators
   ) public initializer {
   
+    // Emit MetadataUpdated event for indexing
+    emit MetadataUpdated(metaPtr, _metaPtr);
     metaPtr = _metaPtr;
 
     // assign roles
