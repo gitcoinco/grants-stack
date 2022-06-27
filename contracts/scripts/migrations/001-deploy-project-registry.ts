@@ -1,4 +1,4 @@
-import hre, { ethers } from "hardhat";
+import hre, { ethers, upgrades } from "hardhat";
 import { prompt, prettyNum } from "../../lib/utils";
 
 async function main() {
@@ -16,7 +16,7 @@ async function main() {
   console.log("deploying...");
 
   const ProjectRegistry = await ethers.getContractFactory("ProjectRegistry");
-  const instance = await ProjectRegistry.deploy();
+  const instance = await upgrades.deployProxy(ProjectRegistry, []);
   console.log("tx hash", instance.deployTransaction.hash);
   await instance.deployed();
 
