@@ -77,9 +77,39 @@ export interface Round {
     name: string
   };
   /**
-   * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
+   * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */
   store?: Metadata;
+  /**
+   * Metadata of a round application to be stored off-chain
+   */
+  applicationMetadata?: {
+    walletAddress: string,
+    project?: {
+      name: string,
+      description?: string,
+      website?: string,
+      twitter?: string,
+      github?: string,
+    }
+    contact?: {
+      name?: string,
+      email?: string,
+      teamDescription?: string,
+    },
+    grant?: {
+      fundingRequested?: string,
+      budgetBreakdown?: string,
+    },
+    customQuestion?: {
+      label?: string,
+      helper?: string,
+    }
+  };
+  /**
+   * Pointer to application metadata in a decentralized storage e.g IPFS, Ceramic etc.
+   */
+  applicationStore?: Metadata
   /**
    * Voting contract address
    */
@@ -108,9 +138,4 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
-}
-
-/** This non-nested interface exists for form validation */
-export interface RoundForm extends Round {
-  name?: string;
 }
