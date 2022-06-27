@@ -9,7 +9,7 @@ import { roundParams } from '../config/round.config';
 const roundConfig  = {
   metaPtr: {
     protocol: 1,
-    pointer: "bafybeibuaokjfjrfv5wa25hf2r3kdutngoxahw27qgaqch6ddm2ihb6t4i"
+    pointer: "bafybeigayocgcsj6efydq67ymitgx7nq4y754g6nohf3wgackd7ff7rx54"
   }
 }
 export async function main() {

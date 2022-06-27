@@ -132,6 +132,7 @@ You can do this by two means :
     projects {
       id
       status
+      payoutAddress
       metaPtr {
         protocol
         pointer
@@ -151,6 +152,7 @@ You can do this by two means :
   }) {
     id
     status
+    payoutAddress
     metaPtr{
       protocol
       pointer

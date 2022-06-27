@@ -82,4 +82,5 @@ type RoundProject @entity {
   status: String!
   metaPtr: MetaPtr!
   round: Round!
+  payoutAddress: String
 }
