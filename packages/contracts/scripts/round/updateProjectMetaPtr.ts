@@ -7,10 +7,9 @@ import { roundParams } from '../config/round.config';
 
 
 const roundConfig  = {
-  contract: "0x812c0bef016284b7a72a11ee737b6b0eae991f7b", // TODO: UDPATE
   metaPtr: {
     protocol: 1,
-    pointer: "bafybeigpecznpyiyvuvrlemkkxguwtrwyiydovvtzsx5gihiqmmj33w5ua"
+    pointer: "bafybeibuaokjfjrfv5wa25hf2r3kdutngoxahw27qgaqch6ddm2ihb6t4i"
   }
 }
 export async function main() {
@@ -18,21 +17,25 @@ export async function main() {
   const network = hre.network;
 
   const networkParams = roundParams[network.name];
-
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }
 
-  const round = await ethers.getContractAt('RoundImplementation', roundConfig.contract);
-  
+  const contract = networkParams.roundContract;
+  if (!contract) {
+    throw new Error(`Missing contrat for network ${network.name}`);
+  }
+
+  const round = await ethers.getContractAt('RoundImplementation', contract);
+
   await confirmContinue({
     "contract"                     : "RoundImplementation",
-    "round"                        : roundConfig.contract,
+    "round"                        : contract,
     "network"                      : network.name,
     "chainId"                      : network.config.chainId
   });
 
-  // Update ProjectMetaPtr 
+  // Update ProjectMetaPtr
   const updateTx = await round.updateProjectsMetaPtr(roundConfig.metaPtr);
   await updateTx.wait();
 

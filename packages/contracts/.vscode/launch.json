@@ -59,6 +59,15 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "script: applyToRound",
+            "runtimeExecutable": "yarn",
+            "args": ["goerli-apply-to-round"],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "script: setProjectMetaPtr",
             "runtimeExecutable": "yarn",
             "args": ["goerli-update-project-metaptr"],

@@ -113,5 +113,46 @@
 }
 ```
 
-// GRANTS REVIEW (TODO: think on how to implement)
 **Fetch all rounds by a project id and know it's status**
+
+You can do this by two means :
+##### Filtering against the round
+
+```graphql
+{
+  rounds(where:{
+    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
+  }) {
+    id
+    projects {
+      id
+      status
+      metaPtr {
+        protocol
+        pointer
+      }
+    }
+  }
+}
+```
+
+##### Filtering against the roundProject
+
+
+```graphql
+{
+  roundProjects(where: {
+    round:"0x7581e65b04da761ef3311997ec04bf3046013c96"
+  }) {
+    id
+    status
+    metaPtr{
+      protocol
+      pointer
+    }
+    round {
+      id
+    }
+  }
+}
+```

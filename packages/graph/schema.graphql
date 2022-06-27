@@ -1,3 +1,14 @@
+
+########################
+# == Helper Entities == #
+########################
+
+type MetaPtr @entity {
+  id: ID!
+  protocol: Int,
+  pointer: String
+}
+
 ########################
 # ===== Program ===== #
 ########################
@@ -35,7 +46,8 @@ type Round @entity {
   id: ID!
   program: String!
   roles: [RoundRole!]! @derivedFrom(field: "round") 
-  accounts: [RoundAccount!]! @derivedFrom(field: "round") 
+  accounts: [RoundAccount!]! @derivedFrom(field: "round")
+  projects: [RoundProject!] @derivedFrom(field: "round")
 }
 
 # id = round.toHex()-role.toHex()
@@ -51,5 +63,13 @@ type RoundAccount @entity {
   id: ID!
   address: String!
   role: RoundRole!
+  round: Round!
+}
+
+# id: round.toHex()-project.toHex()
+type RoundProject @entity {
+  id: ID!
+  status: String!
+  metaPtr: MetaPtr!
   round: Round!
 }

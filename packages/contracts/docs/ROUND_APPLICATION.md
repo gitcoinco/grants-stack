@@ -40,7 +40,7 @@ The schema of the filled application form is defined HERE
 
 // TODO: get schema from hub team
 
-On invoking `applyToRound`, the contract emits an event `NewProjectApplication` which is then used by the subgraph to create the list of projects and index them.
+On invoking `applyToRound` with the `project` id and `applicationMetaPtr`, the contract emits an event `NewProjectApplication` which is then used by the subgraph to create the list of projects and index them.
 
 
 ### Structure of Project indexed by the project.
