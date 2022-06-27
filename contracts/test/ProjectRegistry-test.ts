@@ -79,8 +79,9 @@ describe("ProjectRegistry", function () {
       .addProjectOwner(projectID, this.accounts[1].address);
 
     const { events: addEvents } = await addTx.wait();
-    const addOwner = addEvents[0].args.owner;
-    expect(addOwner).to.equal(this.accounts[1].address);
+    const [addedOwner, emittedProject0] = addEvents[0].args;
+    expect(emittedProject0).to.equal(projectID);
+    expect(addedOwner).to.equal(this.accounts[1].address);
     expect(addEvents[0].event).to.equal("AddedOwner");
 
     const removeTx = await this.contract
@@ -92,8 +93,9 @@ describe("ProjectRegistry", function () {
       );
 
     const { events } = await removeTx.wait();
-    const [owner] = events[0].args;
-    expect(owner).to.equal(this.accounts[1].address);
+    const [removedOwner, emittedProject1] = events[0].args;
+    expect(emittedProject1).to.equal(projectID);
+    expect(removedOwner).to.equal(this.accounts[1].address);
     expect(events[0].event).to.equal("RemovedOwner");
   });
 
