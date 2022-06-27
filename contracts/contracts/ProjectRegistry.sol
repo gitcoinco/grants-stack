@@ -51,8 +51,8 @@ contract ProjectRegistry {
 
     event ProjectCreated(address indexed owner, uint96 projectID);
     event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr);
-    event AddedOwner(address owner);
-    event RemovedOwner(address owner);
+    event AddedOwner(address owner, uint96 projectID);
+    event RemovedOwner(address owner, uint96 projectID);
 
     // Modifiers
 

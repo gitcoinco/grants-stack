@@ -50,13 +50,13 @@ describe("ProjectRegistry", function () {
     await expect(
       this.contract
         .connect(this.nonOwner)
-        .updateProjectMetaData(project.id, updatedMetadata)
+        .updateProjectMetadata(project.id, updatedMetadata)
     ).to.be.revertedWith("not owner");
   });
 
   it("updates project metadata", async function () {
     const project = await this.contract.projects(0);
-    await this.contract.updateProjectMetaData(project.id, updatedMetadata);
+    await this.contract.updateProjectMetadata(project.id, updatedMetadata);
     const updatedProject = await this.contract.projects(0);
     const [protocol, pointer] = updatedProject.metadata;
     expect(protocol).to.equal(updatedMetadata.protocol);
