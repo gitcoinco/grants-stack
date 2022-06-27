@@ -9,18 +9,30 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint96",
         "name": "projectID",
         "type": "uint96"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct MetaPtr",
+        "name": "metaPtr",
+        "type": "tuple"
       }
     ],
-    "name": "MetaDataUpdated",
+    "name": "MetadataUpdated",
     "type": "event"
   },
   {
@@ -45,6 +57,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      },
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "addProjectOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
@@ -62,7 +92,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct ProjectRegistry.MetaPtr",
+        "internalType": "struct MetaPtr",
         "name": "metadata",
         "type": "tuple"
       }
@@ -80,12 +110,31 @@
         "type": "uint96"
       }
     ],
-    "name": "getOwners",
+    "name": "getProjectOwners",
     "outputs": [
       {
         "internalType": "address[]",
         "name": "",
         "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      }
+    ],
+    "name": "projectOwnersCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -124,7 +173,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct ProjectRegistry.MetaPtr",
+        "internalType": "struct MetaPtr",
         "name": "metadata",
         "type": "tuple"
       }
@@ -172,6 +221,29 @@
         "type": "uint96"
       },
       {
+        "internalType": "address",
+        "name": "prevOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "removeProjectOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint96",
+        "name": "projectID",
+        "type": "uint96"
+      },
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -184,12 +256,12 @@
             "type": "string"
           }
         ],
-        "internalType": "struct ProjectRegistry.MetaPtr",
+        "internalType": "struct MetaPtr",
         "name": "metadata",
         "type": "tuple"
       }
     ],
-    "name": "updateProjectMetaData",
+    "name": "updateProjectMetadata",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
