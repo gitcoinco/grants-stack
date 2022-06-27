@@ -110,7 +110,7 @@ contract ProjectRegistry {
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
         owners.count++;
 
-        emit AddedOwner(newOwner);
+        emit AddedOwner(newOwner, projectID);
     }
 
     /**
@@ -131,22 +131,22 @@ contract ProjectRegistry {
         delete owners.list[owner];
         owners.count--;
 
-        emit RemovedOwner(owner);
+        emit RemovedOwner(owner, projectID);
     }
 
     // Public functions
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Retrieve count of existing project owners
+     * @param projectID ID of project 
      */
     function projectOwnersCount(uint96 projectID) public view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Retrieve list of project owners 
+     * @param projectID ID of project 
      */
     function getProjectOwners(uint96 projectID) public view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
@@ -172,8 +172,8 @@ contract ProjectRegistry {
     // Internal functions
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Create initial OwnerList for passed project
+     * @param projectID ID of project 
      */
     function initProjectOwners(uint96 projectID) internal {
         OwnerList storage owners = projectsOwners[projectID];
