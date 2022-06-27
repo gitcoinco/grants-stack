@@ -72,7 +72,7 @@ describe("ProjectRegistry", function () {
     ).to.be.revertedWith("not owner");
   });
 
-  it("emits AddedOwner and RemovedOwner when owner events", async function () {
+  it("emits AddedOwner and RemovedOwner when OwnerList is modified", async function () {
     const projectID = 0;
     const addTx = await this.contract
       .connect(this.owner)
