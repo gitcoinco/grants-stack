@@ -1,11 +1,13 @@
-import { useLocation } from "react-router-dom"
-import "react-datetime/css/react-datetime.css";
+import { useLocation, useNavigate } from "react-router-dom"
+import "react-datetime/css/react-datetime.css"
+import { XIcon } from "@heroicons/react/solid"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListProgramsQuery } from "../api/services/program"
 import { FormWizard } from "../common/FormWizard"
 import { RoundDetailForm } from "./RoundDetailForm"
 import { RoundApplicationForm } from "./RoundApplicationForm"
+import { Button } from "../common/styles"
 
 
 export default function CreateRound() {
@@ -20,10 +22,22 @@ export default function CreateRound() {
     })
   })
 
+  const navigate = useNavigate()
+
   return (
     <div className="container mx-auto h-screen px-4 py-16">
       <header>
-        <h1 className="text-[32px] mb-7">Create Round</h1>
+        <div className="flow-root">
+          <h1 className="float-left text-[32px] mb-7">Create Round</h1>
+          <Button 
+          type="button" 
+          $variant="outline" 
+          className="inline-flex float-right py-2 px-4 text-sm text-grey-400"
+          onClick={() => navigate(`/program/${programId}`)}>
+            <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+            Exit
+          </Button>
+        </div>
       </header>
       <main>
         <FormWizard
