@@ -31,6 +31,18 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC,
       },
     },
+    optimism: {
+      url: process.env.OPTIMISM || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    },
+    optimisticKovan: {
+      url: process.env.OPTIMISTIC_KOVAN || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    },
   },
 
   gasReporter: {
@@ -39,7 +51,11 @@ const config: HardhatUserConfig = {
   },
 
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
+      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+      optimisticKovan: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+    },
   },
 };
 
