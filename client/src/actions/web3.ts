@@ -87,8 +87,7 @@ declare global {
 const loadWeb3Data = () => (dispatch: Dispatch) => {
   global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
   global.web3Provider!.getNetwork().then(({ chainId }) => {
-    console.log(chainNames);
-    if (chainIds.includes(String(chainId))) {
+    if (!chainIds.includes(String(chainId))) {
       dispatch(
         web3Error(
           `wrong network, please connect to one of the following networks: ${chainNames.join(
