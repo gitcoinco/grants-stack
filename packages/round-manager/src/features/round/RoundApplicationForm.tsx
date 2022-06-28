@@ -76,10 +76,14 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     try {
       const data = { ...formData, ...values }
 
-      // Save round metadata to IPFS
-      const metadataPointer = await saveToIPFS({
-        content: JSON.stringify({ name: data.metadata?.name })
-      }).unwrap()
+      // Save round and application metadata to IPFS
+      const [
+        metadataPointer,
+        applicationMetadataPointer
+      ] = await Promise.all([
+        saveToIPFS({ content: JSON.stringify({ ...data.metadata }) }).unwrap(),
+        saveToIPFS({ content: JSON.stringify({ ...data.applicationMetadata }) }).unwrap()
+      ])
 
       // Deploy round contract
       await createRound({
@@ -90,6 +94,10 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
         store: {
           protocol: 1, // IPFS protocol ID is 1
           pointer: metadataPointer
+        },
+        applicationStore: {
+          protocol: 1, // IPFS protocol ID is 1
+          pointer: applicationMetadataPointer
         },
         operatorWallets: props.initialData.program!.operatorWallets
       }).unwrap()
