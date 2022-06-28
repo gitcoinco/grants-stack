@@ -2,10 +2,10 @@ import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { global } from "../global";
 import { RootState } from "../reducers";
+import { chains } from "../contracts/deployments";
 
-export const VALID_NETWORK_NAME = "Goerli";
-export const VALID_CHAIN_ID = 5;
-export const LOCAL_CHAIN_ID = 1337;
+const chainIds = Object.keys(chains);
+const chainNames = Object.values(chains);
 
 enum Web3Type {
   Generic,
@@ -87,9 +87,14 @@ declare global {
 const loadWeb3Data = () => (dispatch: Dispatch) => {
   global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
   global.web3Provider!.getNetwork().then(({ chainId }) => {
-    if (chainId !== VALID_CHAIN_ID && chainId !== LOCAL_CHAIN_ID) {
+    console.log(chainNames);
+    if (chainIds.includes(String(chainId))) {
       dispatch(
-        web3Error(`wrong network, please connect to ${VALID_NETWORK_NAME}`)
+        web3Error(
+          `wrong network, please connect to one of the following networks: ${chainNames.join(
+            ", "
+          )}`
+        )
       );
       return;
     }
