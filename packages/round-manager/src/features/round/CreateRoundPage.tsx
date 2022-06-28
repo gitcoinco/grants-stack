@@ -4,8 +4,8 @@ import "react-datetime/css/react-datetime.css";
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListProgramsQuery } from "../api/services/program"
 import { FormWizard } from "../common/FormWizard"
-import { RoundDetailsForm } from "./RoundDetailsForm"
-import { RoundApplicationsConfigForm } from "./RoundApplicationsConfigForm"
+import { RoundDetailForm } from "./RoundDetailForm"
+import { RoundApplicationForm } from "./RoundApplicationForm"
 
 
 export default function CreateRound() {
@@ -27,7 +27,7 @@ export default function CreateRound() {
       </header>
       <main>
         <FormWizard
-          steps={[RoundDetailsForm, RoundApplicationsConfigForm]}
+          steps={[RoundDetailForm, RoundApplicationForm]}
           initialData={{ program, isProgramFetched, programId }}
         />
 
