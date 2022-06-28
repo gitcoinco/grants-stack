@@ -29,6 +29,7 @@ export const roundApi = api.injectEndpoints({
             round.token,
             round.ownedBy,
             round.store,
+            round.applicationStore,
             round.operatorWallets!.filter(e => e !== "")
           )
 
