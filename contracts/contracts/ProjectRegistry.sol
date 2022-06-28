@@ -51,6 +51,8 @@ contract ProjectRegistry {
 
     event ProjectCreated(address indexed owner, uint96 projectID);
     event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr);
+    event OwnerAdded(address owner, uint96 projectID);
+    event OwnerRemoved(address owner, uint96 projectID);
 
     // Modifiers
 
@@ -93,8 +95,9 @@ contract ProjectRegistry {
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Associate a new owner with a project
+     * @param projectID ID of previously created project
+     * @param newOwner address of new project owner
      */
     function addProjectOwner(uint96 projectID, address newOwner) external onlyProjectOwner(projectID) {
         require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
@@ -106,11 +109,15 @@ contract ProjectRegistry {
         owners.list[newOwner] = owners.list[OWNERS_LIST_SENTINEL];
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
         owners.count++;
+
+        emit OwnerAdded(newOwner, projectID);
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Disassociate a new owner with a project
+     * @param projectID ID of previously created project
+     * @param prevOwner Address of previous owner in OwnerList
+     * @param owner Address of new Owner
      */
     function removeProjectOwner(uint96 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
         require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "bad owner");
@@ -123,21 +130,23 @@ contract ProjectRegistry {
         owners.list[prevOwner] = owners.list[owner];
         delete owners.list[owner];
         owners.count--;
+
+        emit OwnerRemoved(owner, projectID);
     }
 
     // Public functions
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Retrieve count of existing project owners
+     * @param projectID ID of project 
      */
     function projectOwnersCount(uint96 projectID) public view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Retrieve list of project owners 
+     * @param projectID ID of project 
      */
     function getProjectOwners(uint96 projectID) public view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
@@ -163,8 +172,8 @@ contract ProjectRegistry {
     // Internal functions
 
     /**
-     * @notice todo
-     * @dev todo
+     * @notice Create initial OwnerList for passed project
+     * @param projectID ID of project 
      */
     function initProjectOwners(uint96 projectID) internal {
         OwnerList storage owners = projectsOwners[projectID];

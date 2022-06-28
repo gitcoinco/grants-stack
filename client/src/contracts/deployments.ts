@@ -8,7 +8,7 @@ export const addresses: { [key: string]: any } = {
     projectRegistry: "0xc755eFc2168E959B50F1B2F0918DBEcC709956F4",
   },
   optimisticKovan: {
-    projectRegistry: "0xf90b4f383244fdf9dF7a28b1e8030d130E7c9be5",
+    projectRegistry: "0x46Da9bbe66d0FA187b46371D850245838D3c6850",
   },
 };
 
