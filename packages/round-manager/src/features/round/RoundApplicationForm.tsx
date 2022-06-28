@@ -116,7 +116,6 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
           }
         </div>
 
-
         <div className="mt-5 md:mt-0 md:col-span-2  border border-grey-100 px-6 pt-6 pb-3.5">
           <form onSubmit={handleSubmit(next)}>
             <p className="mt-4 mb-2"><b>Default information</b></p>
