@@ -51,8 +51,8 @@ contract ProjectRegistry {
 
     event ProjectCreated(address indexed owner, uint96 projectID);
     event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr);
-    event AddedOwner(address owner, uint96 projectID);
-    event RemovedOwner(address owner, uint96 projectID);
+    event OwnerAdded(address owner, uint96 projectID);
+    event OwnerRemoved(address owner, uint96 projectID);
 
     // Modifiers
 
@@ -110,7 +110,7 @@ contract ProjectRegistry {
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
         owners.count++;
 
-        emit AddedOwner(newOwner, projectID);
+        emit OwnerAdded(newOwner, projectID);
     }
 
     /**
@@ -131,7 +131,7 @@ contract ProjectRegistry {
         delete owners.list[owner];
         owners.count--;
 
-        emit RemovedOwner(owner, projectID);
+        emit OwnerRemoved(owner, projectID);
     }
 
     // Public functions

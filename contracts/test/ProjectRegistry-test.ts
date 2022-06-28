@@ -64,7 +64,7 @@ describe("ProjectRegistry", function () {
     const [addedOwner, emittedProject0] = addEvents[0].args;
     expect(emittedProject0).to.equal(projectID);
     expect(addedOwner).to.equal(this.accounts[1].address);
-    expect(addEvents[0].event).to.equal("AddedOwner");
+    expect(addEvents[0].event).to.equal("OwnerAdded");
 
     const removeTx = await this.contract.connect(this.owner).removeProjectOwner(projectID, OWNERS_LIST_SENTINEL, this.accounts[1].address);
 
@@ -72,7 +72,7 @@ describe("ProjectRegistry", function () {
     const [removedOwner, emittedProject1] = events[0].args;
     expect(emittedProject1).to.equal(projectID);
     expect(removedOwner).to.equal(this.accounts[1].address);
-    expect(events[0].event).to.equal("RemovedOwner");
+    expect(events[0].event).to.equal("OwnerRemoved");
   });
 
   it("adds owner to project", async function () {
