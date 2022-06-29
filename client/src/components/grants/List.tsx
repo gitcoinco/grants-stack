@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { newGrantPath } from "../../routes";
-import { loadProjects, unloadProjects } from "../../actions/projects";
+import { loadProjects } from "../../actions/projects";
 import Globe from "../icons/Globe";
 import Button, { ButtonVariants } from "../base/Button";
 import Card from "./Card";
 import colors from "../../styles/colors";
+import { ProjectEvent } from "../../types";
 
 function ProjectsList() {
   const dispatch = useDispatch();
@@ -22,9 +23,6 @@ function ProjectsList() {
 
   useEffect(() => {
     dispatch(loadProjects());
-    return () => {
-      dispatch(unloadProjects());
-    };
   }, [dispatch]);
 
   return (
@@ -41,9 +39,9 @@ function ProjectsList() {
           </div>
           <div className="grow">
             {props.grants.length ? (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                {props.grants.map((item: number) => (
-                  <Card projectId={item} key={item} />
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {props.grants.map((event: ProjectEvent) => (
+                  <Card projectId={event.id} key={event.id} />
                 ))}
               </div>
             ) : (

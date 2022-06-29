@@ -29,3 +29,8 @@ export type RadioInputProps = {
   currentValue?: string;
   changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
+
+export interface ProjectEvent {
+  id: number;
+  block: number;
+}
