@@ -2,6 +2,35 @@
 
 The project hub contracts power the universal grant registry. It allows the creation and editing of projects. These projects can then apply to participate in [Grant Rounds](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts/contracts/utils)
 
+## Deploy
+
+Enable the config file and edit it to set the value of the exported env variables:
+
+`cp .env.example .env`
+
+Deploy the `ProjectRegistry` contract:
+
+```
+npx hardhat run scripts/migrations/001-deploy-project-registry.ts --network goerli
+```
+
+The script above will deploy 3 contracts:
+
+* The `ProjectRegistry` implementation.
+* The `ProxyAdmin` used to upgrade the proxies.
+* The `TransparentUpgradeableProxy` contract, which is the instance of `ProjectRegistry` that will be used.
+
+
+## ⚠️ Implementations must be initialized⚠️
+
+The scripts use the openzeppelin upgrades plugin to manage proxies deploys and upgrades.
+
+The first deploy will also call the initializer automatically on the proxy.
+
+On upgrade, the scrips must send a second transaction calling `initialize` after deploy.
+
+After deploys and upgrades, **the implementations must be initialized manually**. The easiest way is to do it on etherescan.
+
 # Directory Structure
 
 ```

@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "@openzeppelin/hardhat-upgrades";
 
 dotenv.config();
 
@@ -32,13 +33,13 @@ const config: HardhatUserConfig = {
       },
     },
     optimism: {
-      url: process.env.OPTIMISM || "",
+      url: process.env.OPTIMISM_URL || "",
       accounts: {
         mnemonic: process.env.MNEMONIC,
       },
     },
     optimisticKovan: {
-      url: process.env.OPTIMISTIC_KOVAN || "",
+      url: process.env.OPTIMISTIC_KOVAN_URL || "",
       accounts: {
         mnemonic: process.env.MNEMONIC,
       },
@@ -52,6 +53,7 @@ const config: HardhatUserConfig = {
 
   etherscan: {
     apiKey: {
+      goerli: process.env.ETHERSCAN_API_KEY,
       mainnet: process.env.ETHERSCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
       optimisticKovan: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,

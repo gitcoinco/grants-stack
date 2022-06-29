@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./utils/MetaPtr.sol";
 
 /**
  * @title ProjectRegistry
  */
-contract ProjectRegistry {
+contract ProjectRegistry is Initializable {
     // Types
 
     // The project structs contains the minimal data we need for a project
@@ -36,7 +38,7 @@ contract ProjectRegistry {
     // State variables
 
     // Used as sentinel value in the owners linked list.
-    address OWNERS_LIST_SENTINEL = address(0x1);
+    address public constant OWNERS_LIST_SENTINEL = address(0x1);
 
     // The number of projects created, used to give an incremental id to each one
     uint96 public projectsCount;
@@ -61,7 +63,12 @@ contract ProjectRegistry {
         _;
     }
 
-    constructor() {}
+    /**
+     * @notice Initializes the contract after an upgrade
+     * @dev In future deploys of the implementation, an higher version should be passed to reinitializer
+     */
+    function initialize() public reinitializer(1) {
+    }
 
     // External functions
 
