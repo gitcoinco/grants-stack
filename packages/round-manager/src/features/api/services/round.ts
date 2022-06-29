@@ -1,9 +1,10 @@
 import { ethers } from "ethers"
-import { create as IPFSCreate } from "ipfs-core"
+
 import { api } from ".."
-import { global } from "../../../global"
 import { roundFactoryContract, roundImplementationContract } from "../contracts"
 import { Round } from "../types"
+import { fetchFromIPFS } from "../utils"
+import { global } from "../../../global"
 
 
 /**
@@ -102,7 +103,8 @@ export const roundApi = api.injectEndpoints({
 
               // Fetch round data from contract
               const [
-                metadata,
+                roundMetaPtr,
+                applicationMetaPtr,
                 applicationStartTime,
                 startTime,
                 endTime,
@@ -110,7 +112,8 @@ export const roundApi = api.injectEndpoints({
                 token,
                 // operatorCount
               ] = await Promise.all([
-                roundImplementation.metaPtr(),
+                roundImplementation.roundMetaPtr(),
+                roundImplementation.applicationMetaPtr(),
                 roundImplementation.applicationsStartTime(),
                 roundImplementation.roundStartTime(),
                 roundImplementation.roundEndTime(),
@@ -126,22 +129,20 @@ export const roundApi = api.injectEndpoints({
               // }
               // operatorWallets = await Promise.all(operatorWallets)
 
-              // Fetch metadata from ipfs
-              if (global.ipfs === undefined) {
-                global.ipfs = await IPFSCreate()
-              }
-
-              const decoder = new TextDecoder()
-              let content = ''
-
-              for await (const chunk of global.ipfs.cat(metadata[1])) {
-                content += decoder.decode(chunk)
-              }
+              // Fetch round and application metadata from IPFS
+              const [
+                roundMetadata,
+                applicationMetadata
+              ] = await Promise.all([
+                fetchFromIPFS(roundMetaPtr[1]),
+                fetchFromIPFS(applicationMetaPtr[1])
+              ])
 
               // Add round to response
               rounds.push({
                 id: event.args[0],
-                metadata: JSON.parse(content),
+                metadata: JSON.parse(roundMetadata),
+                applicationMetadata: JSON.parse(applicationMetadata),
                 applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),
                 endTime: new Date(endTime.toNumber() * 1000),

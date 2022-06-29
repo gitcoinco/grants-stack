@@ -1,9 +1,9 @@
 import { ethers } from "ethers"
-import { create as IPFSCreate } from "ipfs-core"
 import { api } from ".."
 import { global } from "../../../global"
 import { programFactoryContract, programImplementationContract } from "../contracts"
 import { Program } from "../types"
+import { fetchFromIPFS } from "../utils"
 
 
 /**
@@ -107,17 +107,8 @@ export const programApi = api.injectEndpoints({
               }
               operatorWallets = await Promise.all(operatorWallets)
 
-              // Fetch metadata from ipfs
-              if (global.ipfs === undefined) {
-                global.ipfs = await IPFSCreate()
-              }
-
-              const decoder = new TextDecoder()
-              let content = ''
-
-              for await (const chunk of global.ipfs.cat(metadata[1])) {
-                content += decoder.decode(chunk)
-              }
+              // Fetch metadata from IPFS
+              const content = await fetchFromIPFS(metadata[1])
 
               // Add program to response
               programs.push({
