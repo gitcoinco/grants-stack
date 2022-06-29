@@ -32,7 +32,7 @@ function Layout(ownProps: Props) {
   }, [props.web3Initialized]);
 
   const { children } = ownProps;
-  if (!props.web3Initialized) {
+  if (!props.web3Initialized || props.account === undefined) {
     return <Landing />;
   }
 
