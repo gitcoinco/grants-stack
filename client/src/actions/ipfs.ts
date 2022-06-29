@@ -126,7 +126,7 @@ interface Inputs {
 }
 
 export const saveFileToIPFS =
-  (path: string, content: Inputs | Buffer, fileType: FileTypes) =>
+  (content: Inputs | Buffer, fileType: FileTypes) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     dispatch(savingFile());
@@ -142,13 +142,11 @@ export const saveFileToIPFS =
     if (fileType === FileTypes.IMG) {
       const imgBuffer = fullContent as Buffer;
       const res = await global.ipfs!.add({
-        path,
         content: imgBuffer,
       });
       dispatch(projectIMGSaved(res.cid.toString()));
     } else {
       const res = await global.ipfs!.add({
-        path,
         content: JSON.stringify(fullContent),
       });
       dispatch(projectFileSaved(res.cid.toString()));
