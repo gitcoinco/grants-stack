@@ -54,12 +54,17 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
   })
 
   const [saveToIPFS, {
+    error: ipfsError,
     isLoading: isSavingToIPFS,
+    isSuccess: isSavedToIPFS,
+    isError: isIPFSError,
   }] = useSaveToIPFSMutation()
 
   const [createRound, {
+    error: roundError,
     isLoading,
     isSuccess,
+    isError: isRoundError,
   }] = useCreateRoundMutation()
 
   useEffect(() => {
@@ -116,12 +121,20 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
           <p className="text-base leading-6"><b>Application Form Configuration</b></p>
           <p className="mt-1 text-base text-gray-500">Define the acceptance criteria grant owners can
             provide to apply for your grant program round.</p>
+
           {(!programId || (!props.initialData.program && props.initialData.isProgramFetched)) &&
             <div className="mt-5">
               <span className="text-rose-600">Error: Missing or invalid Program ID!</span><br />
               <Link to="/" className="text-blue-600 underline">Please choose a Grant Program</Link>
             </div>
           }
+
+          {/* Display relevant status updates */}
+          {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
+          {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
+          {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
+          {isSuccess && <p className="text-green-600">✅ Congratulations! your round was successfully created!</p>}
+          {(isIPFSError || isRoundError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || roundError)}!</p>}
         </div>
 
         <div className="mt-5 md:mt-0 md:col-span-2  border border-grey-100 px-6 pt-6 pb-3.5">

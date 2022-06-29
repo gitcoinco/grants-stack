@@ -72,8 +72,12 @@ export const programApi = api.injectEndpoints({
           // Loop through past events to filter programs for which the connected account
           // has the required operator permission
           for (const event of events) {
+            if (!event.args) {
+              continue
+            }
+
             const programImplementation = new ethers.Contract(
-              event.args![0],
+              event.args[0],
               programImplementationContract.abi,
               global.web3Provider
             )
@@ -117,7 +121,7 @@ export const programApi = api.injectEndpoints({
 
               // Add program to response
               programs.push({
-                id: event.args![0],
+                id: event.args[0],
                 metadata: JSON.parse(content),
                 operatorWallets
               })

@@ -44,13 +44,6 @@ export default function CreateRound() {
           steps={[RoundDetailForm, RoundApplicationForm]}
           initialData={{ program, isProgramFetched, programId }}
         />
-
-        {/* Display relevant status updates */}
-        {/* {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
-          {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
-          {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-          {isSuccess && <p className="text-green-600">✅ Congratulations! your round was successfully created!</p>}
-          {(isIPFSError || isRoundError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || roundError)}!</p>} */}
       </main>
     </div >
   )

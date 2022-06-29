@@ -79,8 +79,12 @@ export const roundApi = api.injectEndpoints({
           // Loop through past events to filter rounds for which the connected account
           // has the required operator permission
           for (const event of events) {
+            if (!event.args) {
+              continue
+            }
+
             const roundImplementation = new ethers.Contract(
-              event.args![0],
+              event.args[0],
               roundImplementationContract.abi,
               global.web3Provider
             )
@@ -136,14 +140,14 @@ export const roundApi = api.injectEndpoints({
 
               // Add round to response
               rounds.push({
-                id: event.args![0],
+                id: event.args[0],
                 metadata: JSON.parse(content),
                 applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),
                 endTime: new Date(endTime.toNumber() * 1000),
                 votingContract,
                 token,
-                ownedBy: event.args![1],
+                ownedBy: event.args[1],
                 // operatorWallets
               })
             }
