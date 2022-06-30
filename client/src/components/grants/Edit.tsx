@@ -25,7 +25,9 @@ function EditProject() {
           onClick={() => toggleModal(true)}
           styles={["w-full sm:w-auto mx-w-full ml-0"]}
         >
-          <i className="icon"><Cross color={colors["danger-background"]} /></i>{" "}
+          <i className="icon">
+            <Cross color={colors["danger-background"]} />
+          </i>{" "}
           <span className="pl-2">Exit</span>
         </Button>
       </div>
@@ -59,7 +61,9 @@ function EditProject() {
             >
               Go Back
             </Button>
-            <Button path={slugs.grants} variant={ButtonVariants.danger}>Yes, Exit</Button>
+            <Button path={slugs.grants} variant={ButtonVariants.danger}>
+              Yes, Exit
+            </Button>
           </div>
         </>
       </BaseModal>

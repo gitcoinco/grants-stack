@@ -22,7 +22,9 @@ function NewProject() {
           onClick={() => toggleModal(true)}
           styles={["w-full sm:w-auto mx-w-full ml-0"]}
         >
-          <i style={{ display: "inline-block"}}><Cross color={colors["danger-background"]} /></i>
+          <i style={{ display: "inline-block" }}>
+            <Cross color={colors["danger-background"]} />
+          </i>
           <span className="pl-2">Exit</span>
         </Button>
       </div>
@@ -56,7 +58,9 @@ function NewProject() {
             >
               Go Back
             </Button>
-            <Button path={slugs.grants} variant={ButtonVariants.danger}>Yes, Exit</Button>
+            <Button path={slugs.grants} variant={ButtonVariants.danger}>
+              Yes, Exit
+            </Button>
           </div>
         </>
       </BaseModal>

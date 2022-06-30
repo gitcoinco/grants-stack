@@ -111,8 +111,8 @@ function Project() {
                 >
                   <i className="icon">
                     <Pencil color={colors["secondary-text"]} />
-                  </i>&nbsp;
-                  Edit
+                  </i>
+                  &nbsp; Edit
                 </Button>
               </Link>
             )}

@@ -16,17 +16,27 @@ interface ButtonProps {
   styles?: string[];
 }
 
-function Button({ onClick, path, children, variant, disabled, styles }: ButtonProps) {
+function Button({
+  onClick,
+  path,
+  children,
+  variant,
+  disabled,
+  styles,
+}: ButtonProps) {
   const navigate = useNavigate();
 
-  if (onClick === undefined && path !== undefined) {
-    onClick = () => navigate(path);
-  }
+  const clickHandler = () => {
+    if (onClick === undefined && path !== undefined) {
+      navigate(path);
+    }
+    if (onClick) onClick();
+  };
 
   return (
     <button
       disabled={disabled}
-      onClick={onClick}
+      onClick={clickHandler}
       className={`base-btn ${variant} ${styles?.join(" ")}`}
       type="button"
     >
