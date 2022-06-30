@@ -109,7 +109,7 @@ function Project() {
                   variant={ButtonVariants.outline}
                   styles={["w-full sm:w-auto mx-w-full ml-0"]}
                 >
-                  <i className="icon">
+                  <i className="icon mt-1">
                     <Pencil color={colors["secondary-text"]} />
                   </i>
                   &nbsp; Edit

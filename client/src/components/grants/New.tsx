@@ -22,7 +22,7 @@ function NewProject() {
           onClick={() => toggleModal(true)}
           styles={["w-full sm:w-auto mx-w-full ml-0"]}
         >
-          <i style={{ display: "inline-block" }}>
+          <i className="mt-1.5">
             <Cross color={colors["danger-background"]} />
           </i>
           <span className="pl-2">Exit</span>
