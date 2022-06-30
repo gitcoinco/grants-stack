@@ -9,7 +9,7 @@ export interface Web3Instance {
   chainId: number;
 }
 
-export interface Metadata {
+export interface MetadataPointer {
   /**
    * The decentralized storage protocol
    * Read more here: https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
@@ -58,16 +58,40 @@ export interface Program {
   /**
    * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
    */
-  store?: Metadata;
+  store?: MetadataPointer;
   /**
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets: Array<string>;
 }
 
+export interface ApplicationMetadata {
+  walletAddress: string;
+  project?: {
+    name: string,
+    description?: string,
+    website?: string,
+    twitter?: string,
+    github?: string,
+  };
+  contact?: {
+    name?: string,
+    email?: string,
+    teamDescription?: string,
+  };
+  grant?: {
+    fundingRequested?: string,
+    budgetBreakdown?: string,
+  };
+  customQuestion?: {
+    label?: string,
+    helper?: string,
+  };
+}
+
 export interface Round {
   /**
-   * The on-chain unique program ID
+   * The on-chain unique round ID
    */
   id?: string;
   /**
@@ -79,41 +103,19 @@ export interface Round {
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */
-  store?: Metadata;
+  store?: MetadataPointer;
   /**
    * Metadata of a round application to be stored off-chain
    */
-  applicationMetadata?: {
-    walletAddress: string,
-    project?: {
-      name: string,
-      description?: string,
-      website?: string,
-      twitter?: string,
-      github?: string,
-    }
-    contact?: {
-      name?: string,
-      email?: string,
-      teamDescription?: string,
-    },
-    grant?: {
-      fundingRequested?: string,
-      budgetBreakdown?: string,
-    },
-    customQuestion?: {
-      label?: string,
-      helper?: string,
-    }
-  };
+  applicationMetadata?: ApplicationMetadata;
   /**
    * Pointer to application metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */
-  applicationStore?: Metadata
+  applicationStore?: MetadataPointer;
   /**
    * Voting contract address
    */
-  votingContract: string;
+  votingStrategy: string;
   /**
    * Unix timestamp of the start of the round
    */
