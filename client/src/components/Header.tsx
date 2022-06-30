@@ -63,7 +63,9 @@ export default function Header() {
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
             <Link to={newGrantPath()}>
               <Button variant={ButtonVariants.primary}>
-                <Plus color={colors["quaternary-text"]} />
+                <i className="icon">
+                  <Plus color={colors["quaternary-text"]} />
+                </i>
                 New Project
               </Button>
             </Link>
@@ -71,7 +73,9 @@ export default function Header() {
               variant={ButtonVariants.outline}
               onClick={() => connectHandler}
             >
-              <Blockchain chain={ChainLogos.ETH} />
+              <i className="icon">
+                <Blockchain chain={ChainLogos.ETH} />
+              </i>
               {props.account ? shortAddress(props.account) : "Connect Wallet"}
             </Button>
           </div>

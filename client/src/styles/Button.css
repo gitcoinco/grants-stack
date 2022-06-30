@@ -1,5 +1,5 @@
 button.base-btn {
-  @apply rounded py-2 px-4 my-2 mx-1 outline-0;
+  @apply rounded py-2 px-4 my-2 mx-1 outline-0 flex;
 }
 button.base-btn:disabled {
   opacity: .3
