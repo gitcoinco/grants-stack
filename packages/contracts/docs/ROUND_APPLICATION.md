@@ -15,8 +15,8 @@ The application schema would be in the format as listed below:
 ```javascript
 {
   "id"                      : "String",                 // round contract address
-  "last_updated_on"         : "String",                 // epoch time
-  "application_schema": [
+  "lastUpdatedOn"         : "Number",                 // epoch time in milliseconds
+  "applicationSchema": [
     {
       "question"            : "String",
       "type"                : "String",                 // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
