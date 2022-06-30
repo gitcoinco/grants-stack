@@ -49,10 +49,10 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     resetStatus();
     showToast(true);
     if (projectImg) {
-      await dispatch(saveFileToIPFS("test.txt", projectImg, FileTypes.IMG));
+      await dispatch(saveFileToIPFS(projectImg, FileTypes.IMG));
     }
 
-    await dispatch(saveFileToIPFS("test.txt", formInputs, FileTypes.PROJECT));
+    await dispatch(saveFileToIPFS(formInputs, FileTypes.PROJECT));
     dispatch(publishGrant(currentGrantId));
   };
 
