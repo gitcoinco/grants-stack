@@ -9,32 +9,31 @@ import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Round } from "../api/types"
 import { FormContext } from "../common/FormWizard"
 import { Input } from "../common/styles"
+import { generateApplicationSchema } from "../api/utils"
 
 
 const ValidationSchema = yup.object().shape({
   applicationMetadata: yup.object({
-    walletAddress: yup.string()
-      .required("This field is required.")
-      .min(40, "Please enter a valid wallet address."),
+    walletAddress: yup.string().min(40, "Please enter a valid wallet address."),
     project: yup.object({
-      name: yup.string().required("This field is required."),
-      description: yup.string().required("This field is required."),
-      website: yup.string().required("This field is required."),
-      twitter: yup.string().required("This field is required."),
-      github: yup.string().required("This field is required."),
+      name: yup.string(),
+      description: yup.string(),
+      website: yup.string(),
+      twitter: yup.string(),
+      github: yup.string(),
     }),
     contact: yup.object({
-      name: yup.string().required("This field is required."),
-      email: yup.string().required("This field is required."),
-      teamDescription: yup.string().required("This field is required."),
+      name: yup.string(),
+      email: yup.string(),
+      teamDescription: yup.string(),
     }),
     grant: yup.object({
-      fundingRequested: yup.string().required("This field is required."),
-      budgetBreakdown: yup.string().required("This field is required."),
+      fundingRequested: yup.string(),
+      budgetBreakdown: yup.string(),
     }),
     customQuestion: yup.object({
-      label: yup.string().required("This field is required."),
-      helper: yup.string().required("This field is required."),
+      label: yup.string(),
+      helper: yup.string(),
     })
   })
 })
@@ -54,12 +53,17 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
   })
 
   const [saveToIPFS, {
+    error: ipfsError,
     isLoading: isSavingToIPFS,
+    isSuccess: isSavedToIPFS,
+    isError: isIPFSError,
   }] = useSaveToIPFSMutation()
 
   const [createRound, {
+    error: roundError,
     isLoading,
     isSuccess,
+    isError: isRoundError,
   }] = useCreateRoundMutation()
 
   useEffect(() => {
@@ -76,20 +80,33 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     try {
       const data = { ...formData, ...values }
 
-      // Save round metadata to IPFS
-      const metadataPointer = await saveToIPFS({
-        content: JSON.stringify({ name: data.metadata?.name })
-      }).unwrap()
+      // Save round and application metadata to IPFS
+      const [
+        metadataPointer,
+        applicationMetadataPointer
+      ] = await Promise.all([
+        saveToIPFS({ content: JSON.stringify(data.metadata) }).unwrap(),
+        saveToIPFS({
+          content: JSON.stringify({
+            lastUpdatedOn: Date.now(),
+            applicationSchema: generateApplicationSchema(data.applicationMetadata)
+          })
+        }).unwrap()
+      ])
 
       // Deploy round contract
       await createRound({
         ...data,
-        votingContract: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
+        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
         ownedBy: programId!,
         store: {
           protocol: 1, // IPFS protocol ID is 1
           pointer: metadataPointer
+        },
+        applicationStore: {
+          protocol: 1, // IPFS protocol ID is 1
+          pointer: applicationMetadataPointer
         },
         operatorWallets: props.initialData.program!.operatorWallets
       }).unwrap()
@@ -108,12 +125,22 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
           <p className="text-base leading-6"><b>Application Form Configuration</b></p>
           <p className="mt-1 text-base text-gray-500">Define the acceptance criteria grant owners can
             provide to apply for your grant program round.</p>
+
           {(!programId || (!props.initialData.program && props.initialData.isProgramFetched)) &&
             <div className="mt-5">
               <span className="text-rose-600">Error: Missing or invalid Program ID!</span><br />
               <Link to="/" className="text-blue-600 underline">Please choose a Grant Program</Link>
             </div>
           }
+
+          {/* Display relevant status updates */}
+          <div className="mt-5">
+            {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
+            {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
+            {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
+            {isSuccess && <p className="text-green-600">✅ Congratulations! your round was successfully created!</p>}
+            {(isIPFSError || isRoundError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || roundError)}!</p>}
+          </div>
         </div>
 
         <div className="mt-5 md:mt-0 md:col-span-2  border border-grey-100 px-6 pt-6 pb-3.5">
@@ -158,7 +185,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.project.description")}
                   $hasError={errors.applicationMetadata?.project?.description}
                   type="text"
-                  placeholder='i.e "Tell us more about your project"'
+                  placeholder='e.g "Tell us more about your project"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.project?.description
@@ -178,7 +205,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.project.website")}
                   $hasError={errors.applicationMetadata?.project?.website}
                   type="text"
-                  placeholder='i.e "https://www.project-website-url.com"'
+                  placeholder='e.g "https://www.project-website-url.com"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.project?.website
@@ -198,7 +225,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.project.twitter")}
                   $hasError={errors.applicationMetadata?.project?.twitter}
                   type="text"
-                  placeholder='i.e "twitter.com/user-handle"'
+                  placeholder='e.g "twitter.com/user-handle"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.project?.twitter
@@ -218,7 +245,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.project.github")}
                   $hasError={errors.applicationMetadata?.project?.github}
                   type="text"
-                  placeholder='i.e "@github-handle"'
+                  placeholder='e.g "@github-handle"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.project?.github
@@ -244,7 +271,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.contact.name")}
                   $hasError={errors.applicationMetadata?.contact?.name}
                   type="text"
-                  placeholder='i.e "Enter your first and last name"'
+                  placeholder='e.g "Enter your first and last name"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.contact?.name
@@ -264,7 +291,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.contact.email")}
                   $hasError={errors.applicationMetadata?.contact?.email}
                   type="text"
-                  placeholder='i.e "email@domain.com"'
+                  placeholder='e.g "email@domain.com"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.contact?.email
@@ -284,7 +311,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.contact.teamDescription")}
                   $hasError={errors.applicationMetadata?.contact?.teamDescription}
                   type="text"
-                  placeholder='i.e "Tell us more about your team structure"'
+                  placeholder='e.g "Tell us more about your team structure"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.contact?.teamDescription
@@ -310,7 +337,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.grant.fundingRequested")}
                   $hasError={errors.applicationMetadata?.grant?.fundingRequested}
                   type="text"
-                  placeholder='i.e "Enter the request amount in USD"'
+                  placeholder='e.g "Enter the request amount in USD"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.grant?.fundingRequested
@@ -330,7 +357,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   {...register("applicationMetadata.grant.budgetBreakdown")}
                   $hasError={errors.applicationMetadata?.grant?.budgetBreakdown}
                   type="text"
-                  placeholder='i.e "How will the funds be allocated?"'
+                  placeholder='e.g "How will the funds be allocated?"'
                   className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.grant?.budgetBreakdown
@@ -362,7 +389,8 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   </p>
                 }
               </div>
-
+            </div>
+            <div className="grid grid-cols-6 gap-6 mt-4">
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="applicationMetadata.customQuestion.helper"

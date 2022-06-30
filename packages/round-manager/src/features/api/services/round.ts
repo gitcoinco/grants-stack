@@ -1,9 +1,10 @@
 import { ethers } from "ethers"
-import { create as IPFSCreate } from "ipfs-core"
+
 import { api } from ".."
-import { global } from "../../../global"
 import { roundFactoryContract, roundImplementationContract } from "../contracts"
 import { Round } from "../types"
+import { fetchFromIPFS } from "../utils"
+import { global } from "../../../global"
 
 
 /**
@@ -22,13 +23,14 @@ export const roundApi = api.injectEndpoints({
 
           // Deploy a new Round contract
           let tx = await roundFactory.create(
-            round.votingContract,
-            Math.round(new Date(round.applicationStartTime).getTime() / 1000),
-            Math.round(new Date(round.startTime).getTime() / 1000),
-            Math.round(new Date(round.endTime).getTime() / 1000),
+            round.votingStrategy,
+            new Date(round.applicationStartTime).getTime() / 1000,
+            new Date(round.startTime).getTime() / 1000,
+            new Date(round.endTime).getTime() / 1000,
             round.token,
             round.ownedBy,
             round.store,
+            round.applicationStore,
             round.operatorWallets!.filter(e => e !== "")
           )
 
@@ -78,8 +80,12 @@ export const roundApi = api.injectEndpoints({
           // Loop through past events to filter rounds for which the connected account
           // has the required operator permission
           for (const event of events) {
+            if (!event.args) {
+              continue
+            }
+
             const roundImplementation = new ethers.Contract(
-              event.args![0],
+              event.args[0],
               roundImplementationContract.abi,
               global.web3Provider
             )
@@ -97,19 +103,21 @@ export const roundApi = api.injectEndpoints({
 
               // Fetch round data from contract
               const [
-                metadata,
+                roundMetaPtr,
+                applicationMetaPtr,
                 applicationStartTime,
                 startTime,
                 endTime,
-                votingContract,
+                votingStrategy,
                 token,
                 // operatorCount
               ] = await Promise.all([
-                roundImplementation.metaPtr(),
+                roundImplementation.roundMetaPtr(),
+                roundImplementation.applicationMetaPtr(),
                 roundImplementation.applicationsStartTime(),
                 roundImplementation.roundStartTime(),
                 roundImplementation.roundEndTime(),
-                roundImplementation.votingContract(),
+                roundImplementation.votingStrategy(),
                 roundImplementation.token(),
                 // roundImplementation.getRoleMemberCount(ROUND_OPERATOR_ROLE)
               ])
@@ -121,28 +129,26 @@ export const roundApi = api.injectEndpoints({
               // }
               // operatorWallets = await Promise.all(operatorWallets)
 
-              // Fetch metadata from ipfs
-              if (global.ipfs === undefined) {
-                global.ipfs = await IPFSCreate()
-              }
-
-              const decoder = new TextDecoder()
-              let content = ''
-
-              for await (const chunk of global.ipfs.cat(metadata[1])) {
-                content += decoder.decode(chunk)
-              }
+              // Fetch round and application metadata from IPFS
+              const [
+                roundMetadata,
+                applicationMetadata
+              ] = await Promise.all([
+                fetchFromIPFS(roundMetaPtr[1]),
+                fetchFromIPFS(applicationMetaPtr[1])
+              ])
 
               // Add round to response
               rounds.push({
-                id: event.args![0],
-                metadata: JSON.parse(content),
+                id: event.args[0],
+                metadata: JSON.parse(roundMetadata),
+                applicationMetadata: JSON.parse(applicationMetadata),
                 applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),
                 endTime: new Date(endTime.toNumber() * 1000),
-                votingContract,
+                votingStrategy,
                 token,
-                ownedBy: event.args![1],
+                ownedBy: event.args[1],
                 // operatorWallets
               })
             }

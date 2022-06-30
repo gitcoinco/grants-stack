@@ -12,7 +12,7 @@ export const ipfsApi = api.injectEndpoints({
 
         try {
           if (global.ipfs === undefined) {
-            global.ipfs = await IPFSCreate()
+            global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
           }
 
           const res = await global.ipfs!.add({
@@ -27,10 +27,6 @@ export const ipfsApi = api.injectEndpoints({
 
         } catch (err) {
           console.log("error", err)
-          if (err === "LockExistsError") {
-            return result
-          }
-          global.ipfs = undefined
           return { error: "Unable to save file to IPFS" }
         }
       },
@@ -39,7 +35,7 @@ export const ipfsApi = api.injectEndpoints({
       queryFn: async (cid) => {
         try {
           if (global.ipfs === undefined) {
-            global.ipfs = await IPFSCreate()
+            global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
           }
 
           const decoder = new TextDecoder()
