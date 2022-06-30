@@ -19,8 +19,14 @@ const ValidationSchema = yup.object().shape({
       .min(8, "Round name must be less that 8 characters."),
   }),
   applicationStartTime: yup.date().required("This field is required."),
-  startTime: yup.date().required("This field is required."),
-  endTime: yup.date().required("This field is required."),
+  startTime: yup.date()
+    .required("This field is required.")
+    .min(
+      yup.ref("applicationStartTime"),
+      "Round start date must be later than application start date"
+    ),
+  endTime: yup.date()
+    .min(yup.ref("startTime"), "Round end date must be later than the round start date")
 })
 
 

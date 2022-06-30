@@ -24,7 +24,7 @@ export default function ViewRound() {
 
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    navigate("/")
+    navigate(-1)
   }
 
   const goToApplications = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -79,11 +79,11 @@ export default function ViewRound() {
           <p className="my-4">
             <span className="text-2xl">Voting Contract Address: </span>
             {round?.token ? <a
-              href={`https://goerli.etherscan.io/address/${round?.votingContract}`}
+              href={`https://goerli.etherscan.io/address/${round?.votingStrategy}`}
               rel="noopener noreferrer"
               target="_blank"
               className="text-blue-600 underline">
-              {round?.votingContract}
+              {round?.votingStrategy}
             </a> : "..."}
           </p>
           {isRoundsFetched &&
