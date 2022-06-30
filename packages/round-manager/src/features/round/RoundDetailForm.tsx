@@ -7,29 +7,33 @@ import "react-datetime/css/react-datetime.css"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
-import { RoundForm } from "../api/types"
+import { Round } from "../api/types"
 import { FormContext } from "../common/FormWizard"
 import { Input } from "../common/styles"
 
 
 const ValidationSchema = yup.object().shape({
-  name: yup.string()
-    .required("This field is required.")
-    .min(8, "Round name must be less that 8 characters."),
+  metadata: yup.object({
+    name: yup.string()
+      .required("This field is required.")
+      .min(8, "Round name must be less that 8 characters."),
+  }),
   applicationStartTime: yup.date().required("This field is required."),
   startTime: yup.date().required("This field is required."),
   endTime: yup.date().required("This field is required."),
 })
 
-export function RoundDetailsForm(props: { initialData: any, stepper: any }) {
+
+export function RoundDetailForm(props: { initialData: any, stepper: any }) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } = useContext(FormContext)
-  const { control, register, handleSubmit, formState: { errors } } = useForm<RoundForm>({
+  const { control, register, handleSubmit, formState: { errors } } = useForm<Round>({
+    defaultValues: formData,
     resolver: yupResolver(ValidationSchema),
   })
 
   const FormStepper = props.stepper
 
-  const next: SubmitHandler<RoundForm> = async (values) => {
+  const next: SubmitHandler<Round> = async (values) => {
     const data = { ...formData, ...values }
     setFormData(data)
     setCurrentStep(currentStep + 1)
@@ -49,18 +53,18 @@ export function RoundDetailsForm(props: { initialData: any, stepper: any }) {
             </div>
           }
         </div>
+
         <div className="mt-5 md:mt-0 md:col-span-2  border border-grey-100 px-6 pt-6 pb-3.5">
           <form onSubmit={handleSubmit(next)}>
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
                 <label htmlFor="name" className="block text-xs font-medium text-gray-700">Round Name</label>
                 <Input
-                  {...register("name")}
-                  $hasError={errors.name}
+                  {...register("metadata.name")}
+                  $hasError={errors.metadata?.name}
                   type="text"
-                  className=""
                 />
-                {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
+                {errors.metadata?.name && <p className="text-sm text-red-600">{errors.metadata?.name?.message}</p>}
               </div>
             </div>
 

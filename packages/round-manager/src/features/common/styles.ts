@@ -15,21 +15,25 @@ export const Button = tw.button`
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none
-  ${({ $variant }: ButtonProps) => (
-    $variant === "outline" ? "bg-white text-grey-500 border" : "bg-grey-500 text-white"
+  ${(p: ButtonProps) => (
+    p.$variant === "outline" ? "bg-white text-grey-500 border" : "bg-grey-500 text-white"
   )}
 `
 
 type InputProps = {
   $hasError: boolean
+  $disabled: boolean
 }
 
 export const Input = tw.input<InputProps>`
   block
-  my-1 w-full sm:text-sm border-gray-300
+  my-1 w-full sm:text-sm border-grey-100
   shadow-sm rounded-md
-  focus:ring-indigo-500 focus:border-indigo-500 
-  ${({ $hasError }: InputProps) => (
-    $hasError ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500" : ""
+  ${(p: InputProps) => (
+    p.$hasError ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+      : "focus:ring-indigo-500 focus:border-indigo-500"
+  )}
+  ${(p: InputProps) => (
+    p.$disabled && "bg-[#F1F1F1]"
   )}
 `
