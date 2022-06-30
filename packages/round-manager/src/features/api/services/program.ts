@@ -116,7 +116,6 @@ export const programApi = api.injectEndpoints({
                 metadata: JSON.parse(content),
                 operatorWallets
               })
-
             }
           }
 

@@ -23,10 +23,10 @@ export const roundApi = api.injectEndpoints({
 
           // Deploy a new Round contract
           let tx = await roundFactory.create(
-            round.votingContract,
-            Math.round(new Date(round.applicationStartTime).getTime() / 1000),
-            Math.round(new Date(round.startTime).getTime() / 1000),
-            Math.round(new Date(round.endTime).getTime() / 1000),
+            round.votingStrategy,
+            new Date(round.applicationStartTime).getTime() / 1000,
+            new Date(round.startTime).getTime() / 1000,
+            new Date(round.endTime).getTime() / 1000,
             round.token,
             round.ownedBy,
             round.store,
@@ -108,7 +108,7 @@ export const roundApi = api.injectEndpoints({
                 applicationStartTime,
                 startTime,
                 endTime,
-                votingContract,
+                votingStrategy,
                 token,
                 // operatorCount
               ] = await Promise.all([
@@ -117,7 +117,7 @@ export const roundApi = api.injectEndpoints({
                 roundImplementation.applicationsStartTime(),
                 roundImplementation.roundStartTime(),
                 roundImplementation.roundEndTime(),
-                roundImplementation.votingContract(),
+                roundImplementation.votingStrategy(),
                 roundImplementation.token(),
                 // roundImplementation.getRoleMemberCount(ROUND_OPERATOR_ROLE)
               ])
@@ -146,7 +146,7 @@ export const roundApi = api.injectEndpoints({
                 applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),
                 endTime: new Date(endTime.toNumber() * 1000),
-                votingContract,
+                votingStrategy,
                 token,
                 ownedBy: event.args[1],
                 // operatorWallets
