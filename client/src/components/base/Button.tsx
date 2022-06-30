@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 export enum ButtonVariants {
   primary = "primary",
   outline = "outline",
@@ -7,13 +9,20 @@ export enum ButtonVariants {
 
 interface ButtonProps {
   onClick?: () => void;
+  path?: string;
   children: React.ReactNode;
   variant: ButtonVariants;
   disabled?: boolean;
   styles?: string[];
 }
 
-function Button({ onClick, children, variant, disabled, styles }: ButtonProps) {
+function Button({ onClick, path, children, variant, disabled, styles }: ButtonProps) {
+  const navigate = useNavigate();
+
+  if (onClick === undefined && path !== undefined) {
+    onClick = () => navigate(path);
+  }
+
   return (
     <button
       disabled={disabled}
@@ -21,7 +30,7 @@ function Button({ onClick, children, variant, disabled, styles }: ButtonProps) {
       className={`base-btn ${variant} ${styles?.join(" ")}`}
       type="button"
     >
-      <div className="flex">{children}</div>
+      {children}
     </button>
   );
 }

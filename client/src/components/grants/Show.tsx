@@ -109,12 +109,10 @@ function Project() {
                   variant={ButtonVariants.outline}
                   styles={["w-full sm:w-auto mx-w-full ml-0"]}
                 >
-                  <div className="flex justify-center w-full">
-                    <div className="m-1">
-                      <Pencil color={colors["secondary-text"]} />
-                    </div>
-                    Edit
-                  </div>
+                  <i className="icon">
+                    <Pencil color={colors["secondary-text"]} />
+                  </i>&nbsp;
+                  Edit
                 </Button>
               </Link>
             )}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { slugs } from "../../routes";
 import colors from "../../styles/colors";
 import Button, { ButtonVariants } from "../base/Button";
@@ -23,10 +22,8 @@ function NewProject() {
           onClick={() => toggleModal(true)}
           styles={["w-full sm:w-auto mx-w-full ml-0"]}
         >
-          <div className="flex items-center justify-center w-full">
-            <Cross color={colors["danger-background"]} />{" "}
-            <span className="pl-2">Exit</span>
-          </div>
+          <i style={{ display: "inline-block"}}><Cross color={colors["danger-background"]} /></i>
+          <span className="pl-2">Exit</span>
         </Button>
       </div>
 
@@ -59,9 +56,7 @@ function NewProject() {
             >
               Go Back
             </Button>
-            <Link to={slugs.grants}>
-              <Button variant={ButtonVariants.danger}>Yes, Exit</Button>
-            </Link>
+            <Button path={slugs.grants} variant={ButtonVariants.danger}>Yes, Exit</Button>
           </div>
         </>
       </BaseModal>
