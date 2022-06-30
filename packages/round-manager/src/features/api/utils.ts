@@ -33,6 +33,7 @@ const camelToTitle = (camelCase: string) => camelCase
 
 
 /**
+ * This function generates the round application schema to be stored in a decentralized storage
  * 
  * @param metadata - The metadata of a round application
  * @returns - The application schema
