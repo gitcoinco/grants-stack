@@ -9,7 +9,7 @@ import { Contract } from "./types"
 
 /** ProgramFactory  */
 export const programFactoryContract: Contract = {
-  address: "0xCB08d3a6cAe32443873537D502b22270C77e27e1",
+  address: "0x7b7a95DE5cdBDA7F4B4604CC3F14Da3085dC6a52",
   abi: abi.programFactory
 }
 

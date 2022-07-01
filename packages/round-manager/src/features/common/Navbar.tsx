@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { PlusSmIcon } from "@heroicons/react/solid"
 
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg"
+import { Button } from "../common/styles"
 
 
 export interface NavbarProps {
@@ -25,13 +26,14 @@ export default function Navbar({ programCta = false }: NavbarProps) {
             <div className="flex-shrink-0">
               { programCta &&
                 <Link to="/program/create">
-                  <button
+                  <Button
+                    $variant="outline"
                     type="button"
-                    className="inline-flex items-center px-4 py-1.5 border border-white shadow-sm text-xs font-medium rounded text-grey-500 bg-white hover:bg-gray-50"
+                    className="inline-flex items-center px-4 py-1.5 border border-white shadow-sm text-xs font-medium rounded text-grey-500 bg-white"
                   >
                     <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                     Create Program
-                  </button>
+                  </Button>
                 </Link>
               }
             </div>

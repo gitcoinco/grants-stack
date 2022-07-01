@@ -30,7 +30,7 @@
 ```graphql
 {
   rounds(where: {
-    program: "0x1564f459600505734cffe7a075691db96e517ae7"
+    program: "0x5ab1a19edc1daebe1cd3a860e875c052be9d24db"
   }) {
     id
   }
