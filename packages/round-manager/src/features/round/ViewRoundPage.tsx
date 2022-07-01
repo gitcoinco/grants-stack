@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "../common/styles"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
+import Navbar from "../common/Navbar"
 
 
 export default function ViewRound() {
@@ -38,6 +39,8 @@ export default function ViewRound() {
   )
 
   return (
+    <>
+    <Navbar />
     <div className="container mx-auto px-4 py-16 h-screen">
       <header>
         <p className="mb-16">
@@ -92,6 +95,7 @@ export default function ViewRound() {
           <Button type="button" onClick={goBack}>Back</Button>
         </div>
       </main>
-    </div >
+    </div>
+    </>
   )
 }

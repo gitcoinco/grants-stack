@@ -4,10 +4,10 @@ import { useWeb3 } from "../common/ProtectedRoute"
 import { useListProgramsQuery } from "../api/services/program"
 import {
   ArrowNarrowRightIcon,
-  PlusSmIcon,
   UserIcon,
 } from "@heroicons/react/solid"
 import { Spinner } from "../common/Spinner"
+import Navbar from "../common/Navbar"
 
 
 function ListPrograms() {
@@ -17,7 +17,7 @@ function ListPrograms() {
   const programList = programs?.map((program, index) => (
     <div
       key={program.id}
-      className="relative rounded-sm border border-gray-300 bg-white px-6 py-4 my-4 shadow-lg drop-shadow-sm flex items-center space-x-3"
+      className="relative rounded-sm border border-grey-100 bg-white px-6 py-4 my-4 shadow-lg drop-shadow-sm flex items-center space-x-3"
     >
 
       <div className="flex-1 min-w-0">
@@ -42,37 +42,28 @@ function ListPrograms() {
   ))
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <h1 className="text-[32px] text-grey-500">My Programs</h1>
-        <h2 className="text-base text-grey-400">
-          Create grant program and manage rounds with independent criteria.
-        </h2>
-      </header>
-      <main>
-        <div className="grid">
-          <div className="w-100 md:w-3/4">
-            {programList}
+    <>
+      <Navbar programCta={ isSuccess ? true : false } />
+      <div className="container mx-auto h-screen py-7 px-4 md:px-0 lg:px-0">
+        <header className="mb-2.5">
+          <h1 className="text-[32px] text-grey-500">My Programs</h1>
+          <p className="text-base text-grey-400">
+            Create grant program and manage rounds with independent criteria.
+          </p>
+        </header>
+        <main>
+          <div className="grid">
+            <div className="w-100 md:w-3/4">
+              {programList}
+            </div>
           </div>
-        </div>
 
-        {isSuccess &&
-          <Link to="/program/create">
-            <button
-              type="button"
-              className="inline-flex items-center px-2.5 py-1.5 border border-white shadow-sm text-xs font-medium rounded text-grey-500 bg-white hover:bg-gray-50"
-            >
-              <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-              Create Program
-            </button>
-          </Link>
-        }
-
-        {isLoading &&
-          <Spinner text="Fetching Programs" />
-        }
-      </main>
-    </div>
+          {isLoading &&
+            <Spinner text="Fetching Programs" />
+          }
+        </main>
+      </div>
+    </>
   )
 }
 
