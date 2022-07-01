@@ -27,7 +27,7 @@ export async function main() {
     throw new Error(`error: missing roundImplementationContract`);
   }
 
-  const programContractAddress = "0x1564f459600505734cffe7a075691db96e517ae7";
+  const programContractAddress = "0x5ab1a19edc1daebe1cd3a860e875c052be9d24db";
 
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
