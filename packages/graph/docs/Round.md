@@ -42,8 +42,8 @@
 
 ```graphql
 {
-    roundAccounts(where:{
-      address:"0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
+    roundAccounts(where: {
+      address: "0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
     }) {
       address
     	role {
@@ -62,11 +62,11 @@
 {
   roundRoles(
     where :{
-      role:"0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
+      role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
     }
   ) {
     accounts(where:{
-      address:"0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
+      address: "0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
     }) {
       address
       round{
@@ -83,10 +83,10 @@
 
 {
   rounds(where :{
-    id:"0x804629a3aa09502a9893fd4ca58007087a34efe9"
+    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
   }) {
   	roles(where:{
-      role:"0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
+      role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
     }) {
       accounts {
         address
@@ -101,7 +101,7 @@
 ```graphql
 {
   rounds(where :{
-    id:"0x804629a3aa09502a9893fd4ca58007087a34efe9"
+    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
   }) {
     accounts {
       address
@@ -121,7 +121,7 @@ You can do this by two means :
 ```graphql
 {
   rounds(where:{
-    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
+    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
   }) {
     id
     projects {
@@ -142,7 +142,7 @@ You can do this by two means :
 ```graphql
 {
   roundProjects(where: {
-    round:"0x7581e65b04da761ef3311997ec04bf3046013c96"
+    round: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
   }) {
     id
     status

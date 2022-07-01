@@ -6,14 +6,14 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0xE84146a78aCefF0dB44A6e260026B8febe29213c |
+| goerli  | 0x2aD4797E384aa31b5aEf7801C368C3B97e3D8197 |
 
 
 ## RoundImplementation
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0x22988a624824263f34880037832AF924e22C595c |
+| goerli  | 0x6632Bb1dfe27FdD7F70DD85c5F240aBfe153D3bE |
 
 
 ## BulkVotingStrategy
@@ -28,7 +28,7 @@ This document lists all the addresses of the contracts that have been deployed o
 This is not the exahustive list but instead just shows example of a round deployed on network
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0xE0770EEcCAD16CCED1ECF596f4D8C9790D8194f1 |
+| goerli  | 0xaF0B0869c5EF9317dd0f9c40b36E4fc91Dd16e30 |
 
 
 
