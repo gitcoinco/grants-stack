@@ -65,7 +65,7 @@ export const publishGrant =
       );
       let projectTx;
       if (grantId !== undefined) {
-        projectTx = await projectRegistry.updateProjectMetaData(grantId, {
+        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
           protocol: 1,
           pointer: state.ipfs.projectFileSavedCID,
         });
