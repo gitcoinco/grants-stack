@@ -8,4 +8,4 @@ typechain
 # Hardhat files
 cache
 artifacts
-abis
+abis/

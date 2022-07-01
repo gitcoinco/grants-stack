@@ -1,17 +1,17 @@
 /** ProgramFactory contract ABI in Human Readable ABI Format  */
 
 const programFactory = [
-  "event Initialized(uint8)",
-  "event OwnershipTransferred(address indexed,address indexed)",
-  "event ProgramContractUpdated(address)",
-  "event ProgramCreated(address indexed)",
-  "function create(tuple(uint256,string),address[]) returns (address)",
+  "event Initialized(uint8 version)",
+  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  "event ProgramContractUpdated(address programContractAddress)",
+  "event ProgramCreated(address indexed programContractAddress)",
+  "function create(tuple(uint256 protocol, string pointer) _metaPtr, address[] _programOperators) returns (address)",
   "function initialize()",
   "function owner() view returns (address)",
   "function programContract() view returns (address)",
   "function renounceOwnership()",
-  "function transferOwnership(address)",
-  "function updateProgramContract(address)"
+  "function transferOwnership(address newOwner)",
+  "function updateProgramContract(address _programContract)"
 ]
 
 export default programFactory
