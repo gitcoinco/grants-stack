@@ -83,6 +83,11 @@ export const loadProjects =
       block: event.blockNumber,
     }));
 
+    if (createdIds.length === 0) {
+      dispatch(projectsLoaded([]));
+      return;
+    }
+
     const ids = createdIds.map((item) => ethers.utils.hexlify(item.id));
     const metadataFilter = contract.filters.MetadataUpdated(ids);
     const metadataEvents = await contract.queryFilter(metadataFilter);
