@@ -53,7 +53,7 @@ export default function ViewProgram() {
   return (
     <>
     <Navbar />
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto h-screen px-4 py-16">
       <header>
         <div className="mb-7 flex justify-between">
           <div className="flex flex-rows">
@@ -117,7 +117,7 @@ export default function ViewProgram() {
           <div className="grid sm:grid-cols-3 gap-2">
             {
               program?.operatorWallets.map((operatorWallet, index) =>
-                <div className="bg-white text-grey-500 border sm:text-center	py-2 px-1">
+                <div className="bg-white text-grey-500 border sm:text-center	py-2 px-1" key={index}>
                   <UserIcon className="inline-flex h-4 w-4 text-black mr-1" />
                   <span className="text-[10px] sm:text-[13px] text-gray-500" key={index}>{operatorWallet}</span>     
                 </div>         
