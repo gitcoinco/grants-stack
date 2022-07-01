@@ -8,6 +8,7 @@ import { FormWizard } from "../common/FormWizard"
 import { RoundDetailForm } from "./RoundDetailForm"
 import { RoundApplicationForm } from "./RoundApplicationForm"
 import { Button } from "../common/styles"
+import Navbar from "../common/Navbar"
 
 
 export default function CreateRound() {
@@ -25,6 +26,8 @@ export default function CreateRound() {
   const navigate = useNavigate()
 
   return (
+    <>
+    <Navbar />
     <div className="container mx-auto h-screen px-4 py-16">
       <header>
         <div className="flow-root">
@@ -45,6 +48,7 @@ export default function CreateRound() {
           initialData={{ program, isProgramFetched, programId }}
         />
       </main>
-    </div >
+    </div>
+    </>
   )
 }
