@@ -101,7 +101,7 @@
 ```graphql
 {
   rounds(where :{
-    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
+    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
   }) {
     accounts {
       address
@@ -121,7 +121,7 @@ You can do this by two means :
 ```graphql
 {
   rounds(where:{
-    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
+    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
   }) {
     id
     projects {
@@ -142,7 +142,7 @@ You can do this by two means :
 ```graphql
 {
   roundProjects(where: {
-    round: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
+    round: "0x7581e65b04da761ef3311997ec04bf3046013c96"
   }) {
     id
     status

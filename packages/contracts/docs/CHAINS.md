@@ -28,7 +28,7 @@ This document lists all the addresses of the contracts that have been deployed o
 This is not the exahustive list but instead just shows example of a round deployed on network
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0xaF0B0869c5EF9317dd0f9c40b36E4fc91Dd16e30 |
+| goerli  | 0x7581e65b04da761ef3311997ec04bf3046013c96 |
 
 
 
