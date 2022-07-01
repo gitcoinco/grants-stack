@@ -29,7 +29,7 @@ function ListPrograms() {
         <p className="text-xs text-grey-400 flex gap-1">
           <UserIcon className="h-4 w-4 text-black" />
           <span>{program.operatorWallets.length}</span>
-          <span>Round Operators</span>
+          <span>Program Operators</span>
         </p>
       </div>
 
