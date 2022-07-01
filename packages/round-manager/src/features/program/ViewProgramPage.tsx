@@ -1,11 +1,12 @@
 import { useNavigate, useParams, Link } from "react-router-dom"
+import { ArrowLeftIcon, ArrowNarrowRightIcon, PencilIcon, UserIcon } from "@heroicons/react/solid"
+import { RefreshIcon } from "@heroicons/react/outline"
 
 import { Button } from "../common/styles"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
-import { ArrowLeftIcon, ArrowNarrowRightIcon, PencilIcon, UserIcon } from "@heroicons/react/solid"
-import { RefreshIcon } from "@heroicons/react/outline"
+import Navbar from "../common/Navbar"
 
 
 export default function ViewProgram() {
@@ -50,8 +51,9 @@ export default function ViewProgram() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
       <header>
         <div className="mb-7 flex justify-between">
           <div className="flex flex-rows">
@@ -59,7 +61,7 @@ export default function ViewProgram() {
               <ArrowLeftIcon className="h-6 w-6 mr-3 mt-1" aria-hidden="true" />
             </Link>
 
-            <h1 className="text-[30px] sm:text-[32px]">
+            <h1 className="text-3xl sm:text-[32px]">
               Program Details
             </h1>
           </div>
@@ -91,7 +93,7 @@ export default function ViewProgram() {
               <h3 className="text-[16px] my-3">
                 Grant Round
               </h3>
-              <p className="text-gray-500 text-[12px]">
+              <p className="text-gray-500 text-xs">
                 Manage date details and acceptance criteria for your Grant Program Round.
               </p>
               <Link to={`/round/create?programId=${program?.id}`}>
@@ -120,15 +122,15 @@ export default function ViewProgram() {
                   <span className="text-[10px] sm:text-[13px] text-gray-500" key={index}>{operatorWallet}</span>     
                 </div>         
               ) || (
-                <p className="text-gray-500 text-[14px]">
+                <p className="text-gray-500 text-sm">
                   Fetching operator wallets...
                 </p>
               )
             }
           </div>
 
-          <p className="text-gray-500 border-b text-[14px] py-4">
-            You can’t edit operator wallets after the round is deployed.
+          <p className="text-gray-500 border-b text-sm py-4">
+            You can't edit operator wallets after the round is deployed.
           </p>
 
 
@@ -141,6 +143,7 @@ export default function ViewProgram() {
 
         </div>
       </main>
-    </div >
+    </div>
+    </>
   )
 }

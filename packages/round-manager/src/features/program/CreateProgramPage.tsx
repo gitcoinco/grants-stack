@@ -1,12 +1,13 @@
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
+import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
-import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
+import Navbar from "../common/Navbar"
 
 
 type FormData = {
@@ -73,7 +74,9 @@ export default function CreateProgram() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+    <Navbar />
+    <div className="container mx-auto h-screen px-4 py-16">
       <header>
         <div className="flow-root">
           <h1 className="float-left text-[32px] mb-7">Create Grant Program</h1>
@@ -90,10 +93,20 @@ export default function CreateProgram() {
 
       <main className="grid md:grid-cols-3 gap-4">
         <div>
-          <h2 className="text-base font-bold mb-4">Details</h2>
-          <h2 className="text-base text-grey-400">
-            Provide the name of the program as well as the round operators’ wallets addresses.
-          </h2>
+          <p className="text-base leading-6"><b>Details</b></p>
+          <p className="mt-1 text-base text-gray-500">
+            Provide the name of the program as well as the round operators' wallet addresses.
+          </p>
+
+          <div className="mt-5">
+            {/* Display relevant status updates */}
+            {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
+            {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
+            {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
+            {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
+            {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
+          </div>
+
         </div>
 
         <div className="col-span-2">
@@ -152,13 +165,13 @@ export default function CreateProgram() {
               </ul>
 
               <p className="mt-2 mb-6 text-sm text-gray-500">
-                You can’t edit operator wallets after the grant is deployed.
+                You can't edit operator wallets after the grant is deployed.
               </p>
 
               <Button
                 type="button"
                 $variant="outline"
-                className="inline-flex items-center px-2.5 py-1.5 border shadow-sm text-xs font-medium rounded text-gray-500 bg-white"
+                className="inline-flex items-center px-4 py-1.5 border border-grey-100 shadow-sm text-xs font-medium rounded text-grey-500 bg-white"
                 onClick={() => {
                   append({ wallet: "" });
                 }}
@@ -174,17 +187,11 @@ export default function CreateProgram() {
                 {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
               </Button>
             </div>
-
-            {/* Display relevant status updates */}
-            {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
-            {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
-            {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-            {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
-            {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
           </form>
         </div>
 
       </main>
     </div>
+    </>
   )
 }
