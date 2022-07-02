@@ -1,62 +1,51 @@
 # round-manager
 
-This package serves the app which holds all the features w.r.t to managing a round.
+This package serves the app which holds all the features w.r.t to 
 
-## Usage
+- creating a program
+- maintaing a program
+- creating a round
+- maintaining a program
 
-### Pre Requisites
+This package is meant to be used by the round operators 
+It relies on the contracts deployed from the [contracts](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts) package.
+Indexed data can be queried by the graphs deployed from the [graph](https://github.com/gitcoinco/grants-round/tree/main/packages/graph) package.
 
-Before running any command, make sure to install dependencies:
+## Directory Structure 
 
-```sh
-$ yarn install
+```
+.
+├── public                      # Public Assets
+├── src
+│   ├── app                     # Stores/Hooks
+│   ├── features
+│       ├── auth                # components/services related to authentication/authorization
+│       ├── program             # Program related components/services
+│       ├── round               # Round related components/services 
+│   ├── api.ts                  # Empty API service (feature APIs will inject endpoints)
+│   ├── browserPatches.tsx      # Browser polyfill
+│   ├── index.tsx               # Routes
+│   ├── index.css               # Global CSS
+├── tsconfig.json               # Typescript configuration 
+├── craco.json                  # Craco configuration
+├── package.json                # Package configuration
+└── README.md
 ```
 
-### Run in Development
+The app structure ensures all components and services related to a particular feature are kept in a subdirectory of the `features` directory.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Observe the directory structure for Authentication feature in `features/auth`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-```sh
-$ yarn start
+```
+├── features
+│   ├── auth
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── web3Service.tsx
 ```
 
-### Lint TypeScript
-
-Lint the TypeScript code:
-
-```sh
-$ yarn lint:ts
-```
-
-### Test
-
-Run the Mocha tests:
-
-```sh
-$ yarn test
-```
-
-### Run in Production
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-```sh
-$ yarn build
-```
-
-Serve on port 3000
-
-```sh
-$ npm install -g serve
-$ serve -s build -l 3000
-```
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+It contains the `ProtectedRoute` component and `web3Service` which extends the base API service defined in `src/api.ts` by endpoint injection.
 
 
-To contribute to this project, fork the project and follow the instructions at `/docs/Dev.md`
+### Development
+
+To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-manager/docs/DEV.md)

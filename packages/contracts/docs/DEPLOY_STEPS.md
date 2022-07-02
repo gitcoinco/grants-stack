@@ -72,7 +72,7 @@ export const params: DeployParams = {
 yarn run goerli-link-round-implementation
 ```
 
-### Voting Setup
+### VotingStrategy Setup
 
 The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the BulkVotingStrategy contract on goerli
 

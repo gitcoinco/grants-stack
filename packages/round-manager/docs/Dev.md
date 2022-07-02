@@ -1,38 +1,58 @@
-## Development Instructions
+## Development
 
-### Directory Structure 
+This section documents the basics running instructions on running / developing on the round-manager package.
 
-```
-.
-├── public                      # Public Assets
-├── src
-│   ├── app                     # Stores/Hooks
-│   ├── features
-│       ├── auth                # components/services related to authentication/authorization
-│       ├── program             # Program related components/services
-│       ├── round               # Round related components/services 
-│   ├── api.ts                  # Empty API service (feature APIs will inject endpoints)
-│   ├── browserPatches.tsx      # Browser polyfill
-│   ├── index.tsx               # Routes
-│   ├── index.css               # Global CSS
-├── tsconfig.json               # Typescript documentation 
-├── craco.json                  # Craco configuration
-├── package.json                # Package configuration
-└── README.md
+### Pre Requisites
+
+Before running any command, make sure to install dependencies:
+
+```sh
+$ yarn install
 ```
 
-The app structure ensures all components and services related to a particular feature are kept in a subdirectory of the `features` directory.
+### Run in Development
 
-Observe the directory structure for Authentication feature in `features/auth`
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
+
+```sh
+$ yarn start
 ```
-├── features
-│   ├── auth
-│   │   ├── ProtectedRoute.tsx
-│   │   ├── web3Service.tsx
+
+### Lint TypeScript
+
+Lint the TypeScript code:
+
+```sh
+$ yarn lint:ts
 ```
 
-It contains the `ProtectedRoute` component and `web3Service` which extends the base API service defined in `src/api.ts` by endpoint injection.
+### Test
+
+Run the Mocha tests:
+
+```sh
+$ yarn test
+```
+
+### Run in Production
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+```sh
+$ yarn build
+```
+
+Serve on port 3000
+
+```sh
+$ npm install -g serve
+$ serve -s build -l 3000
+```
 
 ### Adding a new route
 Global routing configuration is held in `src/index.tsx`. Below is an example of a route definition

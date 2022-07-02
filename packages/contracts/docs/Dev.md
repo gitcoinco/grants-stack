@@ -59,7 +59,10 @@ $ yarn coverage
 
 ### Generate ABI
 
-Generate ABI of contracts
+Generate ABI of contracts. 
+The generated ABI can be found within `abis/` folder
+We generate both human readable ABI
+
 ```sh
 yarn run clear-abi
 yarn run export-abi
@@ -81,18 +84,12 @@ Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 $ yarn clean
 ```
 
-### Deployment
-
-To test deploying the contracts locally, first start a localhost hardhat network.
-
-```sh
-$ yarn app:node
-```
-
 ### Scripts
 
 Contracts written here have deploy scripts written in `scripts/` directory.
 The commands to run them are documented in `package.json`.
+To get a better grasp of how the scripts can be used to deploy / interact with contracts.
+Refer [DEPLOY_STEPS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEPLOY_STEPS.md)
 
 Additionally if you are using vscode -> debug scripts are written up in `launch.json`
 to make it easier to debug the script while running them.
