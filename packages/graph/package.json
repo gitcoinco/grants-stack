@@ -17,11 +17,15 @@
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ thelostone-mc/program-factory",
     "create-local": "graph create --node http://localhost:8020/ thelostone-mc/program-factory",
     "remove-local": "graph remove --node http://localhost:8020/ thelostone-mc/program-factory",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 thelostone-mc/program-factory"
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 thelostone-mc/program-factory",
+    "test": "graph test"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.30.4",
     "@graphprotocol/graph-ts": "0.27.0",
     "@openzeppelin/subgraphs": "^0.1.8"
+  },
+  "devDependencies": {
+    "matchstick-as": "^0.5.0"
   }
 }
