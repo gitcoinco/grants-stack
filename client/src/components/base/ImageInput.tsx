@@ -12,7 +12,7 @@ export default function ImageInput({
 }: {
   label: string;
   currentProject?: Metadata;
-  imgHandler: (event: Buffer) => void;
+  imgHandler: (file: Blob) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [tempImg, setTempImg] = useState("");
@@ -65,10 +65,10 @@ export default function ImageInput({
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        const bufferResult = reader.result as ArrayBuffer;
-        if (bufferResult) {
-          const buf = window.Buffer.from(bufferResult);
-          imgHandler(buf);
+        const res = reader.result;
+        if (res) {
+          // const  = window.Buffer.from(bufferResult);
+          imgHandler(files[0]);
         }
       };
 

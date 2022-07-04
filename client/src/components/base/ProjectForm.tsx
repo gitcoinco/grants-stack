@@ -8,8 +8,9 @@ import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
 import { saveFileToIPFS, resetFileStatus, FileTypes } from "../../actions/ipfs";
-import { publishGrant, resetTXStatus } from "../../actions/newGrant";
+import { publishGrant, resetStatus } from "../../actions/newGrant";
 import { validateProjectForm } from "./projectFormValidation";
+import { Status } from "../../reducers/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
 import ExitModal from "./ExitModal";
@@ -43,7 +44,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
       savingFile: state.ipfs.ipfsSavingFile,
       projectFile: state.ipfs.projectFileSavedCID,
       projectImg: state.ipfs.projectImgSavedCID,
-      txStatus: state.newGrant.txStatus,
+      status: state.newGrant.status,
     };
   }, shallowEqual);
 
@@ -53,10 +54,10 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   const [show, showToast] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
 
-  const resetStatus = () => {
+  const _resetStatus = () => {
     setSubmitted(false);
     setFormValidation(validation);
-    dispatch(resetTXStatus());
+    dispatch(resetStatus());
     dispatch(resetFileStatus());
   };
   const [projectImg, setProjectImg] = useState<Buffer | undefined>();
@@ -64,7 +65,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   const publishProject = async () => {
     setSubmitted(true);
     if (!formValidation.valid) return;
-    resetStatus();
+    _resetStatus();
     showToast(true);
     if (projectImg) {
       await dispatch(saveFileToIPFS(projectImg, FileTypes.IMG));
@@ -73,7 +74,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
     await dispatch(
       saveFileToIPFS(formInputs, FileTypes.PROJECT, currentProjectId)
     );
-    await dispatch(publishGrant(currentProjectId));
+    await dispatch(publishGrant(currentProjectId, formInputs, projectImg));
   };
 
   const handleInput = (
@@ -136,7 +137,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   // eslint-disable-next-line
   useEffect(() => {
     return () => {
-      resetStatus();
+      _resetStatus();
     };
   }, []);
 
@@ -242,7 +243,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         onClose={() => showToast(false)}
         error={props.txStatus === "error"}
       >
-        <TXLoading status={props.txStatus} />
+        <TXLoading status={props.status} error={props.error} />
       </Toast>
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
     </div>
