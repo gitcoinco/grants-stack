@@ -8,9 +8,9 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "./votingStrategy/IVotingStrategy.sol";
+import "../votingStrategy/IVotingStrategy.sol";
 
-import "./utils/MetaPtr.sol";
+import "../utils/MetaPtr.sol";
 
 /**
  * @notice Contract deployed per Round which would managed by

@@ -5,7 +5,7 @@ import "./RoundImplementation.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./utils/MetaPtr.sol";
+import "../utils/MetaPtr.sol";
 
 /**
  * @notice Invoked by a RoundOperator to enable creation of a
