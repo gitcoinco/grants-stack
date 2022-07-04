@@ -13,6 +13,6 @@ export const roundParams: DeployParams = {
     roundFactoryContract: '0x592b8983f02cF41bBAa3Bb39920E5498Bd9cD938',
     roundImplementationContract: '0x4A173c7f9AD7cE6E176362cFc67F4101dAdedd45',
     bulkVotingStrategyContract: '0x868CBca73915f842A70cD9584D80a57DB5E690C1',
-    roundContract: '0xaF0B0869c5EF9317dd0f9c40b36E4fc91Dd16e30'
+    roundContract: '0x30683Ae980f3049E0fECF376945eC6f279e3E351'
   },
 };
