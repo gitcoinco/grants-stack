@@ -59,7 +59,11 @@ export default function ViewRound() {
           {isRoundsLoading && <p className="mb-8">Fetching round information...</p>}
           <p className="my-4">
             <span className="text-2xl">Application Start Date: </span>
-            <span>{formatDate(round?.applicationStartTime) || "..."}</span>
+            <span>{formatDate(round?.applicationsStartTime) || "..."}</span>
+          </p>
+          <p className="my-4">
+            <span className="text-2xl">Application End Date: </span>
+            <span>{formatDate(round?.applicationsEndTime) || "..."}</span>
           </p>
           <p className="my-4">
             <span className="text-2xl">Round Start Date: </span>

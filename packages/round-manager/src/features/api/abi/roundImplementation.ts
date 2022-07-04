@@ -2,6 +2,7 @@
 
 const roundImplementation = [
   "event ApplicationMetaPtrUpdated(tuple(uint256 protocol, string pointer) oldMetaPtr, tuple(uint256 protocol, string pointer) newMetaPtr)",
+  "event ApplicationsEndTimeUpdated(uint256 oldTime, uint256 newTime)",
   "event ApplicationsStartTimeUpdated(uint256 oldTime, uint256 newTime)",
   "event Initialized(uint8 version)",
   "event NewProjectApplication(address indexed project, tuple(uint256 protocol, string pointer) applicationMetaPtr)",
@@ -15,6 +16,7 @@ const roundImplementation = [
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
   "function ROUND_OPERATOR_ROLE() view returns (bytes32)",
   "function applicationMetaPtr() view returns (uint256 protocol, string pointer)",
+  "function applicationsEndTime() view returns (uint256)",
   "function applicationsStartTime() view returns (uint256)",
   "function applyToRound(address _project, tuple(uint256 protocol, string pointer) _applicationMetaPtr)",
   "function getRoleAdmin(bytes32 role) view returns (bytes32)",
@@ -22,7 +24,7 @@ const roundImplementation = [
   "function getRoleMemberCount(bytes32 role) view returns (uint256)",
   "function grantRole(bytes32 role, address account)",
   "function hasRole(bytes32 role, address account) view returns (bool)",
-  "function initialize(address _votingStrategy, uint256 _applicationsStartTime, uint256 _roundStartTime, uint256 _roundEndTime, address _token, tuple(uint256 protocol, string pointer) _roundMetaPtr, tuple(uint256 protocol, string pointer) _applicationMetaPtr, address _adminRole, address[] _roundOperators)",
+  "function initialize(address _votingStrategy, uint256 _applicationsStartTime, uint256 _applicationsEndTime, uint256 _roundStartTime, uint256 _roundEndTime, address _token, tuple(uint256 protocol, string pointer) _roundMetaPtr, tuple(uint256 protocol, string pointer) _applicationMetaPtr, address _adminRole, address[] _roundOperators)",
   "function projectsMetaPtr() view returns (uint256 protocol, string pointer)",
   "function renounceRole(bytes32 role, address account)",
   "function revokeRole(bytes32 role, address account)",
@@ -32,6 +34,7 @@ const roundImplementation = [
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
   "function token() view returns (address)",
   "function updateApplicationMetaPtr(tuple(uint256 protocol, string pointer) _newApplicationMetaPtr)",
+  "function updateApplicationsEndTime(uint256 _newApplicationsEndTime)",
   "function updateApplicationsStartTime(uint256 _newApplicationsStartTime)",
   "function updateProjectsMetaPtr(tuple(uint256 protocol, string pointer) _newProjectsMetaPtr)",
   "function updateRoundEndTime(uint256 _newRoundEndTime)",
