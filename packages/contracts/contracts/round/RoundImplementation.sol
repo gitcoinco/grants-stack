@@ -114,12 +114,12 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   ) public initializer {
 
     require(_applicationsStartTime >= block.timestamp, "initialize: applications start time has already passed");
-    require(_applicationsEndTime > _applicationsStartTime, "initialize: application end time must be after application start time");
+    require(_applicationsEndTime > _applicationsStartTime, "initialize: application end time should be after application start time");
 
-    require(_roundEndTime >= _applicationsEndTime, "initialize: application end time must be before round end time");
-    require(_roundEndTime > _roundStartTime, "initialize: end time must be after start time");
+    require(_roundEndTime >= _applicationsEndTime, "initialize: application end time should be before round end time");
+    require(_roundEndTime > _roundStartTime, "initialize: end time should be after start time");
 
-    require(_roundStartTime >= _applicationsStartTime, "initialize: round start time must be after application start time");
+    require(_roundStartTime >= _applicationsStartTime, "initialize: round start time should be after application start time");
 
 
     votingStrategy = _votingStrategy;
@@ -169,8 +169,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
-    require(_newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time must be after application start time");
-    require(_newRoundStartTime < roundEndTime, "updateRoundStartTime: start time must be before round end time");
+    require(_newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time should be after application start time");
+    require(_newRoundStartTime < roundEndTime, "updateRoundStartTime: start time should be before round end time");
 
     emit RoundStartTimeUpdated(roundStartTime, _newRoundStartTime);
 
@@ -182,8 +182,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newRoundEndTime >= block.timestamp, "updateRoundEndTime: end time has already passed");
-    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time must be after start time");
-    require(_newRoundEndTime >= applicationsEndTime, "updateRoundEndTime: end time must be after application end time");
+    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time should be after start time");
+    require(_newRoundEndTime >= applicationsEndTime, "updateRoundEndTime: end time should be after application end time");
 
     emit RoundEndTimeUpdated(roundEndTime, _newRoundEndTime);
 

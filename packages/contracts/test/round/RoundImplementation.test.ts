@@ -180,7 +180,7 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: application end time must be after application start time");
+        )).to.be.revertedWith("initialize: application end time should be after application start time");
 
       });
 
@@ -200,7 +200,7 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: application end time must be before round end time");
+        )).to.be.revertedWith("initialize: application end time should be before round end time");
 
       });
 
@@ -224,7 +224,7 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: end time must be after start time");
+        )).to.be.revertedWith("initialize: end time should be after start time");
 
       });
 
@@ -249,7 +249,7 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: round start time must be after application start time");
+        )).to.be.revertedWith("initialize: round start time should be after application start time");
 
       });
 
@@ -506,7 +506,7 @@ describe("RoundImplementation", function () {
         const _time = Math.round(new Date().getTime() / 1000 + 1800); // 30 min later
 
         await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
-          'updateRoundStartTime: start time must be after application start time'
+          'updateRoundStartTime: start time should be after application start time'
         );
       });
 
@@ -586,7 +586,7 @@ describe("RoundImplementation", function () {
         const _time = Math.round(new Date().getTime() / 1000 + 900); // 15 min later
 
         await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'updateRoundEndTime: end time must be after start time'
+          'updateRoundEndTime: end time should be after start time'
         );
       });
 
@@ -595,7 +595,7 @@ describe("RoundImplementation", function () {
         const _time = _applicationsEndTime; // 2.5 hours later
 
         await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'updateRoundEndTime: end time must be after application end time'
+          'updateRoundEndTime: end time should be after application end time'
         );
       });
 
@@ -697,6 +697,98 @@ describe("RoundImplementation", function () {
         expect(await roundImplementation.updateApplicationsStartTime(newTime))
           .to.emit(roundImplementation, 'ApplicationsStartTimeUpdated')
           .withArgs(_applicationsStartTime, newTime);
+      });
+    });
+
+    describe('test: updateApplicationsEndTime', () => {
+      let initializeTxn: ContractTransaction;
+    
+      const newTime = Math.round(new Date().getTime() / 1000 + 12600); // 3.5 hours later
+    
+      beforeEach(async () => {
+    
+        initializeTxn = await roundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
+          _roundStartTime, // _roundStartTime
+          _roundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRole, // _adminRole
+          _roundOperators // _roundOperators
+        );
+    
+        initializeTxn.wait();
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if invoked by wallet who is not round operator', async () => {
+    
+        const randomWallet = Wallet.createRandom().address;
+        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+    
+        const txn = await newRoundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
+          _roundStartTime, // _roundStartTime
+          _roundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          randomWallet, // _adminRole
+          [randomWallet] // _roundOperators
+        );
+    
+        txn.wait();
+    
+        await expect(newRoundImplementation.updateApplicationsEndTime(newTime)).to.revertedWith(
+          `AccessControl: account ${user.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime has already passed', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 - 900); // 15 min before
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: application end time has already passed'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime is before applicationsStartTime', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 + 900); // 15 min later
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: application end time should be after application start time'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime is after roundEndTime', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 + 16200); // 4.5 hours later
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: should be before round end time'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD update roundEndTime value IF called is round operator', async () => {
+    
+        const txn = await roundImplementation.updateApplicationsEndTime(newTime);
+        await txn.wait();
+    
+        const applicationsEndTime = await roundImplementation.applicationsEndTime();
+        expect(applicationsEndTime).equals(newTime);
+      });
+    
+      it('invoking updateApplicationsEndTime SHOULD emit RoundEndTimeUpdated event', async() => {
+    
+        expect(await roundImplementation.updateApplicationsEndTime(newTime))
+          .to.emit(roundImplementation, 'ApplicationsEndTimeUpdated')
+          .withArgs(_applicationsEndTime, newTime);
       });
     });
 
