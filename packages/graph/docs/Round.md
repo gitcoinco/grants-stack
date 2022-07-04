@@ -83,7 +83,7 @@
 
 {
   rounds(where :{
-    id: "0x2ad4797e384aa31b5aef7801c368c3b97e3d8197"
+    id: "0x592b8983f02cF41bBAa3Bb39920E5498Bd9cD938"
   }) {
   	roles(where:{
       role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
@@ -101,7 +101,7 @@
 ```graphql
 {
   rounds(where :{
-    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
+    id: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
   }) {
     accounts {
       address
@@ -121,7 +121,7 @@ You can do this by two means :
 ```graphql
 {
   rounds(where:{
-    id: "0x7581e65b04da761ef3311997ec04bf3046013c96"
+    id: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
   }) {
     id
     projects {
@@ -142,7 +142,7 @@ You can do this by two means :
 ```graphql
 {
   roundProjects(where: {
-    round: "0x7581e65b04da761ef3311997ec04bf3046013c96"
+    round: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
   }) {
     id
     status
