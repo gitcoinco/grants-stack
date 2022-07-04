@@ -40,6 +40,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Emitted when application start time is updated
   event ApplicationsStartTimeUpdated(uint256 oldTime, uint256 newTime);
 
+  /// @notice Emitted when application end time is updated
+  event ApplicationsEndTimeUpdated(uint256 oldTime, uint256 newTime);
+
   /// @notice Emitted when a round start time is updated
   event RoundStartTimeUpdated(uint256 oldTime, uint256 newTime);
 
@@ -60,6 +63,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Unix timestamp from when round can accept applications
   uint256 public applicationsStartTime;
+
+  /// @notice Unix timestamp from when round stops accepting applications
+  uint256 public applicationsEndTime;
 
   /// @notice Unix timestamp of the start of the round
   uint256 public roundStartTime;
@@ -85,6 +91,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    * @notice Instantiates a new round
    * @param _votingStrategy Deployed Voting Strategy Contract
    * @param _applicationsStartTime Unix timestamp from when round can accept applications
+   * @param _applicationsEndTime Unix timestamp from when round stops accepting applications
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
@@ -96,6 +103,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function initialize(
     IVotingStrategy _votingStrategy,
     uint256 _applicationsStartTime,
+    uint256 _applicationsEndTime,
     uint256 _roundStartTime,
     uint256 _roundEndTime,
     IERC20 _token,
@@ -106,12 +114,16 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   ) public initializer {
 
     require(_applicationsStartTime >= block.timestamp, "initialize: applications start time has already passed");
+    require(_applicationsEndTime > _applicationsStartTime, "initialize: application end time must be after application start time");
+    require(_roundEndTime > _applicationsStartTime, "initialize: application end time must be beore round end time");
+
     require(_roundStartTime > _applicationsStartTime, "initialize: round start time must be after application start time");
     require(_roundEndTime > _roundStartTime, "initialize: end time must be after start time");
 
 
     votingStrategy = _votingStrategy;
     applicationsStartTime = _applicationsStartTime;
+    roundEndTime = _roundEndTime;
     roundStartTime = _roundStartTime;
     roundEndTime = _roundEndTime;
     token = _token;
@@ -168,6 +180,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
     require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time must be after start time");
+    require(_newRoundEndTime > applicationsEndTime, "updateRoundEndTime: end time must be after application end time");
 
     emit RoundEndTimeUpdated(roundEndTime, _newRoundEndTime);
 
@@ -178,12 +191,24 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param _newApplicationsStartTime new applicationsStartTime
   function updateApplicationsStartTime(uint256 _newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(_newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
     require(_newApplicationsStartTime < roundStartTime, "updateApplicationsStartTime: should be before round start time");
+    require(_newApplicationsStartTime < applicationsEndTime, "updateApplicationsStartTime: should be before application end time");
 
     emit ApplicationsStartTimeUpdated(applicationsStartTime, _newApplicationsStartTime);
 
     applicationsStartTime = _newApplicationsStartTime;
+  }
+
+  /// @notice Update applicationsEndTime (only by ROUND_OPERATOR_ROLE)
+  /// @param _newApplicationsEndTime new applicationsEndTime
+  function updateApplicationsEndTime(uint256 _newApplicationsEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+
+    require(_newApplicationsEndTime >= applicationsStartTime, "updateApplicationsEndTime: application end time should be after application start time");
+    require(_newApplicationsEndTime < roundEndTime, "updateApplicationsEndTime: should be before round end time");
+
+    emit ApplicationsEndTimeUpdated(applicationsEndTime, _newApplicationsEndTime);
+
+    applicationsEndTime = _newApplicationsEndTime;
   }
 
   /// @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)

@@ -52,6 +52,7 @@ contract RoundFactory is Ownable {
    *
    * @param _votingStrategy Voting Strategy Contract
    * @param _applicationsStartTime Unix timestamp from when round can accept applications
+   * @param _applicationsEndTime Unix timestamp of when round stops accepting applications
    * @param _roundStartTime Unix timestamp of the start of the round
    * @param _roundEndTime Unix timestamp of the end of the round
    * @param _token Address of the ERC20 token for accepting matching pool contributions
@@ -63,6 +64,7 @@ contract RoundFactory is Ownable {
   function create(
     IVotingStrategy _votingStrategy,
     uint256 _applicationsStartTime,
+    uint256 _applicationsEndTime,
     uint256 _roundStartTime,
     uint256 _roundEndTime,
     IERC20 _token,
@@ -77,6 +79,7 @@ contract RoundFactory is Ownable {
     RoundImplementation(_clone).initialize(
       _votingStrategy,
       _applicationsStartTime,
+      _applicationsEndTime,
       _roundStartTime,
       _roundEndTime,
       _token,
