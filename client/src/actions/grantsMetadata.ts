@@ -118,6 +118,7 @@ export const fetchGrantData =
     // if not cached in localstorage
     let source;
     try {
+      // FIXME: fetch from pinata gateway
       source = await global.ipfs!.cat(project.metadata.pointer);
     } catch (e) {
       // FIXME: dispatch "ipfs error"

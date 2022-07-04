@@ -4,13 +4,14 @@ import { global } from "../global";
 import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
-import { NewGrant } from "../reducers/newGrant";
-import { fetchGrantData } from "./grantsMetadata";
+import { NewGrant, Status } from "../reducers/newGrant";
+import PinataClient from "../services/pinata";
 
-export const NEW_GRANT_TX_STATUS = "NEW_GRANT_TX_STATUS";
-export interface NewGrantTXStatus {
-  type: typeof NEW_GRANT_TX_STATUS;
-  status: string;
+export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
+export interface NewGrantStatus {
+  type: typeof NEW_GRANT_STATUS;
+  status: Status;
+  error: string | undefined;
 }
 
 export const NEW_GRANT_CREATED = "NEW_GRANT_CREATED";
@@ -21,23 +22,24 @@ export interface GrantCreated {
   owner?: string;
 }
 
-export const RESET_TX_STATUS = "RESET_TX_STATUS";
+export const RESET_STATUS = "RESET_STATUS";
 export interface IPFSResetTXStatus {
-  type: typeof RESET_TX_STATUS;
+  type: typeof RESET_STATUS;
 }
 
 export type NewGrantActions =
   | GrantCreated
-  | NewGrantTXStatus
+  | NewGrantStatus
   | IPFSResetTXStatus;
 
-export const resetTXStatus = (): NewGrantActions => ({
-  type: RESET_TX_STATUS,
+export const resetStatus = (): NewGrantActions => ({
+  type: RESET_STATUS,
 });
 
-export const grantTXStatus = (status: string): NewGrantActions => ({
-  type: NEW_GRANT_TX_STATUS,
+export const grantStatus = (status: Status, error: string | undefined): NewGrantActions => ({
+  type: NEW_GRANT_STATUS,
   status,
+  error,
 });
 
 export const grantCreated = ({
@@ -52,43 +54,61 @@ export const grantCreated = ({
 });
 
 export const publishGrant =
-  (grantId?: string) =>
+  (grantId: string | undefined, content: any, image: Blob | undefined) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const { chainID } = state.web3;
-      const addresses = addressesByChainID(chainID!);
-      const signer = global.web3Provider?.getSigner();
-      const projectRegistry = new ethers.Contract(
-        addresses.projectRegistry,
-        ProjectRegistryABI,
-        signer
-      );
-      let projectTx;
-      if (grantId !== undefined) {
-        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
+    const pinataClient = new PinataClient();
+
+    if (image !== undefined) {
+      dispatch(grantStatus(Status.UploadingImage, undefined));
+      const resp = await pinataClient.pinFile(image);
+      content.projectImg = resp.IpfsHash;
+    }
+
+    dispatch(grantStatus(Status.UploadingJSON, undefined));
+    const resp = await pinataClient.pinJSON(content);
+    const metadataCID = resp.IpfsHash;
+
+    const state = getState();
+    const { chainID } = state.web3;
+    const addresses = addressesByChainID(chainID!);
+    const signer = global.web3Provider?.getSigner();
+    const projectRegistry = new ethers.Contract(
+      addresses.projectRegistry,
+      ProjectRegistryABI,
+      signer
+    );
+
+    dispatch(grantStatus(Status.WaitingForSignature, undefined));
+    let projectTx;
+
+    if (grantId !== undefined) {
+      try {
+        projectTx = await projectRegistry.updateProjectMetaData(grantId, {
           protocol: 1,
-          pointer: state.ipfs.projectFileSavedCID,
+          pointer: metadataCID,
         });
-      } else {
+      } catch (e) {
+        dispatch(grantStatus(Status.Error, "transaction error"));
+        console.error("tx error", e);
+        return;
+      }
+    } else {
+      try {
         projectTx = await projectRegistry.createProject(signer?.getAddress(), {
           protocol: 1,
-          pointer: state.ipfs.projectFileSavedCID,
+          pointer: metadataCID,
         });
+      } catch (e) {
+        dispatch(grantStatus(Status.Error, "transaction error"));
+        console.error("tx error", e);
+        return;
       }
+    }
 
-      dispatch(grantTXStatus("initiated"));
-      const txStatus = await projectTx.wait();
-      if (txStatus.status) {
-        dispatch(grantTXStatus("complete"));
-        // if grantId is not undefined it means we are editing an
-        // existing project
-        if (grantId !== undefined) {
-          dispatch<any>(fetchGrantData(Number(grantId)));
-        }
-      }
-    } catch (e) {
-      console.log({ e });
-      dispatch(grantTXStatus("error"));
+    dispatch(grantStatus(Status.TransactionInitiated, undefined));
+    const txStatus = await projectTx.wait();
+    if (txStatus.status) {
+      dispatch(grantStatus(Status.Completed, undefined));
     }
   };
+

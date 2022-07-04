@@ -87,6 +87,11 @@ export const resetFileStatus = (): IPFSActions => ({
 
 export const startIPFS =
   () => async (dispatch: Dispatch, getState: () => RootState) => {
+    // FIXME: create a general ipfs service with swappable
+    // strategies like local ipfs node, ipfs gateways, specific API like pinata.cloud
+    dispatch(ipfsInitialized());
+    return;
+
     const state = getState();
     if (state.ipfs.initializing || state.ipfs.initialized) {
       return;
