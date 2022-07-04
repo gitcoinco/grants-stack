@@ -41,12 +41,14 @@ export async function main() {
   });
 
   const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+  const applicationsEndTime = Math.round(new Date().getTime() / 1000 + 86400); // 1 day later
   const roundStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
   const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
   const roundTx = await roundFactory.create(
       networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
       applicationsStartTime, // _applicationsStartTime
+      applicationsEndTime, // _applicationsEndTime
       roundStartTime, // _roundStartTime
       roundEndTime, // _roundEndTime
       '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
