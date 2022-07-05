@@ -1,10 +1,10 @@
 ## Round Application
 
-This document covers how
-- a round operator can set the application form
-- a project can apply to a round (by filling the application form)
-- a round operator can view applications & take action on them (approve / reject)
-- a project application status can be retrieved at any given point in time
+This document covers how a
+- round operator can set the application form
+- project can apply to a round (by filling the application form)
+- round operator can view applications & take action on them (approve / reject)
+- project application status can be retrieved at any given point in time
 
 ### Application Form Schema
 
@@ -15,11 +15,11 @@ The application schema would be in the format as listed below:
 ```javascript
 {
   "id"                      : "String",                 // round contract address
-  "lastUpdatedOn"         : "Number",                 // epoch time in milliseconds
+  "lastUpdatedOn"           : "Number",                 // epoch time in milliseconds
   "applicationSchema": [
     {
       "question"            : "String",
-      "type"                : "String",                 // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+      "type"                : "String",                 // [TEXT, TEXTAREA, RADIO, MULTIPLE]
       "required"            : "Boolean",
       "info"               ?: "String",                 // optional
       "choices"            ?: ["String"|"Number"]       // optional

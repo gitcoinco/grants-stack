@@ -1,6 +1,7 @@
 ## Program
 
-The following documents lays out the kind of queries which can be made against the subgraph w.r.t Programs
+The following documents lays out the kind of queries which can be made against the subgraph w.r.t Programs.
+Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0?selected=playground
 
 
 **Fetch all programs created**
@@ -17,10 +18,10 @@ The following documents lays out the kind of queries which can be made against t
 
 ```graphql
 {
-	programAccounts(where:{
+	programAccounts(where: {
     address: "0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
   }) {
-    program{
+    program {
       id
     }
   }
@@ -31,10 +32,10 @@ The following documents lays out the kind of queries which can be made against t
 **Fetch all programs managed a given address and the roles they have**
 ```graphql
 {
-	programAccounts(where:{
+	programAccounts(where: {
     address: "0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
   }) {
-    program{
+    program {
       id
       roles {
         role
@@ -65,7 +66,7 @@ The following documents lays out the kind of queries which can be made against t
 **Fetch accounts having a certain role on a certain program**
 ```graphql
 {
-  programs(where:{
+  programs(where: {
    id: "0x5ab1a19edc1daebe1cd3a860e875c052be9d24db"
   }) {
     id
@@ -78,6 +79,5 @@ The following documents lays out the kind of queries which can be made against t
     	}
     }
   }
-  
 }
 ```
