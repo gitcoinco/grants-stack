@@ -3,9 +3,9 @@
 This package serves the app which holds all the features w.r.t to 
 
 - creating a program
-- maintaing a program
-- creating a round
 - maintaining a program
+- creating a round
+- maintaining a round
 
 This package is meant to be used by the round operators 
 It relies on the contracts deployed from the [contracts](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts) package.
