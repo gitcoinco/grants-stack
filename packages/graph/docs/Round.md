@@ -1,3 +1,8 @@
+## Rounds
+
+The following documents lays out the kind of queries which can be made against the subgraph w.r.t Rounds.
+Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0?selected=playground
+
 **Fetch all rounds created**
 
 ```graphql
@@ -60,12 +65,12 @@
 
 ```graphql
 {
-  roundRoles(
-    where :{
+  roundRoles (
+    where: {
       role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
     }
   ) {
-    accounts(where:{
+    accounts(where: {
       address: "0x5cdb35fadb8262a3f88863254c870c2e6a848cca"
     }) {
       address
@@ -82,10 +87,10 @@
 ```graphql
 
 {
-  rounds(where :{
+  rounds(where: {
     id: "0x592b8983f02cF41bBAa3Bb39920E5498Bd9cD938"
   }) {
-  	roles(where:{
+  	roles(where: {
       role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
     }) {
       accounts {

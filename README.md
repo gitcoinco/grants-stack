@@ -1,20 +1,22 @@
 # grants-round
 
 This repository contains packages needed for a user to 
-- Create & Manage Grant Round
-- Explore available Grant Rounds 
-- Contribute / Support Grants within a Grant Round
+- Create & Manage Rounds
+- Explore available Rounds 
+- Vote for Projects within a Round
 
 Project Maintained via  : `lerna`
 Build Tool              : `yarn`
 
 ## Directory Structure
+
 ```
 .
 ├── .github                     # github specific configuration
 ├── packages
 │   ├── contracts               # contracts built using hardhat
-│   ├── round-manager           # react-frontend for round-mamager
+│   ├── graph                   # graph which indexes data from contracts
+│   ├── round-manager           # react-frontend for round-manager
 │   ├── round-explorer          # react-frontend for round-explorer
 ├── docs                        # useful documentation 
 ├── lerna.json                  # lerna config
@@ -22,3 +24,63 @@ Build Tool              : `yarn`
 └── README.md
 ``` 
 
+## Packages
+
+### contracts
+
+The contracts needed for running a round can be found within the [contracts package](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts)
+
+##### Deploy Steps
+
+To know how the contracts should be setup, refer [DEPLOY_STEPS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEPLOY_STEPS.md)
+
+
+##### Chain Deployment List
+
+To know the addresses are deployed on which network. refer [CHAINS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/CHAINS.md)
+
+##### Development
+
+To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEV.md)
+
+This is built and maintained using [hardhat](hardhat.org)
+
+### graph 
+
+This package holds the subgraph which indexs data with regard the 
+- ProgramFactory
+- ProgramImplementation
+- RoundFactory
+- RoundImplementation
+
+More information can be found within the [graph package](https://github.com/gitcoinco/grants-round/tree/main/packages/graph)
+
+### round-manager
+
+This package serves the app which holds all the features w.r.t to 
+
+- creating a program
+- maintaing a program
+- creating a round
+- maintaining a program
+
+More information can be found within the [round-manager package](https://github.com/gitcoinco/grants-round/tree/main/packages/round-manager)
+
+##### Development
+
+To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-manager/docs/DEV.md)
+
+
+### round-explorer
+
+This package serves the app which holds all the features w.r.t to 
+
+- exploring a round
+- voting for a project
+
+
+More information can be found within the [round-explorer package](https://github.com/gitcoinco/grants-round/tree/main/packages/round-explorer)
+
+##### Development
+
+To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-explorer/docs/DEV.md)
