@@ -21,6 +21,10 @@ export const roundApi = api.injectEndpoints({
             global.web3Signer
           )
 
+          if (!round.applicationsEndTime) {
+            round.applicationsEndTime = round.startTime
+          }
+
           // Deploy a new Round contract
           let tx = await roundFactory.create(
             round.votingStrategy,
