@@ -32,6 +32,7 @@ describe("RoundImplementation", function () {
   // Variable declarations
   let _roundStartTime: BigNumberish;
   let _applicationsStartTime: BigNumberish;
+  let _applicationsEndTime: BigNumberish;
   let _roundEndTime: BigNumberish;
   let _token: string;
   let _votingStrategy: string;
@@ -71,8 +72,9 @@ describe("RoundImplementation", function () {
 
     before(async() => {
       _applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
-      _roundStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
-      _roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
+      _applicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
+      _roundStartTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
+      _roundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
 
       _token = Wallet.createRandom().address;
       _votingStrategy = Wallet.createRandom().address;
@@ -100,6 +102,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -121,6 +124,7 @@ describe("RoundImplementation", function () {
 
         expect(await roundImplementation.votingStrategy()).equals(_votingStrategy);
         expect(await roundImplementation.applicationsStartTime()).equals(_applicationsStartTime);
+        expect(await roundImplementation.applicationsEndTime()).equals(_applicationsEndTime);
         expect(await roundImplementation.roundStartTime()).equals(_roundStartTime);
         expect(await roundImplementation.roundEndTime()).equals(_roundEndTime);
         expect(await roundImplementation.token()).equals(_token);
@@ -147,6 +151,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _time, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -158,34 +163,16 @@ describe("RoundImplementation", function () {
 
       });
 
-      it ('initialize SHOULD revert if roundEndTime is after roundStartTime', async () => {
 
-        const _time = Math.round(new Date().getTime() / 1000); // current time
+      it ('initialize SHOULD revert when applicationsStartTime is after applicationsEndTime', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000 - 259200); // 3 days earlier
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
         await expect(newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
-          _roundStartTime, // _roundStartTime
-          _time, // _roundEndTime
-          _token, // _token
-          _roundMetaPtr, // _roundMetaPtr
-          _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
-          _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: end time must be after start time");
-
-      });
-
-
-      it ('initialize SHOULD revert when applicationsStartTime is after roundStartTime', async () => {
-
-        const _time = Math.round(new Date().getTime() / 1000 + 259200); // 3 days later
-        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
-
-        await expect(newRoundImplementation.initialize(
-          _votingStrategy, // _votingStrategyAddress
-          _time, // _applicationsStartTime
+          _time, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -193,7 +180,76 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
-        )).to.be.revertedWith("initialize: round start time must be after application start time");
+        )).to.be.revertedWith("initialize: application end time should be after application start time");
+
+      });
+
+      it ('initialize SHOULD revert if applicationsEndTime is after roundEndTime', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000); // current time
+        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+        await expect(newRoundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
+          _roundStartTime, // _roundStartTime
+          _time, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRole, // _adminRole
+          _roundOperators // _roundOperators
+        )).to.be.revertedWith("initialize: application end time should be before round end time");
+
+      });
+
+      it ('initialize SHOULD revert if roundEndTime is after roundStartTime', async () => {
+
+        const _uApplicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+        const _uApplicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
+        const _uRoundStartTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
+        const _uRoundEndTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
+
+        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+        await expect(newRoundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _uApplicationsStartTime, // _applicationsStartTime
+          _uApplicationsEndTime, // _applicationsEndTime
+          _uRoundStartTime, // _roundStartTime
+          _uRoundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRole, // _adminRole
+          _roundOperators // _roundOperators
+        )).to.be.revertedWith("initialize: end time should be after start time");
+
+      });
+
+
+      it ('initialize SHOULD revert when applicationsStartTime is after roundStartTime', async () => {
+
+        const _uApplicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+        const _uApplicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
+        const _uRoundStartTime = Math.round(new Date().getTime() / 1000 + 1800); // 30 min later
+        const _uRoundEndTime = Math.round(new Date().getTime() / 1000 + 14000); // 4 hours later
+
+        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+        await expect(newRoundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _uApplicationsStartTime, // _applicationsStartTime
+          _uApplicationsEndTime, // _applicationsEndTime
+          _uRoundStartTime, // _roundStartTime
+          _uRoundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRole, // _adminRole
+          _roundOperators // _roundOperators
+        )).to.be.revertedWith("initialize: round start time should be after application start time");
 
       });
 
@@ -202,6 +258,7 @@ describe("RoundImplementation", function () {
         await expect(roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -247,6 +304,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -268,6 +326,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -321,6 +380,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -341,6 +401,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -392,6 +453,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -412,6 +474,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -429,12 +492,21 @@ describe("RoundImplementation", function () {
       });
 
 
-      it ('invoking updateRoundStartTime SHOULD revert if roundStartTime is before applicationsStartTime', async () => {
+      it ('invoking updateRoundStartTime SHOULD revert if roundStartTime is in past', async () => {
 
-        const _time = Math.round(new Date().getTime() / 1000 - 86400); // 1 day earlier
+        const _time = Math.round(new Date().getTime() / 1000 - 1800); // 30 min before
 
         await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
-          'updateRoundStartTime: start time must be after application start time'
+          'updateRoundStartTime: start time has already passed'
+        );
+      });
+
+      it ('invoking updateRoundStartTime SHOULD revert if roundStartTime is before applicationsStartTime', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000 + 1800); // 30 min later
+
+        await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
+          'updateRoundStartTime: start time should be after application start time'
         );
       });
 
@@ -461,13 +533,19 @@ describe("RoundImplementation", function () {
 
       const newTime = Math.round(new Date().getTime() / 1000 + 691200); // 8 days later
 
+      const _uApplicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+      const _uApplicationsEndTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
+      const _uRoundStartTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
+      const _uRoundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
+
       beforeEach(async () => {
 
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
-          _applicationsStartTime, // _applicationsStartTime
-          _roundStartTime, // _roundStartTime
-          _roundEndTime, // _roundEndTime
+          _uApplicationsStartTime, // _applicationsStartTime
+          _uApplicationsEndTime, // _applicationsEndTime
+          _uRoundStartTime, // _roundStartTime
+          _uRoundEndTime, // _roundEndTime
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
@@ -486,6 +564,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -504,10 +583,19 @@ describe("RoundImplementation", function () {
 
       it ('invoking updateRoundEndTime SHOULD revert if roundEndTime is after roundStartTime', async () => {
 
-        const _time = Math.round(new Date().getTime() / 1000); // current time
+        const _time = Math.round(new Date().getTime() / 1000 + 900); // 15 min later
 
         await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'updateRoundEndTime: end time must be after start time'
+          'updateRoundEndTime: end time should be after start time'
+        );
+      });
+
+      it ('invoking updateRoundEndTime SHOULD revert if roundEndTime is before applicationsEndTime', async () => {
+
+        const _time = _applicationsEndTime; // 2.5 hours later
+
+        await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
+          'updateRoundEndTime: end time should be after application end time'
         );
       });
 
@@ -524,7 +612,7 @@ describe("RoundImplementation", function () {
 
         expect(await roundImplementation.updateRoundEndTime(newTime))
           .to.emit(roundImplementation, 'RoundEndTimeUpdated')
-          .withArgs(_roundEndTime, newTime);
+          .withArgs(_uRoundEndTime, newTime);
       });
     });
 
@@ -538,6 +626,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -559,6 +648,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -610,6 +700,98 @@ describe("RoundImplementation", function () {
       });
     });
 
+    describe('test: updateApplicationsEndTime', () => {
+      let initializeTxn: ContractTransaction;
+    
+      const newTime = Math.round(new Date().getTime() / 1000 + 12600); // 3.5 hours later
+    
+      beforeEach(async () => {
+    
+        initializeTxn = await roundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
+          _roundStartTime, // _roundStartTime
+          _roundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          _adminRole, // _adminRole
+          _roundOperators // _roundOperators
+        );
+    
+        initializeTxn.wait();
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if invoked by wallet who is not round operator', async () => {
+    
+        const randomWallet = Wallet.createRandom().address;
+        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+    
+        const txn = await newRoundImplementation.initialize(
+          _votingStrategy, // _votingStrategyAddress
+          _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
+          _roundStartTime, // _roundStartTime
+          _roundEndTime, // _roundEndTime
+          _token, // _token
+          _roundMetaPtr, // _roundMetaPtr
+          _applicationMetaPtr, // _applicationMetaPtr
+          randomWallet, // _adminRole
+          [randomWallet] // _roundOperators
+        );
+    
+        txn.wait();
+    
+        await expect(newRoundImplementation.updateApplicationsEndTime(newTime)).to.revertedWith(
+          `AccessControl: account ${user.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime has already passed', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 - 900); // 15 min before
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: application end time has already passed'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime is before applicationsStartTime', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 + 900); // 15 min later
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: application end time should be after application start time'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD revert if applicationsEndTime is after roundEndTime', async () => {
+    
+        const _time = Math.round(new Date().getTime() / 1000 + 16200); // 4.5 hours later
+    
+        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
+          'updateApplicationsEndTime: should be before round end time'
+        );
+      });
+    
+      it ('invoking updateApplicationsEndTime SHOULD update roundEndTime value IF called is round operator', async () => {
+    
+        const txn = await roundImplementation.updateApplicationsEndTime(newTime);
+        await txn.wait();
+    
+        const applicationsEndTime = await roundImplementation.applicationsEndTime();
+        expect(applicationsEndTime).equals(newTime);
+      });
+    
+      it('invoking updateApplicationsEndTime SHOULD emit RoundEndTimeUpdated event', async() => {
+    
+        expect(await roundImplementation.updateApplicationsEndTime(newTime))
+          .to.emit(roundImplementation, 'ApplicationsEndTimeUpdated')
+          .withArgs(_applicationsEndTime, newTime);
+      });
+    });
+
     describe('test: updateProjectsMetaPtr', () => {
 
       const randomMetaPtr: MetaPtr = {
@@ -626,6 +808,7 @@ describe("RoundImplementation", function () {
         initializeTxn = await roundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token
@@ -646,6 +829,7 @@ describe("RoundImplementation", function () {
         const txn = await newRoundImplementation.initialize(
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
+          _applicationsEndTime, // _applicationsEndTime
           _roundStartTime, // _roundStartTime
           _roundEndTime, // _roundEndTime
           _token, // _token

@@ -76,17 +76,19 @@ describe("RoundFactory", function () {
 
     describe('test: create', async () => {
       
-      const startTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
-      const applicationStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
-      const endTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
+      const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
+      const applicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
+      const roundStartTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
+      const roundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
 
         
       it("invoking create SHOULD have a successful transaction", async() => {
         const txn = await roundFactory.create(
           Wallet.createRandom().address, // _votingStrategyAddress
-          applicationStartTime, // _applicationsStartTime
-          startTime, // _roundStartTime
-          endTime, // _roundEndTime
+          applicationsStartTime, // _applicationsStartTime
+          applicationsEndTime, // _applicationsEndTime
+          roundStartTime, // _roundStartTime
+          roundEndTime, // _roundEndTime
           Wallet.createRandom().address, // _token
           Wallet.createRandom().address, // _ownedBy (Program)  
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
@@ -107,9 +109,10 @@ describe("RoundFactory", function () {
 
         const txn = await roundFactory.create(
           Wallet.createRandom().address, // _votingStrategyAddress
-          applicationStartTime, // _applicationsStartTime
-          startTime, // _roundStartTime
-          endTime, // _roundEndTime
+          applicationsStartTime, // _applicationsStartTime
+          applicationsEndTime, // _applicationsEndTime
+          roundStartTime, // _roundStartTime
+          roundEndTime, // _roundEndTime
           Wallet.createRandom().address, // _token
           programAddress, // _ownedBy (Program)  
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr

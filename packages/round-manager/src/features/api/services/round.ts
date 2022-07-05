@@ -21,10 +21,15 @@ export const roundApi = api.injectEndpoints({
             global.web3Signer
           )
 
+          if (!round.applicationsEndTime) {
+            round.applicationsEndTime = round.startTime
+          }
+
           // Deploy a new Round contract
           let tx = await roundFactory.create(
             round.votingStrategy,
-            new Date(round.applicationStartTime).getTime() / 1000,
+            new Date(round.applicationsStartTime).getTime() / 1000,
+            new Date(round.applicationsEndTime).getTime() / 1000,
             new Date(round.startTime).getTime() / 1000,
             new Date(round.endTime).getTime() / 1000,
             round.token,
@@ -105,7 +110,8 @@ export const roundApi = api.injectEndpoints({
               const [
                 roundMetaPtr,
                 applicationMetaPtr,
-                applicationStartTime,
+                applicationsStartTime,
+                applicationsEndTime,
                 startTime,
                 endTime,
                 votingStrategy,
@@ -115,6 +121,7 @@ export const roundApi = api.injectEndpoints({
                 roundImplementation.roundMetaPtr(),
                 roundImplementation.applicationMetaPtr(),
                 roundImplementation.applicationsStartTime(),
+                roundImplementation.applicationsEndTime(),
                 roundImplementation.roundStartTime(),
                 roundImplementation.roundEndTime(),
                 roundImplementation.votingStrategy(),
@@ -143,7 +150,8 @@ export const roundApi = api.injectEndpoints({
                 id: event.args[0],
                 metadata: JSON.parse(roundMetadata),
                 applicationMetadata: JSON.parse(applicationMetadata),
-                applicationStartTime: new Date(applicationStartTime.toNumber() * 1000),
+                applicationsStartTime: new Date(applicationsStartTime.toNumber() * 1000),
+                applicationsEndTime: new Date(applicationsEndTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),
                 endTime: new Date(endTime.toNumber() * 1000),
                 votingStrategy,

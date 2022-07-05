@@ -18,11 +18,11 @@ const ValidationSchema = yup.object().shape({
       .required("This field is required.")
       .min(8, "Round name must be less that 8 characters."),
   }),
-  applicationStartTime: yup.date().required("This field is required."),
+  applicationsStartTime: yup.date().required("This field is required."),
   startTime: yup.date()
     .required("This field is required.")
     .min(
-      yup.ref("applicationStartTime"),
+      yup.ref("applicationsStartTime"),
       "Round start date must be later than application start date"
     ),
   endTime: yup.date()
@@ -78,29 +78,56 @@ export function RoundDetailForm(props: { initialData: any, stepper: any }) {
 
             <p className="text-xs mt-4 mb-2">Applications</p>
             <div className="grid grid-cols-6 gap-6 mb-1">
-              <div className={`col-span-6 sm:col-span-3 relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.applicationStartTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
-                <label htmlFor="applicationStartTime" className="block text-[10px]">Start Date</label>
-                <Controller
-                  control={control}
-                  name="applicationStartTime"
-                  render={({ field }) => (
-                    <Datetime
-                      {...field}
-                      closeOnSelect
-                      inputProps={{
-                        placeholder: "",
-                        className: "block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 text-sm"
-                      }}
-                    />
-                  )} />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
+              <div className="col-span-6 sm:col-span-3">
+                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.applicationsStartTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
+                  <label htmlFor="applicationsStartTime" className="block text-[10px]">Start Date</label>
+                  <Controller
+                    control={control}
+                    name="applicationsStartTime"
+                    render={({ field }) => (
+                      <Datetime
+                        {...field}
+                        closeOnSelect
+                        inputProps={{
+                          placeholder: "",
+                          className: "block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 text-sm"
+                        }}
+                      />
+                    )} />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
+                {errors.applicationsStartTime && <p className="text-sm text-red-600">{errors.applicationsStartTime?.message}</p>}
+              </div>
+
+              <div className="col-span-6 sm:col-span-3">
+                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.applicationsEndTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
+                  <label htmlFor="applicationsEndTime" className="block text-[10px]">End Date</label>
+                  <Controller
+                    control={control}
+                    name="applicationsEndTime"
+                    render={({ field }) => (
+                      <Datetime
+                        {...field}
+                        closeOnSelect
+                        inputProps={{
+                          placeholder: "",
+                          className: "block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 text-sm"
+                        }}
+                      />
+                    )} />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                {errors.applicationsEndTime && <p className="text-sm text-red-600">{errors.applicationsEndTime?.message}</p>}
               </div>
             </div>
-            {errors.applicationStartTime && <p className="text-sm text-red-600">{errors.applicationStartTime?.message}</p>}
 
             <p className="text-xs mt-4 mb-2">Round</p>
             <div className="grid grid-cols-6 gap-6">
