@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
 import { BigNumberish, ContractTransaction, Wallet } from "ethers";
-import { isAddress } from "ethers/lib/utils";
+import { BytesLike, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { BulkVotingStrategy, RoundFactory, RoundImplementation } from "../../typechain";
@@ -510,6 +510,15 @@ describe("RoundImplementation", function () {
         );
       });
 
+      it ('invoking updateRoundStartTime SHOULD revert if roundStartTime is after roundEndTime', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000 + 18000); // 5 hours later
+
+        await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
+          'updateRoundStartTime: start time should be before round end time'
+        );
+      });
+
       it ('invoking updateRoundStartTime SHOULD update roundStartTime value IF called is round operator', async () => {
 
         const txn = await roundImplementation.updateRoundStartTime(newTime);
@@ -578,6 +587,15 @@ describe("RoundImplementation", function () {
 
         await expect(newRoundImplementation.updateRoundEndTime(newTime)).to.revertedWith(
           `AccessControl: account ${user.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+      });
+
+      it ('invoking updateRoundEndTime SHOULD revert if roundEndTime is in the past', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000 - 3600); // 1 hour earlier
+
+        await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
+          'updateRoundEndTime: end time has already passed'
         );
       });
 
@@ -667,7 +685,7 @@ describe("RoundImplementation", function () {
 
       it ('invoking updateApplicationsStartTime SHOULD revert if applicationsStartTime is in the past', async () => {
 
-        const _time = Math.round(new Date().getTime() / 1000 - 259200); // 3 days earlier
+        const _time = Math.round(new Date().getTime() / 1000 - 3600); // 1 hour earlier
 
         await expect(roundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
           'updateApplicationsStartTime: application start time has already passed'
@@ -676,12 +694,22 @@ describe("RoundImplementation", function () {
 
       it ('invoking updateApplicationsStartTime SHOULD revert if applicationsStartTime is after roundStartTime', async () => {
 
-        const _time = Math.round(new Date().getTime() / 1000 + 259200); // 3 days later
+        const _time = Math.round(new Date().getTime() / 1000 + 18000); // 5 hours later
 
         await expect(roundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
           'updateApplicationsStartTime: should be before round start time'
         );
       });
+
+      it ('invoking updateApplicationsStartTime SHOULD revert if applicationsStartTime is after applicationsEndTime', async () => {
+
+        const _time = Math.round(new Date().getTime() / 1000 + 9000); // 2.5 hours later
+
+        await expect(roundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
+          'updateApplicationsStartTime: should be before application end time'
+        );
+      });
+
 
       it ('invoking updateApplicationsStartTime SHOULD update applicationsStartTime value IF called is round operator', async () => {
 
@@ -872,11 +900,42 @@ describe("RoundImplementation", function () {
     });
 
     describe('test: applyToRound', () => {
+      it('invoking applyToRound SHOULD emit NewProjectApplication event', async() => {
+        const project = Wallet.createRandom().address;
+        const newProjectMetaPtr: MetaPtr = {
+          protocol: 1,
+          pointer: "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
+        };
 
+        const txn = await roundImplementation.applyToRound(project, newProjectMetaPtr);
+        expect(txn).to.emit(
+          roundImplementation, 'NewProjectApplication'
+        ).withArgs(
+          project, 
+          [ newProjectMetaPtr.protocol, newProjectMetaPtr.pointer ]
+        );
+      });
     });
 
     describe('test: vote', () => {
+      const votes = [
+        [Wallet.createRandom().address, 1, Wallet.createRandom().address],
+        [Wallet.createRandom().address, 2, Wallet.createRandom().address]
+      ];
 
+      const encodedVotes: BytesLike[] = [];
+
+      for (let i = 0; i < votes.length; i++) {
+        encodedVotes.push(ethers.utils.defaultAbiCoder.encode(
+          ["address", "uint256", "address"], votes[i]
+        ));
+      }
+
+      it('invoking Vote with encoded votes SHOULD NOT revert', async () => {
+        expect(
+          roundImplementation.vote(encodedVotes)
+        ).to.not.be.reverted;
+      })
     });
   })
 
