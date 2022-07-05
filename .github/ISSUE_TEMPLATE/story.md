@@ -24,4 +24,4 @@ THEN
 **Open Questions:**
 
 **Notes/Assumptions:**
-- This includes writing test coverage for the functionality added in the ticket
+- This includes writing test coverage for the functionality added in the ticket, if necessary
