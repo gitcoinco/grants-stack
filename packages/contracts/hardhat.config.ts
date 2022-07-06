@@ -62,7 +62,7 @@ const abiExporter = [
     path: './abis/pretty',
     flat: true,
     clear: true,
-    pretty: true,
+    format: "fullName",
   },
   {
     path: './abis/ugly',
