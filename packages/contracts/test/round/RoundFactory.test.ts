@@ -7,6 +7,7 @@ import { AddressZero } from "@ethersproject/constants";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { RoundFactory, RoundImplementation } from "../../typechain/";
+import { encodeRoundParameters } from "../../scripts/utils";
 
 describe("RoundFactory", function () {
 
@@ -83,17 +84,23 @@ describe("RoundFactory", function () {
 
         
       it("invoking create SHOULD have a successful transaction", async() => {
-        const txn = await roundFactory.create(
+
+        const params = [
           Wallet.createRandom().address, // _votingStrategyAddress
           applicationsStartTime, // _applicationsStartTime
           applicationsEndTime, // _applicationsEndTime
           roundStartTime, // _roundStartTime
           roundEndTime, // _roundEndTime
           Wallet.createRandom().address, // _token
-          Wallet.createRandom().address, // _ownedBy (Program)  
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
           { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
+          Wallet.createRandom().address, // _adminRoles
           [ Wallet.createRandom().address, Wallet.createRandom().address ] // _roundOperators
+        ];
+
+        const txn = await roundFactory.create(
+          encodeRoundParameters(params),
+          Wallet.createRandom().address, // _ownedBy (Program)
         );
 
         const receipt = await txn.wait();
@@ -107,17 +114,22 @@ describe("RoundFactory", function () {
 
         const programAddress = Wallet.createRandom().address;
 
-        const txn = await roundFactory.create(
+        const params = [
           Wallet.createRandom().address, // _votingStrategyAddress
           applicationsStartTime, // _applicationsStartTime
           applicationsEndTime, // _applicationsEndTime
           roundStartTime, // _roundStartTime
           roundEndTime, // _roundEndTime
           Wallet.createRandom().address, // _token
-          programAddress, // _ownedBy (Program)  
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
           { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
+          Wallet.createRandom().address, // _adminRoles
           [ Wallet.createRandom().address, Wallet.createRandom().address ] // _roundOperators
+        ];
+
+        const txn = await roundFactory.create(
+          encodeRoundParameters(params),
+          programAddress
         );
 
         let roundAddress;

@@ -50,43 +50,18 @@ contract RoundFactory is Ownable {
   /**
    * @notice Clones RoundImp a new round and emits event
    *
-   * @param _votingStrategy Voting Strategy Contract
-   * @param _applicationsStartTime Unix timestamp from when round can accept applications
-   * @param _applicationsEndTime Unix timestamp of when round stops accepting applications
-   * @param _roundStartTime Unix timestamp of the start of the round
-   * @param _roundEndTime Unix timestamp of the end of the round
-   * @param _token Address of the ERC20 token for accepting matching pool contributions
+   * @param _encodedParameters Encoded parameters for creating a round
    * @param _ownedBy Program which created the contract
-   * @param _roundMetaPtr MetaPtr to the round metadata
-   * @param _applicationMetaPtr MetaPtr to the application form schema
-   * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function create(
-    IVotingStrategy _votingStrategy,
-    uint256 _applicationsStartTime,
-    uint256 _applicationsEndTime,
-    uint256 _roundStartTime,
-    uint256 _roundEndTime,
-    IERC20 _token,
-    address _ownedBy,
-    MetaPtr calldata _roundMetaPtr,
-    MetaPtr calldata _applicationMetaPtr,
-    address[] calldata _roundOperators
+    bytes calldata _encodedParameters,
+    address _ownedBy
   ) external returns (address) {
 
     address _clone = Clones.clone(RoundContract);
 
     RoundImplementation(_clone).initialize(
-      _votingStrategy,
-      _applicationsStartTime,
-      _applicationsEndTime,
-      _roundStartTime,
-      _roundEndTime,
-      _token,
-      _roundMetaPtr,
-      _applicationMetaPtr,
-      msg.sender,
-      _roundOperators
+      _encodedParameters
     );
 
     emit RoundCreated(_clone, _ownedBy);

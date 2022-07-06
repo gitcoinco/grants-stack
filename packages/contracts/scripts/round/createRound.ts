@@ -4,6 +4,7 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
+import { encodeRoundParameters } from "../utils";
   
 export async function main() {
 
@@ -45,18 +46,23 @@ export async function main() {
   const roundStartTime = Math.round(new Date().getTime() / 1000 + 172800); // 2 days later
   const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
-  const roundTx = await roundFactory.create(
-      networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
-      applicationsStartTime, // _applicationsStartTime
-      applicationsEndTime, // _applicationsEndTime
-      roundStartTime, // _roundStartTime
-      roundEndTime, // _roundEndTime
-      '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
-      programContractAddress, // _ownedBy (Program)
-      { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
-      { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
-      ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123', '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB', '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017'] // _roundOperators
-  );
+  const params = [
+    networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
+    applicationsStartTime, // _applicationsStartTime
+    applicationsEndTime, // _applicationsEndTime
+    roundStartTime, // _roundStartTime
+    roundEndTime, // _roundEndTime
+    '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
+    programContractAddress, // _ownedBy (Program)
+    { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
+    { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
+    ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA'], // _adminRoles
+    ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123', '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB', '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017'] // _roundOperators
+  ];
+
+  const encodedParameters = encodeRoundParameters(params);
+
+  const roundTx = await roundFactory.create(encodedParameters);
 
   const receipt = await roundTx.wait();
   let roundAddress;

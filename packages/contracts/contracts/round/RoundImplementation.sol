@@ -89,29 +89,47 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /**
    * @notice Instantiates a new round
-   * @param _votingStrategy Deployed Voting Strategy Contract
-   * @param _applicationsStartTime Unix timestamp from when round can accept applications
-   * @param _applicationsEndTime Unix timestamp from when round stops accepting applications
-   * @param _roundStartTime Unix timestamp of the start of the round
-   * @param _roundEndTime Unix timestamp of the end of the round
-   * @param _token Address of the ERC20 token for accepting matching pool contributions
-   * @param _roundMetaPtr MetaPtr to the round metadata
-   * @param _applicationMetaPtr MetaPtr to the application form schema
-   * @param _adminRole Address to be granted DEFAULT_ADMIN_ROLE
-   * @param _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
+   * @param _encodedParameters Encoded parameters for program creation
+   * @dev _encodedParameters
+   *  - _applicationsStartTime Unix timestamp from when round can accept applications
+   *  - _applicationsEndTime Unix timestamp from when round stops accepting applications
+   *  - _roundStartTime Unix timestamp of the start of the round
+   *  - _roundEndTime Unix timestamp of the end of the round
+   *  - _token Address of the ERC20 token for accepting matching pool contributions
+   *  - _roundMetaPtr MetaPtr to the round metadata
+   *  - _applicationMetaPtr MetaPtr to the application form schema
+   *  - _adminRoles Address to be granted DEFAULT_ADMIN_ROLE
+   *  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
-    IVotingStrategy _votingStrategy,
-    uint256 _applicationsStartTime,
-    uint256 _applicationsEndTime,
-    uint256 _roundStartTime,
-    uint256 _roundEndTime,
-    IERC20 _token,
-    MetaPtr memory _roundMetaPtr,
-    MetaPtr calldata _applicationMetaPtr,
-    address _adminRole,
-    address[] memory _roundOperators
+    bytes calldata _encodedParameters
   ) public initializer {
+
+    // Decode _encodedParameters
+    (
+      IVotingStrategy _votingStrategy,
+      uint256 _applicationsStartTime,
+      uint256 _applicationsEndTime,
+      uint256 _roundStartTime,
+      uint256 _roundEndTime,
+      IERC20 _token,
+      MetaPtr memory _roundMetaPtr,
+      MetaPtr memory _applicationMetaPtr,
+      address _adminRole,
+      address[] memory _roundOperators
+    ) = abi.decode(
+      _encodedParameters, (
+      IVotingStrategy,
+      uint256,
+      uint256,
+      uint256,
+      uint256,
+      IERC20,
+      MetaPtr,
+      MetaPtr,
+      address,
+      address[]
+    ));
 
     require(_applicationsStartTime >= block.timestamp, "initialize: applications start time has already passed");
     require(_applicationsEndTime > _applicationsStartTime, "initialize: application end time should be after application start time");

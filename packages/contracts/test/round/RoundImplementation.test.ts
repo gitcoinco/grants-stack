@@ -5,6 +5,7 @@ import { BigNumberish, ContractTransaction, Wallet } from "ethers";
 import { BytesLike, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
+import { encodeRoundParameters } from "../../scripts/utils";
 import { BulkVotingStrategy, RoundFactory, RoundImplementation } from "../../typechain";
 
 
@@ -97,9 +98,10 @@ describe("RoundImplementation", function () {
     describe('test: initialize', () => {
 
       let initializeTxn: ContractTransaction;
-
+      
       beforeEach(async () => {
-        initializeTxn = await roundImplementation.initialize(
+
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -110,6 +112,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -148,7 +154,7 @@ describe("RoundImplementation", function () {
         const _time = Math.round(new Date().getTime() / 1000 - 259200); // 3 days earlier
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        await expect(newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _time, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -159,6 +165,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        await expect(newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("initialize: applications start time has already passed");
 
       });
@@ -169,7 +179,7 @@ describe("RoundImplementation", function () {
         const _time = Math.round(new Date().getTime() / 1000 - 259200); // 3 days earlier
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        await expect(newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _time, // _applicationsEndTime
@@ -180,6 +190,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        await expect(newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("initialize: application end time should be after application start time");
 
       });
@@ -189,7 +203,7 @@ describe("RoundImplementation", function () {
         const _time = Math.round(new Date().getTime() / 1000); // current time
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        await expect(newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -200,6 +214,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        await expect(newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("initialize: application end time should be before round end time");
 
       });
@@ -213,7 +231,7 @@ describe("RoundImplementation", function () {
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        await expect(newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _uApplicationsStartTime, // _applicationsStartTime
           _uApplicationsEndTime, // _applicationsEndTime
@@ -224,6 +242,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        await expect(newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("initialize: end time should be after start time");
 
       });
@@ -238,7 +260,7 @@ describe("RoundImplementation", function () {
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        await expect(newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _uApplicationsStartTime, // _applicationsStartTime
           _uApplicationsEndTime, // _applicationsEndTime
@@ -249,13 +271,17 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+      
+        await expect(newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("initialize: round start time should be after application start time");
 
       });
 
       it ('initialize CANNOT not be invoked on already initialized contract ', async () => {
 
-        await expect(roundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -266,6 +292,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        await expect(roundImplementation.initialize(
+          encodeRoundParameters(params)
         )).to.be.revertedWith("Initializable: contract is already initialized");
 
       });
@@ -301,7 +331,7 @@ describe("RoundImplementation", function () {
       let initializeTxn: ContractTransaction;
 
       beforeEach(async () => {
-        initializeTxn = await roundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -312,6 +342,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -323,7 +357,7 @@ describe("RoundImplementation", function () {
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -334,6 +368,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();
@@ -377,7 +415,8 @@ describe("RoundImplementation", function () {
       let initializeTxn: ContractTransaction;
 
       beforeEach(async () => {
-        initializeTxn = await roundImplementation.initialize(
+
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -388,6 +427,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -398,7 +441,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -409,6 +452,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();
@@ -450,7 +497,7 @@ describe("RoundImplementation", function () {
 
       beforeEach(async () => {
 
-        initializeTxn = await roundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -461,6 +508,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -471,7 +522,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -482,6 +533,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();
@@ -548,8 +603,7 @@ describe("RoundImplementation", function () {
       const _uRoundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
 
       beforeEach(async () => {
-
-        initializeTxn = await roundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _uApplicationsStartTime, // _applicationsStartTime
           _uApplicationsEndTime, // _applicationsEndTime
@@ -560,6 +614,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -570,7 +628,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -581,6 +639,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();
@@ -641,7 +703,7 @@ describe("RoundImplementation", function () {
 
       beforeEach(async () => {
 
-        initializeTxn = await roundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -652,6 +714,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -663,7 +729,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        const params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -674,6 +740,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+        
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();
@@ -735,7 +805,7 @@ describe("RoundImplementation", function () {
     
       beforeEach(async () => {
     
-        initializeTxn = await roundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -746,6 +816,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
     
         initializeTxn.wait();
@@ -756,7 +830,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
     
-        const txn = await newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -767,6 +841,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
     
         txn.wait();
@@ -832,8 +910,8 @@ describe("RoundImplementation", function () {
       let initializeTxn: ContractTransaction;
 
       beforeEach(async () => {
-
-        initializeTxn = await roundImplementation.initialize(
+        
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -844,6 +922,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           _adminRole, // _adminRole
           _roundOperators // _roundOperators
+        ];
+
+        initializeTxn = await roundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         initializeTxn.wait();
@@ -854,7 +936,7 @@ describe("RoundImplementation", function () {
         const randomWallet = Wallet.createRandom().address;
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
-        const txn = await newRoundImplementation.initialize(
+        let params = [
           _votingStrategy, // _votingStrategyAddress
           _applicationsStartTime, // _applicationsStartTime
           _applicationsEndTime, // _applicationsEndTime
@@ -865,6 +947,10 @@ describe("RoundImplementation", function () {
           _applicationMetaPtr, // _applicationMetaPtr
           randomWallet, // _adminRole
           [randomWallet] // _roundOperators
+        ];
+
+        const txn = await newRoundImplementation.initialize(
+          encodeRoundParameters(params)
         );
 
         txn.wait();

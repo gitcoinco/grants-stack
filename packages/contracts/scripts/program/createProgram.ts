@@ -4,6 +4,7 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { programParams } from '../config/program.config';
+import { encodeProgramParams } from "../utils";
 
   
 export async function main() {
@@ -45,13 +46,9 @@ export async function main() {
     ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123', '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB', '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017'] // _programOperators
   ];
 
-  const encodedParameters = ethers.utils.defaultAbiCoder.encode(
-    ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
-    params
-  );
+  const encodedParameters = encodeProgramParams(params);
 
   const programTx = await programFactory.create(encodedParameters);
-
 
   const receipt = await programTx.wait();
   let programAddress;
