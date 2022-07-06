@@ -41,21 +41,15 @@ contract ProgramFactory is OwnableUpgradeable {
   /**
    * @notice Clones ProgramImplmentation and deployed a program and emits an event
    *
-   * @param _metaPtr URL pointing to the program metadata
-   * @param _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
+   * @param _encodedParameters Encoded parameters for creating a program
    */
   function create(
-    MetaPtr calldata _metaPtr,
-    address[] calldata _programOperators
+    bytes calldata _encodedParameters
   ) external returns (address) {
 
     address clone = ClonesUpgradeable.clone(programContract);
 
-    ProgramImplementation(clone).initialize(
-      _metaPtr,
-      msg.sender,
-      _programOperators
-    );
+    ProgramImplementation(clone).initialize(_encodedParameters);
 
     emit ProgramCreated(clone);
 
