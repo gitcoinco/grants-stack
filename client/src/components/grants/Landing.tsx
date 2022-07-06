@@ -21,7 +21,7 @@ function Landing() {
 
   useEffect(() => {
     if (props.account) {
-      navigate(slugs.grants, { replace: true });
+      navigate(slugs.grants);
     }
   }, [props.account]);
 

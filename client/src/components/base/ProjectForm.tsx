@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
@@ -9,9 +10,13 @@ import { saveFileToIPFS, resetFileStatus, FileTypes } from "../../actions/ipfs";
 import { publishGrant, resetTXStatus } from "../../actions/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
+import ExitModal from "./ExitModal";
+import { slugs } from "../../routes";
 
 function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[Number(currentGrantId)];
     return {
@@ -38,6 +43,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
   });
 
   const [show, showToast] = useState(false);
+  const [modalOpen, toggleModal] = useState(false);
 
   const resetStatus = () => {
     dispatch(resetTXStatus());
@@ -53,7 +59,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     }
 
     await dispatch(saveFileToIPFS(formInputs, FileTypes.PROJECT));
-    dispatch(publishGrant(currentGrantId));
+    await dispatch(publishGrant(currentGrantId));
   };
 
   const handleInput = (
@@ -64,6 +70,12 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
+
+  useEffect(() => {
+    if (props.txStatus === "complete") {
+      setTimeout(() => navigate(slugs.grants), 1500);
+    }
+  }, [props.txStatus]);
 
   // TODO: feels like this could be extracted to a component
   useEffect(() => {
@@ -172,6 +184,12 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         />
         <div className="flex w-full justify-end mt-6">
           <Button
+            variant={ButtonVariants.outline}
+            onClick={() => toggleModal(true)}
+          >
+            Cancel
+          </Button>
+          <Button
             disabled={!validated || !props.ipfsInitialized}
             variant={ButtonVariants.primary}
             onClick={publishProject}
@@ -187,6 +205,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       >
         <TXLoading status={props.txStatus} />
       </Toast>
+      <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
     </div>
   );
 }
