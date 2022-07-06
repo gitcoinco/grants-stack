@@ -98,7 +98,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    *  - _token Address of the ERC20 token for accepting matching pool contributions
    *  - _roundMetaPtr MetaPtr to the round metadata
    *  - _applicationMetaPtr MetaPtr to the application form schema
-   *  - _adminRoles Address to be granted DEFAULT_ADMIN_ROLE
+   *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
    *  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
@@ -115,7 +115,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       IERC20 _token,
       MetaPtr memory _roundMetaPtr,
       MetaPtr memory _applicationMetaPtr,
-      address _adminRole,
+      address[] memory _adminRoles,
       address[] memory _roundOperators
     ) = abi.decode(
       _encodedParameters, (
@@ -127,7 +127,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       IERC20,
       MetaPtr,
       MetaPtr,
-      address,
+      address[],
       address[]
     ));
 
@@ -155,8 +155,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     emit ApplicationMetaPtrUpdated(applicationMetaPtr, _applicationMetaPtr);
     applicationMetaPtr = _applicationMetaPtr;
 
-    // assign roles
-    _grantRole(DEFAULT_ADMIN_ROLE, _adminRole);
+    // Assigning default admin role
+    for (uint256 i = 0; i < _adminRoles.length; ++i) {
+      _grantRole(DEFAULT_ADMIN_ROLE, _adminRoles[i]);
+    }
 
     // Assigning round operators
     for (uint256 i = 0; i < _roundOperators.length; ++i) {

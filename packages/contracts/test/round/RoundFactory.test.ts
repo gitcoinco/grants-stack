@@ -94,7 +94,7 @@ describe("RoundFactory", function () {
           Wallet.createRandom().address, // _token
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
           { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
-          Wallet.createRandom().address, // _adminRoles
+          [ Wallet.createRandom().address ], // _adminRoles
           [ Wallet.createRandom().address, Wallet.createRandom().address ] // _roundOperators
         ];
 
@@ -123,7 +123,7 @@ describe("RoundFactory", function () {
           Wallet.createRandom().address, // _token
           { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
           { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
-          Wallet.createRandom().address, // _adminRoles
+          [ Wallet.createRandom().address ], // _adminRoles
           [ Wallet.createRandom().address, Wallet.createRandom().address ] // _roundOperators
         ];
 

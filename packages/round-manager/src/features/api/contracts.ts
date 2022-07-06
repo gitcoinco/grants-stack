@@ -20,7 +20,7 @@ export const programImplementationContract: Contract = {
 
 /** RoundFactory  */
 export const roundFactoryContract: Contract = {
-  address: "0x592b8983f02cF41bBAa3Bb39920E5498Bd9cD938",
+  address: "0x515594eeB37A6D5815F4c860454cD4FD87539978",
   abi: abi.roundFactory
 }
 

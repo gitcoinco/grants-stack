@@ -7,7 +7,7 @@ import { ethers } from "ethers";
  * @param params 
  * @returns {string}
  */
-export const encodeProgramParams = (params: any[]) => {
+export const encodeProgramParams = (params: any[]): string => {
   return ethers.utils.defaultAbiCoder.encode(
     ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
     params
@@ -20,7 +20,7 @@ export const encodeProgramParams = (params: any[]) => {
  * @param params 
  * @returns {string}
  */
-export const encodeRoundParameters = (params: any[]) => {
+export const encodeRoundParameters = (params: any[]): string => {
   return ethers.utils.defaultAbiCoder.encode(
     [
       "address",
@@ -31,7 +31,7 @@ export const encodeRoundParameters = (params: any[]) => {
       "address",
       "tuple(uint256 protocol, string pointer)",
       "tuple(uint256 protocol, string pointer)",
-      "address",
+      "address[]",
       "address[]"
     ],
     params

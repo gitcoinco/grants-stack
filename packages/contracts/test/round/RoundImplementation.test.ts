@@ -39,7 +39,7 @@ describe("RoundImplementation", function () {
   let _votingStrategy: string;
   let _roundMetaPtr: MetaPtr;
   let _applicationMetaPtr: MetaPtr;
-  let _adminRole: string;
+  let _adminRoles: string[];
   let _roundOperators: string[];
 
   const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
@@ -81,7 +81,7 @@ describe("RoundImplementation", function () {
       _votingStrategy = Wallet.createRandom().address;
       _roundMetaPtr = { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" };
       _applicationMetaPtr = { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" };
-      _adminRole = user.address;
+      _adminRoles = [ user.address ];
       _roundOperators = [
         user.address,
         Wallet.createRandom().address,
@@ -110,7 +110,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -143,6 +143,9 @@ describe("RoundImplementation", function () {
         expect(applicationMetaPtr.pointer).equals(_applicationMetaPtr.pointer);
         expect(applicationMetaPtr.protocol).equals(_applicationMetaPtr.protocol);
 
+        expect(await roundImplementation.getRoleMemberCount(DEFAULT_ADMIN_ROLE)).equals(_adminRoles.length);
+        expect(await roundImplementation.getRoleMember(DEFAULT_ADMIN_ROLE, 0)).equals(_adminRoles[0]);
+
         expect(await roundImplementation.getRoleMemberCount(ROUND_OPERATOR_ROLE)).equals(_roundOperators.length);
         expect(await roundImplementation.getRoleMember(ROUND_OPERATOR_ROLE, 0)).equals(_roundOperators[0]);
         expect(await roundImplementation.getRoleMember(ROUND_OPERATOR_ROLE, 1)).equals(_roundOperators[1]);
@@ -163,7 +166,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -188,7 +191,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -212,7 +215,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -240,7 +243,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -269,7 +272,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
       
@@ -290,7 +293,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -340,7 +343,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -366,7 +369,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 
@@ -425,7 +428,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -450,7 +453,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 
@@ -506,7 +509,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -531,7 +534,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 
@@ -612,7 +615,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -637,7 +640,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 
@@ -712,7 +715,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -738,7 +741,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
         
@@ -814,7 +817,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -839,7 +842,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 
@@ -920,7 +923,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          _adminRole, // _adminRole
+          _adminRoles, // _adminRoles
           _roundOperators // _roundOperators
         ];
 
@@ -945,7 +948,7 @@ describe("RoundImplementation", function () {
           _token, // _token
           _roundMetaPtr, // _roundMetaPtr
           _applicationMetaPtr, // _applicationMetaPtr
-          randomWallet, // _adminRole
+          [randomWallet], // _adminRoles
           [randomWallet] // _roundOperators
         ];
 

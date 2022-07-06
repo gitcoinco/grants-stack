@@ -88,7 +88,7 @@ Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone
 
 {
   rounds(where: {
-    id: "0x592b8983f02cF41bBAa3Bb39920E5498Bd9cD938"
+    id: "0x515594eeB37A6D5815F4c860454cD4FD87539978"
   }) {
   	roles(where: {
       role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
@@ -106,7 +106,7 @@ Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone
 ```graphql
 {
   rounds(where :{
-    id: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
+    id: "0x707F12906E028dE672424d600c9C69460dcD2295"
   }) {
     accounts {
       address
@@ -126,7 +126,7 @@ You can do this by two means :
 ```graphql
 {
   rounds(where:{
-    id: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
+    id: "0x707F12906E028dE672424d600c9C69460dcD2295"
   }) {
     id
     projects {
@@ -147,7 +147,7 @@ You can do this by two means :
 ```graphql
 {
   roundProjects(where: {
-    round: "0x30683Ae980f3049E0fECF376945eC6f279e3E351"
+    round: "0x707F12906E028dE672424d600c9C69460dcD2295"
   }) {
     id
     status
