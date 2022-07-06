@@ -40,7 +40,7 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
    * @param _encodedParameters Encoded parameters for program creation
    * @dev _encodedParameters
    *  - _metaPtr URL pointing to the program metadata
-   *  - _adminRole Addresses to be granted DEFAULT_ADMIN_ROLE
+   *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
    *  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
    */
   function initialize(
@@ -50,12 +50,12 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
     // Decode _encodedParameters
     (
       MetaPtr memory _metaPtr,
-      address _adminRole,
+      address[] memory _adminRoles,
       address[] memory _programOperators
     ) = abi.decode(
       _encodedParameters, (
       MetaPtr,
-      address,
+      address[],
       address[]
     ));
 
@@ -63,8 +63,10 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
     emit MetadataUpdated(metaPtr, _metaPtr);
     metaPtr = _metaPtr;
 
-    // assign roles
-    _grantRole(DEFAULT_ADMIN_ROLE, _adminRole);
+    // Assigning default admin role
+    for (uint256 i = 0; i < _adminRoles.length; ++i) {
+      _grantRole(DEFAULT_ADMIN_ROLE, _adminRoles[i]);
+    }
 
     // Assigning program operators
     for (uint256 i = 0; i < _programOperators.length; ++i) {

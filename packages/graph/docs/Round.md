@@ -35,7 +35,7 @@ Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone
 ```graphql
 {
   rounds(where: {
-    program: "0x5ab1a19edc1daebe1cd3a860e875c052be9d24db"
+    program: "0xA758560ED04c45FE77D1bE3aFC1f8B0eb4Cc597c"
   }) {
     id
   }
