@@ -56,18 +56,18 @@ export function WebsiteInput({
         {" "}
         {label}{" "}
       </label>
-      <div className="mt-1 flex rounded-md shadow-sm">
-        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+      <div className="mt-1 flex">
+        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
           {" "}
           http://{" "}
-        </span>
+        </span> */}
         <input
           type="text"
-          className="rounded-none rounded-r-md"
+          className="rounded"
           id={label}
           name={name}
           value={value ?? ""}
-          placeholder="www.example.com"
+          placeholder="https://gitcoin.co/"
           onChange={changeHandler}
         />
       </div>
