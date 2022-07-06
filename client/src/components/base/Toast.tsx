@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Transition } from "@headlessui/react";
 import Cross from "../icons/Cross";
 import colors from "../../styles/colors";
@@ -7,13 +7,23 @@ export default function Toast({
   children,
   show,
   error = false,
+  fadeOut = false,
   onClose,
 }: {
   children: JSX.Element;
   show: boolean;
   error?: boolean;
+  fadeOut?: boolean;
   onClose: () => void;
 }) {
+  useEffect(() => {
+    if (fadeOut) {
+      const timer = setTimeout(onClose, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [fadeOut]);
+
   return (
     <div
       aria-live="assertive"
