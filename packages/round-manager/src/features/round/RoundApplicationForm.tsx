@@ -85,12 +85,20 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
         metadataPointer,
         applicationMetadataPointer
       ] = await Promise.all([
-        saveToIPFS({ content: JSON.stringify(data.metadata) }).unwrap(),
         saveToIPFS({
-          content: JSON.stringify({
+          content: data.metadata,
+          metadata: {
+            name: "round-metadata"
+          }
+        }).unwrap(),
+        saveToIPFS({
+          content: {
             lastUpdatedOn: Date.now(),
             applicationSchema: generateApplicationSchema(data.applicationMetadata)
-          })
+          },
+          metadata: {
+            name: "application-schema"
+          }
         }).unwrap()
       ])
 

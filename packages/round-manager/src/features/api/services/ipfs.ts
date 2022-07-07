@@ -1,27 +1,21 @@
 import { create as IPFSCreate } from "ipfs-core"
 import { global } from "../../../global"
+import { IPFSObject } from "../types"
+import { pinToIPFS } from "../utils"
 import { api } from ".."
-import { IPFSFile } from "../types"
 
 
 export const ipfsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    saveToIPFS: builder.mutation<string, IPFSFile>({
-      queryFn: async (file) => {
+    saveToIPFS: builder.mutation<string, IPFSObject>({
+      queryFn: async (object) => {
         let result = { data: "" }
 
         try {
-          if (global.ipfs === undefined) {
-            global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
-          }
+          const resp = await pinToIPFS(object)
 
-          const res = await global.ipfs!.add({
-            path: file.path,
-            content: new TextEncoder().encode(file.content)
-          })
-
-          console.log('Added file to IPFS:', res.path, res.cid.toString())
-          result.data = res.cid.toString()
+          console.log('Added file to IPFS:', resp.IpfsHash)
+          result.data = resp.IpfsHash
 
           return result
 
