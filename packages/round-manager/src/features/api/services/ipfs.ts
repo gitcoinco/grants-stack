@@ -1,7 +1,5 @@
-import { create as IPFSCreate } from "ipfs-core"
-import { global } from "../../../global"
 import { IPFSObject } from "../types"
-import { pinToIPFS } from "../utils"
+import { fetchFromIPFS, pinToIPFS } from "../utils"
 import { api } from ".."
 
 
@@ -28,18 +26,9 @@ export const ipfsApi = api.injectEndpoints({
     readFromIPFS: builder.query<string, string>({
       queryFn: async (cid) => {
         try {
-          if (global.ipfs === undefined) {
-            global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
-          }
+          const data = await fetchFromIPFS(cid)
 
-          const decoder = new TextDecoder()
-          let content = ''
-
-          for await (const chunk of global.ipfs.cat(cid)) {
-            content += decoder.decode(chunk)
-          }
-
-          return { data: content }
+          return { data }
 
         } catch (err) {
           console.log("error", err)
