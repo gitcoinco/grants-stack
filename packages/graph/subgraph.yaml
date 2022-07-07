@@ -7,7 +7,7 @@ dataSources:
     name: Program
     network: goerli
     source:
-      address: "0x7b7a95DE5cdBDA7F4B4604CC3F14Da3085dC6a52"
+      address: "0xAd732aB847d20EdfC48A6d9B256f35D756381C52"
       abi: ProgramFactory
       startBlock: 7015700 
     mapping:

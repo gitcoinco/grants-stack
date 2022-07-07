@@ -36,14 +36,14 @@ This is not the exahustive list but instead just shows example of a round deploy
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0x7b7a95DE5cdBDA7F4B4604CC3F14Da3085dC6a52 |
+| goerli  | 0xAd732aB847d20EdfC48A6d9B256f35D756381C52 |
 
 
 ## ProgramImplementation
 
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0x01B8c38730a8830eE280e9Cc000b66ce3b45221E |
+| goerli  | 0x6D4F03Eb1a51f16da40E4237C42DE07D96C8e351 |
 
 
 ## Program
@@ -51,4 +51,4 @@ This is not the exahustive list but instead just shows example of a round deploy
 This is not the exahustive list but instead just shows example of a program deployed on network
 | Network | Address                                    |
 |---------|--------------------------------------------|
-| goerli  | 0x5ab1a19edc1daebe1cd3a860e875c052be9d24db |
+| goerli  | 0xA758560ED04c45FE77D1bE3aFC1f8B0eb4Cc597c |
