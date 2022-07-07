@@ -148,8 +148,8 @@ export const roundApi = api.injectEndpoints({
               // Add round to response
               rounds.push({
                 id: event.args[0],
-                metadata: JSON.parse(roundMetadata),
-                applicationMetadata: JSON.parse(applicationMetadata),
+                metadata: roundMetadata,
+                applicationMetadata,
                 applicationsStartTime: new Date(applicationsStartTime.toNumber() * 1000),
                 applicationsEndTime: new Date(applicationsEndTime.toNumber() * 1000),
                 startTime: new Date(startTime.toNumber() * 1000),

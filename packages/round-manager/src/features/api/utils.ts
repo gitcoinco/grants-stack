@@ -1,27 +1,20 @@
-import { create as IPFSCreate } from "ipfs-core"
-
-import { global } from "../../global"
 import { IPFSObject } from "./types"
 
 
 /**
  * Fetch data from IPFS
+ * TODO: include support for fetching abitrary data e.g images
  * 
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = async (cid: string) => {
-  if (global.ipfs === undefined) {
-    global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
-  }
+  return fetch(`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
+    if (resp.ok) {
+      return resp.json()
+    }
 
-  const decoder = new TextDecoder()
-  let content = ''
-
-  for await (const chunk of global.ipfs.cat(cid)) {
-    content += decoder.decode(chunk)
-  }
-
-  return content
+    return Promise.reject(resp)
+  })
 }
 
 
@@ -62,7 +55,7 @@ export const pinToIPFS = (obj: IPFSObject) => {
       }
 
       return Promise.reject(resp)
-    });
+    })
   } else {
     // content is a blob
     const fd = new FormData();
