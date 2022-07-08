@@ -30,6 +30,14 @@ function Card({ projectId }: { projectId: number }) {
     }
   }, [dispatch, props.ipfsInitialized, projectId, props.currentProject]);
 
+  useEffect(() => {
+    // Called to capture updates to projectmetadata after project edit
+    // props.currentProject will be defined, but it will reference cached values
+    if (projectId !== undefined) {
+      dispatch(fetchGrantData(projectId));
+    }
+  }, [projectId, props.ipfsInitialized]);
+
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={grantPath(projectId)}>
