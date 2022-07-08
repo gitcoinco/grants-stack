@@ -126,7 +126,7 @@ interface Inputs {
 }
 
 export const saveFileToIPFS =
-  (content: Inputs | Buffer, fileType: FileTypes) =>
+  (content: Inputs | Buffer, fileType: FileTypes, currentProjectId?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     dispatch(savingFile());
@@ -135,6 +135,13 @@ export const saveFileToIPFS =
     }
 
     const fullContent: any = content;
+
+    const id = Number(currentProjectId);
+
+    if (currentProjectId !== undefined && state.grantsMetadata[id]) {
+      fullContent.projectImg = state.grantsMetadata[id].metadata?.projectImg;
+    }
+
     if (state.ipfs.projectImgSavedCID) {
       fullContent.projectImg = state.ipfs.projectImgSavedCID;
     }

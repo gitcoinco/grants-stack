@@ -28,16 +28,16 @@ const validation = {
   valid: false,
 };
 
-function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
+function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(currentGrantId)];
+    const grantMetadata = state.grantsMetadata[Number(currentProjectId)];
     return {
-      id: currentGrantId,
+      id: currentProjectId,
       loading: grantMetadata ? grantMetadata.loading : false,
-      currentGrant: grantMetadata?.metadata,
+      currentProject: grantMetadata?.metadata,
       ipfsInitialized: state.ipfs.initialized,
       ipfsInitializationError: state.ipfs.initializationError,
       savingFile: state.ipfs.ipfsSavingFile,
@@ -70,8 +70,10 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
       await dispatch(saveFileToIPFS(projectImg, FileTypes.IMG));
     }
 
-    await dispatch(saveFileToIPFS(formInputs, FileTypes.PROJECT));
-    await dispatch(publishGrant(currentGrantId));
+    await dispatch(
+      saveFileToIPFS(formInputs, FileTypes.PROJECT, currentProjectId)
+    );
+    await dispatch(publishGrant(currentProjectId));
   };
 
   const handleInput = (
@@ -94,22 +96,22 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     // called twice
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
-    if (currentGrantId !== undefined && props.currentGrant === undefined) {
-      dispatch(fetchGrantData(Number(currentGrantId)));
+    if (currentProjectId !== undefined && props.currentProject === undefined) {
+      dispatch(fetchGrantData(Number(currentProjectId)));
     }
 
-    const { currentGrant } = props;
+    const { currentProject } = props;
 
-    if (currentGrant) {
+    if (currentProject) {
       setFormInputs({
-        title: currentGrant.title,
-        description: currentGrant.description,
-        website: currentGrant.website,
-        challenges: currentGrant.challenges,
-        roadmap: currentGrant.roadmap,
+        title: currentProject.title,
+        description: currentProject.description,
+        website: currentProject.website,
+        challenges: currentProject.challenges,
+        roadmap: currentProject.roadmap,
       });
     }
-  }, [dispatch, props.ipfsInitialized, currentGrantId, props.currentGrant]);
+  }, [dispatch, props.ipfsInitialized, currentProjectId, props.currentProject]);
 
   const validate = async () => {
     try {
@@ -144,13 +146,13 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
     }
   }, [props.txStatus]);
 
-  if (props.currentGrant === undefined && props.ipfsInitializationError) {
+  if (props.currentProject === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
   }
 
   if (
-    currentGrantId !== undefined &&
-    props.currentGrant === undefined &&
+    currentProjectId !== undefined &&
+    props.currentProject === undefined &&
     !props.ipfsInitialized
   ) {
     return <>Initializing ipfs...</>;
@@ -158,10 +160,10 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
 
   if (
     // if it's undefined we don't have anything to load
-    currentGrantId !== undefined &&
-    props.currentGrant === undefined &&
+    currentProjectId !== undefined &&
+    props.currentProject === undefined &&
     props.loading &&
-    props.currentGrant === undefined
+    props.currentProject === undefined
   ) {
     return <>Loading grant data from IPFS... </>;
   }
@@ -184,6 +186,7 @@ function ProjectForm({ currentGrantId }: { currentGrantId?: string }) {
         />
         <ImageInput
           label="Project Logo"
+          currentProject={props.currentProject}
           imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
         />
         <TextArea

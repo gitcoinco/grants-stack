@@ -1,13 +1,17 @@
 import { useRef, useState } from "react";
 import colors from "../../styles/colors";
+import { Metadata } from "../../types";
+import { getProjectImage } from "../../utils/components";
 import CloudUpload from "../icons/CloudUpload";
 import Toast from "./Toast";
 
 export default function ImageInput({
   label,
+  currentProject,
   imgHandler,
 }: {
   label: string;
+  currentProject?: Metadata;
   imgHandler: (event: Buffer) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -72,6 +76,12 @@ export default function ImageInput({
     }
   };
 
+  const currentImg = () => {
+    if (tempImg) return tempImg;
+    if (!currentProject) return "";
+    return getProjectImage(false, currentProject);
+  };
+
   const onButtonClick = () => {
     if (typeof fileInput.current?.click === "function") {
       fileInput.current.click();
@@ -109,7 +119,9 @@ export default function ImageInput({
             </button>
           )}
           <div className="w-1/4">
-            {tempImg && <img src={tempImg} alt="Project Logo Preview" />}
+            {currentImg().length > 0 && (
+              <img src={currentImg()} alt="Project Logo Preview" />
+            )}
           </div>
         </div>
       </div>

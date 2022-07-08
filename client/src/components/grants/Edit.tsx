@@ -35,7 +35,7 @@ function EditProject() {
           <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
         </div>
         <div className="w-full md:w-2/3">
-          <ProjectForm currentGrantId={params.id} />
+          <ProjectForm currentProjectId={params.id} />
         </div>
       </div>
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
