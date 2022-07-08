@@ -7,7 +7,7 @@ import { IPFSObject } from "./types"
  * 
  * @param cid - the unique content identifier that points to the data
  */
-export const fetchFromIPFS = async (cid: string) => {
+export const fetchFromIPFS = (cid: string) => {
   return fetch(`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
     if (resp.ok) {
       return resp.json()
