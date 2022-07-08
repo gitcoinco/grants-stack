@@ -1,6 +1,4 @@
-import { JsonRpcBatchProvider } from '@ethersproject/providers'
 import { enableFetchMocks, FetchMock } from 'jest-fetch-mock'
-import { object } from 'yup/lib/locale'
 enableFetchMocks()
 
 import { fetchFromIPFS, pinToIPFS } from "../utils"
