@@ -26,6 +26,8 @@ contract ProgramFactory is OwnableUpgradeable {
     __Ownable_init_unchained();
   }
 
+  // --- Core methods ---
+
   /**
    * @notice Allows the owner to update the ProgramImplementation.
    * This provides us the flexibility to upgrade ProgramImplementation

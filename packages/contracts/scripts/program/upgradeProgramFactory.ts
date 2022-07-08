@@ -8,8 +8,8 @@ import { programParams } from "../config/program.config";
 
 // note: update anytime the program contract is to be upgraded
 const config = {
-  currentProgramContract: "ProgramFactory",
-  newProgramContract: "DummyProgramFactory"
+  currentProgramFactoryContract: "ProgramFactory",
+  newProgramFactoryContract: "DummyProgramFactory"
 }
 
 export async function main() {
@@ -23,23 +23,23 @@ export async function main() {
 
   const programFactoryContract = networkParams.programFactoryContract;
 
-  if (!config.newProgramContract || config.newProgramContract == '') {
-    console.log("error: set config.newProgramContract with the new contract to be deployed");
+  if (!config.newProgramFactoryContract || config.newProgramFactoryContract == '') {
+    console.log("error: set config.newProgramFactoryContract with the new contract to be deployed");
     return;
   }
   
   await confirmContinue({
     "contract"  : "Upgrading ProgramFactory to new version",
     "factory contract": programFactoryContract,
-    "currentProgramContract": config.currentProgramContract,
-    "newProgramContract": config.newProgramContract,
+    "currentProgramFactoryContract": config.currentProgramFactoryContract,
+    "newProgramFactoryContract": config.newProgramFactoryContract,
     "network"   : hre.network.name,
     "chainId"   : hre.network.config.chainId
   });
 
-  console.log("Upgrading program factory");
+  console.log("Upgrading ProgramFactory...");
 
-  const newContractFactory = await ethers.getContractFactory(config.newProgramContract);
+  const newContractFactory = await ethers.getContractFactory(config.newProgramFactoryContract);
 
   const contract = await upgrades.upgradeProxy(programFactoryContract, newContractFactory);
 
