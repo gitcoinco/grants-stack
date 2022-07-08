@@ -5,6 +5,7 @@ import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { NewGrant } from "../reducers/newGrant";
+import { fetchGrantData } from "./grantsMetadata";
 
 export const NEW_GRANT_TX_STATUS = "NEW_GRANT_TX_STATUS";
 export interface NewGrantTXStatus {
@@ -80,6 +81,11 @@ export const publishGrant =
       const txStatus = await projectTx.wait();
       if (txStatus.status) {
         dispatch(grantTXStatus("complete"));
+        // if grantId is not undefined it means we are editing an
+        // existing project
+        if (grantId !== undefined) {
+          dispatch<any>(fetchGrantData(Number(grantId)));
+        }
       }
     } catch (e) {
       console.log({ e });
