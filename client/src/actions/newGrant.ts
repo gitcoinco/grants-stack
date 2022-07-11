@@ -27,16 +27,16 @@ export interface IPFSResetTXStatus {
   type: typeof RESET_STATUS;
 }
 
-export type NewGrantActions =
-  | GrantCreated
-  | NewGrantStatus
-  | IPFSResetTXStatus;
+export type NewGrantActions = GrantCreated | NewGrantStatus | IPFSResetTXStatus;
 
 export const resetStatus = (): NewGrantActions => ({
   type: RESET_STATUS,
 });
 
-export const grantStatus = (status: Status, error: string | undefined): NewGrantActions => ({
+export const grantStatus = (
+  status: Status,
+  error: string | undefined
+): NewGrantActions => ({
   type: NEW_GRANT_STATUS,
   status,
   error,
@@ -54,8 +54,9 @@ export const grantCreated = ({
 });
 
 export const publishGrant =
-  (grantId: string | undefined, content: any, image: Blob | undefined) =>
+  (grantId: string | undefined, _content: any, image: Blob | undefined) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
+    const content = _content;
     const pinataClient = new PinataClient();
 
     if (image !== undefined) {
@@ -111,4 +112,3 @@ export const publishGrant =
       dispatch(grantStatus(Status.Completed, undefined));
     }
   };
-
