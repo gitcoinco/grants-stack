@@ -1,26 +1,26 @@
 import { Store, combineReducers, createStore } from "redux";
-// import { grantTXStatus } from "../actions/newGrant";
-// import { newGrantReducer, initialState } from "./newGrant";
+import { grantStatus } from "../actions/newGrant";
+import { newGrantReducer, initialState, Status } from "./newGrant";
 
-// describe("newGrant reducer", () => {
-//   let store: Store;
-//   beforeEach(() => {
-//     store = createStore(combineReducers({ newGrant: newGrantReducer }));
-//   });
+describe("newGrant reducer", () => {
+  let store: Store;
+  beforeEach(() => {
+    store = createStore(combineReducers({ newGrant: newGrantReducer }));
+  });
 
-//   it("marks tx status", () => {
-//     const initiated = "initiated";
-//     const complete = "complete";
-//     store.dispatch(grantTXStatus(initiated));
-//     expect(store.getState().newGrant).toEqual({
-//       ...initialState,
-//       txStatus: initiated,
-//     });
+  it("marks tx status", () => {
+    const initiated = Status.Ready;
+    const complete = Status.Completed;
+    store.dispatch(grantStatus(initiated, undefined));
+    expect(store.getState().newGrant).toEqual({
+      ...initialState,
+      status: initiated,
+    });
 
-//     store.dispatch(grantTXStatus(complete));
-//     expect(store.getState().newGrant).toEqual({
-//       ...initialState,
-//       txStatus: complete,
-//     });
-//   });
-// });
+    store.dispatch(grantStatus(complete, undefined));
+    expect(store.getState().newGrant).toEqual({
+      ...initialState,
+      status: complete,
+    });
+  });
+});
