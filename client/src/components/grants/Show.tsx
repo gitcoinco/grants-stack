@@ -69,7 +69,7 @@ function Project() {
       // If user reloads Show projects will not exist
       dispatch(loadProjects());
     }
-  }, [props.id, props.projects, global, dispatch]);
+  }, [props.id, props.projects[Number(props.id)], global, dispatch]);
 
   if (props.currentProject === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
