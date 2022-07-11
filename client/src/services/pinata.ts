@@ -1,9 +1,19 @@
 // eslint-disable-next-line
-const jwt = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI0YmE2NDc0NS1hYWFmLTRiOWEtODE4YS1kZmIzODkxOWRlZWEiLCJlbWFpbCI6ImVuZ2luZWVyaW5nQGdpdGNvaW4uY28iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZjA5MzQwMTc2ZGQ2YjY3ZWRkMjQiLCJzY29wZWRLZXlTZWNyZXQiOiJmNzIyYzAyNjllZTdhM2Y0NzAwZDE2YTVmYjBmZGQ5OTZlMWNhMDM3Y2IwZDJkZmI1MmZiNWQyMjYwZjg1OTM3IiwiaWF0IjoxNjU2NTYyODkyfQ.qYcmSfln8YyHk7EtTWkvDZ4C5eiNBEprJj_gBgzupeI`;
-const pinJSONToIPFSURL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-const pinFileToIPFSURL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+const JWT = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI0YmE2NDc0NS1hYWFmLTRiOWEtODE4YS1kZmIzODkxOWRlZWEiLCJlbWFpbCI6ImVuZ2luZWVyaW5nQGdpdGNvaW4uY28iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZjA5MzQwMTc2ZGQ2YjY3ZWRkMjQiLCJzY29wZWRLZXlTZWNyZXQiOiJmNzIyYzAyNjllZTdhM2Y0NzAwZDE2YTVmYjBmZGQ5OTZlMWNhMDM3Y2IwZDJkZmI1MmZiNWQyMjYwZjg1OTM3IiwiaWF0IjoxNjU2NTYyODkyfQ.qYcmSfln8YyHk7EtTWkvDZ4C5eiNBEprJj_gBgzupeI`;
+const PIN_JSON_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
+const PIN_FILE_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
 export default class PinataClient {
+  private jwt: string;
+  private pinJSONToIPFSURL: string;
+  private pinFileToIPFSURL: string;
+
+  constructor() {
+    this.jwt = JWT;
+    this.pinJSONToIPFSURL = PIN_JSON_TO_IPFS_URL;
+    this.pinFileToIPFSURL = PIN_FILE_TO_IPFS_URL;
+  }
+
   pinJSON(object: any) {
     const data = {
       pinataOptions: {
@@ -18,11 +28,11 @@ export default class PinataClient {
       pinataContent: object,
     };
 
-    return fetch(pinJSONToIPFSURL, {
+    return fetch(this.pinJSONToIPFSURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${this.jwt}`,
       },
       body: JSON.stringify(data),
     }).then((resp) => {
@@ -43,10 +53,10 @@ export default class PinataClient {
       '{"name": "project-image", "keyvalues": {"app": "grant-hub"}}'
     );
 
-    return fetch(pinFileToIPFSURL, {
+    return fetch(this.pinFileToIPFSURL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${this.jwt}`,
       },
       body: fd,
     }).then((resp) => {
