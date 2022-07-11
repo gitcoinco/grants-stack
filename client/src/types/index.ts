@@ -1,3 +1,17 @@
+type ApplicationSchema = {
+  question: string;
+  type: string;
+  required: boolean;
+  info?: string;
+  choices?: string[] | number[];
+};
+
+export type ApplicationForm = {
+  id: string;
+  last_updated_on: string;
+  application_schema: ApplicationSchema[];
+};
+
 export interface Metadata {
   protocol: number;
   pointer: string;
