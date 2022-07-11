@@ -7,9 +7,10 @@ import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { saveFileToIPFS, resetFileStatus, FileTypes } from "../../actions/ipfs";
-import { publishGrant, resetTXStatus } from "../../actions/newGrant";
+import { resetFileStatus } from "../../actions/ipfs";
+import { publishGrant, resetStatus } from "../../actions/newGrant";
 import { validateProjectForm } from "./projectFormValidation";
+import { Status } from "../../reducers/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
 import ExitModal from "./ExitModal";
@@ -43,7 +44,8 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
       savingFile: state.ipfs.ipfsSavingFile,
       projectFile: state.ipfs.projectFileSavedCID,
       projectImg: state.ipfs.projectImgSavedCID,
-      txStatus: state.newGrant.txStatus,
+      status: state.newGrant.status,
+      error: state.newGrant.error,
     };
   }, shallowEqual);
 
@@ -53,27 +55,20 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   const [show, showToast] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
 
-  const resetStatus = () => {
+  const localResetStatus = () => {
     setSubmitted(false);
     setFormValidation(validation);
-    dispatch(resetTXStatus());
+    dispatch(resetStatus());
     dispatch(resetFileStatus());
   };
-  const [projectImg, setProjectImg] = useState<Buffer | undefined>();
+  const [projectImg, setProjectImg] = useState<Blob | undefined>();
 
   const publishProject = async () => {
     setSubmitted(true);
     if (!formValidation.valid) return;
-    resetStatus();
+    localResetStatus();
     showToast(true);
-    if (projectImg) {
-      await dispatch(saveFileToIPFS(projectImg, FileTypes.IMG));
-    }
-
-    await dispatch(
-      saveFileToIPFS(formInputs, FileTypes.PROJECT, currentProjectId)
-    );
-    await dispatch(publishGrant(currentProjectId));
+    await dispatch(publishGrant(currentProjectId, formInputs, projectImg));
   };
 
   const handleInput = (
@@ -86,10 +81,10 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   };
 
   useEffect(() => {
-    if (props.txStatus === "complete") {
+    if (props.status === Status.Completed) {
       setTimeout(() => navigate(slugs.grants), 1500);
     }
-  }, [props.txStatus]);
+  }, [props.status]);
 
   // TODO: feels like this could be extracted to a component
   useEffect(() => {
@@ -136,15 +131,15 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   // eslint-disable-next-line
   useEffect(() => {
     return () => {
-      resetStatus();
+      localResetStatus();
     };
   }, []);
 
   useEffect(() => {
-    if (props.txStatus === "complete") {
+    if (props.status === Status.Completed) {
       setFormInputs(initialFormValues);
     }
-  }, [props.txStatus]);
+  }, [props.status]);
 
   if (props.currentProject === undefined && props.ipfsInitializationError) {
     return <>Error initializing IPFS. Reload the page and try again.</>;
@@ -187,7 +182,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         <ImageInput
           label="Project Logo"
           currentProject={props.currentProject}
-          imgHandler={(buffer: Buffer) => setProjectImg(buffer)}
+          imgHandler={(buffer: Blob) => setProjectImg(buffer)}
         />
         <TextArea
           label="Project Description"
@@ -238,11 +233,11 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
       </form>
       <Toast
         show={show}
-        fadeOut={props.txStatus === "complete"}
+        fadeOut={props.status === Status.Completed}
         onClose={() => showToast(false)}
-        error={props.txStatus === "error"}
+        error={props.status === Status.Error}
       >
-        <TXLoading status={props.txStatus} />
+        <TXLoading status={props.status} error={props.error} />
       </Toast>
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
     </div>

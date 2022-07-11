@@ -1,8 +1,8 @@
 import {
   NewGrantActions,
   NEW_GRANT_CREATED,
-  NEW_GRANT_TX_STATUS,
-  RESET_TX_STATUS,
+  NEW_GRANT_STATUS,
+  RESET_STATUS,
 } from "../actions/newGrant";
 
 export interface NewGrant {
@@ -10,12 +10,26 @@ export interface NewGrant {
   metaData: string;
   owner?: string;
 }
+
+export const enum Status {
+  Ready = 0,
+  UploadingImage,
+  UploadingJSON,
+  WaitingForSignature,
+  TransactionInitiated,
+  ProjectCreated,
+  Completed,
+  Error,
+}
+
 export interface NewGrantState {
-  txStatus: string | undefined;
+  status: Status;
+  error: string | undefined;
 }
 
 export const initialState: NewGrantState = {
-  txStatus: undefined,
+  status: Status.Ready,
+  error: undefined,
 };
 
 export const newGrantReducer = (
@@ -29,17 +43,18 @@ export const newGrantReducer = (
       };
     }
 
-    case NEW_GRANT_TX_STATUS: {
+    case NEW_GRANT_STATUS: {
       return {
         ...state,
-        txStatus: action.status,
+        status: action.status,
+        error: action.error,
       };
     }
 
-    case RESET_TX_STATUS: {
+    case RESET_STATUS: {
       return {
         ...state,
-        txStatus: undefined,
+        status: Status.Ready,
       };
     }
 

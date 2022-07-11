@@ -1,20 +1,32 @@
 import Stars from "../icons/Stars";
 import colors from "../../styles/colors";
+import { Status } from "../../reducers/newGrant";
 
-function statusMessage(status?: string) {
+function statusMessage(status: Status, error: string | undefined) {
   switch (status) {
-    case undefined:
+    case Status.UploadingImage:
+      return "Uploading image to IPFS...";
+    case Status.UploadingJSON:
+      return "Uploading metadata to IPFS...";
+    case Status.WaitingForSignature:
       return "Please confirm your transaction";
-    case "initiated":
+    case Status.TransactionInitiated:
       return "Your transaction is processing!";
-    case "error":
-      return "There was an error processing your transaction. Please try again";
-    default:
+    case (Status.ProjectCreated, Status.Completed):
       return "Project Created!";
+    case Status.Error:
+      return error;
+    default:
+      return "";
   }
 }
 
-function TXLoading({ status }: { status?: string }) {
+interface Props {
+  status: Status;
+  error: string | undefined;
+}
+
+function TXLoading({ status, error }: Props) {
   return (
     <>
       <div className="w-6 mt-1 mr-2">
@@ -22,9 +34,9 @@ function TXLoading({ status }: { status?: string }) {
       </div>
       <div>
         <p className="font-semibold text-quaternary-text mr-2 mt-1">
-          {statusMessage(status)}
+          {statusMessage(status, error)}
         </p>
-        {status === "complete" && (
+        {status === Status.Completed && (
           <p className="text-quaternary-text">Now you can apply for grants.</p>
         )}
       </div>

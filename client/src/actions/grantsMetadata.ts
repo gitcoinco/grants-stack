@@ -6,6 +6,7 @@ import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { LocalStorage } from "../services/Storage";
+import PinataClient from "../services/pinata";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -82,8 +83,6 @@ export const fetchGrantData =
       return;
     }
 
-    const chunks = [];
-
     dispatch(grantMetadataLoading(id));
 
     const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
@@ -116,22 +115,16 @@ export const fetchGrantData =
     }
 
     // if not cached in localstorage
-    let source;
+    let content;
     try {
-      source = await global.ipfs!.cat(project.metadata.pointer);
+      // FIXME: fetch from pinata gateway
+      const pinataClient = new PinataClient();
+      content = await pinataClient.fetchText(project.metadata.pointer);
     } catch (e) {
       // FIXME: dispatch "ipfs error"
       console.error(e);
       return;
     }
-
-    const decoder = new TextDecoder();
-
-    for await (const chunk of source) {
-      chunks.push(decoder.decode(chunk));
-    }
-
-    const content = chunks.join("");
 
     let metadata: Metadata;
     try {
