@@ -13,11 +13,16 @@ function Card({ projectId }: { projectId: number }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
+    const loading = grantMetadata ? grantMetadata.loading : true;
+    const project = grantMetadata?.metadata;
+    const projectImg = getProjectImage(loading, project);
+
     return {
       id: projectId,
-      loading: grantMetadata ? grantMetadata.loading : true,
-      currentProject: grantMetadata?.metadata,
+      loading,
+      currentProject: project,
       ipfsInitialized: state.ipfs.initialized,
+      projectImg,
     };
   }, shallowEqual);
 
@@ -35,7 +40,7 @@ function Card({ projectId }: { projectId: number }) {
       <Link to={grantPath(projectId)}>
         <img
           className="w-full h-32 object-cover"
-          src={getProjectImage(props.loading, props.currentProject)}
+          src={props.projectImg}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = "./assets/card-img.png";

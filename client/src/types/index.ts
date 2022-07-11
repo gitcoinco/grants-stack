@@ -7,7 +7,7 @@ export interface Metadata {
   roadmap: string;
   challenges: string;
   website: string;
-  projectImg?: string | Buffer;
+  projectImg?: string;
 }
 
 // Inputs

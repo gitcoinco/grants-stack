@@ -25,8 +25,12 @@ export default class PinataClient {
     this.pinFileToIPFSURL = PIN_FILE_TO_IPFS_URL;
   }
 
+  fileURL(cid: string) {
+    return `${GATEWAY}/ipfs/${cid}`;
+  }
+
   fetchText(cid: string) {
-    const url = `${GATEWAY}/ipfs/${cid}`;
+    const url = this.fileURL(cid);
     return fetch(url).then((resp) => resp.text());
   }
 
