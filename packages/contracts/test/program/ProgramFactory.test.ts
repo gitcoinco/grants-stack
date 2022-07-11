@@ -13,11 +13,11 @@ describe("ProgramFactory", function () {
 
   let user: SignerWithAddress;
 
-  // Round Factory
+  // Program Factory
   let programFactory: ProgramFactory;
   let programContractFactory: ProgramFactory__factory;
 
-  // Round Implementation 
+  // Program Implementation 
   let programImplementation: ProgramImplementation;
   let programImplementationArtifact: Artifact;
 
@@ -66,7 +66,7 @@ describe("ProgramFactory", function () {
           .withArgs(programImplementation.address);
       });
 
-      it("ProgramContract SHOULD have round address after invoking updateProgramContract", async () => {
+      it("ProgramContract SHOULD have program address after invoking updateProgramContract", async () => {
         await programFactory.updateProgramContract(programImplementation.address).then(async () => {
           const programContract = await programFactory.programContract();
           expect(programContract).to.be.equal(programImplementation.address);
