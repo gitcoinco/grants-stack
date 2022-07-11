@@ -30,17 +30,23 @@ export default class PinataClient {
     return fetch(url).then((resp) => resp.text());
   }
 
-  pinJSON(object: any) {
-    const data = {
+  baseRequestData(name: string) {
+    return {
       pinataOptions: {
         cidVersion: 1,
       },
       pinataMetadata: {
-        name: "project-metadata",
+        name,
         keyvalues: {
           app: "grant-hub",
         },
       },
+    };
+  }
+
+  pinJSON(object: any) {
+    const data = {
+      ...this.baseRequestData("grant-hub"),
       pinataContent: object,
     };
 
@@ -62,12 +68,11 @@ export default class PinataClient {
 
   pinFile(file: Blob) {
     const fd = new FormData();
+    const requestData = this.baseRequestData("project-image");
+
     fd.append("file", file);
-    fd.append("pinataOptions", '{"cidVersion": 1}');
-    fd.append(
-      "pinataMetadata",
-      '{"name": "project-image", "keyvalues": {"app": "grant-hub"}}'
-    );
+    fd.append("pinataOptions", JSON.stringify(requestData.pinataOptions));
+    fd.append("pinataMetadata", JSON.stringify(requestData.pinataMetadata));
 
     return fetch(this.pinFileToIPFSURL, {
       method: "POST",
