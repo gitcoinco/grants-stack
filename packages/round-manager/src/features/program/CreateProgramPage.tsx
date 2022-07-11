@@ -56,7 +56,10 @@ export default function CreateProgram() {
     try {
       // Save program metadata to IPFS
       const metadataPointer = await saveToIPFS({
-        content: JSON.stringify({ name: data.name })
+        content: { name: data.name },
+        metadata: {
+          name: "program-metadata"
+        }
       }).unwrap()
 
       // Deploy program contract

@@ -21,15 +21,18 @@ export interface MetadataPointer {
   pointer: string;
 }
 
-export interface IPFSFile {
+export interface IPFSObject {
   /**
    * File content to be saved in IPFS
    */
-  content: string;
+  content: object | Blob;
   /**
-   * Optional path
+   * Optional metadata
    */
-  path?: string;
+  metadata?: {
+    name?: string;
+    keyvalues?: object;
+  }
 }
 
 /** Base Contract interface */

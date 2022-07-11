@@ -94,7 +94,7 @@ export const programApi = api.injectEndpoints({
 
               // Fetch program data from contract
               const [
-                metadata,
+                metaPointer,
                 operatorCount
               ] = await Promise.all([
                 programImplementation.metaPtr(),
@@ -108,12 +108,12 @@ export const programApi = api.injectEndpoints({
               operatorWallets = await Promise.all(operatorWallets)
 
               // Fetch metadata from IPFS
-              const content = await fetchFromIPFS(metadata[1])
+              const metadata = await fetchFromIPFS(metaPointer[1])
 
               // Add program to response
               programs.push({
                 id: event.args[0],
-                metadata: JSON.parse(content),
+                metadata,
                 operatorWallets
               })
             }

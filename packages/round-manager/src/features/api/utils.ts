@@ -1,25 +1,77 @@
-import { create as IPFSCreate } from "ipfs-core"
+import { IPFSObject } from "./types"
 
-import { global } from "../../global"
 
 /**
  * Fetch data from IPFS
+ * TODO: include support for fetching abitrary data e.g images
  * 
  * @param cid - the unique content identifier that points to the data
  */
-export const fetchFromIPFS = async (cid: string) => {
-  if (global.ipfs === undefined) {
-    global.ipfs = await IPFSCreate({ repo: 'ok' + Math.random() })
+export const fetchFromIPFS = (cid: string) => {
+  return fetch(`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
+    if (resp.ok) {
+      return resp.json()
+    }
+
+    return Promise.reject(resp)
+  })
+}
+
+
+/**
+ * Pin data to IPFS
+ * The data could either be a file or a JSON object
+ * 
+ * @param obj - the data to be pinned on IPFS
+ * @returns the unique content identifier that points to the data
+ */
+export const pinToIPFS = (obj: IPFSObject) => {
+
+  let params: any = {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`
+    },
+    body: {
+      pinataMetadata: obj.metadata,
+      pinataOptions: {
+        cidVersion: 1
+      }
+    }
   }
 
-  const decoder = new TextDecoder()
-  let content = ''
+  if (typeof obj.content === 'object') {
+    // content is a JSON object
+    return fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+      ...params,
+      headers: {
+        ...params.headers,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ ...params.body, pinataContent: obj.content })
+    }).then(resp => {
+      if (resp.ok) {
+        return resp.json()
+      }
 
-  for await (const chunk of global.ipfs.cat(cid)) {
-    content += decoder.decode(chunk)
+      return Promise.reject(resp)
+    })
+  } else {
+    // content is a blob
+    const fd = new FormData();
+    fd.append("file", obj.content)
+    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
+    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
+
+    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", { ...params, body: fd }
+    ).then(resp => {
+      if (resp.ok) {
+        return resp.json();
+      }
+
+      return Promise.reject(resp)
+    })
   }
-
-  return content
 }
 
 
