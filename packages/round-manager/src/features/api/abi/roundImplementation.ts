@@ -24,7 +24,7 @@ const roundImplementation = [
   "function getRoleMemberCount(bytes32 role) view returns (uint256)",
   "function grantRole(bytes32 role, address account)",
   "function hasRole(bytes32 role, address account) view returns (bool)",
-  "function initialize(address _votingStrategy, uint256 _applicationsStartTime, uint256 _applicationsEndTime, uint256 _roundStartTime, uint256 _roundEndTime, address _token, tuple(uint256 protocol, string pointer) _roundMetaPtr, tuple(uint256 protocol, string pointer) _applicationMetaPtr, address _adminRole, address[] _roundOperators)",
+  "function initialize(bytes _encodedParameters)",
   "function projectsMetaPtr() view returns (uint256 protocol, string pointer)",
   "function renounceRole(bytes32 role, address account)",
   "function revokeRole(bytes32 role, address account)",
