@@ -6,9 +6,29 @@ import { global } from "../global";
 import { Round, MetaPtr } from "../types";
 import PinataClient from "../services/pinata";
 
-export const ROUNDS_LOADING_META_PTR = "ROUNDS_LOADING_META_PTR";
-interface RoundsLoadingMetaPtrAction {
-  type: typeof ROUNDS_LOADING_META_PTR;
+export const ROUNDS_LOADING_ROUND_META_PTR = "ROUNDS_LOADING_ROUND_META_PTR";
+interface RoundsLoadingRoundMetaPtrAction {
+  type: typeof ROUNDS_LOADING_ROUND_META_PTR;
+  address: string;
+}
+
+export const ROUNDS_LOADING_ROUND_METADATA = "ROUNDS_LOADING_ROUND_METADATA";
+interface RoundsLoadingRoundMetadataAction {
+  type: typeof ROUNDS_LOADING_ROUND_METADATA;
+  address: string;
+}
+
+export const ROUNDS_LOADING_APPLICATION_META_PTR =
+  "ROUNDS_LOADING_APPLICATION_META_PTR";
+interface RoundsLoadingApplicationMetaPtrAction {
+  type: typeof ROUNDS_LOADING_APPLICATION_META_PTR;
+  address: string;
+}
+
+export const ROUNDS_LOADING_APPLICATION_METADATA =
+  "ROUNDS_LOADING_APPLICATION_METADATA";
+interface RoundsLoadingApplicationMetadataAction {
+  type: typeof ROUNDS_LOADING_APPLICATION_METADATA;
   address: string;
 }
 
@@ -32,15 +52,13 @@ interface RoundsLoadingErrorAction {
 }
 
 export type RoundsActions =
-  | RoundsLoadingMetaPtrAction
+  | RoundsLoadingRoundMetaPtrAction
+  | RoundsLoadingRoundMetadataAction
+  | RoundsLoadingApplicationMetaPtrAction
+  | RoundsLoadingApplicationMetadataAction
   | RoundsRoundLoadedAction
   | RoundsUnloadedAction
   | RoundsLoadingErrorAction;
-
-const loadingMetaPtr = (address: string): RoundsActions => ({
-  type: ROUNDS_LOADING_META_PTR,
-  address,
-});
 
 const roundLoaded = (address: string, round: Round): RoundsActions => ({
   type: ROUNDS_ROUND_LOADED,
@@ -61,26 +79,52 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 export const unloadRounds = () => roundsUnloaded();
 
 export const loadRound = (address: string) => async (dispatch: Dispatch) => {
-  dispatch(loadingMetaPtr(address));
+  dispatch({ type: ROUNDS_LOADING_ROUND_META_PTR, address });
 
   const signer = global.web3Provider!.getSigner();
   const contract = new ethers.Contract(address, RoundABI, signer);
+  const pinataClient = new PinataClient();
 
-  let metaPtr: MetaPtr;
+  let roundMetaPtr: MetaPtr;
   try {
-    metaPtr = await contract.roundMetaPtr();
+    roundMetaPtr = await contract.roundMetaPtr();
   } catch (e) {
     dispatch(loadingError(address, "error loading round metaPtr"));
     console.error(e);
     return;
   }
 
-  let metadata: string;
+  dispatch({ type: ROUNDS_LOADING_ROUND_METADATA, address });
+
+  let roundMetadata: string;
   try {
-    const pinataClient = new PinataClient();
-    metadata = await pinataClient.fetchText(metaPtr.pointer);
+    roundMetadata = await pinataClient.fetchText(roundMetaPtr.pointer);
   } catch (e) {
-    dispatch(loadingError(address, "error loading metadata"));
+    dispatch(loadingError(address, "error loading round metadata"));
+    console.error(e);
+    return;
+  }
+
+  dispatch({ type: ROUNDS_LOADING_APPLICATION_META_PTR, address });
+
+  let applicationMetaPtr: MetaPtr;
+  try {
+    applicationMetaPtr = await contract.applicationMetaPtr();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application metaPtr"));
+    console.error(e);
+    return;
+  }
+
+  dispatch({ type: ROUNDS_LOADING_APPLICATION_METADATA, address });
+
+  let applicationMetadata: string;
+  try {
+    applicationMetadata = await pinataClient.fetchText(
+      applicationMetaPtr.pointer
+    );
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
     return;
   }
@@ -89,11 +133,16 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const testRound = {
       address,
       name: "Test Round",
-      metaPtr: {
-        protocol: BigNumber.from(metaPtr.protocol).toString(),
-        pointer: metaPtr.pointer,
+      roundMetaPtr: {
+        protocol: BigNumber.from(roundMetaPtr.protocol).toString(),
+        pointer: roundMetaPtr.pointer,
       },
-      metadata,
+      roundMetadata,
+      applicationMetaPtr: {
+        protocol: BigNumber.from(applicationMetaPtr.protocol).toString(),
+        pointer: applicationMetaPtr.pointer,
+      },
+      applicationMetadata,
     };
     dispatch(roundLoaded(address, testRound));
   }, 1000);

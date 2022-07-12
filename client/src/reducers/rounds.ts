@@ -1,6 +1,9 @@
 import {
   RoundsActions,
-  ROUNDS_LOADING_META_PTR,
+  ROUNDS_LOADING_ROUND_META_PTR,
+  ROUNDS_LOADING_ROUND_METADATA,
+  ROUNDS_LOADING_APPLICATION_META_PTR,
+  ROUNDS_LOADING_APPLICATION_METADATA,
   ROUNDS_ROUND_LOADED,
   ROUNDS_UNLOADED,
   ROUNDS_LOADING_ERROR,
@@ -9,8 +12,10 @@ import { Round } from "../types";
 
 export const enum Status {
   Empty = 0,
-  LoadingMetaPtr,
-  LoadingMetadata,
+  LoadingRoundMetaPtr,
+  LoadingRoundMetadata,
+  LoadingApplicationMetaPtr,
+  LoadingApplicationMetadata,
   Loaded,
   Error,
 }
@@ -36,13 +41,46 @@ export const roundsReducer = (
   action: RoundsActions
 ): RoundsState => {
   switch (action.type) {
-    case ROUNDS_LOADING_META_PTR: {
+    case ROUNDS_LOADING_ROUND_META_PTR: {
       const round = state[action.address] || roundInitialState;
       return {
         ...state,
         [action.address]: {
           ...round,
-          status: Status.LoadingMetaPtr,
+          status: Status.LoadingRoundMetaPtr,
+        },
+      };
+    }
+
+    case ROUNDS_LOADING_ROUND_METADATA: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.LoadingRoundMetadata,
+        },
+      };
+    }
+
+    case ROUNDS_LOADING_APPLICATION_META_PTR: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.LoadingApplicationMetaPtr,
+        },
+      };
+    }
+
+    case ROUNDS_LOADING_APPLICATION_METADATA: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.LoadingApplicationMetadata,
         },
       };
     }

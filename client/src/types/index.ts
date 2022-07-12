@@ -43,6 +43,8 @@ export interface MetaPtr {
 export interface Round {
   address: string;
   name: string;
-  metaPtr: MetaPtr;
-  metadata: any;
+  roundMetaPtr: MetaPtr;
+  roundMetadata: any;
+  applicationMetaPtr: MetaPtr;
+  applicationMetadata: any;
 }

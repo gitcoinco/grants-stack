@@ -46,11 +46,8 @@ function Apply() {
   return (
     <div>
       <h4>Round #{props.id} Application</h4>
-      <div>
-        MetaPtr: {props.round.metaPtr?.protocol} {props.round.metaPtr?.pointer}
-      </div>
-      <p>Raw Metadata</p>
-      <pre>{props.round.metadata}</pre>
+      <p>Raw Round</p>
+      <pre>{JSON.stringify(props.round, null, 2)}</pre>
       <p>Submit application</p>
     </div>
   );
