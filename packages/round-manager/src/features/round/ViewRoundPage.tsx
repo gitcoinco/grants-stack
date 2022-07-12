@@ -1,14 +1,14 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
+import { useListProgramsQuery } from "../api/services/program"
 
 
 export default function ViewRound() {
   const { id } = useParams()
-  const navigate = useNavigate()
 
   const { account } = useWeb3()
   const {
@@ -23,14 +23,13 @@ export default function ViewRound() {
     }),
   })
 
-  const goBack = () => {
-    navigate(-1)
-  }
+  const { program } = useListProgramsQuery(account, {
+    selectFromResult: ({ data }) => ({
+      program: data?.find((program) => program.id === round?.ownedBy) }
+    ),
+  })
 
-  const formatDate = (date: Date | undefined) => date?.toLocaleDateString(
-    "en-US",
-    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-  )
+  const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
   return (
     <>
@@ -38,10 +37,10 @@ export default function ViewRound() {
     <div className="container mx-auto h-screen px-4 py-7">
       <header>
         <div className="mb-4">
-          <div className="text-sm flex gap-2" onClick={goBack}>
+          <Link className="text-sm flex gap-2" to={`/program/${program?.id}`}>
             <ArrowNarrowLeftIcon className="h-3 w-3 mt-1" />
-            <span>Back</span>
-          </div>
+            <span>{program?.metadata?.name || "..."}</span>
+          </Link>
         </div>
         <div className="flow-root">
           <h1 className="float-left text-[32px] mb-7">{round?.metadata?.name || "..."}</h1>
@@ -53,13 +52,13 @@ export default function ViewRound() {
         {
           isRoundsFetched &&
           <div className="my-2">
-            <div className="my-5 grid grid-cols-2">
-              <div className="flex">
+            <div className="my-5 flex">
+              <div className="flex mr-3 pr-3">
                 <CalendarIcon className="h-5 w-5 mr-2" />
                 <p className="text-sm mr-1 text-grey-500">Application Start & End:</p>
                 <p className="text-sm">
                   {formatDate(round?.applicationsStartTime) || "..."}
-                  -
+                  <span className="mx-1">-</span>
                   {formatDate(round?.applicationsEndTime) || "..."}
                 </p>
               </div>
@@ -69,7 +68,7 @@ export default function ViewRound() {
                 <p className="text-sm mr-1 text-grey-500">Grant Round Start & End:</p>
                 <p className="text-sm">
                   {formatDate(round?.roundStartTime) || "..."}
-                  -
+                  <span className="mx-1">-</span>
                   {formatDate(round?.roundEndTime) || "..."}
                 </p>
               </div>
