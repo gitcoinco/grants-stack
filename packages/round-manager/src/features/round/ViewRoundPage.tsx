@@ -1,10 +1,11 @@
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
 import { useListProgramsQuery } from "../api/services/program"
+import { Tabs } from "../common/Tabs"
 
 
 export default function ViewRound() {
@@ -31,6 +32,13 @@ export default function ViewRound() {
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
+
+  const tabs = [
+    { name: 'Received', href: '#received', current: true },
+    { name: 'Approved', href: '#approved', current: false },
+    { name: 'Rejected', href: '#rejected', current: false }
+  ];
+  
   return (
     <>
     <Navbar />
@@ -75,7 +83,10 @@ export default function ViewRound() {
             </div>
 
             <div>
-              <p className="text-bold text-md font-semibold">Grant Applications</p>
+              <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
+              <div>
+                <Tabs tabs={tabs}></Tabs>
+              </div>
             </div>
 
           </div>
