@@ -3,7 +3,12 @@ import { Dispatch } from "redux";
 import { ethers, BigNumber } from "ethers";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
-import { Round, MetaPtr } from "../types";
+import {
+  Round,
+  MetaPtr,
+  RoundMetadata,
+  RoundApplicationMetadata,
+} from "../types";
 import PinataClient from "../services/pinata";
 
 export const ROUNDS_LOADING_ROUND_META_PTR = "ROUNDS_LOADING_ROUND_META_PTR";
@@ -96,9 +101,10 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
 
   dispatch({ type: ROUNDS_LOADING_ROUND_METADATA, address });
 
-  let roundMetadata: string;
+  let roundMetadata: RoundMetadata;
   try {
-    roundMetadata = await pinataClient.fetchText(roundMetaPtr.pointer);
+    const resp = await pinataClient.fetchText(roundMetaPtr.pointer);
+    roundMetadata = JSON.parse(resp);
   } catch (e) {
     dispatch(loadingError(address, "error loading round metadata"));
     console.error(e);
@@ -118,32 +124,30 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
 
   dispatch({ type: ROUNDS_LOADING_APPLICATION_METADATA, address });
 
-  let applicationMetadata: string;
+  let applicationMetadata: RoundApplicationMetadata;
   try {
-    applicationMetadata = await pinataClient.fetchText(
-      applicationMetaPtr.pointer
-    );
+    const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
+    applicationMetadata = JSON.parse(resp);
   } catch (e) {
     dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
     return;
   }
 
-  setTimeout(() => {
-    const testRound = {
-      address,
-      name: "Test Round",
-      roundMetaPtr: {
-        protocol: BigNumber.from(roundMetaPtr.protocol).toString(),
-        pointer: roundMetaPtr.pointer,
-      },
-      roundMetadata,
-      applicationMetaPtr: {
-        protocol: BigNumber.from(applicationMetaPtr.protocol).toString(),
-        pointer: applicationMetaPtr.pointer,
-      },
-      applicationMetadata,
-    };
-    dispatch(roundLoaded(address, testRound));
-  }, 1000);
+  const testRound = {
+    address,
+    name: "Test Round",
+    roundMetaPtr: {
+      protocol: BigNumber.from(roundMetaPtr.protocol).toString(),
+      pointer: roundMetaPtr.pointer,
+    },
+    roundMetadata,
+    applicationMetaPtr: {
+      protocol: BigNumber.from(applicationMetaPtr.protocol).toString(),
+      pointer: applicationMetaPtr.pointer,
+    },
+    applicationMetadata,
+  };
+
+  dispatch(roundLoaded(address, testRound));
 };
