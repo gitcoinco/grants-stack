@@ -5,7 +5,7 @@ const programFactory = [
   "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
   "event ProgramContractUpdated(address programContractAddress)",
   "event ProgramCreated(address indexed programContractAddress)",
-  "function create(tuple(uint256 protocol, string pointer) _metaPtr, address[] _programOperators) returns (address)",
+  "function create(bytes _encodedParameters) returns (address)",
   "function initialize()",
   "function owner() view returns (address)",
   "function programContract() view returns (address)",

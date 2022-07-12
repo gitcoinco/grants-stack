@@ -4,9 +4,9 @@ import { deployContract } from "ethereum-waffle";
 import { isAddress } from "ethers/lib/utils";
 import { Wallet } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
-import { artifacts, ethers } from "hardhat";
+import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
-import { RoundFactory, RoundImplementation } from "../../typechain/";
+import { RoundFactory, RoundFactory__factory, RoundImplementation } from "../../typechain/";
 import { encodeRoundParameters } from "../../scripts/utils";
 
 describe("RoundFactory", function () {
@@ -15,7 +15,7 @@ describe("RoundFactory", function () {
 
   // Round Factory
   let roundFactory: RoundFactory;
-  let roundFactoryArtifact: Artifact;
+  let roundContractFactory: RoundFactory__factory;
 
   // Round Implementation 
   let roundImplementation: RoundImplementation;
@@ -28,8 +28,8 @@ describe("RoundFactory", function () {
 
       [user] = await ethers.getSigners();
 
-      roundFactoryArtifact = await artifacts.readArtifact('RoundFactory');
-      roundFactory = <RoundFactory>await deployContract(user, roundFactoryArtifact, []);
+      roundContractFactory = await ethers.getContractFactory('RoundFactory');
+      roundFactory = <RoundFactory>await upgrades.deployProxy(roundContractFactory);
 
       // Verify deploy
       expect(isAddress(roundFactory.address), 'Failed to deploy RoundFactory').to.be.true;
@@ -43,8 +43,8 @@ describe("RoundFactory", function () {
       [user] = await ethers.getSigners();
 
       // Deploy RoundFactory contract
-      roundFactoryArtifact = await artifacts.readArtifact('RoundFactory');
-      roundFactory = <RoundFactory>await deployContract(user, roundFactoryArtifact, []);
+      roundContractFactory = await ethers.getContractFactory('RoundFactory');
+      roundFactory = <RoundFactory>await upgrades.deployProxy(roundContractFactory);
 
       // Deploy RoundImplementation contract
       roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');

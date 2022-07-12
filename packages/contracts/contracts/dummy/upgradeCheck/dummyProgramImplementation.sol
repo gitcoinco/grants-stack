@@ -1,42 +1,86 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../../utils/MetaPtr.sol";
 
 
-/// THIS IS A DUMMY CONTRACT. DO NOT USE THIS
-contract DummyProgramImplementation is AccessControl, Initializable {
+/**
+ * @notice Program which would managed by a group of 
+ * PROGRAM_OPERATOR deployed via the ProgramFactory
+ */
+contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
 
+  // --- Libraries ---
   using Address for address;
 
+  // --- Roles ---
+
+  /// @notice program operator role
   bytes32 public constant PROGRAM_OPERATOR_ROLE = keccak256("PROGRAM_OPERATOR");
 
+  // --- Events ---
+
+  /// @notice Emitted when a team metadata pointer is updated
   event MetadataUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
+  // --- Data ---
+
+  string public foobar;
+
+  /// @notice URL pointing for program metadata (for off-chain use)
   MetaPtr public metaPtr;
-  string public message;
 
+
+  // --- Core methods ---
+
+  /**
+   * @notice Instantiates a new program
+   * @param _encodedParameters Encoded parameters for program creation
+   * @dev _encodedParameters
+   *  - _metaPtr URL pointing to the program metadata
+   *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
+   *  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
+   */
   function initialize(
-    MetaPtr memory _metaPtr,
-    address _adminRole,
-    address[] memory _programOperators, 
-    string calldata _message
+    bytes calldata _encodedParameters,
+    string calldata _foobar
   ) public initializer {
+
+    foobar = _foobar;
   
+    // Decode _encodedParameters
+    (
+      MetaPtr memory _metaPtr,
+      address[] memory _adminRoles,
+      address[] memory _programOperators
+    ) = abi.decode(
+      _encodedParameters, (
+      MetaPtr,
+      address[],
+      address[]
+    ));
+
+    // Emit MetadataUpdated event for indexing
+    emit MetadataUpdated(metaPtr, _metaPtr);
     metaPtr = _metaPtr;
-    message = _message;
 
-    _grantRole(DEFAULT_ADMIN_ROLE, _adminRole);
+    // Assigning default admin role
+    for (uint256 i = 0; i < _adminRoles.length; ++i) {
+      _grantRole(DEFAULT_ADMIN_ROLE, _adminRoles[i]);
+    }
 
+    // Assigning program operators
     for (uint256 i = 0; i < _programOperators.length; ++i) {
       _grantRole(PROGRAM_OPERATOR_ROLE, _programOperators[i]);
     }
   }
 
+  // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
+  /// @param _newMetaPtr new metaPtr
   function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
     emit MetadataUpdated(metaPtr, _newMetaPtr);
     metaPtr = _newMetaPtr;

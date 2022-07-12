@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "./RoundImplementation.sol";
+import "./dummyRoundImplementation.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import "../utils/MetaPtr.sol";
+import "../../utils/MetaPtr.sol";
+
 
 /**
  * @notice Invoked by a RoundOperator to enable creation of a
@@ -20,9 +21,11 @@ import "../utils/MetaPtr.sol";
  * @dev This contract is Ownable thus supports ownership transfership
  *
  */
-contract RoundFactory is OwnableUpgradeable {
+contract DummyRoundFactory is OwnableUpgradeable {
 
   address public RoundContract;
+
+  string public foobar;
 
   // --- Event ---
 
@@ -61,13 +64,16 @@ contract RoundFactory is OwnableUpgradeable {
    */
   function create(
     bytes calldata _encodedParameters,
-    address _ownedBy
+    address _ownedBy,
+    string calldata _foobar
   ) external returns (address) {
 
+    foobar = _foobar;
     address _clone = ClonesUpgradeable.clone(RoundContract);
 
-    RoundImplementation(_clone).initialize(
-      _encodedParameters
+    DummyRoundImplementation(_clone).initialize(
+      _encodedParameters,
+      _foobar
     );
 
     emit RoundCreated(_clone, _ownedBy);

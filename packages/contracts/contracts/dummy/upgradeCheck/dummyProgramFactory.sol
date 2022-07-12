@@ -8,13 +8,15 @@ import "../../utils/MetaPtr.sol";
 import "./dummyProgramImplementation.sol";
 
 contract DummyProgramFactory is OwnableUpgradeable {
-
-  // @notice THIS IS A DUMMY CONTRACT. DO NOT USE THIS
  
   address public programContract;
 
+  string public foobar;
+
   event ProgramContractUpdated(address programContractAddress);
-  event ProgramCreated(address programContractAddress, string message);
+
+  /// @notice Emitted when a new Program is created
+  event ProgramCreated(address indexed programContractAddress);
 
 
   /// @notice constructor function which ensure deployer is set as owner
@@ -23,28 +25,37 @@ contract DummyProgramFactory is OwnableUpgradeable {
     __Ownable_init_unchained();
   }
 
+  // --- Core methods ---
+
+  /**
+   * @notice Allows the owner to update the ProgramImplementation.
+   * This provides us the flexibility to upgrade ProgramImplementation
+   * contract while relying on the same ProgramFactory to get the list of
+   * programs.
+   */
   function updateProgramContract(address _programContract) public onlyOwner {
     programContract = _programContract;
 
     emit ProgramContractUpdated(_programContract);
   }
 
+  /**
+   * @notice Clones ProgramImplmentation and deployed a program and emits an event
+   *
+   * @param _encodedParameters Encoded parameters for creating a program
+   */
   function create(
-    MetaPtr calldata _metaPtr,
-    address[] calldata _programOperators,
-    string calldata _message
+    bytes calldata _encodedParameters,
+    string calldata _foobar
   ) external returns (address) {
+
+    foobar = _foobar;
 
     address clone = ClonesUpgradeable.clone(programContract);
 
-    DummyProgramImplementation(clone).initialize(
-      _metaPtr,
-      msg.sender,
-      _programOperators,
-      _message
-    );
+    DummyProgramImplementation(clone).initialize(_encodedParameters, foobar);
 
-    emit ProgramCreated(clone, _message);
+    emit ProgramCreated(clone);
 
     return clone;
   }

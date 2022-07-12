@@ -7,7 +7,7 @@ import { ethers } from "ethers";
  * @param params 
  * @returns {string}
  */
-export const encodeProgramParams = (params: any[]): string => {
+export const encodeProgramParameters = (params: any[]): string => {
   return ethers.utils.defaultAbiCoder.encode(
     ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
     params
