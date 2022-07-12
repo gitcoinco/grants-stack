@@ -1,31 +1,28 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
+import { roundPath } from "../../routes";
 
 function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const props = useSelector(
-    (state: RootState) => ({
-      id: params.id,
+  const props = useSelector((state: RootState) => {
+    const { id } = params;
+    return {
+      id,
+      round: state.rounds[id!],
       account: state.web3.account,
-    }),
-    shallowEqual
-  );
+    };
+  }, shallowEqual);
 
   useEffect(() => {
-    if (props.id !== undefined) {
-      // load round
+    if (props.id !== undefined && props.round === undefined) {
+      navigate(roundPath(props.id));
     }
-
-    return () => {
-      if (props.id !== undefined) {
-        // unload round
-      }
-    };
-  }, [dispatch, props.id]);
+  }, [dispatch, props.id, props.round]);
 
   return (
     <div>

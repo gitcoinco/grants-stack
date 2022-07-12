@@ -2,7 +2,7 @@ import {
   RoundsActions,
   ROUNDS_LOADING_META_PTR,
   ROUNDS_ROUND_LOADED,
-  ROUNDS_UNLOAD,
+  ROUNDS_UNLOADED,
 } from "../actions/rounds";
 import { Round } from "../types";
 
@@ -19,7 +19,7 @@ export interface RoundsState {
     status: Status;
     error: string | undefined;
     round: Round | undefined;
-  }
+  };
 }
 
 const initialState: RoundsState = {};
@@ -42,7 +42,7 @@ export const roundsReducer = (
         [action.address]: {
           ...round,
           status: Status.LoadingMetaPtr,
-        }
+        },
       };
     }
 
@@ -55,15 +55,15 @@ export const roundsReducer = (
           status: Status.Loaded,
           error: undefined,
           round: action.round,
-        }
+        },
       };
     }
 
-    case ROUNDS_UNLOAD: {
+    case ROUNDS_UNLOADED: {
       return initialState;
     }
 
     default:
       return state;
   }
-}
+};

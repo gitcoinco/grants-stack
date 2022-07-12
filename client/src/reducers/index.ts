@@ -9,6 +9,7 @@ import { IPFSState, ipfsReducer } from "./ipfs";
 import { ProjectsState, projectsReducer } from "./projects";
 import { NewGrantState, newGrantReducer } from "./newGrant";
 import { GrantsMetadataState, grantsMetadataReducer } from "./grantsMetadata";
+import { RoundsState, roundsReducer } from "./rounds";
 
 export interface RootState {
   router: ReduxRouterState;
@@ -17,6 +18,7 @@ export interface RootState {
   projects: ProjectsState;
   newGrant: NewGrantState;
   grantsMetadata: GrantsMetadataState;
+  rounds: RoundsState;
 }
 
 export const createRootReducer = () =>
@@ -27,4 +29,5 @@ export const createRootReducer = () =>
     projects: projectsReducer,
     newGrant: newGrantReducer,
     grantsMetadata: grantsMetadataReducer,
+    rounds: roundsReducer,
   });

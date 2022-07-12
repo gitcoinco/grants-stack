@@ -1,3 +1,5 @@
+import { Dispatch } from "redux";
+// import { RootState } from "../reducers";
 import { Round } from "../types";
 
 export const ROUNDS_LOADING_META_PTR = "ROUNDS_LOADING_META_PTR";
@@ -13,12 +15,44 @@ interface RoundsRoundLoadedAction {
   round: Round;
 }
 
-export const ROUNDS_UNLOAD = "ROUNDS_UNLOAD";
-interface RoundsUnloadAction {
-  type: typeof ROUNDS_UNLOAD;
+export const ROUNDS_UNLOADED = "ROUNDS_UNLOADED";
+interface RoundsUnloadedAction {
+  type: typeof ROUNDS_UNLOADED;
 }
 
 export type RoundsActions =
-  RoundsLoadingMetaPtrAction |
-  RoundsRoundLoadedAction |
-  RoundsUnloadAction;
+  | RoundsLoadingMetaPtrAction
+  | RoundsRoundLoadedAction
+  | RoundsUnloadedAction;
+
+const loadingMetaPtr = (address: string): RoundsActions => ({
+  type: ROUNDS_LOADING_META_PTR,
+  address,
+});
+
+const roundLoaded = (address: string, round: Round): RoundsActions => ({
+  type: ROUNDS_ROUND_LOADED,
+  address,
+  round,
+});
+
+const roundsUnloaded = (): RoundsActions => ({
+  type: ROUNDS_UNLOADED,
+});
+
+export const unloadRounds = () => roundsUnloaded();
+
+export const loadRound = (address: string) => async (dispatch: Dispatch) => {
+  dispatch(loadingMetaPtr(address));
+  setTimeout(() => {
+    const testRound = {
+      address,
+      metaPtr: {
+        protocol: "1",
+        pointer: "test/pointer",
+      },
+      metadata: "test metadata",
+    };
+    dispatch(roundLoaded(address, testRound));
+  }, 2000);
+};

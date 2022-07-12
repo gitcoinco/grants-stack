@@ -41,6 +41,7 @@ export interface MetaPtr {
 }
 
 export interface Round {
-  metaPtr: MetaPtr
-  metadata: any
+  address: string;
+  metaPtr: MetaPtr;
+  metadata: any;
 }

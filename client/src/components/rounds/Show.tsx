@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { roundApplicationPath } from "../../routes";
+import { loadRound, unloadRounds } from "../../actions/rounds";
 
 function Round() {
   const params = useParams();
@@ -18,14 +19,9 @@ function Round() {
 
   useEffect(() => {
     if (props.id !== undefined) {
-      // load round
+      dispatch(unloadRounds());
+      dispatch(loadRound(props.id));
     }
-
-    return () => {
-      if (props.id !== undefined) {
-        // unload round
-      }
-    };
   }, [dispatch, props.id]);
 
   return (
