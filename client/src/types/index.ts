@@ -34,3 +34,33 @@ export interface ProjectEvent {
   id: number;
   block: number;
 }
+
+export interface MetaPtr {
+  protocol: string;
+  pointer: string;
+}
+
+export interface RoundMetadata {
+  name: string;
+}
+
+export interface RoundApplicationQuestion {
+  question: string;
+  type: string;
+  required: boolean;
+  info: string;
+}
+
+export interface RoundApplicationMetadata {
+  lastUpdatedOn: number;
+  applicationSchema: RoundApplicationQuestion[];
+}
+
+export interface Round {
+  address: string;
+  name: string;
+  roundMetaPtr: MetaPtr;
+  roundMetadata: RoundMetadata;
+  applicationMetaPtr: MetaPtr;
+  applicationMetadata: RoundApplicationMetadata;
+}
