@@ -20,15 +20,36 @@ export const programApi = api.injectEndpoints({
             global.web3Signer
           )
 
-          // Deploy a new Program contract
-          let tx = await programFactory.create(
-            metadata,
-            operatorWallets.filter(e => e !== "")
+          operatorWallets = operatorWallets.filter(e => e !== "")
+
+          // encode input parameters
+          const encodedParamaters = ethers.utils.defaultAbiCoder.encode(
+            ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
+            [
+              metadata,
+              operatorWallets.slice(0, 1),
+              operatorWallets
+            ]
           )
 
-          await tx.wait() // wait for transaction receipt
+          // Deploy a new Program contract
+          let tx = await programFactory.create(encodedParamaters)
 
-          console.log("Deployed program contract:", tx.hash)
+          const receipt = await tx.wait() // wait for transaction receipt
+
+          let programAddress
+
+          if (receipt.events) {
+            const event = receipt.events.find(
+              (e: { event: string }) => e.event === 'ProgramCreated'
+            )
+            if (event && event.args) {
+              programAddress = event.args.programContractAddress
+            }
+          }
+
+          console.log("✅ Transaction hash: ", tx.hash)
+          console.log("✅ Program address: ", programAddress)
 
           return { data: tx.hash }
 
@@ -77,12 +98,12 @@ export const programApi = api.injectEndpoints({
             }
 
             const programImplementation = new ethers.Contract(
-              event.args[0],
+              event.args.programContractAddress,
               programImplementationContract.abi,
               global.web3Provider
             )
 
-            const PROGRAM_OPERATOR_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROGRAM_OPERATOR"))
+            const PROGRAM_OPERATOR_ROLE = await programImplementation.PROGRAM_OPERATOR_ROLE()
 
             const isOperator = await programImplementation.hasRole(
               PROGRAM_OPERATOR_ROLE,
@@ -112,7 +133,7 @@ export const programApi = api.injectEndpoints({
 
               // Add program to response
               programs.push({
-                id: event.args[0],
+                id: event.args.programContractAddress,
                 metadata,
                 operatorWallets
               })

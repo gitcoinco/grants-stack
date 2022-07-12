@@ -25,23 +25,56 @@ export const roundApi = api.injectEndpoints({
             round.applicationsEndTime = round.startTime
           }
 
-          // Deploy a new Round contract
-          let tx = await roundFactory.create(
+          round.operatorWallets = round.operatorWallets!.filter(e => e !== "")
+
+          // encode input parameters
+          const params = [
             round.votingStrategy,
             new Date(round.applicationsStartTime).getTime() / 1000,
             new Date(round.applicationsEndTime).getTime() / 1000,
             new Date(round.startTime).getTime() / 1000,
             new Date(round.endTime).getTime() / 1000,
             round.token,
-            round.ownedBy,
             round.store,
             round.applicationStore,
-            round.operatorWallets!.filter(e => e !== "")
+            round.operatorWallets.slice(0, 1),
+            round.operatorWallets
+          ]
+
+          const encodedParamaters = ethers.utils.defaultAbiCoder.encode(
+            [
+              "address",
+              "uint256",
+              "uint256",
+              "uint256",
+              "uint256",
+              "address",
+              "tuple(uint256 protocol, string pointer)",
+              "tuple(uint256 protocol, string pointer)",
+              "address[]",
+              "address[]"
+            ],
+            params
           )
 
-          await tx.wait() // wait for transaction receipt
+          // Deploy a new Round contract
+          let tx = await roundFactory.create(encodedParamaters, round.ownedBy)
 
-          console.log("Deployed round contract:", tx.hash)
+          const receipt = await tx.wait() // wait for transaction receipt
+
+          let roundAddress
+
+          if (receipt.events) {
+            const event = receipt.events.find(
+              (e: { event: string }) => e.event === 'RoundCreated'
+            )
+            if (event && event.args) {
+              roundAddress = event.args.roundAddress
+            }
+          }
+
+          console.log("✅ Transaction hash: ", tx.hash)
+          console.log("✅ Round address: ", roundAddress)
 
           return { data: tx.hash }
 
@@ -90,14 +123,12 @@ export const roundApi = api.injectEndpoints({
             }
 
             const roundImplementation = new ethers.Contract(
-              event.args[0],
+              event.args.roundAddress,
               roundImplementationContract.abi,
               global.web3Provider
             )
 
-            const ROUND_OPERATOR_ROLE = ethers.utils.keccak256(
-              ethers.utils.toUtf8Bytes("ROUND_OPERATOR")
-            )
+            const ROUND_OPERATOR_ROLE = await roundImplementation.ROUND_OPERATOR_ROLE()
 
             const isOperator = await roundImplementation.hasRole(
               ROUND_OPERATOR_ROLE, account
@@ -147,7 +178,7 @@ export const roundApi = api.injectEndpoints({
 
               // Add round to response
               rounds.push({
-                id: event.args[0],
+                id: event.args.roundAddress,
                 metadata: roundMetadata,
                 applicationMetadata,
                 applicationsStartTime: new Date(applicationsStartTime.toNumber() * 1000),
@@ -156,7 +187,7 @@ export const roundApi = api.injectEndpoints({
                 endTime: new Date(endTime.toNumber() * 1000),
                 votingStrategy,
                 token,
-                ownedBy: event.args[1],
+                ownedBy: event.args.ownedBy,
                 // operatorWallets
               })
             }
