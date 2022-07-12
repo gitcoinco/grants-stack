@@ -27,6 +27,7 @@ import Project from "./components/grants/Show";
 import NewProject from "./components/grants/New";
 import EditProject from "./components/grants/Edit";
 import RoundShow from "./components/rounds/Show";
+import RoundApply from "./components/rounds/Apply";
 import Landing from "./components/grants/Landing";
 import { startIPFS } from "./actions/ipfs";
 import { initializeWeb3 } from "./actions/web3";
@@ -82,6 +83,7 @@ root.render(
               <Route path={slugs.newGrant} element={<NewProject />} />
               <Route path={slugs.edit} element={<EditProject />} />
               <Route path={slugs.round} element={<RoundShow />} />
+              <Route path={slugs.roundApplication} element={<RoundApply />} />
             </Routes>
           </Layout>
         </ReduxRouter>

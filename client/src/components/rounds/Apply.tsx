@@ -1,10 +1,9 @@
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
-import { roundApplicationPath } from "../../routes";
 
-function Round() {
+function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
 
@@ -30,11 +29,10 @@ function Round() {
 
   return (
     <div>
-      <h4>Round #{props.id}</h4>
-      <p>...</p>
-      <Link to={roundApplicationPath(params.id!)}>Apply to this round</Link>
+      <h4>Round #{props.id} Application</h4>
+      <p>Submit application</p>
     </div>
   );
 }
 
-export default Round;
+export default Apply;
