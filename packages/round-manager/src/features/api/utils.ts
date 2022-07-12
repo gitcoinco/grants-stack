@@ -93,22 +93,7 @@ const camelToTitle = (camelCase: string) => camelCase
 export const generateApplicationSchema = (metadata: any) => {
 
   // declare schema with default fields
-  let schema = [
-    {
-      question: "Project Name",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: []
-    },
-    {
-      question: "Wallet Address",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: []
-    }
-  ]
+  let schema = [];
 
   for (const key of Object.keys(metadata)) {
     if (typeof metadata[key] === "object") {

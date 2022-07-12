@@ -69,26 +69,14 @@ export interface Program {
 }
 
 export interface ApplicationMetadata {
-  walletAddress: string;
-  project?: {
-    name: string,
-    description?: string,
-    website?: string,
-    twitter?: string,
-    github?: string,
-  };
-  contact?: {
-    name?: string,
+  customQuestions?: {
     email?: string,
-    teamDescription?: string,
-  };
-  grant?: {
-    fundingRequested?: string,
-    budgetBreakdown?: string,
-  };
-  customQuestion?: {
-    label?: string,
-    helper?: string,
+    twitter?: string,
+    website?: string,
+    github?: string,
+    fundingSource?: string,
+    profit2022?: string,
+    teamSize?: string,
   };
 }
 
