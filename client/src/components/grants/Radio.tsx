@@ -15,12 +15,9 @@ export default function Radio({
 }: RadioInputProps) {
   return (
     <div>
-      <label htmlFor={name} className="text-base font-medium text-gray-900">
-        {label}
-      </label>
-      <p className="text-sm leading-5 text-gray-500">{info}</p>
+      <label htmlFor={name}>{label}</label>
+      <legend>{info}</legend>
       <fieldset className="mt-4" id={name}>
-        <legend className="sr-only">Notification method</legend>
         <div className="space-y-2">
           {choices.map((choice, i) => {
             const choiceId = choice.toLowerCase().replaceAll(" ", "_");
@@ -34,10 +31,7 @@ export default function Radio({
                   className="focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
                   onChange={changeHandler}
                 />
-                <label
-                  htmlFor={choiceId}
-                  className="ml-3 text-sm font-medium text-gray-700"
-                >
+                <label htmlFor={choiceId} className="ml-3 mb-0">
                   {choice}
                 </label>
               </div>

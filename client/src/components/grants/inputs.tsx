@@ -1,7 +1,8 @@
-import { InputProps, RadioInputProps } from "../../types";
+import { InputProps } from "../../types";
 
 export function TextInput({
   label,
+  info,
   name,
   value,
   placeholder,
@@ -9,9 +10,8 @@ export function TextInput({
 }: InputProps) {
   return (
     <div className="mt-6 w-full sm:w-1/2">
-      <label className="block text-xs mb-2" htmlFor={label}>
-        {label}
-      </label>
+      <label htmlFor={name}>{label}</label>
+      <legend>{info}</legend>
       <input
         type="text"
         id={label}
@@ -24,26 +24,6 @@ export function TextInput({
   );
 }
 
-export function RadioInput({
-  name,
-  value,
-  currentValue,
-  changeHandler,
-}: RadioInputProps) {
-  return (
-    <div style={{ display: "block" }}>
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={value === currentValue}
-        onChange={changeHandler}
-      />{" "}
-      {value}
-    </div>
-  );
-}
-
 export function WebsiteInput({
   label,
   name,
@@ -52,11 +32,8 @@ export function WebsiteInput({
 }: InputProps) {
   return (
     <div className="mt-6 w-full sm:w-2/3">
-      <label htmlFor={name} className="block text-xs mb-2">
-        {" "}
-        {label}{" "}
-      </label>
-      <div className="mt-1 flex">
+      <label htmlFor={name}> {label} </label>
+      <div className="flex">
         {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
           {" "}
           http://{" "}
@@ -77,6 +54,7 @@ export function WebsiteInput({
 
 export function TextArea({
   label,
+  info,
   name,
   value,
   placeholder,
@@ -84,9 +62,8 @@ export function TextArea({
 }: InputProps) {
   return (
     <div className="mt-6">
-      <label className="block text-xs mb-2" htmlFor={label}>
-        {label}
-      </label>
+      <label htmlFor={name}>{label}</label>
+      <legend>{info}</legend>
       <textarea
         id={label}
         name={name}
