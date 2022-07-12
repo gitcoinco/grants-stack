@@ -22,7 +22,7 @@ export const roundApi = api.injectEndpoints({
           )
 
           if (!round.applicationsEndTime) {
-            round.applicationsEndTime = round.startTime
+            round.applicationsEndTime = round.roundStartTime
           }
 
           round.operatorWallets = round.operatorWallets!.filter(e => e !== "")
@@ -32,8 +32,8 @@ export const roundApi = api.injectEndpoints({
             round.votingStrategy,
             new Date(round.applicationsStartTime).getTime() / 1000,
             new Date(round.applicationsEndTime).getTime() / 1000,
-            new Date(round.startTime).getTime() / 1000,
-            new Date(round.endTime).getTime() / 1000,
+            new Date(round.roundStartTime).getTime() / 1000,
+            new Date(round.roundEndTime).getTime() / 1000,
             round.token,
             round.store,
             round.applicationStore,
@@ -143,8 +143,8 @@ export const roundApi = api.injectEndpoints({
                 applicationMetaPtr,
                 applicationsStartTime,
                 applicationsEndTime,
-                startTime,
-                endTime,
+                roundStartTime,
+                roundEndTime,
                 votingStrategy,
                 token,
                 // operatorCount
@@ -183,8 +183,8 @@ export const roundApi = api.injectEndpoints({
                 applicationMetadata,
                 applicationsStartTime: new Date(applicationsStartTime.toNumber() * 1000),
                 applicationsEndTime: new Date(applicationsEndTime.toNumber() * 1000),
-                startTime: new Date(startTime.toNumber() * 1000),
-                endTime: new Date(endTime.toNumber() * 1000),
+                roundStartTime: new Date(roundStartTime.toNumber() * 1000),
+                roundEndTime: new Date(roundEndTime.toNumber() * 1000),
                 votingStrategy,
                 token,
                 ownedBy: event.args.ownedBy,

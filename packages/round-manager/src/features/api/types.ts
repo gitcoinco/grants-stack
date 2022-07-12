@@ -110,11 +110,11 @@ export interface Round {
   /**
    * Unix timestamp of the start of the round
    */
-  startTime: Date;
+  roundStartTime: Date;
   /**
    * Unix timestamp of the end of the round
    */
-  endTime: Date;
+  roundEndTime: Date;
   /**
    * Unix timestamp of when grants can apply to a round
    */

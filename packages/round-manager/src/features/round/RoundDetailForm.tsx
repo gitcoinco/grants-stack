@@ -19,14 +19,14 @@ const ValidationSchema = yup.object().shape({
       .min(8, "Round name must be less that 8 characters."),
   }),
   applicationsStartTime: yup.date().required("This field is required."),
-  startTime: yup.date()
+  roundStartTime: yup.date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
       "Round start date must be later than application start date"
     ),
-  endTime: yup.date()
-    .min(yup.ref("startTime"), "Round end date must be later than the round start date")
+  roundEndTime: yup.date()
+    .min(yup.ref("roundStartTime"), "Round end date must be later than the round start date")
 })
 
 
@@ -132,11 +132,11 @@ export function RoundDetailForm(props: { initialData: any, stepper: any }) {
             <p className="text-xs mt-4 mb-2">Round</p>
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
-                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.startTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
-                  <label htmlFor="startTime" className="block text-[10px]">Start Date</label>
+                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.roundStartTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
+                  <label htmlFor="roundStartTime" className="block text-[10px]">Start Date</label>
                   <Controller
                     control={control}
-                    name="startTime"
+                    name="roundStartTime"
                     render={({ field }) => (
                       <Datetime
                         {...field}
@@ -153,15 +153,15 @@ export function RoundDetailForm(props: { initialData: any, stepper: any }) {
                     </svg>
                   </div>
                 </div>
-                {errors.startTime && <p className="text-sm text-red-600">{errors.startTime?.message}</p>}
+                {errors.roundStartTime && <p className="text-sm text-red-600">{errors.roundStartTime?.message}</p>}
               </div>
 
               <div className="col-span-6 sm:col-span-3">
-                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.endTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
-                  <label htmlFor="endTime" className="block text-[10px]">End Date</label>
+                <div className={`relative border rounded-md px-3 py-2 shadow-sm focus-within:ring-1 ${errors.roundEndTime ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500" : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"}`}>
+                  <label htmlFor="roundEndTime" className="block text-[10px]">End Date</label>
                   <Controller
                     control={control}
-                    name="endTime"
+                    name="roundEndTime"
                     render={({ field }) => (
                       <Datetime
                         {...field}
@@ -178,7 +178,7 @@ export function RoundDetailForm(props: { initialData: any, stepper: any }) {
                     </svg>
                   </div>
                 </div>
-                {errors.endTime && <p className="text-sm text-red-600">{errors.endTime?.message}</p>}
+                {errors.roundEndTime && <p className="text-sm text-red-600">{errors.roundEndTime?.message}</p>}
               </div>
             </div>
             <FormStepper

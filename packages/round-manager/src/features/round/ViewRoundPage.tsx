@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom"
 
-import { Button } from "../common/styles"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
+import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
 
 
 export default function ViewRound() {
@@ -23,14 +23,8 @@ export default function ViewRound() {
     }),
   })
 
-  const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+  const goBack = () => {
     navigate(-1)
-  }
-
-  const goToApplications = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    navigate(`/round/${id}/applications`)
   }
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString(
@@ -41,63 +35,60 @@ export default function ViewRound() {
   return (
     <>
     <Navbar />
-    <div className="container mx-auto px-4 py-16 h-screen">
+    <div className="container mx-auto h-screen px-4 py-7">
       <header>
-        <p className="mb-16">
-          <span className="text-5xl">{round?.metadata?.name || "..."}</span>
-          <span className="float-right truncate">📒: {account}</span>
-        </p>
-      </header>
-      <main>
-        <div>
-          {/* <div>
-            <h2 className="text-3xl mb-8">Operator Wallets</h2>
-            {round?.operatorWallets.map((operatorWallet, index) =>
-              <p key={index} className="truncate">{operatorWallet}</p>
-            ) || <p>Fetching operator wallets...</p>}
-          </div><br /> */}
-          {isRoundsLoading && <p className="mb-8">Fetching round information...</p>}
-          <p className="my-4">
-            <span className="text-2xl">Application Start Date: </span>
-            <span>{formatDate(round?.applicationsStartTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Application End Date: </span>
-            <span>{formatDate(round?.applicationsEndTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Round Start Date: </span>
-            <span>{formatDate(round?.startTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Round End Date: </span>
-            <span>{formatDate(round?.endTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Supported Token for Voting: </span>
-            {round?.token ? <a
-              href={`https://goerli.etherscan.io/address/${round?.token}`}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-600 underline">
-              {round?.token}
-            </a> : "..."}
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Voting Contract Address: </span>
-            {round?.token ? <a
-              href={`https://goerli.etherscan.io/address/${round?.votingStrategy}`}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-600 underline">
-              {round?.votingStrategy}
-            </a> : "..."}
-          </p>
-          {isRoundsFetched &&
-            <Button type="button" onClick={goToApplications}>Review Applications</Button>
-          }<br />
-          <Button type="button" onClick={goBack}>Back</Button>
+        <div className="mb-4">
+          <div className="text-sm flex gap-2" onClick={goBack}>
+            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1" />
+            <span>Back</span>
+          </div>
         </div>
+        <div className="flow-root">
+          <h1 className="float-left text-[32px] mb-7">{round?.metadata?.name || "..."}</h1>
+        </div>
+        <hr/>
+      </header>
+
+      <main>
+        {
+          isRoundsFetched &&
+          <div className="my-2">
+            <div className="my-5 grid grid-cols-2">
+              <div className="flex">
+                <CalendarIcon className="h-5 w-5 mr-2" />
+                <p className="text-sm mr-1 text-grey-500">Application Start & End:</p>
+                <p className="text-sm">
+                  {formatDate(round?.applicationsStartTime) || "..."}
+                  -
+                  {formatDate(round?.applicationsEndTime) || "..."}
+                </p>
+              </div>
+
+              <div className="flex">
+                <ClockIcon className="h-5 w-5 mr-2" />
+                <p className="text-sm mr-1 text-grey-500">Grant Round Start & End:</p>
+                <p className="text-sm">
+                  {formatDate(round?.roundStartTime) || "..."}
+                  -
+                  {formatDate(round?.roundEndTime) || "..."}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-bold text-md font-semibold">Grant Applications</p>
+            </div>
+
+          </div>
+        }
+
+        <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
+          {
+            isRoundsLoading &&
+            <p>Fetching round information...</p>
+          }
+        </div>
+
       </main>
     </div>
     </>
