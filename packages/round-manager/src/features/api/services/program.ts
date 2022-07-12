@@ -98,12 +98,12 @@ export const programApi = api.injectEndpoints({
             }
 
             const programImplementation = new ethers.Contract(
-              event.args[0],
+              event.args.programContractAddress,
               programImplementationContract.abi,
               global.web3Provider
             )
 
-            const PROGRAM_OPERATOR_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PROGRAM_OPERATOR"))
+            const PROGRAM_OPERATOR_ROLE = await programImplementation.PROGRAM_OPERATOR_ROLE()
 
             const isOperator = await programImplementation.hasRole(
               PROGRAM_OPERATOR_ROLE,
@@ -133,7 +133,7 @@ export const programApi = api.injectEndpoints({
 
               // Add program to response
               programs.push({
-                id: event.args[0],
+                id: event.args.programContractAddress,
                 metadata,
                 operatorWallets
               })
