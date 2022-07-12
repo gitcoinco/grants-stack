@@ -47,6 +47,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   setTimeout(() => {
     const testRound = {
       address,
+      name: "Test Round",
       metaPtr: {
         protocol: "1",
         pointer: "test/pointer",
@@ -54,5 +55,5 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
       metadata: "test metadata",
     };
     dispatch(roundLoaded(address, testRound));
-  }, 2000);
+  }, 1000);
 };

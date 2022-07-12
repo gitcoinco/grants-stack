@@ -4,18 +4,26 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { roundApplicationPath } from "../../routes";
 import { loadRound, unloadRounds } from "../../actions/rounds";
+import { Status } from "../../reducers/rounds";
 
 function Round() {
   const params = useParams();
   const dispatch = useDispatch();
 
-  const props = useSelector(
-    (state: RootState) => ({
-      id: params.id,
-      account: state.web3.account,
-    }),
-    shallowEqual
-  );
+  const props = useSelector((state: RootState) => {
+    const { id } = params;
+    const roundState = state.rounds[id!];
+    const status = roundState ? roundState.status : Status.Empty;
+    const error = roundState ? roundState.error : undefined;
+    const round = roundState ? roundState.round : undefined;
+    return {
+      id,
+      roundState,
+      status,
+      error,
+      round,
+    };
+  }, shallowEqual);
 
   useEffect(() => {
     if (props.id !== undefined) {
@@ -24,10 +32,23 @@ function Round() {
     }
   }, [dispatch, props.id]);
 
+  if (props.status === Status.Error) {
+    return <div>Error: {props.error}</div>;
+  }
+
+  if (props.status !== Status.Loaded) {
+    return <div>loading...</div>;
+  }
+
+  if (props.roundState === undefined || props.round === undefined) {
+    return <div>something went wrong</div>;
+  }
+
   return (
     <div>
       <h4>Round #{props.id}</h4>
-      <p>...</p>
+      <p>{props.round.address}</p>
+      <p>{props.round.name}</p>
       <Link to={roundApplicationPath(params.id!)}>Apply to this round</Link>
     </div>
   );
