@@ -60,26 +60,9 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "_metaPtr",
-        "type": "tuple"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_programOperators",
-        "type": "address[]"
+        "internalType": "bytes",
+        "name": "_encodedParameters",
+        "type": "bytes"
       }
     ],
     "name": "create",

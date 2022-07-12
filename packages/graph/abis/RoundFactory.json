@@ -3,6 +3,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -66,73 +79,14 @@
   {
     "inputs": [
       {
-        "internalType": "contract IVotingStrategy",
-        "name": "_votingStrategy",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_applicationsStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_roundStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_roundEndTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "contract IERC20",
-        "name": "_token",
-        "type": "address"
+        "internalType": "bytes",
+        "name": "_encodedParameters",
+        "type": "bytes"
       },
       {
         "internalType": "address",
         "name": "_ownedBy",
         "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "_roundMetaPtr",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "_applicationMetaPtr",
-        "type": "tuple"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_roundOperators",
-        "type": "address[]"
       }
     ],
     "name": "create",
@@ -143,6 +97,13 @@
         "type": "address"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

@@ -58,7 +58,26 @@
         "type": "uint256"
       }
     ],
-    "name": "ApplicationStartTimeUpdated",
+    "name": "ApplicationsEndTimeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "ApplicationsStartTimeUpdated",
     "type": "event"
   },
   {
@@ -350,6 +369,19 @@
   },
   {
     "inputs": [],
+    "name": "applicationsEndTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "applicationsStartTime",
     "outputs": [
       {
@@ -498,73 +530,9 @@
   {
     "inputs": [
       {
-        "internalType": "contract IVotingStrategy",
-        "name": "_votingStrategy",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_applicationsStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_roundStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_roundEndTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "contract IERC20",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "_roundMetaPtr",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "_applicationMetaPtr",
-        "type": "tuple"
-      },
-      {
-        "internalType": "address",
-        "name": "_adminRole",
-        "type": "address"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_roundOperators",
-        "type": "address[]"
+        "internalType": "bytes",
+        "name": "_encodedParameters",
+        "type": "bytes"
       }
     ],
     "name": "initialize",
@@ -723,6 +691,19 @@
       }
     ],
     "name": "updateApplicationMetaPtr",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newApplicationsEndTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateApplicationsEndTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
