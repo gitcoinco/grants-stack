@@ -14,6 +14,9 @@ jobs:
           fetch-depth: 1
 
       - name: Install, Build, and Test 🔧
+        env:
+          REACT_APP_PINATA_JWT: ${{ secrets.REACT_APP_PINATA_JWT }}
+          REACT_APP_PINATA_GATEWAY: ${{ secrets.REACT_APP_PINATA_GATEWAY }}
         run: |
           cd client
           yarn install
@@ -23,9 +26,6 @@ jobs:
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
-        env:
-          REACT_APP_PINATA_JWT: ${{ secrets.REACT_APP_PINATA_JWT }}
-          REACT_APP_PINATA_GATEWAY: ${{ secrets.REACT_APP_PINATA_GATEWAY }}
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: client/build # The folder the action should deploy.
