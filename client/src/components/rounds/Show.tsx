@@ -46,9 +46,12 @@ function Round() {
 
   return (
     <div>
-      <h4>Round #{props.id}</h4>
-      <p>{props.round.address}</p>
-      <p>{props.round.name}</p>
+      <h4>Round #{props.id} Application</h4>
+      <div>
+        MetaPtr: {props.round.metaPtr?.protocol} {props.round.metaPtr?.pointer}
+      </div>
+      <p>Raw Metadata</p>
+      <pre>{props.round.metadata}</pre>
       <Link to={roundApplicationPath(params.id!)}>Apply to this round</Link>
     </div>
   );

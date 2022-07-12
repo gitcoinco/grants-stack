@@ -3,6 +3,7 @@ import {
   ROUNDS_LOADING_META_PTR,
   ROUNDS_ROUND_LOADED,
   ROUNDS_UNLOADED,
+  ROUNDS_LOADING_ERROR,
 } from "../actions/rounds";
 import { Round } from "../types";
 
@@ -55,6 +56,18 @@ export const roundsReducer = (
           status: Status.Loaded,
           error: undefined,
           round: action.round,
+        },
+      };
+    }
+
+    case ROUNDS_LOADING_ERROR: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.Error,
+          error: action.error,
         },
       };
     }

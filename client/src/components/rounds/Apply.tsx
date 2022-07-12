@@ -49,7 +49,8 @@ function Apply() {
       <div>
         MetaPtr: {props.round.metaPtr?.protocol} {props.round.metaPtr?.pointer}
       </div>
-      <div>Metadata: {props.round.metadata}</div>
+      <p>Raw Metadata</p>
+      <pre>{props.round.metadata}</pre>
       <p>Submit application</p>
     </div>
   );
