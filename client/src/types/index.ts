@@ -34,3 +34,13 @@ export interface ProjectEvent {
   id: number;
   block: number;
 }
+
+export interface MetaPtr {
+  protocol: string;
+  pointer: string;
+}
+
+export interface Round {
+  metaPtr: MetaPtr
+  metadata: any
+}
