@@ -29,7 +29,7 @@ dataSources:
     name: Round
     network: goerli
     source:
-      address: "0xfF187f3d58c9E1eB4d7177a8009C26ac79efC534"
+      address: "0x515594eeB37A6D5815F4c860454cD4FD87539978"
       abi: RoundFactory
       startBlock: 7015700 
     mapping:
