@@ -159,7 +159,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                 </label>
                 <Input
                   type="text"
-                  value="i.e. What do you call your customQuestions?"
+                  value='i.e. "What do you call your project?"'
                   disabled
                   $disabled
                 />
@@ -260,7 +260,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                 </label>
                 <Input
                   type="text"
-                  value="i.e. “Tell us more about your project.“"
+                  value='i.e. "Tell us more about your project."'
                   disabled
                   $disabled
                 />
@@ -273,7 +273,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                 </label>
                 <Input
                   type="text"
-                  value="i.e. “What are the dependencies and project goals?"
+                  value='i.e. "What are the dependencies and project goals?"'
                   disabled
                   $disabled
                 />
@@ -286,7 +286,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                 </label>
                 <Input
                   type="text"
-                  value="i.e. “What are some of the risks you see ahead?"
+                  value='i.e. "What are some of the risks you see ahead?"'
                   disabled
                   $disabled
                 />
