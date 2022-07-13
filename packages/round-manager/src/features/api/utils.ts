@@ -100,6 +100,7 @@ export const generateApplicationSchema = (metadata: any) => {
 
       for (const subKey of Object.keys(metadata[key])) {
         schema.push({
+          id: schema.length,
           question: camelToTitle(subKey),
           type: "TEXT",
           required: true,
@@ -111,6 +112,7 @@ export const generateApplicationSchema = (metadata: any) => {
 
     } else {
       schema.push({
+        id: schema.length,
         question: camelToTitle(key),
         type: "TEXT",
         required: true,
