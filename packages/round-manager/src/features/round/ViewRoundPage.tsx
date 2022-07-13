@@ -36,13 +36,6 @@ export default function ViewRound() {
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
-
-  const tabs = [
-    { name: 'Received', href: '#received', current: true },
-    { name: 'Approved', href: '#approved', current: false },
-    { name: 'Rejected', href: '#rejected', current: false }
-  ];
-
   return (
     <>
     <Navbar />
