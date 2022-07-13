@@ -46,7 +46,8 @@ const routerMiddleware = createRouterMiddleware(history);
 
 let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
 
-if (process.env.NODE_ENV !== "production") {
+const urlParams = new URLSearchParams(window.location.search);
+if (process.env.NODE_ENV !== "production" || urlParams.get("debug") !== null) {
   middlewares = [...middlewares, logger];
 }
 
