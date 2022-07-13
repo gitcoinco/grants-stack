@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
-import { ApplicationForm } from "../../types";
+import { RoundApplicationMetadata } from "../../types";
 import { TextArea, TextInput } from "../grants/inputs";
 import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
@@ -18,13 +18,13 @@ const validation = {
 export default function Form({
   roundApplication,
 }: {
-  roundApplication: ApplicationForm;
+  roundApplication: RoundApplicationMetadata;
 }) {
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
 
-  const idSchema = roundApplication.application_schema.map((input) => ({
+  const idSchema = roundApplication.applicationSchema.map((input) => ({
     ...input,
     id: input.question.toLowerCase().replaceAll(" ", "_"),
   }));

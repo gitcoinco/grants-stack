@@ -1,5 +1,5 @@
 import { object, string } from "yup";
-import { ApplicationSchema } from "../../types";
+import { RoundApplicationQuestion } from "../../types";
 
 export interface FormSchema {
   title: string;
@@ -25,7 +25,7 @@ export async function validateProjectForm(inputs: FormSchema) {
 }
 
 export async function validateApplication(
-  defaultInputs: ApplicationSchema[],
+  defaultInputs: RoundApplicationQuestion[],
   formInputs: any
 ) {
   const schema = defaultInputs.reduce((acc, input) => {
