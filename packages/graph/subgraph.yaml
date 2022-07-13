@@ -19,6 +19,8 @@ dataSources:
       abis:
         - name: ProgramFactory
           file: ./abis/ProgramFactory.json
+        - name: ProgramImplementation
+          file: ./abis/ProgramImplementation.json
       eventHandlers:
         - event: ProgramCreated(indexed address)
           handler: handleProgramCreated
