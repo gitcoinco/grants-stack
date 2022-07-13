@@ -5,7 +5,11 @@ import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
 import { useListProgramsQuery } from "../api/services/program"
-import { Tabs } from "../common/Tabs"
+import { Tab } from '@headlessui/react'
+import ApplicationsApproved from "./ApplicationsApproved"
+import ApplicationsReceived from "./ApplicationsReceived"
+import ApplicationsRejected from "./ApplicationsRejected"
+
 
 
 export default function ViewRound() {
@@ -38,7 +42,7 @@ export default function ViewRound() {
     { name: 'Approved', href: '#approved', current: false },
     { name: 'Rejected', href: '#rejected', current: false }
   ];
-  
+
   return (
     <>
     <Navbar />
@@ -84,8 +88,50 @@ export default function ViewRound() {
 
             <div>
               <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
+              
               <div>
-                <Tabs tabs={tabs}></Tabs>
+                <Tab.Group>
+                  <Tab.List className="border-b -mb-px flex space-x-8 mb-6">
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Received
+                    </Tab>
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Approved
+                    </Tab>
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Rejected
+                    </Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>
+                      <ApplicationsReceived />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsApproved />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsRejected />
+                    </Tab.Panel>
+                  </Tab.Panels>
+                </Tab.Group>
               </div>
             </div>
 
