@@ -23,6 +23,16 @@ export default function Form({
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
+  const schema = [
+    ...roundApplication.applicationSchema,
+    {
+      id: roundApplication.applicationSchema.length + 1,
+      question: "Recipient Address",
+      type: "TEXT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+      required: true,
+      info: "Address that will receive funds",
+    },
+  ];
 
   const handleInput = (
     e:
@@ -35,7 +45,7 @@ export default function Form({
 
   const validate = async () => {
     try {
-      await validateApplication(roundApplication.applicationSchema, formInputs);
+      await validateApplication(schema, formInputs);
       setFormValidation({
         message: "",
         valid: true,
@@ -62,7 +72,7 @@ export default function Form({
 
   return (
     <>
-      {roundApplication.applicationSchema.map((input) => {
+      {schema.map((input) => {
         switch (input.type) {
           case "TEXT":
             return (
