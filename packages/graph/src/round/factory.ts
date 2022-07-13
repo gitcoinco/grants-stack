@@ -2,11 +2,12 @@ import {
   RoundCreated as RoundCreatedEvent
 } from "../../generated/Round/RoundFactory"
 
-import { Round } from "../../generated/schema";
+import { MetaPtr, Round } from "../../generated/schema";
 import { RoundImplementation } from  "../../generated/templates";
 import {
   RoundImplementation  as RoundImplementationContract
 } from "../../generated/templates/RoundImplementation/RoundImplementation";
+import { updateMetaPtr } from "../utils";
 
 /**
  * @dev Handles indexing on RoundCreatedEvent event.
@@ -32,8 +33,26 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
     round.token = roundContract.token().toHex();
 
     // set roundMetaPtr
+    const roundMetaPtrId = ['roundMetaPtr', roundContractAddress.toHex()].join('-');
+    let roundMetaPtr = roundContract.roundMetaPtr();
+    let metaPtr = updateMetaPtr(
+      roundMetaPtrId,
+      roundMetaPtr.getProtocol().toI32(),
+      roundMetaPtr.getPointer().toString()
+    );
+    round.roundMetaPtr = metaPtr.id;
+
 
     // set applicationsMetaPtr
+    const applicationsMetaPtrId = ['applicationsMetaPtr', roundContractAddress.toHex()].join('-');
+    let applicationsMetaPtr = roundContract.applicationMetaPtr();
+    metaPtr = updateMetaPtr(
+      applicationsMetaPtrId,
+      applicationsMetaPtr.getProtocol().toI32(),
+      applicationsMetaPtr.getPointer().toString()
+    );
+    round.applicationMetaPtr = metaPtr.id;
+
   }
 
   // link round to program
@@ -43,4 +62,3 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
 
   RoundImplementation.create(roundContractAddress);
 }
-

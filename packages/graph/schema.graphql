@@ -54,8 +54,8 @@ type Round @entity {
   roundStartTime: String!
   roundEndTime: String!
   token: String!
-  # roundMetaPtr: MetaPtr!
-  # applicationMetaPtr: MetaPtr!
+  roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
+  applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
   # projectsMetaPtr: MetaPtr
 }
 

@@ -7,6 +7,7 @@ import { MetaPtr, Program } from "../../generated/schema";
 import {
   ProgramImplementation  as ProgramImplementationContract
 } from "../../generated/templates/ProgramImplementation/ProgramImplementation";
+import { updateMetaPtr } from "../utils";
 
 
 /**
@@ -27,15 +28,12 @@ export function handleProgramCreated(event: ProgramCreatedEvent): void {
 
     // set metaPtr
     const metaPtrId = ['metaPtr', programContractAddress.toHex()].join('-');
-
     let programMetaPtr = programContract.metaPtr();
-
-    let metaPtr = new MetaPtr(metaPtrId);
-
-    metaPtr.protocol = programMetaPtr.getProtocol().toI32();
-    metaPtr.pointer = programMetaPtr.getPointer().toString();
-    metaPtr.save();
-
+    let metaPtr = updateMetaPtr(
+      metaPtrId,
+      programMetaPtr.getProtocol().toI32(),
+      programMetaPtr.getPointer().toString()
+    );
     program.metaPtr = metaPtr.id;
   }
 
