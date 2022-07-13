@@ -1,4 +1,5 @@
 import { object, string } from "yup";
+import { ApplicationSchema } from "../../types";
 
 export interface FormSchema {
   title: string;
@@ -20,5 +21,26 @@ export async function validateProjectForm(inputs: FormSchema) {
   });
 
   const validatedInputs = await schema.validate(inputs);
+  return validatedInputs;
+}
+
+export async function validateApplication(
+  defaultInputs: ApplicationSchema[],
+  formInputs: any
+) {
+  const schema = defaultInputs.reduce((acc, input) => {
+    const { id, required } = input;
+    if (id) {
+      return {
+        ...acc,
+        [id]: required
+          ? string().required(`${input.question} is required`)
+          : string(),
+      };
+    }
+    return acc;
+  }, {});
+
+  const validatedInputs = await object(schema).validate(formInputs);
   return validatedInputs;
 }
