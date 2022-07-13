@@ -43,12 +43,12 @@ export default function ViewRound() {
       <header>
         <div className="mb-4">
           <Link className="text-sm flex gap-2" to={`/program/${program?.id}`}>
-            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1" />
+            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
             <span>{program?.metadata?.name || "..."}</span>
           </Link>
         </div>
         <div className="flow-root">
-          <h1 className="float-left text-[32px] mb-7">{round?.metadata?.name || "..."}</h1>
+          <h1 className="float-left text-[32px] mb-6">{round?.metadata?.name || "..."}</h1>
         </div>
         <hr/>
       </header>
@@ -57,10 +57,10 @@ export default function ViewRound() {
         {
           isRoundsFetched &&
           <div className="my-2">
-            <div className="my-5 flex">
+            <div className="mt-6 mb-8 flex">
               <div className="flex mr-3 pr-3">
                 <CalendarIcon className="h-5 w-5 mr-2" />
-                <p className="text-sm mr-1 text-grey-500">Application Start & End:</p>
+                <p className="text-sm mr-1 text-grey-400">Application Start & End:</p>
                 <p className="text-sm">
                   {formatDate(round?.applicationsStartTime) || "..."}
                   <span className="mx-1">-</span>
@@ -70,7 +70,7 @@ export default function ViewRound() {
 
               <div className="flex">
                 <ClockIcon className="h-5 w-5 mr-2" />
-                <p className="text-sm mr-1 text-grey-500">Grant Round Start & End:</p>
+                <p className="text-sm mr-1 text-grey-400">Grant Round Start & End:</p>
                 <p className="text-sm">
                   {formatDate(round?.roundStartTime) || "..."}
                   <span className="mx-1">-</span>
@@ -84,12 +84,12 @@ export default function ViewRound() {
               
               <div>
                 <Tab.Group>
-                  <Tab.List className="border-b -mb-px flex space-x-8 mb-6">
+                  <Tab.List className="border-b flex space-x-8 mb-6">
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
-                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
                       }
                     >
                       Received
@@ -97,8 +97,8 @@ export default function ViewRound() {
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
-                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
                       }
                     >
                       Approved
@@ -106,8 +106,8 @@ export default function ViewRound() {
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
-                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
                       }
                     >
                       Rejected
