@@ -1,14 +1,19 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
-import { Button } from "../common/styles"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
+import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
+import { useListProgramsQuery } from "../api/services/program"
+import { Tab } from '@headlessui/react'
+import ApplicationsApproved from "./ApplicationsApproved"
+import ApplicationsReceived from "./ApplicationsReceived"
+import ApplicationsRejected from "./ApplicationsRejected"
+
 
 
 export default function ViewRound() {
   const { id } = useParams()
-  const navigate = useNavigate()
 
   const { account } = useWeb3()
   const {
@@ -23,81 +28,116 @@ export default function ViewRound() {
     }),
   })
 
-  const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    navigate(-1)
-  }
+  const { program } = useListProgramsQuery(account, {
+    selectFromResult: ({ data }) => ({
+      program: data?.find((program) => program.id === round?.ownedBy) }
+    ),
+  })
 
-  const goToApplications = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    navigate(`/round/${id}/applications`)
-  }
-
-  const formatDate = (date: Date | undefined) => date?.toLocaleDateString(
-    "en-US",
-    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-  )
+  const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
   return (
     <>
     <Navbar />
-    <div className="container mx-auto px-4 py-16 h-screen">
+    <div className="container mx-auto h-screen px-4 py-7">
       <header>
-        <p className="mb-16">
-          <span className="text-5xl">{round?.metadata?.name || "..."}</span>
-          <span className="float-right truncate">📒: {account}</span>
-        </p>
-      </header>
-      <main>
-        <div>
-          {/* <div>
-            <h2 className="text-3xl mb-8">Operator Wallets</h2>
-            {round?.operatorWallets.map((operatorWallet, index) =>
-              <p key={index} className="truncate">{operatorWallet}</p>
-            ) || <p>Fetching operator wallets...</p>}
-          </div><br /> */}
-          {isRoundsLoading && <p className="mb-8">Fetching round information...</p>}
-          <p className="my-4">
-            <span className="text-2xl">Application Start Date: </span>
-            <span>{formatDate(round?.applicationsStartTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Application End Date: </span>
-            <span>{formatDate(round?.applicationsEndTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Round Start Date: </span>
-            <span>{formatDate(round?.startTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Round End Date: </span>
-            <span>{formatDate(round?.endTime) || "..."}</span>
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Supported Token for Voting: </span>
-            {round?.token ? <a
-              href={`https://goerli.etherscan.io/address/${round?.token}`}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-600 underline">
-              {round?.token}
-            </a> : "..."}
-          </p>
-          <p className="my-4">
-            <span className="text-2xl">Voting Contract Address: </span>
-            {round?.token ? <a
-              href={`https://goerli.etherscan.io/address/${round?.votingStrategy}`}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="text-blue-600 underline">
-              {round?.votingStrategy}
-            </a> : "..."}
-          </p>
-          {isRoundsFetched &&
-            <Button type="button" onClick={goToApplications}>Review Applications</Button>
-          }<br />
-          <Button type="button" onClick={goBack}>Back</Button>
+        <div className="mb-4">
+          <Link className="text-sm flex gap-2" to={`/program/${program?.id}`}>
+            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
+            <span>{program?.metadata?.name || "..."}</span>
+          </Link>
         </div>
+        <div className="flow-root">
+          <h1 className="float-left text-[32px] mb-6">{round?.metadata?.name || "..."}</h1>
+        </div>
+        <hr/>
+      </header>
+
+      <main>
+        {
+          isRoundsFetched &&
+          <div className="my-2">
+            <div className="mt-6 mb-8 flex">
+              <div className="flex mr-3 pr-3">
+                <CalendarIcon className="h-5 w-5 mr-2" />
+                <p className="text-sm mr-1 text-grey-400">Application Start & End:</p>
+                <p className="text-sm">
+                  {formatDate(round?.applicationsStartTime) || "..."}
+                  <span className="mx-1">-</span>
+                  {formatDate(round?.applicationsEndTime) || "..."}
+                </p>
+              </div>
+
+              <div className="flex">
+                <ClockIcon className="h-5 w-5 mr-2" />
+                <p className="text-sm mr-1 text-grey-400">Grant Round Start & End:</p>
+                <p className="text-sm">
+                  {formatDate(round?.roundStartTime) || "..."}
+                  <span className="mx-1">-</span>
+                  {formatDate(round?.roundEndTime) || "..."}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
+              
+              <div>
+                <Tab.Group>
+                  <Tab.List className="border-b flex space-x-8 mb-6">
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Received
+                    </Tab>
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Approved
+                    </Tab>
+                    <Tab
+                      className={({ selected }) =>
+                        selected ?
+                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
+                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                      }
+                    >
+                      Rejected
+                    </Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>
+                      <ApplicationsReceived />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsApproved />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsRejected />
+                    </Tab.Panel>
+                  </Tab.Panels>
+                </Tab.Group>
+              </div>
+            </div>
+
+          </div>
+        }
+
+        <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
+          {
+            isRoundsLoading &&
+            <p>Fetching round information...</p>
+          }
+        </div>
+
       </main>
     </div>
     </>
