@@ -24,11 +24,6 @@ export default function Form({
   const [submitted, setSubmitted] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
 
-  const idSchema = roundApplication.applicationSchema.map((input) => ({
-    ...input,
-    id: input.question.toLowerCase().replaceAll(" ", "_"),
-  }));
-
   const handleInput = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -40,7 +35,7 @@ export default function Form({
 
   const validate = async () => {
     try {
-      await validateApplication(idSchema, formInputs);
+      await validateApplication(roundApplication.applicationSchema, formInputs);
       setFormValidation({
         message: "",
         valid: true,
@@ -67,7 +62,7 @@ export default function Form({
 
   return (
     <>
-      {idSchema.map((input) => {
+      {roundApplication.applicationSchema.map((input) => {
         switch (input.type) {
           case "TEXT":
             return (
@@ -75,7 +70,7 @@ export default function Form({
                 key={input.id}
                 label={input.question}
                 info={input.info}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />
@@ -86,7 +81,7 @@ export default function Form({
                 key={input.id}
                 label={input.question}
                 info={input.info}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />
@@ -96,7 +91,7 @@ export default function Form({
               <Radio
                 key={input.id}
                 label={input.question}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={
                   formInputs[input.id] ?? (input.choices && input.choices[0])
                 }
@@ -121,7 +116,7 @@ export default function Form({
               <TextInput
                 key={input.id}
                 label={input.question}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />

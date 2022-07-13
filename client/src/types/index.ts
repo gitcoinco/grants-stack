@@ -46,13 +46,12 @@ export interface RoundMetadata {
 }
 
 export interface RoundApplicationQuestion {
+  id: number;
   question: string;
   type: string;
   required: boolean;
   info?: string;
   choices?: string[];
-  // temporarily optional unitl passed from RM
-  id?: string;
 }
 
 export interface RoundApplicationMetadata {
