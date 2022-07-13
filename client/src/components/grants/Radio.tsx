@@ -1,6 +1,7 @@
 type RadioInputProps = {
   label: string;
   name: string;
+  value: string | number;
   info?: string;
   choices?: string[];
   changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -9,6 +10,7 @@ type RadioInputProps = {
 export default function Radio({
   label,
   name,
+  value,
   info,
   choices = [],
   changeHandler,
@@ -19,17 +21,17 @@ export default function Radio({
       <legend>{info}</legend>
       <fieldset className="mt-4" id={name}>
         <div className="space-y-2">
-          {choices.map((choice, i) => {
+          {choices.map((choice) => {
             const choiceId = choice.toLowerCase().replaceAll(" ", "_");
             return (
               <div key={choiceId} className="flex justify-start w-1/2">
                 <input
-                  id={choiceId}
-                  name="notification-method"
-                  type="radio"
-                  defaultChecked={i === 0}
-                  className="focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
+                  value={choice}
+                  name={name}
+                  checked={choice === value}
                   onChange={changeHandler}
+                  type="radio"
+                  className="focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">
                   {choice}
