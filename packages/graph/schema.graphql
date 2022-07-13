@@ -49,10 +49,11 @@ type Round @entity {
   roles: [RoundRole!]! @derivedFrom(field: "round") 
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
-  # applicationsStartTime: String!
-  # applicationsEndTime: String!
-  # roundStartTime: String!
-  # token: String!
+  applicationsStartTime: String!
+  applicationsEndTime: String!
+  roundStartTime: String!
+  roundEndTime: String!
+  token: String!
   # roundMetaPtr: MetaPtr!
   # applicationMetaPtr: MetaPtr!
   # projectsMetaPtr: MetaPtr

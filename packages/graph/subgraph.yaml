@@ -43,6 +43,8 @@ dataSources:
       abis:
         - name: RoundFactory
           file: ./abis/RoundFactory.json
+        - name: RoundImplementation
+          file: ./abis/RoundImplementation.json
       eventHandlers:
         - event: RoundCreated(indexed address,indexed address)
           handler: handleRoundCreated
