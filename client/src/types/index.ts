@@ -1,9 +1,11 @@
-type ApplicationSchema = {
+export type ApplicationSchema = {
   question: string;
   type: string;
   required: boolean;
   info?: string;
-  choices?: string[] | number[];
+  choices?: string[];
+  // temporarily optional unitl passed from RM
+  id?: string;
 };
 
 export type ApplicationForm = {
@@ -28,7 +30,8 @@ export interface Metadata {
 export type InputProps = {
   label: string;
   name: string;
-  value?: string;
+  info?: string;
+  value?: string | number;
   placeholder?: string;
   changeHandler: (
     event:
