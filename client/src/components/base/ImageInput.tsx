@@ -91,9 +91,7 @@ export default function ImageInput({
   return (
     <>
       <div className="mt-6 w-11/12">
-        <label className="block text-xs mb-2" htmlFor={label}>
-          {label}
-        </label>
+        <label htmlFor={label}>{label}</label>
         <div className="flex">
           <input
             ref={fileInput}

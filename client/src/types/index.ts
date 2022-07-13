@@ -1,3 +1,19 @@
+export type ApplicationSchema = {
+  question: string;
+  type: string;
+  required: boolean;
+  info?: string;
+  choices?: string[];
+  // temporarily optional unitl passed from RM
+  id?: string;
+};
+
+export type ApplicationForm = {
+  id: string;
+  last_updated_on: string;
+  application_schema: ApplicationSchema[];
+};
+
 export interface Metadata {
   protocol: number;
   pointer: string;
@@ -14,7 +30,8 @@ export interface Metadata {
 export type InputProps = {
   label: string;
   name: string;
-  value?: string;
+  info?: string;
+  value?: string | number;
   placeholder?: string;
   changeHandler: (
     event:

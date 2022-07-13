@@ -9,7 +9,7 @@ import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
 import { resetFileStatus } from "../../actions/ipfs";
 import { publishGrant, resetStatus } from "../../actions/newGrant";
-import { validateProjectForm } from "./projectFormValidation";
+import { validateProjectForm } from "./formValidation";
 import { Status } from "../../reducers/newGrant";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
@@ -171,13 +171,13 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
           name="title"
           placeholder="What's the project name?"
           value={formInputs.title}
-          changeHandler={(e) => handleInput(e)}
+          changeHandler={handleInput}
         />
         <WebsiteInput
           label="Project Website"
           name="website"
           value={formInputs.website}
-          changeHandler={(e) => handleInput(e)}
+          changeHandler={handleInput}
         />
         <ImageInput
           label="Project Logo"
@@ -189,21 +189,21 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
           name="description"
           placeholder="What is the project about and what kind of impact does it aim to have?"
           value={formInputs.description}
-          changeHandler={(e) => handleInput(e)}
+          changeHandler={handleInput}
         />
         <TextArea
           label="Project Roadmap"
           name="roadmap"
           placeholder="What are the dependencies and project goals? What are the timelines per milestone or deliverable?"
           value={formInputs.roadmap}
-          changeHandler={(e) => handleInput(e)}
+          changeHandler={handleInput}
         />
         <TextArea
           label="Project Challenges"
           name="challenges"
           placeholder="What are some of the risks you see ahead? How do you plan to prepare?"
           value={formInputs.challenges}
-          changeHandler={(e) => handleInput(e)}
+          changeHandler={handleInput}
         />
         {!formValidation.valid && submitted && (
           <p className="text-danger-text w-full text-center font-semibold my-2">
