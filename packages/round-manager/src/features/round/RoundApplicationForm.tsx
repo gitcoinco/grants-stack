@@ -265,33 +265,6 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   $disabled
                 />
               </div>
-
-              {/* Roadmap */}
-              <div className="sm:col-start-1">
-                <label className="block text-xs font-medium text-gray-700">
-                  Roadmap
-                </label>
-                <Input
-                  type="text"
-                  value='i.e. "What are the dependencies and project goals?"'
-                  disabled
-                  $disabled
-                />
-              </div>
-
-              {/* Challenges */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700">
-                  Challenges
-                </label>
-                <Input
-                  type="text"
-                  value='i.e. "What are some of the risks you see ahead?"'
-                  disabled
-                  $disabled
-                />
-              </div>
-
             </div>
 
             <p className="mt-4 mb-2"><b>Additional Questions</b></p>
