@@ -136,7 +136,6 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
 
   const testRound = {
     address,
-    name: "Test Round",
     roundMetaPtr: {
       protocol: BigNumber.from(roundMetaPtr.protocol).toString(),
       pointer: roundMetaPtr.pointer,

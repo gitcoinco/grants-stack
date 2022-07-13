@@ -75,7 +75,6 @@ export interface RoundApplicationMetadata {
 
 export interface Round {
   address: string;
-  name: string;
   roundMetaPtr: MetaPtr;
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
