@@ -4,6 +4,7 @@ import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { roundPath } from "../../routes";
 import { Status } from "../../reducers/rounds";
+import Form from "../application/Form";
 
 function Apply() {
   const params = useParams();
@@ -22,6 +23,7 @@ function Apply() {
       status,
       error,
       round,
+      applicationMetadata: round?.applicationMetadata,
     };
   }, shallowEqual);
 
@@ -46,9 +48,10 @@ function Apply() {
   return (
     <div>
       <h4>Round #{props.id} Application</h4>
-      <p>Raw Round</p>
-      <pre>{JSON.stringify(props.round, null, 2)}</pre>
-      <p>Submit application</p>
+      {!props.applicationMetadata === undefined && <div>loading form...</div>}
+      {props.applicationMetadata !== undefined && (
+        <Form roundApplication={props.applicationMetadata} />
+      )}
     </div>
   );
 }

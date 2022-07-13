@@ -1,19 +1,3 @@
-export type ApplicationSchema = {
-  question: string;
-  type: string;
-  required: boolean;
-  info?: string;
-  choices?: string[];
-  // temporarily optional unitl passed from RM
-  id?: string;
-};
-
-export type ApplicationForm = {
-  id: string;
-  last_updated_on: string;
-  application_schema: ApplicationSchema[];
-};
-
 export interface Metadata {
   protocol: number;
   pointer: string;
@@ -65,10 +49,14 @@ export interface RoundApplicationQuestion {
   question: string;
   type: string;
   required: boolean;
-  info: string;
+  info?: string;
+  choices?: string[];
+  // temporarily optional unitl passed from RM
+  id?: string;
 }
 
 export interface RoundApplicationMetadata {
+  id: string;
   lastUpdatedOn: number;
   applicationSchema: RoundApplicationQuestion[];
 }
