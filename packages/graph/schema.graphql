@@ -49,6 +49,7 @@ type Round @entity {
   roles: [RoundRole!]! @derivedFrom(field: "round") 
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
+  votingStrategy: String!
   applicationsStartTime: String!
   applicationsEndTime: String!
   roundStartTime: String!

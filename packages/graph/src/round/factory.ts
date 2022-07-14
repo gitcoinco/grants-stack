@@ -26,6 +26,7 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
     const roundContract = RoundImplementationContract.bind(roundContractAddress);
 
     // index global variables
+    round.votingStrategy = roundContract.votingStrategy().toHex();
     round.applicationsStartTime = roundContract.applicationsStartTime().toString();
     round.applicationsEndTime = roundContract.applicationsEndTime().toString();
     round.roundStartTime = roundContract.roundStartTime().toString();
