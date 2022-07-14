@@ -76,8 +76,7 @@ export const programApi = api.injectEndpoints({
     listPrograms: builder.query<Program[], string>({
       queryFn: async (account) => {
         try {
-          account = ethers.utils.getAddress(account)
-
+          // get the subgraph for all programs owned by the given account
           const res = await graphql_fetch(
             `
               query GetPrograms($account: String!) {
@@ -101,7 +100,7 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            { account: account.toLowerCase() }
+            { account }
           )
 
           const programs: Program[] = []

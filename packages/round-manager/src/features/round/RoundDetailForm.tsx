@@ -13,7 +13,7 @@ import { Input } from "../common/styles"
 
 
 const ValidationSchema = yup.object().shape({
-  metadata: yup.object({
+  roundMetadata: yup.object({
     name: yup.string()
       .required("This field is required.")
       .min(8, "Round name must be less that 8 characters."),
@@ -66,11 +66,11 @@ export function RoundDetailForm(props: { initialData: any, stepper: any }) {
               <div className="col-span-6 sm:col-span-3">
                 <label htmlFor="name" className="block text-xs font-medium text-gray-700">Round Name</label>
                 <Input
-                  {...register("metadata.name")}
-                  $hasError={errors.metadata?.name}
+                  {...register("roundMetadata.name")}
+                  $hasError={errors.roundMetadata?.name}
                   type="text"
                 />
-                {errors.metadata?.name && <p className="text-sm text-red-600">{errors.metadata?.name?.message}</p>}
+                {errors.roundMetadata?.name && <p className="text-sm text-red-600">{errors.roundMetadata?.name?.message}</p>}
               </div>
             </div>
 

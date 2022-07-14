@@ -88,7 +88,7 @@ export interface Round {
   /**
    * Metadata of the Round to be stored off-chain
    */
-  metadata?: {
+  roundMetadata?: {
     name: string
   };
   /**

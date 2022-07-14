@@ -33,7 +33,7 @@ export default function ViewProgram() {
       <div className="flex-1 min-w-0">
 
         <p className="text-sm mb-1 font-medium text-gray-900">
-          {round.metadata!.name}
+          {round.roundMetadata!.name}
         </p>
 
         <div className="grid sm:grid-cols-3">
