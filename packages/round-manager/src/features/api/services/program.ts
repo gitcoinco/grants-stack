@@ -91,8 +91,12 @@ export const programApi = api.injectEndpoints({
                     protocol
                     pointer
                   }
-                  accounts {
-                    address
+                  roles(where: {
+                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
+                  }) {
+                    accounts {
+                      address
+                    }
                   }
                 }
               }
@@ -108,7 +112,7 @@ export const programApi = api.injectEndpoints({
             programs.push({
               id: program.id,
               metadata,
-              operatorWallets: program.accounts.map((program: any) => program.address)
+              operatorWallets: program.roles[0].accounts.map((program: any) => program.address)
             })
           }
 
