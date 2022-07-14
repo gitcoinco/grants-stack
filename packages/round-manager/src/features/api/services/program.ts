@@ -7,7 +7,7 @@ import { fetchFromIPFS, graphql_fetch } from "../utils"
 
 
 /**
- * Contract interations API for a Grant Program
+ * Contract interactions API for a Grant Program
  */
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({

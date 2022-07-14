@@ -8,7 +8,7 @@ import { global } from "../../../global"
 
 
 /**
- * Contract interations API for a Round
+ * Contract interactions API for a Round
  */
 export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
