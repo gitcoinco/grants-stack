@@ -22,7 +22,7 @@ function Apply() {
   const props = useSelector((state: RootState) => {
     const { id } = params;
     const roundState = state.rounds[id!];
-    const status = roundState ? roundState.status : Status.Empty;
+    const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
     return {
