@@ -10,31 +10,13 @@ import {
   RoundApplicationMetadata,
 } from "../types";
 import PinataClient from "../services/pinata";
+import { Status } from "../reducers/rounds";
 
-export const ROUNDS_LOADING_ROUND_META_PTR = "ROUNDS_LOADING_ROUND_META_PTR";
-interface RoundsLoadingRoundMetaPtrAction {
-  type: typeof ROUNDS_LOADING_ROUND_META_PTR;
+export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
+interface RoundsLoadingRoundAction {
+  type: typeof ROUNDS_LOADING_ROUND;
   address: string;
-}
-
-export const ROUNDS_LOADING_ROUND_METADATA = "ROUNDS_LOADING_ROUND_METADATA";
-interface RoundsLoadingRoundMetadataAction {
-  type: typeof ROUNDS_LOADING_ROUND_METADATA;
-  address: string;
-}
-
-export const ROUNDS_LOADING_APPLICATION_META_PTR =
-  "ROUNDS_LOADING_APPLICATION_META_PTR";
-interface RoundsLoadingApplicationMetaPtrAction {
-  type: typeof ROUNDS_LOADING_APPLICATION_META_PTR;
-  address: string;
-}
-
-export const ROUNDS_LOADING_APPLICATION_METADATA =
-  "ROUNDS_LOADING_APPLICATION_METADATA";
-interface RoundsLoadingApplicationMetadataAction {
-  type: typeof ROUNDS_LOADING_APPLICATION_METADATA;
-  address: string;
+  status: Status;
 }
 
 export const ROUNDS_ROUND_LOADED = "ROUNDS_ROUND_LOADED";
@@ -57,10 +39,7 @@ interface RoundsLoadingErrorAction {
 }
 
 export type RoundsActions =
-  | RoundsLoadingRoundMetaPtrAction
-  | RoundsLoadingRoundMetadataAction
-  | RoundsLoadingApplicationMetaPtrAction
-  | RoundsLoadingApplicationMetadataAction
+  | RoundsLoadingRoundAction
   | RoundsRoundLoadedAction
   | RoundsUnloadedAction
   | RoundsLoadingErrorAction;
@@ -84,11 +63,24 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 export const unloadRounds = () => roundsUnloaded();
 
 export const loadRound = (address: string) => async (dispatch: Dispatch) => {
-  dispatch({ type: ROUNDS_LOADING_ROUND_META_PTR, address });
-
   const signer = global.web3Provider!.getSigner();
   const contract = new ethers.Contract(address, RoundABI, signer);
   const pinataClient = new PinataClient();
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingApplicationsStartTime,
+  });
+
+  const applicationsStartTime = await contract.applicationsStartTime();
+  console.log("----", applicationsStartTime);
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingRoundMetaPtr,
+  });
 
   let roundMetaPtr: MetaPtr;
   try {
@@ -99,7 +91,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  dispatch({ type: ROUNDS_LOADING_ROUND_METADATA, address });
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingRoundMetadata,
+  });
 
   let roundMetadata: RoundMetadata;
   try {
@@ -111,7 +107,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  dispatch({ type: ROUNDS_LOADING_APPLICATION_META_PTR, address });
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingApplicationMetaPtr,
+  });
 
   let applicationMetaPtr: MetaPtr;
   try {
@@ -122,7 +122,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  dispatch({ type: ROUNDS_LOADING_APPLICATION_METADATA, address });
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingApplicationMetadata,
+  });
 
   let applicationMetadata: RoundApplicationMetadata;
   try {
