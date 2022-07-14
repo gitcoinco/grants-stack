@@ -1,9 +1,9 @@
 import { ethers } from "ethers"
 import { api } from ".."
 import { global } from "../../../global"
-import { programFactoryContract, programImplementationContract } from "../contracts"
+import { programFactoryContract } from "../contracts"
 import { Program } from "../types"
-import { fetchFromIPFS } from "../utils"
+import { fetchFromIPFS, graphql_fetch } from "../utils"
 
 
 /**
@@ -78,66 +78,42 @@ export const programApi = api.injectEndpoints({
         try {
           account = ethers.utils.getAddress(account)
 
-          const programFactory = new ethers.Contract(
-            programFactoryContract.address!,
-            programFactoryContract.abi,
-            global.web3Provider
+          const res = await graphql_fetch(
+            `
+              query GetPrograms($account: String!) {
+                programs(where: {
+                  accounts_: {
+                    address: $account
+                  }
+                }) {
+                  id
+                  metaPtr {
+                    protocol
+                    pointer
+                  }
+                  roles(where: {
+                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
+                  }) {
+                    accounts {
+                      address
+                    }
+                  }
+                }
+              }
+            `,
+            { account: account.toLowerCase() }
           )
-
-          // Create event filter and query programs created from past events
-          const filter = programFactory.filters.ProgramCreated()
-          const events = await programFactory.queryFilter(filter)
 
           const programs: Program[] = []
 
-          // Loop through past events to filter programs for which the connected account
-          // has the required operator permission
-          for (const event of events) {
-            if (!event.args) {
-              continue
-            }
+          for (const program of res.data.programs) {
+            const metadata = await fetchFromIPFS(program.metaPtr.pointer)
 
-            const programImplementation = new ethers.Contract(
-              event.args.programContractAddress,
-              programImplementationContract.abi,
-              global.web3Provider
-            )
-
-            const PROGRAM_OPERATOR_ROLE = await programImplementation.PROGRAM_OPERATOR_ROLE()
-
-            const isOperator = await programImplementation.hasRole(
-              PROGRAM_OPERATOR_ROLE,
-              account
-            )
-
-            if (isOperator) {
-              // Connected wallet is a Program Operator
-
-              // Fetch program data from contract
-              const [
-                metaPointer,
-                operatorCount
-              ] = await Promise.all([
-                programImplementation.metaPtr(),
-                programImplementation.getRoleMemberCount(PROGRAM_OPERATOR_ROLE)
-              ])
-
-              let operatorWallets = [];
-              for (let i = 0; i < operatorCount; ++i) {
-                operatorWallets.push(programImplementation.getRoleMember(PROGRAM_OPERATOR_ROLE, i))
-              }
-              operatorWallets = await Promise.all(operatorWallets)
-
-              // Fetch metadata from IPFS
-              const metadata = await fetchFromIPFS(metaPointer[1])
-
-              // Add program to response
-              programs.push({
-                id: event.args.programContractAddress,
-                metadata,
-                operatorWallets
-              })
-            }
+            programs.push({
+              id: program.id,
+              metadata,
+              operatorWallets: program.roles[0].accounts.map((program: any) => program.address)
+            })
           }
 
           return { data: programs }
