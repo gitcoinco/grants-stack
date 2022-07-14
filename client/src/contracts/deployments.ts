@@ -5,7 +5,7 @@ export const chains: { [key: number]: string } = {
 
 export const addresses: { [key: string]: any } = {
   goerli: {
-    projectRegistry: "0xf47669845D97f66922058430f01F24AdA28Aaf36",
+    projectRegistry: "0x1D4C316Ceb8cd3f497122606c9CCe2451F202B0a",
   },
   optimisticKovan: {
     projectRegistry: "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a",

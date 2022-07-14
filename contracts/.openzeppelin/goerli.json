@@ -9,6 +9,11 @@
       "address": "0xf47669845D97f66922058430f01F24AdA28Aaf36",
       "txHash": "0x51ce5c1409e430b1e840e7d98de426197816541790f08d4fa044c2320a0bd891",
       "kind": "transparent"
+    },
+    {
+      "address": "0x1D4C316Ceb8cd3f497122606c9CCe2451F202B0a",
+      "txHash": "0x646eb3fb9d2c89b9a260e109ddb0795eef10dc9f57c05d7dd9177bc502efb637",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -138,6 +143,147 @@
               {
                 "label": "metadata",
                 "type": "t_struct(MetaPtr)856_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          },
+          "t_uint96": {
+            "label": "uint96",
+            "numberOfBytes": "12"
+          }
+        }
+      }
+    },
+    "a36594dbe2a93ab8fecfd5a107121ff6513a91cc23f34cf2e478828bf2b3200a": {
+      "address": "0xD1934288080CCc2FD0ca93e2EB25BD965642eC0E",
+      "txHash": "0xe174a3c9e337ffc88e61c34bb25516d82dee15af6f10e7efc0e1e23a37ef6eb0",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "projectsCount",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_uint96",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:43"
+          },
+          {
+            "label": "projects",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint96,t_struct(Project)397_storage)",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:46"
+          },
+          {
+            "label": "projectsOwners",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint96,t_struct(OwnerList)404_storage)",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:49"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint96,t_struct(OwnerList)404_storage)": {
+            "label": "mapping(uint96 => struct ProjectRegistry.OwnerList)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint96,t_struct(Project)397_storage)": {
+            "label": "mapping(uint96 => struct ProjectRegistry.Project)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(MetaPtr)846_storage": {
+            "label": "struct MetaPtr",
+            "members": [
+              {
+                "label": "protocol",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "pointer",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(OwnerList)404_storage": {
+            "label": "struct ProjectRegistry.OwnerList",
+            "members": [
+              {
+                "label": "count",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "list",
+                "type": "t_mapping(t_address,t_address)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Project)397_storage": {
+            "label": "struct ProjectRegistry.Project",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint96",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "metadata",
+                "type": "t_struct(MetaPtr)846_storage",
                 "offset": 0,
                 "slot": "1"
               }
