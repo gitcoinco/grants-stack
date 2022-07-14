@@ -12,6 +12,8 @@ Before running any command, make sure to install dependencies:
 yarn install
 ```
 
+Copy `.env-example` to `.env` and write your [https://www.pinata.cloud/](pinata.clod) JWT and GATEWAY environment variable.
+
 ### Start
 
 Runs the app in the development mode.\
