@@ -73,7 +73,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
         applicationMetadataPointer
       ] = await Promise.all([
         saveToIPFS({
-          content: data.metadata,
+          content: data.roundMetadata,
           metadata: {
             name: "round-metadata"
           }
