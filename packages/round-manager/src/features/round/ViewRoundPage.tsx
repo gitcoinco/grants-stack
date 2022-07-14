@@ -14,8 +14,8 @@ import ApplicationsRejected from "./ApplicationsRejected"
 
 export default function ViewRound() {
   const { id } = useParams()
-
   const { account } = useWeb3()
+
   const {
     round,
     isLoading: isRoundsLoading,

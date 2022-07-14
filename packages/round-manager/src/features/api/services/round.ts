@@ -104,12 +104,16 @@ export const roundApi = api.injectEndpoints({
           // query the subgraph for all rounds by the given account in the given program
           const res = await graphql_fetch(
             `
-              query GetRounds($account: String!, $programId: String!) {
+              query GetRounds($account: String!, $programId: String) {
                 rounds(where: {
                   accounts_: {
                     address: $account
                   }
-                  program: $programId
+            `
+              +
+                (programId ? `program: $programId` : ``)
+              +
+            `
                 }) {
                   id
                   program
@@ -155,7 +159,7 @@ export const roundApi = api.injectEndpoints({
               roundStartTime: new Date(round.roundStartTime * 1000),
               roundEndTime: new Date(round.roundEndTime * 1000),
               token: round.token,
-              votingStrategy: "",
+              votingStrategy: round.votingStrategy,
               ownedBy: round.program
             })
           }
