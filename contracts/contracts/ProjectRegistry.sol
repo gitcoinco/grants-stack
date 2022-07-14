@@ -13,7 +13,6 @@ contract ProjectRegistry is Initializable {
     // The project structs contains the minimal data we need for a project
     struct Project {
         uint96 id;
-        address recipient;
         MetaPtr metadata;
     }
 
@@ -73,16 +72,14 @@ contract ProjectRegistry is Initializable {
     // External functions
 
     /**
-     * @notice Creates a new project with recipient and a metadata pointer
-     * @param recipient the recipient address of a grant application
+     * @notice Creates a new project with a metadata pointer
      * @param metadata the metadata pointer
      */
-    function createProject(address recipient, MetaPtr memory metadata) external {
+    function createProject(MetaPtr memory metadata) external {
         uint96 projectID = projectsCount++;
 
         Project storage g = projects[projectID];
         g.id = projectID;
-        g.recipient = recipient;
         g.metadata = metadata;
 
         initProjectOwners(projectID);

@@ -10,7 +10,7 @@ const OWNERS_LIST_SENTINEL = "0x0000000000000000000000000000000000000001";
 
 describe("ProjectRegistry", function () {
   before(async function () {
-    [this.owner, this.projectRecipient, this.nonOwner, ...this.accounts] = await ethers.getSigners();
+    [this.owner, this.nonOwner, ...this.accounts] = await ethers.getSigners();
 
     const ProjectRegistry = await hre.ethers.getContractFactory("ProjectRegistry", this.owner);
     this.contract = await ProjectRegistry.deploy();
@@ -30,13 +30,12 @@ describe("ProjectRegistry", function () {
   it("creates a new project and adds it to the projects list", async function () {
     expect(await this.contract.projectsCount()).to.equal("0");
 
-    await this.contract.createProject(this.projectRecipient.address, testMetadata);
+    await this.contract.createProject(testMetadata);
 
     expect(await this.contract.projectsCount()).to.equal("1");
 
     const project = await this.contract.projects(0);
     expect(project.id).to.equal("0");
-    expect(project.recipient).to.equal(this.projectRecipient.address);
 
     const [protocol, pointer] = project.metadata;
     expect(protocol).to.equal(testMetadata.protocol);
