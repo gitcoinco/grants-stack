@@ -2,6 +2,37 @@ import { IPFSObject } from "./types"
 
 
 /**
+ * Fetch data from a GraphQL endpoint
+ * 
+ * @param endpoint - The GraphQL endpoint
+ * @param query - The query to be executed
+ * @param variables - The variables to be used in the query
+ * @returns The result of the query
+ */
+ export const graphql_fetch = (
+   query: string,
+   variables: object,
+   endpoint: string = `${process.env.REACT_APP_SUBGRAPH_API}`
+) => {
+
+  return fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query, variables })
+  }
+  ).then(resp => {
+    if (resp.ok) {
+      return resp.json();
+    }
+
+    return Promise.reject(resp)
+  })
+}
+
+
+/**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
  * 
@@ -88,7 +119,7 @@ const camelToTitle = (camelCase: string) => camelCase
  * This function generates the round application schema to be stored in a decentralized storage
  * 
  * @param metadata - The metadata of a round application
- * @returns - The application schema
+ * @returns The application schema
  */
 export const generateApplicationSchema = (metadata: any) => {
 
