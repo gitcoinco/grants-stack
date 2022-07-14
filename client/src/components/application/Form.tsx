@@ -23,11 +23,16 @@ export default function Form({
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
-
-  const idSchema = roundApplication.applicationSchema.map((input) => ({
-    ...input,
-    id: input.question.toLowerCase().replaceAll(" ", "_"),
-  }));
+  const schema = [
+    ...roundApplication.applicationSchema,
+    {
+      id: roundApplication.applicationSchema.length + 1,
+      question: "Recipient Address",
+      type: "TEXT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+      required: true,
+      info: "Address that will receive funds",
+    },
+  ];
 
   const handleInput = (
     e:
@@ -40,7 +45,7 @@ export default function Form({
 
   const validate = async () => {
     try {
-      await validateApplication(idSchema, formInputs);
+      await validateApplication(schema, formInputs);
       setFormValidation({
         message: "",
         valid: true,
@@ -67,7 +72,7 @@ export default function Form({
 
   return (
     <>
-      {idSchema.map((input) => {
+      {schema.map((input) => {
         switch (input.type) {
           case "TEXT":
             return (
@@ -75,7 +80,7 @@ export default function Form({
                 key={input.id}
                 label={input.question}
                 info={input.info}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />
@@ -86,7 +91,7 @@ export default function Form({
                 key={input.id}
                 label={input.question}
                 info={input.info}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />
@@ -96,7 +101,7 @@ export default function Form({
               <Radio
                 key={input.id}
                 label={input.question}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={
                   formInputs[input.id] ?? (input.choices && input.choices[0])
                 }
@@ -121,7 +126,7 @@ export default function Form({
               <TextInput
                 key={input.id}
                 label={input.question}
-                name={input.id}
+                name={`question-${input.id}`}
                 value={formInputs[input.id] ?? ""}
                 changeHandler={handleInput}
               />

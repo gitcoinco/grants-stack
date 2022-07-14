@@ -1,8 +1,16 @@
 [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -113,11 +121,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
         "components": [
           {
             "internalType": "uint256",
@@ -160,6 +163,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint96",
@@ -192,11 +202,6 @@
         "internalType": "uint96",
         "name": "id",
         "type": "uint96"
-      },
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
       },
       {
         "components": [

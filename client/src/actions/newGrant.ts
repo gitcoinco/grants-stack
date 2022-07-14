@@ -95,7 +95,7 @@ export const publishGrant =
       }
     } else {
       try {
-        projectTx = await projectRegistry.createProject(signer?.getAddress(), {
+        projectTx = await projectRegistry.createProject({
           protocol: 1,
           pointer: metadataCID,
         });
