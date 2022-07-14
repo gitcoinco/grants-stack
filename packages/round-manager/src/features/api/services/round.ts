@@ -110,9 +110,9 @@ export const roundApi = api.injectEndpoints({
                     address: $account
                   }
             `
-              +
-                (programId ? `program: $programId` : ``)
-              +
+            +
+            (programId ? `program: $programId` : ``)
+            +
             `
                 }) {
                   id
@@ -132,10 +132,7 @@ export const roundApi = api.injectEndpoints({
                 }
               }
             `,
-            {
-              account: ethers.utils.getAddress(account).toLowerCase(),
-              programId: programId?.toLowerCase()
-            }
+            { account, programId }
           )
 
           const rounds: Round[] = []

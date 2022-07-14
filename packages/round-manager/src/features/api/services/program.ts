@@ -100,7 +100,7 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            { account: ethers.utils.getAddress(account).toLowerCase() }
+            { account }
           )
 
           const programs: Program[] = []
