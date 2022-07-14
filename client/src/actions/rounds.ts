@@ -73,8 +73,43 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingApplicationsStartTime,
   });
 
-  const applicationsStartTime = await contract.applicationsStartTime();
-  console.log("----", applicationsStartTime);
+  const ast: BigNumber = await contract.applicationsStartTime();
+  const applicationsStartTime = ast.toNumber();
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingApplicationsEndTime,
+  });
+
+  const aet: BigNumber = await contract.applicationsEndTime();
+  const applicationsEndTime = aet.toNumber();
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingRoundStartTime,
+  });
+
+  const rst: BigNumber = await contract.roundStartTime();
+  const roundStartTime = rst.toNumber();
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingRoundEndTime,
+  });
+
+  const ret: BigNumber = await contract.roundEndTime();
+  const roundEndTime = ret.toNumber();
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingToken,
+  });
+
+  const token = await contract.token();
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -140,6 +175,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
 
   const testRound = {
     address,
+    applicationsStartTime,
+    applicationsEndTime,
+    roundStartTime,
+    roundEndTime,
+    token,
     roundMetaPtr: {
       protocol: BigNumber.from(roundMetaPtr.protocol).toString(),
       pointer: roundMetaPtr.pointer,

@@ -62,6 +62,11 @@ export interface RoundApplicationMetadata {
 
 export interface Round {
   address: string;
+  applicationsStartTime: number;
+  applicationsEndTime: number;
+  roundStartTime: number;
+  roundEndTime: number;
+  token: string;
   roundMetaPtr: MetaPtr;
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
