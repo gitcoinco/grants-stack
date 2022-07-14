@@ -1,17 +1,17 @@
-import { enableFetchMocks, FetchMock } from 'jest-fetch-mock'
+import { enableFetchMocks, FetchMock } from "jest-fetch-mock"
 enableFetchMocks()
 
-import { fetchFromIPFS, pinToIPFS } from "../utils"
+import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 
 const fetchMock = fetch as FetchMock
 
 
-describe('fetchFromIPFS', () => {
+describe("fetchFromIPFS", () => {
   beforeEach(() => {
     fetchMock.resetMocks()
   })
 
-  it('should return data from IPFS', async () => {
+  it("should return data from IPFS", async () => {
     fetchMock.mockResponseOnce(JSON.stringify({ name: "My First Metadata" }))
 
     const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4"
@@ -26,12 +26,12 @@ describe('fetchFromIPFS', () => {
 })
 
 
-describe('pinToIPFS', () => {
+describe("pinToIPFS", () => {
   beforeEach(() => {
     fetchMock.resetMocks()
   })
 
-  it('should pin JSON data to IPFS', async () => {
+  it("should pin JSON data to IPFS", async () => {
     const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4"
 
     fetchMock.mockResponseOnce(JSON.stringify({
@@ -69,5 +69,52 @@ describe('pinToIPFS', () => {
       params
     )
     expect(res.IpfsHash).toEqual(cid)
+  })
+})
+
+
+describe("graphql_fetch", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks()
+  })
+
+  it("should return data from a graphql endpoint", async () => {
+    fetchMock.resetMocks()
+
+    fetchMock.mockResponseOnce(JSON.stringify({
+      data: {
+        programs: [
+          { id: "0x123456789544fe81379e2951623f008d200e1d18" },
+          { id: "0x123456789567fe81379e2951623f008d200e1d20" }
+        ]
+      }
+    }))
+
+    const query = `
+      programs {
+        id
+      }
+    `
+
+    const res = await graphql_fetch(query)
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query,
+        variables: {}
+      }),
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_API}`,
+      params
+    )
+    expect(res.data.programs[0]).toEqual(
+      { id: "0x123456789544fe81379e2951623f008d200e1d18" }
+    )
   })
 })

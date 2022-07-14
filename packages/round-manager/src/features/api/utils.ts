@@ -11,7 +11,7 @@ import { IPFSObject } from "./types"
  */
  export const graphql_fetch = (
    query: string,
-   variables: object,
+   variables: object = {},
    endpoint: string = `${process.env.REACT_APP_SUBGRAPH_API}`
 ) => {
 
@@ -21,8 +21,7 @@ import { IPFSObject } from "./types"
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, variables })
-  }
-  ).then(resp => {
+  }).then(resp => {
     if (resp.ok) {
       return resp.json();
     }
