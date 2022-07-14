@@ -1,9 +1,9 @@
 import { ethers } from "ethers"
 
 import { api } from ".."
-import { roundFactoryContract, roundImplementationContract } from "../contracts"
+import { roundFactoryContract } from "../contracts"
 import { Round } from "../types"
-import { fetchFromIPFS } from "../utils"
+import { fetchFromIPFS, graphql_fetch } from "../utils"
 import { global } from "../../../global"
 
 
@@ -101,96 +101,63 @@ export const roundApi = api.injectEndpoints({
     listRounds: builder.query<Round[], { account: string, programId?: string }>({
       queryFn: async ({ account, programId }) => {
         try {
-          account = ethers.utils.getAddress(account)
-
-          const roundFactory = new ethers.Contract(
-            roundFactoryContract.address!,
-            roundFactoryContract.abi,
-            global.web3Provider
+          // query the subgraph for all rounds by the given account in the given program
+          const res = await graphql_fetch(
+            `
+              query GetRounds($account: String!, $programId: String!) {
+                rounds(where: {
+                  accounts_: {
+                    address: $account
+                  }
+                  program: $programId
+                }) {
+                  id
+                  program
+                  roundMetaPtr {
+                    protocol
+                    pointer
+                  }
+                  applicationMetaPtr {
+                    protocol
+                    pointer
+                  }
+                  applicationsStartTime
+                  applicationsEndTime
+                  roundStartTime
+                  roundEndTime
+                }
+              }
+            `,
+            {
+              account: ethers.utils.getAddress(account).toLowerCase(),
+              programId: programId?.toLowerCase()
+            }
           )
-
-          // Create event filter and query rounds created from past events
-          const filter = roundFactory.filters.RoundCreated(null, programId)
-          const events = await roundFactory.queryFilter(filter)
 
           const rounds: Round[] = []
 
-          // Loop through past events to filter rounds for which the connected account
-          // has the required operator permission
-          for (const event of events) {
-            if (!event.args) {
-              continue
-            }
+          for (const round of res.data.rounds) {
+            // fetch round and application metadata from IPFS
+            const [
+              roundMetadata,
+              applicationMetadata
+            ] = await Promise.all([
+              fetchFromIPFS(round.roundMetaPtr.pointer),
+              fetchFromIPFS(round.applicationMetaPtr.pointer)
+            ])
 
-            const roundImplementation = new ethers.Contract(
-              event.args.roundAddress,
-              roundImplementationContract.abi,
-              global.web3Provider
-            )
-
-            const ROUND_OPERATOR_ROLE = await roundImplementation.ROUND_OPERATOR_ROLE()
-
-            const isOperator = await roundImplementation.hasRole(
-              ROUND_OPERATOR_ROLE, account
-            )
-
-            if (isOperator) {
-              // Connected wallet is a Round Operator
-
-              // Fetch round data from contract
-              const [
-                roundMetaPtr,
-                applicationMetaPtr,
-                applicationsStartTime,
-                applicationsEndTime,
-                roundStartTime,
-                roundEndTime,
-                votingStrategy,
-                token,
-                // operatorCount
-              ] = await Promise.all([
-                roundImplementation.roundMetaPtr(),
-                roundImplementation.applicationMetaPtr(),
-                roundImplementation.applicationsStartTime(),
-                roundImplementation.applicationsEndTime(),
-                roundImplementation.roundStartTime(),
-                roundImplementation.roundEndTime(),
-                roundImplementation.votingStrategy(),
-                roundImplementation.token(),
-                // roundImplementation.getRoleMemberCount(ROUND_OPERATOR_ROLE)
-              ])
-
-              // Fetch operator wallets for the round
-              // let operatorWallets = [];
-              // for (let i = 0; i < operatorCount; ++i) {
-              //   operatorWallets.push(roundImplementation.getRoleMember(ROUND_OPERATOR_ROLE, i))
-              // }
-              // operatorWallets = await Promise.all(operatorWallets)
-
-              // Fetch round and application metadata from IPFS
-              const [
-                roundMetadata,
-                applicationMetadata
-              ] = await Promise.all([
-                fetchFromIPFS(roundMetaPtr[1]),
-                fetchFromIPFS(applicationMetaPtr[1])
-              ])
-
-              // Add round to response
-              rounds.push({
-                id: event.args.roundAddress,
-                metadata: roundMetadata,
-                applicationMetadata,
-                applicationsStartTime: new Date(applicationsStartTime.toNumber() * 1000),
-                applicationsEndTime: new Date(applicationsEndTime.toNumber() * 1000),
-                roundStartTime: new Date(roundStartTime.toNumber() * 1000),
-                roundEndTime: new Date(roundEndTime.toNumber() * 1000),
-                votingStrategy,
-                token,
-                ownedBy: event.args.ownedBy,
-                // operatorWallets
-              })
-            }
+            rounds.push({
+              id: round.id,
+              roundMetadata,
+              applicationMetadata,
+              applicationsStartTime: new Date(round.applicationsStartTime * 1000),
+              applicationsEndTime: new Date(round.applicationsEndTime * 1000),
+              roundStartTime: new Date(round.roundStartTime * 1000),
+              roundEndTime: new Date(round.roundEndTime * 1000),
+              token: round.token,
+              votingStrategy: "",
+              ownedBy: round.program
+            })
           }
 
           return { data: rounds }

@@ -48,7 +48,7 @@ export default function ViewRound() {
           </Link>
         </div>
         <div className="flow-root">
-          <h1 className="float-left text-[32px] mb-6">{round?.metadata?.name || "..."}</h1>
+          <h1 className="float-left text-[32px] mb-6">{round?.roundMetadata?.name || "..."}</h1>
         </div>
         <hr/>
       </header>
