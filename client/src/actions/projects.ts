@@ -5,6 +5,7 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import { ProjectEvent } from "../types";
+import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -59,7 +60,8 @@ export function aggregateEvents(
 }
 
 export const loadProjects =
-  () => async (dispatch: Dispatch, getState: () => RootState) => {
+  (withMetaData?: boolean) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(projectsLoading());
 
     const state = getState();
@@ -95,6 +97,9 @@ export const loadProjects =
       block: event.blockNumber,
     }));
     const events = aggregateEvents(createdIds, updateIds);
+    if (withMetaData) {
+      ids.map((id) => dispatch(fetchGrantData(Number(id)) as any));
+    }
 
     dispatch(projectsLoaded(events));
   };
