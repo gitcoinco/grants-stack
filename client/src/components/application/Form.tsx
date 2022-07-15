@@ -71,80 +71,82 @@ export default function Form({
   }, [formInputs]);
 
   return (
-    <>
-      {schema.map((input) => {
-        switch (input.type) {
-          case "TEXT":
-            return (
-              <TextInput
-                key={input.id}
-                label={input.question}
-                info={input.info}
-                name={`question-${input.id}`}
-                value={formInputs[input.id] ?? ""}
-                changeHandler={handleInput}
-              />
-            );
-          case "TEXTAREA":
-            return (
-              <TextArea
-                key={input.id}
-                label={input.question}
-                info={input.info}
-                name={`question-${input.id}`}
-                value={formInputs[input.id] ?? ""}
-                changeHandler={handleInput}
-              />
-            );
-          case "RADIO":
-            return (
-              <Radio
-                key={input.id}
-                label={input.question}
-                name={`question-${input.id}`}
-                value={
-                  formInputs[input.id] ?? (input.choices && input.choices[0])
-                }
-                info={input.info}
-                choices={input.choices}
-                changeHandler={handleInput}
-              />
-            );
-          // case "MULTIPLE":
-          // placeholder until we support multiple input
-          //   return (
-          //     <Radio
-          //       label={appInput.question}
-          //       name={id}
-          //       info={appInput.info}
-          //       choices={appInput.choices}
-          //       changeHandler={(e) => console.log(e)}
-          //     />
-          //   );
-          default:
-            return (
-              <TextInput
-                key={input.id}
-                label={input.question}
-                name={`question-${input.id}`}
-                value={formInputs[input.id] ?? ""}
-                changeHandler={handleInput}
-              />
-            );
-        }
-      })}
-      {!formValidation.valid && submitted && (
-        <p className="text-danger-text w-full text-center font-semibold my-2">
-          {formValidation.message}
-        </p>
-      )}
-      <Button
-        variant={ButtonVariants.primary}
-        onClick={submitApplication}
-        // disabled={submitted}
-      >
-        Submit
-      </Button>
-    </>
+    <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
+      <form onSubmit={(e) => e.preventDefault()}>
+        {schema.map((input) => {
+          switch (input.type) {
+            case "TEXT":
+              return (
+                <TextInput
+                  key={input.id}
+                  label={input.question}
+                  info={input.info}
+                  name={`question-${input.id}`}
+                  value={formInputs[input.id] ?? ""}
+                  changeHandler={handleInput}
+                />
+              );
+            case "TEXTAREA":
+              return (
+                <TextArea
+                  key={input.id}
+                  label={input.question}
+                  info={input.info}
+                  name={`question-${input.id}`}
+                  value={formInputs[input.id] ?? ""}
+                  changeHandler={handleInput}
+                />
+              );
+            case "RADIO":
+              return (
+                <Radio
+                  key={input.id}
+                  label={input.question}
+                  name={`question-${input.id}`}
+                  value={
+                    formInputs[input.id] ?? (input.choices && input.choices[0])
+                  }
+                  info={input.info}
+                  choices={input.choices}
+                  changeHandler={handleInput}
+                />
+              );
+            // case "MULTIPLE":
+            // placeholder until we support multiple input
+            //   return (
+            //     <Radio
+            //       label={appInput.question}
+            //       name={id}
+            //       info={appInput.info}
+            //       choices={appInput.choices}
+            //       changeHandler={(e) => console.log(e)}
+            //     />
+            //   );
+            default:
+              return (
+                <TextInput
+                  key={input.id}
+                  label={input.question}
+                  name={`question-${input.id}`}
+                  value={formInputs[input.id] ?? ""}
+                  changeHandler={handleInput}
+                />
+              );
+          }
+        })}
+        {!formValidation.valid && submitted && (
+          <p className="text-danger-text w-full text-center font-semibold my-2">
+            {formValidation.message}
+          </p>
+        )}
+        <Button
+          variant={ButtonVariants.primary}
+          onClick={submitApplication}
+          // disabled={submitted}
+        >
+          Submit
+        </Button>
+      </form>
+    </div>
   );
 }
