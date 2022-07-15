@@ -6,7 +6,7 @@ This package holds the subgraph which indexs data with regard the
 - RoundFactory
 - RoundImplementation
 
-The subgraph has been on goreli as an hosted service.
+The subgraph has been on goerli as a hosted service.
 
 **Entity mapping + Playground**
 https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0
@@ -39,8 +39,7 @@ https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0?se
 
 ## Queries
 
-To know more about the queries which can be run on the playground, check out the documentation over at
-https://github.com/gitcoinco/grants-round/tree/main/packages/graph/docs
+To know more about the queries which can be run on the playground, check out the [documentation](docs/)
 
 
 ## Deploy Subgraph

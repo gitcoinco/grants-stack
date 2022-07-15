@@ -3,7 +3,12 @@
 The section here shows how to set up the program for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
 
 
-1. Create an `.env` file and fill out
+1. Create an `.env` file
+```sh
+cp ../.env.example ../.env
+```
+and fill in your own values
+
     - `INFURA_ID`               : Infura ID for deploying contract
     - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
