@@ -1,4 +1,4 @@
-import { InputProps } from "../../types";
+import { InputProps, ProjectOptions } from "../../types";
 
 export function TextInput({
   label,
@@ -75,21 +75,26 @@ export function TextArea({
   );
 }
 
+type RadioInputProps = InputProps & {
+  options: ProjectOptions[];
+};
+
 export function Select({
   label,
   info,
   name,
+  options,
   // value,
   changeHandler,
-}: InputProps) {
+}: RadioInputProps) {
   return (
     <div>
       <label htmlFor={name}>{label}</label>
       <legend>{info}</legend>
       <select id={name} name={name} onChange={(e) => changeHandler(e)}>
-        <option>United States</option>
-        <option selected>Canada</option>
-        <option>Mexico</option>
+        {options.map((option) => (
+          <option key={option.id}>{option.title}</option>
+        ))}
       </select>
     </div>
   );

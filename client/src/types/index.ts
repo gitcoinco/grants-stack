@@ -73,3 +73,8 @@ export interface Round {
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
 }
+
+export type ProjectOptions = {
+  id: number;
+  title?: string;
+};

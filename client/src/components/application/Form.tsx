@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
-import { RoundApplicationMetadata } from "../../types";
-import { TextArea, TextInput } from "../grants/inputs";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import {
+  ChangeHandlers,
+  RoundApplicationMetadata,
+  ProjectOptions,
+} from "../../types";
+import { Select, TextArea, TextInput } from "../grants/inputs";
 import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
+import { RootState } from "../../reducers";
+import { loadProjects } from "../../actions/projects";
 
 interface DynamicFormInputs {
   [key: string]: string | number;
@@ -20,9 +27,21 @@ export default function Form({
 }: {
   roundApplication: RoundApplicationMetadata;
 }) {
+  const dispatch = useDispatch();
+
+  const props = useSelector(
+    (state: RootState) => ({
+      projects: state.projects.projects,
+      allProjectMetadata: state.grantsMetadata,
+    }),
+    shallowEqual
+  );
+
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
+  const [projectOptions, setProjectOptions] = useState<ProjectOptions[]>();
+
   const schema = [
     ...roundApplication.applicationSchema,
     {
@@ -34,11 +53,7 @@ export default function Form({
     },
   ];
 
-  const handleInput = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
@@ -59,6 +74,10 @@ export default function Form({
     }
   };
 
+  const projectSelected = (e: ChangeHandlers) => {
+    console.log({ e });
+  };
+
   const submitApplication = async () => {
     setSubmitted(true);
     await validate();
@@ -70,9 +89,28 @@ export default function Form({
     validate();
   }, [formInputs]);
 
+  useEffect(() => {
+    dispatch(loadProjects(true));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const currentOptions = props.projects.map((project) => ({
+      id: project.id,
+      title: props.allProjectMetadata[project.id].metadata?.title,
+    }));
+
+    setProjectOptions(currentOptions);
+  }, [props.allProjectMetadata]);
+
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
+        <Select
+          name="project-select"
+          label="Select a project you would like to apply for funding:"
+          options={projectOptions ?? []}
+          changeHandler={projectSelected}
+        />
         {schema.map((input) => {
           switch (input.type) {
             case "TEXT":
