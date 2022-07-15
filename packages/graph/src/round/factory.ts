@@ -2,7 +2,7 @@ import {
   RoundCreated as RoundCreatedEvent
 } from "../../generated/Round/RoundFactory"
 
-import { MetaPtr, Round } from "../../generated/schema";
+import { MetaPtr, Program, Round } from "../../generated/schema";
 import { RoundImplementation } from  "../../generated/templates";
 import {
   RoundImplementation  as RoundImplementationContract
@@ -57,7 +57,11 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   }
 
   // link round to program
-  round.program = event.params.ownedBy.toHex();
+  const programContractAddress = event.params.ownedBy.toHex();
+  let program = Program.load(programContractAddress);
+  // avoid creating a round if program does not exist
+  if (!program) return;
+  round.program = program.id;
 
   round.save();
 

@@ -1,5 +1,6 @@
 import {
   NewProjectApplication as NewProjectApplicationEvent,
+  ProjectsMetaPtrUpdated as ProjectsMetaPtrUpdatedEvent,
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent
 } from "../../generated/templates/RoundImplementation/RoundImplementation";
@@ -11,8 +12,8 @@ import {
   RoundRole,
   RoundProject
 } from "../../generated/schema";
-import { generateID } from "../utils";
-import { store } from '@graphprotocol/graph-ts';
+import { fetchMetaPtrData, generateID, updateMetaPtr } from "../utils";
+import { JSONValue, JSONValueKind, store } from '@graphprotocol/graph-ts';
 
 
 // @dev: Enum for different states a project application can be in
@@ -125,4 +126,85 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
   project.metaPtr = metaPtr.id;
   project.status = "PENDING";
   project.save();
+}
+
+/**
+ * Handles indexing on ProjectsMetaPtrUpdatedEvent event.
+ *  - retrieve & parses object from metaPtr
+ *  - updates projectsMetaPtr
+ *  - gets list of projects on which a review decision has been made
+ *  - load and update the status of that project entity
+ *
+ * @param event ProjectsMetaPtrUpdatedEvent
+ */
+export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent): void {
+
+  const _round = event.address.toHex();
+
+  const _metaPtr = event.params.newMetaPtr;
+
+  const protocol = _metaPtr[0].toI32();
+  const pointer = _metaPtr[1].toString();
+
+  // load Round entity
+  const round = Round.load(_round);
+  if (!round) return;
+
+  // set projectsMetaPtr
+  const projectsMetaPtrId = ['projectsMetaPtr', _round].join('-');
+  const projectsMetaPtr = updateMetaPtr(projectsMetaPtrId, protocol, pointer);
+  round.projectsMetaPtr = projectsMetaPtr.id;
+
+  // fetch projectsMetaPtr content
+  const metaPtrData = fetchMetaPtrData(protocol, pointer);
+
+  if (!metaPtrData) return;
+
+  const _projects = metaPtrData.toArray();
+
+  for (let i = 0; i < _projects.length; i++) {
+
+    // construct projectId
+    const _project = _projects[i].toObject();
+
+    const _id =  _project.get("id")
+    if (!_id) continue;
+    const projectId = [_id.toString().toLowerCase(), _round].join('-');
+
+    // load project entity
+    let project = RoundProject.load(projectId);
+
+    let isProjectUpdated = false;
+
+    // skip if project cannot be loaded
+    if (!project) continue;
+
+    // get status of project
+    let status = _project.get("status");
+
+    // get payout address of project
+    let payoutAddress = _project.get("payoutAddress");
+
+    if (
+      status &&
+      status.kind == JSONValueKind.STRING &&
+      status.toString() != project.status
+    ) {
+      // update project status
+      project.status = status.toString();
+      isProjectUpdated = true;
+    }
+
+    if (
+      payoutAddress &&
+      payoutAddress.kind == JSONValueKind.STRING &&
+      payoutAddress.toString() != project.payoutAddress
+    ) {
+      // update project payout address
+      project.payoutAddress = payoutAddress.toString();
+      isProjectUpdated = true;
+    }
+
+    if (isProjectUpdated) project.save();
+  }
 }

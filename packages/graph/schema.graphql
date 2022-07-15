@@ -18,6 +18,7 @@ type Program @entity {
   id: ID!
   roles: [ProgramRole!]! @derivedFrom(field: "program") 
   accounts: [ProgramAccount!]! @derivedFrom(field: "program")
+  rounds: [Round!]! @derivedFrom(field: "program")
   metaPtr: MetaPtr! # id = "metaPtr-{programAddress.toHex()}"
 }
 
@@ -45,7 +46,7 @@ type ProgramAccount @entity {
 # id = roundAddress.toHex()
 type Round @entity {
   id: ID!
-  program: String!
+  program: Program!
   roles: [RoundRole!]! @derivedFrom(field: "round") 
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
@@ -57,7 +58,7 @@ type Round @entity {
   token: String!
   roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
   applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
-  # projectsMetaPtr: MetaPtr
+  projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
 }
 
 # id = round.toHex()-role.toHex()
@@ -82,4 +83,5 @@ type RoundProject @entity {
   status: String!
   metaPtr: MetaPtr!
   round: Round!
+  payoutAddress: String
 }

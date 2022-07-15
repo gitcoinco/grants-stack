@@ -1,4 +1,4 @@
-import { crypto } from '@graphprotocol/graph-ts'
+import { crypto, ipfs, json, JSONValue } from '@graphprotocol/graph-ts'
 import { ByteArray } from '@graphprotocol/graph-ts';
 import { MetaPtr } from '../generated/schema';
 
@@ -33,4 +33,25 @@ export function updateMetaPtr(metaPtrId: string, protocol: i32, pointer: string)
   metaPtr.save();
 
   return metaPtr;
+}
+
+/**
+ * Returns metaPtr data based on protocol and pointer
+ * @param protocol { number }
+ * @param pointer { string }
+ * @returns JSONValue
+ */
+export function fetchMetaPtrData(protocol: number , pointer: string) : JSONValue | null {
+
+  let metaPtrData: JSONValue;
+  if (protocol == 1) {
+    const ipfsData = ipfs.cat(pointer);
+
+    if (!ipfsData) return null;
+
+    metaPtrData = json.fromBytes(ipfsData);
+    return metaPtrData;
+  }
+
+  return null;
 }
