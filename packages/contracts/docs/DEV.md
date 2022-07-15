@@ -8,6 +8,11 @@ Before running any command, make sure to install dependencies:
 $ yarn install
 ```
 
+Create environment files, and replace environment variables with your own values
+```sh
+cp ../.env.example ../.env
+```
+
 ### Compile
 
 Compile the smart contracts with Hardhat:

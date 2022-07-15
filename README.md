@@ -28,22 +28,22 @@ Build Tool              : `yarn`
 
 ### contracts
 
-The contracts needed for running a round can be found within the [contracts package](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts)
+The contracts needed for running a round can be found within the [contracts package](packages/contracts)
 
 ##### Deploy Steps
 
-To know how the contracts should be setup, refer [DEPLOY_STEPS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEPLOY_STEPS.md)
+To know how the contracts should be setup, refer [DEPLOY_STEPS.md](packages/contracts/docs/DEPLOY_STEPS.md)
 
 
 ##### Chain Deployment List
 
-To know the addresses are deployed on which network. refer [CHAINS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/CHAINS.md)
+To know the addresses are deployed on which network. refer [CHAINS.md](packages/contracts/docs/CHAINS.md)
 
 ##### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/contracts/docs/DEV.md)
 
-This is built and maintained using [hardhat](hardhat.org)
+This is built and maintained using [hardhat](https://hardhat.org)
 
 ### graph 
 
@@ -53,7 +53,7 @@ This package holds the subgraph which indexs data with regard the
 - RoundFactory
 - RoundImplementation
 
-More information can be found within the [graph package](https://github.com/gitcoinco/grants-round/tree/main/packages/graph)
+More information can be found within the [graph package](packages/graph)
 
 ### round-manager
 
@@ -64,11 +64,11 @@ This package serves the app which holds all the features w.r.t to
 - creating a round
 - maintaining a program
 
-More information can be found within the [round-manager package](https://github.com/gitcoinco/grants-round/tree/main/packages/round-manager)
+More information can be found within the [round-manager package](packages/round-manager)
 
 ##### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-manager/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-manager/docs/DEV.md)
 
 
 ### round-explorer
@@ -79,8 +79,8 @@ This package serves the app which holds all the features w.r.t to
 - voting for a project
 
 
-More information can be found within the [round-explorer package](https://github.com/gitcoinco/grants-round/tree/main/packages/round-explorer)
+More information can be found within the [round-explorer package](packages/round-explorer)
 
 ##### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-explorer/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-explorer/docs/DEV.md)

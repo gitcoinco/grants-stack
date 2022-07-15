@@ -10,6 +10,11 @@ Before running any command, make sure to install dependencies:
 $ yarn install
 ```
 
+Create environment files, and fill in environment variables with your own values
+```sh
+cp ../.env.sample ../.env
+```
+
 ### Run in Development
 
 Runs the app in the development mode.\

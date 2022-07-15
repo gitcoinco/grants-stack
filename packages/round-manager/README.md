@@ -8,8 +8,8 @@ This package serves the app which holds all the features w.r.t to
 - maintaining a round
 
 This package is meant to be used by the round operators 
-It relies on the contracts deployed from the [contracts](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts) package.
-Indexed data can be queried by the graphs deployed from the [graph](https://github.com/gitcoinco/grants-round/tree/main/packages/graph) package.
+It relies on the contracts deployed from the [contracts](../contracts) package.
+Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 
 ## Directory Structure 
 
@@ -48,4 +48,4 @@ It contains the `ProtectedRoute` component and `web3Service` which extends the b
 
 ### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-manager/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)

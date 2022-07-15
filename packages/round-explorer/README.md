@@ -6,8 +6,8 @@ This package serves the app which holds all the features w.r.t to
 - voting for a project
 
 This package is meant to be used by the users who would wnat to explore rounds and contribute to the projects within a round
-It relies on the contracts deployed from the [contracts](https://github.com/gitcoinco/grants-round/tree/main/packages/contracts) package.
-Indexed data can be queried by the graphs deployed from the [graph](https://github.com/gitcoinco/grants-round/tree/main/packages/graph) package.
+It relies on the contracts deployed from the [contracts](../contracts) package.
+Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 
 
 ### Directory Structure 
@@ -46,4 +46,4 @@ It contains the `ProtectedRoute` component and `web3Service` which extends the b
 
 ## Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/round-explorer/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)

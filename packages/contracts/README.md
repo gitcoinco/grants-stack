@@ -1,6 +1,6 @@
 # grants-round/contracts
 
-This project is built using [hardhat](hardhat.org).
+This project is built using [hardhat](https://hardhat.org).
 All the contracts required to run / manage a round can be found here.
 If you come across any vulnerabilties, do create an issue / raise a PR to help improve the contracts. ^_^
 
@@ -39,7 +39,7 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 - **Program**: maintained by Program Operators which together form a team
 - **Round Operators**: wallets that have the permission to create & manage the round
 - **Round**: created by a Program and deal with everything relating to running a round
-- **Voter** : wallet who cast a vote to a grant during the round 
+- **Voter** : wallet who cast a vote to a grant during the round
 
 ## General Setup
 
@@ -78,13 +78,13 @@ The `RoundFactory` enables us to have upgradable contracts on `RoundImplementati
 
 ## Deploy Steps
 
-To know how the contracts should be setup, refer [DEPLOY_STEPS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEPLOY_STEPS.md)
+To know how the contracts should be setup, refer [DEPLOY_STEPS.md](docs/DEPLOY_STEPS.md)
 
 
 ## Chain Deployment List
 
-To know the addresses are deployed on which network. refer [CHAINS.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/CHAINS.md)
+To know the addresses are deployed on which network. refer [CHAINS.md](docs/CHAINS.md)
 
 ## Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
