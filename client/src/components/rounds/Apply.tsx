@@ -91,7 +91,10 @@ function Apply() {
             <div>loading form...</div>
           )}
           {props.applicationMetadata !== undefined && (
-            <Form roundApplication={props.applicationMetadata} />
+            <Form
+              roundApplication={props.applicationMetadata}
+              round={props.round}
+            />
           )}
         </div>
       </div>

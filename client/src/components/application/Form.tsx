@@ -5,6 +5,7 @@ import {
   ChangeHandlers,
   RoundApplicationMetadata,
   ProjectOptions,
+  Round,
 } from "../../types";
 import { Select, TextArea, TextInput } from "../grants/inputs";
 import { validateApplication } from "../base/formValidation";
@@ -24,8 +25,10 @@ const validation = {
 
 export default function Form({
   roundApplication,
+  round,
 }: {
   roundApplication: RoundApplicationMetadata;
+  round: Round;
 }) {
   const dispatch = useDispatch();
 
@@ -111,6 +114,11 @@ export default function Form({
           options={projectOptions ?? []}
           changeHandler={projectSelected}
         />
+        <p className="text-xs mt-4 mb-1">
+          To complete your application to {round.roundMetadata.name}, a little
+          more info is needed:
+        </p>
+        <hr />
         {schema.map((input) => {
           switch (input.type) {
             case "TEXT":
