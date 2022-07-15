@@ -63,6 +63,15 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 export const unloadRounds = () => roundsUnloaded();
 
 export const loadRound = (address: string) => async (dispatch: Dispatch) => {
+  try {
+    // address validation
+    ethers.utils.getAddress(address);
+  } catch (e) {
+    dispatch(loadingError(address, "invalid address or address checksum"));
+    console.error(e);
+    return;
+  }
+
   const signer = global.web3Provider!.getSigner();
   const contract = new ethers.Contract(address, RoundABI, signer);
   const pinataClient = new PinataClient();
@@ -73,8 +82,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingApplicationsStartTime,
   });
 
-  const ast: BigNumber = await contract.applicationsStartTime();
-  const applicationsStartTime = ast.toNumber();
+  let applicationsStartTime;
+  try {
+    const ast: BigNumber = await contract.applicationsStartTime();
+    applicationsStartTime = ast.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application start time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -82,8 +98,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingApplicationsEndTime,
   });
 
-  const aet: BigNumber = await contract.applicationsEndTime();
-  const applicationsEndTime = aet.toNumber();
+  let applicationsEndTime;
+  try {
+    const aet: BigNumber = await contract.applicationsEndTime();
+    applicationsEndTime = aet.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application end time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -91,8 +114,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingRoundStartTime,
   });
 
-  const rst: BigNumber = await contract.roundStartTime();
-  const roundStartTime = rst.toNumber();
+  let roundStartTime;
+  try {
+    const rst: BigNumber = await contract.roundStartTime();
+    roundStartTime = rst.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round start time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -100,8 +130,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingRoundEndTime,
   });
 
-  const ret: BigNumber = await contract.roundEndTime();
-  const roundEndTime = ret.toNumber();
+  let roundEndTime;
+  try {
+    const ret: BigNumber = await contract.roundEndTime();
+    roundEndTime = ret.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round end time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -109,7 +146,14 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingToken,
   });
 
-  const token = await contract.token();
+  let token;
+  try {
+    token = await contract.token();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round token"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
