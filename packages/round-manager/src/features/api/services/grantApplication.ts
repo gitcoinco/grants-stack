@@ -1,8 +1,6 @@
-import { ethers } from "ethers"
-
 import { api } from ".."
 // import { GrantApplication } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
+import { graphql_fetch } from "../utils"
 
 
 /**
@@ -10,7 +8,10 @@ import { fetchFromIPFS, graphql_fetch } from "../utils"
  */
 export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    listGrantApplications: builder.query<object[], { roundId: string, status: string }>({
+    listGrantApplications: builder.query<
+      object[],
+      { roundId: string, status: "PENDING" | "APPROVED" | "REJECTED" }
+    >({
       queryFn: async ({ roundId, status }) => {
         try {
           // query the subgraph for all rounds by the given account in the given program
@@ -21,28 +22,30 @@ export const grantApplicationApi = api.injectEndpoints({
                   round: $roundId
                   status: $status
                 }) {
+                  id
                   metaPtr {
                     protocol
                     pointer
                   }
+                  payoutAddress
                 }
               }
             `,
             { roundId, status }
           )
 
-          const rounds: object[] = []
+          const grantApplications: object[] = []
 
           for (const project of res.data.roundProjects) {
-            const metadata = await fetchFromIPFS(project.metaPtr.pointer)
+            // const metadata = await fetchFromIPFS(project.metaPtr.pointer)
 
             // TODO: define a GrantApplication type in ../types to be used here
-            rounds.push({
-              ...metadata,
+            grantApplications.push({
+              id: project.id,
             })
           }
 
-          return { data: rounds }
+          return { data: grantApplications }
 
         } catch (err) {
           console.log("error", err)

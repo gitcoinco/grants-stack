@@ -116,7 +116,9 @@ export const roundApi = api.injectEndpoints({
             `
                 }) {
                   id
-                  program
+                  program {
+                    id
+                  }
                   roundMetaPtr {
                     protocol
                     pointer
@@ -157,7 +159,7 @@ export const roundApi = api.injectEndpoints({
               roundEndTime: new Date(round.roundEndTime * 1000),
               token: round.token,
               votingStrategy: round.votingStrategy,
-              ownedBy: round.program
+              ownedBy: round.program.id
             })
           }
 
