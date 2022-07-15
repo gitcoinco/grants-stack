@@ -19,7 +19,7 @@ export default function ApplicationsReceived() {
         </div>
       ))}
       {isLoading &&
-        <Spinner text="Fetching Programs" />
+        <Spinner text="Fetching Grant Applications" />
       }
     </div>
   )
