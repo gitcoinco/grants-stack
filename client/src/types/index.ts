@@ -10,6 +10,11 @@ export interface Metadata {
   projectImg?: string;
 }
 
+export type ChangeHandlers =
+  | React.ChangeEvent<HTMLInputElement>
+  | React.ChangeEvent<HTMLTextAreaElement>
+  | React.ChangeEvent<HTMLSelectElement>;
+
 // Inputs
 export type InputProps = {
   label: string;
@@ -17,11 +22,7 @@ export type InputProps = {
   info?: string;
   value?: string | number;
   placeholder?: string;
-  changeHandler: (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => void;
+  changeHandler: (event: ChangeHandlers) => void;
 };
 
 export type RadioInputProps = {

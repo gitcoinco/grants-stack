@@ -74,3 +74,23 @@ export function TextArea({
     </div>
   );
 }
+
+export function Select({
+  label,
+  info,
+  name,
+  // value,
+  changeHandler,
+}: InputProps) {
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <legend>{info}</legend>
+      <select id={name} name={name} onChange={(e) => changeHandler(e)}>
+        <option>United States</option>
+        <option selected>Canada</option>
+        <option>Mexico</option>
+      </select>
+    </div>
+  );
+}
