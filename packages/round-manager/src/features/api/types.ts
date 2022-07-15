@@ -89,7 +89,7 @@ export interface Round {
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
-    name: string
+    name: string,
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -135,4 +135,35 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
+}
+
+
+export interface GrantApplication {
+  /**
+   * The round contract address applied to 
+   */
+  round: string;
+  /** 
+   * Recipient wallet address of grantee
+   */
+  recipient: string;
+  /**
+   * Project information
+   */
+  project: {
+    lastUpdated: Number, // unix timestamp in milliseconds
+    id: string,
+    title: string,
+    description: string,
+    website: string,
+    bannerImg?: string,
+    logoImg: string,
+    metaPtr: MetadataPointer
+  };
+  /** List of answers to questions */
+  answers: Array<{
+    questionId: Number,
+    question: string,
+    answer: string
+  }>
 }
