@@ -12,7 +12,7 @@ import {
   RoundRole,
   RoundProject
 } from "../../generated/schema";
-import { fetchMetaPtrData, generateID } from "../utils";
+import { fetchMetaPtrData, generateID, updateMetaPtr } from "../utils";
 import { JSONValue, JSONValueKind, store } from '@graphprotocol/graph-ts';
 
 
@@ -131,6 +131,7 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
 /**
  * Handles indexing on ProjectsMetaPtrUpdatedEvent event.
  *  - retrieve & parses object from metaPtr
+ *  - updates projectsMetaPtr
  *  - gets list of projects on which a review decision has been made
  *  - load and update the status of that project entity
  *
@@ -145,6 +146,16 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
   const protocol = _metaPtr[0].toI32();
   const pointer = _metaPtr[1].toString();
 
+  // load Round entity
+  const round = Round.load(_round);
+  if (!round) return;
+
+  // set projectsMetaPtr
+  const projectsMetaPtrId = ['projectsMetaPtr', _round].join('-');
+  const projectsMetaPtr = updateMetaPtr(projectsMetaPtrId, protocol, pointer);
+  round.projectsMetaPtr = projectsMetaPtr.id;
+
+  // fetch projectsMetaPtr content
   const metaPtrData = fetchMetaPtrData(protocol, pointer);
 
   if (!metaPtrData) return;

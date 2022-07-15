@@ -57,7 +57,7 @@ type Round @entity {
   token: String!
   roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
   applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
-  # projectsMetaPtr: MetaPtr
+  projectsMetaPtr: MetaPtr
 }
 
 # id = round.toHex()-role.toHex()
