@@ -144,7 +144,7 @@ contract ProjectRegistry is Initializable {
      * @notice Retrieve count of existing project owners
      * @param projectID ID of project
      */
-    function projectOwnersCount(uint256 projectID) public view returns(uint256) {
+    function projectOwnersCount(uint256 projectID) external view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
@@ -152,7 +152,7 @@ contract ProjectRegistry is Initializable {
      * @notice Retrieve list of project owners
      * @param projectID ID of project
      */
-    function getProjectOwners(uint256 projectID) public view returns(address[] memory) {
+    function getProjectOwners(uint256 projectID) external view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
 
         address[] memory list = new address[](owners.count);
