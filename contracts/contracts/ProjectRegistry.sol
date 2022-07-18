@@ -78,9 +78,9 @@ contract ProjectRegistry is Initializable {
     function createProject(MetaPtr memory metadata) external {
         uint256 projectID = projectsCount++;
 
-        Project storage g = projects[projectID];
-        g.id = projectID;
-        g.metadata = metadata;
+        Project storage project = projects[projectID];
+        project.id = projectID;
+        project.metadata = metadata;
 
         initProjectOwners(projectID);
 
