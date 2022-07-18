@@ -50,10 +50,10 @@ contract ProjectRegistry is Initializable {
 
     // Events
 
-    event ProjectCreated(address indexed owner, uint256 projectID);
+    event ProjectCreated(uint256 indexed projectID, address indexed owner);
     event MetadataUpdated(uint256 indexed projectID, MetaPtr metaPtr);
-    event OwnerAdded(address owner, uint256 projectID);
-    event OwnerRemoved(address owner, uint256 projectID);
+    event OwnerAdded(uint256 indexed projectID, address indexed owner);
+    event OwnerRemoved(uint256 indexed projectID, address indexed owner);
 
     // Modifiers
 
@@ -84,7 +84,7 @@ contract ProjectRegistry is Initializable {
 
         initProjectOwners(projectID);
 
-        emit ProjectCreated(msg.sender, projectID);
+        emit ProjectCreated(projectID, msg.sender);
         emit MetadataUpdated(projectID, metadata);
     }
 
@@ -114,7 +114,7 @@ contract ProjectRegistry is Initializable {
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
         owners.count++;
 
-        emit OwnerAdded(newOwner, projectID);
+        emit OwnerAdded(projectID, newOwner);
     }
 
     /**
@@ -135,7 +135,7 @@ contract ProjectRegistry is Initializable {
         delete owners.list[owner];
         owners.count--;
 
-        emit OwnerRemoved(owner, projectID);
+        emit OwnerRemoved(projectID, owner);
     }
 
     // Public functions
