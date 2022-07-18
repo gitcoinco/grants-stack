@@ -13,9 +13,11 @@ import "hardhat-abi-exporter";
 dotenv.config();
 
 const chainIds = {
-  hardhat: 31337,
-  mainnet: 1,
-  goerli: 5,
+  "hardhat"           : 31337,
+  "mainnet"           : 1,
+  "goerli"            : 5,
+  "optimism-mainnet"  : 10,
+  "optimism-kovan"    : 69
 };
 
 
@@ -44,14 +46,40 @@ if (!infuraIdKey) {
 }
 
 
+/**
+ * Generates hardhat network configuration the test networks.
+ * @param network
+ * @param url (optional)
+ * @returns {NetworkUserConfig}
+ */
 function createTestnetConfig(
+  network: keyof typeof chainIds,
+  url?: string
+): NetworkUserConfig {
+  if(!url) {
+    url = `https://${network}.infura.io/v3/${infuraIdKey}`;
+  }
+  return {
+    accounts: [deployPrivateKey],
+    chainId: chainIds[network],
+    allowUnlimitedContractSize: true,
+    url,
+  };
+}
+
+
+/**
+ * Generates hardhat network configuration the mainnet networks.
+ * @param network
+ * @returns {NetworkUserConfig}
+ */
+function createMainnetConfig(
   network: keyof typeof chainIds
 ): NetworkUserConfig {
   const url: string = `https://${network}.infura.io/v3/${infuraIdKey}`;
   return {
     accounts: [deployPrivateKey],
     chainId: chainIds[network],
-    allowUnlimitedContractSize: true,
     url,
   };
 }
@@ -74,12 +102,13 @@ const abiExporter = [
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    mainnet: {
-      url: `https://mainnet.infura.io/v3/${infuraIdKey}`,
-      chainId: chainIds['mainnet'],
-      accounts: [deployPrivateKey]
-    },
-    goerli: createTestnetConfig("goerli")
+    // Main Networks
+    "mainnet": createMainnetConfig("mainnet"),
+    "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
+
+    // Test Networks
+    "goerli": createTestnetConfig("goerli"),
+    "optimism-kovan": createTestnetConfig("optimism-kovan", "https://kovan.optimism.io")
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

@@ -1,3 +1,14 @@
+### Networks
+
+The project has been configured to support the following networks.
+All the deploy scripts will expect network param to know which network the contract deployment / interaction should take place
+
+| network            |
+|--------------------|
+| `goerli`           |
+| `optimism-mainnet` |
+| `optimism-kovan`  |
+
 ### Program Setup
 
 The section here shows how to set up the program for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
@@ -16,12 +27,12 @@ and fill in your own values
 
 2. Deploy the `ProgramFactory` contract
 ```shell
-yarn run goerli-deploy-program-factory
+yarn run deploy-program-factory goerli
 ```
 
 3. Deploy the `ProgramImplementation` contract
 ```shell
-yarn run goerli-deploy-program-implementation
+yarn run deploy-program-implementation goerli
 ```
 
 4. Update `program.config.ts` with deployed contracts based on your network
@@ -37,7 +48,7 @@ export const params: DeployParams = {
 
 5. Update `ProgramFactory` to reference the `ProgramImplementation` contract.
 ```shell
-yarn run goerli-link-program-implementation
+yarn run link-program-implementation goerli
 ```
 
 
@@ -53,12 +64,12 @@ The section here shows how to set up the round manager for the first time on a g
 
 2. Deploy the `RoundFactory` contract
 ```shell
-yarn run goerli-deploy-round-factory
+yarn run deploy-round-factory goerli
 ```
 
 3. Deploy the `RoundImplementation` contract
 ```shell
-yarn run goerli-deploy-round-implementation
+yarn run deploy-round-implementation goerli
 ```
 
 4. Update `round.config.ts` with deployed contracts based on your network
@@ -69,12 +80,13 @@ export const params: DeployParams = {
     roundFactoryContract: 'DEPLOYED_ROUND_FACTORY_CONTRACT',
     ...
   },
+  ...
 };
 ```
 
 5. Update `RoundFactory` to reference the `RoundImplementation` contract
 ```shell
-yarn run goerli-link-round-implementation
+yarn run link-round-implementation goerli
 ```
 
 ### VotingStrategy Setup
@@ -88,7 +100,7 @@ The section here shows how to set up voting strategy for the first time on a giv
 
 2. Deploy the BulkVotingStrategy contract.
 ```shell
-yarn run goerli-deploy-bulk-voting-strategy
+yarn run deploy-bulk-voting-strategy goerli
 ```
 
 3. Update `round.config.ts` with deployed contracts based on your network
@@ -98,6 +110,7 @@ export const params: DeployParams = {
     BulkVotingStrategyContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
     ...
   },
+  ...
 };
 ```
 
