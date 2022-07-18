@@ -75,7 +75,7 @@ contract ProjectRegistry is Initializable {
      * @notice Creates a new project with a metadata pointer
      * @param metadata the metadata pointer
      */
-    function createProject(MetaPtr memory metadata) external {
+    function createProject(MetaPtr calldata metadata) external {
         uint256 projectID = projectsCount++;
 
         Project storage project = projects[projectID];
@@ -93,7 +93,7 @@ contract ProjectRegistry is Initializable {
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
      */
-    function updateProjectMetadata(uint256 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
+    function updateProjectMetadata(uint256 projectID, MetaPtr calldata metadata) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
         emit MetadataUpdated(projectID, metadata);
     }
