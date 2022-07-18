@@ -2,23 +2,6 @@
 
 This serves as the UI for publishing products to the project registry contracts
 
-## Directory Structure
-
-```
-.
-├── public
-└── src
-    ├── actions # redux actions
-    ├── components
-    │   ├── base
-    │   └── grants
-    ├── contracts
-    │   └── abis
-    ├── reducers # redux reducers
-    ├── styles
-    └── types
-```
-
 ## Usage
 
 ### Pre Requisites
@@ -28,6 +11,8 @@ Before running any command, make sure to install dependencies:
 ```sh
 yarn install
 ```
+
+Copy `.env-example` to `.env` and write your [https://www.pinata.cloud/](pinata.clod) JWT and GATEWAY environment variable.
 
 ### Start
 
