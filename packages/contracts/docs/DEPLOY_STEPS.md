@@ -57,9 +57,10 @@ yarn run link-program-implementation goerli
 The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
 
 1. Create an `.env` file and fill out
-    - `INFURA_ID`               : Infura ID for deploying contract
-    - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
-    - `ETHERSCAN_API_KEY`       : API key for etherscan verification
+    - `INFURA_ID`                     : Infura ID for deploying contract
+    - `DEPLOYER_PRIVATE_KEY`          : address which deploys the contract
+    - `ETHERSCAN_API_KEY`             : API key for etherscan verification on mainnet / testnet
+    - `OPTIMISTIC_ETHERSCAN_API_KEY`  : API key for etherscan verification on optimism mainnet / testnet
 
 
 2. Deploy the `RoundFactory` contract

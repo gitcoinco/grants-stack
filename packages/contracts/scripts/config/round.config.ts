@@ -22,8 +22,8 @@ export const roundParams: DeployParams = {
     roundContract: ''
   },
   "optimism-kovan": {
-    roundFactoryContract: '',
-    roundImplementationContract: '',
+    roundFactoryContract: '0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92',
+    roundImplementationContract: '0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6',
     bulkVotingStrategyContract: '',
     roundContract: ''
   },
