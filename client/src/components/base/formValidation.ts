@@ -5,8 +5,6 @@ export interface FormSchema {
   title: string;
   description: string;
   website: string;
-  challenges: string;
-  roadmap: string;
 }
 
 export async function validateProjectForm(inputs: FormSchema) {
@@ -16,8 +14,6 @@ export async function validateProjectForm(inputs: FormSchema) {
     website: string()
       .url("Project Website must be a valid url. e.g. https://gitcoin.co/")
       .required("Project Website is required"),
-    challenges: string().required("Project Challenges is required"),
-    roadmap: string().required("Project Roadmap is required"),
   });
 
   const validatedInputs = await schema.validate(inputs);

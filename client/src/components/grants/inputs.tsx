@@ -30,6 +30,12 @@ export function WebsiteInput({
   value,
   changeHandler,
 }: InputProps) {
+  const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const validatedEvent = event;
+    validatedEvent.target.value = event.target.value.trim();
+
+    changeHandler(event);
+  };
   return (
     <div className="mt-6 w-full sm:w-2/3">
       <label htmlFor={name}> {label} </label>
@@ -45,7 +51,7 @@ export function WebsiteInput({
           name={name}
           value={value ?? ""}
           placeholder="https://gitcoin.co/"
-          onChange={changeHandler}
+          onChange={removeWhiteSpace}
         />
       </div>
     </div>

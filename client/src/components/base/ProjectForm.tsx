@@ -20,8 +20,6 @@ const initialFormValues = {
   title: "",
   description: "",
   website: "",
-  challenges: "",
-  roadmap: "",
 };
 
 const validation = {
@@ -102,8 +100,6 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         title: currentProject.title,
         description: currentProject.description,
         website: currentProject.website,
-        challenges: currentProject.challenges,
-        roadmap: currentProject.roadmap,
       });
     }
   }, [dispatch, props.ipfsInitialized, currentProjectId, props.currentProject]);
@@ -189,20 +185,6 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
           name="description"
           placeholder="What is the project about and what kind of impact does it aim to have?"
           value={formInputs.description}
-          changeHandler={handleInput}
-        />
-        <TextArea
-          label="Project Roadmap"
-          name="roadmap"
-          placeholder="What are the dependencies and project goals? What are the timelines per milestone or deliverable?"
-          value={formInputs.roadmap}
-          changeHandler={handleInput}
-        />
-        <TextArea
-          label="Project Challenges"
-          name="challenges"
-          placeholder="What are some of the risks you see ahead? How do you plan to prepare?"
-          value={formInputs.challenges}
           changeHandler={handleInput}
         />
         {!formValidation.valid && submitted && (
