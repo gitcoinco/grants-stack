@@ -48,7 +48,7 @@ export default function Form({
   const schema = [
     ...roundApplication.applicationSchema,
     {
-      id: roundApplication.applicationSchema.length + 1,
+      id: roundApplication.applicationSchema.length,
       question: "Recipient Address",
       type: "TEXT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
       required: true,
@@ -128,7 +128,7 @@ export default function Form({
                   label={input.question}
                   info={input.info}
                   name={`question-${input.id}`}
-                  value={formInputs[input.id] ?? ""}
+                  value={formInputs[`question-${input.id}`] ?? ""}
                   changeHandler={handleInput}
                 />
               );
@@ -139,7 +139,7 @@ export default function Form({
                   label={input.question}
                   info={input.info}
                   name={`question-${input.id}`}
-                  value={formInputs[input.id] ?? ""}
+                  value={formInputs[`question-${input.id}`] ?? ""}
                   changeHandler={handleInput}
                 />
               );
@@ -150,7 +150,8 @@ export default function Form({
                   label={input.question}
                   name={`question-${input.id}`}
                   value={
-                    formInputs[input.id] ?? (input.choices && input.choices[0])
+                    formInputs[`question-${input.id}`] ??
+                    (input.choices && input.choices[0])
                   }
                   info={input.info}
                   choices={input.choices}
@@ -174,7 +175,7 @@ export default function Form({
                   key={input.id}
                   label={input.question}
                   name={`question-${input.id}`}
-                  value={formInputs[input.id] ?? ""}
+                  value={formInputs[`question-${input.id}`] ?? ""}
                   changeHandler={handleInput}
                 />
               );
