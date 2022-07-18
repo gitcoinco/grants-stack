@@ -12,7 +12,7 @@ contract ProjectRegistry is Initializable {
 
     // The project structs contains the minimal data we need for a project
     struct Project {
-        uint96 id;
+        uint256 id;
         MetaPtr metadata;
     }
 
@@ -40,24 +40,24 @@ contract ProjectRegistry is Initializable {
     address constant OWNERS_LIST_SENTINEL = address(0x1);
 
     // The number of projects created, used to give an incremental id to each one
-    uint96 public projectsCount;
+    uint256 public projectsCount;
 
     // The mapping of projects, from projectID to Project
-    mapping(uint96 => Project) public projects;
+    mapping(uint256 => Project) public projects;
 
     // The mapping projects owners, from projectID to OwnerList
-    mapping(uint96 => OwnerList) public projectsOwners;
+    mapping(uint256 => OwnerList) public projectsOwners;
 
     // Events
 
-    event ProjectCreated(address indexed owner, uint96 projectID);
-    event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr);
-    event OwnerAdded(address owner, uint96 projectID);
-    event OwnerRemoved(address owner, uint96 projectID);
+    event ProjectCreated(address indexed owner, uint256 projectID);
+    event MetadataUpdated(uint256 indexed projectID, MetaPtr metaPtr);
+    event OwnerAdded(address owner, uint256 projectID);
+    event OwnerRemoved(address owner, uint256 projectID);
 
     // Modifiers
 
-    modifier onlyProjectOwner(uint96 projectID) {
+    modifier onlyProjectOwner(uint256 projectID) {
         require(projectsOwners[projectID].list[msg.sender] != address(0), "not owner");
         _;
     }
@@ -76,7 +76,7 @@ contract ProjectRegistry is Initializable {
      * @param metadata the metadata pointer
      */
     function createProject(MetaPtr memory metadata) external {
-        uint96 projectID = projectsCount++;
+        uint256 projectID = projectsCount++;
 
         Project storage g = projects[projectID];
         g.id = projectID;
@@ -93,7 +93,7 @@ contract ProjectRegistry is Initializable {
      * @param projectID ID of previously created project
      * @param metadata Updated pointer to external metadata
      */
-    function updateProjectMetadata(uint96 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
+    function updateProjectMetadata(uint256 projectID, MetaPtr memory metadata) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
         emit MetadataUpdated(projectID, metadata);
     }
@@ -103,7 +103,7 @@ contract ProjectRegistry is Initializable {
      * @param projectID ID of previously created project
      * @param newOwner address of new project owner
      */
-    function addProjectOwner(uint96 projectID, address newOwner) external onlyProjectOwner(projectID) {
+    function addProjectOwner(uint256 projectID, address newOwner) external onlyProjectOwner(projectID) {
         require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
 
         OwnerList storage owners = projectsOwners[projectID];
@@ -123,7 +123,7 @@ contract ProjectRegistry is Initializable {
      * @param prevOwner Address of previous owner in OwnerList
      * @param owner Address of new Owner
      */
-    function removeProjectOwner(uint96 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
+    function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
         require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "bad owner");
 
         OwnerList storage owners = projectsOwners[projectID];
@@ -144,7 +144,7 @@ contract ProjectRegistry is Initializable {
      * @notice Retrieve count of existing project owners
      * @param projectID ID of project
      */
-    function projectOwnersCount(uint96 projectID) public view returns(uint256) {
+    function projectOwnersCount(uint256 projectID) public view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
@@ -152,7 +152,7 @@ contract ProjectRegistry is Initializable {
      * @notice Retrieve list of project owners
      * @param projectID ID of project
      */
-    function getProjectOwners(uint96 projectID) public view returns(address[] memory) {
+    function getProjectOwners(uint256 projectID) public view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
 
         address[] memory list = new address[](owners.count);
@@ -179,7 +179,7 @@ contract ProjectRegistry is Initializable {
      * @notice Create initial OwnerList for passed project
      * @param projectID ID of project
      */
-    function initProjectOwners(uint96 projectID) internal {
+    function initProjectOwners(uint256 projectID) internal {
         OwnerList storage owners = projectsOwners[projectID];
 
         owners.list[OWNERS_LIST_SENTINEL] = msg.sender;
