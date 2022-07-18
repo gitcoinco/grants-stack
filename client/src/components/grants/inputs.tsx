@@ -84,7 +84,6 @@ export function Select({
   info,
   name,
   options,
-  // value,
   changeHandler,
 }: RadioInputProps) {
   return (

@@ -11,12 +11,6 @@ import Cross from "../icons/Cross";
 import colors from "../../styles/colors";
 
 const formatDate = (unixTS: number) =>
-  // const options = {
-  //   year: "numeric",
-  //   month: "short",
-  //   day: "numeric",
-  // };
-  // eslint-disable-line  -- asdf
   new Date(unixTS).toLocaleDateString(undefined);
 function Apply() {
   const params = useParams();
