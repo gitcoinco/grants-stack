@@ -98,7 +98,6 @@ function Apply() {
           )}
         </div>
       </div>
-      <h4>Round #{props.id} Application</h4>
 
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
     </div>
