@@ -22,9 +22,7 @@ describe("ProjectRegistry", function () {
   });
 
   it("doesn't allow to initilize again", async function () {
-    await expect(
-      this.contract.connect(this.owner).initialize()
-    ).to.be.revertedWith("contract is already initialized");
+    await expect(this.contract.connect(this.owner).initialize()).to.be.revertedWith("contract is already initialized");
   });
 
   it("creates a new project and adds it to the projects list", async function () {
@@ -48,9 +46,7 @@ describe("ProjectRegistry", function () {
 
   it("does not allow update of project metadata if not owner", async function () {
     const project = await this.contract.projects(0);
-    await expect(
-      this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)
-    ).to.be.revertedWith("not owner");
+    await expect(this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)).to.be.revertedWith("not owner");
   });
 
   it("updates project metadata", async function () {
@@ -116,20 +112,22 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove owner 0", async function () {
     const projectID = 0;
-    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, ZERO_ADDRESS)).to.be.revertedWith("bad owner");
+    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, ZERO_ADDRESS)).to.be.revertedWith(
+      "invalid owner"
+    );
   });
 
   it("does not allow to remove owner equal to OWNERS_LIST_SENTINEL", async function () {
     const projectID = 0;
     await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, OWNERS_LIST_SENTINEL)).to.be.revertedWith(
-      "bad owner"
+      "invalid owner"
     );
   });
 
-  it("does not allow to remove owner with bad prevOwner", async function () {
+  it("does not allow to remove owner with prevOwner must equal owner", async function () {
     const projectID = 0;
     await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.nonOwner.address, this.owner.address)).to.be.revertedWith(
-      "bad prevOwner"
+      "prevOwner must equal owner"
     );
   });
 

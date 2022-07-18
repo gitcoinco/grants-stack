@@ -124,11 +124,11 @@ contract ProjectRegistry is Initializable {
      * @param owner Address of new Owner
      */
     function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
-        require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "bad owner");
+        require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "invalid owner");
 
         OwnerList storage owners = projectsOwners[projectID];
 
-        require(owners.list[prevOwner] == owner, "bad prevOwner");
+        require(owners.list[prevOwner] == owner, "prevOwner must equal owner");
         require(owners.count > 1, "single owner");
 
         owners.list[prevOwner] = owners.list[owner];
