@@ -53,7 +53,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   event ProjectsMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
   /// @notice Emitted when a project has applied to the round
-  event NewProjectApplication(address indexed project, MetaPtr applicationMetaPtr);
+  event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
 
 
   // --- Data ---
@@ -246,10 +246,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   }
 
   /// @notice Submit a project application
-  /// @param _project project applying for the round
+  /// @param _projectID unique hash of the project
   /// @param _applicationMetaPtr appliction metaPtr
-  function applyToRound(address _project, MetaPtr calldata _applicationMetaPtr) public {
-    emit NewProjectApplication(_project, _applicationMetaPtr);
+  function applyToRound(bytes32 _projectID, MetaPtr calldata _applicationMetaPtr) public {
+    emit NewProjectApplication(_projectID, _applicationMetaPtr);
   }
 
   /// @notice Invoked by voter to cast votes
