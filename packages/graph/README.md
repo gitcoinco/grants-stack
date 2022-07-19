@@ -6,14 +6,15 @@ This package holds the subgraph which indexs data with regard the
 - RoundFactory
 - RoundImplementation
 
-The subgraph has been on goerli as a hosted service.
 
-**Entity mapping + Playground**
-https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0
+#### Deployed Subgraphs
 
-**Playground Link**
-https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0?selected=playground
+The following sections document the hosted services where the subgraph is deployed across different networks
 
+| Network        | GITHUB_USER/SUBGRAPH_NAME                 | Playground                                                                             | Query                                                                             |
+|----------------|-------------------------------------------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| goerli         | thelostone-mc/program-factory-v0          | https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0          | https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0          |
+| optimism-kovan | thelostone-mc/grants-round-optimism-kovan | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-kovan | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-kovan |
 
 ## Directory Structure
 
@@ -76,7 +77,7 @@ graph auth --product hosted-service <YOUR_API_KEY>
 
 - Deploy Subgraph
 ```shell
-graph deploy --product hosted-service thelostone-mc/program-factory-v0
+graph deploy --product hosted-service <GITHUB_USER>/<SUBGRAPH_NAME>
 ```
 
 
@@ -88,5 +89,5 @@ rm -rf generated && rm -rf build &&
     yarn prepare:goerli &&
     graph codegen &&
     graph auth --product hosted-service <YOUR_API_KEY> &&
-    graph deploy --product hosted-service thelostone-mc/program-factory-v0
+    graph deploy --product hosted-service <GITHUB_USER>/<SUBGRAPH_NAME>
 ```
