@@ -12,6 +12,8 @@
   },
   "homepage": "https://github.com/gitcoinco/grants-round#readme",
   "scripts": {
+    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:optimism-kovan": "mustache config/optimism-kovan.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ thelostone-mc/program-factory",
@@ -26,6 +28,7 @@
     "@openzeppelin/subgraphs": "^0.1.8"
   },
   "devDependencies": {
-    "matchstick-as": "^0.5.0"
+    "matchstick-as": "^0.5.0",
+    "mustache": "^4.2.0"
   }
 }

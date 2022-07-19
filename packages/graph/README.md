@@ -30,7 +30,7 @@ https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0?se
 │       ├── implementation.ts   # RoundImplementation event handlers
 │   ├── utils.ts                # useful helper functions
 ├── schema.graphql              # Entity schema
-├── subgraph.yaml               # Subgraph configuration
+├── subgraph.template.yaml      # Subgraph configuration
 ├── tsconfig.json               # Typescript configuration 
 ├── package.json                # Package configuration
 └── .gitignore
@@ -50,6 +50,20 @@ Generate your hosted-service API key on the graph
 rm -rf generated && rm -rf build
 ```
 
+- Generate the `subgraph.yaml` for the network against which you'd like to deploy the subgraph
+
+```shell
+yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
+```
+
+**Supported Networks**
+
+| network        |
+|----------------|
+| goerli         |
+| optimism-kovan |
+
+
 - Run codegen
 ```shell
 graph codegen
@@ -63,4 +77,16 @@ graph auth --product hosted-service <YOUR_API_KEY>
 - Deploy Subgraph
 ```shell
 graph deploy --product hosted-service thelostone-mc/program-factory-v0
+```
+
+
+Note: If you find yourself wanting to run the entire flow in one command.
+Use this example where we deploy the subgraph on goerli
+
+```shell
+rm -rf generated && rm -rf build &&
+    yarn prepare:goerli &&
+    graph codegen &&
+    graph auth --product hosted-service <YOUR_API_KEY> &&
+    graph deploy --product hosted-service thelostone-mc/program-factory-v0
 ```
