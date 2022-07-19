@@ -46,7 +46,7 @@ describe("ProjectRegistry", function () {
 
   it("does not allow update of project metadata if not owner", async function () {
     const project = await this.contract.projects(0);
-    await expect(this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)).to.be.revertedWith("not owner");
+    await expect(this.contract.connect(this.nonOwner).updateProjectMetadata(project.id, updatedMetadata)).to.be.revertedWith("PR000");
   });
 
   it("updates project metadata", async function () {
@@ -60,7 +60,7 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to add an owner if not owner", async function () {
     const projectID = 0;
-    await expect(this.contract.connect(this.nonOwner).addProjectOwner(projectID, this.nonOwner.address)).to.be.revertedWith("not owner");
+    await expect(this.contract.connect(this.nonOwner).addProjectOwner(projectID, this.nonOwner.address)).to.be.revertedWith("PR000");
   });
 
   it("emits AddedOwner and RemovedOwner when OwnerList is modified", async function () {
@@ -68,7 +68,8 @@ describe("ProjectRegistry", function () {
     const addTx = await this.contract.connect(this.owner).addProjectOwner(projectID, this.accounts[1].address);
 
     const { events: addEvents } = await addTx.wait();
-    const [addedOwner, emittedProject0] = addEvents[0].args;
+    const [emittedProject0, addedOwner] = addEvents[0].args;
+
     expect(emittedProject0).to.equal(projectID);
     expect(addedOwner).to.equal(this.accounts[1].address);
     expect(addEvents[0].event).to.equal("OwnerAdded");
@@ -76,7 +77,7 @@ describe("ProjectRegistry", function () {
     const removeTx = await this.contract.connect(this.owner).removeProjectOwner(projectID, OWNERS_LIST_SENTINEL, this.accounts[1].address);
 
     const { events } = await removeTx.wait();
-    const [removedOwner, emittedProject1] = events[0].args;
+    const [emittedProject1, removedOwner] = events[0].args;
     expect(emittedProject1).to.equal(projectID);
     expect(removedOwner).to.equal(this.accounts[1].address);
     expect(events[0].event).to.equal("OwnerRemoved");
@@ -106,28 +107,26 @@ describe("ProjectRegistry", function () {
   it("does not allow to remove an owner if not owner", async function () {
     const projectID = 0;
     await expect(this.contract.connect(this.nonOwner).removeProjectOwner(projectID, this.owner.address, this.owner.address)).to.be.revertedWith(
-      "not owner"
+      "PR000"
     );
   });
 
   it("does not allow to remove owner 0", async function () {
     const projectID = 0;
-    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, ZERO_ADDRESS)).to.be.revertedWith(
-      "invalid owner"
-    );
+    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, ZERO_ADDRESS)).to.be.revertedWith("PR001");
   });
 
   it("does not allow to remove owner equal to OWNERS_LIST_SENTINEL", async function () {
     const projectID = 0;
     await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, OWNERS_LIST_SENTINEL)).to.be.revertedWith(
-      "invalid owner"
+      "PR001"
     );
   });
 
   it("does not allow to remove owner with prevOwner must equal owner", async function () {
     const projectID = 0;
     await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.nonOwner.address, this.owner.address)).to.be.revertedWith(
-      "prevOwner must equal owner"
+      "PR003"
     );
   });
 
@@ -169,6 +168,6 @@ describe("ProjectRegistry", function () {
 
     await expect(
       this.contract.connect(this.accounts[1]).removeProjectOwner(projectID, OWNERS_LIST_SENTINEL, this.accounts[1].address)
-    ).to.be.revertedWith("single owner");
+    ).to.be.revertedWith("PR004");
   });
 });
