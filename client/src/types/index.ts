@@ -22,14 +22,8 @@ export type InputProps = {
   info?: string;
   value?: string | number;
   placeholder?: string;
+  disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
-};
-
-export type RadioInputProps = {
-  name: string;
-  value: string;
-  currentValue?: string;
-  changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export interface ProjectEvent {

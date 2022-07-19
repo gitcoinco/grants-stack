@@ -6,6 +6,7 @@ export function TextInput({
   name,
   value,
   placeholder,
+  disabled,
   changeHandler,
 }: InputProps) {
   return (
@@ -18,6 +19,7 @@ export function TextInput({
         name={name}
         value={value ?? ""}
         placeholder={placeholder}
+        disabled={disabled}
         onChange={changeHandler}
       />
     </div>
@@ -28,6 +30,7 @@ export function WebsiteInput({
   label,
   name,
   value,
+  disabled,
   changeHandler,
 }: InputProps) {
   return (
@@ -45,6 +48,7 @@ export function WebsiteInput({
           name={name}
           value={value ?? ""}
           placeholder="https://gitcoin.co/"
+          disabled={disabled}
           onChange={changeHandler}
         />
       </div>
@@ -58,6 +62,7 @@ export function TextArea({
   name,
   value,
   placeholder,
+  disabled,
   changeHandler,
 }: InputProps) {
   return (
@@ -69,13 +74,14 @@ export function TextArea({
         name={name}
         placeholder={placeholder}
         value={value ?? ""}
+        disabled={disabled}
         onChange={(e) => changeHandler(e)}
       />
     </div>
   );
 }
 
-type RadioInputProps = InputProps & {
+type SelectInputProps = InputProps & {
   options: ProjectOptions[];
 };
 
@@ -84,13 +90,19 @@ export function Select({
   info,
   name,
   options,
+  disabled,
   changeHandler,
-}: RadioInputProps) {
+}: SelectInputProps) {
   return (
     <div>
       <label htmlFor={name}>{label}</label>
       <legend>{info}</legend>
-      <select id={name} name={name} onChange={(e) => changeHandler(e)}>
+      <select
+        id={name}
+        name={name}
+        disabled={disabled}
+        onChange={(e) => changeHandler(e)}
+      >
         {options.map((option) => (
           <option key={option.id}>{option.title}</option>
         ))}

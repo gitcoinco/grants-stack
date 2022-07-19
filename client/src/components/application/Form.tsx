@@ -42,6 +42,7 @@ export default function Form({
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
+  const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOptions[]>();
 
@@ -112,6 +113,7 @@ export default function Form({
           name="project-select"
           label="Select a project you would like to apply for funding:"
           options={projectOptions ?? []}
+          disabled={preview}
           changeHandler={projectSelected}
         />
         <p className="text-xs mt-4 mb-1">
@@ -129,6 +131,7 @@ export default function Form({
                   info={input.info}
                   name={`question-${input.id}`}
                   value={formInputs[`question-${input.id}`] ?? ""}
+                  disabled={preview}
                   changeHandler={handleInput}
                 />
               );
@@ -140,6 +143,7 @@ export default function Form({
                   info={input.info}
                   name={`question-${input.id}`}
                   value={formInputs[`question-${input.id}`] ?? ""}
+                  disabled={preview}
                   changeHandler={handleInput}
                 />
               );
@@ -155,6 +159,7 @@ export default function Form({
                   }
                   info={input.info}
                   choices={input.choices}
+                  disabled={preview}
                   changeHandler={handleInput}
                 />
               );
@@ -176,6 +181,7 @@ export default function Form({
                   label={input.question}
                   name={`question-${input.id}`}
                   value={formInputs[`question-${input.id}`] ?? ""}
+                  disabled={preview}
                   changeHandler={handleInput}
                 />
               );
@@ -186,13 +192,31 @@ export default function Form({
             {formValidation.message}
           </p>
         )}
-        <Button
-          variant={ButtonVariants.primary}
-          onClick={submitApplication}
-          // disabled={submitted}
-        >
-          Submit
-        </Button>
+        <div className="flex justify-end">
+          {!preview ? (
+            <Button
+              variant={ButtonVariants.primary}
+              onClick={() => setPreview(true)}
+            >
+              Preview Application
+            </Button>
+          ) : (
+            <div className="flex justify-end">
+              <Button
+                variant={ButtonVariants.outline}
+                onClick={() => setPreview(false)}
+              >
+                Back to Editing
+              </Button>
+              <Button
+                variant={ButtonVariants.primary}
+                onClick={submitApplication}
+              >
+                Submit
+              </Button>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   );
