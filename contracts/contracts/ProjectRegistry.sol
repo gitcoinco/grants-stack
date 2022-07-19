@@ -58,7 +58,7 @@ contract ProjectRegistry is Initializable {
     // Modifiers
 
     modifier onlyProjectOwner(uint256 projectID) {
-        require(projectsOwners[projectID].list[msg.sender] != address(0), "not owner");
+        require(projectsOwners[projectID].list[msg.sender] != address(0), "PR000");
         _;
     }
 
@@ -104,11 +104,11 @@ contract ProjectRegistry is Initializable {
      * @param newOwner address of new project owner
      */
     function addProjectOwner(uint256 projectID, address newOwner) external onlyProjectOwner(projectID) {
-        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "bad owner");
+        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "PR001");
 
         OwnerList storage owners = projectsOwners[projectID];
 
-        require(owners.list[newOwner] == address(0), "already owner");
+        require(owners.list[newOwner] == address(0), "PR002");
 
         owners.list[newOwner] = owners.list[OWNERS_LIST_SENTINEL];
         owners.list[OWNERS_LIST_SENTINEL] = newOwner;
@@ -124,12 +124,12 @@ contract ProjectRegistry is Initializable {
      * @param owner Address of new Owner
      */
     function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
-        require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "invalid owner");
+        require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "PR001");
 
         OwnerList storage owners = projectsOwners[projectID];
 
-        require(owners.list[prevOwner] == owner, "prevOwner must equal owner");
-        require(owners.count > 1, "single owner");
+        require(owners.list[prevOwner] == owner, "PR003");
+        require(owners.count > 1, "PR004");
 
         owners.list[prevOwner] = owners.list[owner];
         delete owners.list[owner];
