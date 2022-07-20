@@ -19,7 +19,7 @@ const projectApplications  = [
     project: "0x1bCD46B724fD4C08995CEC46ffd51bD45feDE200",
     metaPtr: {
       protocol: 1,
-      pointer: "bafybeih2pise44gkkzj7fdws3knwotppnh4x2gifnbxjtttuv7okw4mjzue"
+      pointer: "bafybeih2pise44gkkzj7fdws3knwotppnh4x2gifnbxjtttuv7okw4mjzu"
     }
   },
 
