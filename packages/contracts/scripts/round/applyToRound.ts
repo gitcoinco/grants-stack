@@ -11,7 +11,7 @@ const projectApplications  = [
     project: "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA",
     metaPtr: {
       protocol: 1,
-      pointer: "bafybeig5focgmbzugeyh6bd2inhuhqcflw4mcsqcovbu5lomjkou5unl6u"
+      pointer: "bafybeiekytxwrrfzxvuq3ge5glfzlhkuxjgvx2qb4swodhqd3c3mtc5jay"
     }
   },
 
@@ -19,7 +19,7 @@ const projectApplications  = [
     project: "0x1bCD46B724fD4C08995CEC46ffd51bD45feDE200",
     metaPtr: {
       protocol: 1,
-      pointer: "bafybeigcn2mwgklmmmw62obnpfsupjejgfvwu2beriv3im6lfsnjkmk55e"
+      pointer: "bafybeih2pise44gkkzj7fdws3knwotppnh4x2gifnbxjtttuv7okw4mjzue"
     }
   },
 
@@ -27,7 +27,7 @@ const projectApplications  = [
     project: "0x500Df079BEBE24A9f6FFa2c70fb58000A4722784",
     metaPtr: {
       protocol: 1,
-      pointer: "bafybeifjllgtj6x7yop6f44qaqnxpmmboxwnrhgi2h5kncm62fkhjkitje"
+      pointer: "bafybeiceggy6uzfxsn3z6b2rraptp3g2kx2nrwailkjnx522yah43g5tyu"
     }
   }
 ];
