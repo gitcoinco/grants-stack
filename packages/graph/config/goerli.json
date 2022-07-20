@@ -1,0 +1,6 @@
+{
+  "network": "goerli",
+  "startBlock": 7015700,
+  "programFactoryAddress": "0xAd732aB847d20EdfC48A6d9B256f35D756381C52",
+  "roundFactoryAddress": "0x515594eeB37A6D5815F4c860454cD4FD87539978"
+}

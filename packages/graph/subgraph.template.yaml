@@ -9,11 +9,11 @@ dataSources:
   # ProgramFactory
   - kind: ethereum/contract
     name: Program
-    network: goerli
+    network: {{ network }}
     source:
-      address: "0xAd732aB847d20EdfC48A6d9B256f35D756381C52"
+      address: '{{ programFactoryAddress }}'
       abi: ProgramFactory
-      startBlock: 7015700 
+      startBlock: {{ startBlock }} 
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -33,11 +33,11 @@ dataSources:
   # RoundFactory
   - kind: ethereum/contract
     name: Round
-    network: goerli
+    network: {{ network }}
     source:
-      address: "0x515594eeB37A6D5815F4c860454cD4FD87539978"
+      address: '{{ roundFactoryAddress }}'
       abi: RoundFactory
-      startBlock: 7015700 
+      startBlock: {{ startBlock }} 
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -58,7 +58,7 @@ templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
     name: ProgramImplementation
-    network: goerli
+    network: {{ network }}
     source:
       abi: ProgramImplementation
     mapping:
@@ -80,7 +80,7 @@ templates:
   # RoundImplementation AccessControl
   - kind: ethereum/contract
     name: RoundImplementation
-    network: goerli
+    network: {{ network }}
     source:
       abi: RoundImplementation
     mapping:
