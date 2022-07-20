@@ -990,17 +990,17 @@ describe("RoundImplementation", function () {
 
     describe('test: applyToRound', () => {
       it('invoking applyToRound SHOULD emit NewProjectApplication event', async() => {
-        const project = Wallet.createRandom().address;
+        const projectID = ethers.utils.hexlify(ethers.utils.randomBytes(32));
         const newProjectMetaPtr: MetaPtr = {
           protocol: 1,
           pointer: "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
         };
 
-        const txn = await roundImplementation.applyToRound(project, newProjectMetaPtr);
+        const txn = await roundImplementation.applyToRound(projectID, newProjectMetaPtr);
         expect(txn).to.emit(
           roundImplementation, 'NewProjectApplication'
         ).withArgs(
-          project, 
+          projectID,
           [ newProjectMetaPtr.protocol, newProjectMetaPtr.pointer ]
         );
       });
