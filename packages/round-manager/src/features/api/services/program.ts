@@ -4,6 +4,7 @@ import { global } from "../../../global"
 import { programFactoryContract } from "../contracts"
 import { Program } from "../types"
 import { fetchFromIPFS, graphql_fetch } from "../utils"
+import { useGetWeb3Query } from "./web3"
 
 
 /**
@@ -14,9 +15,14 @@ export const programApi = api.injectEndpoints({
     createProgram: builder.mutation<string, Program>({
       queryFn: async ({ store: metadata, operatorWallets }) => {
         try {
+          // fetch chain id
+          const chainId = (await useGetWeb3Query().data)?.chainId
+
+          // load program factory contract
+          const _programFactoryContract = programFactoryContract(chainId);
           const programFactory = new ethers.Contract(
-            programFactoryContract.address!,
-            programFactoryContract.abi,
+            _programFactoryContract.address!,
+            _programFactoryContract.abi,
             global.web3Signer
           )
 
