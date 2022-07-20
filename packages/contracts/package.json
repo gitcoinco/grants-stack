@@ -13,14 +13,14 @@
     "export-abi": "yarn run hardhat export-abi",
     "clear-abi": "yarn run hardhat clear-abi",
 
-    "// progam-deploy-scripts": "//-- Program deploy Script --//",
+    "// progam-deploy-scripts": "echo '//-- Program deploy Script --//'",
     "deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network",
     "deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network",
     "link-program-implementation": "yarn hardhat run scripts/program/linkProgramImplementation.ts --network",
     "create-program": "yarn hardhat run scripts/program/createProgram.ts --network",
     "upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network",
 
-    "// round-deploy-scripts": "//-- Round deploy Script --//",
+    "// round-deploy-scripts": "echo '//-- Round deploy Script --//'",
     "deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network",
     "deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network",
     "link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network",
@@ -29,7 +29,7 @@
     "update-project-metaptr": "yarn hardhat run scripts/round/updateProjectMetaPtr.ts --network",
     "upgrade-round-factory": "yarn hardhat run scripts/round/upgradeRoundFactory.ts --network",
 
-    "// vote-deploy-scripts": "//-- Voting deploy Script --//",
+    "// vote-deploy-scripts": "echo '//-- Voting deploy Script --//'",
     "deploy-bulk-voting-strategy": "yarn hardhat run scripts/votingStrategy/deployBulkVotingStrategy.ts --network"
   },
   "devDependencies": {
