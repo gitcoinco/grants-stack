@@ -17,12 +17,12 @@ import Program from "./features/program/ListProgramPage"
 import ProtectedRoute from "./features/common/ProtectedRoute"
 import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRound from "./features/round/ViewRoundPage"
-import ReviewRoundApplications from "./features/round/ReviewApplicationsPage";
+import ViewApplication from "./features/round/ViewApplicationPage"
 
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
-);
+)
 
 root.render(
   <React.StrictMode>
@@ -35,10 +35,10 @@ root.render(
             {/* Default Route */}
             <Route path="/" element={<Program />} />
 
-            {/* Round Manager Routes */}
+            {/* Round Routes */}
             <Route path="/round/create" element={<CreateRound />} />
             <Route path="/round/:id" element={<ViewRound />} />
-            <Route path="/round/:id/applications" element={<ReviewRoundApplications />} />
+            <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
 
             {/* Program Routes */}
             <Route path="/program/create" element={<CreateProgram />} />
@@ -51,7 +51,7 @@ root.render(
       </ReduxRouter>
     </Provider>
   </React.StrictMode>
-);
+)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

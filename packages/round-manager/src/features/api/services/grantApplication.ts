@@ -1,6 +1,6 @@
 import { api } from ".."
-// import { GrantApplication } from "../types"
-import { graphql_fetch } from "../utils"
+import { GrantApplication } from "../types"
+import { fetchFromIPFS, graphql_fetch } from "../utils"
 
 
 /**
@@ -9,40 +9,41 @@ import { graphql_fetch } from "../utils"
 export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     listGrantApplications: builder.query<
-      object[],
-      { roundId: string, status: "PENDING" | "APPROVED" | "REJECTED" }
+      GrantApplication[],
+      { roundId: string, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
     >({
-      queryFn: async ({ roundId, status }) => {
+      queryFn: async ({ roundId, id, status }) => {
         try {
           // query the subgraph for all rounds by the given account in the given program
           const res = await graphql_fetch(
             `
-              query GetGrantApplications($roundId: String!, $status: String!) {
+              query GetGrantApplications($roundId: String!, $id: String, $status: String) {
                 roundProjects(where: {
                   round: $roundId
-                  status: $status
+            `
+            +
+            (status ? `status: $status` : ``)
+            +
+            (id ? `id: $id` : ``)
+            +
+            `
                 }) {
                   id
                   metaPtr {
                     protocol
                     pointer
                   }
-                  payoutAddress
                 }
               }
             `,
-            { roundId, status }
+            { roundId, id, status }
           )
 
-          const grantApplications: object[] = []
+          const grantApplications: GrantApplication[] = []
 
           for (const project of res.data.roundProjects) {
-            // const metadata = await fetchFromIPFS(project.metaPtr.pointer)
-
-            // TODO: define a GrantApplication type in ../types to be used here
-            grantApplications.push({
-              id: project.id,
-            })
+            const metadata = await fetchFromIPFS(project.metaPtr.pointer)
+            grantApplications.push({ ...metadata, id: project.id })
           }
 
           return { data: grantApplications }

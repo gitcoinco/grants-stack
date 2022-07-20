@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
 import { Spinner } from "../common/Spinner"
@@ -15,7 +15,9 @@ export default function ApplicationsReceived() {
     <div>
       {isSuccess && data?.map((application, index) => (
         <div key={index}>
-          {JSON.stringify(application)}
+          <Link to={`/round/${id}/application/${application.id}`}>
+            {JSON.stringify(application)}
+          </Link>
         </div>
       ))}
       {isLoading &&
