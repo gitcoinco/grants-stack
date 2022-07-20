@@ -4,6 +4,7 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
+import { programParams } from "../config/program.config";
 import { encodeRoundParameters } from "../utils";
   
 export async function main() {
@@ -11,6 +12,7 @@ export async function main() {
   const network = hre.network;
 
   const networkParams = roundParams[network.name];
+  const programNetworkParams = programParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
@@ -18,7 +20,7 @@ export async function main() {
 
   const roundFactoryContract = networkParams.roundFactoryContract;
   const roundImplementationContract = networkParams.roundImplementationContract;
-
+  const programContract = programNetworkParams.programContract;
   
   if (!roundFactoryContract) {
     throw new Error(`error: missing roundFactoryContract`);
@@ -28,7 +30,6 @@ export async function main() {
     throw new Error(`error: missing roundImplementationContract`);
   }
 
-  const programContractAddress = "0xA758560ED04c45FE77D1bE3aFC1f8B0eb4Cc597c";
 
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
@@ -36,7 +37,7 @@ export async function main() {
     "info"                         : "create a Round",
     "roundFactoryContract"         : roundFactoryContract,
     "roundImplementationContract"  : roundImplementationContract,
-    "programContractAddress"       : programContractAddress,
+    "programContractAddress"       : programContract,
     "network"                      : network.name,
     "chainId"                      : network.config.chainId
   });
@@ -63,7 +64,7 @@ export async function main() {
   
   const roundTx = await roundFactory.create(
     encodedParameters,
-    programContractAddress, // _ownedBy (Program)
+    programContract, // _ownedBy (Program)
   );
 
   const receipt = await roundTx.wait();

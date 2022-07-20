@@ -25,7 +25,7 @@
             "request": "launch",
             "name": "script: deployRoundImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-round"],
+            "args": ["deploy-round", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -34,7 +34,7 @@
             "request": "launch",
             "name": "script: deployRoundFactory",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-round-factory"],
+            "args": ["deploy-round-factory", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -43,7 +43,7 @@
             "request": "launch",
             "name": "script: linkRoundImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-link-round-implementation"],
+            "args": ["link-round-implementation", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -52,7 +52,7 @@
             "request": "launch",
             "name": "script: createRound",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-create-round"],
+            "args": ["create-round", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -61,7 +61,7 @@
             "request": "launch",
             "name": "script: applyToRound",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-apply-to-round"],
+            "args": ["apply-to-round", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -70,7 +70,7 @@
             "request": "launch",
             "name": "script: setProjectMetaPtr",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-update-project-metaptr"],
+            "args": ["update-project-metaptr", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -79,7 +79,7 @@
             "request": "launch",
             "name": "script: deployBulkVotingStrategy",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-bulk-voting-strategy"],
+            "args": ["deploy-bulk-voting-strategy", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -88,7 +88,7 @@
             "request": "launch",
             "name": "script: deployProgramImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-program-implementation"],
+            "args": ["deploy-program-implementation", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -97,7 +97,7 @@
             "request": "launch",
             "name": "script: deployProgramFactory",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-deploy-program-factory"],
+            "args": ["deploy-program-factory", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -106,7 +106,7 @@
             "request": "launch",
             "name": "script: linkProgramImplementation",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-link-program-implementation"],
+            "args": ["link-program-implementation", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
@@ -115,7 +115,7 @@
             "request": "launch",
             "name": "script: createProgram",
             "runtimeExecutable": "yarn",
-            "args": ["goerli-create-program"],
+            "args": ["create-program", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },
