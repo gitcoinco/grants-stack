@@ -146,10 +146,6 @@ function Project() {
 
             <p className="text-xs text-primary-text mb-1">Description</p>
             <p className="mb-12">{props.currentProject.description}</p>
-            <p className="text-xs text-primary-text mb-1">Project Roadmap</p>
-            <p className="mb-12">{props.currentProject.roadmap}</p>
-            <p className="text-xs text-primary-text mb-1">Project Challenges</p>
-            <p className="mb-12">{props.currentProject.challenges}</p>
           </div>
         </>
       )}

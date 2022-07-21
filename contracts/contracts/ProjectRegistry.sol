@@ -118,7 +118,7 @@ contract ProjectRegistry is Initializable {
     }
 
     /**
-     * @notice Disassociate a new owner with a project
+     * @notice Disassociate an existing owner from a project
      * @param projectID ID of previously created project
      * @param prevOwner Address of previous owner in OwnerList
      * @param owner Address of new Owner
@@ -142,15 +142,17 @@ contract ProjectRegistry is Initializable {
 
     /**
      * @notice Retrieve count of existing project owners
-     * @param projectID ID of project
+     * @param projectID ID of project 
+     * @return Count of owners for given project
      */
     function projectOwnersCount(uint96 projectID) public view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
     /**
-     * @notice Retrieve list of project owners
-     * @param projectID ID of project
+     * @notice Retrieve list of project owners 
+     * @param projectID ID of project 
+     * @return List of current owners of given project
      */
     function getProjectOwners(uint96 projectID) public view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
