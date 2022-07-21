@@ -1,4 +1,4 @@
-import { InputProps } from "../../types";
+import { InputProps, ProjectOptions } from "../../types";
 
 export function TextInput({
   label,
@@ -6,6 +6,7 @@ export function TextInput({
   name,
   value,
   placeholder,
+  disabled,
   changeHandler,
 }: InputProps) {
   return (
@@ -18,6 +19,7 @@ export function TextInput({
         name={name}
         value={value ?? ""}
         placeholder={placeholder}
+        disabled={disabled}
         onChange={changeHandler}
       />
     </div>
@@ -28,6 +30,7 @@ export function WebsiteInput({
   label,
   name,
   value,
+  disabled,
   changeHandler,
 }: InputProps) {
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +54,8 @@ export function WebsiteInput({
           name={name}
           value={value ?? ""}
           placeholder="https://gitcoin.co/"
+          disabled={disabled}
+          onChange={changeHandler}
           onChange={removeWhiteSpace}
         />
       </div>
@@ -64,6 +69,7 @@ export function TextArea({
   name,
   value,
   placeholder,
+  disabled,
   changeHandler,
 }: InputProps) {
   return (
@@ -75,8 +81,39 @@ export function TextArea({
         name={name}
         placeholder={placeholder}
         value={value ?? ""}
+        disabled={disabled}
         onChange={(e) => changeHandler(e)}
       />
+    </div>
+  );
+}
+
+type SelectInputProps = InputProps & {
+  options: ProjectOptions[];
+};
+
+export function Select({
+  label,
+  info,
+  name,
+  options,
+  disabled,
+  changeHandler,
+}: SelectInputProps) {
+  return (
+    <div>
+      <label htmlFor={name}>{label}</label>
+      <legend>{info}</legend>
+      <select
+        id={name}
+        name={name}
+        disabled={disabled}
+        onChange={(e) => changeHandler(e)}
+      >
+        {options.map((option) => (
+          <option key={option.id}>{option.title}</option>
+        ))}
+      </select>
     </div>
   );
 }

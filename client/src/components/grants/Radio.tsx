@@ -1,10 +1,7 @@
-type RadioInputProps = {
-  label: string;
-  name: string;
-  value: string | number;
-  info?: string;
+import { InputProps } from "../../types";
+
+type RadioInputProps = InputProps & {
   choices?: string[];
-  changeHandler: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function Radio({
