@@ -55,7 +55,6 @@ export function WebsiteInput({
           value={value ?? ""}
           placeholder="https://gitcoin.co/"
           disabled={disabled}
-          onChange={changeHandler}
           onChange={removeWhiteSpace}
         />
       </div>
