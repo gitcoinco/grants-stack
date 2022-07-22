@@ -140,6 +140,10 @@ export interface Round {
 
 export interface GrantApplication {
   /**
+   * The on-chain unique grant application ID
+   */
+  id: string;
+  /**
    * The round contract address applied to 
    */
   round: string;
