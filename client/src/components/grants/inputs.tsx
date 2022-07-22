@@ -110,7 +110,9 @@ export function Select({
         onChange={(e) => changeHandler(e)}
       >
         {options.map((option) => (
-          <option key={`key-${option.id}`}>{option.title}</option>
+          <option key={`key-${option.id}`} value={option.id}>
+            {option.title}
+          </option>
         ))}
       </select>
     </div>
