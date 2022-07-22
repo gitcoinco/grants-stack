@@ -4,7 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
   RoundApplicationMetadata,
-  ProjectOptions,
+  ProjectOption,
   Round,
 } from "../../types";
 import { Select, TextArea, TextInput } from "../grants/inputs";
@@ -44,7 +44,7 @@ export default function Form({
   const [submitted, setSubmitted] = useState(false);
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
-  const [projectOptions, setProjectOptions] = useState<ProjectOptions[]>();
+  const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
 
   const schema = [
     ...roundApplication.applicationSchema,
@@ -98,10 +98,13 @@ export default function Form({
   }, [dispatch]);
 
   useEffect(() => {
-    const currentOptions = props.projects.map((project) => ({
-      id: project.id,
-      title: props.allProjectMetadata[project.id].metadata?.title,
-    }));
+    const currentOptions = props.projects.map(
+      (project): ProjectOption => ({
+        id: project.id,
+        title: props.allProjectMetadata[project.id].metadata?.title,
+      })
+    );
+    currentOptions.unshift({ id: undefined, title: "" });
 
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);

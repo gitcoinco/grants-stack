@@ -12,6 +12,7 @@ import colors from "../../styles/colors";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
+
 function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
