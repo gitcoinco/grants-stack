@@ -78,10 +78,6 @@ export default function Form({
     }
   };
 
-  const projectSelected = (e: ChangeHandlers) => {
-    console.log({ e });
-  };
-
   const submitApplication = async () => {
     setSubmitted(true);
     await validate();
@@ -117,7 +113,7 @@ export default function Form({
           label="Select a project you would like to apply for funding:"
           options={projectOptions ?? []}
           disabled={preview}
-          changeHandler={projectSelected}
+          changeHandler={handleInput}
         />
         <p className="text-xs mt-4 mb-1">
           To complete your application to {round.roundMetadata.name}, a little
