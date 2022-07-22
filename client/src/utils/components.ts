@@ -1,13 +1,29 @@
 import { Metadata } from "../types";
 import PinataClient from "../services/pinata";
 
-export const getProjectImage = (loading: boolean, project?: Metadata) => {
-  if (loading || (project && !project.projectImg)) {
-    return "./assets/card-img.png";
+export enum ImgTypes {
+  bannerImg = "bannerImg",
+  logoImg = "logoImg",
+}
+
+const defaultImgs = {
+  bannerImg: "./assets/card-img.png",
+  logoImg: "./icons/lightning.svg",
+};
+
+export const getProjectImage = (
+  loading: boolean,
+  imgType: ImgTypes,
+  project?: Metadata
+) => {
+  const img = project && project[imgType];
+
+  if (loading || !img) {
+    return defaultImgs[imgType];
   }
 
   const pinataClient = new PinataClient();
-  return pinataClient.fileURL(project?.projectImg!);
+  return pinataClient.fileURL(img);
 };
 
 export default {};

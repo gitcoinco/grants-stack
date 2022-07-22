@@ -1,3 +1,8 @@
+export type Images = {
+  bannerImg?: Blob;
+  logoImg?: Blob;
+};
+
 export interface Metadata {
   protocol: number;
   pointer: string;
@@ -7,7 +12,8 @@ export interface Metadata {
   roadmap: string;
   challenges: string;
   website: string;
-  projectImg?: string;
+  bannerImg?: string;
+  logoImg?: string;
 }
 
 export type ChangeHandlers =

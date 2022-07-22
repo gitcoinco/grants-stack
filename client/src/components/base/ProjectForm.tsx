@@ -7,7 +7,6 @@ import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
-import { resetFileStatus } from "../../actions/ipfs";
 import { publishGrant, resetStatus } from "../../actions/newGrant";
 import { validateProjectForm } from "./formValidation";
 import { Status } from "../../reducers/newGrant";
@@ -38,11 +37,6 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
       id: currentProjectId,
       loading: grantMetadata ? grantMetadata.loading : false,
       currentProject: grantMetadata?.metadata,
-      ipfsInitialized: state.ipfs.initialized,
-      ipfsInitializationError: state.ipfs.initializationError,
-      savingFile: state.ipfs.ipfsSavingFile,
-      projectFile: state.ipfs.projectFileSavedCID,
-      projectImg: state.ipfs.projectImgSavedCID,
       status: state.newGrant.status,
       error: state.newGrant.error,
     };
@@ -58,16 +52,21 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
     setSubmitted(false);
     setFormValidation(validation);
     dispatch(resetStatus());
-    dispatch(resetFileStatus());
   };
-  const [projectImg, setProjectImg] = useState<Blob | undefined>();
+  const [logoImg, setLogoImg] = useState<Blob | undefined>();
+  const [bannerImg, setBannerImg] = useState<Blob | undefined>();
 
   const publishProject = async () => {
     setSubmitted(true);
     if (!formValidation.valid) return;
     localResetStatus();
     showToast(true);
-    await dispatch(publishGrant(currentProjectId, formInputs, projectImg));
+    await dispatch(
+      publishGrant(currentProjectId, formInputs, {
+        bannerImg,
+        logoImg,
+      })
+    );
   };
 
   const handleInput = (e: ChangeHandlers) => {
@@ -85,7 +84,6 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
   useEffect(() => {
     // called twice
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
-    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
     if (currentProjectId !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(Number(currentProjectId)));
     }
@@ -99,7 +97,7 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         website: currentProject.website,
       });
     }
-  }, [dispatch, props.ipfsInitialized, currentProjectId, props.currentProject]);
+  }, [dispatch, currentProjectId, props.currentProject]);
 
   const validate = async () => {
     try {
@@ -134,18 +132,6 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
     }
   }, [props.status]);
 
-  if (props.currentProject === undefined && props.ipfsInitializationError) {
-    return <>Error initializing IPFS. Reload the page and try again.</>;
-  }
-
-  if (
-    currentProjectId !== undefined &&
-    props.currentProject === undefined &&
-    !props.ipfsInitialized
-  ) {
-    return <>Initializing ipfs...</>;
-  }
-
   if (
     // if it's undefined we don't have anything to load
     currentProjectId !== undefined &&
@@ -174,8 +160,22 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         />
         <ImageInput
           label="Project Logo"
+          dimensions={{
+            width: 300,
+            height: 300,
+          }}
+          circle
           currentProject={props.currentProject}
-          imgHandler={(buffer: Blob) => setProjectImg(buffer)}
+          imgHandler={(buffer: Blob) => setLogoImg(buffer)}
+        />
+        <ImageInput
+          label="Project Banner"
+          dimensions={{
+            width: 1500,
+            height: 500,
+          }}
+          currentProject={props.currentProject}
+          imgHandler={(buffer: Blob) => setBannerImg(buffer)}
         />
         <TextArea
           label="Project Description"
@@ -191,22 +191,18 @@ function ProjectForm({ currentProjectId }: { currentProjectId?: string }) {
         )}
         <div className="flex w-full justify-end mt-6">
           <Button
-            disabled={
-              !props.ipfsInitialized || (!formValidation.valid && submitted)
-            }
+            disabled={!formValidation.valid && submitted}
             variant={ButtonVariants.outline}
             onClick={() => toggleModal(true)}
           >
             Cancel
           </Button>
           <Button
-            disabled={
-              !props.ipfsInitialized || (!formValidation.valid && submitted)
-            }
+            disabled={!formValidation.valid && submitted}
             variant={ButtonVariants.primary}
             onClick={publishProject}
           >
-            {props.ipfsInitialized ? "Save & Publish" : "Initializing IPFS..."}
+            Save &amp; Publish
           </Button>
         </div>
       </form>

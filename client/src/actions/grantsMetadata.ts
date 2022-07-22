@@ -109,11 +109,6 @@ export const fetchGrantData =
       }
     }
 
-    // cache not found and ipfs not initialized yet
-    if (!state.ipfs.initialized) {
-      return;
-    }
-
     // if not cached in localstorage
     let content;
     try {

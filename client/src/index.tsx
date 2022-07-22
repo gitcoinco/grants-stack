@@ -29,7 +29,6 @@ import EditProject from "./components/grants/Edit";
 import RoundShow from "./components/rounds/Show";
 import RoundApply from "./components/rounds/Apply";
 import Landing from "./components/grants/Landing";
-import { startIPFS } from "./actions/ipfs";
 import { initializeWeb3 } from "./actions/web3";
 
 const logger: Middleware =
@@ -52,7 +51,6 @@ if (process.env.NODE_ENV !== "production" || urlParams.get("debug") !== null) {
 }
 
 const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
-store.dispatch<any>(startIPFS());
 store.dispatch<any>(initializeWeb3(false));
 
 const root = ReactDOM.createRoot(

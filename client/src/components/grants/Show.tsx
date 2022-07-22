@@ -10,7 +10,7 @@ import Pencil from "../icons/Pencil";
 import colors from "../../styles/colors";
 import LinkIcon from "../icons/LinkIcon";
 import Arrow from "../icons/Arrow";
-import { getProjectImage } from "../../utils/components";
+import { getProjectImage, ImgTypes } from "../../utils/components";
 import { ProjectEvent } from "../../types";
 import { loadProjects } from "../../actions/projects";
 import Calendar from "../icons/Calendar";
@@ -24,13 +24,24 @@ function Project() {
 
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[Number(params.id)];
+    const loading = grantMetadata ? grantMetadata.loading : false;
+    const bannerImg = getProjectImage(
+      loading,
+      ImgTypes.bannerImg,
+      grantMetadata?.metadata
+    );
+    const logoImg = getProjectImage(
+      loading,
+      ImgTypes.logoImg,
+      grantMetadata?.metadata
+    );
     return {
       id: params.id,
-      loading: grantMetadata ? grantMetadata.loading : false,
+      loading,
+      bannerImg,
+      logoImg,
       currentProject: grantMetadata?.metadata,
       projects: state.projects.projects,
-      ipfsInitialized: state.ipfs.initialized,
-      ipfsInitializationError: state.ipfs.initializationError,
     };
   }, shallowEqual);
 
@@ -41,7 +52,7 @@ function Project() {
     if (params.id !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(Number(params.id)));
     }
-  }, [dispatch, props.ipfsInitialized, params.id, props.currentProject]);
+  }, [dispatch, params.id, props.currentProject]);
 
   useEffect(() => {
     async function fetchTimeStamp(projects: ProjectEvent[], projectId: string) {
@@ -71,14 +82,6 @@ function Project() {
     }
   }, [props.id, props.currentProject, global, dispatch]);
 
-  if (props.currentProject === undefined && props.ipfsInitializationError) {
-    return <>Error initializing IPFS. Reload the page and try again.</>;
-  }
-
-  if (props.currentProject === undefined && !props.ipfsInitialized) {
-    return <>Initializing ipfs...</>;
-  }
-
   if (
     props.currentProject === undefined &&
     props.loading &&
@@ -103,11 +106,11 @@ function Project() {
             {props.id && (
               <Link
                 to={editPath(props.id)}
-                className="w-full sm:w-auto mx-w-full ml-0"
+                className="sm:w-auto mx-w-full ml-0"
               >
                 <Button
                   variant={ButtonVariants.outline}
-                  styles={["w-full sm:w-auto mx-w-full ml-0"]}
+                  styles={["sm:w-auto mx-w-full ml-0"]}
                 >
                   <i className="icon mt-1">
                     <Pencil color={colors["secondary-text"]} />
@@ -119,16 +122,35 @@ function Project() {
           </div>
           <div className="w-full md:w-2/3 mb-40">
             <img
-              className="w-full mb-4  h-32 object-contain"
-              src={getProjectImage(props.loading, props.currentProject)}
+              className="w-full mb-4"
+              src={getProjectImage(
+                props.loading,
+                ImgTypes.bannerImg,
+                props.currentProject
+              )}
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = "./assets/card-img.png";
               }}
               alt="project banner"
             />
-            <h4 className="mb-4">{props.currentProject.title}</h4>
-            <div className="flex justify-start border-b  pb-6 mb-6">
+            <div className="relative">
+              <div className="flex w-full justify-start absolute -top-14 left-8">
+                <div className="rounded-full h-20 w-20 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
+                  <img
+                    className="rounded-full"
+                    src={props.logoImg}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "./icons/lightning.svg";
+                    }}
+                    alt="project logo"
+                  />
+                </div>
+              </div>
+            </div>
+            <h4 className="mb-4 mt-14">{props.currentProject.title}</h4>
+            <div className="flex justify-start border-b pb-6 mb-6">
               <a
                 target="_blank"
                 href={props.currentProject.website}

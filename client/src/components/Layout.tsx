@@ -20,9 +20,6 @@ function Layout(ownProps: Props) {
       web3Error: state.web3.error,
       chainID: state.web3.chainID,
       account: state.web3.account,
-      ipfsInitializing: state.ipfs.initializing,
-      ipfsInitializationError: state.ipfs.initializationError,
-      ipfsInitialized: state.ipfs.initialized,
     }),
     shallowEqual
   );

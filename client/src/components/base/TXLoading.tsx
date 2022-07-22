@@ -4,8 +4,8 @@ import { Status } from "../../reducers/newGrant";
 
 function statusMessage(status: Status, error: string | undefined) {
   switch (status) {
-    case Status.UploadingImage:
-      return "Uploading image to IPFS...";
+    case Status.UploadingImages:
+      return "Uploading images to IPFS...";
     case Status.UploadingJSON:
       return "Uploading metadata to IPFS...";
     case Status.WaitingForSignature:

@@ -4,10 +4,8 @@ import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { grantPath } from "../../routes";
-import Lightning from "../icons/Lightning";
-import colors from "../../styles/colors";
 import TextLoading from "../base/TextLoading";
-import { getProjectImage } from "../../utils/components";
+import { getProjectImage, ImgTypes } from "../../utils/components";
 
 function Card({ projectId }: { projectId: number }) {
   const dispatch = useDispatch();
@@ -15,14 +13,15 @@ function Card({ projectId }: { projectId: number }) {
     const grantMetadata = state.grantsMetadata[projectId];
     const loading = grantMetadata ? grantMetadata.loading : true;
     const project = grantMetadata?.metadata;
-    const projectImg = getProjectImage(loading, project);
+    const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
+    const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
     return {
       id: projectId,
       loading,
       currentProject: project,
-      ipfsInitialized: state.ipfs.initialized,
-      projectImg,
+      bannerImg,
+      logoImg,
     };
   }, shallowEqual);
 
@@ -33,31 +32,39 @@ function Card({ projectId }: { projectId: number }) {
     if (projectId !== undefined && props.currentProject === undefined) {
       dispatch(fetchGrantData(projectId));
     }
-  }, [dispatch, props.ipfsInitialized, projectId, props.currentProject]);
+  }, [dispatch, projectId, props.currentProject]);
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={grantPath(projectId)}>
         <img
           className="w-full h-32 object-cover"
-          src={props.projectImg}
+          src={props.bannerImg}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = "./assets/card-img.png";
           }}
           alt="project banner"
         />
-        <div className="py-4 relative text-center">
-          <div className="flex w-full justify-center absolute -top-6">
+        <div className="p-6 relative text-start">
+          <div className="flex w-full justify-start absolute -top-6">
             <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
-              <Lightning color={colors["primary-text"]} />
+              <img
+                className="rounded-full"
+                src={props.logoImg}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "./icons/lightning.svg";
+                }}
+                alt="project logo"
+              />
             </div>
           </div>
           {props.loading ? (
             <TextLoading />
           ) : (
-            <div className="px-6 pt-4">
-              <div className="font-bold text-xl mb-2">
+            <div className="pt-4">
+              <div className="font-semi-bold text-xl mb-2">
                 {props.currentProject?.title}
               </div>
               <p className="text-gray-700 text-base h-20">
