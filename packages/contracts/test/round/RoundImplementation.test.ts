@@ -253,7 +253,6 @@ describe("RoundImplementation", function () {
 
       });
 
-
       it ('initialize SHOULD revert when applicationsStartTime is after roundStartTime', async () => {
 
         const _uApplicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later

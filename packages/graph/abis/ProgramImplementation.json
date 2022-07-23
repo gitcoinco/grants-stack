@@ -52,7 +52,7 @@
         "type": "tuple"
       }
     ],
-    "name": "MetadataUpdated",
+    "name": "MetaPtrUpdated",
     "type": "event"
   },
   {

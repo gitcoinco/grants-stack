@@ -25,7 +25,7 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
   // --- Events ---
 
   /// @notice Emitted when a team metadata pointer is updated
-  event MetadataUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
+  event MetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
   // --- Data ---
 
@@ -59,8 +59,8 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
       address[]
     ));
 
-    // Emit MetadataUpdated event for indexing
-    emit MetadataUpdated(metaPtr, _metaPtr);
+    // Emit MetaPtrUpdated event for indexing
+    emit MetaPtrUpdated(metaPtr, _metaPtr);
     metaPtr = _metaPtr;
 
     // Assigning default admin role
@@ -77,7 +77,7 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
   // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
   /// @param _newMetaPtr new metaPtr
   function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
-    emit MetadataUpdated(metaPtr, _newMetaPtr);
+    emit MetaPtrUpdated(metaPtr, _newMetaPtr);
     metaPtr = _newMetaPtr;
   }
 }
