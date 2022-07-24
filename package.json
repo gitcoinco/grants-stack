@@ -21,7 +21,8 @@
     "// round manager script": "====== packages/round-manager specific ======",
     "rm-build": "cd packages/round-manager; yarn build",
     "rm-test": "cd packages/round-manager; yarn test",
-    "rm-start": "cd packages/round-manager; yarn start"
+    "rm-start": "cd packages/round-manager; yarn start",
+    "rm-slither": "cd packages/round-manager; slither ."
   },
   "devDependencies": {
     "lerna": "^4.0.0"

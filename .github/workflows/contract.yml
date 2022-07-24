@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  build-and-deploy:
+  tests:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
@@ -27,3 +27,20 @@ jobs:
       - name: Test Contract
         run: |
           yarn hh-test
+
+  slither:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Get node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+      - name: Run slither
+        uses: crytic/slither-action@v0.1.1
+        with:
+          target: ./packages/hardhat
