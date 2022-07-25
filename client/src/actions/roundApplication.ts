@@ -1,8 +1,12 @@
 import { Dispatch } from "redux";
+import { ethers } from "ethers";
 import { Status } from "../reducers/roundApplication";
 import { RootState } from "../reducers";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { Metadata, Project } from "../types";
+import PinataClient from "../services/pinata";
+import RoundABI from "../contracts/abis/Round.json";
+import { global } from "../global";
 
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
 interface RoundApplicationLoadingAction {
@@ -44,7 +48,7 @@ export const submitApplication =
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      status: Status.UploadingMetadata,
+      status: Status.BuildingApplication,
     });
 
     const state = getState();
@@ -99,6 +103,45 @@ export const submitApplication =
       roundApplicationMetadata
     );
     const application = builder.build(roundAddress, formInputs);
-    console.log("------------------");
-    console.log(application);
+
+    const pinataClient = new PinataClient();
+
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
+      roundAddress,
+      status: Status.UploadingMetadata,
+    });
+    const resp = await pinataClient.pinJSON(application);
+    const metaPtr = {
+      protocol: "1",
+      pointer: resp.IpfsHash,
+    };
+
+    console.log("metaPtr", metaPtr);
+
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
+      roundAddress,
+      status: Status.SendingTx,
+    });
+
+    const signer = global.web3Provider!.getSigner();
+    const contract = new ethers.Contract(roundAddress, RoundABI, signer);
+    // FIXME: when the new round implementation is deployed we can send a
+    // bytes32 instead of an address
+    const projectUniqueID = "0x000000000000000000000000000000000000beaf";
+    try {
+      await contract.applyToRound(projectUniqueID, metaPtr);
+      dispatch({
+        type: ROUND_APPLICATION_LOADED,
+        roundAddress,
+      });
+    } catch (e) {
+      console.error("error calling applyToRound:", e);
+      dispatch({
+        type: ROUND_APPLICATION_ERROR,
+        roundAddress,
+        error: "error calling applyToRound",
+      });
+    }
   };

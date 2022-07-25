@@ -73,6 +73,10 @@ function Apply() {
     );
   }
 
+  if (props.applicationStatus === ApplicationStatus.Sent) {
+    return <div>Applied to round successfully.</div>;
+  }
+
   if (props.applicationStatus !== ApplicationStatus.Undefined) {
     return <div>sending application...</div>;
   }
