@@ -12,6 +12,19 @@ import {
 import PinataClient from "../services/pinata";
 import { Status } from "../reducers/rounds";
 
+const projectQuestion = {
+  question: "Select a project you would like to apply for funding:",
+  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  required: true,
+};
+
+const recipientAddressQuestion = {
+  question: "Recipient Address",
+  type: "RECIPIENT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  required: true,
+  info: "Address that will receive funds",
+};
+
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
   type: typeof ROUNDS_LOADING_ROUND;
@@ -208,16 +221,32 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   });
 
   let applicationMetadata: RoundApplicationMetadata;
+  let projectQuestionId;
+  let recipientQuestionId;
   try {
     const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
     applicationMetadata = JSON.parse(resp);
+
+    projectQuestionId = applicationMetadata.applicationSchema.length;
+    applicationMetadata.applicationSchema.unshift({
+      ...projectQuestion,
+      id: projectQuestionId,
+    });
+    applicationMetadata.projectQuestionId = projectQuestionId;
+
+    recipientQuestionId = applicationMetadata.applicationSchema.length;
+    applicationMetadata.applicationSchema.push({
+      ...recipientAddressQuestion,
+      id: recipientQuestionId,
+    });
+    applicationMetadata.recipientQuestionId = recipientQuestionId;
   } catch (e) {
     dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
     return;
   }
 
-  const testRound = {
+  const round = {
     address,
     applicationsStartTime,
     applicationsEndTime,
@@ -236,5 +265,5 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     applicationMetadata,
   };
 
-  dispatch(roundLoaded(address, testRound));
+  dispatch(roundLoaded(address, round));
 };
