@@ -13,9 +13,10 @@ import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
+import { submitApplication } from "../../actions/roundApplication";
 
 interface DynamicFormInputs {
-  [key: string]: string | number;
+  [key: string]: string;
 }
 
 const validation = {
@@ -46,16 +47,7 @@ export default function Form({
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
 
-  const schema = [
-    ...roundApplication.applicationSchema,
-    {
-      id: roundApplication.applicationSchema.length,
-      question: "Recipient Address",
-      type: "TEXT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
-      required: true,
-      info: "Address that will receive funds",
-    },
-  ];
+  const schema = roundApplication.applicationSchema;
 
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
@@ -78,10 +70,10 @@ export default function Form({
     }
   };
 
-  const submitApplication = async () => {
+  const handleSubmitApplication = async () => {
     setSubmitted(true);
     await validate();
-    // TODO: Submit application to RM
+    dispatch(submitApplication(round.address, formInputs));
   };
 
   // perform validation after the fields state is updated
@@ -108,28 +100,35 @@ export default function Form({
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        <Select
-          name="project-select"
-          label="Select a project you would like to apply for funding:"
-          options={projectOptions ?? []}
-          disabled={preview}
-          changeHandler={handleInput}
-        />
-        <p className="text-xs mt-4 mb-1">
-          To complete your application to {round.roundMetadata.name}, a little
-          more info is needed:
-        </p>
-        <hr />
         {schema.map((input) => {
           switch (input.type) {
+            case "PROJECT":
+              return (
+                <>
+                  <Select
+                    key={input.id}
+                    name={`${input.id}`}
+                    label={input.question}
+                    options={projectOptions ?? []}
+                    disabled={preview}
+                    changeHandler={handleInput}
+                  />
+                  <p className="text-xs mt-4 mb-1">
+                    To complete your application to ${round.roundMetadata.name},
+                    a little more info is needed:
+                  </p>
+                  <hr />
+                </>
+              );
             case "TEXT":
+            case "RECIPIENT": // FIXME: separate RECIPIENT to have address validation
               return (
                 <TextInput
                   key={input.id}
                   label={input.question}
                   info={input.info}
-                  name={`question-${input.id}`}
-                  value={formInputs[`question-${input.id}`] ?? ""}
+                  name={`${input.id}`}
+                  value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
                 />
@@ -140,8 +139,8 @@ export default function Form({
                   key={input.id}
                   label={input.question}
                   info={input.info}
-                  name={`question-${input.id}`}
-                  value={formInputs[`question-${input.id}`] ?? ""}
+                  name={`${input.id}`}
+                  value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
                 />
@@ -151,9 +150,9 @@ export default function Form({
                 <Radio
                   key={input.id}
                   label={input.question}
-                  name={`question-${input.id}`}
+                  name={`${input.id}`}
                   value={
-                    formInputs[`question-${input.id}`] ??
+                    formInputs[`${input.id}`] ??
                     (input.choices && input.choices[0])
                   }
                   info={input.info}
@@ -178,8 +177,8 @@ export default function Form({
                 <TextInput
                   key={input.id}
                   label={input.question}
-                  name={`question-${input.id}`}
-                  value={formInputs[`question-${input.id}`] ?? ""}
+                  name={`${input.id}`}
+                  value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
                 />
@@ -209,7 +208,7 @@ export default function Form({
               </Button>
               <Button
                 variant={ButtonVariants.primary}
-                onClick={submitApplication}
+                onClick={handleSubmitApplication}
               >
                 Submit
               </Button>
