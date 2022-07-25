@@ -48,4 +48,5 @@ jobs:
       - name: Run slither
         uses: crytic/slither-action@v0.1.1
         with:
+          node-version: 16
           target: ./packages/contracts
