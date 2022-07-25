@@ -98,9 +98,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "address",
+        "internalType": "bytes32",
         "name": "project",
-        "type": "address"
+        "type": "bytes32"
       },
       {
         "components": [
@@ -396,9 +396,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_project",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "_projectID",
+        "type": "bytes32"
       },
       {
         "components": [
