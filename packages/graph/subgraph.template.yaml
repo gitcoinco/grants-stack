@@ -97,7 +97,7 @@ templates:
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: NewProjectApplication(indexed address,(uint256,string))
+        - event: NewProjectApplication(indexed bytes32,(uint256,string))
           handler: handleNewProjectApplication
         - event: ProjectsMetaPtrUpdated((uint256,string),(uint256,string))
           handler: handleProjectsMetaPtrUpdated

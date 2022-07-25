@@ -10,10 +10,10 @@ type DeployParams = Record<string, RoundParams>;
 
 export const roundParams: DeployParams = {
   "goerli": {
-    roundFactoryContract: '0x515594eeB37A6D5815F4c860454cD4FD87539978',
-    roundImplementationContract: '0x1D88549dF4A5880d5d459eBf84330bdC2b3Ee647',
+    roundFactoryContract: '0xFed628443dEbcE553EB6053566dFabE0537348f2',
+    roundImplementationContract: '0x0E5df3f2Ff30cc2daDc8d5990488F4e3400C3A37',
     bulkVotingStrategyContract: '0x868CBca73915f842A70cD9584D80a57DB5E690C1',
-    roundContract: '0x3879a696253Aa2FaE4164C21e16104894dE632c9'
+    roundContract: '0xD96222ec011Cded90Be74969d0CFfDf4247FAe1b'
   },
   "optimism-mainnet": {
     roundFactoryContract: '',
@@ -22,9 +22,9 @@ export const roundParams: DeployParams = {
     roundContract: ''
   },
   "optimism-kovan": {
-    roundFactoryContract: '0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92',
-    roundImplementationContract: '0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6',
+    roundFactoryContract: '0x5632fdD467B657AEc800296F1695cf8847A50048',
+    roundImplementationContract: '0x24bF2015ad3B99b3fCDe5f752bc4cF9fa5Ea922A',
     bulkVotingStrategyContract: '0x2D39988C462C63b0035c3824fDEE80938cB27d0b',
-    roundContract: '0x3Cd6edA7fDF9ab6b6AF6E226Ce184569C5DF8Ae5'
+    roundContract: '0xdd6726a26889929B4129D4889a00834caa3832Fd'
   },
 };
