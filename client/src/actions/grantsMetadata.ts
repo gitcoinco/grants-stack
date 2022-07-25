@@ -63,38 +63,6 @@ export const grantMetadataFetchingError = (
   error,
 });
 
-export const fetchGrantData =
-  (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(grantMetadataLoadingURI(id));
-    const state = getState();
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    const signer = global.web3Provider?.getSigner();
-
-    let project: ProjectRegistryMetadata;
-
-    try {
-      project = await getProjectById(id, addresses, signer!);
-    } catch (e) {
-      console.error(e);
-      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
-      return;
-    }
-
-    if (!project.metadata.protocol) {
-      console.error("project not found");
-      dispatch(grantMetadataFetchingError(id, "project not found"));
-      return;
-    }
-
-    dispatch(grantMetadataLoading(id));
-
-    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-    const item = await getMetadata(id, project, cacheKey);
-
-    dispatch(grantMetadataFetched(item));
-  };
-
 const getProjectById = async (
   projectId: number,
   addresses: any,
@@ -170,3 +138,35 @@ const getMetadata = async (
   storage.add(cacheKey, JSON.stringify(ret));
   return ret;
 };
+
+export const fetchGrantData =
+  (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
+    dispatch(grantMetadataLoadingURI(id));
+    const state = getState();
+    const { chainID } = state.web3;
+    const addresses = addressesByChainID(chainID!);
+    const signer = global.web3Provider?.getSigner();
+
+    let project: ProjectRegistryMetadata;
+
+    try {
+      project = await getProjectById(id, addresses, signer!);
+    } catch (e) {
+      console.error(e);
+      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
+      return;
+    }
+
+    if (!project.metadata.protocol) {
+      console.error("project not found");
+      dispatch(grantMetadataFetchingError(id, "project not found"));
+      return;
+    }
+
+    dispatch(grantMetadataLoading(id));
+
+    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
+    const item = await getMetadata(id, project, cacheKey);
+
+    dispatch(grantMetadataFetched(item));
+  };
