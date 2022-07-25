@@ -16,6 +16,17 @@ export interface Metadata {
   logoImg?: string;
 }
 
+export interface Project {
+  lastUpdated: Number; // unix timestamp in milliseconds
+  id: string;
+  title: string;
+  description: string;
+  website: string;
+  bannerImg?: string;
+  logoImg: string;
+  metaPtr: MetaPtr;
+}
+
 export type ChangeHandlers =
   | React.ChangeEvent<HTMLInputElement>
   | React.ChangeEvent<HTMLTextAreaElement>
@@ -53,12 +64,24 @@ export interface RoundApplicationQuestion {
   required: boolean;
   info?: string;
   choices?: string[];
+  encrypted?: boolean;
+}
+
+export interface JWK {
+  alg: string;
+  e: string;
+  ext: boolean;
+  key_ops: string[];
+  kty: string;
+  n: string;
 }
 
 export interface RoundApplicationMetadata {
-  id: string;
   lastUpdatedOn: number;
+  publicKey: JWK,
   applicationSchema: RoundApplicationQuestion[];
+  projectQuestionId?: number;
+  recipientQuestionId?: number;
 }
 
 export interface Round {
@@ -78,3 +101,25 @@ export type ProjectOption = {
   id: number | undefined;
   title?: string;
 };
+
+export interface RoundApplication {
+  /**
+   * The round contract address applied to
+   */
+  round: string;
+  /**
+   * Recipient wallet address of grantee
+   */
+  recipient: string;
+  /**
+   * Project information
+   */
+  project: Project;
+
+  /** List of answers to questions */
+  answers: Array<{
+    questionId: Number;
+    question: string;
+    answer: string;
+  }>
+}
