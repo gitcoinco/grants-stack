@@ -56,9 +56,12 @@ export async function main() {
     "chainId"                      : network.config.chainId
   });
 
-  for (let i = 0; i< projectApplications.length; i++) {
+  for (let i = 0; i < projectApplications.length; i++) {
     const project = projectApplications[i];
-    const updateTx = await round.applyToRound(project.project, project.metaPtr);
+    const updateTx = await round.applyToRound(
+      ethers.utils.hexZeroPad(project.project, 32),
+      project.metaPtr
+    );
     await updateTx.wait();
     console.log("✅ project applied: ", updateTx.hash);
   }
