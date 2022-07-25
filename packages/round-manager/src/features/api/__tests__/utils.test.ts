@@ -110,7 +110,7 @@ describe("graphql_fetch", () => {
     }
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.SUBGRAPH_GOERLI_API}`,
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
       params
     )
     expect(res.data.programs[0]).toEqual(

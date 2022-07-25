@@ -31,17 +31,17 @@ const getGraphQLEndpoint = async () => {
   switch (chainId) {
     case 10: {
       // optimism network
-      endpoint = `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`
       break
     }
     case 69: {
       // optimism-kovan network
-      endpoint = `${process.env.SUBGRAPH_OPTIMISM_KOVAN_API}`
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`
       break
     }
     default: {
       // goerli network
-      endpoint = `${process.env.SUBGRAPH_GOERLI_API}`
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`
     }
   }
 
