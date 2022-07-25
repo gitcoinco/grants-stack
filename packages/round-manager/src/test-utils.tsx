@@ -29,10 +29,3 @@ function reducer(ui, {
 
 export * from "@testing-library/react"
 export { reducer }
-
-// @ts-ignore
-// function ReduxProvider({ children }) {
-//   return <Provider store={ store }>{ children }</Provider>
-// }
-//
-// export const reduxRender = (ui: ReactElement, options = {}) => render(ui, { wrapper: ReduxProvider, ...options })

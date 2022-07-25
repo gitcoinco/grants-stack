@@ -11,6 +11,8 @@ export const handlers = [
               protocol: 1,
               pointer: "some-ptr"
             },
+            title: "Some Title 1",
+            description: "Some project description 1",
             payoutAddress: "0xSomeAddress"
           },
           {
@@ -19,6 +21,8 @@ export const handlers = [
               protocol: 1,
               pointer: "some-ptr2"
             },
+            title: "Some Title 2",
+            description: "Some project description 2",
             payoutAddress: "0xSomeAddress2"
           },
           {
@@ -27,6 +31,8 @@ export const handlers = [
               protocol: 1,
               pointer: "some-ptr3"
             },
+            title: "Some Title 3",
+            description: "Some project description 3",
             payoutAddress: "0xSomeAddress3"
           }
         ]

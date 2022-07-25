@@ -53,9 +53,9 @@ export default function ApplicationsReceived() {
           <ProjectCardHeader/>
           <ProjectCardContent>
             <Link to={ `/round/${ id }/application/${ application.id }` }>
-              <ProjectCardTitle>{ JSON.stringify(application) }</ProjectCardTitle>
+              <ProjectCardTitle>{ application.project.title }</ProjectCardTitle>
             </Link>
-            <p data-testid="application-card-description"> Some Description</p>
+            <p>{ application.project.description }</p>
           </ProjectCardContent>
         </ProjectCard>
       )) }
