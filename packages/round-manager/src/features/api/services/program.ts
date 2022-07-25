@@ -3,8 +3,7 @@ import { api } from ".."
 import { global } from "../../../global"
 import { programFactoryContract } from "../contracts"
 import { Program } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
-import { useGetWeb3Query } from "./web3"
+import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
 
 
 /**
@@ -16,7 +15,7 @@ export const programApi = api.injectEndpoints({
       queryFn: async ({ store: metadata, operatorWallets }) => {
         try {
           // fetch chain id
-          const chainId = (await useGetWeb3Query().data)?.chainId
+          const chainId = (await getWeb3Instance())?.chainId
 
           // load program factory contract
           const _programFactoryContract = programFactoryContract(chainId);
