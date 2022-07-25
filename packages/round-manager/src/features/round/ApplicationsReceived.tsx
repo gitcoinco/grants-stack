@@ -16,56 +16,52 @@ export default function ApplicationsReceived() {
   flex
   flex-row
   w-full
-  bg-indigo-100
   `
 
   const ProjectCard = tw.div`
-  w-1/3
+  w-1/4
   h-60
   border-2
   border-black
-  m-8
+  mx-2
   overflow-hidden
+  rounded-sm
   `
 
   const ProjectCardHeader = tw.div`
   bg-black
   w-full
-  h-10
+  h-1/4
+  `
+
+  const ProjectCardContent = tw.div`
+  p-4
   `
 
   const ProjectCardTitle = tw.p`
-  w-1/3
+  w-full
+  my-4
   text-md
   font-semibold
   text-ellipsis
   `
 
   return (
-    <div>
-      {isSuccess && data?.map((application, index) => (
-        <div key={index}>
-          <Link to={`/round/${id}/application/${application.id}`}>
-            <ProjectCardsContainer>
-              { isSuccess &&
-                data?.map((application, index) => {
-                  console.table(application)
-                  return (
-                    <ProjectCard key={ index } className="application-card">
-                      <ProjectCardHeader/>
-                      <ProjectCardTitle data-testid="application-card-title">{ JSON.stringify(application) }</ProjectCardTitle>
-                      <p data-testid="application-card-description"> Some Description</p>
-                    </ProjectCard>
-                  )
-                }) }
-              { isLoading && <Spinner text="Fetching Grant Applications"/> }
-            </ProjectCardsContainer>
-          </Link>
-        </div>
-      ))}
-      {isLoading &&
-        <Spinner text="Fetching Grant Applications" />
+    <ProjectCardsContainer>
+      { isSuccess && data?.map((application, index) => (
+        <ProjectCard key={ index } className="application-card" data-testid="application-card">
+          <ProjectCardHeader/>
+          <ProjectCardContent>
+            <Link to={ `/round/${ id }/application/${ application.id }` }>
+              <ProjectCardTitle>{ JSON.stringify(application) }</ProjectCardTitle>
+            </Link>
+            <p data-testid="application-card-description"> Some Description</p>
+          </ProjectCardContent>
+        </ProjectCard>
+      )) }
+      { isLoading &&
+        <Spinner text="Fetching Grant Applications"/>
       }
-    </div>
+    </ProjectCardsContainer>
   )
 }
