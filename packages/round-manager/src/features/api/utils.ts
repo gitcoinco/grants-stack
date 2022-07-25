@@ -1,19 +1,44 @@
+import { useGetWeb3Query } from "./services/web3";
 import { IPFSObject } from "./types"
 
+const getGraphQLEndpoint = async () => {
+  // fetch chain id
+  const chainId = (await useGetWeb3Query().data)?.chainId
+
+  let endpoint;
+
+  switch (chainId) {
+    case 10: {
+      // optimism network
+      endpoint = `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
+      break;
+    }
+    case 69: {
+      // optimism-kovan network
+      endpoint = `${process.env.SUBGRAPH_OPTIMISM_KOVAN_API}`
+      break;
+    }
+    default: {
+      // goerli network
+      endpoint = `${process.env.SUBGRAPH_GOERLI_API}`;
+    }
+  }
+  return endpoint;
+}
 
 /**
  * Fetch data from a GraphQL endpoint
  * 
- * @param endpoint - The GraphQL endpoint
  * @param query - The query to be executed
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
- export const graphql_fetch = (
+ export const graphql_fetch = async (
    query: string,
    variables: object = {},
-   endpoint: string = `${process.env.REACT_APP_SUBGRAPH_API}`
 ) => {
+  
+  const endpoint = await getGraphQLEndpoint();
 
   return fetch(endpoint, {
     method: "POST",
