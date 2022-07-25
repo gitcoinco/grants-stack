@@ -14,17 +14,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           yarn install
           cd packages/contracts
           yarn install
 
-      - name: Compile Contract
+      - name: Compile contract
         run: |
           yarn hh-compile
           
-      - name: Test Contract
+      - name: Test contract
         run: |
           yarn hh-test
 
@@ -40,7 +40,12 @@ jobs:
         with:
           node-version: "16"
           cache: "yarn"
+      - name: Install dependencies
+        run: |
+          yarn install
+          cd packages/contracts
+          yarn install
       - name: Run slither
         uses: crytic/slither-action@v0.1.1
         with:
-          target: ./packages/hardhat
+          target: ./packages/contracts
