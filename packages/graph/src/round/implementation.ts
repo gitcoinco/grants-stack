@@ -207,4 +207,6 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
 
     if (isProjectUpdated) project.save();
   }
+
+  round.save();
 }
