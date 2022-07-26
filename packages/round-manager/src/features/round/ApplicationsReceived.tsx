@@ -46,6 +46,10 @@ export default function ApplicationsReceived() {
   text-ellipsis
   `
 
+  const ProjectCardDescription = tw.p`
+  text-ellipsis
+  `
+
   return (
     <ProjectCardsContainer>
       { isSuccess && data?.map((application, index) => (
@@ -55,7 +59,7 @@ export default function ApplicationsReceived() {
             <Link to={ `/round/${ id }/application/${ application.id }` }>
               <ProjectCardTitle>{ application.project.title }</ProjectCardTitle>
             </Link>
-            <p>{ application.project.description }</p>
+            <ProjectCardDescription>{ application.project.description }</ProjectCardDescription>
           </ProjectCardContent>
         </ProjectCard>
       )) }
