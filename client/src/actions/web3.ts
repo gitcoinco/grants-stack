@@ -133,6 +133,9 @@ export const initializeWeb3 = (requestAccess = true) => {
 
           // FIXME: fix dispatch<any>
           window.ethereum.on("chainChanged", () => window.location.reload());
+          window.ethereum.on("accountsChanged", () => {
+            window.location.reload();
+          });
           dispatch<any>(loadWeb3Data());
         })
         .catch((err: string) => {
