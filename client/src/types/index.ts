@@ -78,7 +78,7 @@ export interface JWK {
 
 export interface RoundApplicationMetadata {
   lastUpdatedOn: number;
-  publicKey: JWK,
+  publicKey: JWK;
   applicationSchema: RoundApplicationQuestion[];
   projectQuestionId?: number;
   recipientQuestionId?: number;
@@ -121,5 +121,5 @@ export interface RoundApplication {
     questionId: Number;
     question: string;
     answer: string;
-  }>
+  }>;
 }
