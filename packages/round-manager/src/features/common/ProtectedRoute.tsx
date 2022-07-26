@@ -3,7 +3,9 @@ import { Outlet, useOutletContext } from 'react-router-dom'
 import { useGetWeb3Query } from "../api/services/web3"
 import { Web3Instance } from "../api/types"
 import { Spinner } from "../common/Spinner";
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo.svg"
+import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg"
+import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg"
+
 
 
 /**
@@ -23,25 +25,25 @@ export default function ProtectedRoute() {
       <main>
         {isLoading
           ? <Spinner text="Connecting Wallet" />
-          : <div className="bg-grey-500 h-screen">
+          :
+          <div className="h-screen">
             <div className="flex left-0 h-full fixed bg-white z-10">
-              <div>
-                <GitcoinLogo className="ml-20 mt-3.5 absolute" />
-              </div>
               <div className="m-auto ml-20">
-                <h1>Round Manager</h1>
+                <LandingLogo className="block w-auto mb-6"></LandingLogo>
+                <h1 className='mb-6'>Round Manager</h1>
                 <p className="text-2xl my-2 text-grey-400">
                   As a round operator you can manage high-impact<br />
                   grant programs and distribute funds across different<br />
                   rounds and voting mechanisms.
                 </p>
-                <button type="button" className="bg-grey-500 mt-8 py-4 px-8 rounded text-white" onClick={connectHandler}>
+                <button type="button" className="bg-violet-400 mt-8 py-4 px-8 rounded text-white" onClick={connectHandler}>
                   Connect Wallet
                 </button>
               </div>
             </div>
-            <div className="left-0 w-[55%] h-full fixed overflow-x-hidden skew-x-[-10deg] bg-white"></div>
-            <div className="right-0 w-1/2 h-full fixed overflow-x-hidden"></div>
+            <div className="right-0 w-1/2 h-full fixed overflow-x">
+              <LandingBanner className="w-auto right-0 absolute align-middle"></LandingBanner>
+            </div>
           </div>
         }
       </main>
