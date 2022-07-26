@@ -13,7 +13,6 @@ export interface NewGrant {
 
 export const enum Status {
   Undefined = 0,
-  UploadingImage,
   UploadingImages,
   UploadingJSON,
   WaitingForSignature,

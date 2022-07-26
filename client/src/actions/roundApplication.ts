@@ -90,8 +90,8 @@ export const submitApplication =
       title: projectMetadata.title,
       description: projectMetadata.description,
       website: projectMetadata.website,
-      bannerImg: projectMetadata.projectImg,
-      logoImg: projectMetadata.projectImg!,
+      bannerImg: projectMetadata.bannerImg!,
+      logoImg: projectMetadata.logoImg!,
       metaPtr: {
         protocol: String(projectMetadata.protocol),
         pointer: projectMetadata.pointer,
