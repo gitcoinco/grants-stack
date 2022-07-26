@@ -1,5 +1,5 @@
-import { IPFSObject } from "./types"
 import { ethers } from "ethers"
+import { IPFSObject, MetadataPointer } from "./types"
 
 
 /**
@@ -92,6 +92,26 @@ export const fetchFromIPFS = (cid: string) => {
 
     return Promise.reject(resp)
   })
+}
+
+
+/**
+ * Check status of a grant application
+ * 
+ * @param id - the application id
+ * @param projectsMetaPtr - the pointer to a decentralized storage
+ */
+export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer) => {
+  let reviewedApplications: any = []
+
+  // read data from ipfs
+  if (projectsMetaPtr) {
+    reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
+  }
+
+  const obj = reviewedApplications.find((o: any) => o.id === id)
+
+  return obj ? obj.status : "PENDING"
 }
 
 
