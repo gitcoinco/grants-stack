@@ -1,19 +1,66 @@
 import { IPFSObject } from "./types"
+import { ethers } from "ethers"
 
 
 /**
+ * Fetch chain id from web3
+ *
+ * @returns { chainId, name }
+ */
+ export const getWeb3Instance = async () => {
+
+  if (!window.ethereum) {
+    return { error: "not a web3 browser" }
+  }
+
+  // Instantiate ethers.js provider and signer
+  const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+
+  // Fetch network details
+  const { chainId, name } = await web3Provider!.getNetwork()
+  return {chainId, name}
+}
+
+
+const getGraphQLEndpoint = async () => {
+  // fetch chain id
+  const chainId = (await getWeb3Instance())?.chainId
+
+  let endpoint
+
+  switch (chainId) {
+    case 10: {
+      // optimism network
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`
+      break
+    }
+    case 69: {
+      // optimism-kovan network
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`
+      break
+    }
+    default: {
+      // goerli network
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`
+    }
+  }
+
+  return endpoint;
+}
+
+/**
  * Fetch data from a GraphQL endpoint
- * 
- * @param endpoint - The GraphQL endpoint
+ *
  * @param query - The query to be executed
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
- export const graphql_fetch = (
+ export const graphql_fetch = async (
    query: string,
    variables: object = {},
-   endpoint: string = `${process.env.REACT_APP_SUBGRAPH_API}`
 ) => {
+
+  const endpoint = await getGraphQLEndpoint();
 
   return fetch(endpoint, {
     method: "POST",
@@ -34,7 +81,7 @@ import { IPFSObject } from "./types"
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
- * 
+ *
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
@@ -51,7 +98,7 @@ export const fetchFromIPFS = (cid: string) => {
 /**
  * Pin data to IPFS
  * The data could either be a file or a JSON object
- * 
+ *
  * @param obj - the data to be pinned on IPFS
  * @returns the unique content identifier that points to the data
  */
@@ -116,7 +163,7 @@ const camelToTitle = (camelCase: string) => camelCase
 
 /**
  * This function generates the round application schema to be stored in a decentralized storage
- * 
+ *
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */

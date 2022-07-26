@@ -3,7 +3,7 @@ import { ethers } from "ethers"
 import { api } from ".."
 import { roundFactoryContract } from "../contracts"
 import { Round } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
+import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
 import { global } from "../../../global"
 
 
@@ -15,9 +15,14 @@ export const roundApi = api.injectEndpoints({
     createRound: builder.mutation<string, Round>({
       queryFn: async (round) => {
         try {
+          // fetch chain id
+          const chainId = (await getWeb3Instance())?.chainId
+
+          // load round factory contract
+          const _roundFactoryContract = roundFactoryContract(chainId);
           const roundFactory = new ethers.Contract(
-            roundFactoryContract.address!,
-            roundFactoryContract.abi,
+            _roundFactoryContract.address!,
+            _roundFactoryContract.abi,
             global.web3Signer
           )
 
