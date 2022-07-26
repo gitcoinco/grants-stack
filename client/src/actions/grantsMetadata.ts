@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { RootState } from "../reducers";
-import { Metadata } from "../types";
+import { Metadata, ProjectRegistryMetadata } from "../types";
 import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
@@ -26,10 +26,18 @@ export interface GrantMetadataFetched {
   data: Metadata;
 }
 
+export const GRANT_METADATA_FETCHING_ERROR = "GRANT_METADATA_FETCHING_ERROR";
+interface GrantMetadataFetchingError {
+  type: typeof GRANT_METADATA_FETCHING_ERROR;
+  id: number;
+  error: string;
+}
+
 export type GrantMetadataActions =
   | GrantMetadataLoadingURI
   | GrantMetadataLoading
-  | GrantMetadataFetched;
+  | GrantMetadataFetched
+  | GrantMetadataFetchingError;
 
 export const grantMetadataLoadingURI = (id: number): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING_URI,
@@ -46,6 +54,91 @@ export const grantMetadataFetched = (data: Metadata): GrantMetadataActions => ({
   data,
 });
 
+export const grantMetadataFetchingError = (
+  id: number,
+  error: string
+): GrantMetadataActions => ({
+  type: GRANT_METADATA_FETCHING_ERROR,
+  id,
+  error,
+});
+
+const getProjectById = async (
+  projectId: number,
+  addresses: any,
+  signer: ethers.providers.JsonRpcSigner
+) => {
+  const projectRegistry = new ethers.Contract(
+    addresses.projectRegistry,
+    ProjectRegistryABI,
+    signer
+  );
+
+  const project: ProjectRegistryMetadata = await projectRegistry.projects(
+    projectId
+  );
+
+  return project;
+};
+
+const getMetadata = async (
+  projectId: number,
+  project: any,
+  cacheKey: string
+) => {
+  const storage = new LocalStorage();
+  if (storage.supported) {
+    const item = storage.get(cacheKey);
+    if (item !== null) {
+      try {
+        const metadata = JSON.parse(item);
+
+        const ret = {
+          ...metadata,
+          protocol: project.metadata.protocol,
+          pointer: project.metadata.pointer,
+          projectId,
+        };
+        storage.add(cacheKey, JSON.stringify(ret));
+        return ret;
+      } catch (e) {
+        // FIXME: dispatch error
+        console.log("error parsing cached project metadata", e);
+      }
+    }
+  }
+
+  // if not cached in localstorage
+  let content;
+  try {
+    // FIXME: fetch from pinata gateway
+    const pinataClient = new PinataClient();
+    content = await pinataClient.fetchText(project.metadata.pointer);
+  } catch (e) {
+    // FIXME: dispatch "ipfs error"
+    console.error(e);
+    return null;
+  }
+
+  let metadata: Metadata;
+  try {
+    metadata = JSON.parse(content);
+  } catch (e) {
+    // FIXME: dispatch JSON error
+    console.error(e);
+    return null;
+  }
+
+  const ret = {
+    ...metadata,
+    protocol: project.metadata.protocol,
+    pointer: project.metadata.pointer,
+    projectId,
+  };
+  storage.add(cacheKey, JSON.stringify(ret));
+  return ret;
+};
+
 export const fetchGrantData =
   (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantMetadataLoadingURI(id));
@@ -54,89 +147,26 @@ export const fetchGrantData =
     const addresses = addressesByChainID(chainID!);
     const signer = global.web3Provider?.getSigner();
 
-    const projectRegistry = new ethers.Contract(
-      addresses.projectRegistry,
-      ProjectRegistryABI,
-      signer
-    );
-
-    let project: {
-      metadata: {
-        protocol: number;
-        pointer: string;
-      };
-    };
+    let project: ProjectRegistryMetadata;
 
     try {
-      project = await projectRegistry.projects(id);
+      project = await getProjectById(id, addresses, signer!);
     } catch (e) {
-      // FIXME: dispatch contract interaction error
       console.error(e);
+      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
       return;
     }
 
-    // FIXME: the contract will always return a project,
-    // check one field to know if it exists.
-    if (project === null) {
-      // FIXME: dispatch "not found"
+    if (!project.metadata.protocol) {
       console.error("project not found");
+      dispatch(grantMetadataFetchingError(id, "project not found"));
       return;
     }
 
     dispatch(grantMetadataLoading(id));
 
     const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-    const storage = new LocalStorage();
-    if (storage.supported) {
-      const item = storage.get(cacheKey);
-      if (item !== null) {
-        try {
-          const metadata = JSON.parse(item);
-          dispatch(
-            grantMetadataFetched({
-              ...metadata,
-              protocol: project.metadata.protocol,
-              pointer: project.metadata.pointer,
-              id,
-            })
-          );
-
-          return;
-        } catch (e) {
-          // FIXME: dispatch error
-          console.log("error parsing cached project metadata", e);
-        }
-      }
-    }
-
-    // if not cached in localstorage
-    let content;
-    try {
-      // FIXME: fetch from pinata gateway
-      const pinataClient = new PinataClient();
-      content = await pinataClient.fetchText(project.metadata.pointer);
-    } catch (e) {
-      // FIXME: dispatch "ipfs error"
-      console.error(e);
-      return;
-    }
-
-    let metadata: Metadata;
-    try {
-      metadata = JSON.parse(content);
-    } catch (e) {
-      // FIXME: dispatch JSON error
-      console.error(e);
-      return;
-    }
-
-    const item = {
-      ...metadata,
-      protocol: project.metadata.protocol,
-      pointer: project.metadata.pointer,
-      id,
-    };
+    const item = await getMetadata(id, project, cacheKey);
 
     dispatch(grantMetadataFetched(item));
-    storage.add(cacheKey, JSON.stringify(item));
   };

@@ -16,6 +16,13 @@ export interface Metadata {
   logoImg?: string;
 }
 
+export type ProjectRegistryMetadata = {
+  metadata: {
+    protocol: number;
+    pointer: string;
+  };
+};
+
 export type ChangeHandlers =
   | React.ChangeEvent<HTMLInputElement>
   | React.ChangeEvent<HTMLTextAreaElement>

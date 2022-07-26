@@ -3,13 +3,17 @@ import {
   GRANT_METADATA_LOADING_URI,
   GRANT_METADATA_LOADING,
   GRANT_METADATA_FETCHED,
+  GRANT_METADATA_FETCHING_ERROR,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
+import { Status } from "./newGrant";
 
 export interface GrantsMetadataState {
   [id: number]: {
     loading: boolean;
     metadata: Metadata | undefined;
+    status: Status;
+    error: string | undefined;
   };
 }
 
@@ -48,6 +52,18 @@ export const grantsMetadataReducer = (
           ...state[action.data.id],
           loading: false,
           metadata: action.data,
+        },
+      };
+    }
+
+    case GRANT_METADATA_FETCHING_ERROR: {
+      return {
+        ...state,
+        [action.id]: {
+          loading: false,
+          metadata: undefined,
+          status: Status.Error,
+          error: action.error,
         },
       };
     }
