@@ -24,7 +24,7 @@ function reducer(ui, {
     )
   }
 
-  return rtlRender(ui,{wrapper: Wrapper, ...renderOptions})
+  return rtlRender(ui ,{ wrapper: Wrapper, ...renderOptions })
 }
 
 export * from "@testing-library/react"
