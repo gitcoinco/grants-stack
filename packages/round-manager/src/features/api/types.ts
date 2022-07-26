@@ -175,4 +175,5 @@ export interface GrantApplication {
    * e.g IPFS, Ceramic etc.
    */
    projectsMetaPtr: MetadataPointer;
+   status?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
 }

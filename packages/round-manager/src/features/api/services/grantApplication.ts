@@ -2,7 +2,7 @@ import { ethers } from "ethers"
 import { api } from ".."
 import { roundImplementationContract } from "../contracts"
 import { GrantApplication, MetadataPointer } from "../types"
-import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 import { global } from "../../../global"
 
 
@@ -52,10 +52,17 @@ export const grantApplicationApi = api.injectEndpoints({
 
           for (const project of res.data.roundProjects) {
             const metadata = await fetchFromIPFS(project.metaPtr.pointer)
+
+            let status
+            if (id) {
+              status = await checkGrantApplicationStatus(project.id, project.round.projectsMetaPtr)
+            }
+
             grantApplications.push({
               ...metadata,
+              status,
               id: project.id,
-              projectsMetaPtr: project.round.projectsMetaPtr
+              projectsMetaPtr: project.round.projectsMetaPtr,
             })
           }
 
