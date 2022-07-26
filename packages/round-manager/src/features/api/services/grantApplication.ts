@@ -1,8 +1,8 @@
 import { ethers } from "ethers"
 import { api } from ".."
-import { roundFactoryContract } from "../contracts"
+import { roundImplementationContract } from "../contracts"
 import { GrantApplication, MetadataPointer } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
+import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 import { global } from "../../../global"
 
 
@@ -65,61 +65,69 @@ export const grantApplicationApi = api.injectEndpoints({
           console.log("error", err)
           return { error: "Unable to fetch grant applications" }
         }
-      }
+      },
+      providesTags: ["GrantApplication"]
     }),
     updateGrantApplication: builder.mutation<
       string,
       {
         id: string,
+        roundId: string,
         status: "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD",
         projectsMetaPtr: MetadataPointer,
         payoutAddress: string
       }
     >({
-      queryFn: async ({ id, status, projectsMetaPtr, payoutAddress }) => {
+      queryFn: async ({ id, roundId, status, projectsMetaPtr, payoutAddress }) => {
         try {
-          // read data from ipfs
-          const reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
+          let reviewedApplications: any = []
+          let foundEntry = false
 
-          // if grant application is already reviewed overwrite the information
-          const obj = reviewedApplications.find((o: any, i: any) => {
-            if (o.id === id) {
-              reviewedApplications[i] = { id, status, payoutAddress }
-              return true // stop searching
-            }
-            return false
-          })
+          // read data from ipfs
+          if (projectsMetaPtr) {
+            reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
+
+            // if grant application is already reviewed overwrite the entry
+            foundEntry = reviewedApplications.find((o: any, i: any) => {
+              if (o.id === id) {
+                reviewedApplications[i] = { id, status, payoutAddress }
+                return true // stop searching
+              }
+              return false
+            })
+          }
 
           // create a new reviewed application entry
-          if (!obj) {
+          if (!foundEntry || !projectsMetaPtr) {
             reviewedApplications.push({ id, status, payoutAddress })
           }
 
-          const roundFactory = new ethers.Contract(
-            roundFactoryContract.address!,
-            roundFactoryContract.abi,
+          // pin new list IPFS
+          const resp = await pinToIPFS({
+            content: reviewedApplications,
+            metadata: {
+              name: "reviewed-applications"
+            }
+          })
+          console.log("✅  Saved data to IPFS:", resp.IpfsHash)
+
+          // update projects meta pointer in round implementation contract
+          projectsMetaPtr = {
+            protocol: 1,
+            pointer: resp.IpfsHash
+          }
+
+          const roundImplementation = new ethers.Contract(
+            roundId,
+            roundImplementationContract.abi,
             global.web3Signer
           )
 
-          // update projects meta pointer in round implementation contract
-          let tx = await roundFactory.updateProjectsMetaPtr(projectsMetaPtr)
+          let tx = await roundImplementation.updateProjectsMetaPtr(projectsMetaPtr)
 
-          const receipt = await tx.wait() // wait for transaction receipt
-
-          // read projects updated event
-          let newProjectsMetaPtr
-
-          if (receipt.events) {
-            const event = receipt.events.find(
-              (e: { event: string }) => e.event === "ProjectsMetaPtrUpdated"
-            )
-            if (event && event.args) {
-              newProjectsMetaPtr = event.args.newMetaPtr
-            }
-          }
+          await tx.wait() // wait for transaction receipt
 
           console.log("✅ Transaction hash: ", tx.hash)
-          console.log("✅ New projects meta pointer: ", newProjectsMetaPtr)
 
           return { data: tx.hash }
 
@@ -128,7 +136,7 @@ export const grantApplicationApi = api.injectEndpoints({
           return { error: "Unable to update grant application" }
         }
       },
-      invalidatesTags: ["GrantApplication"]
+      invalidatesTags: ["GrantApplication", "Round"]
     }),
   }),
   overrideExisting: false

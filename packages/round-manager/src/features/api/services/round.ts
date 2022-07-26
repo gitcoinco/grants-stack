@@ -102,6 +102,7 @@ export const roundApi = api.injectEndpoints({
           return { error: "Unable to update round" }
         }
       },
+      invalidatesTags: ["Round"]
     }),
     listRounds: builder.query<Round[], { account: string, programId?: string }>({
       queryFn: async ({ account, programId }) => {
@@ -175,6 +176,7 @@ export const roundApi = api.injectEndpoints({
           return { error: "Unable to fetch rounds" }
         }
       },
+      providesTags: ["Round"]
     })
   }),
   overrideExisting: false
