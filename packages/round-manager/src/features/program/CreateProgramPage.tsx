@@ -12,7 +12,7 @@ import Navbar from "../common/Navbar"
 
 type FormData = {
   name: string;
-  operators: [{ wallet: string }];
+  operators: { wallet: string }[];
 }
 
 export default function CreateProgram() {
@@ -34,7 +34,7 @@ export default function CreateProgram() {
   const navigate = useNavigate()
   const { register, control, formState, handleSubmit } = useForm<FormData>({
     defaultValues: {
-      operators: [{ wallet: account}]
+      operators: [{ wallet: account }]
     }
   })
   const { fields, append, remove } = useFieldArray({
@@ -78,74 +78,72 @@ export default function CreateProgram() {
 
   return (
     <>
-    <Navbar />
-    <div className="container mx-auto h-screen px-4 py-16">
-      <header>
-        <div className="flow-root">
-          <h1 className="float-left text-[32px] mb-7">Create Grant Program</h1>
-          <Button
-            type="button"
-            $variant="outline"
-            className="inline-flex float-right py-2 px-4 text-sm text-grey-400"
-            onClick={() => navigate('/')}>
+      <Navbar />
+      <div className="container mx-auto h-screen px-4 py-16">
+        <header>
+          <div className="flow-root">
+            <h1 className="float-left text-[32px] mb-7">Create Grant Program</h1>
+            <Button
+              type="button"
+              $variant="outline"
+              className="inline-flex float-right py-2 px-4 text-sm text-grey-400"
+              onClick={() => navigate('/')}>
               <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
               Exit
-          </Button>
-        </div>
-      </header>
-
-      <main className="grid md:grid-cols-3 gap-4">
-        <div>
-          <p className="text-base leading-6"><b>Details</b></p>
-          <p className="mt-1 text-base text-gray-500">
-            Provide the name of the program as well as the round operators' wallet addresses.
-          </p>
-
-          <div className="mt-5">
-            {/* Display relevant status updates */}
-            {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
-            {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
-            {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-            {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
-            {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
+            </Button>
           </div>
+        </header>
 
-        </div>
+        <main className="grid md:grid-cols-3 gap-4">
+          <div>
+            <p className="text-base leading-6"><b>Details</b></p>
+            <p className="mt-1 text-base text-gray-500">
+              Provide the name of the program as well as the round operators' wallet addresses.
+            </p>
 
-        <div className="col-span-2">
-
-          <form
-            className="grid grid-cols-1 gap-4 sm:items-start sm:border sm:border-gray-200 py-5 sm:px-10"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-
-            <div className="sm:flex sm:flex-rows">
-              <div className="sm:basis-2/3">
-                <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
-                <Input
-                  {...register("name", { required: true })}
-                  $hasError={errors.name}
-                  type="text"
-                  disabled={isLoading}
-                  placeholder="Program name"
-                />
-                {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
-              </div>
+            <div className="mt-5">
+              {/* Display relevant status updates */}
+              {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
+              {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
+              {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
+              {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
+              {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
             </div>
 
+          </div>
 
-            <div>
-              <label htmlFor="operators" className="block text-xs font-medium text-gray-700">
-                Additional Operator Wallets
-              </label>
+          <div className="col-span-2">
 
-              <ul>
-                {fields.map((item, index) => {
-                  return (
+            <form
+              className="grid grid-cols-1 gap-4 sm:items-start sm:border sm:border-gray-200 py-5 sm:px-10"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+
+              <div className="sm:flex sm:flex-rows">
+                <div className="sm:basis-2/3">
+                  <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
+                  <Input
+                    {...register("name", { required: true })}
+                    $hasError={errors.name}
+                    type="text"
+                    disabled={isLoading}
+                    placeholder="Program name"
+                  />
+                  {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
+                </div>
+              </div>
+
+
+              <div>
+                <label htmlFor="operators" className="block text-xs font-medium text-gray-700">
+                  Additional Operator Wallets
+                </label>
+
+                <ul>
+                  {fields.map((item, index) => (
                     <li key={item.id} className="flex flex-rows">
                       <Input
-                        {...register(`operators.0.wallet`)}
-                        // {...register(`operators.${index}.wallet`)}
+                        {...register(`operators.${index}.wallet`)}
                         type="text"
                         disabled={isLoading}
                         className="basis:3/4 md:basis-2/3"
@@ -163,38 +161,37 @@ export default function CreateProgram() {
                         </Button>
                       </div>
                     </li>
-                  );
-                })}
-              </ul>
+                  ))}
+                </ul>
 
-              <p className="mt-2 mb-6 text-sm text-gray-500">
-                You can't edit operator wallets after the grant is deployed.
-              </p>
+                <p className="mt-2 mb-6 text-sm text-gray-500">
+                  You can't edit operator wallets after the grant is deployed.
+                </p>
 
-              <Button
-                type="button"
-                $variant="outline"
-                className="inline-flex items-center px-4 py-1.5 border border-grey-100 shadow-sm text-xs font-medium rounded text-grey-500 bg-white"
-                onClick={() => {
-                  append({ wallet: "" });
-                }}
-              >
-                <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                Add Operator
-              </Button>
+                <Button
+                  type="button"
+                  $variant="outline"
+                  className="inline-flex items-center px-4 py-1.5 border border-grey-100 shadow-sm text-xs font-medium rounded text-grey-500 bg-white"
+                  onClick={() => {
+                    append({ wallet: "" });
+                  }}
+                >
+                  <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                  Add Operator
+                </Button>
 
-            </div>
+              </div>
 
-            <div>
-              <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
-                {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
-              </Button>
-            </div>
-          </form>
-        </div>
+              <div>
+                <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
+                  {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </form>
+          </div>
 
-      </main>
-    </div>
+        </main>
+      </div>
     </>
   )
 }
