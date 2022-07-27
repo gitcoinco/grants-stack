@@ -22,7 +22,7 @@ export default function ViewApplicationPage() {
   const { roundId, id } = useParams()
   const { account } = useWeb3()
 
-  const { application, refetch, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, id }, {
+  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, id }, {
     selectFromResult: ({ data, isLoading }) => ({
       application: data?.find((application) => application.id === id),
       isLoading
@@ -39,7 +39,6 @@ export default function ViewApplicationPage() {
     isLoading: updating,
   }] = useUpdateGrantApplicationMutation()
 
-
   const handleUpdateGrantApplication = async () => {
     try {
       setOpenModal(false)
@@ -51,8 +50,6 @@ export default function ViewApplicationPage() {
         payoutAddress: application!.recipient,
         projectsMetaPtr: application!.projectsMetaPtr
       }).unwrap()
-
-      refetch()
 
     } catch (e) {
       console.error(e)
