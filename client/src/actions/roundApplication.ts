@@ -98,11 +98,21 @@ export const submitApplication =
       },
     };
 
+    // FIXME: this is temporarily until the round manager adds the encrypted field
+    roundApplicationMetadata.applicationSchema.forEach((question) => {
+      console.log(question.question);
+      if (/email/i.test(question.question.toLowerCase())) {
+        // eslint-disable-next-line
+        question.encrypted = true;
+      }
+    });
+
     const builder = new RoundApplicationBuilder(
+      true,
       project,
       roundApplicationMetadata
     );
-    const application = builder.build(roundAddress, formInputs);
+    const application = await builder.build(roundAddress, formInputs);
 
     const pinataClient = new PinataClient();
 
