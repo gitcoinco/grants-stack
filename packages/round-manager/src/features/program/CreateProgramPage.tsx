@@ -12,7 +12,7 @@ import Navbar from "../common/Navbar"
 
 type FormData = {
   name: string;
-  operators: [{ wallet: string }];
+  operators: { wallet: string }[];
 }
 
 export default function CreateProgram() {
@@ -143,7 +143,7 @@ export default function CreateProgram() {
                   {fields.map((item, index) => (
                     <li key={item.id} className="flex flex-rows">
                       <Input
-                        {...register(`operators.${index}.wallet` as "operators.0.wallet")}
+                        {...register(`operators.${index}.wallet`)}
                         type="text"
                         disabled={isLoading}
                         className="basis:3/4 md:basis-2/3"
