@@ -73,7 +73,9 @@ export default function Form({
   const handleSubmitApplication = async () => {
     setSubmitted(true);
     await validate();
-    dispatch(submitApplication(round.address, formInputs));
+    if (formValidation.valid) {
+      dispatch(submitApplication(round.address, formInputs));
+    }
   };
 
   // perform validation after the fields state is updated
