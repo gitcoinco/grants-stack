@@ -8,7 +8,7 @@ import {
 import { Round } from "../types";
 
 export const enum Status {
-  Empty = 0,
+  Undefined = 0,
   LoadingApplicationsStartTime,
   LoadingApplicationsEndTime,
   LoadingRoundStartTime,
@@ -33,7 +33,7 @@ export interface RoundsState {
 const initialState: RoundsState = {};
 
 const roundInitialState = {
-  status: Status.Empty,
+  status: Status.Undefined,
   error: undefined,
   round: undefined,
 };

@@ -9,13 +9,14 @@ import Button, { ButtonVariants } from "../base/Button";
 import Card from "./Card";
 import colors from "../../styles/colors";
 import { ProjectEvent } from "../../types";
+import { Status } from "../../reducers/projects";
 
 function ProjectsList() {
   const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
-      loading: state.projects.loading,
-      grants: state.projects.projects,
+      loading: state.projects.status === Status.Loading,
+      projects: state.projects.projects,
       chainID: state.web3.chainID,
     }),
     shallowEqual
@@ -38,9 +39,9 @@ function ProjectsList() {
             </p>
           </div>
           <div className="grow">
-            {props.grants.length ? (
+            {props.projects.length ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {props.grants.map((event: ProjectEvent) => (
+                {props.projects.map((event: ProjectEvent) => (
                   <Card projectId={event.id} key={event.id} />
                 ))}
               </div>

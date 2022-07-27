@@ -6,13 +6,22 @@ import {
 } from "../actions/projects";
 import { ProjectEvent } from "../types";
 
+export const enum Status {
+  Undefined = 0,
+  Loading,
+  Loaded,
+  Error,
+}
+
 export interface ProjectsState {
-  loading: boolean;
   projects: ProjectEvent[];
+  status: Status;
+  error: string | undefined;
 }
 
 const initialState = {
-  loading: false,
+  status: Status.Undefined,
+  error: undefined,
   projects: [],
 };
 
@@ -24,7 +33,7 @@ export const projectsReducer = (
     case PROJECTS_LOADING: {
       return {
         ...state,
-        loading: true,
+        status: Status.Loading,
         projects: [],
       };
     }
@@ -34,7 +43,7 @@ export const projectsReducer = (
 
       return {
         ...state,
-        loading: false,
+        status: Status.Loaded,
         projects,
       };
     }
@@ -42,7 +51,7 @@ export const projectsReducer = (
     case PROJECTS_UNLOADED: {
       return {
         ...state,
-        loading: false,
+        status: Status.Undefined,
         projects: [],
       };
     }
