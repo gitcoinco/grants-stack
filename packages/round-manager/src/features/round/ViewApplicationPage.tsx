@@ -1,6 +1,6 @@
 import { ArrowNarrowLeftIcon, CheckIcon, XIcon } from "@heroicons/react/solid"
 import { useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {
   useListGrantApplicationsQuery,
   useUpdateGrantApplicationMutation
@@ -21,6 +21,7 @@ export default function ViewApplicationPage() {
 
   const { roundId, id } = useParams()
   const { account } = useWeb3()
+  const navigate = useNavigate()
 
   const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, id }, {
     selectFromResult: ({ data, isLoading }) => ({
@@ -50,6 +51,8 @@ export default function ViewApplicationPage() {
         payoutAddress: application!.recipient,
         projectsMetaPtr: application!.projectsMetaPtr
       }).unwrap()
+
+      navigate(0)
 
     } catch (e) {
       console.error(e)
@@ -83,23 +86,23 @@ export default function ViewApplicationPage() {
             <div className="mt-3 flex sm:mt-0 sm:ml-4">
               <Button
                 type="button"
-                $variant={reviewDecision === "APPROVED" || application?.status === "APPROVED" ? "solid" : "outline"}
+                $variant={application?.status === "APPROVED" ? "solid" : "outline"}
                 className="inline-flex float-right py-2 px-4 text-sm"
                 disabled={isLoading || updating}
                 onClick={() => confirmReviewDecision("APPROVED")}
               >
                 <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {reviewDecision === "APPROVED" || application?.status === "APPROVED" ? "Approved" : "Approve"}
+                {application?.status === "APPROVED" ? "Approved" : "Approve"}
               </Button>
               <Button
                 type="button"
-                $variant={reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "solid" : "outline"}
-                className={"inline-flex ml-3 py-2 px-4 text-sm" + (reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "" : "text-grey-500")}
+                $variant={application?.status === "REJECTED" ? "solid" : "outline"}
+                className={"inline-flex ml-3 py-2 px-4 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500")}
                 disabled={isLoading || updating}
                 onClick={() => confirmReviewDecision("REJECTED")}
               >
                 <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "Rejected" : "Reject"}
+                {application?.status === "REJECTED" ? "Rejected" : "Reject"}
               </Button>
             </div>
           </div>
