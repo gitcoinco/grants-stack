@@ -17,7 +17,7 @@ const validateDimensions = (
   const { naturalHeight, naturalWidth } = image;
 
   return (
-    naturalHeight !== dimensions.height && naturalWidth !== dimensions.width
+    naturalHeight === dimensions.height && naturalWidth === dimensions.width
   );
 };
 
@@ -38,7 +38,7 @@ export default function ImageInput({
   imgHandler: (file: Blob) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
-  const [tempImg, setTempImg] = useState("");
+  const [tempImg, setTempImg] = useState<string | undefined>();
   const [validation, setValidation] = useState({
     error: false,
     msg: "",
@@ -77,6 +77,11 @@ export default function ImageInput({
         return;
       }
       const file = files[0];
+      // remove validation message
+      setValidation({
+        error: false,
+        msg: "",
+      });
       // ensure image is < 2mb
       if (file.size > 2000000) {
         setValidation({
@@ -85,35 +90,30 @@ export default function ImageInput({
         });
         return;
       }
-      // remove validation message
-      setValidation({
-        error: false,
-        msg: "",
-      });
-
-      const img: HTMLImageElement = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-
-      setTempImg(URL.createObjectURL(file));
 
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const res = reader.result;
-        if (validateDimensions(img, dimensions)) {
-          setValidation({
-            error: true,
-            msg: `Image must be ${dimensions.width}px x ${dimensions.height}px`,
-          });
-          setTempImg("");
-          return;
-        }
-
-        if (res) {
-          imgHandler(file);
-        }
+      reader.onload = () => {
+        const img: HTMLImageElement = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+          if (!validateDimensions(img, dimensions)) {
+            setValidation({
+              error: true,
+              msg: `Image must be ${dimensions.width}px x ${dimensions.height}px`,
+            });
+            setTempImg(undefined);
+          } else {
+            setValidation({
+              error: false,
+              msg: "",
+            });
+            imgHandler(file);
+            setTempImg(URL.createObjectURL(file));
+          }
+        };
       };
 
-      reader.readAsArrayBuffer(file);
+      reader.readAsDataURL(file);
     }
   };
 

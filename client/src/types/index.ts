@@ -27,6 +27,13 @@ export interface Project {
   metaPtr: MetaPtr;
 }
 
+export type ProjectRegistryMetadata = {
+  metadata: {
+    protocol: number;
+    pointer: string;
+  };
+};
+
 export type ChangeHandlers =
   | React.ChangeEvent<HTMLInputElement>
   | React.ChangeEvent<HTMLTextAreaElement>
