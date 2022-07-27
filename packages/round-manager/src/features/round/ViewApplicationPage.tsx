@@ -83,23 +83,23 @@ export default function ViewApplicationPage() {
             <div className="mt-3 flex sm:mt-0 sm:ml-4">
               <Button
                 type="button"
-                $variant={application?.status === "APPROVED" ? "solid" : "outline"}
+                $variant={reviewDecision === "APPROVED" || application?.status === "APPROVED" ? "solid" : "outline"}
                 className="inline-flex float-right py-2 px-4 text-sm"
                 disabled={isLoading || updating}
                 onClick={() => confirmReviewDecision("APPROVED")}
               >
                 <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {application?.status === "APPROVED" ? "Approved" : "Approve"}
+                {reviewDecision === "APPROVED" || application?.status === "APPROVED" ? "Approved" : "Approve"}
               </Button>
               <Button
                 type="button"
-                $variant={application?.status === "REJECTED" ? "solid" : "outline"}
-                className={"inline-flex ml-3 py-2 px-4 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500")}
+                $variant={reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "solid" : "outline"}
+                className={"inline-flex ml-3 py-2 px-4 text-sm" + (reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "" : "text-grey-500")}
                 disabled={isLoading || updating}
                 onClick={() => confirmReviewDecision("REJECTED")}
               >
                 <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {application?.status === "REJECTED" ? "Rejected" : "Reject"}
+                {reviewDecision === "REJECTED" || application?.status === "REJECTED" ? "Rejected" : "Reject"}
               </Button>
             </div>
           </div>
