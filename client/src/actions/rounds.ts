@@ -20,7 +20,7 @@ const projectQuestion = {
 
 const recipientAddressQuestion = {
   question: "Recipient Address",
-  type: "RECIPIENT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  type: "RECIPIENT",
   required: true,
   info: "Address that will receive funds",
 };

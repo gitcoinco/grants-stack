@@ -117,8 +117,6 @@ export const submitApplication =
       pointer: resp.IpfsHash,
     };
 
-    console.log("metaPtr", metaPtr);
-
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
