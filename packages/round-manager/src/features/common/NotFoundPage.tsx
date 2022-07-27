@@ -3,9 +3,28 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { Button } from "../common/styles"
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg"
+import { Lit } from "../api/lit"
 
 
 export default function NotFoundPage() {
+
+  const lit = new Lit({
+    chain: "goerli",
+    contract: "0x22c0e3EDc90f6A890A259130B416Cd5F3Ee4Aca0",
+    wallet: "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA"
+  });
+
+  lit.encryptString("Hello World").then(async res => {
+    
+    const encryptedString = res.encryptedString;
+    const encryptedSymmetricKey = res.encryptedSymmetricKey;
+
+    const x = await lit.decryptString(encryptedString, encryptedSymmetricKey);
+
+    console.log(x);
+    
+  })
+
   return (
     <>
       <Navbar />

@@ -8,9 +8,11 @@ import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
+import { Lit } from "../api/lit"
 
 
 export default function ViewProgram() {
+  
   const { id } = useParams()
   const navigate = useNavigate()
 
