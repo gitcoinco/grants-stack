@@ -169,5 +169,11 @@ export interface GrantApplication {
     questionId: Number,
     question: string,
     answer: string
-  }>
+  }>;
+  /**
+   * Pointer to the list of approved/rejected grant applications in a decentralized storage
+   * e.g IPFS, Ceramic etc.
+   */
+   projectsMetaPtr: MetadataPointer;
+   status?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
 }

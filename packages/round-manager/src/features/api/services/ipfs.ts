@@ -22,6 +22,7 @@ export const ipfsApi = api.injectEndpoints({
           return { error: "Unable to save file to IPFS" }
         }
       },
+      invalidatesTags: ["IPFS"]
     }),
     readFromIPFS: builder.query<string, string>({
       queryFn: async (cid) => {
@@ -35,6 +36,7 @@ export const ipfsApi = api.injectEndpoints({
           return { error: "Unable to fetch file from IPFS" }
         }
       },
+      providesTags: ["IPFS"]
     })
   }),
   overrideExisting: false

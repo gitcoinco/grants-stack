@@ -1,6 +1,9 @@
+import { ethers } from "ethers"
 import { api } from ".."
-import { GrantApplication } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
+import { roundImplementationContract } from "../contracts"
+import { GrantApplication, MetadataPointer } from "../types"
+import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+import { global } from "../../../global"
 
 
 /**
@@ -33,6 +36,12 @@ export const grantApplicationApi = api.injectEndpoints({
                     protocol
                     pointer
                   }
+                  round {
+                    projectsMetaPtr {
+                      protocol
+                      pointer
+                    }
+                  }
                 }
               }
             `,
@@ -43,7 +52,18 @@ export const grantApplicationApi = api.injectEndpoints({
 
           for (const project of res.data.roundProjects) {
             const metadata = await fetchFromIPFS(project.metaPtr.pointer)
-            grantApplications.push({ ...metadata, id: project.id })
+
+            let status
+            if (id) {
+              status = await checkGrantApplicationStatus(project.id, project.round.projectsMetaPtr)
+            }
+
+            grantApplications.push({
+              ...metadata,
+              status,
+              id: project.id,
+              projectsMetaPtr: project.round.projectsMetaPtr,
+            })
           }
 
           return { data: grantApplications }
@@ -52,7 +72,78 @@ export const grantApplicationApi = api.injectEndpoints({
           console.log("error", err)
           return { error: "Unable to fetch grant applications" }
         }
+      },
+      providesTags: ["GrantApplication"]
+    }),
+    updateGrantApplication: builder.mutation<
+      string,
+      {
+        id: string,
+        roundId: string,
+        status: "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD",
+        projectsMetaPtr: MetadataPointer,
+        payoutAddress: string
       }
+    >({
+      queryFn: async ({ id, roundId, status, projectsMetaPtr, payoutAddress }) => {
+        try {
+          let reviewedApplications: any = []
+          let foundEntry = false
+
+          // read data from ipfs
+          if (projectsMetaPtr) {
+            reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
+
+            // if grant application is already reviewed overwrite the entry
+            foundEntry = reviewedApplications.find((o: any, i: any) => {
+              if (o.id === id) {
+                reviewedApplications[i] = { id, status, payoutAddress }
+                return true // stop searching
+              }
+              return false
+            })
+          }
+
+          // create a new reviewed application entry
+          if (!foundEntry || !projectsMetaPtr) {
+            reviewedApplications.push({ id, status, payoutAddress })
+          }
+
+          // pin new list IPFS
+          const resp = await pinToIPFS({
+            content: reviewedApplications,
+            metadata: {
+              name: "reviewed-applications"
+            }
+          })
+          console.log("✅  Saved data to IPFS:", resp.IpfsHash)
+
+          // update projects meta pointer in round implementation contract
+          projectsMetaPtr = {
+            protocol: 1,
+            pointer: resp.IpfsHash
+          }
+
+          const roundImplementation = new ethers.Contract(
+            roundId,
+            roundImplementationContract.abi,
+            global.web3Signer
+          )
+
+          let tx = await roundImplementation.updateProjectsMetaPtr(projectsMetaPtr)
+
+          await tx.wait() // wait for transaction receipt
+
+          console.log("✅ Transaction hash: ", tx.hash)
+
+          return { data: tx.hash }
+
+        } catch (err) {
+          console.log("error", err)
+          return { error: "Unable to update grant application" }
+        }
+      },
+      invalidatesTags: ["GrantApplication", "Round"]
     }),
   }),
   overrideExisting: false
@@ -60,4 +151,5 @@ export const grantApplicationApi = api.injectEndpoints({
 
 export const {
   useListGrantApplicationsQuery,
+  useUpdateGrantApplicationMutation
 } = grantApplicationApi

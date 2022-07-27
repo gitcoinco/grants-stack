@@ -63,7 +63,7 @@ export const programApi = api.injectEndpoints({
           return { error: "Unable to create program" }
         }
       },
-      invalidatesTags: ["Program"]
+      invalidatesTags: ["Program", "IPFS"]
     }),
     updateProgram: builder.mutation<string, Program>({
       queryFn: async ({ id, ...program }) => {
@@ -77,6 +77,7 @@ export const programApi = api.injectEndpoints({
           return { error: "Unable to update program" }
         }
       },
+      invalidatesTags: ["Program"]
     }),
     listPrograms: builder.query<Program[], string>({
       queryFn: async (account) => {
@@ -127,6 +128,7 @@ export const programApi = api.injectEndpoints({
           return { error: "Unable to fetch programs" }
         }
       },
+      providesTags: ["Program", "IPFS"]
     })
   }),
   overrideExisting: false
