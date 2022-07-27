@@ -15,23 +15,26 @@ export default function ApplicationsReceived() {
   const ProjectCardsContainer = tw.div`
   flex
   flex-row
+  flex-wrap
   w-full
   `
 
   const ProjectCard = tw.div`
-  w-1/4
-  h-60
-  border-2
-  border-black
-  mx-2
+  w-80
+  h-72
+  border
+  border-gray-300
+  ml-0
+  mr-6
+  my-3
   overflow-hidden
-  rounded-sm
+  rounded-md
   `
 
   const ProjectCardHeader = tw.div`
-  bg-black
+  bg-grey-500
   w-full
-  h-1/4
+  h-1/3
   `
 
   const ProjectCardContent = tw.div`
@@ -41,13 +44,18 @@ export default function ApplicationsReceived() {
   const ProjectCardTitle = tw.p`
   w-full
   my-4
-  text-md
-  font-semibold
+  text-lg
+  font-normal
   text-ellipsis
+  line-clamp-2
   `
 
   const ProjectCardDescription = tw.p`
+  text-sm
   text-ellipsis
+  line-clamp-2
+  text-gray-500
+  leading-relaxed
   `
 
   return (
