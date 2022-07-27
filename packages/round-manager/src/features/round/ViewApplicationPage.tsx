@@ -12,7 +12,7 @@ import { useWeb3 } from "../common/ProtectedRoute"
 import { Button } from "../common/styles"
 
 
-type ApplicationStatus = "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD"
+type ApplicationStatus = "APPROVED" | "REJECTED"
 
 
 export default function ViewApplicationPage() {
@@ -65,8 +65,8 @@ export default function ViewApplicationPage() {
   }
 
   const handleCancelModal = () => {
-    setReviewDecision(undefined)
     setOpenModal(false)
+    setTimeout(() => setReviewDecision(undefined), 500)
   }
 
   return (
@@ -107,7 +107,7 @@ export default function ViewApplicationPage() {
             </div>
           </div>
           <ConfirmationModal
-            body={"You have rejected a Grant Application. This will carry gas fees based on the selected network"}
+            body={`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
             confirmButtonAction={handleUpdateGrantApplication}
             cancelButtonAction={handleCancelModal}
             isOpen={openModal}
