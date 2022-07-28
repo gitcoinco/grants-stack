@@ -80,7 +80,7 @@ export const grantApplicationApi = api.injectEndpoints({
       {
         id: string,
         roundId: string,
-        status: "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD",
+        status: "APPROVED" | "REJECTED",
         projectsMetaPtr: MetadataPointer,
         payoutAddress: string
       }

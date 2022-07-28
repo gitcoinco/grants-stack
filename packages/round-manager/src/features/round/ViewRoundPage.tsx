@@ -5,10 +5,8 @@ import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
 import { useListProgramsQuery } from "../api/services/program"
-import { Tab } from '@headlessui/react'
-import ApplicationsApproved from "./ApplicationsApproved"
-import ApplicationsReceived from "./ApplicationsReceived"
-import ApplicationsRejected from "./ApplicationsRejected"
+import { Tab } from "@headlessui/react"
+import ListApplications from "./ListApplications"
 
 
 
@@ -88,8 +86,8 @@ export default function ViewRound() {
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none' :
-                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none" :
+                        "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                       }
                     >
                       Received
@@ -97,8 +95,8 @@ export default function ViewRound() {
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
-                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none" :
+                        "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                       }
                     >
                       Approved
@@ -106,8 +104,8 @@ export default function ViewRound() {
                     <Tab
                       className={({ selected }) =>
                         selected ?
-                        'border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none' :
-                        'border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                        "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none" :
+                        "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
                       }
                     >
                       Rejected
@@ -115,13 +113,13 @@ export default function ViewRound() {
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
-                      <ApplicationsReceived />
+                      <ListApplications status="PENDING" />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ApplicationsApproved />
+                    <ListApplications status="APPROVED" />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ApplicationsRejected />
+                    <ListApplications status="REJECTED" />
                     </Tab.Panel>
                   </Tab.Panels>
                 </Tab.Group>
