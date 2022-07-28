@@ -87,17 +87,19 @@ const getMetadata = async (
   cacheKey: string
 ) => {
   const storage = new LocalStorage();
+  let metadata: Metadata;
+
   if (storage.supported) {
     const item = storage.get(cacheKey);
     if (item !== null) {
       try {
-        const metadata = JSON.parse(item);
+        metadata = JSON.parse(item);
 
         const ret = {
           ...metadata,
           protocol: project.metadata.protocol,
           pointer: project.metadata.pointer,
-          projectId,
+          id: projectId,
         };
         storage.add(cacheKey, JSON.stringify(ret));
         return ret;
@@ -120,7 +122,6 @@ const getMetadata = async (
     return null;
   }
 
-  let metadata: Metadata;
   try {
     metadata = JSON.parse(content);
   } catch (e) {
@@ -152,7 +153,7 @@ export const fetchGrantData =
     try {
       project = await getProjectById(id, addresses, signer!);
     } catch (e) {
-      console.error(e);
+      console.error("error fetching project by id", e);
       dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
       return;
     }
@@ -167,6 +168,12 @@ export const fetchGrantData =
 
     const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
     const item = await getMetadata(id, project, cacheKey);
+
+    if (item === null) {
+      console.log("item is null");
+      dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
+      return;
+    }
 
     dispatch(grantMetadataFetched(item));
   };
