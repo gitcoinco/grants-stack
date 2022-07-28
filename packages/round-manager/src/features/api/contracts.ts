@@ -61,7 +61,7 @@ export const roundFactoryContract = (chainId: number|undefined): Contract => {
 
   return {
     address: address,
-    abi: abi.programFactory
+    abi: abi.roundFactory
   }
 }
 
