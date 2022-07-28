@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
 import { roundPath } from "../../routes";
-import { Status } from "../../reducers/rounds";
+import { Status as RoundStatus } from "../../reducers/rounds";
+import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
@@ -12,6 +13,7 @@ import colors from "../../styles/colors";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
+
 function Apply() {
   const params = useParams();
   const dispatch = useDispatch();
@@ -22,15 +24,27 @@ function Apply() {
   const props = useSelector((state: RootState) => {
     const { id } = params;
     const roundState = state.rounds[id!];
-    const status = roundState ? roundState.status : Status.Empty;
-    const error = roundState ? roundState.error : undefined;
+    const roundStatus = roundState ? roundState.status : RoundStatus.Undefined;
+    const applicationState = state.roundApplication[id!];
+    const applicationStatus: ApplicationStatus = applicationState
+      ? applicationState.status
+      : ApplicationStatus.Undefined;
+
+    const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
+
+    const applicationError = applicationState
+      ? applicationState.error
+      : undefined;
+
     return {
       id,
       roundState,
-      status,
-      error,
+      roundStatus,
+      roundError,
       round,
+      applicationStatus,
+      applicationError,
       applicationMetadata: round?.applicationMetadata,
     };
   }, shallowEqual);
@@ -41,16 +55,30 @@ function Apply() {
     }
   }, [dispatch, props.id, props.round]);
 
-  if (props.status === Status.Error) {
-    return <div>Error: {props.error}</div>;
+  if (props.roundStatus === RoundStatus.Error) {
+    return <div>Error loading round data: {props.roundError}</div>;
   }
 
-  if (props.status !== Status.Loaded) {
+  if (props.roundStatus !== RoundStatus.Loaded) {
     return <div>loading...</div>;
   }
 
   if (props.roundState === undefined || props.round === undefined) {
     return <div>something went wrong</div>;
+  }
+
+  if (props.applicationStatus === ApplicationStatus.Error) {
+    return (
+      <div>Error submitting round application: {props.applicationError}</div>
+    );
+  }
+
+  if (props.applicationStatus === ApplicationStatus.Sent) {
+    return <div>Applied to round successfully.</div>;
+  }
+
+  if (props.applicationStatus !== ApplicationStatus.Undefined) {
+    return <div>sending application...</div>;
   }
 
   return (

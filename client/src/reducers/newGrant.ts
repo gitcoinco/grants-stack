@@ -12,7 +12,7 @@ export interface NewGrant {
 }
 
 export const enum Status {
-  Ready = 0,
+  Undefined = 0,
   UploadingImages,
   UploadingJSON,
   WaitingForSignature,
@@ -28,7 +28,7 @@ export interface NewGrantState {
 }
 
 export const initialState: NewGrantState = {
-  status: Status.Ready,
+  status: Status.Undefined,
   error: undefined,
 };
 
@@ -54,7 +54,7 @@ export const newGrantReducer = (
     case RESET_STATUS: {
       return {
         ...state,
-        status: Status.Ready,
+        status: Status.Undefined,
       };
     }
 

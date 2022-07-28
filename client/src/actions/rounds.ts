@@ -12,6 +12,19 @@ import {
 import PinataClient from "../services/pinata";
 import { Status } from "../reducers/rounds";
 
+const projectQuestion = {
+  question: "Select a project you would like to apply for funding:",
+  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  required: true,
+};
+
+const recipientAddressQuestion = {
+  question: "Recipient Address",
+  type: "RECIPIENT",
+  required: true,
+  info: "Address that will receive funds",
+};
+
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
   type: typeof ROUNDS_LOADING_ROUND;
@@ -63,6 +76,15 @@ const loadingError = (address: string, error: string): RoundsActions => ({
 export const unloadRounds = () => roundsUnloaded();
 
 export const loadRound = (address: string) => async (dispatch: Dispatch) => {
+  try {
+    // address validation
+    ethers.utils.getAddress(address);
+  } catch (e) {
+    dispatch(loadingError(address, "invalid address or address checksum"));
+    console.error(e);
+    return;
+  }
+
   const signer = global.web3Provider!.getSigner();
   const contract = new ethers.Contract(address, RoundABI, signer);
   const pinataClient = new PinataClient();
@@ -73,8 +95,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingApplicationsStartTime,
   });
 
-  const ast: BigNumber = await contract.applicationsStartTime();
-  const applicationsStartTime = ast.toNumber();
+  let applicationsStartTime;
+  try {
+    const ast: BigNumber = await contract.applicationsStartTime();
+    applicationsStartTime = ast.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application start time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -82,8 +111,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingApplicationsEndTime,
   });
 
-  const aet: BigNumber = await contract.applicationsEndTime();
-  const applicationsEndTime = aet.toNumber();
+  let applicationsEndTime;
+  try {
+    const aet: BigNumber = await contract.applicationsEndTime();
+    applicationsEndTime = aet.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading application end time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -91,8 +127,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingRoundStartTime,
   });
 
-  const rst: BigNumber = await contract.roundStartTime();
-  const roundStartTime = rst.toNumber();
+  let roundStartTime;
+  try {
+    const rst: BigNumber = await contract.roundStartTime();
+    roundStartTime = rst.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round start time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -100,8 +143,15 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingRoundEndTime,
   });
 
-  const ret: BigNumber = await contract.roundEndTime();
-  const roundEndTime = ret.toNumber();
+  let roundEndTime;
+  try {
+    const ret: BigNumber = await contract.roundEndTime();
+    roundEndTime = ret.toNumber();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round end time"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -109,7 +159,14 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     status: Status.LoadingToken,
   });
 
-  const token = await contract.token();
+  let token;
+  try {
+    token = await contract.token();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading round token"));
+    console.error(e);
+    return;
+  }
 
   dispatch({
     type: ROUNDS_LOADING_ROUND,
@@ -164,16 +221,32 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   });
 
   let applicationMetadata: RoundApplicationMetadata;
+  let projectQuestionId;
+  let recipientQuestionId;
   try {
     const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
     applicationMetadata = JSON.parse(resp);
+
+    projectQuestionId = applicationMetadata.applicationSchema.length;
+    applicationMetadata.applicationSchema.unshift({
+      ...projectQuestion,
+      id: projectQuestionId,
+    });
+    applicationMetadata.projectQuestionId = projectQuestionId;
+
+    recipientQuestionId = applicationMetadata.applicationSchema.length;
+    applicationMetadata.applicationSchema.push({
+      ...recipientAddressQuestion,
+      id: recipientQuestionId,
+    });
+    applicationMetadata.recipientQuestionId = recipientQuestionId;
   } catch (e) {
     dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
     return;
   }
 
-  const testRound = {
+  const round = {
     address,
     applicationsStartTime,
     applicationsEndTime,
@@ -192,5 +265,5 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     applicationMetadata,
   };
 
-  dispatch(roundLoaded(address, testRound));
+  dispatch(roundLoaded(address, round));
 };
