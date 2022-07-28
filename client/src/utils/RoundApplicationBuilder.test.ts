@@ -106,13 +106,14 @@ const project: Project = {
   },
 };
 
-describe("event aggregation", () => {
-  it("test", () => {
+describe("round application builder", () => {
+  it("builds", async () => {
     const builder = new RoundApplicationBuilder(
+      false,
       project,
       roundApplicationMetadata
     );
-    const application = builder.build("0x1234", formInputs);
+    const application = await builder.build("0x1234", formInputs);
 
     expect(application.project).toEqual(project);
     expect(application.round).toEqual("0x1234");
