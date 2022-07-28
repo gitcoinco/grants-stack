@@ -58,11 +58,10 @@ export default function ImageInput({
   };
 
   const getFiles = (e: any) => {
-    if (e.currentTarget) {
-      return e.currentTarget?.files;
+    if (e.dataTransfer) {
+      return e.dataTransfer.files;
     }
-
-    return e.dataTransfer.files;
+    return e.currentTarget?.files;
   };
 
   const saveImage = (
