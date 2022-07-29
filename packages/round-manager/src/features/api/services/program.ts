@@ -106,7 +106,7 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            { account }
+            { account: account.toLowerCase() }
           )
 
           const programs: Program[] = []

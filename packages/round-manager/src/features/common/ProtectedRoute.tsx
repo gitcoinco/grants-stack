@@ -1,12 +1,14 @@
 import { Outlet, useOutletContext } from 'react-router-dom'
+import { useAccount, useEnsName } from 'wagmi'
 
-import { useGetWeb3Query } from "../api/services/web3"
 import { Web3Instance } from "../api/types"
 import { Spinner } from "../common/Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg"
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg"
 import Footer from './Footer';
 
+import { useState } from 'react';
+import WalletConnectionModal from './WalletConnectionModal';
 
 
 /**
@@ -14,17 +16,21 @@ import Footer from './Footer';
  * It prompts a user to connect wallet if no web3 instance is found.
  */
 export default function ProtectedRoute() {
-  const { data, refetch, isSuccess, isLoading } = useGetWeb3Query()
+  const [openModal, setOpenModal] = useState(false)
 
-  const connectHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    refetch()
+  const { address: account, isConnected, isConnecting } = useAccount()
+  const { data: ensName } = useEnsName({ address: account })
+
+  const data = { account, ensName }
+
+  const handleCloseModal = () => {
+    setOpenModal(false)
   }
 
-  return !isSuccess ? (
+  return !isConnected ? (
     <div>
       <main>
-        {isLoading
+        {isConnecting
           ? <Spinner text="Connecting Wallet" />
           :
           <div className="flex flex-row bg-white">
@@ -36,7 +42,7 @@ export default function ProtectedRoute() {
                 grant programs and distribute funds across different<br />
                 rounds and voting mechanisms.
               </p>
-              <button type="button" className="bg-violet-400 mt-8 py-4 px-8 rounded text-white" onClick={connectHandler}>
+              <button type="button" className="bg-violet-400 mt-8 py-4 px-8 rounded text-white" onClick={() => setOpenModal(true)}>
                 Connect Wallet
               </button>
             </div>
@@ -45,6 +51,7 @@ export default function ProtectedRoute() {
             </div>
           </div>
         }
+        <WalletConnectionModal isOpen={openModal} cancelButtonAction={handleCloseModal} />
       </main>
       <Footer />
     </div>
