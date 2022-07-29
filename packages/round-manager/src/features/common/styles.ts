@@ -37,3 +37,49 @@ export const Input = tw.input<InputProps>`
     p.$disabled && "bg-[#F1F1F1]"
   )}
 `
+
+export const ProjectCardsContainer = tw.div`
+  flex
+  flex-row
+  flex-wrap
+  w-full
+`
+
+export const ProjectCard = tw.div`
+  w-80
+  h-72
+  border
+  border-gray-300
+  ml-0
+  mr-6
+  my-3
+  overflow-hidden
+  rounded-md
+`
+
+export const ProjectCardHeader = tw.div`
+  bg-grey-500
+  w-full
+  h-1/3
+`
+
+export const ProjectCardContent = tw.div`
+  p-4
+`
+
+export const ProjectCardTitle = tw.p`
+  w-full
+  my-4
+  text-lg
+  font-normal
+  text-ellipsis
+  line-clamp-2
+`
+
+export const ProjectCardDescription = tw.p`
+  text-sm
+  text-ellipsis
+  line-clamp-2
+  text-gray-500
+  leading-relaxed
+`
