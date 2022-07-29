@@ -33,8 +33,8 @@ export default function ProtectedRoute() {
         {isConnecting
           ? <Spinner text="Connecting Wallet" />
           :
-          <div className="flex flex-row bg-white">
-            <div className="basis-1/2 m-auto ml-20">
+          <div className="container mx-auto flex flex-row bg-white">
+            <div className="basis-1/2 m-auto">
               <LandingLogo className="block w-auto mb-6"></LandingLogo>
               <h1 className='mb-6'>Round Manager</h1>
               <p className="text-2xl my-2 text-grey-400">

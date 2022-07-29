@@ -60,7 +60,7 @@ export default function WalletConnectionModal(
                     <XIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-                <div>
+                <div className="mt-4">
                   {connectors.map((connector: any) => (
                     <Button
                       type="button"
