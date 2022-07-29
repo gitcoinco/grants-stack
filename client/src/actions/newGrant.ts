@@ -89,7 +89,7 @@ export const publishGrant =
 
     if (grantId !== undefined) {
       try {
-        projectTx = await projectRegistry.updateProjectMetaData(grantId, {
+        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
           protocol: 1,
           pointer: metadataCID,
         });
