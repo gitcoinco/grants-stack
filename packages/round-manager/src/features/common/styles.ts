@@ -5,7 +5,7 @@ type ButtonProps = {
   $variant: 'solid' | 'outline'
 }
 export const Button = tw.button`
-  bg-grey-500 text-white
+  bg-violet-400 text-white
   py-2.5 px-10
   rounded
   transition-colors
@@ -16,7 +16,7 @@ export const Button = tw.button`
   disabled:border-slate-200
   disabled:shadow-none
   ${(p: ButtonProps) => (
-    p.$variant === "outline" ? "bg-white text-grey-500 border border-grey-100" : "bg-grey-500 text-white"
+    p.$variant === "outline" ? "bg-white text-grey-500 border border-grey-100" : "bg-violet-400 text-white"
   )}
 `
 

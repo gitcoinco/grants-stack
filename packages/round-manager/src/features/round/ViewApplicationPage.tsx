@@ -1,4 +1,4 @@
-import { ArrowNarrowLeftIcon, CheckIcon, XIcon } from "@heroicons/react/solid"
+import { ArrowNarrowLeftIcon, CheckIcon, MailIcon, XIcon } from "@heroicons/react/solid"
 import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import {
@@ -10,6 +10,9 @@ import ConfirmationModal from "../common/ConfirmationModal"
 import Navbar from "../common/Navbar"
 import { useWeb3 } from "../common/ProtectedRoute"
 import { Button } from "../common/styles"
+import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
+import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
+
 
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
@@ -69,41 +72,61 @@ export default function ViewApplicationPage() {
     setTimeout(() => setReviewDecision(undefined), 500)
   }
 
+  const getAnswer = (question: string) => {
+    return application?.answers.find((answer) => answer.question === question)?.answer || "N/A"
+  }
+
   return (
     <>
       <Navbar />
       <div className="container mx-auto h-screen px-4 py-7">
         <header>
-          <div className="pb-5 border-grey-100 sm:flex sm:items-center sm:justify-between">
-            <div className="flex gap-2">
-              <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
-              <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
-                <span>
-                  {round?.roundMetadata?.name || "..."}
-                </span>
-              </Link>
+          <div className="flex gap-2 mb-6">
+            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
+            <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
+              <span>
+                {round?.roundMetadata?.name || "..."}
+              </span>
+            </Link>
+          </div>
+          <div>
+            <div>
+              {/* TODO: after applyToRound script is updated,
+              fetch image via ipfs e.g {`https://gitcoin.mypinata.cloud/ipfs/${application?.project.bannerImg}`} */}
+              <img className="h-32 w-full object-cover lg:h-80 rounded" src={application?.project.bannerImg} alt="" />
             </div>
-            <div className="mt-3 flex sm:mt-0 sm:ml-4">
-              <Button
-                type="button"
-                $variant={application?.status === "APPROVED" ? "solid" : "outline"}
-                className="inline-flex float-right py-2 px-4 text-sm"
-                disabled={isLoading || updating}
-                onClick={() => confirmReviewDecision("APPROVED")}
-              >
-                <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {application?.status === "APPROVED" ? "Approved" : "Approve"}
-              </Button>
-              <Button
-                type="button"
-                $variant={application?.status === "REJECTED" ? "solid" : "outline"}
-                className={"inline-flex ml-3 py-2 px-4 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500")}
-                disabled={isLoading || updating}
-                onClick={() => confirmReviewDecision("REJECTED")}
-              >
-                <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                {application?.status === "REJECTED" ? "Rejected" : "Reject"}
-              </Button>
+            <div className="pl-4 sm:pl-6 lg:pl-8">
+              <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                <div className="flex">
+                  {/* TODO: after applyToRound script is updated,
+                      fetch image via ipfs  e.g {`https://gitcoin.mypinata.cloud/ipfs/${application?.project.logoImg}`} */}
+                  <img className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32" src={application?.project.logoImg} alt="" />
+                </div>
+                <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                  <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                    <Button
+                      type="button"
+                      $variant={application?.status === "APPROVED" ? "solid" : "outline"}
+                      className="inline-flex justify-center px-4 py-2 text-sm"
+                      disabled={isLoading || updating}
+                      onClick={() => confirmReviewDecision("APPROVED")}
+                    >
+                      <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                      {application?.status === "APPROVED" ? "Approved" : "Approve"}
+                    </Button>
+                    <Button
+                      type="button"
+                      $variant={application?.status === "REJECTED" ? "solid" : "outline"}
+                      className={"inline-flex justify-center px-4 py-2 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500")}
+                      disabled={isLoading || updating}
+                      onClick={() => confirmReviewDecision("REJECTED")}
+                    >
+                      <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                      {application?.status === "REJECTED" ? "Rejected" : "Reject"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <ConfirmationModal
@@ -115,7 +138,43 @@ export default function ViewApplicationPage() {
         </header>
 
         <main>
-          <h1 className="float-left text-[32px] mb-6">{application?.project.title || "..."}</h1>
+          <h1 className="text-2xl mt-6">{application?.project.title || "..."}</h1>
+          <div className="sm:flex sm:justify-between my-6">
+            <div className="sm:basis-3/4 sm:mr-3">
+              <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
+                <div className="text-grey-500 truncate block">
+                  <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
+                  <span className="text-xs text-grey-400">{getAnswer("Email")}</span>
+                </div>
+                <div className="text-grey-500 truncate block">
+                  <TwitterIcon className="inline-flex h-4 w-4 mr-1" />
+                  <span className="text-xs text-grey-400">{getAnswer("Twitter")}</span>
+                </div>
+                <div className="text-grey-500 truncate block">
+                  <GithubIcon className="inline-flex h-4 w-4 text-black mr-1" />
+                  <span className="text-xs text-grey-400">{getAnswer("Github")}</span>
+                </div>
+              </div>
+
+              <hr className="my-6" />
+
+              <h2 className="text-xs mb-2">Description</h2>
+              <p className="text-base">{application?.project.description}</p>
+
+              <hr className="my-6" />
+
+              <h2 className="text-xs mb-2">Funding Sources</h2>
+              <p className="text-base mb-6">{getAnswer("Funding Source")}</p>
+
+              <h2 className="text-xs mb-2">Funding Profit</h2>
+              <p className="text-base mb-6">{getAnswer("Profit2022")}</p>
+
+              <h2 className="text-xs mb-2">Team Size</h2>
+              <p className="text-base mb-6">{getAnswer("Team Size")}</p>
+            </div>
+            <div className="sm:basis-1/4 text-center sm:ml-3"></div>
+          </div>
+
           {/* <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
             {
               isRoundsLoading &&
