@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { providers } from "ethers"
 import { IPFSObject, MetadataPointer } from "./types"
 
 
@@ -7,18 +7,17 @@ import { IPFSObject, MetadataPointer } from "./types"
  *
  * @returns { chainId, name }
  */
- export const getWeb3Instance = async () => {
+export const getWeb3Instance = async () => {
 
   if (!window.ethereum) {
     return { error: "not a web3 browser" }
   }
 
-  // Instantiate ethers.js provider and signer
-  const web3Provider = new ethers.providers.Web3Provider(window.ethereum)
+  const provider = new providers.InfuraProvider("goerli", process.env.REACT_APP_INFURA_ID)
 
   // Fetch network details
-  const { chainId, name } = await web3Provider!.getNetwork()
-  return {chainId, name}
+  const { chainId, name } = await provider!.getNetwork()
+  return { chainId, name }
 }
 
 
@@ -55,9 +54,9 @@ const getGraphQLEndpoint = async () => {
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
- export const graphql_fetch = async (
-   query: string,
-   variables: object = {},
+export const graphql_fetch = async (
+  query: string,
+  variables: object = {},
 ) => {
 
   const endpoint = await getGraphQLEndpoint();
