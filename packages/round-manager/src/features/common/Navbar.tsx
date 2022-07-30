@@ -4,6 +4,7 @@ import { PlusSmIcon } from "@heroicons/react/solid"
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg"
 import { ReactComponent as RoundManagerLogo } from "../../assets/round-manager-logo.svg"
 import { Button } from "../common/styles"
+import WalletDisplay from "./WalletDisplay"
 
 
 export interface NavbarProps {
@@ -26,7 +27,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
               </div>
             </Link>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
               {programCta &&
                 <Link to="/program/create">
@@ -41,9 +42,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
                 </Link>
               }
             </div>
-            <div>
-              <span className="text-white pl-2.5">Connected 🟢</span>
-            </div>
+            <WalletDisplay />
           </div>
         </div>
       </div>
