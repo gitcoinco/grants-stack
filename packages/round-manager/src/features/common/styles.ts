@@ -11,7 +11,7 @@ export const Button = tw.button`
   transition-colors
   focus:shadow-outline
   hover:brightness-125
-  disabled:bg-slate-50
+  disabled:bg-slate-100
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none

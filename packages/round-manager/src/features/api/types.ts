@@ -2,11 +2,14 @@ export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
    */
-  account: string;
+  address: string;
   /**
-   * Chain ID of the currently connected network
+   * Chain ID & name of the currently connected network
    */
-  chainId: number;
+  chain: {
+    id: number;
+    name: string;
+  }
 }
 
 export interface MetadataPointer {
