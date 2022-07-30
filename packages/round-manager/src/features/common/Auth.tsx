@@ -18,7 +18,10 @@ export default function Auth() {
   const { data: ensName } = useEnsName({ address })
   const { chain } = useNetwork()
 
-  const data = { address: ensName ?? address, chain: { id: chain?.id, name: chain?.name } }
+  const data = {
+    address: ensName ?? address,
+    chain: { id: chain?.id, name: chain?.name, network: chain?.network }
+  }
 
   return !isConnected ? (
     <div>
