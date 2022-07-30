@@ -1,19 +1,15 @@
 import { providers } from "ethers"
-import { IPFSObject, MetadataPointer } from "./types"
+import { IPFSObject, MetadataPointer, Network } from "./types"
 
 
 /**
- * Fetch chain id from web3
- *
+ * Fetch chain details for the provided network
+ * 
+ * @param network - The network to be initialized
  * @returns { chainId, name }
  */
-export const getWeb3Instance = async () => {
-
-  if (!window.ethereum) {
-    return { error: "not a web3 browser" }
-  }
-
-  const provider = new providers.InfuraProvider("goerli", process.env.REACT_APP_INFURA_ID)
+export const getWeb3Instance = async (network: Network) => {
+  const provider = new providers.InfuraProvider(network, process.env.REACT_APP_INFURA_ID)
 
   // Fetch network details
   const { chainId, name } = await provider!.getNetwork()
@@ -21,9 +17,15 @@ export const getWeb3Instance = async () => {
 }
 
 
-const getGraphQLEndpoint = async () => {
+/**
+ * Fetch subgraph network for provided web3 network
+ * 
+ * @param network - The network to be initialized
+ * @returns the subgraph endpoint
+ */
+const getGraphQLEndpoint = async (network: Network) => {
   // fetch chain id
-  const chainId = (await getWeb3Instance())?.chainId
+  const chainId = (await getWeb3Instance(network))?.chainId
 
   let endpoint
 
@@ -47,19 +49,22 @@ const getGraphQLEndpoint = async () => {
   return endpoint;
 }
 
+
 /**
  * Fetch data from a GraphQL endpoint
  *
  * @param query - The query to be executed
+ * @param network - The EVM network indexed by the subgraph
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
 export const graphql_fetch = async (
   query: string,
+  network: Network,
   variables: object = {},
 ) => {
 
-  const endpoint = await getGraphQLEndpoint();
+  const endpoint = await getGraphQLEndpoint(network);
 
   return fetch(endpoint, {
     method: "POST",
