@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-import { useWallet } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import {
   ArrowNarrowRightIcon,

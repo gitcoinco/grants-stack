@@ -17,7 +17,7 @@ import "./index.css"
 import CreateProgram from "./features/program/CreateProgramPage"
 import CreateRound from "./features/round/CreateRoundPage"
 import Program from "./features/program/ListProgramPage"
-import ProtectedRoute from "./features/common/ProtectedRoute"
+import Auth from "./features/common/Auth"
 import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRound from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
@@ -34,7 +34,7 @@ root.render(
         <ReduxRouter history={history} store={store}>
           <Routes>
             {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
+            <Route element={<Auth />}>
 
               {/* Default Route */}
               <Route path="/" element={<Program />} />

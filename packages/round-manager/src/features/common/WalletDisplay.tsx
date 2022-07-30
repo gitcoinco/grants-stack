@@ -4,7 +4,7 @@ import { Dialog, Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon, XIcon } from "@heroicons/react/solid"
 
 import { Button } from "./styles"
-import { useWallet } from "./ProtectedRoute"
+import { useWallet } from "./Auth"
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ")

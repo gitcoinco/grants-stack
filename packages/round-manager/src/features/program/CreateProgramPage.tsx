@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
 
-import { useWallet } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"

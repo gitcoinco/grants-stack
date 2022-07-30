@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom"
 
-import { useWallet } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"

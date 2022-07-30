@@ -2,7 +2,7 @@ import { Outlet, useOutletContext } from "react-router-dom"
 import { useAccount, useEnsName, useNetwork } from "wagmi"
 
 import { Web3Instance } from "../api/types"
-import { Spinner } from "../common/Spinner";
+import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg"
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg"
 import Footer from "./Footer";
@@ -13,7 +13,7 @@ import WalletConnectionButton from "./WalletConnectionButton";
  * Component for protecting child routes that require web3 wallet instance.
  * It prompts a user to connect wallet if no web3 instance is found.
  */
-export default function ProtectedRoute() {
+export default function Auth() {
   const { address, isConnected, isConnecting } = useAccount()
   const { data: ensName } = useEnsName({ address })
   const { chain } = useNetwork()

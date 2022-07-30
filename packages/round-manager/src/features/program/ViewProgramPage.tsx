@@ -3,7 +3,7 @@ import { ArrowLeftIcon, ArrowNarrowRightIcon, PencilIcon, UserIcon } from "@hero
 import { RefreshIcon } from "@heroicons/react/outline"
 
 import { Button } from "../common/styles"
-import { useWallet } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"

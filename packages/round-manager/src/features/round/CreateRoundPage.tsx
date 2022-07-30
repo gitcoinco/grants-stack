@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import "react-datetime/css/react-datetime.css"
 import { XIcon } from "@heroicons/react/solid"
 
-import { useWallet } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import { FormWizard } from "../common/FormWizard"
 import { RoundDetailForm } from "./RoundDetailForm"
