@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom"
 
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/ProtectedRoute"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
@@ -14,13 +14,13 @@ import ApplicationsRejected from "./ApplicationsRejected"
 
 export default function ViewRound() {
   const { id } = useParams()
-  const { account } = useWeb3()
+  const { address } = useWallet()
 
   const {
     round,
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
-  } = useListRoundsQuery({ account }, {
+  } = useListRoundsQuery({ address }, {
     selectFromResult: ({ data, isLoading, isSuccess }) => ({
       round: data?.find((round) => round.id === id),
       isLoading,
@@ -28,7 +28,7 @@ export default function ViewRound() {
     }),
   })
 
-  const { program } = useListProgramsQuery(account, {
+  const { program } = useListProgramsQuery(address, {
     selectFromResult: ({ data }) => ({
       program: data?.find((program) => program.id === round?.ownedBy)
     }

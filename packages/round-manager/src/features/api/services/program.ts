@@ -80,15 +80,15 @@ export const programApi = api.injectEndpoints({
       invalidatesTags: ["Program"]
     }),
     listPrograms: builder.query<Program[], string>({
-      queryFn: async (account) => {
+      queryFn: async (address) => {
         try {
-          // get the subgraph for all programs owned by the given account
+          // get the subgraph for all programs owned by the given address
           const res = await graphql_fetch(
             `
-              query GetPrograms($account: String!) {
+              query GetPrograms($address: String!) {
                 programs(where: {
                   accounts_: {
-                    address: $account
+                    address: $address
                   }
                 }) {
                   id
@@ -106,7 +106,7 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            { account: account.toLowerCase() }
+            { address: address.toLowerCase() }
           )
 
           const programs: Program[] = []

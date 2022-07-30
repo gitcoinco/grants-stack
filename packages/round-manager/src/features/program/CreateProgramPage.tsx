@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
 
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/ProtectedRoute"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
@@ -30,11 +30,11 @@ export default function CreateProgram() {
     isError: isProgramError
   }] = useCreateProgramMutation()
 
-  const { account } = useWeb3()
+  const { address } = useWallet()
   const navigate = useNavigate()
   const { register, control, formState, handleSubmit } = useForm<FormData>({
     defaultValues: {
-      operators: [{ wallet: account }]
+      operators: [{ wallet: address }]
     }
   })
   const { fields, append, remove } = useFieldArray({
