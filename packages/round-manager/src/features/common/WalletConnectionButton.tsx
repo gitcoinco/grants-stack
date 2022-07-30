@@ -5,7 +5,16 @@ import { XIcon } from "@heroicons/react/solid"
 import { Button } from "./styles"
 
 
-export default function WalletConnectionButton() {
+interface ButtonProps {
+  text?: string;
+  className?: string;
+}
+
+export default function WalletConnectionButton({
+  text = "Connect Wallet",
+  className = "bg-violet-400 mt-8 py-4 px-8 rounded text-white"
+}: ButtonProps) {
+
   const [open, setOpen] = useState(false)
 
   const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
@@ -14,10 +23,10 @@ export default function WalletConnectionButton() {
     <>
       <button
         type="button"
-        className="bg-violet-400 mt-8 py-4 px-8 rounded text-white"
+        className={className}
         onClick={() => setOpen(true)}
       >
-        Connect Wallet
+        {text}
       </button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setOpen}>
