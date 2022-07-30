@@ -14,13 +14,13 @@ import ApplicationsRejected from "./ApplicationsRejected"
 
 export default function ViewRound() {
   const { id } = useParams()
-  const { address } = useWallet()
+  const { address, chain: { network } } = useWallet()
 
   const {
     round,
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
-  } = useListRoundsQuery({ address }, {
+  } = useListRoundsQuery({ address, network }, {
     selectFromResult: ({ data, isLoading, isSuccess }) => ({
       round: data?.find((round) => round.id === id),
       isLoading,
@@ -28,7 +28,7 @@ export default function ViewRound() {
     }),
   })
 
-  const { program } = useListProgramsQuery(address, {
+  const { program } = useListProgramsQuery({ address, network }, {
     selectFromResult: ({ data }) => ({
       program: data?.find((program) => program.id === round?.ownedBy)
     }

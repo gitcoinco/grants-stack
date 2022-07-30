@@ -11,8 +11,8 @@ import Navbar from "../common/Navbar"
 
 
 function ListPrograms() {
-  const { address } = useWallet()
-  const { data: programs, isLoading, isSuccess } = useListProgramsQuery(address)
+  const { address, chain: { network } } = useWallet()
+  const { data: programs, isLoading, isSuccess } = useListProgramsQuery({ address, network })
 
   const programList = programs?.map((program, index) => (
     <div

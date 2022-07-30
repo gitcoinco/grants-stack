@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import { api } from ".."
 import { roundImplementationContract } from "../contracts"
-import { GrantApplication, MetadataPointer } from "../types"
+import { GrantApplication, MetadataPointer, Network } from "../types"
 import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 import { global } from "../../../global"
 
@@ -13,9 +13,9 @@ export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     listGrantApplications: builder.query<
       GrantApplication[],
-      { roundId: string, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
+      { roundId: string, network: Network, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
     >({
-      queryFn: async ({ roundId, id, status }) => {
+      queryFn: async ({ roundId, network, id, status }) => {
         try {
           // query the subgraph for all rounds by the given account in the given program
           const res = await graphql_fetch(
@@ -45,6 +45,7 @@ export const grantApplicationApi = api.injectEndpoints({
                 }
               }
             `,
+            network,
             { roundId, id, status }
           )
 

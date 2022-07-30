@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom"
 
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
+import { useWallet } from "../common/Auth"
 import { Spinner } from "../common/Spinner"
 import {
   ProjectCardsContainer,
@@ -14,9 +15,10 @@ import {
 
 export default function ApplicationsApproved() {
   const { id } = useParams()
+  const { chain: { network } } = useWallet()
 
   const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!, status: "APPROVED"
+    roundId: id!, network, status: "APPROVED"
   })
 
   return (

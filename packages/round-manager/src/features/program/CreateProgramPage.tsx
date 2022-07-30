@@ -16,6 +16,8 @@ type FormData = {
 }
 
 export default function CreateProgram() {
+  const { address, chain: { network } } = useWallet()
+
   const [saveToIPFS, {
     error: ipfsError,
     isError: isIPFSError,
@@ -30,7 +32,6 @@ export default function CreateProgram() {
     isError: isProgramError
   }] = useCreateProgramMutation()
 
-  const { address } = useWallet()
   const navigate = useNavigate()
   const { register, control, formState, handleSubmit } = useForm<FormData>({
     defaultValues: {
@@ -64,11 +65,14 @@ export default function CreateProgram() {
 
       // Deploy program contract
       await createProgram({
-        store: {
-          protocol: 1, // IPFS protocol ID is 1
-          pointer: metadataPointer
+        program: {
+          store: {
+            protocol: 1, // IPFS protocol ID is 1
+            pointer: metadataPointer
+          },
+          operatorWallets: data.operators.map(op => op.wallet)
         },
-        operatorWallets: data.operators.map(op => op.wallet)
+        network
       }).unwrap()
 
     } catch (e) {

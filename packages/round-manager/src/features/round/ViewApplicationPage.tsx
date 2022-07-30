@@ -14,26 +14,24 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 
 
-
 type ApplicationStatus = "APPROVED" | "REJECTED"
-
 
 export default function ViewApplicationPage() {
   const [reviewDecision, setReviewDecision] = useState<ApplicationStatus | undefined>(undefined)
   const [openModal, setOpenModal] = useState(false)
 
   const { roundId, id } = useParams()
-  const { address } = useWallet()
+  const { address, chain: { network } } = useWallet()
   const navigate = useNavigate()
 
-  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, id }, {
+  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, network, id }, {
     selectFromResult: ({ data, isLoading }) => ({
       application: data?.find((application) => application.id === id),
       isLoading
     })
   })
 
-  const { round } = useListRoundsQuery({ address }, {
+  const { round } = useListRoundsQuery({ address, network }, {
     selectFromResult: ({ data }) => ({
       round: data?.find((round) => round.id === roundId)
     }),

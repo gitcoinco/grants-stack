@@ -2,7 +2,7 @@ import { ethers } from "ethers"
 
 import { api } from ".."
 import { roundFactoryContract } from "../contracts"
-import { Round } from "../types"
+import { Network, Round } from "../types"
 import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
 import { global } from "../../../global"
 
@@ -12,11 +12,11 @@ import { global } from "../../../global"
  */
 export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createRound: builder.mutation<string, Round>({
-      queryFn: async (round) => {
+    createRound: builder.mutation<string, { round: Round, network: Network }>({
+      queryFn: async ({ round, network }) => {
         try {
           // fetch chain id
-          const chainId = (await getWeb3Instance())?.chainId
+          const chainId = (await getWeb3Instance(network))?.chainId
 
           // load round factory contract
           const _roundFactoryContract = roundFactoryContract(chainId);
@@ -104,8 +104,8 @@ export const roundApi = api.injectEndpoints({
       },
       invalidatesTags: ["Round"]
     }),
-    listRounds: builder.query<Round[], { address: string, programId?: string }>({
-      queryFn: async ({ address, programId }) => {
+    listRounds: builder.query<Round[], { address: string, network: Network, programId?: string }>({
+      queryFn: async ({ address, network, programId }) => {
         try {
           // query the subgraph for all rounds by the given address in the given program
           const res = await graphql_fetch(
@@ -140,6 +140,7 @@ export const roundApi = api.injectEndpoints({
                 }
               }
             `,
+            network,
             { address: address.toLowerCase(), programId }
           )
 
