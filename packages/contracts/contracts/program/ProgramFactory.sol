@@ -21,7 +21,7 @@ contract ProgramFactory is OwnableUpgradeable {
 
 
   /// @notice constructor function which ensure deployer is set as owner
-  function initialize() public initializer {
+  function initialize() external initializer {
     __Context_init_unchained();
     __Ownable_init_unchained();
   }
@@ -34,7 +34,7 @@ contract ProgramFactory is OwnableUpgradeable {
    * contract while relying on the same ProgramFactory to get the list of
    * programs.
    */
-  function updateProgramContract(address newProgramContract) public onlyOwner {
+  function updateProgramContract(address newProgramContract) external onlyOwner {
     // slither-disable-next-line missing-zero-check
     programContract = newProgramContract;
 

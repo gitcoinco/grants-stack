@@ -103,7 +103,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    */
   function initialize(
     bytes calldata encodedParameters
-  ) public initializer {
+  ) external initializer {
     // Decode _encodedParameters
     (
       IVotingStrategy _votingStrategy,
@@ -168,7 +168,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param newRoundMetaPtr new roundMetaPtr
-  function updateRoundMetaPtr(MetaPtr memory newRoundMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateRoundMetaPtr(MetaPtr memory newRoundMetaPtr) external onlyRole(ROUND_OPERATOR_ROLE) {
 
     emit RoundMetaPtrUpdated(roundMetaPtr, newRoundMetaPtr);
 
@@ -177,7 +177,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   // @notice Update applicationMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param newApplicationMetaPtr new applicationMetaPtr
-  function updateApplicationMetaPtr(MetaPtr memory newApplicationMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateApplicationMetaPtr(MetaPtr memory newApplicationMetaPtr) external onlyRole(ROUND_OPERATOR_ROLE) {
 
     emit ApplicationMetaPtrUpdated(applicationMetaPtr, newApplicationMetaPtr);
 
@@ -186,7 +186,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Update roundStartTime (only by ROUND_OPERATOR_ROLE)
   /// @param newRoundStartTime new roundStartTime
-  function updateRoundStartTime(uint256 newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateRoundStartTime(uint256 newRoundStartTime) external onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
     require(newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
     require(newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time should be after application start time");
@@ -199,7 +199,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Update roundEndTime (only by ROUND_OPERATOR_ROLE)
   /// @param newRoundEndTime new roundEndTime
-  function updateRoundEndTime(uint256 newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateRoundEndTime(uint256 newRoundEndTime) external onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
     require(newRoundEndTime >= block.timestamp, "updateRoundEndTime: end time has already passed");
     require(newRoundEndTime > roundStartTime, "updateRoundEndTime: end time should be after start time");
@@ -212,7 +212,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
   /// @param newApplicationsStartTime new applicationsStartTime
-  function updateApplicationsStartTime(uint256 newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateApplicationsStartTime(uint256 newApplicationsStartTime) external onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
     require(newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
     require(newApplicationsStartTime <= roundStartTime, "updateApplicationsStartTime: should be before round start time");
@@ -225,7 +225,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Update applicationsEndTime (only by ROUND_OPERATOR_ROLE)
   /// @param newApplicationsEndTime new applicationsEndTime
-  function updateApplicationsEndTime(uint256 newApplicationsEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateApplicationsEndTime(uint256 newApplicationsEndTime) external onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
     require(newApplicationsEndTime >= block.timestamp, "updateApplicationsEndTime: application end time has already passed");
     require(newApplicationsEndTime > applicationsStartTime, "updateApplicationsEndTime: application end time should be after application start time");
@@ -238,7 +238,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
   /// @param newProjectsMetaPtr new ProjectsMetaPtr
-  function updateProjectsMetaPtr(MetaPtr calldata newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  function updateProjectsMetaPtr(MetaPtr calldata newProjectsMetaPtr) external onlyRole(ROUND_OPERATOR_ROLE) {
 
     emit ProjectsMetaPtrUpdated(projectsMetaPtr, newProjectsMetaPtr);
 
@@ -248,13 +248,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Submit a project application
   /// @param projectID unique hash of the project
   /// @param newApplicationMetaPtr appliction metaPtr
-  function applyToRound(bytes32 projectID, MetaPtr calldata newApplicationMetaPtr) public {
+  function applyToRound(bytes32 projectID, MetaPtr calldata newApplicationMetaPtr) external {
     emit NewProjectApplication(projectID, newApplicationMetaPtr);
   }
 
   /// @notice Invoked by voter to cast votes
   /// @param encodedVotes encoded vote
-  function vote(bytes[] memory encodedVotes) public {
+  function vote(bytes[] memory encodedVotes) external {
 
     votingStrategy.vote(encodedVotes, msg.sender);
   }

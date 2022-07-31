@@ -48,7 +48,7 @@ contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
   function initialize(
     bytes calldata encodedParameters,
     string calldata newFoobar
-  ) public initializer {
+  ) external initializer {
 
     foobar = newFoobar;
   
@@ -81,7 +81,7 @@ contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
 
   // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
   /// @param newMetaPtr new metaPtr
-  function updateMetaPtr(MetaPtr memory newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
+  function updateMetaPtr(MetaPtr memory newMetaPtr) external onlyRole(PROGRAM_OPERATOR_ROLE) {
     emit MetadataUpdated(metaPtr, newMetaPtr);
     metaPtr = newMetaPtr;
   }

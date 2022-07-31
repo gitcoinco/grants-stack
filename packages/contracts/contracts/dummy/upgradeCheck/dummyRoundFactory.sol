@@ -37,7 +37,7 @@ contract DummyRoundFactory is OwnableUpgradeable {
 
 
   /// @notice constructor function which ensure deployer is set as owner
-  function initialize() public initializer {
+  function initialize() external initializer {
     __Context_init_unchained();
     __Ownable_init_unchained();
   }
@@ -50,7 +50,7 @@ contract DummyRoundFactory is OwnableUpgradeable {
    * contract while relying on the same RoundFactory to get the list of
    * rounds.
    */
-  function updateRoundContract(address newRoundContract) public onlyOwner {
+  function updateRoundContract(address newRoundContract) external onlyOwner {
     // slither-disable-next-line missing-zero-check
     roundContract = newRoundContract;
 
