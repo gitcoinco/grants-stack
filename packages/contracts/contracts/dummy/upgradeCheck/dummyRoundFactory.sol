@@ -23,7 +23,7 @@ import "../../utils/MetaPtr.sol";
  */
 contract DummyRoundFactory is OwnableUpgradeable {
 
-  address public RoundContract;
+  address public roundContract;
 
   string public foobar;
 
@@ -50,36 +50,36 @@ contract DummyRoundFactory is OwnableUpgradeable {
    * contract while relying on the same RoundFactory to get the list of
    * rounds.
    */
-  function updateRoundContract(address _RoundContract) public onlyOwner {
+  function updateRoundContract(address newRoundContract) public onlyOwner {
     // slither-disable-next-line missing-zero-check
-    RoundContract = _RoundContract;
+    roundContract = newRoundContract;
 
-    emit RoundContractUpdated(_RoundContract);
+    emit RoundContractUpdated(newRoundContract);
   }
 
   /**
    * @notice Clones RoundImp a new round and emits event
    *
-   * @param _encodedParameters Encoded parameters for creating a round
-   * @param _ownedBy Program which created the contract
+   * @param encodedParameters Encoded parameters for creating a round
+   * @param ownedBy Program which created the contract
    */
   function create(
-    bytes calldata _encodedParameters,
-    address _ownedBy,
-    string calldata _foobar
+    bytes calldata encodedParameters,
+    address ownedBy,
+    string calldata newFoobar
   ) external returns (address) {
 
-    foobar = _foobar;
-    address _clone = ClonesUpgradeable.clone(RoundContract);
+    foobar = newFoobar;
+    address clone = ClonesUpgradeable.clone(roundContract);
 
-    emit RoundCreated(_clone, _ownedBy);
+    emit RoundCreated(clone, ownedBy);
 
-    DummyRoundImplementation(_clone).initialize(
-      _encodedParameters,
-      _foobar
+    DummyRoundImplementation(clone).initialize(
+      encodedParameters,
+      newFoobar
     );
 
-    return _clone;
+    return clone;
   }
 
 }

@@ -54,7 +54,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   event ProjectsMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
   /// @notice Emitted when a project has applied to the round
-  event NewProjectApplication(address indexed project, MetaPtr applicationMetaPtr);
+  event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
 
 
   // --- Data ---
@@ -92,8 +92,8 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
 
   /**
    * @notice Instantiates a new round
-   * @param _encodedParameters Encoded parameters for program creation
-   * @dev _encodedParameters
+   * @param encodedParameters Encoded parameters for program creation
+   * @dev encodedParameters
    *  - _applicationsStartTime Unix timestamp from when round can accept applications
    *  - _applicationsEndTime Unix timestamp from when round stops accepting applications
    *  - _roundStartTime Unix timestamp of the start of the round
@@ -105,11 +105,11 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
    *  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE
    */
   function initialize(
-    bytes calldata _encodedParameters,
-    string calldata _foobar
+    bytes calldata encodedParameters,
+    string calldata newFoobar
   ) public initializer {
 
-    foobar = _foobar;
+    foobar = newFoobar;
 
     // Decode _encodedParameters
     (
@@ -124,7 +124,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
       address[] memory _adminRoles,
       address[] memory _roundOperators
     ) = abi.decode(
-      _encodedParameters, (
+      encodedParameters, (
       IVotingStrategy,
       uint256,
       uint256,
@@ -174,95 +174,95 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   }
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
-  /// @param _newRoundMetaPtr new roundMetaPtr
-  function updateRoundMetaPtr(MetaPtr memory _newRoundMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newRoundMetaPtr new roundMetaPtr
+  function updateRoundMetaPtr(MetaPtr memory newRoundMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    emit RoundMetaPtrUpdated(roundMetaPtr, _newRoundMetaPtr);
+    emit RoundMetaPtrUpdated(roundMetaPtr, newRoundMetaPtr);
 
-    roundMetaPtr = _newRoundMetaPtr;
+    roundMetaPtr = newRoundMetaPtr;
   }
 
   // @notice Update applicationMetaPtr (only by ROUND_OPERATOR_ROLE)
-  /// @param _newApplicationMetaPtr new applicationMetaPtr
-  function updateApplicationMetaPtr(MetaPtr memory _newApplicationMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newApplicationMetaPtr new applicationMetaPtr
+  function updateApplicationMetaPtr(MetaPtr memory newApplicationMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    emit ApplicationMetaPtrUpdated(applicationMetaPtr, _newApplicationMetaPtr);
+    emit ApplicationMetaPtrUpdated(applicationMetaPtr, newApplicationMetaPtr);
 
-    applicationMetaPtr = _newApplicationMetaPtr;
+    applicationMetaPtr = newApplicationMetaPtr;
   }
 
   /// @notice Update roundStartTime (only by ROUND_OPERATOR_ROLE)
-  /// @param _newRoundStartTime new roundStartTime
-  function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newRoundStartTime new roundStartTime
+  function updateRoundStartTime(uint256 newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
-    require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
-    require(_newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time should be after application start time");
-    require(_newRoundStartTime < roundEndTime, "updateRoundStartTime: start time should be before round end time");
+    require(newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
+    require(newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time should be after application start time");
+    require(newRoundStartTime < roundEndTime, "updateRoundStartTime: start time should be before round end time");
 
-    emit RoundStartTimeUpdated(roundStartTime, _newRoundStartTime);
+    emit RoundStartTimeUpdated(roundStartTime, newRoundStartTime);
 
-    roundStartTime = _newRoundStartTime;
+    roundStartTime = newRoundStartTime;
   }
 
   /// @notice Update roundEndTime (only by ROUND_OPERATOR_ROLE)
-  /// @param _newRoundEndTime new roundEndTime
-  function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newRoundEndTime new roundEndTime
+  function updateRoundEndTime(uint256 newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
-    require(_newRoundEndTime >= block.timestamp, "updateRoundEndTime: end time has already passed");
-    require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time should be after start time");
-    require(_newRoundEndTime >= applicationsEndTime, "updateRoundEndTime: end time should be after application end time");
+    require(newRoundEndTime >= block.timestamp, "updateRoundEndTime: end time has already passed");
+    require(newRoundEndTime > roundStartTime, "updateRoundEndTime: end time should be after start time");
+    require(newRoundEndTime >= applicationsEndTime, "updateRoundEndTime: end time should be after application end time");
 
-    emit RoundEndTimeUpdated(roundEndTime, _newRoundEndTime);
+    emit RoundEndTimeUpdated(roundEndTime, newRoundEndTime);
 
-    roundEndTime = _newRoundEndTime;
+    roundEndTime = newRoundEndTime;
   }
 
   /// @notice Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
-  /// @param _newApplicationsStartTime new applicationsStartTime
-  function updateApplicationsStartTime(uint256 _newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newApplicationsStartTime new applicationsStartTime
+  function updateApplicationsStartTime(uint256 newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
-    require(_newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
-    require(_newApplicationsStartTime <= roundStartTime, "updateApplicationsStartTime: should be before round start time");
-    require(_newApplicationsStartTime < applicationsEndTime, "updateApplicationsStartTime: should be before application end time");
+    require(newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
+    require(newApplicationsStartTime <= roundStartTime, "updateApplicationsStartTime: should be before round start time");
+    require(newApplicationsStartTime < applicationsEndTime, "updateApplicationsStartTime: should be before application end time");
 
-    emit ApplicationsStartTimeUpdated(applicationsStartTime, _newApplicationsStartTime);
+    emit ApplicationsStartTimeUpdated(applicationsStartTime, newApplicationsStartTime);
 
-    applicationsStartTime = _newApplicationsStartTime;
+    applicationsStartTime = newApplicationsStartTime;
   }
 
   /// @notice Update applicationsEndTime (only by ROUND_OPERATOR_ROLE)
-  /// @param _newApplicationsEndTime new applicationsEndTime
-  function updateApplicationsEndTime(uint256 _newApplicationsEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newApplicationsEndTime new applicationsEndTime
+  function updateApplicationsEndTime(uint256 newApplicationsEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
-    require(_newApplicationsEndTime >= block.timestamp, "updateApplicationsEndTime: application end time has already passed");
-    require(_newApplicationsEndTime > applicationsStartTime, "updateApplicationsEndTime: application end time should be after application start time");
-    require(_newApplicationsEndTime <= roundEndTime, "updateApplicationsEndTime: should be before round end time");
+    require(newApplicationsEndTime >= block.timestamp, "updateApplicationsEndTime: application end time has already passed");
+    require(newApplicationsEndTime > applicationsStartTime, "updateApplicationsEndTime: application end time should be after application start time");
+    require(newApplicationsEndTime <= roundEndTime, "updateApplicationsEndTime: should be before round end time");
 
-    emit ApplicationsEndTimeUpdated(applicationsEndTime, _newApplicationsEndTime);
+    emit ApplicationsEndTimeUpdated(applicationsEndTime, newApplicationsEndTime);
 
-    applicationsEndTime = _newApplicationsEndTime;
+    applicationsEndTime = newApplicationsEndTime;
   }
 
   /// @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
-  /// @param _newProjectsMetaPtr new ProjectsMetaPtr
-  function updateProjectsMetaPtr(MetaPtr calldata _newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
+  /// @param newProjectsMetaPtr new ProjectsMetaPtr
+  function updateProjectsMetaPtr(MetaPtr calldata newProjectsMetaPtr) public onlyRole(ROUND_OPERATOR_ROLE) {
 
-    emit ProjectsMetaPtrUpdated(projectsMetaPtr, _newProjectsMetaPtr);
+    emit ProjectsMetaPtrUpdated(projectsMetaPtr, newProjectsMetaPtr);
 
-    projectsMetaPtr = _newProjectsMetaPtr;
+    projectsMetaPtr = newProjectsMetaPtr;
   }
 
   /// @notice Submit a project application
-  /// @param _project project applying for the round
-  /// @param _applicationMetaPtr appliction metaPtr
-  function applyToRound(address _project, MetaPtr calldata _applicationMetaPtr) public {
-    emit NewProjectApplication(_project, _applicationMetaPtr);
+  /// @param projectID unique hash of the project
+  /// @param newApplicationMetaPtr appliction metaPtr
+  function applyToRound(bytes32 projectID, MetaPtr calldata newApplicationMetaPtr) public {
+    emit NewProjectApplication(projectID, newApplicationMetaPtr);
   }
 
   /// @notice Invoked by voter to cast votes
-  /// @param _encodedVotes encoded vote
-  function vote(bytes[] memory _encodedVotes) public {
+  /// @param encodedVotes encoded vote
+  function vote(bytes[] memory encodedVotes) public {
 
-    votingStrategy.vote(_encodedVotes, msg.sender);
+    votingStrategy.vote(encodedVotes, msg.sender);
   }
 }

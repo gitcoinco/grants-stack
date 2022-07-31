@@ -39,18 +39,18 @@ contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
 
   /**
    * @notice Instantiates a new program
-   * @param _encodedParameters Encoded parameters for program creation
-   * @dev _encodedParameters
+   * @param encodedParameters Encoded parameters for program creation
+   * @dev encodedParameters
    *  - _metaPtr URL pointing to the program metadata
    *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
    *  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
    */
   function initialize(
-    bytes calldata _encodedParameters,
-    string calldata _foobar
+    bytes calldata encodedParameters,
+    string calldata newFoobar
   ) public initializer {
 
-    foobar = _foobar;
+    foobar = newFoobar;
   
     // Decode _encodedParameters
     (
@@ -58,7 +58,7 @@ contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
       address[] memory _adminRoles,
       address[] memory _programOperators
     ) = abi.decode(
-      _encodedParameters, (
+      encodedParameters, (
       MetaPtr,
       address[],
       address[]
@@ -80,9 +80,9 @@ contract DummyProgramImplementation is AccessControlEnumerable, Initializable {
   }
 
   // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
-  /// @param _newMetaPtr new metaPtr
-  function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
-    emit MetadataUpdated(metaPtr, _newMetaPtr);
-    metaPtr = _newMetaPtr;
+  /// @param newMetaPtr new metaPtr
+  function updateMetaPtr(MetaPtr memory newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
+    emit MetadataUpdated(metaPtr, newMetaPtr);
+    metaPtr = newMetaPtr;
   }
 }

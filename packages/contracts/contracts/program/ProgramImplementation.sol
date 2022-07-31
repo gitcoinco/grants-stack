@@ -37,14 +37,14 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
 
   /**
    * @notice Instantiates a new program
-   * @param _encodedParameters Encoded parameters for program creation
-   * @dev _encodedParameters
+   * @param encodedParameters Encoded parameters for program creation
+   * @dev encodedParameters
    *  - _metaPtr URL pointing to the program metadata
    *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
    *  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
    */
   function initialize(
-    bytes calldata _encodedParameters
+    bytes calldata encodedParameters
   ) public initializer {
   
     // Decode _encodedParameters
@@ -53,7 +53,7 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
       address[] memory _adminRoles,
       address[] memory _programOperators
     ) = abi.decode(
-      _encodedParameters, (
+      encodedParameters, (
       MetaPtr,
       address[],
       address[]
@@ -75,9 +75,9 @@ contract ProgramImplementation is AccessControlEnumerable, Initializable {
   }
 
   // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
-  /// @param _newMetaPtr new metaPtr
-  function updateMetaPtr(MetaPtr memory _newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
-    emit MetaPtrUpdated(metaPtr, _newMetaPtr);
-    metaPtr = _newMetaPtr;
+  /// @param newMetaPtr new metaPtr
+  function updateMetaPtr(MetaPtr memory newMetaPtr) public onlyRole(PROGRAM_OPERATOR_ROLE) {
+    emit MetaPtrUpdated(metaPtr, newMetaPtr);
+    metaPtr = newMetaPtr;
   }
 }

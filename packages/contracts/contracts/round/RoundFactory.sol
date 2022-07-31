@@ -22,7 +22,7 @@ import "../utils/MetaPtr.sol";
  */
 contract RoundFactory is OwnableUpgradeable {
 
-  address public RoundContract;
+  address public roundContract;
 
   // --- Event ---
 
@@ -47,33 +47,33 @@ contract RoundFactory is OwnableUpgradeable {
    * contract while relying on the same RoundFactory to get the list of
    * rounds.
    */
-  function updateRoundContract(address _RoundContract) public onlyOwner {
+  function updateRoundContract(address newRoundContract) public onlyOwner {
     // slither-disable-next-line missing-zero-check
-    RoundContract = _RoundContract;
+    roundContract = newRoundContract;
 
-    emit RoundContractUpdated(_RoundContract);
+    emit RoundContractUpdated(newRoundContract);
   }
 
   /**
    * @notice Clones RoundImp a new round and emits event
    *
-   * @param _encodedParameters Encoded parameters for creating a round
-   * @param _ownedBy Program which created the contract
+   * @param encodedParameters Encoded parameters for creating a round
+   * @param ownedBy Program which created the contract
    */
   function create(
-    bytes calldata _encodedParameters,
-    address _ownedBy
+    bytes calldata encodedParameters,
+    address ownedBy
   ) external returns (address) {
 
-    address _clone = ClonesUpgradeable.clone(RoundContract);
+    address clone = ClonesUpgradeable.clone(roundContract);
 
-    emit RoundCreated(_clone, _ownedBy);
+    emit RoundCreated(clone, ownedBy);
 
-    RoundImplementation(_clone).initialize(
-      _encodedParameters
+    RoundImplementation(clone).initialize(
+      encodedParameters
     );
 
-    return _clone;
+    return clone;
   }
 
 }

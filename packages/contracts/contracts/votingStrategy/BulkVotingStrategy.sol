@@ -32,24 +32,24 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
    *
    * @dev
    * - more voters -> higher the gas
-   * - his would be triggered when a voter casts their vote via round explorer
+   * - this would be triggered when a voter casts their vote via round explorer
    *
-   * @param _encodedVotes encoded list of votes
-   * @param _voterAddress voter address
+   * @param encodedVotes encoded list of votes
+   * @param voterAddress voter address
    */
-  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external override nonReentrant {
+  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
 
 
     /// @dev iterate over multiple donations and transfer funds
-    for (uint256 i = 0; i < _encodedVotes.length; i++) {
+    for (uint256 i = 0; i < encodedVotes.length; i++) {
 
-      (address _token, uint256 _amount, address _grantAddress) = abi.decode(_encodedVotes[i], (address, uint256, address));
+      (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
       /// @dev emit event for transfer
       emit Voted(
         IERC20(_token),
         _amount,
-        _voterAddress,
+        voterAddress,
         _grantAddress,
         msg.sender
       );
@@ -57,7 +57,7 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
       /// @dev erc20 transfer to grant address
       SafeERC20.safeTransferFrom(
         IERC20(_token),
-        _voterAddress,
+        voterAddress,
         _grantAddress,
         _amount
       );

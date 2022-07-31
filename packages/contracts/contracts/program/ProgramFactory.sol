@@ -34,27 +34,27 @@ contract ProgramFactory is OwnableUpgradeable {
    * contract while relying on the same ProgramFactory to get the list of
    * programs.
    */
-  function updateProgramContract(address _programContract) public onlyOwner {
+  function updateProgramContract(address newProgramContract) public onlyOwner {
     // slither-disable-next-line missing-zero-check
-    programContract = _programContract;
+    programContract = newProgramContract;
 
-    emit ProgramContractUpdated(_programContract);
+    emit ProgramContractUpdated(newProgramContract);
   }
 
   /**
    * @notice Clones ProgramImplmentation and deployed a program and emits an event
    *
-   * @param _encodedParameters Encoded parameters for creating a program
+   * @param encodedParameters Encoded parameters for creating a program
    */
   function create(
-    bytes calldata _encodedParameters
+    bytes calldata encodedParameters
   ) external returns (address) {
 
     address clone = ClonesUpgradeable.clone(programContract);
 
     emit ProgramCreated(clone);
 
-    ProgramImplementation(clone).initialize(_encodedParameters);
+    ProgramImplementation(clone).initialize(encodedParameters);
 
     return clone;
   }
