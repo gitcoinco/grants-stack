@@ -35,6 +35,7 @@ contract ProgramFactory is OwnableUpgradeable {
    * programs.
    */
   function updateProgramContract(address _programContract) public onlyOwner {
+    // slither-disable-next-line missing-zero-check
     programContract = _programContract;
 
     emit ProgramContractUpdated(_programContract);

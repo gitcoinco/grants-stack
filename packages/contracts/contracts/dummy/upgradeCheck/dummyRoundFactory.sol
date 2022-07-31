@@ -51,6 +51,7 @@ contract DummyRoundFactory is OwnableUpgradeable {
    * rounds.
    */
   function updateRoundContract(address _RoundContract) public onlyOwner {
+    // slither-disable-next-line missing-zero-check
     RoundContract = _RoundContract;
 
     emit RoundContractUpdated(_RoundContract);
