@@ -72,12 +72,12 @@ contract DummyRoundFactory is OwnableUpgradeable {
     foobar = _foobar;
     address _clone = ClonesUpgradeable.clone(RoundContract);
 
+    emit RoundCreated(_clone, _ownedBy);
+
     DummyRoundImplementation(_clone).initialize(
       _encodedParameters,
       _foobar
     );
-
-    emit RoundCreated(_clone, _ownedBy);
 
     return _clone;
   }

@@ -67,11 +67,11 @@ contract RoundFactory is OwnableUpgradeable {
 
     address _clone = ClonesUpgradeable.clone(RoundContract);
 
+    emit RoundCreated(_clone, _ownedBy);
+
     RoundImplementation(_clone).initialize(
       _encodedParameters
     );
-
-    emit RoundCreated(_clone, _ownedBy);
 
     return _clone;
   }

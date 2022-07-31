@@ -45,21 +45,21 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(_encodedVotes[i], (address, uint256, address));
 
-      /// @dev erc20 transfer to grant address
-      SafeERC20.safeTransferFrom(
-        IERC20(_token),
-        _voterAddress,
-        _grantAddress,
-        _amount
-      );
-
-      /// @dev emit event once transfer is done
+      /// @dev emit event for transfer
       emit Voted(
         IERC20(_token),
         _amount,
         _voterAddress,
         _grantAddress,
         msg.sender
+      );
+
+      /// @dev erc20 transfer to grant address
+      SafeERC20.safeTransferFrom(
+        IERC20(_token),
+        _voterAddress,
+        _grantAddress,
+        _amount
       );
     }
 

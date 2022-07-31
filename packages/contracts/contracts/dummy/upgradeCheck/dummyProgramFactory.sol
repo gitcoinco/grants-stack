@@ -54,9 +54,9 @@ contract DummyProgramFactory is OwnableUpgradeable {
 
     address clone = ClonesUpgradeable.clone(programContract);
 
-    DummyProgramImplementation(clone).initialize(_encodedParameters, foobar);
-
     emit ProgramCreated(clone);
+
+    DummyProgramImplementation(clone).initialize(_encodedParameters, foobar);
 
     return clone;
   }

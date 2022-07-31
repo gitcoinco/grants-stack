@@ -52,9 +52,9 @@ contract ProgramFactory is OwnableUpgradeable {
 
     address clone = ClonesUpgradeable.clone(programContract);
 
-    ProgramImplementation(clone).initialize(_encodedParameters);
-
     emit ProgramCreated(clone);
+
+    ProgramImplementation(clone).initialize(_encodedParameters);
 
     return clone;
   }
