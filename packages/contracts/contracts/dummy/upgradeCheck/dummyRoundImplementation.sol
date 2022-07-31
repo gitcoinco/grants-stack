@@ -137,6 +137,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
       address[]
     ));
 
+    // slither-disable-next-line timestamp
     require(_applicationsStartTime >= block.timestamp, "initialize: applications start time has already passed");
     require(_applicationsEndTime > _applicationsStartTime, "initialize: application end time should be after application start time");
 
@@ -193,7 +194,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Update roundStartTime (only by ROUND_OPERATOR_ROLE)
   /// @param _newRoundStartTime new roundStartTime
   function updateRoundStartTime(uint256 _newRoundStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
-
+    // slither-disable-next-line timestamp
     require(_newRoundStartTime >= block.timestamp, "updateRoundStartTime: start time has already passed");
     require(_newRoundStartTime >= applicationsStartTime, "updateRoundStartTime: start time should be after application start time");
     require(_newRoundStartTime < roundEndTime, "updateRoundStartTime: start time should be before round end time");
@@ -206,7 +207,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Update roundEndTime (only by ROUND_OPERATOR_ROLE)
   /// @param _newRoundEndTime new roundEndTime
   function updateRoundEndTime(uint256 _newRoundEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
-
+    // slither-disable-next-line timestamp
     require(_newRoundEndTime >= block.timestamp, "updateRoundEndTime: end time has already passed");
     require(_newRoundEndTime > roundStartTime, "updateRoundEndTime: end time should be after start time");
     require(_newRoundEndTime >= applicationsEndTime, "updateRoundEndTime: end time should be after application end time");
@@ -219,7 +220,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
   /// @param _newApplicationsStartTime new applicationsStartTime
   function updateApplicationsStartTime(uint256 _newApplicationsStartTime) public onlyRole(ROUND_OPERATOR_ROLE) {
-
+    // slither-disable-next-line timestamp
     require(_newApplicationsStartTime >= block.timestamp, "updateApplicationsStartTime: application start time has already passed");
     require(_newApplicationsStartTime <= roundStartTime, "updateApplicationsStartTime: should be before round start time");
     require(_newApplicationsStartTime < applicationsEndTime, "updateApplicationsStartTime: should be before application end time");
@@ -232,7 +233,7 @@ contract DummyRoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Update applicationsEndTime (only by ROUND_OPERATOR_ROLE)
   /// @param _newApplicationsEndTime new applicationsEndTime
   function updateApplicationsEndTime(uint256 _newApplicationsEndTime) public onlyRole(ROUND_OPERATOR_ROLE) {
-
+    // slither-disable-next-line timestamp
     require(_newApplicationsEndTime >= block.timestamp, "updateApplicationsEndTime: application end time has already passed");
     require(_newApplicationsEndTime > applicationsStartTime, "updateApplicationsEndTime: application end time should be after application start time");
     require(_newApplicationsEndTime <= roundEndTime, "updateApplicationsEndTime: should be before round end time");
