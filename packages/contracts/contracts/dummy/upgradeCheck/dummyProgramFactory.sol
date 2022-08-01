@@ -20,7 +20,7 @@ contract DummyProgramFactory is OwnableUpgradeable {
 
 
   /// @notice constructor function which ensure deployer is set as owner
-  function initialize() public initializer {
+  function initialize() external initializer {
     __Context_init_unchained();
     __Ownable_init_unchained();
   }
@@ -33,29 +33,30 @@ contract DummyProgramFactory is OwnableUpgradeable {
    * contract while relying on the same ProgramFactory to get the list of
    * programs.
    */
-  function updateProgramContract(address _programContract) public onlyOwner {
-    programContract = _programContract;
+  function updateProgramContract(address newProgramContract) external onlyOwner {
+    // slither-disable-next-line missing-zero-check
+    programContract = newProgramContract;
 
-    emit ProgramContractUpdated(_programContract);
+    emit ProgramContractUpdated(newProgramContract);
   }
 
   /**
    * @notice Clones ProgramImplmentation and deployed a program and emits an event
    *
-   * @param _encodedParameters Encoded parameters for creating a program
+   * @param encodedParameters Encoded parameters for creating a program
    */
   function create(
-    bytes calldata _encodedParameters,
-    string calldata _foobar
+    bytes calldata encodedParameters,
+    string calldata newFoobar
   ) external returns (address) {
 
-    foobar = _foobar;
+    foobar = newFoobar;
 
     address clone = ClonesUpgradeable.clone(programContract);
 
-    DummyProgramImplementation(clone).initialize(_encodedParameters, foobar);
-
     emit ProgramCreated(clone);
+
+    DummyProgramImplementation(clone).initialize(encodedParameters, newFoobar);
 
     return clone;
   }
