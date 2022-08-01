@@ -122,6 +122,7 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
   project = project == null ? new RoundProject(projectId) : project;
 
   //  RoundProject
+  project.project = _project.toString();
   project.round = round.id;
   project.metaPtr = metaPtr.id;
   project.status = "PENDING";
@@ -169,7 +170,7 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
 
     const _id =  _project.get("id")
     if (!_id) continue;
-    const projectId = [_id.toString().toLowerCase(), _round].join('-');
+    const projectId = _id.toString().toLowerCase();
 
     // load project entity
     let project = RoundProject.load(projectId);
