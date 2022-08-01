@@ -131,6 +131,7 @@ You can do this by two means :
     id
     projects {
       id
+      project
       status
       payoutAddress
       metaPtr {

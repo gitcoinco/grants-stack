@@ -122,6 +122,7 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
   project = project == null ? new RoundProject(projectId) : project;
 
   //  RoundProject
+  project.project = _project.toString();
   project.round = round.id;
   project.metaPtr = metaPtr.id;
   project.status = "PENDING";

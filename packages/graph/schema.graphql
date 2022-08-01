@@ -80,6 +80,7 @@ type RoundAccount @entity {
 # id: round.toHex()-project.toHex()
 type RoundProject @entity {
   id: ID!
+  project: String!
   status: String!
   metaPtr: MetaPtr!
   round: Round!
