@@ -21,6 +21,7 @@ import Auth from "./features/common/Auth"
 import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRound from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
+import NotFound from "./features/common/NotFoundPage"
 
 
 const root = ReactDOM.createRoot(
@@ -49,7 +50,7 @@ root.render(
               <Route path="/program/:id" element={<ViewProgram />} />
 
               {/* 404 */}
-              <Route path="*" element={<p>There's nothing here: 404!</p>} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </ReduxRouter>
