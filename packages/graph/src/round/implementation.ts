@@ -169,7 +169,7 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
 
     const _id =  _project.get("id")
     if (!_id) continue;
-    const projectId = [_id.toString().toLowerCase(), _round].join('-');
+    const projectId = _id.toString().toLowerCase();
 
     // load project entity
     let project = RoundProject.load(projectId);

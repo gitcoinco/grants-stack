@@ -126,7 +126,7 @@ You can do this by two means :
 ```graphql
 {
   rounds(where:{
-    id: "0x707F12906E028dE672424d600c9C69460dcD2295"
+    id: "0xd96222ec011cded90be74969d0cffdf4247fae1b"
   }) {
     id
     projects {
