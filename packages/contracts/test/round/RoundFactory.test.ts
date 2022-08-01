@@ -56,7 +56,7 @@ describe("RoundFactory", function () {
     describe('test: updateRoundContract', async () => {
 
       it("RoundContract SHOULD have default address after deploy ", async () => {
-        expect(await roundFactory.RoundContract())
+        expect(await roundFactory.roundContract())
           .to.be.equal(AddressZero);
       });
 
@@ -68,7 +68,7 @@ describe("RoundFactory", function () {
 
       it("RoundContract SHOULD have round address after invoking updateRoundContract", async () => {
         await roundFactory.updateRoundContract(roundImplementation.address).then(async () => {
-          const roundContract = await roundFactory.RoundContract();
+          const roundContract = await roundFactory.roundContract();
           expect(roundContract).to.be.equal(roundImplementation.address);
         });
 
