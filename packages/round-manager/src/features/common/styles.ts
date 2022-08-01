@@ -38,14 +38,14 @@ export const Input = tw.input<InputProps>`
   )}
 `
 
-export const ProjectCardsContainer = tw.div`
+export const CardsContainer = tw.div`
   flex
   flex-row
   flex-wrap
   w-full
 `
 
-export const ProjectCard = tw.div`
+export const BasicCard = tw.div`
   w-80
   h-72
   border
@@ -53,21 +53,21 @@ export const ProjectCard = tw.div`
   ml-0
   mr-6
   my-3
-  overflow-hidden
   rounded-md
+  bg-white
 `
 
-export const ProjectCardHeader = tw.div`
+export const CardHeader = tw.div`
   bg-grey-500
   w-full
   h-1/3
 `
 
-export const ProjectCardContent = tw.div`
+export const CardContent = tw.div`
   p-4
 `
 
-export const ProjectCardTitle = tw.p`
+export const CardTitle = tw.p`
   w-full
   my-4
   text-lg
@@ -76,10 +76,27 @@ export const ProjectCardTitle = tw.p`
   line-clamp-2
 `
 
-export const ProjectCardDescription = tw.p`
+export const CardDescription = tw.p`
   text-sm
   text-ellipsis
   line-clamp-2
   text-gray-500
   leading-relaxed
 `
+
+export const CardFooter = tw.div`
+  absolute
+  bottom-0
+  inset-x-0
+  bg-zinc-50
+  h-16
+  w-full
+`
+
+export const CardFooterContent = tw.div`
+  flex
+  flex-row
+  items-center
+  h-full
+  w-full
+  `
