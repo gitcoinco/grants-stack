@@ -1,7 +1,8 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock"
-enableFetchMocks()
 
 import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+
+enableFetchMocks()
 
 const fetchMock = fetch as FetchMock
 
@@ -96,7 +97,7 @@ describe("graphql_fetch", () => {
       }
     `
 
-    const res = await graphql_fetch(query)
+    const res = await graphql_fetch(query, "goerli")
 
     const params = {
       method: "POST",
@@ -115,6 +116,37 @@ describe("graphql_fetch", () => {
     )
     expect(res.data.programs[0]).toEqual(
       { id: "0x123456789544fe81379e2951623f008d200e1d18" }
+    )
+  })
+
+  it("should fetch data from the correct graphql endpoint for optimism-kovan network", async () => {
+    fetchMock.resetMocks()
+
+    fetchMock.mockResponseOnce(JSON.stringify({
+      data: {}
+    }))
+
+    await graphql_fetch(`programs { id }`, "optimism-kovan")
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
+      expect.anything()
+    )
+  })
+
+  it("should fetch data from the correct graphql endpoint for optimism network", async () => {
+    fetchMock.resetMocks()
+
+    fetchMock.mockResponseOnce(JSON.stringify({
+      data: {}
+    }))
+
+    await graphql_fetch(`programs { id }`, "optimism")
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      //`${process.env.REACT_APP_SUBGRAPH_OPTIMISM_API}`,
+      "undefined",
+      expect.anything()
     )
   })
 })
