@@ -1,14 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom"
 
 import { Button } from "../common/styles"
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/ProtectedRoute"
 
 
 export default function ListCartItems() {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { account } = useWeb3()
+  const { address } = useWallet()
 
   const goBack = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()

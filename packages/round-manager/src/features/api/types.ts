@@ -1,12 +1,21 @@
+/**
+ * Supported EVM networks
+ */
+export type Network = "goerli" | "optimism" | "optimism-kovan"
+
 export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
    */
-  account: string;
+  address: string;
   /**
-   * Chain ID of the currently connected network
+   * Chain ID & name of the currently connected network
    */
-  chainId: number;
+  chain: {
+    id: number;
+    name: string;
+    network: Network;
+  }
 }
 
 export interface MetadataPointer {
@@ -174,6 +183,6 @@ export interface GrantApplication {
    * Pointer to the list of approved/rejected grant applications in a decentralized storage
    * e.g IPFS, Ceramic etc.
    */
-   projectsMetaPtr: MetadataPointer;
-   status?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
+  projectsMetaPtr: MetadataPointer;
+  status?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
 }

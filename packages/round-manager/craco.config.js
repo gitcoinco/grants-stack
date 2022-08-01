@@ -1,3 +1,5 @@
+const webpack = require('webpack')
+
 module.exports = {
   webpack: {
     configure: {
@@ -23,7 +25,7 @@ module.exports = {
          * @param {import('webpack').WebpackError} warning
          * @returns {boolean}
          */
-         function ignoreSourcemapsloaderWarnings(warning) {
+        function ignoreSourcemapsloaderWarnings(warning) {
           return (
             warning.module &&
             warning.module.resource.includes('node_modules') &&
@@ -32,6 +34,13 @@ module.exports = {
           )
         },
       ]
-    }
+    },
+    plugins: {
+      add: [
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        }),
+      ],
+    },
   },
 }

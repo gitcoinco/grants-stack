@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import {
   ArrowNarrowRightIcon,
@@ -11,8 +11,8 @@ import Navbar from "../common/Navbar"
 
 
 function ListPrograms() {
-  const { account } = useWeb3()
-  const { data: programs, isLoading, isSuccess } = useListProgramsQuery(account)
+  const { address, chain: { network } } = useWallet()
+  const { data: programs, isLoading, isSuccess } = useListProgramsQuery({ address, network })
 
   const programList = programs?.map((program, index) => (
     <div
@@ -43,7 +43,7 @@ function ListPrograms() {
 
   return (
     <>
-      <Navbar programCta={ isSuccess ? true : false } />
+      <Navbar programCta={isSuccess ? true : false} />
       <div className="container mx-auto h-screen py-7 px-4 md:px-0 lg:px-0">
         <header className="mb-2.5">
           <h1 className="text-[32px] text-grey-500">My Programs</h1>

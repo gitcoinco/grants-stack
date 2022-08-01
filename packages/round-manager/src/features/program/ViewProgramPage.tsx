@@ -3,7 +3,7 @@ import { ArrowLeftIcon, ArrowNarrowRightIcon, PencilIcon, UserIcon } from "@hero
 import { RefreshIcon } from "@heroicons/react/outline"
 
 import { Button } from "../common/styles"
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
@@ -13,8 +13,8 @@ export default function ViewProgram() {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { account } = useWeb3()
-  const { program } = useListProgramsQuery(account, {
+  const { address, chain: { network } } = useWallet()
+  const { program } = useListProgramsQuery({ address, network }, {
     selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
   })
 
@@ -22,7 +22,7 @@ export default function ViewProgram() {
     data: rounds,
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
-  } = useListRoundsQuery({ account, programId: id })
+  } = useListRoundsQuery({ address, network, programId: id })
 
   const roundItems = rounds?.map((round, index) =>
     <div

@@ -2,8 +2,11 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
 import { ReduxRouter } from "@lagunovsky/redux-react-router"
-import { store } from "./app/store";
 import { Route, Routes } from "react-router-dom"
+import { WagmiConfig } from "wagmi"
+
+import { store } from "./app/store"
+import { client as WagmiClient } from "./app/wagmi"
 import reportWebVitals from "./reportWebVitals"
 import history from "./history"
 
@@ -14,7 +17,7 @@ import "./index.css"
 import CreateProgram from "./features/program/CreateProgramPage"
 import CreateRound from "./features/round/CreateRoundPage"
 import Program from "./features/program/ListProgramPage"
-import ProtectedRoute from "./features/common/ProtectedRoute"
+import Auth from "./features/common/Auth"
 import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRound from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
@@ -28,28 +31,30 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ReduxRouter history={history} store={store}>
-        <Routes>
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
+      <WagmiConfig client={WagmiClient}>
+        <ReduxRouter history={history} store={store}>
+          <Routes>
+            {/* Protected Routes */}
+            <Route element={<Auth />}>
 
-            {/* Default Route */}
-            <Route path="/" element={<Program />} />
+              {/* Default Route */}
+              <Route path="/" element={<Program />} />
 
-            {/* Round Routes */}
-            <Route path="/round/create" element={<CreateRound />} />
-            <Route path="/round/:id" element={<ViewRound />} />
-            <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
+              {/* Round Routes */}
+              <Route path="/round/create" element={<CreateRound />} />
+              <Route path="/round/:id" element={<ViewRound />} />
+              <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
 
-            {/* Program Routes */}
-            <Route path="/program/create" element={<CreateProgram />} />
-            <Route path="/program/:id" element={<ViewProgram />} />
+              {/* Program Routes */}
+              <Route path="/program/create" element={<CreateProgram />} />
+              <Route path="/program/:id" element={<ViewProgram />} />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </ReduxRouter>
+              {/* 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </ReduxRouter>
+      </WagmiConfig>
     </Provider>
   </React.StrictMode>
 )

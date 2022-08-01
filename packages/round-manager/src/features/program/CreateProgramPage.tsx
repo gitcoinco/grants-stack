@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
 
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
@@ -16,6 +16,8 @@ type FormData = {
 }
 
 export default function CreateProgram() {
+  const { address, chain: { network } } = useWallet()
+
   const [saveToIPFS, {
     error: ipfsError,
     isError: isIPFSError,
@@ -30,11 +32,10 @@ export default function CreateProgram() {
     isError: isProgramError
   }] = useCreateProgramMutation()
 
-  const { account } = useWeb3()
   const navigate = useNavigate()
   const { register, control, formState, handleSubmit } = useForm<FormData>({
     defaultValues: {
-      operators: [{ wallet: account }]
+      operators: [{ wallet: address }]
     }
   })
   const { fields, append, remove } = useFieldArray({
@@ -64,11 +65,14 @@ export default function CreateProgram() {
 
       // Deploy program contract
       await createProgram({
-        store: {
-          protocol: 1, // IPFS protocol ID is 1
-          pointer: metadataPointer
+        program: {
+          store: {
+            protocol: 1, // IPFS protocol ID is 1
+            pointer: metadataPointer
+          },
+          operatorWallets: data.operators.map(op => op.wallet)
         },
-        operatorWallets: data.operators.map(op => op.wallet)
+        network
       }).unwrap()
 
     } catch (e) {

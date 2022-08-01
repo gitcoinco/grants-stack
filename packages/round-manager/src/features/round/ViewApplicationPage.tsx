@@ -8,32 +8,30 @@ import {
 import { useListRoundsQuery } from "../api/services/round"
 import ConfirmationModal from "../common/ConfirmationModal"
 import Navbar from "../common/Navbar"
-import { useWeb3 } from "../common/ProtectedRoute"
+import { useWallet } from "../common/Auth"
 import { Button } from "../common/styles"
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 
 
-
 type ApplicationStatus = "APPROVED" | "REJECTED"
-
 
 export default function ViewApplicationPage() {
   const [reviewDecision, setReviewDecision] = useState<ApplicationStatus | undefined>(undefined)
   const [openModal, setOpenModal] = useState(false)
 
   const { roundId, id } = useParams()
-  const { account } = useWeb3()
+  const { address, chain: { network } } = useWallet()
   const navigate = useNavigate()
 
-  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, id }, {
+  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, network, id }, {
     selectFromResult: ({ data, isLoading }) => ({
       application: data?.find((application) => application.id === id),
       isLoading
     })
   })
 
-  const { round } = useListRoundsQuery({ account }, {
+  const { round } = useListRoundsQuery({ address, network }, {
     selectFromResult: ({ data }) => ({
       round: data?.find((round) => round.id === roundId)
     }),

@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react"
 import { Button } from "./styles";
 
 
-export interface ModalProps {
+interface ModalProps {
   title?: string;
   body?: string;
   cancelButtonText?: string;

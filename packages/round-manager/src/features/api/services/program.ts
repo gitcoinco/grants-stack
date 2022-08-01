@@ -2,7 +2,7 @@ import { ethers } from "ethers"
 import { api } from ".."
 import { global } from "../../../global"
 import { programFactoryContract } from "../contracts"
-import { Program } from "../types"
+import { Network, Program } from "../types"
 import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
 
 
@@ -11,11 +11,11 @@ import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
  */
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createProgram: builder.mutation<string, Program>({
-      queryFn: async ({ store: metadata, operatorWallets }) => {
+    createProgram: builder.mutation<string, { program: Program, network: Network }>({
+      queryFn: async ({ program: { store: metadata, operatorWallets }, network }) => {
         try {
           // fetch chain id
-          const chainId = (await getWeb3Instance())?.chainId
+          const chainId = (await getWeb3Instance(network))?.chainId
 
           // load program factory contract
           const _programFactoryContract = programFactoryContract(chainId);
@@ -79,16 +79,16 @@ export const programApi = api.injectEndpoints({
       },
       invalidatesTags: ["Program"]
     }),
-    listPrograms: builder.query<Program[], string>({
-      queryFn: async (account) => {
+    listPrograms: builder.query<Program[], { address: string, network: Network }>({
+      queryFn: async ({ address, network }) => {
         try {
-          // get the subgraph for all programs owned by the given account
+          // get the subgraph for all programs owned by the given address
           const res = await graphql_fetch(
             `
-              query GetPrograms($account: String!) {
+              query GetPrograms($address: String!) {
                 programs(where: {
                   accounts_: {
-                    address: $account
+                    address: $address
                   }
                 }) {
                   id
@@ -106,7 +106,8 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            { account }
+            network,
+            { address: address.toLowerCase() }
           )
 
           const programs: Program[] = []
