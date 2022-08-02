@@ -32,10 +32,10 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| BulkVotingStrategy    |                                            |
-| RoundFactory          |                                            |
-| RoundImplementation   |                                            |
+| BulkVotingStrategy    | 0xaaC049bE4ccaE52D981585371829b5aEc4a13F53 |
+| RoundFactory          | 0x0BFA0AAF5f2D81f859e85C8E82A3fc5b624fc6E8 |
+| RoundImplementation   | 0x00CD233ae7F31DC3664401cb040f24f6bf615668 |
 | Round                 |                                            |
-| ProgramFactory        |                                            |
-| ProgramImplementation |                                            |
+| ProgramFactory        | 0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011 |
+| ProgramImplementation | 0x6D86bDA37651F486bDac067c9c20eD512E8f93B3 |
 | Program               |                                            |
