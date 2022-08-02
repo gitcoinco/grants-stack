@@ -4,12 +4,12 @@ import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
 import { useWallet } from "../common/Auth"
 import { Spinner } from "../common/Spinner"
 import {
-  ProjectCardsContainer,
-  ProjectCard,
-  ProjectCardHeader,
-  ProjectCardContent,
-  ProjectCardTitle,
-  ProjectCardDescription
+  CardsContainer,
+  BasicCard,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription
 } from "../common/styles"
 
 
@@ -22,21 +22,21 @@ export default function ApplicationsApproved() {
   })
 
   return (
-    <ProjectCardsContainer>
+    <CardsContainer>
       {isSuccess && data?.map((application, index) => (
-        <ProjectCard key={index} className="application-card" data-testid="application-card">
-          <ProjectCardHeader />
-          <ProjectCardContent>
+        <BasicCard key={index} className="application-card" data-testid="application-card">
+          <CardHeader />
+          <CardContent>
             <Link to={`/round/${id}/application/${application.id}`}>
-              <ProjectCardTitle>{application.project.title}</ProjectCardTitle>
+              <CardTitle>{application.project.title}</CardTitle>
             </Link>
-            <ProjectCardDescription>{application.project.description}</ProjectCardDescription>
-          </ProjectCardContent>
-        </ProjectCard>
+            <CardDescription>{application.project.description}</CardDescription>
+          </CardContent>
+        </BasicCard>
       ))}
       {isLoading &&
         <Spinner text="Fetching Grant Applications" />
       }
-    </ProjectCardsContainer>
+    </CardsContainer>
   )
 }
