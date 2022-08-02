@@ -144,7 +144,6 @@ describe("graphql_fetch", () => {
     await graphql_fetch(`programs { id }`, "optimism")
 
     expect(fetchMock).toHaveBeenCalledWith(
-      //`${process.env.REACT_APP_SUBGRAPH_OPTIMISM_API}`,
       "undefined",
       expect.anything()
     )
