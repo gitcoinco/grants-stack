@@ -23,7 +23,7 @@ export const programFactoryContract = (chainId: number|undefined): Contract => {
     }
     default: {
       // goerli network
-      address = "0x9F7caF160E9674BbF7159eb302c350680Ac09eF6";
+      address = "0x30875E085D988fAbadf3B5aE117061D607167f02";
     }
   }
 
@@ -55,7 +55,7 @@ export const roundFactoryContract = (chainId: number|undefined): Contract => {
     }
     default: {
       // goerli network
-      address = "0xFed628443dEbcE553EB6053566dFabE0537348f2";
+      address = "0x294e4D13919602f3B857fB2195628Fd5255e298a";
     }
   }
 
