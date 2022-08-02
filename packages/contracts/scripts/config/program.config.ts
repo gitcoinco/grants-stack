@@ -16,7 +16,7 @@ export const programParams: DeployParams = {
   "optimism-mainnet": {
     programFactoryContract: '0xd39b40aC9279EeeB86FBbDeb2C9acDF16e16cF89',
     programImplementationContract: '0x9fcC854b145Bd3640a01c49Aa2Cfa725Ed0B4210',
-    programContract: ''
+    programContract: '0x064885b5BBA853b1d11F97E04b477AB157721f82'
   },
   "optimism-kovan": {
     programFactoryContract: '0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011',

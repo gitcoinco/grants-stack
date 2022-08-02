@@ -42,7 +42,10 @@ export async function main() {
 
   const params = [
     { protocol: 1, pointer: "bafybeif43xtcb7zfd6lx7rfq42wjvpkbqgoo7qxrczbj4j4iwfl5aaqv2q" }, // _metaPtr
-    ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA'], // _adminRoles
+    [
+      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
+      '0xB8cEF765721A6da910f14Be93e7684e9a3714123'
+    ], // _adminRoles
     [
       '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
       '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
