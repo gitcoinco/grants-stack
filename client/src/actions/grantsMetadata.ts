@@ -134,7 +134,7 @@ const getMetadata = async (
     ...metadata,
     protocol: project.metadata.protocol,
     pointer: project.metadata.pointer,
-    projectId,
+    id: projectId,
   };
   storage.add(cacheKey, JSON.stringify(ret));
   return ret;
