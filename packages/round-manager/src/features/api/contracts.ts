@@ -18,7 +18,7 @@ export const programFactoryContract = (chainId: number|undefined): Contract => {
     }
     case 69: {
       // optimism-kovan network
-      address = "0x21AE9Cd37c5981841Be9f0168Ee8dBCeb67bcCC2"
+      address = "0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011"
       break;
     }
     default: {
@@ -50,7 +50,7 @@ export const roundFactoryContract = (chainId: number|undefined): Contract => {
     }
     case 69: {
       // optimism-kovan network
-      address = "0x5632fdD467B657AEc800296F1695cf8847A50048"
+      address = "0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF"
       break;
     }
     default: {

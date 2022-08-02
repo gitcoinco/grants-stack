@@ -19,13 +19,13 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| BulkVotingStrategy    | 0x2D39988C462C63b0035c3824fDEE80938cB27d0b |
-| RoundFactory          | 0x5632fdD467B657AEc800296F1695cf8847A50048 |
-| RoundImplementation   | 0x24bF2015ad3B99b3fCDe5f752bc4cF9fa5Ea922A |
-| Round                 | 0xD96222ec011Cded90Be74969d0CFfDf4247FAe1b |
-| ProgramFactory        | 0x21AE9Cd37c5981841Be9f0168Ee8dBCeb67bcCC2 |
-| ProgramImplementation | 0x4A910609A85523e08C74Fe3a35a61F1afF40bd83 |
-| Program               | 0x4a3dA6496F6f938477d41EcEd227780F9bF5501C |
+| BulkVotingStrategy    | 0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c |
+| RoundFactory          | 0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF |
+| RoundImplementation   | 0x5C46ae4a950E0e0280006403B9e517462FD16dAc |
+| Round                 | 0x3EE29458f2121E2C20421cd188F2CAbd99347d54 |
+| ProgramFactory        | 0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011 |
+| ProgramImplementation | 0x6D86bDA37651F486bDac067c9c20eD512E8f93B3 |
+| Program               | 0x007c9A1a6F239923E4f7C0e30C5DE4c2100B22D6 |
 
 
 ## Optimism Mainnet

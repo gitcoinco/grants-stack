@@ -19,8 +19,8 @@ export const programParams: DeployParams = {
     programContract: ''
   },
   "optimism-kovan": {
-    programFactoryContract: '',
-    programImplementationContract: '',
-    programContract: ''
+    programFactoryContract: '0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011',
+    programImplementationContract: '0x6D86bDA37651F486bDac067c9c20eD512E8f93B3',
+    programContract: '0x007c9A1a6F239923E4f7C0e30C5DE4c2100B22D6'
   }
 };

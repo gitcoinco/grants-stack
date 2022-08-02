@@ -22,9 +22,9 @@ export const roundParams: DeployParams = {
     roundContract: ''
   },
   "optimism-kovan": {
-    roundFactoryContract: '',
-    roundImplementationContract: '',
-    bulkVotingStrategyContract: '',
-    roundContract: ''
+    roundFactoryContract: '0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF',
+    roundImplementationContract: '0x5C46ae4a950E0e0280006403B9e517462FD16dAc',
+    bulkVotingStrategyContract: '0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c',
+    roundContract: '0x3EE29458f2121E2C20421cd188F2CAbd99347d54'
   },
 };
