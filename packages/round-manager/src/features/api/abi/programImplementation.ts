@@ -13,12 +13,12 @@ const programImplementation = [
   "function getRoleMemberCount(bytes32 role) view returns (uint256)",
   "function grantRole(bytes32 role, address account)",
   "function hasRole(bytes32 role, address account) view returns (bool)",
-  "function initialize(bytes _encodedParameters)",
+  "function initialize(bytes encodedParameters)",
   "function metaPtr() view returns (uint256 protocol, string pointer)",
   "function renounceRole(bytes32 role, address account)",
   "function revokeRole(bytes32 role, address account)",
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
-  "function updateMetaPtr(tuple(uint256 protocol, string pointer) _newMetaPtr)"
+  "function updateMetaPtr(tuple(uint256 protocol, string pointer) newMetaPtr)"
 ]
 
 export default programImplementation
