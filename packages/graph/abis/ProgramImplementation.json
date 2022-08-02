@@ -264,7 +264,7 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_encodedParameters",
+        "name": "encodedParameters",
         "type": "bytes"
       }
     ],
@@ -362,7 +362,7 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_newMetaPtr",
+        "name": "newMetaPtr",
         "type": "tuple"
       }
     ],

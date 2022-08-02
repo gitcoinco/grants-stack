@@ -64,28 +64,15 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "RoundContract",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_encodedParameters",
+        "name": "encodedParameters",
         "type": "bytes"
       },
       {
         "internalType": "address",
-        "name": "_ownedBy",
+        "name": "ownedBy",
         "type": "address"
       }
     ],
@@ -128,6 +115,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "roundContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -144,7 +144,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_RoundContract",
+        "name": "newRoundContract",
         "type": "address"
       }
     ],
