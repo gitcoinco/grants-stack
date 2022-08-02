@@ -1,6 +1,6 @@
 # graph
 
-This package holds the subgraph which indexs data with regard the 
+This package holds the subgraph which indexs data with regard the
 - ProgramFactory
 - ProgramImplementation
 - RoundFactory
@@ -11,19 +11,20 @@ This package holds the subgraph which indexs data with regard the
 
 The following sections document the hosted services where the subgraph is deployed across different networks
 
-| Network        | GITHUB_USER/SUBGRAPH_NAME                 | Playground                                                                             | Query                                                                             |
-|----------------|-------------------------------------------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| goerli         | thelostone-mc/program-factory-v0          | https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0          | https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0          |
-| optimism-kovan | thelostone-mc/grants-round-optimism-kovan | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-kovan | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-kovan |
+| Network        | GITHUB_USER/SUBGRAPH_NAME                    | Playground                                                                                | Query                                                                                 |
+|----------------|----------------------------------------------|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| goerli         | thelostone-mc/program-factory-v0             | https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0             | https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0              |
+| optimism-kovan | thelostone-mc/grants-round-optimism-kovan    | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-kovan    | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-kovan     |
+| optimism       | thelostone-mc/grants-round-optimism-mainnet  | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-mainnet  | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-mainnet   |
 
 ## Directory Structure
 
 ```
 .
 ├── abis                        # human-readable abis of deployed contracts
-├── docs                        # useful documentation 
-├── src                         
-│   ├── program                 
+├── docs                        # useful documentation
+├── src
+│   ├── program
 │       ├── factory.ts          # ProgramFactory event handlers
 │       ├── implementation.ts   # ProgramImplementation event handlers
 │   ├── round
@@ -31,8 +32,9 @@ The following sections document the hosted services where the subgraph is deploy
 │       ├── implementation.ts   # RoundImplementation event handlers
 │   ├── utils.ts                # useful helper functions
 ├── schema.graphql              # Entity schema
+├── config                      # Chain + contract configuration
 ├── subgraph.template.yaml      # Subgraph configuration
-├── tsconfig.json               # Typescript configuration 
+├── tsconfig.json               # Typescript configuration
 ├── package.json                # Package configuration
 └── .gitignore
 └── README.md
@@ -63,6 +65,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 |----------------|
 | goerli         |
 | optimism-kovan |
+| optimism       |
 
 
 - Run codegen
