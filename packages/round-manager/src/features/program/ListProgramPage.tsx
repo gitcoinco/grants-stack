@@ -120,4 +120,4 @@ function ListPrograms() {
   )
 }
 
-export default ListPrograms;
+export default ListPrograms
