@@ -95,6 +95,24 @@ export default function CreateProgram() {
     }
   }
 
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+    },
+    {
+      name: "Deploying",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status: isSuccess ? "current" : "upcoming"
+    }
+  ]
+
   return (
     <div className="bg-[#F3F3F5]">
       <Navbar />
@@ -202,25 +220,7 @@ export default function CreateProgram() {
           <ProgressModal
             show={openProgressModal}
             subheading={"Please hold while we create your Grant Program."}
-            steps={
-              [
-                {
-                  name: "Storing",
-                  description: "The metadata is being saved in a safe place.",
-                  status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
-                },
-                {
-                  name: "Deploying",
-                  description: `Connecting to the ${chain.name} blockchain.`,
-                  status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
-                },
-                {
-                  name: "Redirecting",
-                  description: "Just another moment while we finish things up.",
-                  status: isSuccess ? "current" : "upcoming"
-                }
-              ]
-            }
+            steps={progressSteps}
           />
 
         </main>
