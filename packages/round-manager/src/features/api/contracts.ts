@@ -13,7 +13,7 @@ export const programFactoryContract = (chainId: number|undefined): Contract => {
   switch (chainId) {
     case 10: {
       // optimism network
-      address = "0x0"; // TODO: update with contract address
+      address = "0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011";
       break;
     }
     case 69: {
@@ -45,7 +45,7 @@ export const roundFactoryContract = (chainId: number|undefined): Contract => {
   switch (chainId) {
     case 10: {
       // optimism network
-      address = "0x0"; // TODO: update with contract address
+      address = "0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF";
       break;
     }
     case 69: {
