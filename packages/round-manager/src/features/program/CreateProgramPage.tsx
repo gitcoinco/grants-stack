@@ -10,7 +10,6 @@ import { Input, Button } from "../common/styles"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
 import ProgressModal from "../common/ProgressModal"
-import { resolveProjectReferencePath } from "typescript"
 
 
 type FormData = {
@@ -23,14 +22,14 @@ export default function CreateProgram() {
   const { address, chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    error: ipfsError,
+    // error: ipfsError,
     isError: isIPFSError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS
   }] = useSaveToIPFSMutation()
 
   const [createProgram, {
-    error: programError,
+    // error: programError,
     isLoading,
     isSuccess,
     isError: isProgramError

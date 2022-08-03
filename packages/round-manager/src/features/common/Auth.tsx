@@ -1,5 +1,5 @@
 import { Outlet, useOutletContext } from "react-router-dom"
-import { useAccount, useEnsName, useNetwork, useProvider, useSigner } from "wagmi"
+import { useAccount, useNetwork, useProvider, useSigner } from "wagmi"
 
 import { Web3Instance } from "../api/types"
 import { Spinner } from "./Spinner";
