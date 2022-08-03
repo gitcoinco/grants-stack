@@ -27,7 +27,7 @@ type InputProps = {
 
 export const Input = tw.input<InputProps>`
   block
-  my-1 w-full sm:text-sm border-grey-100
+  mt-1 mb-2 w-full sm:text-sm border-grey-100
   shadow-sm rounded-md
   ${(p: InputProps) => (
     p.$hasError ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"

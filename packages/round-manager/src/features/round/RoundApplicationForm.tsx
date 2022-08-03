@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
-import { Link, useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
@@ -11,6 +11,7 @@ import { FormContext } from "../common/FormWizard"
 import { Input } from "../common/styles"
 import { generateApplicationSchema } from "../api/utils"
 import { useWallet } from "../common/Auth"
+import ProgressModal from "../common/ProgressModal"
 
 
 const ValidationSchema = yup.object().shape({
@@ -19,6 +20,7 @@ const ValidationSchema = yup.object().shape({
       email: yup.string(),
       twitter: yup.string(),
       github: yup.string(),
+      githubOrganization: yup.string(),
       fundingSource: yup.string(),
       profit2022: yup.string(),
       teamSize: yup.string(),
@@ -28,6 +30,7 @@ const ValidationSchema = yup.object().shape({
 
 
 export function RoundApplicationForm(props: { initialData: any, stepper: any }) {
+  const [openProgressModal, setOpenProgressModal] = useState(false)
   const { currentStep, setCurrentStep, stepsCount, formData } = useContext(FormContext)
   const FormStepper = props.stepper
 
@@ -40,17 +43,17 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     resolver: yupResolver(ValidationSchema),
   })
 
-  const { signer } = useWallet()
+  const { chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    error: ipfsError,
+    // error: ipfsError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS,
     isError: isIPFSError,
   }] = useSaveToIPFSMutation()
 
   const [createRound, {
-    error: roundError,
+    // error: roundError,
     isLoading,
     isSuccess,
     isError: isRoundError,
@@ -62,12 +65,24 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
         navigate(`/program/${programId}`)
       }, 2000)
     }
-  })
+
+    if (isLoading) {
+      setOpenProgressModal(true)
+    }
+  }, [isSuccess, isLoading, programId, navigate])
+
+  useEffect(() => {
+    if (isIPFSError || isRoundError) {
+      setOpenProgressModal(false)
+    }
+  }, [isIPFSError, isRoundError])
 
   const prev = () => setCurrentStep(currentStep - 1)
 
   const next: SubmitHandler<Round> = async (values) => {
     try {
+      setOpenProgressModal(true)
+
       const data = { ...formData, ...values }
 
       // Save round and application metadata to IPFS
@@ -119,161 +134,124 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     }
   }
 
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+    },
+    {
+      name: "Deploying",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status: isSuccess ? "current" : "upcoming"
+    }
+  ]
+
   return (
-    <div>
-      <div className="md:grid md:grid-cols-3 md:gap-6">
-        <div className="md:col-span-1">
-          <p className="text-base leading-6"><b>Application Form Configuration</b></p>
-          <p className="mt-1 text-base text-gray-500">Define the acceptance criteria grant owners can
-            provide to apply for your grant program round.</p>
+    <div className="md:grid md:grid-cols-3 md:gap-10">
+      <div className="md:col-span-1">
+        <p className="text-base leading-6">Application Form Configuration</p>
+        <p className="mt-1 text-sm text-grey-400">
+          Define the acceptance criteria grant owners can provide to apply for your grant program round.
+        </p>
+      </div>
 
-          {(!programId || (!props.initialData.program && props.initialData.isProgramFetched)) &&
-            <div className="mt-5">
-              <span className="text-rose-600">Error: Missing or invalid Program ID!</span><br />
-              <Link to="/" className="text-blue-600 underline">Please choose a Grant Program</Link>
-            </div>
-          }
-
-          {/* Display relevant status updates */}
-          <div className="mt-5">
-            {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
-            {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
-            {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-            {isSuccess && <p className="text-green-600">✅ Congratulations! your round was successfully created!</p>}
-            {(isIPFSError || isRoundError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || roundError)}!</p>}
-          </div>
-        </div>
-
-        <div className="mt-5 md:mt-0 md:col-span-2  border border-grey-100 px-6 pt-6 pb-3.5">
-          <form onSubmit={handleSubmit(next)}>
-            <p className="mt-4 mb-2"><b>Basic information</b></p>
-            <p className="text-sm text-gray-500 mb-2">
+      <div className="mt-5 md:mt-0 md:col-span-2">
+        <form onSubmit={handleSubmit(next)} className="shadow-sm text-grey-500">
+          <div className="pt-7 pb-10 sm:px-6 bg-white">
+            <p className="mb-2"><b>Basic information</b></p>
+            <p className="text-base text-grey-400 mb-6">
               This information will be collected from all Owners applying to the Grant and some personal identifiable information will be stored publicly.
             </p>
-            <p className="text-sm">
+            <p className="text-base italic">
               Note: The information entered in the fields below will be displayed in the Grant Application.
             </p>
 
-            <p className="mt-4 mb-2"><b>Project</b></p>
+            <p className="mt-6"><b>Project</b></p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               {/* Name */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700">
+              <div className="mt-2">
+                <label className="block text-xs font-medium">
                   Name
                 </label>
                 <Input
                   type="text"
                   value='i.e. "What do you call your project?"'
+                  className="text-grey-400"
                   disabled
                   $disabled
                 />
               </div>
 
               {/* Website */}
-              <div>
+              <div className="mt-2">
                 <label
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   Website
                 </label>
                 <Input
                   type="text"
-                  value="i.e. email@domain.com"
+                  value="i.e. www.domain.com"
+                  className="text-grey-400"
                   disabled
                   $disabled
                 />
               </div>
 
               {/* Logo */}
-              <div className="col-span-1 sm:col-span-3">
+              <div className="col-span-1 sm:col-span-3 mt-2">
                 <label
-                  className="block text-xs font-medium text-gray-700">
-                  Logo
+                  className="block text-xs font-medium mb-2">
+                  Logo Image
                 </label>
 
-                <div className="mt-1 max-w-lg flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <div className="flex text-xs text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                      >
-                      </label>
-                      <p className="pl-1">Owners will upload or drag and drop PNG or JPG</p>
-                    </div>
-                    <p className="text-xs text-gray-500">(Recommended: 200x300px)</p>
+                <div className="max-w-md flex px-20 py-7 border border-gray-300 border-dashed rounded-md">
+                  <div className="text-grey-400 text-xs text-center">
+                    <span>Owners will upload or drag and drop</span><br />
+                    <span>PNG or JPG (Recommended: 200x300px)</span>
                   </div>
                 </div>
-
               </div>
 
               {/* Banner */}
-              <div className="col-span-1 sm:col-span-3">
+              <div className="col-span-1 sm:col-span-3 mt-2">
                 <label
-                  className="block text-xs font-medium text-gray-700">
-                  Banner
+                  className="block text-xs font-medium mb-2">
+                  Banner Image
                 </label>
 
-                <div className="mt-1 max-w-lg flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <div className="flex text-xs text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                      >
-                      </label>
-                      <p className="pl-1">Owners will upload or drag and drop PNG or JPG</p>
-                    </div>
-                    <p className="text-xs text-gray-500">(Recommended: 1044x600px)</p>
+                <div className="max-w-md flex px-20 py-7 border border-gray-300 border-dashed rounded-md">
+                  <div className="text-grey-400 text-xs text-center">
+                    <span>Owners will upload or drag and drop</span><br />
+                    <span>PNG or JPG (Recommended: 1044x600px)</span>
                   </div>
                 </div>
 
               </div>
 
               {/* Description */}
-              <div className="sm:col-start-1 sm:col-span-3">
-                <label className="block text-xs font-medium text-gray-700">
+              <div className="sm:col-start-1 sm:col-span-3 mt-2">
+                <label className="block text-xs font-medium mb-2">
                   Description
                 </label>
                 <Input
                   type="text"
                   value='i.e. "Tell us more about your project."'
+                  className="text-grey-400"
                   disabled
                   $disabled
                 />
               </div>
             </div>
 
-            <p className="mt-4 mb-2"><b>Additional Questions</b></p>
+            <p className="my-6"><b>Additional Questions</b></p>
 
             <div className="grid grid-cols-6 gap-6">
 
@@ -281,7 +259,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="applicationMetadata.contact.email"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   Email
                 </label>
                 <Input
@@ -289,10 +267,9 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   $hasError={errors.applicationMetadata?.customQuestions?.email}
                   type="text"
                   placeholder='i.e. "email@domain.com"'
-                  className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.customQuestions?.email
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.email?.message}
                   </p>
                 }
@@ -302,53 +279,67 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
               <div className="col-span-6 sm:col-span-3 sm:col-start-1">
                 <label
                   htmlFor="applicationMetadata.customQuestions.twitter"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   Twitter
                 </label>
                 <Input
                   {...register("applicationMetadata.customQuestions.twitter")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.twitter}
+                  $hasError={errors.applicationMetadata?.customQuestions?.email}
                   type="text"
                   placeholder='i.e. "twitter.com/user-handle"'
-                  className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.customQuestions?.twitter
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.twitter?.message}
                   </p>
                 }
               </div>
 
               {/* Github */}
-              <div className="col-span-6 sm:col-span-3">
+              <div className="col-span-6 sm:col-span-3 sm:col-start-1">
                 <label
                   htmlFor="applicationMetadata.customQuestions.github"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   GitHub
                 </label>
                 <Input
                   {...register("applicationMetadata.customQuestions.github")}
                   $hasError={errors.applicationMetadata?.customQuestions?.github}
                   type="text"
-                  placeholder='i.e "@github-handle"'
-                  className="placeholder:italic"
+                  placeholder='i.e. "twitter.com/user-handle"'
                 />
                 {errors.applicationMetadata?.customQuestions?.github
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.github?.message}
                   </p>
                 }
               </div>
 
-              <div className="col-span-6">
-                <p className="text-sm my-0 text-gray-500">Twitter and Github will require verification.</p>
+              {/* Github Organization */}
+              <div className="col-span-6 sm:col-span-3">
+                <label
+                  htmlFor="applicationMetadata.customQuestions.githubOrganization"
+                  className="block text-xs font-medium">
+                  GitHub Organization
+                </label>
+                <Input
+                  {...register("applicationMetadata.customQuestions.githubOrganization")}
+                  $hasError={errors.applicationMetadata?.customQuestions?.githubOrganization}
+                  type="text"
+                  placeholder='i.e "@github-handle"'
+                />
+                {errors.applicationMetadata?.customQuestions?.githubOrganization
+                  && <p className="text-xs text-pink-500">
+                    {errors.applicationMetadata?.customQuestions?.githubOrganization?.message}
+                  </p>
+                }
               </div>
 
               {/* Funding Sources */}
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="applicationMetadata.customQuestions.fundingSources"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   Funding Sources
                 </label>
                 <Input
@@ -356,10 +347,9 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   $hasError={errors.applicationMetadata?.customQuestions?.fundingSource}
                   type="text"
                   placeholder='i.e. "What sources of funding do you currently have?"'
-                  className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.customQuestions?.fundingSource
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.fundingSource?.message}
                   </p>
                 }
@@ -369,7 +359,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="applicationMetadata.customQuestions.profit2022"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   2022 Profit
                 </label>
                 <Input
@@ -377,10 +367,9 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   $hasError={errors.applicationMetadata?.customQuestions?.profit2022}
                   type="text"
                   placeholder='i.e. "Please enter your profit for 2022."'
-                  className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.customQuestions?.profit2022
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.profit2022?.message}
                   </p>
                 }
@@ -390,7 +379,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="applicationMetadata.customQuestions.teamSize"
-                  className="block text-xs font-medium text-gray-700">
+                  className="block text-xs font-medium">
                   Team Size
                 </label>
                 <Input
@@ -398,24 +387,30 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                   $hasError={errors.applicationMetadata?.customQuestions?.teamSize}
                   type="text"
                   placeholder='i.e. "What is the size of your team"'
-                  className="placeholder:italic"
                 />
                 {errors.applicationMetadata?.customQuestions?.teamSize
-                  && <p className="text-sm text-red-600">
+                  && <p className="text-xs text-pink-500">
                     {errors.applicationMetadata?.customQuestions?.teamSize?.message}
                   </p>
                 }
               </div>
             </div>
+          </div>
 
+          <div className="px-6 align-middle py-3.5 shadow-md">
             <FormStepper
               currentStep={currentStep}
               stepsCount={stepsCount}
               prev={prev}
               disabledNext={isLoading || isSavingToIPFS || isSuccess || !props.initialData.program}
             />
-          </form>
-        </div>
+          </div>
+        </form>
+        <ProgressModal
+          show={openProgressModal}
+          subheading={"Please hold while we create your Grant Round."}
+          steps={progressSteps}
+        />
       </div>
     </div>
   )

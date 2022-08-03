@@ -9,12 +9,12 @@ export interface FormStepperProps {
 
 export function FormStepper({ disableNext = false, ...props }: FormStepperProps) {
   return (
-    <div className="flex justify-end space-x-4 mt-6">
+    <div className="flex justify-end space-x-4">
       {props.currentStep > 1 &&
         <Button type="button" $variant="outline" onClick={props.prev}>Previous</Button>}
 
       <Button type="submit" $variant="solid" disabled={disableNext}>
-        {props.currentStep === props.stepsCount ? "Deploy" : "Next"}
+        {props.currentStep === props.stepsCount ? "Launch" : "Next"}
       </Button>
     </div>
   )

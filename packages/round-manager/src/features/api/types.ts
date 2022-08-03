@@ -85,6 +85,7 @@ export interface ApplicationMetadata {
     twitter?: string,
     website?: string,
     github?: string,
+    githubOrganization?: string,
     fundingSource?: string,
     profit2022?: string,
     teamSize?: string,

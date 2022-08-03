@@ -9,6 +9,7 @@ import { RoundDetailForm } from "./RoundDetailForm"
 import { RoundApplicationForm } from "./RoundApplicationForm"
 import { Button } from "../common/styles"
 import Navbar from "../common/Navbar"
+import Footer from "../common/Footer"
 
 
 export default function CreateRound() {
@@ -31,26 +32,29 @@ export default function CreateRound() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto h-screen px-4 py-16">
-        <header>
-          <div className="flow-root">
-            <h1 className="float-left text-[32px] mb-7">Create Round</h1>
-            <Button
-              type="button"
-              $variant="outline"
-              className="inline-flex float-right py-2 px-4 text-sm text-grey-400"
-              onClick={() => navigate(`/program/${programId}`)}>
-              <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-              Exit
-            </Button>
-          </div>
-        </header>
-        <main>
-          <FormWizard
-            steps={[RoundDetailForm, RoundApplicationForm]}
-            initialData={{ program, isProgramFetched, programId }}
-          />
-        </main>
+      <div className="bg-[#F3F3F5]">
+        <div className="container mx-auto h-screen px-4 pt-8">
+          <header>
+            <div className="flow-root">
+              <h1 className="float-left text-[32px] mb-7">Create a Round</h1>
+              <Button
+                type="button"
+                $variant="outline"
+                className="inline-flex float-right py-2 px-4 text-sm text-pink-500"
+                onClick={() => navigate('/')}>
+                <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                Exit
+              </Button>
+            </div>
+          </header>
+          <main>
+            <FormWizard
+              steps={[RoundDetailForm, RoundApplicationForm]}
+              initialData={{ program, isProgramFetched, programId }}
+            />
+          </main>
+        </div>
+        <Footer />
       </div>
     </>
   )
