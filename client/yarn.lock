@@ -1750,6 +1750,26 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.1.tgz#75b4c27948c81e88ccd3a8902047bcd797f38d32"
   integrity sha512-ej5oVy6lykXsvieQtqZxCOaLT+xD4+QNarq78cIYISHmZXshCvROLudpQN3lfL8G0NL7plMSSK+zlyvCaIJ4Iw==
 
+"@datadog/browser-core@4.16.0":
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.16.0.tgz#41d3d58f4c1327a5580f7b3589424a26b92de777"
+  integrity sha512-uNc7lJ3h8xgXLM4g2J96nb8ntxZ/+nMC+vkBsRPqq8ZhuMNJDLgURy2UMB457OPzoksBewHo9nqOUmP6v0chLw==
+
+"@datadog/browser-rum-core@4.16.0":
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum-core/-/browser-rum-core-4.16.0.tgz#0589dfab0277d98c3e7a57f5b356bdc0ff8b6040"
+  integrity sha512-uliXF81H81tBYBvazU6yScAJZoEjOwAiX98BvWvUYSUMxBbB6/PGTWd7l13RYtCena2RBlq+zijTacT0B+yrww==
+  dependencies:
+    "@datadog/browser-core" "4.16.0"
+
+"@datadog/browser-rum@^4.16.0":
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum/-/browser-rum-4.16.0.tgz#1ce59429cabd11b154935c5d92dd34c3f5ed3102"
+  integrity sha512-5yyw9NbZpNySeJ4f5dM/7iDmMR4/BCnev9GNSjMHfMHKc2UDOEnduyng2PMfAilbMA2mlHX7yoelQc3zn4Tahg==
+  dependencies:
+    "@datadog/browser-core" "4.16.0"
+    "@datadog/browser-rum-core" "4.16.0"
+
 "@emotion/babel-plugin@^11.7.1":
   version "11.9.2"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.9.2.tgz#723b6d394c89fb2ef782229d92ba95a740576e95"
@@ -9135,6 +9155,11 @@ react-clientside-effect@^1.2.6:
   integrity sha512-XGGGRQAKY+q25Lz9a/4EPqom7WRjz3z9R2k4jhVKA/puQFH/5Nt27vFZYql4m4NVNdUvX8PS3O7r/Zzm7cjUlg==
   dependencies:
     "@babel/runtime" "^7.12.13"
+
+react-datadog@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-datadog/-/react-datadog-1.1.0.tgz#43eeea83f72915b3d44cfbd917cbac85c20a398b"
+  integrity sha512-hZJwaf6b6zwI+CBPXX3o1QteaytR4sSWtS5p8teA+r+u4ZegCuwy8+i7JjA4sCk6KzCYSGVJowqTBq9OdGnnJA==
 
 react-dev-utils@^12.0.1:
   version "12.0.1"
