@@ -56,8 +56,17 @@ export async function main() {
     '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
     { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
     { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
-    ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA'], // _adminRoles
-    ['0x5cdb35fADB8262A3f88863254c870c2e6A848CcA', '0xB8cEF765721A6da910f14Be93e7684e9a3714123', '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB', '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017'] // _roundOperators
+    [
+      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
+      '0xB8cEF765721A6da910f14Be93e7684e9a3714123'
+    ], // _adminRoles
+    [
+      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
+      '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
+      '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB',
+      '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017',
+      '0x6e8C1ADaEDb9A0A801dD50aFD95b5c07e9629C1E'
+    ] // _roundOperators
   ];
   
   const encodedParameters = encodeRoundParameters(params);

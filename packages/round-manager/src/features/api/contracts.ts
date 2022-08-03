@@ -18,12 +18,12 @@ export const programFactoryContract = (chainId: number|undefined): Contract => {
     }
     case 69: {
       // optimism-kovan network
-      address = "0x21AE9Cd37c5981841Be9f0168Ee8dBCeb67bcCC2"
+      address = "0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011"
       break;
     }
     default: {
       // goerli network
-      address = "0x9F7caF160E9674BbF7159eb302c350680Ac09eF6";
+      address = "0x30875E085D988fAbadf3B5aE117061D607167f02";
     }
   }
 
@@ -50,12 +50,12 @@ export const roundFactoryContract = (chainId: number|undefined): Contract => {
     }
     case 69: {
       // optimism-kovan network
-      address = "0x5632fdD467B657AEc800296F1695cf8847A50048"
+      address = "0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF"
       break;
     }
     default: {
       // goerli network
-      address = "0xFed628443dEbcE553EB6053566dFabE0537348f2";
+      address = "0x294e4D13919602f3B857fB2195628Fd5255e298a";
     }
   }
 

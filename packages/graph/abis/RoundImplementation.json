@@ -397,7 +397,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_projectID",
+        "name": "projectID",
         "type": "bytes32"
       },
       {
@@ -414,7 +414,7 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_applicationMetaPtr",
+        "name": "newApplicationMetaPtr",
         "type": "tuple"
       }
     ],
@@ -531,7 +531,7 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "_encodedParameters",
+        "name": "encodedParameters",
         "type": "bytes"
       }
     ],
@@ -686,7 +686,7 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_newApplicationMetaPtr",
+        "name": "newApplicationMetaPtr",
         "type": "tuple"
       }
     ],
@@ -699,7 +699,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newApplicationsEndTime",
+        "name": "newApplicationsEndTime",
         "type": "uint256"
       }
     ],
@@ -712,7 +712,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newApplicationsStartTime",
+        "name": "newApplicationsStartTime",
         "type": "uint256"
       }
     ],
@@ -737,7 +737,7 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_newProjectsMetaPtr",
+        "name": "newProjectsMetaPtr",
         "type": "tuple"
       }
     ],
@@ -750,7 +750,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newRoundEndTime",
+        "name": "newRoundEndTime",
         "type": "uint256"
       }
     ],
@@ -775,7 +775,7 @@
           }
         ],
         "internalType": "struct MetaPtr",
-        "name": "_newRoundMetaPtr",
+        "name": "newRoundMetaPtr",
         "type": "tuple"
       }
     ],
@@ -788,7 +788,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newRoundStartTime",
+        "name": "newRoundStartTime",
         "type": "uint256"
       }
     ],
@@ -801,7 +801,7 @@
     "inputs": [
       {
         "internalType": "bytes[]",
-        "name": "_encodedVotes",
+        "name": "encodedVotes",
         "type": "bytes[]"
       }
     ],
