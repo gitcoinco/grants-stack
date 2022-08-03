@@ -20,6 +20,7 @@ import {
   CardTitle
 } from "../common/styles"
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
+import Footer from "../common/Footer";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element,
@@ -30,7 +31,7 @@ interface ProgramCardProps {
 
 const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
   <BasicCard
-    className="mb-12 md:w-[410px] relative drop-shadow-xl xl:-translate-y-44 lg:-translate-y-20 md:-translate-y-12 -translate-y-2">
+    className="border-none mb-12 md:w-[410px] relative shadow-xl xl:-translate-y-44 lg:-translate-y-20 md:-translate-y-12 -translate-y-2">
     {props.floatingIcon}
     <CardContent className="pt-0">
       <CardTitle className="font-bold">{props.title}</CardTitle>
@@ -43,7 +44,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
         {props.footerContent}
       </CardFooterContent>
     </CardFooter>
-  </BasicCard>);
+  </BasicCard>)
 
 const startAProgramCard = <ProgramCard
   floatingIcon={
@@ -59,7 +60,7 @@ const startAProgramCard = <ProgramCard
       Create Program <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
     </Link>
   }
-/>;
+/>
 
 function ListPrograms() {
   const { address, chain: { network } } = useWallet()
@@ -87,8 +88,8 @@ function ListPrograms() {
   return (
     <>
       <Navbar programCta={!!isSuccess} />
-      <div>
-        <header className="mb-2.5 flex flex-row bg-grey-500 overflow-hidden">
+      <header className="mb-2.5 bg-grey-500 overflow-hidden">
+        <div className="container mx-auto flex flex-row">
           <div className="grow p-6 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">
             <h1 className="text-4xl lg:text-6xl text-white font-thin antialiased">My Programs</h1>
             <p className="text-xl text-grey-400 mt-2">
@@ -98,19 +99,19 @@ function ListPrograms() {
           <div className="right-0 hidden md:block">
             <Banner />
           </div>
-        </header>
-        <main className="p-2 md:px-20">
-          <CardsContainer>
-            {(!programs || programs.length === 0) && startAProgramCard}
-            {programList}
-          </CardsContainer>
+        </div>
+      </header>
+      <main className="container mx-auto p-2 md:px-20">
+        <CardsContainer>
+          {isSuccess && (!programs || programs.length === 0) && startAProgramCard}
+          {programList}
+        </CardsContainer>
 
-
-          {isLoading &&
-            <Spinner text="Fetching Programs" />
-          }
-        </main>
-      </div>
+        {isLoading &&
+          <Spinner text="Fetching Programs" />
+        }
+      </main>
+      <Footer />
     </>
   )
 }
