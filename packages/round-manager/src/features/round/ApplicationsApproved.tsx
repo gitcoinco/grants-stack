@@ -15,10 +15,10 @@ import {
 
 export default function ApplicationsApproved() {
   const { id } = useParams()
-  const { chain: { network } } = useWallet()
+  const { provider } = useWallet()
 
   const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!, network, status: "APPROVED"
+    roundId: id!, signerOrProvider: provider, status: "APPROVED"
   })
 
   return (

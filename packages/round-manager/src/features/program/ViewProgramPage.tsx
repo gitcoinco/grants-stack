@@ -13,8 +13,8 @@ export default function ViewProgram() {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { address, chain: { network } } = useWallet()
-  const { program } = useListProgramsQuery({ address, network }, {
+  const { address, provider } = useWallet()
+  const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
   })
 
@@ -22,7 +22,7 @@ export default function ViewProgram() {
     data: rounds,
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
-  } = useListRoundsQuery({ address, network, programId: id })
+  } = useListRoundsQuery({ address, signerOrProvider: provider, programId: id })
 
   const roundItems = rounds?.map((round, index) =>
     <div

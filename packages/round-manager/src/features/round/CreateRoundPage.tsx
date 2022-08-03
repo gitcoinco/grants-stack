@@ -12,11 +12,14 @@ import Navbar from "../common/Navbar"
 
 
 export default function CreateRound() {
-  const { address, chain: { network } } = useWallet()
+  const { address, provider } = useWallet()
   const search = useLocation().search
   const programId = (new URLSearchParams(search)).get("programId")
 
-  const { program, isSuccess: isProgramFetched } = useListProgramsQuery({ address, network }, {
+  const {
+    program,
+    isSuccess: isProgramFetched
+  } = useListProgramsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data, isSuccess }) => ({
       program: data?.find((program) => program.id === programId),
       isSuccess

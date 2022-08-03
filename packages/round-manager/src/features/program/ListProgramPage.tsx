@@ -63,8 +63,12 @@ const startAProgramCard = <ProgramCard
 />
 
 function ListPrograms() {
-  const { address, chain: { network } } = useWallet()
-  const { data: programs, isLoading, isSuccess } = useListProgramsQuery({ address, network })
+  const { address, provider } = useWallet()
+  const {
+    data: programs,
+    isLoading,
+    isSuccess
+  } = useListProgramsQuery({ address, signerOrProvider: provider })
 
   const programList = programs?.map((program) => (
     <ProgramCard

@@ -1,9 +1,8 @@
 import { ethers } from "ethers"
 import { api } from ".."
-import { global } from "../../../global"
 import { programFactoryContract } from "../contracts"
-import { Network, Program } from "../types"
-import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
+import { Program } from "../types"
+import { fetchFromIPFS, graphql_fetch } from "../utils"
 
 
 /**
@@ -11,18 +10,18 @@ import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
  */
 export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createProgram: builder.mutation<string, { program: Program, network: Network }>({
-      queryFn: async ({ program: { store: metadata, operatorWallets }, network }) => {
+    createProgram: builder.mutation<string, { program: Program, signerOrProvider: any }>({
+      queryFn: async ({ program: { store: metadata, operatorWallets }, signerOrProvider }) => {
         try {
           // fetch chain id
-          const chainId = (await getWeb3Instance(network))?.chainId
+          const chainId = await signerOrProvider.getChainId()
 
           // load program factory contract
           const _programFactoryContract = programFactoryContract(chainId);
           const programFactory = new ethers.Contract(
             _programFactoryContract.address!,
             _programFactoryContract.abi,
-            global.web3Signer
+            signerOrProvider
           )
 
           operatorWallets = operatorWallets.filter(e => e !== "")
@@ -79,9 +78,12 @@ export const programApi = api.injectEndpoints({
       },
       invalidatesTags: ["Program"]
     }),
-    listPrograms: builder.query<Program[], { address: string, network: Network }>({
-      queryFn: async ({ address, network }) => {
+    listPrograms: builder.query<Program[], { address: string, signerOrProvider: any }>({
+      queryFn: async ({ address, signerOrProvider }) => {
         try {
+          // fetch chain id
+          const { chainId } = await signerOrProvider.getNetwork()
+
           // get the subgraph for all programs owned by the given address
           const res = await graphql_fetch(
             `
@@ -106,7 +108,7 @@ export const programApi = api.injectEndpoints({
                 }
               }
             `,
-            network,
+            chainId,
             { address: address.toLowerCase() }
           )
 

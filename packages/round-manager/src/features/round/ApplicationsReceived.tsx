@@ -15,10 +15,10 @@ import {
 
 export default function ApplicationsReceived() {
   const { id } = useParams()
-  const {chain: { network }} = useWallet()
+  const { provider } = useWallet()
 
   const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!, network, status: "PENDING"
+    roundId: id!, signerOrProvider: provider, status: "PENDING"
   })
 
   return (

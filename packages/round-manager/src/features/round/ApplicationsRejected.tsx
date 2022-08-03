@@ -15,10 +15,10 @@ import {
 
 export default function ApplicationsRejected() {
   const { id } = useParams()
-  const { chain: { network }} = useWallet()
+  const { provider } = useWallet()
 
   const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!, network, status: "REJECTED"
+    roundId: id!, signerOrProvider: provider, status: "REJECTED"
   })
 
   return (

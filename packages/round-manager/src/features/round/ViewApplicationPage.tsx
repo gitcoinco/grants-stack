@@ -21,17 +21,20 @@ export default function ViewApplicationPage() {
   const [openModal, setOpenModal] = useState(false)
 
   const { roundId, id } = useParams()
-  const { address, chain: { network } } = useWallet()
+  const { address, provider, signer } = useWallet()
   const navigate = useNavigate()
 
-  const { application, isLoading } = useListGrantApplicationsQuery({ roundId: roundId!, network, id }, {
+  const {
+    application,
+    isLoading
+  } = useListGrantApplicationsQuery({ roundId: roundId!, signerOrProvider: provider, id }, {
     selectFromResult: ({ data, isLoading }) => ({
       application: data?.find((application) => application.id === id),
       isLoading
     })
   })
 
-  const { round } = useListRoundsQuery({ address, network }, {
+  const { round } = useListRoundsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({
       round: data?.find((round) => round.id === roundId)
     }),
@@ -50,7 +53,8 @@ export default function ViewApplicationPage() {
         id: application!.id,
         roundId: roundId!,
         payoutAddress: application!.recipient,
-        projectsMetaPtr: application!.projectsMetaPtr
+        projectsMetaPtr: application!.projectsMetaPtr,
+        signerOrProvider: signer
       }).unwrap()
 
       navigate(0)

@@ -1,9 +1,8 @@
 import { ethers } from "ethers"
 import { api } from ".."
 import { roundImplementationContract } from "../contracts"
-import { GrantApplication, MetadataPointer, Network } from "../types"
+import { GrantApplication, MetadataPointer } from "../types"
 import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
-import { global } from "../../../global"
 
 
 /**
@@ -13,10 +12,13 @@ export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     listGrantApplications: builder.query<
       GrantApplication[],
-      { roundId: string, network: Network, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
+      { roundId: string, signerOrProvider: any, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
     >({
-      queryFn: async ({ roundId, network, id, status }) => {
+      queryFn: async ({ roundId, signerOrProvider, id, status }) => {
         try {
+          // fetch chain id
+          const { chainId } = await signerOrProvider.getNetwork()
+
           // query the subgraph for all rounds by the given account in the given program
           const res = await graphql_fetch(
             `
@@ -45,7 +47,7 @@ export const grantApplicationApi = api.injectEndpoints({
                 }
               }
             `,
-            network,
+            chainId,
             { roundId, id, status }
           )
 
@@ -83,10 +85,11 @@ export const grantApplicationApi = api.injectEndpoints({
         roundId: string,
         status: "APPROVED" | "REJECTED",
         projectsMetaPtr: MetadataPointer,
-        payoutAddress: string
+        payoutAddress: string,
+        signerOrProvider: any
       }
     >({
-      queryFn: async ({ id, roundId, status, projectsMetaPtr, payoutAddress }) => {
+      queryFn: async ({ id, roundId, status, projectsMetaPtr, payoutAddress, signerOrProvider }) => {
         try {
           let reviewedApplications: any = []
           let foundEntry = false
@@ -128,7 +131,7 @@ export const grantApplicationApi = api.injectEndpoints({
           const roundImplementation = new ethers.Contract(
             roundId,
             roundImplementationContract.abi,
-            global.web3Signer
+            signerOrProvider
           )
 
           let tx = await roundImplementation.updateProjectsMetaPtr(projectsMetaPtr)

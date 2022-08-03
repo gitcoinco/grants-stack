@@ -10,6 +10,7 @@ import { Round } from "../api/types"
 import { FormContext } from "../common/FormWizard"
 import { Input } from "../common/styles"
 import { generateApplicationSchema } from "../api/utils"
+import { useWallet } from "../common/Auth"
 
 
 const ValidationSchema = yup.object().shape({
@@ -38,6 +39,8 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     defaultValues: formData,
     resolver: yupResolver(ValidationSchema),
   })
+
+  const { signer } = useWallet()
 
   const [saveToIPFS, {
     error: ipfsError,
@@ -91,19 +94,22 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
 
       // Deploy round contract
       await createRound({
-        ...data,
-        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
-        token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
-        ownedBy: programId!,
-        store: {
-          protocol: 1, // IPFS protocol ID is 1
-          pointer: metadataPointer
+        round: {
+          ...data,
+          votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
+          token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
+          ownedBy: programId!,
+          store: {
+            protocol: 1, // IPFS protocol ID is 1
+            pointer: metadataPointer
+          },
+          applicationStore: {
+            protocol: 1, // IPFS protocol ID is 1
+            pointer: applicationMetadataPointer
+          },
+          operatorWallets: props.initialData.program!.operatorWallets
         },
-        applicationStore: {
-          protocol: 1, // IPFS protocol ID is 1
-          pointer: applicationMetadataPointer
-        },
-        operatorWallets: props.initialData.program!.operatorWallets
+        signerOrProvider: signer
       }).unwrap()
 
       reset()

@@ -15,7 +15,9 @@ export interface Web3Instance {
     id: number;
     name: string;
     network: Network;
-  }
+  },
+  provider: any;
+  signer?: any;
 }
 
 export interface MetadataPointer {
