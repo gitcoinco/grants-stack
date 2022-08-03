@@ -1,5 +1,5 @@
 import { Outlet, useOutletContext } from "react-router-dom"
-import { useAccount, useEnsName, useNetwork } from "wagmi"
+import { useAccount, useNetwork, useProvider, useSigner } from "wagmi"
 
 import { Web3Instance } from "../api/types"
 import { Spinner } from "./Spinner";
@@ -15,12 +15,15 @@ import WalletConnectionButton from "./WalletConnectionButton";
  */
 export default function Auth() {
   const { address, isConnected, isConnecting } = useAccount()
-  const { data: ensName } = useEnsName({ address })
   const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
 
   const data = {
-    address: ensName ?? address,
-    chain: { id: chain?.id, name: chain?.name, network: chain?.network }
+    address,
+    chain: { id: chain?.id, name: chain?.name, network: chain?.network },
+    provider,
+    signer
   }
 
   return !isConnected ? (

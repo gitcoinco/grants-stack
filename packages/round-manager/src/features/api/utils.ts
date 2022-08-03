@@ -1,32 +1,13 @@
-import { providers } from "ethers"
-import { IPFSObject, MetadataPointer, Network } from "./types"
-
-
-/**
- * Fetch chain details for the provided network
- * 
- * @param network - The network to be initialized
- * @returns { chainId, name }
- */
-export const getWeb3Instance = async (network: Network) => {
-  const provider = new providers.InfuraProvider(network, process.env.REACT_APP_INFURA_ID)
-
-  // Fetch network details
-  const { chainId, name } = await provider!.getNetwork()
-  return { chainId, name }
-}
+import { IPFSObject, MetadataPointer } from "./types"
 
 
 /**
  * Fetch subgraph network for provided web3 network
  * 
- * @param network - The network to be initialized
+ * @param chainId - The chain ID of the blockchain2
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = async (network: Network) => {
-  // fetch chain id
-  const chainId = (await getWeb3Instance(network))?.chainId
-
+const getGraphQLEndpoint = async (chainId: number) => {
   let endpoint
 
   switch (chainId) {
@@ -54,17 +35,17 @@ const getGraphQLEndpoint = async (network: Network) => {
  * Fetch data from a GraphQL endpoint
  *
  * @param query - The query to be executed
- * @param network - The EVM network indexed by the subgraph
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
 export const graphql_fetch = async (
   query: string,
-  network: Network,
+  chainId: number,
   variables: object = {},
 ) => {
 
-  const endpoint = await getGraphQLEndpoint(network);
+  const endpoint = await getGraphQLEndpoint(chainId);
 
   return fetch(endpoint, {
     method: "POST",

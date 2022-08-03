@@ -1,13 +1,15 @@
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
-import { useEffect } from "react"
-import { PlusSmIcon, TrashIcon, XIcon } from "@heroicons/react/solid"
+import { useEffect, useState } from "react"
+import { PlusSmIcon, XIcon } from "@heroicons/react/solid"
 
 import { useWallet } from "../common/Auth"
 import { useCreateProgramMutation } from "../api/services/program"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
 import Navbar from "../common/Navbar"
+import Footer from "../common/Footer"
+import ProgressModal from "../common/ProgressModal"
 
 
 type FormData = {
@@ -16,17 +18,18 @@ type FormData = {
 }
 
 export default function CreateProgram() {
-  const { address, chain: { network } } = useWallet()
+  const [openProgressModal, setOpenProgressModal] = useState(false)
+  const { address, chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    error: ipfsError,
+    // error: ipfsError,
     isError: isIPFSError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS
   }] = useSaveToIPFSMutation()
 
   const [createProgram, {
-    error: programError,
+    // error: programError,
     isLoading,
     isSuccess,
     isError: isProgramError
@@ -51,10 +54,22 @@ export default function CreateProgram() {
         navigate("/")
       }, 2000)
     }
-  })
+
+    if (isLoading) {
+      setOpenProgressModal(true)
+    }
+  }, [isSuccess, isLoading, navigate])
+
+  useEffect(() => {
+    if (isIPFSError || isProgramError) {
+      setOpenProgressModal(false)
+    }
+  }, [isIPFSError, isProgramError])
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
+      setOpenProgressModal(true)
+
       // Save program metadata to IPFS
       const metadataPointer = await saveToIPFS({
         content: { name: data.name },
@@ -72,7 +87,7 @@ export default function CreateProgram() {
           },
           operatorWallets: data.operators.map(op => op.wallet)
         },
-        network
+        signerOrProvider: signer
       }).unwrap()
 
     } catch (e) {
@@ -80,17 +95,35 @@ export default function CreateProgram() {
     }
   }
 
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+    },
+    {
+      name: "Deploying",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status: isSuccess ? "current" : "upcoming"
+    }
+  ]
+
   return (
-    <>
+    <div className="bg-[#F3F3F5]">
       <Navbar />
-      <div className="container mx-auto h-screen px-4 py-16">
+      <div className="container mx-auto h-screen px-4 pt-8">
         <header>
           <div className="flow-root">
             <h1 className="float-left text-[32px] mb-7">Create Grant Program</h1>
             <Button
               type="button"
               $variant="outline"
-              className="inline-flex float-right py-2 px-4 text-sm text-grey-400"
+              className="inline-flex float-right py-2 px-4 text-sm text-pink-500"
               onClick={() => navigate('/')}>
               <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
               Exit
@@ -100,102 +133,99 @@ export default function CreateProgram() {
 
         <main className="grid md:grid-cols-3 gap-4">
           <div>
-            <p className="text-base leading-6"><b>Details</b></p>
-            <p className="mt-1 text-base text-gray-500">
+            <p className="text-base leading-6">Details</p>
+            <p className="mt-1 text-sm text-grey-400">
               Provide the name of the program as well as the round operators' wallet addresses.
             </p>
-
-            <div className="mt-5">
-              {/* Display relevant status updates */}
-              {isSavingToIPFS && <p className="text-orange-500">⌛ Saving metadata in IPFS...</p>}
-              {isSavedToIPFS && <p className="text-green-600">✅ Metadata saved to IPFS!</p>}
-              {isLoading && <p className="text-orange-500">⌛ Deploying contract to Goerli + awaiting 1 confirmation...</p>}
-              {isSuccess && <p className="text-green-600">✅ Congratulations! your grant program was successfully created!</p>}
-              {(isIPFSError || isProgramError) && <p className="text-rose-600">Error: {JSON.stringify(ipfsError || programError)}!</p>}
-            </div>
-
           </div>
 
           <div className="col-span-2">
 
             <form
-              className="grid grid-cols-1 gap-4 sm:items-start sm:border sm:border-gray-200 py-5 sm:px-10"
+              className="grid grid-cols-1 gap-4 sm:items-start shadow-sm text-grey-500"
               onSubmit={handleSubmit(onSubmit)}
             >
+              <div className="grid grid-cols-1 gap-4 sm:items-start pt-7 pb-3.5 sm:px-6 bg-white">
 
-              <div className="sm:flex sm:flex-rows">
-                <div className="sm:basis-2/3">
-                  <label htmlFor="name" className="block text-xs font-medium text-gray-700">Name</label>
-                  <Input
-                    {...register("name", { required: true })}
-                    $hasError={errors.name}
-                    type="text"
-                    disabled={isLoading}
-                    placeholder="Program name"
-                  />
-                  {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
+                <div className="sm:flex sm:flex-rows">
+                  <div className="sm:basis-2/3">
+                    <label htmlFor="name" className="block text-xs">Program Name</label>
+                    <Input
+                      {...register("name", { required: true })}
+                      $hasError={errors.name}
+                      type="text"
+                      disabled={isLoading}
+                      placeholder="Enter the name of the Grant Program."
+                      className="placeholder:italic"
+                    />
+                    {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
+                  </div>
+                </div>
+
+
+                <div>
+                  <p className="font-bold text-base mb-4">Add Operator(s)</p>
+                  <label htmlFor="operators" className="block text-xs">
+                    Wallet Address
+                  </label>
+
+                  <ul>
+                    {fields.map((item, index) => (
+                      <li key={item.id} className="flex flex-rows">
+                        <Input
+                          {...register(`operators.${index}.wallet`)}
+                          type="text"
+                          disabled={isLoading}
+                          className="basis:3/4 md:basis-2/3 placeholder:italic"
+                          placeholder="Enter a valid wallet address (32 characters)."
+                        />
+
+                        <div className="basis-1/4 ml-3">
+                          <Button
+                            type="button"
+                            $variant="outline"
+                            className="inline-flex items-center px-2 py-2 mt-1 border border-grey-100 shadow-sm rounded text-pink-500"
+                            onClick={() => remove(index)}
+                          >
+                            <XIcon className="h-5 w-5" aria-hidden="true" />
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    type="button"
+                    $variant="outline"
+                    className="inline-flex items-center px-3.5 py-2 mt-6 mb-8 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
+                    onClick={() => {
+                      append({ wallet: "" });
+                    }}
+                  >
+                    <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                    Add Operator
+                  </Button>
+
                 </div>
               </div>
 
-
-              <div>
-                <label htmlFor="operators" className="block text-xs font-medium text-gray-700">
-                  Additional Operator Wallets
-                </label>
-
-                <ul>
-                  {fields.map((item, index) => (
-                    <li key={item.id} className="flex flex-rows">
-                      <Input
-                        {...register(`operators.${index}.wallet`)}
-                        type="text"
-                        disabled={isLoading}
-                        className="basis:3/4 md:basis-2/3"
-                        placeholder="Enter wallet address"
-                      />
-
-                      <div className="basis-1/4 ml-3">
-                        <Button
-                          type="button"
-                          $variant="outline"
-                          className="inline-flex items-center px-2.5 py-2 mt-1 border shadow-sm text-xs font-medium rounded text-gray-500 bg-white"
-                          onClick={() => remove(index)}
-                        >
-                          <TrashIcon className="h-5 w-5" aria-hidden="true" />
-                        </Button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <p className="mt-2 mb-6 text-sm text-gray-500">
-                  You can't edit operator wallets after the grant is deployed.
-                </p>
-
-                <Button
-                  type="button"
-                  $variant="outline"
-                  className="inline-flex items-center px-4 py-1.5 border border-grey-100 shadow-sm text-xs font-medium rounded text-grey-500 bg-white"
-                  onClick={() => {
-                    append({ wallet: "" });
-                  }}
-                >
-                  <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                  Add Operator
-                </Button>
-
-              </div>
-
-              <div>
+              <div className="px-6 align-middle pb-3.5 shadow-md">
+                <span className="italic text-grey-400">Note: You can't edit operator wallets after the grant is created.</span>
                 <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
                   {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
           </div>
+          <ProgressModal
+            show={openProgressModal}
+            subheading={"Please hold while we create your Grant Program."}
+            steps={progressSteps}
+          />
 
         </main>
       </div>
-    </>
+      <Footer />
+    </div>
   )
 }

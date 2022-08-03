@@ -2,9 +2,8 @@ import { ethers } from "ethers"
 
 import { api } from ".."
 import { roundFactoryContract } from "../contracts"
-import { Network, Round } from "../types"
-import { fetchFromIPFS, getWeb3Instance, graphql_fetch } from "../utils"
-import { global } from "../../../global"
+import { Round } from "../types"
+import { fetchFromIPFS, graphql_fetch } from "../utils"
 
 
 /**
@@ -12,18 +11,18 @@ import { global } from "../../../global"
  */
 export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createRound: builder.mutation<string, { round: Round, network: Network }>({
-      queryFn: async ({ round, network }) => {
+    createRound: builder.mutation<string, { round: Round, signerOrProvider: any }>({
+      queryFn: async ({ round, signerOrProvider }) => {
         try {
           // fetch chain id
-          const chainId = (await getWeb3Instance(network))?.chainId
+          const chainId = await signerOrProvider.getChainId()
 
           // load round factory contract
           const _roundFactoryContract = roundFactoryContract(chainId);
           const roundFactory = new ethers.Contract(
             _roundFactoryContract.address!,
             _roundFactoryContract.abi,
-            global.web3Signer
+            signerOrProvider
           )
 
           if (!round.applicationsEndTime) {
@@ -104,9 +103,12 @@ export const roundApi = api.injectEndpoints({
       },
       invalidatesTags: ["Round"]
     }),
-    listRounds: builder.query<Round[], { address: string, network: Network, programId?: string }>({
-      queryFn: async ({ address, network, programId }) => {
+    listRounds: builder.query<Round[], { address: string, signerOrProvider: any, programId?: string }>({
+      queryFn: async ({ address, signerOrProvider, programId }) => {
         try {
+          // fetch chain id
+          const { chainId } = await signerOrProvider.getNetwork()
+
           // query the subgraph for all rounds by the given address in the given program
           const res = await graphql_fetch(
             `
@@ -140,7 +142,7 @@ export const roundApi = api.injectEndpoints({
                 }
               }
             `,
-            network,
+            chainId,
             { address: address.toLowerCase(), programId }
           )
 
