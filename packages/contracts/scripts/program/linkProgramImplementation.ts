@@ -3,7 +3,9 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { programParams } from '../config/program.config';
+import * as utils from "../utils";
 
+utils.assertEnvironment();
 
 export async function main(programFactoryContract?: string, programImplementationContract?: string) {
 

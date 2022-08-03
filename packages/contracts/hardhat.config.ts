@@ -34,17 +34,12 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 let deployPrivateKey = process.env.DEPLOYER_PRIVATE_KEY as string;
 if (!deployPrivateKey) {
-  console.warn("Please set your DEPLOYER_PRIVATE_KEY in a .env file");
   deployPrivateKey =
     "0x0000000000000000000000000000000000000000000000000000000000000001";
 }
 
 
 const infuraIdKey = process.env.INFURA_ID as string;
-if (!infuraIdKey) {
-  console.warn("Please set your INFURA_ID in a .env file");
-}
-
 
 /**
  * Generates hardhat network configuration the test networks.

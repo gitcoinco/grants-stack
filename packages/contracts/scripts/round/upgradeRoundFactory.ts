@@ -4,7 +4,9 @@ import { ethers, upgrades } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from "../config/round.config";
+import * as utils from "../utils";
 
+utils.assertEnvironment();
 
 // note: update anytime the round contract is to be upgraded
 const config = {
