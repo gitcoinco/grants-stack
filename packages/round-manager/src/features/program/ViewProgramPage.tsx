@@ -7,6 +7,7 @@ import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
+import Footer from "../common/Footer"
 
 
 export default function ViewProgram() {
@@ -70,7 +71,7 @@ export default function ViewProgram() {
   return (
     <>
       <Navbar programCta={true} />
-      <div className="container mx-auto h-screen px-4 py-16">
+      <div className="container mx-auto h-screen px-4 pt-8">
         <header>
           <div className="mb-7 flex justify-between">
             <div className="flex flex-rows">
@@ -160,6 +161,7 @@ export default function ViewProgram() {
           </div>
         </main>
       </div>
+      <Footer />
     </>
   )
 }

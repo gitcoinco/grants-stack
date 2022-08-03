@@ -119,7 +119,7 @@ export default function CreateProgram() {
       <div className="container mx-auto h-screen px-4 pt-8">
         <header>
           <div className="flow-root">
-            <h1 className="float-left text-[32px] mb-7">Create Grant Program</h1>
+            <h1 className="float-left text-[32px] mb-7">Create a Grant Program</h1>
             <Button
               type="button"
               $variant="outline"
@@ -140,7 +140,6 @@ export default function CreateProgram() {
           </div>
 
           <div className="col-span-2">
-
             <form
               className="grid grid-cols-1 gap-4 sm:items-start shadow-sm text-grey-500"
               onSubmit={handleSubmit(onSubmit)}
@@ -161,7 +160,6 @@ export default function CreateProgram() {
                     {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
                   </div>
                 </div>
-
 
                 <div>
                   <p className="font-bold text-base mb-4">Add Operator(s)</p>
@@ -222,7 +220,6 @@ export default function CreateProgram() {
             subheading={"Please hold while we create your Grant Program."}
             steps={progressSteps}
           />
-
         </main>
       </div>
       <Footer />

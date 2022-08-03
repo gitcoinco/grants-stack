@@ -9,6 +9,7 @@ import { Tab } from "@headlessui/react"
 import ApplicationsReceived from "./ApplicationsReceived"
 import ApplicationsApproved from "./ApplicationsApproved"
 import ApplicationsRejected from "./ApplicationsRejected"
+import Footer from "../common/Footer"
 
 
 
@@ -138,9 +139,9 @@ export default function ViewRound() {
               <p>Fetching round information...</p>
             }
           </div>
-
         </main>
       </div>
+      <Footer />
     </>
   )
 }
