@@ -10,10 +10,11 @@ import ApplicationsReceived from "./ApplicationsReceived"
 import ApplicationsApproved from "./ApplicationsApproved"
 import ApplicationsRejected from "./ApplicationsRejected"
 import Footer from "../common/Footer"
+import {useListGrantApplicationsQuery} from "../api/services/grantApplication";
+import tw from "tailwind-styled-components";
 
 
-
-export default function ViewRound() {
+export default function ViewRoundPage() {
   const { id } = useParams()
   const { address, provider } = useWallet()
 
@@ -27,16 +28,37 @@ export default function ViewRound() {
       isLoading,
       isSuccess
     }),
-  })
+  });
 
   const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({
       program: data?.find((program) => program.id === round?.ownedBy)
-    }
-    ),
+    }),
   })
 
+  const { data: applications } = useListGrantApplicationsQuery({
+    roundId: id!, signerOrProvider: provider
+  })
+
+  const pendingApplications = applications?.filter((a) => a.status === "PENDING") || []
+  const approvedApplications = applications?.filter((a) => a.status === "APPROVED") || []
+  const rejectedApplications = applications?.filter((a) => a.status === "REJECTED") || []
+
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
+
+  const TabApplicationCounter = tw.div`
+      rounded-md
+      ml-2
+      w-8
+      h-5
+      float-right
+      font-sm
+      font-normal
+  `
+
+  const tabStyles = (selected: boolean) => selected ?
+      "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none" :
+      "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   return (
     <>
@@ -83,36 +105,41 @@ export default function ViewRound() {
 
               <div>
                 <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
-
                 <div>
                   <Tab.Group>
                     <Tab.List className="border-b flex space-x-8 mb-6">
-                      <Tab
-                        className={({ selected }) =>
-                          selected ?
-                            "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none" :
-                            "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      <Tab className={({selected}) => tabStyles(selected)}>
+                        {({ selected }) =>
+                          <div className={selected ? "text-violet-500" : ""}>
+                            Received
+                            <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                   data-testid="received-application-counter">
+                              {pendingApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
                         }
-                      >
-                        Received
                       </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          selected ?
-                            "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none" :
-                            "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      <Tab className={({selected}) => tabStyles(selected)}>
+                        {({ selected }) =>
+                            <div className={selected ? "text-violet-500" : ""}>
+                              Approved
+                              <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                     data-testid="approved-application-counter">
+                                {approvedApplications?.length || 0}
+                              </TabApplicationCounter>
+                            </div>
                         }
-                      >
-                        Approved
                       </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          selected ?
-                            "border-grey-500 text-grey-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm outline-none" :
-                            "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                      <Tab className={({selected}) => tabStyles(selected)}>
+                        {({ selected }) =>
+                            <div className={selected ? "text-violet-500" : ""}>
+                              Rejected
+                              <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                     data-testid="rejected-application-counter">
+                                {rejectedApplications?.length || 0}
+                              </TabApplicationCounter>
+                            </div>
                         }
-                      >
-                        Rejected
                       </Tab>
                     </Tab.List>
                     <Tab.Panels>
