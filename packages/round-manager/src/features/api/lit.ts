@@ -12,14 +12,12 @@ const ROUND_OPERATOR = '0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f3585282974
 type LitInit = {
   chain: string,
   contract: string,
-  wallet: string
 }
 
 export class Lit {
   litNodeClient: any
   chain: string
   contract: string
-  wallet: string // TODO: REMOVE
 
   /**
    * constructor
@@ -28,7 +26,6 @@ export class Lit {
   constructor(initConfig: LitInit) {
     this.chain = initConfig.chain;
     this.contract = initConfig.contract;
-    this.wallet = initConfig.wallet;
   }
 
   /**
@@ -38,6 +35,7 @@ export class Lit {
   isRoundOperatorAccessControl() {
     return [
       {
+        conditionType: "evmContract",
         contractAddress: this.contract,
         functionName: "hasRole",
         functionParams: [
@@ -56,6 +54,7 @@ export class Lit {
         },
         chain: this.chain,
         returnValueTest:{
+          "key": "",
           "comparator": "=",
           "value": "true"
         },
@@ -96,7 +95,7 @@ export class Lit {
 
     // Saving the Encrypted Content to the Lit Nodes
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
-      accessControlConditions: this.isRoundOperatorAccessControl(),
+      unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
       symmetricKey,
       authSig,
       chain,
@@ -132,7 +131,7 @@ export class Lit {
 
     // Obtaining the Decrypted Symmetric Key
     const symmetricKey = await this.litNodeClient.getEncryptionKey({
-      accessControlConditions: this.isRoundOperatorAccessControl(),
+      unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
       toDecrypt: encryptedSymmetricKey,
       chain,
       authSig,
