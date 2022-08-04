@@ -6,6 +6,9 @@ import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
 import { programParams } from "../config/program.config";
 import { encodeRoundParameters } from "../utils";
+import * as utils from "../utils";
+
+utils.assertEnvironment();
   
 export async function main() {
 
