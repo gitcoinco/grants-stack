@@ -6,6 +6,7 @@
   "dependencies": {
     "@chakra-ui/react": "^2.1.2",
     "@craco/craco": "^6.4.3",
+    "@datadog/browser-rum": "^4.16.0",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@headlessui/react": "^1.6.5",
@@ -30,6 +31,7 @@
     "postcss": "^8.4.14",
     "process": "^0.11.10",
     "react": "^18.0.0",
+    "react-datadog": "^1.1.0",
     "react-dom": "^18.0.0",
     "react-redux": "^7.2.8",
     "react-router-dom": "^6.3.0",
