@@ -88,7 +88,8 @@ export const makeStubApplication = (overrides: Partial<GrantApplication> = {}): 
     projectsMetaPtr: {
       protocol: faker.datatype.number(),
       pointer: faker.datatype.uuid()
-    }
+    },
+    ...overrides
   }
 }
 

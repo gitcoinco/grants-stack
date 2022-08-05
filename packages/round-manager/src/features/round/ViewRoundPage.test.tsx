@@ -58,22 +58,18 @@ describe('the view round page', () => {
         expect(screen.getByText("No Applications")).toBeInTheDocument();
     })
 
-    test("should render applicant data when a given round has applications", () => {
+    test("should indicate how many of each kind of application there are", () => {
         const mockApplicationData: GrantApplication[] = [
-            makeStubApplication({
-                status: "PENDING"
-            }),
-            makeStubApplication({
-                status: "PENDING"
-            })
+            makeStubApplication({status: "PENDING"}),
+            makeStubApplication({status: "PENDING"}),
+            makeStubApplication({status: "REJECTED"}),
+            makeStubApplication({status: "APPROVED"}),
         ];
         (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
             data: mockApplicationData,
             isLoading: false,
             isSuccess: true
         });
-        const expectedApplications: Array<{ name: string, description: string }> =
-            mockApplicationData.map(mockApplication => ({ name: mockApplication.project.title, description: mockApplication.project.description }))
 
         render(
             <Provider store={store}>
@@ -86,12 +82,7 @@ describe('the view round page', () => {
         )
 
         expect(parseInt(screen.getByTestId('received-application-counter').textContent!!)).toBe(2)
-        // TODO(shavinac) move assertion to Tab test
-        // expect(screen.getAllByTestId('round-application').length).toBe(2)
-
-        expectedApplications.forEach((a) => {
-            expect(screen.getByText(a.name)).toBeInTheDocument()
-            expect(screen.getByText(a.description)).toBeInTheDocument()
-        })
+        expect(parseInt(screen.getByTestId('rejected-application-counter').textContent!!)).toBe(1)
+        expect(parseInt(screen.getByTestId('approved-application-counter').textContent!!)).toBe(1)
     })
 })
