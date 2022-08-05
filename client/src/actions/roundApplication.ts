@@ -100,7 +100,6 @@ export const submitApplication =
 
     // FIXME: this is temporarily until the round manager adds the encrypted field
     roundApplicationMetadata.applicationSchema.forEach((question) => {
-      console.log(question.question);
       if (/email/i.test(question.question.toLowerCase())) {
         // eslint-disable-next-line
         question.encrypted = true;
@@ -135,9 +134,10 @@ export const submitApplication =
 
     const signer = global.web3Provider!.getSigner();
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-    // FIXME: when the new round implementation is deployed we can send a
-    // bytes32 instead of an address
-    const projectUniqueID = "0x000000000000000000000000000000000000beaf";
+
+    const projectUniqueID = ethers.utils.formatBytes32String(
+      projectId.toString()
+    );
     try {
       await contract.applyToRound(projectUniqueID, metaPtr);
       dispatch({
