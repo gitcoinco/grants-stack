@@ -1,22 +1,18 @@
-import {Provider} from "react-redux"
-import {store} from "../../app/store"
-import {render, screen} from "@testing-library/react"
-import {useWallet} from "../common/Auth"
-import {useListRoundsQuery} from "../api/services/round"
-import history from "../../history"
-import {ReduxRouter} from "@lagunovsky/redux-react-router"
+import { screen } from "@testing-library/react"
+import { useWallet } from "../common/Auth"
+import { useListRoundsQuery } from "../api/services/round"
 import ViewRoundPage from "./ViewRoundPage"
-import {client as WagmiClient} from "../../app/wagmi";
-import {WagmiConfig} from "wagmi";
-import {GrantApplication, Round} from "../api/types";
-import {makeStubApplication, makeStubProgram, makeStubRound} from "../../test-utils";
-import {useListGrantApplicationsQuery} from "../api/services/grantApplication";
-import {useListProgramsQuery} from "../api/services/program";
+import { GrantApplication, Round } from "../api/types";
+import { makeStubApplication, makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils";
+import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
+import { useListProgramsQuery } from "../api/services/program";
+import {useDisconnect, useSwitchNetwork} from "wagmi";
 
 jest.mock("../common/Auth");
 jest.mock("../api/services/round");
 jest.mock("../api/services/grantApplication");
 jest.mock("../api/services/program");
+jest.mock("wagmi");
 
 const mockRoundData: Round = makeStubRound();
 const mockProgramData = makeStubProgram({
@@ -42,19 +38,14 @@ describe('the view round page', () => {
             isSuccess: true
         });
 
+        (useSwitchNetwork as jest.Mock).mockReturnValue({chains: []});
+        (useDisconnect as jest.Mock).mockReturnValue({});
+
         (useListProgramsQuery as jest.Mock).mockReturnValue({program: mockProgramData});
     })
 
     test("should display copy when there are no applicants for a given round", () => {
-        render(
-            <Provider store={store}>
-                <WagmiConfig client={WagmiClient}>
-                    <ReduxRouter history={history} store={store}>
-                        <ViewRoundPage/>
-                    </ReduxRouter>
-                </WagmiConfig>
-            </Provider>
-        )
+        renderWrapped(<ViewRoundPage/>);
         expect(screen.getByText("No Applications")).toBeInTheDocument();
     })
 
@@ -71,15 +62,7 @@ describe('the view round page', () => {
             isSuccess: true
         });
 
-        render(
-            <Provider store={store}>
-                <WagmiConfig client={WagmiClient}>
-                    <ReduxRouter history={history} store={store}>
-                        <ViewRoundPage/>
-                    </ReduxRouter>
-                </WagmiConfig>
-            </Provider>
-        )
+        renderWrapped(<ViewRoundPage/>);
 
         expect(parseInt(screen.getByTestId('received-application-counter').textContent!!)).toBe(2)
         expect(parseInt(screen.getByTestId('rejected-application-counter').textContent!!)).toBe(1)

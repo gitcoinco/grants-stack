@@ -3,14 +3,14 @@ import { Link, useParams } from "react-router-dom"
 import { useWallet } from "../common/Auth"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
-import { ArrowNarrowLeftIcon, CalendarIcon, ClockIcon } from "@heroicons/react/solid"
+import { ArrowNarrowLeftIcon, CalendarIcon, ChevronRightIcon, ClockIcon } from "@heroicons/react/solid"
 import { useListProgramsQuery } from "../api/services/program"
 import { Tab } from "@headlessui/react"
 import ApplicationsReceived from "./ApplicationsReceived"
 import ApplicationsApproved from "./ApplicationsApproved"
 import ApplicationsRejected from "./ApplicationsRejected"
 import Footer from "../common/Footer"
-import {useListGrantApplicationsQuery} from "../api/services/grantApplication";
+import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
 import tw from "tailwind-styled-components";
 
 
@@ -57,104 +57,107 @@ export default function ViewRoundPage() {
   `
 
   const tabStyles = (selected: boolean) => selected ?
-      "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none" :
-      "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
+    "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none" :
+    "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   return (
     <>
       <Navbar />
-      <div className="container mx-auto h-screen px-4 py-7">
-        <header>
-          <div className="mb-4">
-            <Link className="text-sm flex gap-2" to={`/program/${program?.id}`}>
-              <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
-              <span>{program?.metadata?.name || "..."}</span>
+      <div className="flex flex-col w-screen h-screen mx-0">
+        <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
+          <div className="text-gray-500 font-bold text-sm flex flex-row items-center gap-3">
+            <Link to={`/`}>
+              <span>{"My Programs"}</span>
+            </Link>
+            <ChevronRightIcon className="h-6 w-6" />
+            <Link to={`/program/${program?.id}`}>
+              <span>{"Program Details"}</span>
+            </Link>
+            <ChevronRightIcon className="h-6 w-6" />
+            <Link to={`/round/${id}`}>
+              <span>{"Round Details"}</span>
             </Link>
           </div>
-          <div className="flow-root">
-            <h1 className="float-left text-[32px] mb-6">{round?.roundMetadata?.name || "..."}</h1>
+          <h1 className="text-3xl sm:text-[32px] my-2">
+            {round?.roundMetadata?.name || "Round Details"}
+          </h1>
+          <div className="flex flex-row flex-wrap">
+            <div className="flex mr-8 lg:mr-36 pb-3">
+              <CalendarIcon className="h-5 w-5 mr-2 text-zinc-500" />
+              <p className="text-sm mr-1 text-grey-400">Applications:</p>
+              <p className="text-sm">
+                {formatDate(round?.applicationsStartTime) || "..."}
+                <span className="mx-1">-</span>
+                {formatDate(round?.applicationsEndTime) || "..."}
+              </p>
+            </div>
+
+            <div className="flex">
+              <ClockIcon className="h-5 w-5 mr-2 text-zinc-500" />
+              <p className="text-sm mr-1 text-grey-400">Round:</p>
+              <p className="text-sm">
+                {formatDate(round?.roundStartTime) || "..."}
+                <span className="mx-1">-</span>
+                {formatDate(round?.roundEndTime) || "..."}
+              </p>
+            </div>
           </div>
-          <hr />
         </header>
 
-        <main>
+        <main className="px-3 md:px-20 pt-6">
           {
             isRoundsFetched &&
-            <div className="my-2">
-              <div className="mt-6 mb-8 flex">
-                <div className="flex mr-3 pr-3">
-                  <CalendarIcon className="h-5 w-5 mr-2" />
-                  <p className="text-sm mr-1 text-grey-400">Application Start & End:</p>
-                  <p className="text-sm">
-                    {formatDate(round?.applicationsStartTime) || "..."}
-                    <span className="mx-1">-</span>
-                    {formatDate(round?.applicationsEndTime) || "..."}
-                  </p>
-                </div>
-
-                <div className="flex">
-                  <ClockIcon className="h-5 w-5 mr-2" />
-                  <p className="text-sm mr-1 text-grey-400">Grant Round Start & End:</p>
-                  <p className="text-sm">
-                    {formatDate(round?.roundStartTime) || "..."}
-                    <span className="mx-1">-</span>
-                    {formatDate(round?.roundEndTime) || "..."}
-                  </p>
-                </div>
-              </div>
-
+            <div>
+              <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
               <div>
-                <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
-                <div>
-                  <Tab.Group>
-                    <Tab.List className="border-b flex space-x-8 mb-6">
-                      <Tab className={({selected}) => tabStyles(selected)}>
-                        {({ selected }) =>
-                          <div className={selected ? "text-violet-500" : ""}>
-                            Received
-                            <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                   data-testid="received-application-counter">
-                              {pendingApplications?.length || 0}
-                            </TabApplicationCounter>
-                          </div>
-                        }
-                      </Tab>
-                      <Tab className={({selected}) => tabStyles(selected)}>
-                        {({ selected }) =>
-                            <div className={selected ? "text-violet-500" : ""}>
-                              Approved
-                              <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                     data-testid="approved-application-counter">
-                                {approvedApplications?.length || 0}
-                              </TabApplicationCounter>
-                            </div>
-                        }
-                      </Tab>
-                      <Tab className={({selected}) => tabStyles(selected)}>
-                        {({ selected }) =>
-                            <div className={selected ? "text-violet-500" : ""}>
-                              Rejected
-                              <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                     data-testid="rejected-application-counter">
-                                {rejectedApplications?.length || 0}
-                              </TabApplicationCounter>
-                            </div>
-                        }
-                      </Tab>
-                    </Tab.List>
-                    <Tab.Panels>
-                      <Tab.Panel>
-                        <ApplicationsReceived />
-                      </Tab.Panel>
-                      <Tab.Panel>
-                        <ApplicationsApproved />
-                      </Tab.Panel>
-                      <Tab.Panel>
-                        <ApplicationsRejected />
-                      </Tab.Panel>
-                    </Tab.Panels>
-                  </Tab.Group>
-                </div>
+                <Tab.Group>
+                  <Tab.List className="border-b flex space-x-8 mb-6">
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) =>
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Received
+                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                 data-testid="received-application-counter">
+                            {pendingApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      }
+                    </Tab>
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) =>
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Approved
+                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                 data-testid="approved-application-counter">
+                            {approvedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      }
+                    </Tab>
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) =>
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Rejected
+                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                                                 data-testid="rejected-application-counter">
+                            {rejectedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      }
+                    </Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>
+                      <ApplicationsReceived />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsApproved />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ApplicationsRejected />
+                    </Tab.Panel>
+                  </Tab.Panels>
+                </Tab.Group>
               </div>
 
             </div>

@@ -1,13 +1,9 @@
 import ViewProgram from "./ViewProgramPage"
-import { render, screen } from "@testing-library/react"
-import { Provider } from "react-redux"
-import { store } from "../../app/store"
-import history from "../../history"
+import { screen } from "@testing-library/react"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round";
 import { useWallet } from "../common/Auth"
-import { ReduxRouter } from "@lagunovsky/redux-react-router"
-import { makeStubProgram, makeStubRound } from "../../test-utils"
+import { makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils"
 import { faker } from "@faker-js/faker"
 
 jest.mock("../common/Navbar")
@@ -122,13 +118,3 @@ describe("<ViewProgram />", () => {
     })
   })
 })
-
-const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={ store }>
-      <ReduxRouter store={ store } history={ history }>
-        { ui }
-      </ReduxRouter>
-    </Provider>
-  )
-}

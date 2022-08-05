@@ -96,11 +96,9 @@ export const makeStubApplication = (overrides: Partial<GrantApplication> = {}): 
 export const renderWrapped = (ui: JSX.Element) => {
   render(
     <Provider store={ store }>
-      <WagmiConfig client={ WagmiClient }>
-        <ReduxRouter store={ store } history={ history }>
-          { ui }
-        </ReduxRouter>
-      </WagmiConfig>
+      <ReduxRouter store={ store } history={ history }>
+        { ui }
+      </ReduxRouter>
     </Provider>
   )
 }
