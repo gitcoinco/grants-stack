@@ -29,8 +29,8 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer>
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+    <footer className="bg-white">
+      <div className="max-w-7xl md:flex md:justify-between mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
         <div></div>
         <div className="mt-8 md:mt-0">
           <GitcoinCommunityLogo className=""></GitcoinCommunityLogo>
