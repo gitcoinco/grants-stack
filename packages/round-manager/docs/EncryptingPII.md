@@ -9,6 +9,8 @@ Some of these questions would contain Personally identifiable information(PII) w
 To achieve this, the round-manager relies on [litprotocol](https://litprotocol.com/) to encrypt and decrypt this information
 The actual source code on how we encrypt/decrypt the data can be found on lit.ts
 
+Documentation related to supported chains can be found on [lit-docs](https://developer.litprotocol.com/supportedchains/)
+
 **To Encrypt data**
 
 You would use the `encryptString` function. 
