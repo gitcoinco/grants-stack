@@ -97,7 +97,7 @@ describe("graphql_fetch", () => {
       }
     `
 
-    const res = await graphql_fetch(query, "goerli")
+    const res = await graphql_fetch(query, 5)
 
     const params = {
       method: "POST",
@@ -126,7 +126,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, "optimism-kovan")
+    await graphql_fetch(`programs { id }`, 69)
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
@@ -141,7 +141,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, "optimism")
+    await graphql_fetch(`programs { id }`, 10)
 
     expect(fetchMock).toHaveBeenCalledWith(
       "undefined",
