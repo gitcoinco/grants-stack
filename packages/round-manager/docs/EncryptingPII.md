@@ -18,7 +18,12 @@ To ensure only the round operators are allowed, `isRoundOperatorAccessControl` w
 
 **To Decrypt data**
 
-Assuming the `unifiedAccessControlConditions` was set to `isRoundOperatorAccessControl`, then upon recieving the encrypted content, round-manager would use `decryptString` to decrypt the encrypted data
+Assuming the `unifiedAccessControlConditions` was set to `isRoundOperatorAccessControl`, then upon recieving the encrypted content, round-manager would use `decryptString` to decrypt the encrypted data.
+
+Ideally when the project applies to the round, the would be expected to pass:
+
+- `encryptedString`
+- `encryptedSymmetricKey`
 
 Here is an example of the entire flow in action.
 
