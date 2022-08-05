@@ -9,7 +9,7 @@ import { MetaPtr } from '../generated/schema';
  */
 export function generateID(array: Array<string>): string {
   return crypto.keccak256(
-    ByteArray.fromHexString(array.join('-'))
+    ByteArray.fromUTF8(array.join('-'))
   ).toBase58();
 }
 
