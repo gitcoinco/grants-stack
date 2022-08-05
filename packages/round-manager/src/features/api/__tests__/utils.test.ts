@@ -6,6 +6,9 @@ enableFetchMocks()
 
 const fetchMock = fetch as FetchMock
 
+const GOERLI_CHAIN_ID = 5;
+const OPTIMISM_KOVAN_CHAIN_ID = 69;
+const OPTIMISM_MAINNET_CHAIN_ID = 10;
 
 describe("fetchFromIPFS", () => {
   beforeEach(() => {
@@ -97,7 +100,7 @@ describe("graphql_fetch", () => {
       }
     `
 
-    const res = await graphql_fetch(query, 5)
+    const res = await graphql_fetch(query, GOERLI_CHAIN_ID)
 
     const params = {
       method: "POST",
@@ -126,7 +129,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, 69)
+    await graphql_fetch(`programs { id }`, OPTIMISM_KOVAN_CHAIN_ID)
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
@@ -141,7 +144,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, 10)
+    await graphql_fetch(`programs { id }`, OPTIMISM_MAINNET_CHAIN_ID)
 
     expect(fetchMock).toHaveBeenCalledWith(
       "undefined",

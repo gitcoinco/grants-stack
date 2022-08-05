@@ -7,8 +7,6 @@ import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round";
 import { useWallet } from "../common/Auth"
 import { ReduxRouter } from "@lagunovsky/redux-react-router"
-import { client as WagmiClient } from "../../app/wagmi"
-import { WagmiConfig } from "wagmi"
 import { makeStubProgram, makeStubRound } from "../../test-utils"
 import { faker } from "@faker-js/faker"
 
@@ -128,11 +126,9 @@ describe("<ViewProgram />", () => {
 const renderWrapped = (ui: JSX.Element) => {
   render(
     <Provider store={ store }>
-      <WagmiConfig client={ WagmiClient }>
-        <ReduxRouter store={ store } history={ history }>
-          { ui }
-        </ReduxRouter>
-      </WagmiConfig>
+      <ReduxRouter store={ store } history={ history }>
+        { ui }
+      </ReduxRouter>
     </Provider>
   )
 }
