@@ -44,6 +44,7 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
       /// @dev erc20 transfer to grant address
+      // slither-disable-next-line missing-zero-check,calls-loop,low-level-calls,reentrancy-events
       (bool success, bytes memory returndata) = _token.call(abi.encodeWithSelector(
         IERC20.transferFrom.selector,
         voterAddress,
