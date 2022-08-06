@@ -17,6 +17,8 @@ export class StorageItem {
   }
 }
 
+export type StorageSizeInfo = { spaceUsed: number; spaceLeft: number };
+
 export class LocalStorage {
   supported: boolean;
 
@@ -27,6 +29,9 @@ export class LocalStorage {
   }
 
   add(key: string, item: string) {
+    if (this.getStorageSizeInfo().spaceLeft < 0.5) {
+      this.clear();
+    }
     localStorage.setItem(key, item);
   }
 
@@ -78,5 +83,20 @@ export class LocalStorage {
 
   clear() {
     localStorage.clear();
+  }
+
+  getStorageSizeInfo(): StorageSizeInfo {
+    let lsTotal = 0,
+      itemLen,
+      item;
+    for (item in localStorage) {
+      if (!localStorage.hasOwnProperty(item)) continue;
+      itemLen = (localStorage[item].length + item.length) * 2;
+      lsTotal += itemLen;
+    }
+    return {
+      spaceUsed: 5120 / 1024 - lsTotal / 1024,
+      spaceLeft: lsTotal / 1024,
+    };
   }
 }
