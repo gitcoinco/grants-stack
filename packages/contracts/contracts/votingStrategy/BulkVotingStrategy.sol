@@ -55,8 +55,7 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
       );
 
       /// @dev erc20 transfer to grant address
-      SafeERC20.safeTransferFrom(
-        IERC20(_token),
+      IERC20(_token).transferFrom(
         voterAddress,
         _grantAddress,
         _amount
