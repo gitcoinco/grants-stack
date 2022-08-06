@@ -38,28 +38,33 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
    * @param voterAddress voter address
    */
   function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
-
-
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
-      /// @dev emit event for transfer
-      emit Voted(
-        IERC20(_token),
-        _amount,
-        voterAddress,
-        _grantAddress,
-        msg.sender
-      );
-
       /// @dev erc20 transfer to grant address
-      IERC20(_token).transferFrom(
+      (bool success, bytes memory returndata) = _token.call(abi.encodeWithSelector(
+        IERC20.transferFrom.selector,
         voterAddress,
         _grantAddress,
         _amount
-      );
+      ));
+
+      // This is a non-reverting version of safeTransferFrom()
+      // First, we assert that the address is a contract, since all message calls to EOAs are successful
+      // Then, we assert that we get a low-level message call success (this is for non-compliant ERC20s)
+      // If return data length exceeds 0, we validate it as a boolean and expect true (for compliant ERC20s)
+      if (_token.code.length > 0 && success && (returndata.length == 0 || abi.decode(returndata, (bool)))) {
+        /// @dev emit event for transfer
+        emit Voted(
+          IERC20(_token),
+          _amount,
+          voterAddress,
+          _grantAddress,
+          msg.sender
+        );
+      }
     }
 
   }
