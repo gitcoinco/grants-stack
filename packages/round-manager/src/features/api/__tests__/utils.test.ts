@@ -1,11 +1,10 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock"
 
-import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+import { ChainId, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 
 enableFetchMocks()
 
 const fetchMock = fetch as FetchMock
-
 
 describe("fetchFromIPFS", () => {
   beforeEach(() => {
@@ -97,7 +96,7 @@ describe("graphql_fetch", () => {
       }
     `
 
-    const res = await graphql_fetch(query, "goerli")
+    const res = await graphql_fetch(query, ChainId.GOERLI_CHAIN_ID)
 
     const params = {
       method: "POST",
@@ -126,7 +125,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, "optimism-kovan")
+    await graphql_fetch(`programs { id }`, ChainId.OPTIMISM_KOVAN_CHAIN_ID)
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
@@ -141,7 +140,7 @@ describe("graphql_fetch", () => {
       data: {}
     }))
 
-    await graphql_fetch(`programs { id }`, "optimism")
+    await graphql_fetch(`programs { id }`, ChainId.OPTIMISM_MAINNET_CHAIN_ID)
 
     expect(fetchMock).toHaveBeenCalledWith(
       "undefined",

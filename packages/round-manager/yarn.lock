@@ -1629,6 +1629,11 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.0"
 
+"@faker-js/faker@^7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.3.0.tgz#a508df35ded585c4e071cb5d9d7c89623c837fae"
+  integrity sha512-1W0PZezq2rxlAssoWemi9gFRD8IQxvf0FPL5Km3TOmGHFG7ib0TbFBJ0yC7D/1NsxunjNTK6WjUXV8ao/mKZ5w==
+
 "@headlessui/react@^1.6.6":
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.6.6.tgz#3073c066b85535c9d28783da0a4d9288b5354d0c"
