@@ -96,7 +96,7 @@ export default function ViewApplicationPage() {
             <div>
               <img
                 className="h-32 w-full object-cover lg:h-80 rounded"
-                src={`https://gitcoin.mypinata.cloud/ipfs/${application?.project.bannerImg}`}
+                src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project.bannerImg}`}
                 alt=""
               />
             </div>
@@ -105,7 +105,7 @@ export default function ViewApplicationPage() {
                 <div className="flex">
                   <img
                     className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
-                    src={`https://gitcoin.mypinata.cloud/ipfs/${application?.project.logoImg}`}
+                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project.logoImg}`}
                     alt=""
                   />
                 </div>
