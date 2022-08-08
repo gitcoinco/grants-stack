@@ -1,5 +1,10 @@
 import { IPFSObject, MetadataPointer } from "./types"
 
+export enum ChainId {
+  GOERLI_CHAIN_ID= 5,
+  OPTIMISM_MAINNET_CHAIN_ID = 10,
+  OPTIMISM_KOVAN_CHAIN_ID = 69,
+}
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -7,22 +12,20 @@ import { IPFSObject, MetadataPointer } from "./types"
  * @param chainId - The chain ID of the blockchain2
  * @returns the subgraph endpoint
  */
-const getGraphQLEndpoint = async (chainId: number) => {
+const getGraphQLEndpoint = async (chainId: ChainId) => {
   let endpoint
 
   switch (chainId) {
-    case 10: {
-      // optimism network
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`
       break
     }
-    case 69: {
-      // optimism-kovan network
+    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
       endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`
       break
     }
+    case ChainId.GOERLI_CHAIN_ID:
     default: {
-      // goerli network
       endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`
     }
   }
@@ -41,7 +44,7 @@ const getGraphQLEndpoint = async (chainId: number) => {
  */
 export const graphql_fetch = async (
   query: string,
-  chainId: number,
+  chainId: ChainId,
   variables: object = {},
 ) => {
 
@@ -165,6 +168,7 @@ const camelToTitle = (camelCase: string) => camelCase
   .replace(/^./, (match) => match.toUpperCase())
   .trim()
 
+export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
 
 /**
  * This function generates the round application schema to be stored in a decentralized storage

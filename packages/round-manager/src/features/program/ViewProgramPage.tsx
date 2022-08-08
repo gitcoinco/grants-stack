@@ -7,9 +7,8 @@ import { useWallet } from "../common/Auth"
 import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
-import Footer from "../common/Footer";
-
-const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
+import Footer from "../common/Footer"
+import { abbreviateAddress } from "../api/utils"
 
 export default function ViewProgram() {
   const { id } = useParams()
@@ -46,9 +45,9 @@ export default function ViewProgram() {
                     clipRule="evenodd" />
             </svg>
             <span className="text-grey-400 my-auto">Applications: </span>
-            <span
-              className="my-auto"
-              data-testid="application-time-period">{`${round.applicationsStartTime.toLocaleDateString()} - ${round.applicationsEndTime.toLocaleDateString()}`}</span>
+            <span className="my-auto" data-testid="application-time-period">
+              {`${round.applicationsStartTime.toLocaleDateString()} - ${round.applicationsEndTime.toLocaleDateString()}`}
+            </span>
           </p>
           <p className="text-xs flex gap-1 md:ml-8">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 my-auto" viewBox="0 0 20 20" fill="currentColor">
@@ -57,9 +56,9 @@ export default function ViewProgram() {
                     clipRule="evenodd" />
             </svg>
             <span className="text-grey-400 my-auto">Round: </span>
-            <span
-              className="my-auto"
-              data-testid="round-time-period">{`${round.roundStartTime.toLocaleDateString()} - ${round.roundEndTime.toLocaleDateString()}`}</span>
+            <span className="my-auto" data-testid="round-time-period">
+              {`${round.roundStartTime.toLocaleDateString()} - ${round.roundEndTime.toLocaleDateString()}`}
+            </span>
           </p>
         </div>
       </div>
@@ -76,7 +75,9 @@ export default function ViewProgram() {
       program?.operatorWallets.map((operatorWallet, index) =>
         <div className="bg-white text-zinc-500 pb-2 pr-5" data-testid="program-operator-wallet" key={index}>
           <UserIcon className="inline h-4 w-4 text-zinc-500 mr-1" />
-          <span className="text-sm text-zinc-500" key={index}>{abbreviateAddress(operatorWallet)}</span>
+          <span className="text-sm text-zinc-500" key={index}>
+            {abbreviateAddress(operatorWallet)}
+          </span>
         </div>
       ) || (
         <p className="text-zinc-500 text-sm">
