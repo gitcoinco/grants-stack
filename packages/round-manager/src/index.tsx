@@ -19,7 +19,7 @@ import CreateRound from "./features/round/CreateRoundPage"
 import Program from "./features/program/ListProgramPage"
 import Auth from "./features/common/Auth"
 import ViewProgram from "./features/program/ViewProgramPage"
-import ViewRound from "./features/round/ViewRoundPage"
+import ViewRoundPage from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
 import NotFound from "./features/common/NotFoundPage"
 
@@ -42,7 +42,7 @@ root.render(
 
               {/* Round Routes */}
               <Route path="/round/create" element={<CreateRound />} />
-              <Route path="/round/:id" element={<ViewRound />} />
+              <Route path="/round/:id" element={<ViewRoundPage />} />
               <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
 
               {/* Program Routes */}
