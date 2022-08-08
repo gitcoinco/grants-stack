@@ -1,44 +1,16 @@
-import { render, render as rtlRender } from "@testing-library/react"
-import { Provider } from "react-redux"
 import React from "react"
-import { api } from "./features/api"
-import { configureStore } from "@reduxjs/toolkit"
-import history from "./history"
-import { ReduxRouter } from "@lagunovsky/redux-react-router"
-import { GrantApplication, Program, Round } from "./features/api/types"
-import { faker } from '@faker-js/faker';
+import { GrantApplication, Program, ProjectStatus } from "./features/api/types"
 import { randomInt } from "crypto"
-import { store } from "./app/store";
+import { faker } from "@faker-js/faker"
 
-// @ts-ignore
-function reducer(ui, {
-  // @ts-ignore
-  preloadedState,
-  store = configureStore({ reducer: { api: api.reducer }, preloadedState }),
-  ...renderOptions
-} = {}) {
-  // @ts-ignore
-  function Wrapper({ children }) {
-    return (
-      <Provider store={ store }>
-        <ReduxRouter history={ history } store={ store }>
-          { children }
-        </ReduxRouter>
-      </Provider>
-    )
-  }
-
-  return rtlRender(ui ,{ wrapper: Wrapper, ...renderOptions })
-}
-
-export const makeStubProgram = (overrides: Partial<Program> = {}): Program => ({
+export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
   metadata: {
     name: faker.company.bsBuzz()
   },
   store: {
     protocol: randomInt(1, 10),
-    pointer: faker.random.alpha({count: 59, casing: "lower"})
+    pointer: faker.random.alpha({ count: 59, casing: "lower" })
   },
   operatorWallets: [
     faker.finance.ethereumAddress()
@@ -46,59 +18,29 @@ export const makeStubProgram = (overrides: Partial<Program> = {}): Program => ({
   ...overrides
 })
 
-export const makeStubRound = (overrides: Partial<Round> = {}): Round => {
-  const applicationsStartTime = faker.date.soon();
-  const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
-  const roundStartTime = faker.date.future(1, applicationsEndTime);
-  const roundEndTime = faker.date.soon(21, roundStartTime);
-  return {
-    id: faker.finance.ethereumAddress(),
-    roundMetadata: {
-      name: faker.company.companyName(),
-    },
-    applicationsStartTime,
-    applicationsEndTime,
-    roundStartTime,
-    roundEndTime,
-    token: faker.finance.ethereumAddress(),
-    votingStrategy: faker.finance.ethereumAddress(),
-    ownedBy: faker.finance.ethereumAddress(),
-    ...overrides
-  }
-}
-
-export const makeStubApplication = (overrides: Partial<GrantApplication> = {}): GrantApplication => {
-  return {
-    id: faker.datatype.uuid(),
-    round: faker.finance.ethereumAddress(),
+export const makeGrantApplicationData = (overrides: Partial<GrantApplication> = {}): GrantApplication => ({
+    id: faker.random.alpha({ count: 10, casing: "lower" }),
+    round: faker.random.alpha({ count: 59, casing: "lower" }),
     recipient: faker.finance.ethereumAddress(),
     project: {
-      id: faker.datatype.uuid(),
-      website: faker.internet.url(),
-      logoImg: faker.image.imageUrl(),
+      lastUpdated: 1659714564,
+      id: faker.random.alpha({ count: 10, casing: "lower" }),
+      title: faker.lorem.sentence(2),
+      description: faker.lorem.sentence(10),
+      website: faker.internet.domainName(),
+      bannerImg: faker.random.alpha({ count: 59, casing: "lower" }),
+      logoImg: faker.random.alpha({ count: 59, casing: "lower" }),
       metaPtr: {
-        protocol: faker.datatype.number(),
-        pointer: faker.finance.ethereumAddress()
-      },
-      title: faker.name.middleName(),
-      description: faker.name.jobDescriptor(),
-      lastUpdated: faker.date.recent(5).getTime(),
+        protocol: randomInt(1, 10),
+        pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+      }
     },
     answers: [],
     projectsMetaPtr: {
-      protocol: faker.datatype.number(),
-      pointer: faker.datatype.uuid()
+      protocol: randomInt(1, 10),
+      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
     },
+    status: ["PENDING", "APPROVED", "REJECTED", "APPEAL", "FRAUD"][randomInt(0, 4)] as ProjectStatus,
     ...overrides
   }
-}
-
-export const renderWrapped = (ui: JSX.Element) => {
-  render(
-    <Provider store={ store }>
-      <ReduxRouter store={ store } history={ history }>
-        { ui }
-      </ReduxRouter>
-    </Provider>
-  )
-}
+)
