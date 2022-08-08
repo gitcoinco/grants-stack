@@ -2,11 +2,11 @@ import { screen } from "@testing-library/react"
 import { useWallet } from "../common/Auth"
 import { useListRoundsQuery } from "../api/services/round"
 import ViewRoundPage from "./ViewRoundPage"
-import { GrantApplication, Round } from "../api/types";
-import { makeStubApplication, makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils";
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
-import { useListProgramsQuery } from "../api/services/program";
-import {useDisconnect, useSwitchNetwork} from "wagmi";
+import { GrantApplication, Round } from "../api/types"
+import { makeStubApplication, makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils"
+import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
+import { useListProgramsQuery } from "../api/services/program"
+import {useDisconnect, useSwitchNetwork} from "wagmi"
 
 jest.mock("../common/Auth");
 jest.mock("../api/services/round");

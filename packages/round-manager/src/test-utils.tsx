@@ -1,4 +1,4 @@
-import {render, render as rtlRender} from "@testing-library/react"
+import { render, render as rtlRender } from "@testing-library/react"
 import { Provider } from "react-redux"
 import React from "react"
 import { api } from "./features/api"
@@ -8,7 +8,7 @@ import { ReduxRouter } from "@lagunovsky/redux-react-router"
 import { GrantApplication, Program, Round } from "./features/api/types"
 import { faker } from '@faker-js/faker';
 import { randomInt } from "crypto"
-import {store} from "./app/store";
+import { store } from "./app/store";
 
 // @ts-ignore
 function reducer(ui, {
