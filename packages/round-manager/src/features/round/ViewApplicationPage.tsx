@@ -12,6 +12,7 @@ import { useWallet } from "../common/Auth"
 import { Button } from "../common/styles"
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
+import Footer from "../common/Footer"
 
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
@@ -185,6 +186,7 @@ export default function ViewApplicationPage() {
           </div> */}
 
         </main>
+        <Footer />
       </div>
     </>
   )

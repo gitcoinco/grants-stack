@@ -74,6 +74,7 @@
     ]
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.3.0",
     "@tailwindcss/line-clamp": "^0.4.0",
     "autoprefixer": "^10.4.7",
     "msw": "^0.44.2",

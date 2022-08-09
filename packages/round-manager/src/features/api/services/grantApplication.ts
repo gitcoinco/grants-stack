@@ -38,6 +38,7 @@ export const grantApplicationApi = api.injectEndpoints({
                     protocol
                     pointer
                   }
+                  status
                   round {
                     projectsMetaPtr {
                       protocol
@@ -56,7 +57,8 @@ export const grantApplicationApi = api.injectEndpoints({
           for (const project of res.data.roundProjects) {
             const metadata = await fetchFromIPFS(project.metaPtr.pointer)
 
-            let status
+            let status = project.status
+
             if (id) {
               status = await checkGrantApplicationStatus(project.id, project.round.projectsMetaPtr)
             }
