@@ -31,7 +31,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   return {
     id: faker.finance.ethereumAddress(),
     roundMetadata: {
-      name: faker.company.name(),
+      name: faker.company.companyName(),
     },
     applicationsStartTime,
     applicationsEndTime,
