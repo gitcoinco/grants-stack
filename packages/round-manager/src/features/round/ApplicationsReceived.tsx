@@ -23,7 +23,7 @@ export default function ApplicationsReceived() {
 
   return (
     <CardsContainer>
-      {isSuccess && data?.map((application, index) => (
+      {isSuccess && data?.filter(it => it.status === "PENDING").map((application, index) => (
         <BasicCard key={index} className="application-card" data-testid="application-card">
           <CardHeader />
           <CardContent>

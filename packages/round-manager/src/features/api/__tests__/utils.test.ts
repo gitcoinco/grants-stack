@@ -72,7 +72,6 @@ describe("pinToIPFS", () => {
   })
 })
 
-
 describe("graphql_fetch", () => {
   beforeEach(() => {
     fetchMock.resetMocks()

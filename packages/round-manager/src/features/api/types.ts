@@ -149,6 +149,7 @@ export interface Round {
   operatorWallets?: Array<string>;
 }
 
+export type ProjectStatus = "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
 
 export interface GrantApplication {
   /**
@@ -156,10 +157,10 @@ export interface GrantApplication {
    */
   id: string;
   /**
-   * The round contract address applied to 
+   * The round contract address applied to
    */
   round: string;
-  /** 
+  /**
    * Recipient wallet address of grantee
    */
   recipient: string;
@@ -187,5 +188,5 @@ export interface GrantApplication {
    * e.g IPFS, Ceramic etc.
    */
   projectsMetaPtr: MetadataPointer;
-  status?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
+  status?: ProjectStatus;
 }
