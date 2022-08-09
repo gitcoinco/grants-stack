@@ -1,19 +1,14 @@
 import ApplicationsReceived from "./ApplicationsReceived"
 import React from "react"
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
-import { render, screen } from "@testing-library/react"
-import { BrowserRouter } from "react-router-dom"
+import { screen } from "@testing-library/react"
 import { GrantApplication } from "../api/types"
-import { makeGrantApplicationData } from "../../test-utils"
+import { makeGrantApplicationData, renderWrapped } from "../../test-utils"
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: () => ({ id: 1 })
-}))
+jest.mock("../api/services/grantApplication");
 jest.mock("../common/Auth", () => ({
   useWallet: () => ({ provider: {} })
 }))
-jest.mock("../api/services/grantApplication")
 
 describe("<ApplicationsReceived />", () => {
   it("renders no cards when there are no projects", async () => {
@@ -21,7 +16,7 @@ describe("<ApplicationsReceived />", () => {
       data: [], isSuccess: true, isLoading: false
     })
 
-    await render(<BrowserRouter><ApplicationsReceived/></BrowserRouter>)
+    await renderWrapped(<ApplicationsReceived/>)
     expect(screen.queryAllByTestId("application-card")).toHaveLength(0)
   })
 
@@ -36,7 +31,7 @@ describe("<ApplicationsReceived />", () => {
       data, isSuccess: true, isLoading: false
     })
 
-    await render(<BrowserRouter><ApplicationsReceived/></BrowserRouter>)
+    await renderWrapped(<ApplicationsReceived/>)
 
     expect(screen.getAllByTestId("application-card")).toHaveLength(2)
     screen.getByText(data[0].project.title)

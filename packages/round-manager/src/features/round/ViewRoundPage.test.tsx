@@ -3,7 +3,7 @@ import { useWallet } from "../common/Auth"
 import { useListRoundsQuery } from "../api/services/round"
 import ViewRoundPage from "./ViewRoundPage"
 import { GrantApplication, Round } from "../api/types"
-import { makeStubApplication, makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils"
+import { makeRoundData, renderWrapped, makeProgramData, makeGrantApplicationData } from "../../test-utils"
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
 import { useListProgramsQuery } from "../api/services/program"
 import {useDisconnect, useSwitchNetwork} from "wagmi"
@@ -14,8 +14,8 @@ jest.mock("../api/services/grantApplication");
 jest.mock("../api/services/program");
 jest.mock("wagmi");
 
-const mockRoundData: Round = makeStubRound();
-const mockProgramData = makeStubProgram({
+const mockRoundData: Round = makeRoundData();
+const mockProgramData = makeProgramData({
     id: mockRoundData.ownedBy
 });
 const mockApplicationData: GrantApplication[] = [];
@@ -51,10 +51,10 @@ describe('the view round page', () => {
 
     test("should indicate how many of each kind of application there are", () => {
         const mockApplicationData: GrantApplication[] = [
-            makeStubApplication({status: "PENDING"}),
-            makeStubApplication({status: "PENDING"}),
-            makeStubApplication({status: "REJECTED"}),
-            makeStubApplication({status: "APPROVED"}),
+            makeGrantApplicationData({status: "PENDING"}),
+            makeGrantApplicationData({status: "PENDING"}),
+            makeGrantApplicationData({status: "REJECTED"}),
+            makeGrantApplicationData({status: "APPROVED"}),
         ];
         (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
             data: mockApplicationData,

@@ -1,9 +1,9 @@
 import ViewProgram from "./ViewProgramPage"
 import { screen } from "@testing-library/react"
 import { useListProgramsQuery } from "../api/services/program"
-import { useListRoundsQuery } from "../api/services/round";
+import { useListRoundsQuery } from "../api/services/round"
 import { useWallet } from "../common/Auth"
-import { makeStubProgram, makeStubRound, renderWrapped } from "../../test-utils"
+import { makeProgramData, makeRoundData, renderWrapped } from "../../test-utils"
 import { faker } from "@faker-js/faker"
 
 jest.mock("../common/Navbar")
@@ -20,7 +20,7 @@ describe("<ViewProgram />", () => {
   });
 
   it("displays the program name", async () => {
-    const stubProgram = makeStubProgram();
+    const stubProgram = makeProgramData();
     (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram })
 
     renderWrapped(<ViewProgram />)
@@ -34,7 +34,7 @@ describe("<ViewProgram />", () => {
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
     ];
-    const stubProgram = makeStubProgram({ operatorWallets });
+    const stubProgram = makeProgramData({ operatorWallets });
     (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
 
     renderWrapped(<ViewProgram />);
@@ -49,7 +49,7 @@ describe("<ViewProgram />", () => {
     });
 
     it("displays introductory text on the page", async () => {
-      const stubProgram = makeStubProgram();
+      const stubProgram = makeProgramData();
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
 
       renderWrapped(<ViewProgram />);
@@ -60,8 +60,8 @@ describe("<ViewProgram />", () => {
 
   describe("when there is a round in the program", () => {
     it("displays round name", async () => {
-      const stubProgram = makeStubProgram();
-      const stubRound = makeStubRound({ ownedBy: stubProgram.id });
+      const stubProgram = makeProgramData();
+      const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
       (useListRoundsQuery as jest.Mock).mockReturnValue({
         data: [stubRound],
@@ -74,8 +74,8 @@ describe("<ViewProgram />", () => {
     });
 
     it("displays grant application start and end dates", async () => {
-      const stubProgram = makeStubProgram();
-      const stubRound = makeStubRound({ ownedBy: stubProgram.id });
+      const stubProgram = makeProgramData();
+      const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
       (useListRoundsQuery as jest.Mock).mockReturnValue({
         data: [stubRound],
@@ -89,8 +89,8 @@ describe("<ViewProgram />", () => {
     });
 
     it("displays round start and end dates", async () => {
-      const stubProgram = makeStubProgram();
-      const stubRound = makeStubRound({ ownedBy: stubProgram.id });
+      const stubProgram = makeProgramData();
+      const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
       (useListRoundsQuery as jest.Mock).mockReturnValue({
         data: [stubRound],
@@ -104,8 +104,8 @@ describe("<ViewProgram />", () => {
     });
 
     it("displays create round link", async () => {
-      const stubProgram = makeStubProgram();
-      const stubRound = makeStubRound({ ownedBy: stubProgram.id });
+      const stubProgram = makeProgramData();
+      const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
       (useListRoundsQuery as jest.Mock).mockReturnValue({
         data: [stubRound],

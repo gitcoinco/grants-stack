@@ -1,7 +1,12 @@
 import React from "react"
-import { GrantApplication, Program, ProjectStatus } from "./features/api/types"
+import { GrantApplication, Program, ProjectStatus, Round } from "./features/api/types"
 import { randomInt } from "crypto"
 import { faker } from "@faker-js/faker"
+import { render } from "@testing-library/react"
+import { ReduxRouter } from "@lagunovsky/redux-react-router"
+import { Provider } from "react-redux"
+import { store } from "./app/store"
+import history from "./history"
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -17,6 +22,27 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   ],
   ...overrides
 })
+
+export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
+  const applicationsStartTime = faker.date.soon()
+  const applicationsEndTime = faker.date.soon(10, applicationsStartTime)
+  const roundStartTime = faker.date.future(1, applicationsEndTime)
+  const roundEndTime = faker.date.soon(21, roundStartTime)
+  return {
+    id: faker.finance.ethereumAddress(),
+    roundMetadata: {
+      name: faker.company.name(),
+    },
+    applicationsStartTime,
+    applicationsEndTime,
+    roundStartTime,
+    roundEndTime,
+    token: faker.finance.ethereumAddress(),
+    votingStrategy: faker.finance.ethereumAddress(),
+    ownedBy: faker.finance.ethereumAddress(),
+    ...overrides
+  }
+}
 
 export const makeGrantApplicationData = (overrides: Partial<GrantApplication> = {}): GrantApplication => ({
     id: faker.random.alpha({ count: 10, casing: "lower" }),
@@ -44,3 +70,13 @@ export const makeGrantApplicationData = (overrides: Partial<GrantApplication> = 
     ...overrides
   }
 )
+
+export const renderWrapped = (ui: JSX.Element) => {
+  render(
+    <Provider store={ store }>
+      <ReduxRouter store={ store } history={ history }>
+        { ui }
+      </ReduxRouter>
+    </Provider>
+  )
+}
