@@ -80,17 +80,12 @@ export class Lit {
       await this.connect();
     }
 
-    // console.log("Encrypting Message", content);
-
     // Obtain Auth Signature to verify signer is wallet owner
     const chain = this.chain;
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
     // Encrypting Content and generating symmetric key
     const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(content);
-    // console.log("Encrypted the key pair");
-    // console.log("Encrypted String", encryptedString);
-    // console.log("Symmetric Key", symmetricKey);
 
     // Saving the Encrypted Content to the Lit Nodes
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
@@ -99,8 +94,6 @@ export class Lit {
       authSig,
       chain,
     });
-
-    // console.log("Saved content to the lit node", encryptedSymmetricKey);
 
     return {
       encryptedString,
@@ -142,7 +135,6 @@ export class Lit {
       symmetricKey
     );
 
-    // console.log("Decrypted String", decryptedString);
     return decryptedString;
 
   }
