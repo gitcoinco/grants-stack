@@ -4,8 +4,8 @@ import Footer from "./Footer"
 import { Button } from "../common/styles"
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg"
 
-
 export default function NotFoundPage() {
+
   return (
     <>
       <Navbar />

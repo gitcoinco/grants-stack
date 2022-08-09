@@ -11,6 +11,7 @@ import Footer from "../common/Footer"
 import { abbreviateAddress } from "../api/utils"
 
 export default function ViewProgram() {
+  
   const { id } = useParams()
 
   const { address, provider } = useWallet()

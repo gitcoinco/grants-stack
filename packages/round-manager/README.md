@@ -45,6 +45,9 @@ Observe the directory structure for Authentication feature in `features/auth`
 
 It contains the `ProtectedRoute` component and `web3Service` which extends the base API service defined in `src/api.ts` by endpoint injection.
 
+## Encrypting PII information 
+
+Since all the data is decentralized stored, there might be PII (Personally identifiable information) data which we cannot store. To see how we handle those scenarios, checkout [EncryptingPII.md](docs/EncryptingPII.md) 
 
 ### Development
 
