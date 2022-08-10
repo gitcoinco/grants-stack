@@ -1,4 +1,4 @@
-import { IPFSObject, MetadataPointer } from "./types"
+import {ApplicationMetadata, IPFSObject, MetadataPointer} from "./types"
 
 export enum ChainId {
   GOERLI_CHAIN_ID= 5,
@@ -8,7 +8,7 @@ export enum ChainId {
 
 /**
  * Fetch subgraph network for provided web3 network
- * 
+ *
  * @param chainId - The chain ID of the blockchain2
  * @returns the subgraph endpoint
  */
@@ -85,7 +85,7 @@ export const fetchFromIPFS = (cid: string) => {
 
 /**
  * Check status of a grant application
- * 
+ *
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
@@ -176,37 +176,35 @@ export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */
-export const generateApplicationSchema = (metadata: any) => {
+export const generateApplicationSchema = (metadata: ApplicationMetadata) => {
+  if (!metadata.customQuestions) return []
 
-  // declare schema with default fields
-  let schema = [];
+  const maybe_questions = metadata.customQuestions
 
-  for (const key of Object.keys(metadata)) {
-    if (typeof metadata[key] === "object") {
-
-      for (const subKey of Object.keys(metadata[key])) {
-        schema.push({
-          id: schema.length,
-          question: camelToTitle(subKey),
-          type: "TEXT",
-          required: true,
-          info: metadata[key][subKey],
-          choices: []
-        })
-      }
-      continue
-
-    } else {
-      schema.push({
-        id: schema.length,
-        question: camelToTitle(key),
-        type: "TEXT",
-        required: true,
-        info: metadata[key],
-        choices: []
-      })
-    }
+  const isPresent = (item: (string | undefined)[]): item is string[] => {
+    return !!item[1]
   }
 
-  return schema
+  const questions = [
+    ["email", maybe_questions.email],
+    ["twitter", maybe_questions.twitter],
+    ["website", maybe_questions.website],
+    ["github", maybe_questions.github],
+    ["githubOrganization", maybe_questions.githubOrganization],
+    ["fundingSource", maybe_questions.fundingSource],
+    ["profit2022", maybe_questions.profit2022],
+    ["teamSize", maybe_questions.teamSize]
+  ].filter(isPresent)
+
+  return questions.map(([name , answer], i) => {
+    return {
+      id: i,
+      question: camelToTitle(name),
+      type: "TEXT",
+      required: true,
+      info: answer,
+      choices: [],
+      encrypted: name === 'email'
+    }
+  })
 }
