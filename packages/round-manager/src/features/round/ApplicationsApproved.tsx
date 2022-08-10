@@ -25,7 +25,26 @@ export default function ApplicationsApproved() {
     <CardsContainer>
       {isSuccess && data?.map((application, index) => (
         <BasicCard key={index} className="application-card" data-testid="application-card">
-          <CardHeader />
+          <CardHeader>
+            <div>
+              <img
+                className="h-[120px] w-full object-cover rounded-t"
+                src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project.bannerImg}`}
+                alt=""
+              />
+            </div>
+            <div className="pl-4">
+              <div className="-mt-6 sm:-mt-6 sm:flex sm:items-end sm:space-x-5">
+                <div className="flex">
+                  <img
+                    className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
+                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project.logoImg}`}
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+          </CardHeader>
           <CardContent>
             <Link to={`/round/${id}/application/${application.id}`}>
               <CardTitle>{application.project.title}</CardTitle>

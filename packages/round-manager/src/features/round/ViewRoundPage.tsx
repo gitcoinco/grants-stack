@@ -117,7 +117,7 @@ export default function ViewRoundPage() {
                         <div className={selected ? "text-violet-500" : ""}>
                           Received
                           <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                 data-testid="received-application-counter">
+                            data-testid="received-application-counter">
                             {pendingApplications?.length || 0}
                           </TabApplicationCounter>
                         </div>
@@ -128,7 +128,7 @@ export default function ViewRoundPage() {
                         <div className={selected ? "text-violet-500" : ""}>
                           Approved
                           <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                 data-testid="approved-application-counter">
+                            data-testid="approved-application-counter">
                             {approvedApplications?.length || 0}
                           </TabApplicationCounter>
                         </div>
@@ -139,7 +139,7 @@ export default function ViewRoundPage() {
                         <div className={selected ? "text-violet-500" : ""}>
                           Rejected
                           <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                                                 data-testid="rejected-application-counter">
+                            data-testid="rejected-application-counter">
                             {rejectedApplications?.length || 0}
                           </TabApplicationCounter>
                         </div>

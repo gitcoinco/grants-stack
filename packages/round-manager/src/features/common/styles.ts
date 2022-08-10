@@ -46,41 +46,41 @@ export const CardsContainer = tw.div`
 `
 
 export const BasicCard = tw.div`
-  w-80
-  h-72
-  border
-  border-gray-300
+  w-[302px]
+  h-[294px]
   ml-0
   mr-6
   my-3
-  rounded-md
+  rounded
   bg-white
-`
-
-export const CardHeader = tw.div`
-  bg-grey-500
+  shadow-md
+  `
+  
+  export const CardHeader = tw.div`
   w-full
-  h-1/3
+  h-36
+  rounded-t
 `
 
 export const CardContent = tw.div`
   p-4
+  pt-0
 `
 
 export const CardTitle = tw.p`
   w-full
-  my-4
-  text-lg
+  my-2
+  text-sm
   font-normal
   text-ellipsis
   line-clamp-2
 `
 
 export const CardDescription = tw.p`
-  text-sm
+  text-xs
   text-ellipsis
   line-clamp-2
-  text-gray-500
+  text-grey-400
   leading-relaxed
 `
 
