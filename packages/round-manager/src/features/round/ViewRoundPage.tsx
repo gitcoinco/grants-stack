@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 
 import { useWallet } from "../common/Auth"
@@ -12,9 +13,12 @@ import ApplicationsRejected from "./ApplicationsRejected"
 import Footer from "../common/Footer"
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
 import tw from "tailwind-styled-components";
+import { Button } from "../common/styles"
 
 
 export default function ViewRoundPage() {
+  const [bulkSelect, setBulkSelect] = useState(false)
+
   const { id } = useParams()
   const { address, provider } = useWallet()
 
@@ -65,7 +69,7 @@ export default function ViewRoundPage() {
       <Navbar />
       <div className="flex flex-col w-screen h-screen mx-0">
         <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
-          <div className="text-gray-500 font-bold text-sm flex flex-row items-center gap-3">
+          <div className="text-grey-400 font-bold text-sm flex flex-row items-center gap-3">
             <Link to={`/`}>
               <span>{"My Programs"}</span>
             </Link>
@@ -83,7 +87,7 @@ export default function ViewRoundPage() {
           </h1>
           <div className="flex flex-row flex-wrap">
             <div className="flex mr-8 lg:mr-36 pb-3">
-              <CalendarIcon className="h-5 w-5 mr-2 text-zinc-500" />
+              <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
               <p className="text-sm mr-1 text-grey-400">Applications:</p>
               <p className="text-sm">
                 {formatDate(round?.applicationsStartTime) || "..."}
@@ -93,7 +97,7 @@ export default function ViewRoundPage() {
             </div>
 
             <div className="flex">
-              <ClockIcon className="h-5 w-5 mr-2 text-zinc-500" />
+              <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
               <p className="text-sm mr-1 text-grey-400">Round:</p>
               <p className="text-sm">
                 {formatDate(round?.roundStartTime) || "..."}
@@ -111,7 +115,7 @@ export default function ViewRoundPage() {
               <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
               <div>
                 <Tab.Group>
-                  <Tab.List className="border-b flex space-x-8 mb-6">
+                  <Tab.List className="border-b flex space-x-8 mb-6 items-center">
                     <Tab className={({ selected }) => tabStyles(selected)}>
                       {({ selected }) =>
                         <div className={selected ? "text-violet-500" : ""}>
@@ -145,6 +149,30 @@ export default function ViewRoundPage() {
                         </div>
                       }
                     </Tab>
+                    <div>
+                      <span className="text-grey-400 text-sm mr-6">
+                        Save in gas fees by approving/rejecting multiple applications at once.
+                      </span>
+                      {bulkSelect ?
+                        <Button
+                          type="button"
+                          $variant="outline"
+                          className="text-xs text-pink-500"
+                          onClick={() => setBulkSelect(false)}
+                        >
+                          Cancel
+                        </Button>
+                        :
+                        <Button
+                          type="button"
+                          $variant="outline"
+                          className="text-xs bg-grey-150 border-none"
+                          onClick={() => setBulkSelect(true)}
+                        >
+                          Select
+                        </Button>
+                      }
+                    </div>
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
