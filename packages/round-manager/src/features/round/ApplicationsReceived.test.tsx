@@ -39,4 +39,55 @@ describe("<ApplicationsReceived />", () => {
     screen.getByText(data[1].project.title)
     screen.getByText(data[1].project.description)
   })
+
+  describe("when bulkSelect is true", () => {
+    it("renders approve and reject buttons on each project card", async () => {
+      const grantApplications = [
+        makeGrantApplicationData({ status: "PENDING"}),
+        makeGrantApplicationData({ status: "PENDING"}),
+        makeGrantApplicationData({ status: "PENDING"})
+      ];
+      (useListGrantApplicationsQuery as any).mockReturnValue({
+        data: grantApplications, isSuccess: true, isLoading: false
+      })
+      await renderWrapped(<ApplicationsReceived bulkSelect={true}/>)
+      expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(grantApplications.length)
+    });
+
+    it("displays an approved button as selected when approve button is clicked", async () => {
+      // TODO
+      expect(true).toEqual(false);
+    });
+
+    it("displays a rejected button as selected when reject button is clicked", async () => {
+      // TODO
+      expect(true).toEqual(false);
+    });
+
+    describe("and when an approve button is already selected on a card", () => {
+      it("selects the reject button and unselects the approve button when the reject button is clicked on that card", async () => {
+        // TODO
+        expect(true).toEqual(false);
+      });
+      it("unselects the approve button when that selected approve button is clicked on that card", async () => {
+        // TODO
+        expect(true).toEqual(false);
+      });
+    });
+
+  });
+  describe("when bulkSelect is false", () => {
+    it("does not render approve and reject buttons on each card", async () => {
+      const grantApplications = [
+        makeGrantApplicationData({ status: "PENDING"}),
+        makeGrantApplicationData({ status: "PENDING"}),
+        makeGrantApplicationData({ status: "PENDING"})
+      ];
+      (useListGrantApplicationsQuery as any).mockReturnValue({
+        data: grantApplications, isSuccess: true, isLoading: false
+      })
+      await renderWrapped(<ApplicationsReceived bulkSelect={false}/>)
+      expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(0)
+    });
+  });
 })

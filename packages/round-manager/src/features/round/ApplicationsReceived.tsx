@@ -73,7 +73,7 @@ export default function ApplicationsReceived({
         <BasicCard key={index} className="application-card" data-testid="application-card">
           <CardHeader>
             {bulkSelect && (
-              <div className="absolute flex gap-2 translate-x-[206px] translate-y-4 mr-4">
+              <div className="absolute flex gap-2 translate-x-[206px] translate-y-4 mr-4" data-testid="bulk-approve-reject-buttons">
                 <Button
                   type="button"
                   $variant="solid"
