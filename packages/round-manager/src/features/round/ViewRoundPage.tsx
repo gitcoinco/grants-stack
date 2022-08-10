@@ -115,41 +115,43 @@ export default function ViewRoundPage() {
               <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
               <div>
                 <Tab.Group>
-                  <Tab.List className="border-b flex space-x-8 mb-6 items-center">
-                    <Tab className={({ selected }) => tabStyles(selected)}>
-                      {({ selected }) =>
-                        <div className={selected ? "text-violet-500" : ""}>
-                          Received
-                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                            data-testid="received-application-counter">
-                            {pendingApplications?.length || 0}
-                          </TabApplicationCounter>
-                        </div>
-                      }
-                    </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
-                      {({ selected }) =>
-                        <div className={selected ? "text-violet-500" : ""}>
-                          Approved
-                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                            data-testid="approved-application-counter">
-                            {approvedApplications?.length || 0}
-                          </TabApplicationCounter>
-                        </div>
-                      }
-                    </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
-                      {({ selected }) =>
-                        <div className={selected ? "text-violet-500" : ""}>
-                          Rejected
-                          <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
-                            data-testid="rejected-application-counter">
-                            {rejectedApplications?.length || 0}
-                          </TabApplicationCounter>
-                        </div>
-                      }
-                    </Tab>
-                    <div>
+                  <Tab.List className="border-b mb-6 flex items-center justify-between">
+                    <div className="space-x-8">
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) =>
+                          <div className={selected ? "text-violet-500" : ""}>
+                            Received
+                            <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                              data-testid="received-application-counter">
+                              {pendingApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        }
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) =>
+                          <div className={selected ? "text-violet-500" : ""}>
+                            Approved
+                            <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                              data-testid="approved-application-counter">
+                              {approvedApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        }
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) =>
+                          <div className={selected ? "text-violet-500" : ""}>
+                            Rejected
+                            <TabApplicationCounter className={selected ? "bg-violet-100" : "bg-grey-150"}
+                              data-testid="rejected-application-counter">
+                              {rejectedApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        }
+                      </Tab>
+                    </div>
+                    <div className="justify-end">
                       <span className="text-grey-400 text-sm mr-6">
                         Save in gas fees by approving/rejecting multiple applications at once.
                       </span>
@@ -176,7 +178,7 @@ export default function ViewRoundPage() {
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
-                      <ApplicationsReceived />
+                      <ApplicationsReceived bulkSelect={bulkSelect} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ApplicationsApproved />
