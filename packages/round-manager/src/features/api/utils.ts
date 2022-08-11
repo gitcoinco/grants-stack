@@ -170,30 +170,41 @@ const camelToTitle = (camelCase: string) => camelCase
 
 export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
 
+export interface SchemaQuestion {
+  id: number,
+  question: string,
+  type: "TEXT",
+  required: true,
+  info: string,
+  choices: [],
+  encrypted: boolean
+}
+
 /**
  * This function generates the round application schema to be stored in a decentralized storage
  *
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */
-export const generateApplicationSchema = (metadata: ApplicationMetadata) => {
+export const generateApplicationSchema = (metadata: ApplicationMetadata): Array<SchemaQuestion> => {
   if (!metadata.customQuestions) return []
 
-  const maybe_questions = metadata.customQuestions
+  const maybeQuestions = metadata.customQuestions
 
   const isPresent = (item: (string | undefined)[]): item is string[] => {
     return !!item[1]
   }
 
+  // TODO(Aditya) Revisit code here to potentially package things in a dynamic way
   const questions = [
-    ["email", maybe_questions.email],
-    ["twitter", maybe_questions.twitter],
-    ["website", maybe_questions.website],
-    ["github", maybe_questions.github],
-    ["githubOrganization", maybe_questions.githubOrganization],
-    ["fundingSource", maybe_questions.fundingSource],
-    ["profit2022", maybe_questions.profit2022],
-    ["teamSize", maybe_questions.teamSize]
+    ["email", maybeQuestions.email],
+    ["twitter", maybeQuestions.twitter],
+    ["website", maybeQuestions.website],
+    ["github", maybeQuestions.github],
+    ["githubOrganization", maybeQuestions.githubOrganization],
+    ["fundingSource", maybeQuestions.fundingSource],
+    ["profit2022", maybeQuestions.profit2022],
+    ["teamSize", maybeQuestions.teamSize]
   ].filter(isPresent)
 
   return questions.map(([name , answer], i) => {
