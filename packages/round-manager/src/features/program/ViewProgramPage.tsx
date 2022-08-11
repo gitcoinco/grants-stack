@@ -74,14 +74,14 @@ export default function ViewProgram() {
   const operatorWallets = <div className="flex flex-row flex-wrap">
     {
       program?.operatorWallets.map((operatorWallet, index) =>
-        <div className="bg-white text-zinc-500 pb-2 pr-5" data-testid="program-operator-wallet" key={index}>
-          <UserIcon className="inline h-4 w-4 text-zinc-500 mr-1" />
-          <span className="text-sm text-zinc-500" key={index}>
+        <div className="bg-white text-grey-400 pb-2 pr-5" data-testid="program-operator-wallet" key={index}>
+          <UserIcon className="inline h-4 w-4 text-grey-400 mr-1" />
+          <span className="text-sm text-grey-400" key={index}>
             {abbreviateAddress(operatorWallet)}
           </span>
         </div>
       ) || (
-        <p className="text-zinc-500 text-sm">
+        <p className="text-grey-400 text-sm">
           Fetching operator wallets...
         </p>
       )
@@ -92,7 +92,7 @@ export default function ViewProgram() {
     <div className="text-center md:px-8 w-full lg:w-1/3">
       <RefreshIcon className="h-12 w-12 mt-8 mx-auto bg-zinc-100 rounded-full p-3" aria-hidden="true"></RefreshIcon>
       <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
-      <p className="text-zinc-500 text-sm" data-testid="program-details-intro">
+      <p className="text-grey-400 text-sm" data-testid="program-details-intro">
         Manage date details and acceptance criteria for your Grant Program Round.
       </p>
       <Link to={`/round/create?programId=${program?.id}`}>
@@ -106,14 +106,14 @@ export default function ViewProgram() {
   return (
     <>
       <Navbar programCta={true} />
-      <div className="flex flex-col w-screen h-screen mx-0">
+      <div className="container mx-auto flex flex-col w-screen h-screen">
         <header className="flex flex-col justify-center border-b pl-2 md:pl-20 py-6">
           <div className="flex flex-row items-center">
             <Link to={`/`}>
-              <p className="text-sm text-zinc-500 font-semibold">My Programs</p>
+              <p className="text-sm text-grey-400 font-semibold">My Programs</p>
             </Link>
-            <ChevronRightIcon className="h-6 w-6 mx-3 text-sm text-zinc-500" aria-hidden="true" />
-            <p className="text-sm text-zinc-500 font-semibold">Program Details</p>
+            <ChevronRightIcon className="h-6 w-6 mx-3 text-sm text-grey-400" aria-hidden="true" />
+            <p className="text-sm text-grey-400 font-semibold">Program Details</p>
           </div>
           <h1 className="text-3xl sm:text-[32px] my-2">
             {program?.metadata?.name || "Program Details"}
