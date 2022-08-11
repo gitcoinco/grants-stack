@@ -19,9 +19,11 @@ export function FormWizard({ initialCurrentStep = 1, initialData = {}, steps }: 
   return (
     <FormContext.Provider
       value={{
-        currentStep, setCurrentStep,
+        currentStep,
+        setCurrentStep,
         stepsCount: steps.length,
-        formData, setFormData,
+        formData,
+        setFormData,
       }}
     >
       <Content stepper={FormStepper} initialData={initialData} />
