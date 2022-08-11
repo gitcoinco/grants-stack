@@ -128,6 +128,18 @@ describe("<ApplicationsReceived />", () => {
       });
     });
 
+    it("should approve individual applications independently", () => {
+      renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+      const firstApproveButton = screen.queryAllByTestId("approve-button")[0]
+      fireEvent.click(firstApproveButton)
+      expect(firstApproveButton).toHaveClass("bg-teal-400 text-grey-500")
+
+      const secondApproveButton = screen.queryAllByTestId("approve-button")[1]
+      fireEvent.click(secondApproveButton)
+      expect(secondApproveButton).toHaveClass("bg-teal-400 text-grey-500")
+    });
+
   });
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject buttons on each card", () => {

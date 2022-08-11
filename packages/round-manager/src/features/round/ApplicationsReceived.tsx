@@ -52,10 +52,10 @@ export default function ApplicationsReceived({
 
   const toggleSelection = (id: string, status: string) => {
     const newState = selected?.map((obj: any) => {
-      status = obj.status === status ? "PENDING" : status
+      const newStatus = obj.status === status ? "PENDING" : status
 
       if (obj.id === id) {
-        return { ...obj, status }
+        return { ...obj, status: newStatus }
       }
 
       return obj
