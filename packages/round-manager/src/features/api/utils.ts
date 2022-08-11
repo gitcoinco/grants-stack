@@ -1,4 +1,4 @@
-import { IPFSObject, MetadataPointer } from "./types"
+import {ApplicationMetadata, IPFSObject, MetadataPointer} from "./types"
 
 export enum ChainId {
   GOERLI_CHAIN_ID= 5,
@@ -8,7 +8,7 @@ export enum ChainId {
 
 /**
  * Fetch subgraph network for provided web3 network
- * 
+ *
  * @param chainId - The chain ID of the blockchain2
  * @returns the subgraph endpoint
  */
@@ -85,7 +85,7 @@ export const fetchFromIPFS = (cid: string) => {
 
 /**
  * Check status of a grant application
- * 
+ *
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
@@ -170,43 +170,52 @@ const camelToTitle = (camelCase: string) => camelCase
 
 export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
 
+export interface SchemaQuestion {
+  id: number,
+  question: string,
+  type: "TEXT",
+  required: true,
+  info: string,
+  choices: [],
+  encrypted: boolean
+}
+
 /**
  * This function generates the round application schema to be stored in a decentralized storage
  *
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */
-export const generateApplicationSchema = (metadata: any) => {
+export const generateApplicationSchema = (metadata: ApplicationMetadata): Array<SchemaQuestion> => {
+  if (!metadata.customQuestions) return []
 
-  // declare schema with default fields
-  let schema = [];
+  const maybeQuestions = metadata.customQuestions
 
-  for (const key of Object.keys(metadata)) {
-    if (typeof metadata[key] === "object") {
-
-      for (const subKey of Object.keys(metadata[key])) {
-        schema.push({
-          id: schema.length,
-          question: camelToTitle(subKey),
-          type: "TEXT",
-          required: true,
-          info: metadata[key][subKey],
-          choices: []
-        })
-      }
-      continue
-
-    } else {
-      schema.push({
-        id: schema.length,
-        question: camelToTitle(key),
-        type: "TEXT",
-        required: true,
-        info: metadata[key],
-        choices: []
-      })
-    }
+  const isPresent = (item: (string | undefined)[]): item is string[] => {
+    return !!item[1]
   }
 
-  return schema
+  // TODO(Aditya) Revisit code here to potentially package things in a dynamic way
+  const questions = [
+    ["email", maybeQuestions.email],
+    ["twitter", maybeQuestions.twitter],
+    ["website", maybeQuestions.website],
+    ["github", maybeQuestions.github],
+    ["githubOrganization", maybeQuestions.githubOrganization],
+    ["fundingSource", maybeQuestions.fundingSource],
+    ["profit2022", maybeQuestions.profit2022],
+    ["teamSize", maybeQuestions.teamSize]
+  ].filter(isPresent)
+
+  return questions.map(([name , answer], i) => {
+    return {
+      id: i,
+      question: camelToTitle(name),
+      type: "TEXT",
+      required: true,
+      info: answer,
+      choices: [],
+      encrypted: name === 'email'
+    }
+  })
 }

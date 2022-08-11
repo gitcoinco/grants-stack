@@ -22,8 +22,9 @@ The application schema would be in the format as listed below:
       "question"            : "String",
       "type"                : "String",                 // [TEXT, TEXTAREA, RADIO, MULTIPLE]
       "required"            : "Boolean",
+      "encrypted"           : "Boolean",      
       "info"               ?: "String",                 // optional
-      "choices"            ?: ["String"|"Number"]       // optional
+      "choices"            ?: ["String"|"Number"],       // optional
     },
     {...}
   ]
