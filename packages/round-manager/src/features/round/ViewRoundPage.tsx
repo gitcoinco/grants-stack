@@ -151,30 +151,32 @@ export default function ViewRoundPage() {
                         }
                       </Tab>
                     </div>
-                    <div className="justify-end">
-                      <span className="text-grey-400 text-sm mr-6">
-                        Save in gas fees by approving/rejecting multiple applications at once.
-                      </span>
-                      {bulkSelect ?
-                        <Button
-                          type="button"
-                          $variant="outline"
-                          className="text-xs text-pink-500"
-                          onClick={() => setBulkSelect(false)}
-                        >
-                          Cancel
-                        </Button>
-                        :
-                        <Button
-                          type="button"
-                          $variant="outline"
-                          className="text-xs bg-grey-150 border-none"
-                          onClick={() => setBulkSelect(true)}
-                        >
-                          Select
-                        </Button>
-                      }
-                    </div>
+                    {pendingApplications?.length > 0 &&
+                      <div className="justify-end">
+                        <span className="text-grey-400 text-sm mr-6">
+                          Save in gas fees by approving/rejecting multiple applications at once.
+                        </span>
+                        {bulkSelect ?
+                          <Button
+                            type="button"
+                            $variant="outline"
+                            className="text-xs text-pink-500"
+                            onClick={() => setBulkSelect(false)}
+                          >
+                            Cancel
+                          </Button>
+                          :
+                          <Button
+                            type="button"
+                            $variant="outline"
+                            className="text-xs bg-grey-150 border-none"
+                            onClick={() => setBulkSelect(true)}
+                          >
+                            Select
+                          </Button>
+                        }
+                      </div>
+                    }
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
