@@ -1,15 +1,15 @@
-import ViewProgram from "./ViewProgramPage"
+import ViewProgram from "../ViewProgramPage"
 import { screen } from "@testing-library/react"
-import { useListProgramsQuery } from "../api/services/program"
-import { useListRoundsQuery } from "../api/services/round"
-import { useWallet } from "../common/Auth"
-import { makeProgramData, makeRoundData, renderWrapped } from "../../test-utils"
+import { useListProgramsQuery } from "../../api/services/program"
+import { useListRoundsQuery } from "../../api/services/round"
+import { useWallet } from "../../common/Auth"
+import { makeProgramData, makeRoundData, renderWrapped } from "../../../test-utils"
 import { faker } from "@faker-js/faker"
 
-jest.mock("../common/Navbar")
-jest.mock("../common/Auth")
-jest.mock("../api/services/program")
-jest.mock("../api/services/round")
+jest.mock("../../common/Navbar")
+jest.mock("../../common/Auth")
+jest.mock("../../api/services/program")
+jest.mock("../../api/services/round")
 
 
 describe("<ViewProgram />", () => {

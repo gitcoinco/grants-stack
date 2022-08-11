@@ -50,8 +50,10 @@ export default function ApplicationsReceived({
     }
   }, [data, isSuccess, bulkSelect])
 
-  const markAsSelected = (id: string, status: string) => {
+  const toggleSelection = (id: string, status: string) => {
     const newState = selected?.map((obj: any) => {
+      status = obj.status === status ? "PENDING" : status
+
       if (obj.id === id) {
         return { ...obj, status }
       }
@@ -81,7 +83,7 @@ export default function ApplicationsReceived({
                     `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "APPROVED"
                       ? "bg-teal-400 text-grey-500" : "bg-grey-500 text-white"}`
                   }
-                  onClick={() => markAsSelected(application.id, "APPROVED")}
+                  onClick={() => toggleSelection(application.id, "APPROVED")}
                   data-testid="approve-button"
                 >
                   <CheckIcon aria-hidden="true" />
@@ -93,7 +95,7 @@ export default function ApplicationsReceived({
                     `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "REJECTED"
                       ? "bg-white text-pink-500" : "bg-grey-500 text-white"}`
                   }
-                  onClick={() => markAsSelected(application.id, "REJECTED")}
+                  onClick={() => toggleSelection(application.id, "REJECTED")}
                   data-testid="reject-button"
                 >
                   <XIcon aria-hidden="true" />

@@ -1,17 +1,17 @@
 import { screen } from "@testing-library/react"
-import { useWallet } from "../common/Auth"
-import { useListRoundsQuery } from "../api/services/round"
-import ViewRoundPage from "./ViewRoundPage"
-import { GrantApplication, Round } from "../api/types"
-import { makeRoundData, renderWrapped, makeProgramData, makeGrantApplicationData } from "../../test-utils"
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
-import { useListProgramsQuery } from "../api/services/program"
+import { useWallet } from "../../common/Auth"
+import { useListRoundsQuery } from "../../api/services/round"
+import ViewRoundPage from "../ViewRoundPage"
+import { GrantApplication, Round } from "../../api/types"
+import { makeRoundData, renderWrapped, makeProgramData, makeGrantApplicationData } from "../../../test-utils"
+import { useListGrantApplicationsQuery } from "../../api/services/grantApplication"
+import { useListProgramsQuery } from "../../api/services/program"
 import {useDisconnect, useSwitchNetwork} from "wagmi"
 
-jest.mock("../common/Auth");
-jest.mock("../api/services/round");
-jest.mock("../api/services/grantApplication");
-jest.mock("../api/services/program");
+jest.mock("../../common/Auth");
+jest.mock("../../api/services/round");
+jest.mock("../../api/services/grantApplication");
+jest.mock("../../api/services/program");
 jest.mock("wagmi");
 
 const mockRoundData: Round = makeRoundData();
