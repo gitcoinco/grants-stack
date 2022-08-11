@@ -82,6 +82,7 @@ export default function ApplicationsReceived({
                       ? "bg-teal-400 text-grey-500" : "bg-grey-500 text-white"}`
                   }
                   onClick={() => markAsSelected(application.id, "APPROVED")}
+                  data-testid="approve-button"
                 >
                   <CheckIcon aria-hidden="true" />
                 </Button>
@@ -93,6 +94,7 @@ export default function ApplicationsReceived({
                       ? "bg-white text-pink-500" : "bg-grey-500 text-white"}`
                   }
                   onClick={() => markAsSelected(application.id, "REJECTED")}
+                  data-testid="reject-button"
                 >
                   <XIcon aria-hidden="true" />
                 </Button>

@@ -1,4 +1,3 @@
-import React from "react"
 import { GrantApplication, Program, ProjectStatus, Round } from "./features/api/types"
 import { randomInt } from "crypto"
 import { faker } from "@faker-js/faker"
@@ -31,7 +30,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   return {
     id: faker.finance.ethereumAddress(),
     roundMetadata: {
-      name: faker.company.companyName(),
+      name: faker.company.name(),
     },
     applicationsStartTime,
     applicationsEndTime,
