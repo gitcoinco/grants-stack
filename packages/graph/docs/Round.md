@@ -118,10 +118,10 @@ Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone
 }
 ```
 
-**Fetch all rounds by a project id and know it's status**
+**Fetch all projects by a round and know it's application status**
 
 You can do this by two means :
-##### Filtering against the round
+##### Given a round id -> fetch all projects
 
 ```graphql
 {
@@ -143,7 +143,7 @@ You can do this by two means :
 }
 ```
 
-##### Filtering against the roundProject
+##### Given a project id -> fetch all the rounds it's a part of
 
 
 ```graphql
@@ -154,7 +154,7 @@ You can do this by two means :
     id
     status
     payoutAddress
-    metaPtr{
+    metaPtr {
       protocol
       pointer
     }

@@ -42,7 +42,11 @@ The following sections document the hosted services where the subgraph is deploy
 
 ## Queries
 
-To know more about the queries which can be run on the playground, check out the [documentation](docs/)
+To know more about the queries which can be run on the playground, check out the documentation for
+- [Program](/docs/Program.md)
+- [Round](/docs/Round.md)
+
+To know the relationship between the different entities and the type of queries. Refer [schema.graphql](./schema.graphql)
 
 
 ## Deploy Subgraph
@@ -94,3 +98,8 @@ rm -rf generated && rm -rf build &&
     graph auth --product hosted-service <YOUR_API_KEY> &&
     graph deploy --product hosted-service <GITHUB_USER>/<SUBGRAPH_NAME>
 ```
+
+
+## How do we fetch off-chain storage
+
+The subgraph fetches the `metaPtr` from the contracts and index them making it easy to fetch additional information from of a given entity. To know more on what is the structure of a `metaPtr` and how you can retrieve information refer [MetaPtrProtocol](../contracts/docs/MetaPtrProtocol.md)
