@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
+import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
-import { Metadata } from "../../types";
-import { getProjectImage, ImgTypes } from "../../utils/components";
 import CloudUpload from "../icons/CloudUpload";
 import Toast from "./Toast";
 
@@ -24,8 +23,9 @@ const validateDimensions = (
 export default function ImageInput({
   label,
   dimensions,
-  currentProject,
+  existingImg,
   circle,
+  info,
   imgHandler,
 }: {
   label: string;
@@ -33,8 +33,9 @@ export default function ImageInput({
     width: number;
     height: number;
   };
-  currentProject?: Metadata;
+  existingImg?: string;
   circle?: Boolean;
+  info?: string;
   imgHandler: (file: Blob) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -116,10 +117,21 @@ export default function ImageInput({
     }
   };
 
+  const blobExistingImg = async (imgUrl: string) => {
+    const img = await fetch(imgUrl);
+    const blob = await img.blob();
+    imgHandler(blob);
+  };
+
   const currentImg = () => {
     if (tempImg) return tempImg;
-    if (!currentProject) return "";
-    return getProjectImage(false, ImgTypes.bannerImg, currentProject);
+    if (!existingImg) return "";
+
+    const pinataClient = new PinataClient();
+    const imgUrl = pinataClient.fileURL(existingImg);
+
+    blobExistingImg(imgUrl);
+    return imgUrl;
   };
 
   const onButtonClick = () => {
@@ -131,7 +143,10 @@ export default function ImageInput({
   return (
     <>
       <div className="mt-6 w-full">
-        <label htmlFor={label}>{label}</label>
+        <label className="text-sm" htmlFor={label}>
+          {label}
+        </label>
+        <legend>{info}</legend>
         <div className="flex">
           <input
             ref={fileInput}

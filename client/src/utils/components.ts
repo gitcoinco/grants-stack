@@ -1,4 +1,4 @@
-import { Metadata } from "../types";
+import { Metadata, Project } from "../types";
 import PinataClient from "../services/pinata";
 
 export enum ImgTypes {
@@ -14,7 +14,7 @@ const defaultImgs = {
 export const getProjectImage = (
   loading: boolean,
   imgType: ImgTypes,
-  project?: Metadata
+  project?: Project | Metadata
 ) => {
   const img = project && project[imgType];
 

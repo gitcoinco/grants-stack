@@ -1,3 +1,5 @@
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+
 export type Images = {
   bannerImg?: Blob;
   logoImg?: Blob;
@@ -14,6 +16,10 @@ export interface Metadata {
   website: string;
   bannerImg?: string;
   logoImg?: string;
+  userGithub?: string;
+  projectGithub?: string;
+  projectTwitter?: string;
+  credentials?: ProjectCredentials;
 }
 
 export interface Project {
@@ -23,8 +29,12 @@ export interface Project {
   description: string;
   website: string;
   bannerImg?: string;
-  logoImg: string;
+  logoImg?: string;
   metaPtr: MetaPtr;
+  userGithub?: string;
+  projectGithub?: string;
+  projectTwitter?: string;
+  credentials?: ProjectCredentials;
 }
 
 export type ProjectRegistryMetadata = {
@@ -129,4 +139,29 @@ export interface RoundApplication {
     question: string;
     answer: string;
   }>;
+}
+
+export type ProviderID = "ClearTextTwitter" | "ClearTextGithubOrg";
+
+export type ProjectCredentials = {
+  github?: VerifiableCredential;
+  twitter?: VerifiableCredential;
+};
+
+export type FormInputs = {
+  title?: string;
+  description?: string;
+  website?: string;
+  projectTwitter?: string;
+  userGithub?: string;
+  projectGithub?: string;
+  bannerImg?: Blob;
+  logoImg?: Blob;
+  credentials?: ProjectCredentials;
+};
+
+export enum ProjectFormStatus {
+  Metadata,
+  Verification,
+  Preview,
 }

@@ -7,6 +7,53 @@ import { initializeWeb3 } from "../../actions/web3";
 import { slugs } from "../../routes";
 
 function Landing() {
+  const queryString = new URLSearchParams(window?.location?.search);
+  // Twitter oauth will attach code & state in oauth procedure
+  const queryError = queryString.get("error");
+  const queryCode = queryString.get("code");
+  const queryState = queryString.get("state");
+
+  // if Twitter oauth then submit message to other windows and close self
+  if (
+    (queryError || queryCode) &&
+    queryState &&
+    /^twitter-.*/.test(queryState)
+  ) {
+    // shared message channel between windows (on the same domain)
+    const channel = new BroadcastChannel("twitter_oauth_channel");
+    // only continue with the process if a code is returned
+    if (queryCode) {
+      channel.postMessage({
+        target: "twitter",
+        data: { code: queryCode, state: queryState },
+      });
+    }
+    // always close the redirected window
+    window.close();
+
+    return <div />;
+  }
+  // if Github oauth then submit message to other windows and close self
+  if (
+    (queryError || queryCode) &&
+    queryState &&
+    /^github-.*/.test(queryState)
+  ) {
+    // shared message channel between windows (on the same domain)
+    const channel = new BroadcastChannel("github_oauth_channel");
+    // only continue with the process if a code is returned
+    if (queryCode) {
+      channel.postMessage({
+        target: "github",
+        data: { code: queryCode, state: queryState },
+      });
+    }
+
+    // always close the redirected window
+    window.close();
+
+    return <div />;
+  }
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
@@ -20,7 +67,11 @@ function Landing() {
   };
 
   useEffect(() => {
-    if (props.account) {
+    const isCallback =
+      queryCode !== undefined ||
+      queryState !== undefined ||
+      queryError !== undefined;
+    if (props.account || !isCallback) {
       navigate(slugs.grants);
     }
   }, [props.account]);

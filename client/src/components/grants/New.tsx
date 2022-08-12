@@ -4,9 +4,44 @@ import Button, { ButtonVariants } from "../base/Button";
 import ProjectForm from "../base/ProjectForm";
 import Cross from "../icons/Cross";
 import ExitModal from "../base/ExitModal";
+import VerificationForm from "../base/VerificationForm";
+import { ProjectFormStatus } from "../../types";
+import Preview from "../base/Preview";
 
 function NewProject() {
   const [modalOpen, toggleModal] = useState(false);
+  const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
+    ProjectFormStatus.Metadata
+  );
+
+  const currentForm = (status: ProjectFormStatus) => {
+    switch (status) {
+      case ProjectFormStatus.Metadata:
+        return (
+          <ProjectForm
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+      case ProjectFormStatus.Verification:
+        return (
+          <VerificationForm
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+      case ProjectFormStatus.Preview:
+        return (
+          <Preview
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+      default:
+        return (
+          <ProjectForm
+            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
+          />
+        );
+    }
+  };
 
   return (
     <div className="mx-4">
@@ -31,9 +66,7 @@ function NewProject() {
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
           <p>Tell us what you’re working on.</p>
         </div>
-        <div className="w-full md:w-2/3">
-          <ProjectForm />
-        </div>
+        <div className="w-full md:w-2/3">{currentForm(formStatus)}</div>
       </div>
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
     </div>

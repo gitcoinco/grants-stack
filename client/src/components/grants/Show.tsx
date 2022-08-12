@@ -8,12 +8,11 @@ import Button, { ButtonVariants } from "../base/Button";
 import { global } from "../../global";
 import Pencil from "../icons/Pencil";
 import colors from "../../styles/colors";
-import LinkIcon from "../icons/LinkIcon";
 import Arrow from "../icons/Arrow";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import { ProjectEvent } from "../../types";
 import { loadProjects } from "../../actions/projects";
-import Calendar from "../icons/Calendar";
+import Details from "./Details";
 
 function Project() {
   const [updatedAt, setUpdated] = useState("");
@@ -120,55 +119,12 @@ function Project() {
               </Link>
             )}
           </div>
-          <div className="w-full md:w-2/3 mb-40">
-            <img
-              className="w-full mb-4"
-              src={getProjectImage(
-                props.loading,
-                ImgTypes.bannerImg,
-                props.currentProject
-              )}
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "./assets/card-img.png";
-              }}
-              alt="project banner"
-            />
-            <div className="relative">
-              <div className="flex w-full justify-start absolute -top-14 left-8">
-                <div className="rounded-full h-20 w-20 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
-                  <img
-                    className="rounded-full"
-                    src={props.logoImg}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = "./icons/lightning.svg";
-                    }}
-                    alt="project logo"
-                  />
-                </div>
-              </div>
-            </div>
-            <h4 className="mb-4 mt-14">{props.currentProject.title}</h4>
-            <div className="flex justify-start border-b pb-6 mb-6">
-              <a
-                target="_blank"
-                href={props.currentProject.website}
-                className="flex items-center text-sm mr-6"
-                rel="noreferrer"
-              >
-                <LinkIcon color={colors["secondary-text"]} />{" "}
-                <p className="ml-1">{props.currentProject.website}</p>
-                {/* TODO add created at updated timestamp */}
-              </a>
-              <p className="flex text-sm">
-                <Calendar color={colors["secondary-text"]} /> {updatedAt}
-              </p>
-            </div>
-
-            <p className="text-xs text-primary-text mb-1">Description</p>
-            <p className="mb-12">{props.currentProject.description}</p>
-          </div>
+          <Details
+            project={props.currentProject}
+            updatedAt={updatedAt}
+            logoImg={props.logoImg}
+            bannerImg={props.bannerImg}
+          />
         </>
       )}
     </div>
