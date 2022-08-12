@@ -1,5 +1,5 @@
 import { ArrowNarrowLeftIcon, CheckIcon, MailIcon, XIcon } from "@heroicons/react/solid"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import {
   useListGrantApplicationsQuery,
@@ -14,6 +14,10 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 import Footer from "../common/Footer"
 import { datadogLogs } from "@datadog/browser-logs"
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import {VerifiableCredential} from "@gitcoinco/passport-sdk-types";
+import { ProjectCredentials } from "../api/types"
+// import { PassportVerifier } from "./verifier"
 
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
@@ -29,6 +33,7 @@ export default function ViewApplicationPage() {
   const { roundId, id } = useParams()
   const { address, provider, signer } = useWallet()
   const navigate = useNavigate()
+  const verifier = new PassportVerifier();
 
   const {
     application,
@@ -39,6 +44,25 @@ export default function ViewApplicationPage() {
       isLoading
     })
   })
+
+  const credentials: ProjectCredentials = application?.project.credentials ?? {};
+  const [credentialsVerified, setCredentialsVerified] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!credentials) {
+      return;
+    }
+    const gitHubCredentials = credentials[Object.getOwnPropertyNames(credentials)[0]];
+
+    const verify = async () => {
+      const verified = await verifier.verifyCredential(gitHubCredentials);
+      setCredentialsVerified(verified);
+    };
+
+    verify();
+
+  }, []);
+
 
   const { round } = useListRoundsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({
@@ -167,10 +191,16 @@ export default function ViewApplicationPage() {
                   <TwitterIcon className="inline-flex h-4 w-4 mr-1" />
                   <span className="text-xs text-grey-400">{getAnswer("Twitter")}</span>
                 </div>
-                <div className="text-grey-500 truncate block">
-                  <GithubIcon className="inline-flex h-4 w-4 text-black mr-1" />
-                  <span className="text-xs text-grey-400">{getAnswer("Github")}</span>
-                </div>
+
+                    <div className="text-grey-500 truncate block">
+                      <GithubIcon className="inline-flex h-4 w-4 text-black mr-1"/>
+                      <span className="text-xs text-grey-400">{getAnswer("Github")}</span>
+                      {
+                          credentialsVerified && "icon"
+                          // <VerifiedIcon className="" data-testid="github-verified-credential"/>
+                      }
+                    </div>
+
               </div>
 
               <hr className="my-6" />
