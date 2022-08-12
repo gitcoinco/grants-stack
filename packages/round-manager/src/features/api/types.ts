@@ -1,6 +1,8 @@
 /**
  * Supported EVM networks
  */
+import {VerifiableCredential} from "../../test-utils";
+
 export type Network = "goerli" | "optimism" | "optimism-kovan"
 
 export interface Web3Instance {
@@ -175,6 +177,12 @@ export interface GrantApplication {
     website: string,
     bannerImg?: string,
     logoImg: string,
+    credentials: {
+      [key:string]: {
+        input: string,
+        credential: VerifiableCredential
+      }
+    }
     metaPtr: MetadataPointer
   };
   /** List of answers to questions */
