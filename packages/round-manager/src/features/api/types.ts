@@ -189,5 +189,4 @@ export interface GrantApplication {
    */
   projectsMetaPtr: MetadataPointer;
   status?: ProjectStatus;
-  signerOrProvider?: any;
 }

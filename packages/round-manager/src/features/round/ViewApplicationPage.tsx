@@ -50,12 +50,16 @@ export default function ViewApplicationPage() {
       setOpenModal(false)
 
       await updateGrantApplication({
-        status: reviewDecision!,
-        id: application!.id,
-        round: roundId!,
-        recipient: application!.recipient,
-        projectsMetaPtr: application!.projectsMetaPtr,
-        signerOrProvider: signer
+        roundId: roundId!,
+        application: {
+          status: reviewDecision!,
+          id: application!.id,
+          round: roundId!,
+          recipient: application!.recipient,
+          projectsMetaPtr: application!.projectsMetaPtr,
+        },
+        signer,
+        provider
       }).unwrap()
 
       navigate(0)

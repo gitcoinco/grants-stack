@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline"
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
+import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../api/services/grantApplication"
 import { useWallet } from "../common/Auth"
 import { Spinner } from "../common/Spinner"
 import {
@@ -14,17 +14,12 @@ import {
   Button
 } from "../common/styles"
 import { CheckIcon, XIcon } from "@heroicons/react/solid"
-import { ProjectStatus } from "../api/types"
+import { GrantApplication } from "../api/types"
 import ConfirmationModal from "../common/ConfirmationModal"
 
 
 interface ApplicationsReceivedProps {
   bulkSelect?: boolean;
-}
-
-interface SelectedApplication {
-  id: string;
-  status: ProjectStatus | undefined;
 }
 
 
@@ -34,24 +29,33 @@ export default function ApplicationsReceived({
   const [openModal, setOpenModal] = useState(false)
 
   const { id } = useParams()
-  const { provider } = useWallet()
+  const { provider, signer } = useWallet()
 
-  const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
+  const { data, refetch, isLoading, isSuccess } = useListGrantApplicationsQuery({
     roundId: id!, signerOrProvider: provider, status: "PENDING"
   })
 
-  const [selected, setSelected] = useState<SelectedApplication[] | undefined>([])
+  const [bulkUpdateGrantApplications, {
+    isLoading: isBulkUpdateLoading,
+    // isSuccess: isBulkUpdateSuccess,
+    // isError: isBulkUpdateError
+  }] = useBulkUpdateGrantApplicationsMutation()
+
+  const [selected, setSelected] = useState<GrantApplication[]>([])
 
   useEffect(() => {
     if (isSuccess || !bulkSelect) {
-      setSelected(data?.map(application => {
+      setSelected((data || []).map(application => {
         return {
           id: application.id,
+          round: application.round,
+          recipient: application.recipient,
+          projectsMetaPtr: application.projectsMetaPtr,
           status: application.status
         }
       }))
     }
-  }, [data, isSuccess, bulkSelect])
+  }, [data, isSuccess, bulkSelect, signer])
 
   const toggleSelection = (id: string, status: string) => {
     const newState = selected?.map((obj: any) => {
@@ -71,8 +75,19 @@ export default function ApplicationsReceived({
     return (selected?.find((obj: any) => obj.id === id))?.status
   }
 
-  const handleBulkReview = () => {
-    setOpenModal(false)
+  const handleBulkReview = async () => {
+    try {
+      await bulkUpdateGrantApplications({
+        roundId: id!,
+        applications: selected.filter(application => application.status !== "PENDING"),
+        signer,
+        provider
+      }).unwrap()
+      setOpenModal(false)
+      refetch()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   return (
@@ -173,6 +188,7 @@ export default function ApplicationsReceived({
           <ConfirmationModal
             title={"Confirm Decision"}
             body={"You have selected multiple Grant Applications to approve and/or reject."}
+            confirmButtonText={isBulkUpdateLoading ? "Confirming" : "Confirm"}
             bodyStyled={
               <>
                 <div className="flex my-8 gap-16 justify-center items-center text-center">
