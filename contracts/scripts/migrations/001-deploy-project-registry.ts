@@ -1,22 +1,33 @@
 import hre, { ethers, upgrades } from "hardhat";
 import { prompt, prettyNum } from "../../lib/utils";
+import { HardwareSigner } from "../../lib/HardwareSigner";
 
 async function main() {
   const network = await ethers.provider.getNetwork();
   const networkName = await hre.network.name;
-  const [account] = await ethers.getSigners();
+
+  // without hardware wallet
+  // const [account] = await ethers.getSigners();
+  // const accountAddress = account.address;
+
+  // with hardware wallet
+  const account = new HardwareSigner(ethers.provider, null, "m/44'/60'/0'/0/0");
+  const accountAddress = await account.getAddress();
+
   const balance = await ethers.provider.getBalance(account.address);
 
   console.log(`chainId: ${network.chainId}`);
   console.log(`network: ${networkName} (from ethers: ${network.name})`);
-  console.log(`account: ${account.address}`);
+  console.log(`account: ${accountAddress}`);
   console.log(`balance: ${prettyNum(balance.toString())}`);
 
   await prompt("do you want to deploy the ProjectRegistry contract?");
   console.log("deploying...");
 
   const ProjectRegistry = await ethers.getContractFactory("ProjectRegistry");
-  const instance = await upgrades.deployProxy(ProjectRegistry, []);
+  const instance = await upgrades.deployProxy(ProjectRegistry, [], {
+    type: 1,
+  });
   console.log("tx hash", instance.deployTransaction.hash);
   await instance.deployed();
 
