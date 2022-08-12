@@ -32,23 +32,15 @@ describe("<ApplicationsReceived />", () => {
   })
 
   it("renders a card for every project with PENDING status", () => {
-    const data: GrantApplication[] = [
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "APPROVED" }),
-    ];
-
-    (useListGrantApplicationsQuery as any).mockReturnValue({
-      data, isSuccess: true, isLoading: false
-    })
-
     renderWrapped(<ApplicationsReceived />)
 
-    expect(screen.getAllByTestId("application-card")).toHaveLength(2)
-    screen.getByText(data[0].project.title)
-    screen.getByText(data[0].project.description)
-    screen.getByText(data[1].project.title)
-    screen.getByText(data[1].project.description)
+    expect(screen.getAllByTestId("application-card")).toHaveLength(3)
+    screen.getByText(grantApplications[0].project!.title)
+    screen.getByText(grantApplications[0].project!.description)
+    screen.getByText(grantApplications[1].project!.title)
+    screen.getByText(grantApplications[1].project!.description)
+    screen.getByText(grantApplications[2].project!.title)
+    screen.getByText(grantApplications[2].project!.description)
   })
 
   describe("when bulkSelect is true", () => {

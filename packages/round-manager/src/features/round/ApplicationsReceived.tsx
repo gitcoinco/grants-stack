@@ -112,7 +112,7 @@ export default function ApplicationsReceived({
                 <div>
                   <img
                     className="h-[120px] w-full object-cover rounded-t"
-                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project.bannerImg}`}
+                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project!.bannerImg}`}
                     alt=""
                   />
                 </div>
@@ -121,7 +121,7 @@ export default function ApplicationsReceived({
                     <div className="flex">
                       <img
                         className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
-                        src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project.logoImg}`}
+                        src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project!.logoImg}`}
                         alt=""
                       />
                     </div>
@@ -131,9 +131,9 @@ export default function ApplicationsReceived({
             </CardHeader>
             <CardContent>
               <Link to={`/round/${id}/application/${application.id}`}>
-                <CardTitle>{application.project.title}</CardTitle>
+                <CardTitle>{application.project!.title}</CardTitle>
               </Link>
-              <CardDescription>{application.project.description}</CardDescription>
+              <CardDescription>{application.project!.description}</CardDescription>
             </CardContent>
           </BasicCard>
         ))}

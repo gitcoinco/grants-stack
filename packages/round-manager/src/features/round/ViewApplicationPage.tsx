@@ -52,8 +52,8 @@ export default function ViewApplicationPage() {
       await updateGrantApplication({
         status: reviewDecision!,
         id: application!.id,
-        roundId: roundId!,
-        payoutAddress: application!.recipient,
+        round: roundId!,
+        recipient: application!.recipient,
         projectsMetaPtr: application!.projectsMetaPtr,
         signerOrProvider: signer
       }).unwrap()
@@ -76,7 +76,7 @@ export default function ViewApplicationPage() {
   }
 
   const getAnswer = (question: string) => {
-    return application?.answers.find((answer) => answer.question === question)?.answer || "N/A"
+    return application?.answers!.find((answer) => answer.question === question)?.answer || "N/A"
   }
 
   return (
@@ -96,7 +96,7 @@ export default function ViewApplicationPage() {
             <div>
               <img
                 className="h-32 w-full object-cover lg:h-80 rounded"
-                src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project.bannerImg}`}
+                src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project!.bannerImg}`}
                 alt=""
               />
             </div>
@@ -105,7 +105,7 @@ export default function ViewApplicationPage() {
                 <div className="flex">
                   <img
                     className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
-                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project.logoImg}`}
+                    src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application?.project!.logoImg}`}
                     alt=""
                   />
                 </div>
@@ -145,7 +145,7 @@ export default function ViewApplicationPage() {
         </header>
 
         <main>
-          <h1 className="text-2xl mt-6">{application?.project.title || "..."}</h1>
+          <h1 className="text-2xl mt-6">{application?.project!.title || "..."}</h1>
           <div className="sm:flex sm:justify-between my-6">
             <div className="sm:basis-3/4 sm:mr-3">
               <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
@@ -166,7 +166,7 @@ export default function ViewApplicationPage() {
               <hr className="my-6" />
 
               <h2 className="text-xs mb-2">Description</h2>
-              <p className="text-base">{application?.project.description}</p>
+              <p className="text-base">{application?.project!.description}</p>
 
               <hr className="my-6" />
 

@@ -167,7 +167,7 @@ export interface GrantApplication {
   /**
    * Project information
    */
-  project: {
+  project?: {
     lastUpdated: Number, // unix timestamp in milliseconds
     id: string,
     title: string,
@@ -178,7 +178,7 @@ export interface GrantApplication {
     metaPtr: MetadataPointer
   };
   /** List of answers to questions */
-  answers: Array<{
+  answers?: Array<{
     questionId: Number,
     question: string,
     answer: string
@@ -189,4 +189,5 @@ export interface GrantApplication {
    */
   projectsMetaPtr: MetadataPointer;
   status?: ProjectStatus;
+  signerOrProvider?: any;
 }
