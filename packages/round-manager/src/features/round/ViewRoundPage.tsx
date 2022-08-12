@@ -32,7 +32,7 @@ export default function ViewRoundPage() {
       isLoading,
       isSuccess
     }),
-  });
+  })
 
   const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({
