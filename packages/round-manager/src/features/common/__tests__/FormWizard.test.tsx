@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { FormWizard } from "../FormWizard"
 import { randomInt } from "crypto"
-import { FormStepper } from "../FormStepper"
 
 const generateSteps = (numberOfSteps?: number): Array<(props: any) => JSX.Element> => (
   Array.from(
@@ -24,28 +23,11 @@ describe("<FormWizard />", () => {
 
   it("should render the initialCurrentStep step instead of the first step", () => {
     const steps = generateSteps(10)
-    const initialCurrentStep = randomInt(2, 10) // 1-indexed, picking a random step after the 1st one
+    const notTheFirstStep = randomInt(2, 10) // 1-indexed
 
-    render(<FormWizard initialCurrentStep={initialCurrentStep} steps={steps}/>)
+    render(<FormWizard initialCurrentStep={notTheFirstStep} steps={steps}/>)
 
     expect(screen.queryByTestId("1-step")).not.toBeInTheDocument()
-    expect(screen.getByTestId(`${initialCurrentStep}-step`)).toBeInTheDocument()
-  })
-
-  it("should pass down stepper and initialData props to child step", () => {
-    const mockChildComponent = jest.fn().mockImplementation(() => <div />)
-    const steps = [
-      mockChildComponent
-    ]
-    const initialData = {hello: "world"}
-
-    render(<FormWizard steps={steps} initialData={initialData}/>)
-
-    const mockChildComponentCall = mockChildComponent.mock.calls[0]
-    const firstCallArgument = mockChildComponentCall[0]
-    expect(firstCallArgument).toMatchObject({
-      stepper: FormStepper,
-      initialData
-    })
+    expect(screen.getByTestId(`${notTheFirstStep}-step`)).toBeInTheDocument()
   })
 })

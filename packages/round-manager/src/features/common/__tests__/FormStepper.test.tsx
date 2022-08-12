@@ -8,40 +8,41 @@ describe("<FormStepper />", () => {
     jest.clearAllMocks()
   })
 
-  it("should display a Previous button when currentStep > 1", () => {
+  describe("when currentStep is past the first step", () => {
     const stepsCount = faker.datatype.number({ min: 2 })
     const currentStep = faker.datatype.number({ min: 2, max: stepsCount })
-    const testFormStepperProps: FormStepperProps = {
-      currentStep,
-      stepsCount,
-      disableNext: false,
-      prev: jest.fn(),
-    }
 
-    renderWrapped(<FormStepper {...testFormStepperProps}/>)
+    it("should display a Previous button when currentStep > 1", () => {
+      const testFormStepperProps: FormStepperProps = {
+        currentStep,
+        stepsCount,
+        disableNext: false,
+        prev: jest.fn(),
+      }
 
-    expect(screen.getByRole('button', {name: /Previous/i})).toBeInTheDocument()
+      renderWrapped(<FormStepper {...testFormStepperProps}/>)
+
+      expect(screen.getByText(/Previous/i)).toBeInTheDocument()
+    })
+
+    it("should call prev fn when Previous button is clicked", () => {
+      const mockPrevFn = jest.fn()
+      const testFormStepperProps: FormStepperProps = {
+        currentStep,
+        stepsCount,
+        disableNext: false,
+        prev: mockPrevFn,
+      }
+
+      renderWrapped(<FormStepper {...testFormStepperProps}/>)
+
+      const previousButton = screen.getByText(/Previous/i)
+      fireEvent.click(previousButton)
+      expect(mockPrevFn).toBeCalledTimes(1)
+    })
   })
 
-  it("should call prev fn when Previous button is clicked", () => {
-    const stepsCount = faker.datatype.number({ min: 2 })
-    const currentStep = faker.datatype.number({ min: 2, max: stepsCount })
-    const mockPrevFn = jest.fn()
-    const testFormStepperProps: FormStepperProps = {
-      currentStep,
-      stepsCount,
-      disableNext: false,
-      prev: mockPrevFn,
-    }
-
-    renderWrapped(<FormStepper {...testFormStepperProps}/>)
-
-    const previousButton = screen.getByRole('button', {name: /Previous/i})
-    fireEvent.click(previousButton)
-    expect(mockPrevFn).toBeCalledTimes(1)
-  })
-
-  describe("when currentStep < stepsCount", () => {
+  describe("when currentStep is not the last step", () => {
     const stepsCount = faker.datatype.number({ min: 2 })
     const currentStep = faker.datatype.number({ min: 1, max: stepsCount - 1 })
     const testFormStepperProps: FormStepperProps = {
@@ -54,7 +55,7 @@ describe("<FormStepper />", () => {
     it("should display a Next button", () => {
       renderWrapped(<FormStepper {...testFormStepperProps}/>)
 
-      expect(screen.getByRole('button', {name: /Next/i})).toBeInTheDocument()
+      expect(screen.getByText(/Next/i)).toBeInTheDocument()
     })
 
     it("should display Next button as disabled when disableNext is true", () => {
@@ -65,12 +66,12 @@ describe("<FormStepper />", () => {
 
       renderWrapped(<FormStepper {...disableNextProps}/>)
 
-      const nextButton = screen.getByRole('button', {name: /Next/i})
+      const nextButton = screen.getByText(/Next/i)
       expect(nextButton).toBeDisabled()
     })
   })
 
-  describe("when currentStep == stepsCount (on the final step)", () => {
+  describe("when currentStep is the last step", () => {
     const stepsCount = faker.datatype.number({ min: 1 })
     const currentStep = stepsCount
     const testFormStepperProps: FormStepperProps = {
@@ -83,8 +84,8 @@ describe("<FormStepper />", () => {
     it("should display a Launch button instead of Next", () => {
       renderWrapped(<FormStepper {...testFormStepperProps}/>)
 
-      expect(screen.getByRole('button', {name: /Launch/i})).toBeInTheDocument()
-      expect(screen.queryByRole('button', {name: /Next/i})).not.toBeInTheDocument()
+      expect(screen.getByText(/Launch/i)).toBeInTheDocument()
+      expect(screen.queryByText(/Next/i)).not.toBeInTheDocument()
     })
 
     it("should display Launch button as disabled when disableNext is true", () => {
@@ -95,7 +96,7 @@ describe("<FormStepper />", () => {
 
       renderWrapped(<FormStepper {...disableNextProps}/>)
 
-      const launchButton = screen.getByRole('button', {name: /Launch/i})
+      const launchButton = screen.getByText(/Launch/i)
       expect(launchButton).toBeDisabled()
     })
   })
