@@ -1,7 +1,6 @@
-import { fireEvent, screen } from "@testing-library/react"
+import { fireEvent, screen, waitForElementToBeRemoved } from "@testing-library/react"
 import ApplicationsReceived from "../ApplicationsReceived"
 import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
-import { GrantApplication } from "../../api/types"
 import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
 
 jest.mock("../../api/services/grantApplication");
@@ -15,20 +14,25 @@ const grantApplications = [
   makeGrantApplicationData({ status: "PENDING" })
 ];
 
-const mockBulkUpdateGrantApplications = jest.fn().mockImplementation(
-  () => {
-    console.log("jest mock: mockBulkUpdateGrantApplications ")
-    return { data: "hi "}
-  },
-)
+let bulkUpdateGrantApplications = jest.fn()
 
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
     (useListGrantApplicationsQuery as any).mockReturnValue({
-      data: grantApplications, isSuccess: true, isLoading: false
+      data: grantApplications, refetch: jest.fn(), isSuccess: true, isLoading: false
     });
+
+    bulkUpdateGrantApplications = jest.fn().mockImplementation(
+      () => {
+        return {
+          unwrap: async () => Promise.resolve({
+            data: "hi ",
+          }),
+        }
+      },
+    );
     (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
-      mockBulkUpdateGrantApplications,
+      bulkUpdateGrantApplications,
       {
         isLoading: false
       }
@@ -179,7 +183,7 @@ describe("<ApplicationsReceived />", () => {
         expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
       })
 
-      it("calls bulkUpdateGrantApplications when confirm button is clicked on the modal", () => {
+      it("calls bulkUpdateGrantApplications when confirm button is clicked on the modal", async () => {
         renderWrapped(<ApplicationsReceived bulkSelect={true} />)
 
         const approveButton = screen.queryAllByTestId("approve-button")[0]
@@ -195,7 +199,9 @@ describe("<ApplicationsReceived />", () => {
         });
         fireEvent.click(confirmationModalConfirmButton);
 
-        expect(mockBulkUpdateGrantApplications).toBeCalled();
+        expect(bulkUpdateGrantApplications).toBeCalled();
+
+        await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"));
       })
     });
   });
