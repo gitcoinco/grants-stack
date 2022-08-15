@@ -180,7 +180,7 @@ export default function ViewRoundPage() {
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
-                      <ApplicationsReceived bulkSelect={bulkSelect} />
+                      <ApplicationsReceived bulkSelect={bulkSelect} setBulkSelect={setBulkSelect} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ApplicationsApproved />

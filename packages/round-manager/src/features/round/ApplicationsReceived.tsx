@@ -20,11 +20,14 @@ import ConfirmationModal from "../common/ConfirmationModal"
 
 interface ApplicationsReceivedProps {
   bulkSelect?: boolean;
+  setBulkSelect?: (bulkSelect: boolean) => void;
 }
 
 
 export default function ApplicationsReceived({
-  bulkSelect = false
+  bulkSelect = false,
+  setBulkSelect = () => {},
+  ...props
 }: ApplicationsReceivedProps) {
   const [openModal, setOpenModal] = useState(false)
 
@@ -81,6 +84,7 @@ export default function ApplicationsReceived({
         signer,
         provider
       }).unwrap()
+      setBulkSelect(false)
       setOpenModal(false)
       refetch()
     } catch (e) {
