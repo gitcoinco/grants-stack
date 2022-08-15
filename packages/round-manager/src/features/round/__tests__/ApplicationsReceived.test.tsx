@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react"
 import ApplicationsReceived from "../ApplicationsReceived"
-import { useListGrantApplicationsQuery } from "../../api/services/grantApplication"
+import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
 import { GrantApplication } from "../../api/types"
 import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
 
@@ -15,11 +15,24 @@ const grantApplications = [
   makeGrantApplicationData({ status: "PENDING" })
 ];
 
+const mockBulkUpdateGrantApplications = jest.fn().mockImplementation(
+  () => {
+    console.log("jest mock: mockBulkUpdateGrantApplications ")
+    return { data: "hi "}
+  },
+)
+
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
     (useListGrantApplicationsQuery as any).mockReturnValue({
       data: grantApplications, isSuccess: true, isLoading: false
-    })
+    });
+    (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
+      mockBulkUpdateGrantApplications,
+      {
+        isLoading: false
+      }
+    ]);
   })
 
   it("renders no cards when there are no projects", () => {
@@ -132,7 +145,61 @@ describe("<ApplicationsReceived />", () => {
       expect(secondApproveButton).toHaveClass("bg-teal-400 text-grey-500")
     });
 
+    describe("when at least one application is selected", () => {
+      it("displays the continue button and copy", () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 1 Grant Applications/i)).toBeInTheDocument();
+
+        const approveButton2 = screen.queryAllByTestId("approve-button")[1]
+        fireEvent.click(approveButton2)
+
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
+      })
+
+      it("opens the confirmation modal with the correct number of selected applications when the continue button is clicked", async () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      })
+
+      it("calls bulkUpdateGrantApplications when confirm button is clicked on the modal", () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        const confirmationModalConfirmButton = screen.getByRole('button', {
+          name: /Confirm/i
+        });
+        fireEvent.click(confirmationModalConfirmButton);
+
+        expect(mockBulkUpdateGrantApplications).toBeCalled();
+      })
+    });
   });
+
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject buttons on each card", () => {
       renderWrapped(<ApplicationsReceived bulkSelect={false} />)

@@ -37,8 +37,6 @@ export default function ApplicationsReceived({
 
   const [bulkUpdateGrantApplications, {
     isLoading: isBulkUpdateLoading,
-    // isSuccess: isBulkUpdateSuccess,
-    // isError: isBulkUpdateError
   }] = useBulkUpdateGrantApplicationsMutation()
 
   const [selected, setSelected] = useState<GrantApplication[]>([])
