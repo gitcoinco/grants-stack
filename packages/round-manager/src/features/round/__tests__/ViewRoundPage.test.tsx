@@ -4,7 +4,7 @@ import { useListRoundsQuery } from "../../api/services/round"
 import ViewRoundPage from "../ViewRoundPage"
 import { GrantApplication, Round } from "../../api/types"
 import { makeRoundData, renderWrapped, makeProgramData, makeGrantApplicationData } from "../../../test-utils"
-import { useListGrantApplicationsQuery } from "../../api/services/grantApplication"
+import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
 import { useListProgramsQuery } from "../../api/services/program"
 import { useDisconnect, useSwitchNetwork } from "wagmi"
 
@@ -34,9 +34,17 @@ describe('the view round page', () => {
 
     (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
       data: mockApplicationData,
+      refetch: jest.fn(),
       isLoading: false,
       isSuccess: true
     });
+
+    (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
+      jest.fn(),
+      {
+        isLoading: false
+      }
+    ]);
 
     (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});

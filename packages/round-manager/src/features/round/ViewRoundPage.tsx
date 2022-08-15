@@ -32,7 +32,7 @@ export default function ViewRoundPage() {
       isLoading,
       isSuccess
     }),
-  });
+  })
 
   const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
     selectFromResult: ({ data }) => ({
@@ -180,7 +180,7 @@ export default function ViewRoundPage() {
                   </Tab.List>
                   <Tab.Panels>
                     <Tab.Panel>
-                      <ApplicationsReceived bulkSelect={bulkSelect} />
+                      <ApplicationsReceived bulkSelect={bulkSelect} setBulkSelect={setBulkSelect} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ApplicationsApproved />

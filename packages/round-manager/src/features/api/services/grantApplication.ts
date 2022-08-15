@@ -1,8 +1,84 @@
 import { ethers } from "ethers"
 import { api } from ".."
 import { roundImplementationContract } from "../contracts"
-import { GrantApplication, MetadataPointer } from "../types"
+import { GrantApplication } from "../types"
 import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+
+
+const updateApplicationList = (applications: GrantApplication[], roundId: string, provider: any): Promise<string> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let reviewedApplications: any = []
+      let foundEntry = false
+
+      // fetch latest ipfs pointer to the list of application for the round
+
+      const { chainId } = await provider.getNetwork() // fetch chain id
+
+      const res = await graphql_fetch(
+        `
+          query GetApplicationListPointer($roundId: String!) {
+            rounds(first: 1, where: {
+              id: $roundId
+            }) {
+              projectsMetaPtr {
+                pointer
+              }
+            }
+          }
+        `,
+        chainId,
+        { roundId }
+      )
+
+      const applicationListPointer = res.data.rounds[0].projectsMetaPtr?.pointer
+
+      // read data from ipfs
+      if (applicationListPointer) {
+        reviewedApplications = await fetchFromIPFS(applicationListPointer)
+      }
+
+      for (const application of applications) {
+
+        // if grant application is already reviewed overwrite the entry
+        foundEntry = reviewedApplications.find((o: any, i: any) => {
+          if (o.id === application.id) {
+            reviewedApplications[i] = {
+              id: application.id,
+              status: application.status,
+              payoutAddress: application.recipient
+            }
+            return true // stop searching
+          }
+          return false
+        })
+
+        // create a new reviewed application entry
+        if (!foundEntry || !applicationListPointer) {
+          reviewedApplications.push({
+            id: application.id,
+            status: application.status,
+            payoutAddress: application.recipient
+          })
+        }
+      }
+
+      // pin new list IPFS
+      const resp = await pinToIPFS({
+        content: reviewedApplications,
+        metadata: {
+          name: "reviewed-applications"
+        }
+      })
+      console.log("✅  Saved data to IPFS:", resp.IpfsHash)
+
+      resolve(resp.IpfsHash)
+    } catch (err) {
+      console.log("error", err)
+      reject("Unable to update grant application")
+    }
+  })
+}
 
 
 /**
@@ -82,61 +158,57 @@ export const grantApplicationApi = api.injectEndpoints({
     }),
     updateGrantApplication: builder.mutation<
       string,
-      {
-        id: string,
-        roundId: string,
-        status: "APPROVED" | "REJECTED",
-        projectsMetaPtr: MetadataPointer,
-        payoutAddress: string,
-        signerOrProvider: any
-      }
+      { roundId: string, application: GrantApplication, signer: any, provider: any }
     >({
-      queryFn: async ({ id, roundId, status, projectsMetaPtr, payoutAddress, signerOrProvider }) => {
+      queryFn: async ({ roundId, application, signer, provider }) => {
         try {
-          let reviewedApplications: any = []
-          let foundEntry = false
-
-          // read data from ipfs
-          if (projectsMetaPtr) {
-            reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
-
-            // if grant application is already reviewed overwrite the entry
-            foundEntry = reviewedApplications.find((o: any, i: any) => {
-              if (o.id === id) {
-                reviewedApplications[i] = { id, status, payoutAddress }
-                return true // stop searching
-              }
-              return false
-            })
-          }
-
-          // create a new reviewed application entry
-          if (!foundEntry || !projectsMetaPtr) {
-            reviewedApplications.push({ id, status, payoutAddress })
-          }
-
-          // pin new list IPFS
-          const resp = await pinToIPFS({
-            content: reviewedApplications,
-            metadata: {
-              name: "reviewed-applications"
-            }
-          })
-          console.log("✅  Saved data to IPFS:", resp.IpfsHash)
+          const ipfsHash = await updateApplicationList([application], roundId, provider)
 
           // update projects meta pointer in round implementation contract
-          projectsMetaPtr = {
+          application.projectsMetaPtr = {
             protocol: 1,
-            pointer: resp.IpfsHash
+            pointer: ipfsHash
           }
 
           const roundImplementation = new ethers.Contract(
             roundId,
             roundImplementationContract.abi,
-            signerOrProvider
+            signer
           )
 
-          let tx = await roundImplementation.updateProjectsMetaPtr(projectsMetaPtr)
+          let tx = await roundImplementation.updateProjectsMetaPtr(application.projectsMetaPtr)
+
+          await tx.wait() // wait for transaction receipt
+
+          console.log("✅ Transaction hash: ", tx.hash)
+
+          return { data: tx.hash }
+
+        } catch (err: any) {
+          return { error: err.message }
+        }
+      },
+      invalidatesTags: ["GrantApplication", "Round"]
+    }),
+    bulkUpdateGrantApplications: builder.mutation<
+      string,
+      { roundId: string, applications: GrantApplication[], signer: any, provider: any }
+    >({
+      queryFn: async ({ roundId, applications, signer, provider }) => {
+        try {
+          let ipfsHash = await updateApplicationList(applications, roundId, provider)
+
+          // update projects meta pointer in round implementation contract
+          const roundImplementation = new ethers.Contract(
+            roundId,
+            roundImplementationContract.abi,
+            signer
+          )
+
+          let tx = await roundImplementation.updateProjectsMetaPtr({
+            protocol: 1,
+            pointer: ipfsHash
+          })
 
           await tx.wait() // wait for transaction receipt
 
@@ -146,7 +218,7 @@ export const grantApplicationApi = api.injectEndpoints({
 
         } catch (err) {
           console.log("error", err)
-          return { error: "Unable to update grant application" }
+          return { error: "Unable to update the grant applications" }
         }
       },
       invalidatesTags: ["GrantApplication", "Round"]
@@ -157,5 +229,6 @@ export const grantApplicationApi = api.injectEndpoints({
 
 export const {
   useListGrantApplicationsQuery,
-  useUpdateGrantApplicationMutation
+  useUpdateGrantApplicationMutation,
+  useBulkUpdateGrantApplicationsMutation
 } = grantApplicationApi

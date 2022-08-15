@@ -1,7 +1,6 @@
-import { fireEvent, screen } from "@testing-library/react"
+import { fireEvent, screen, waitForElementToBeRemoved } from "@testing-library/react"
 import ApplicationsReceived from "../ApplicationsReceived"
-import { useListGrantApplicationsQuery } from "../../api/services/grantApplication"
-import { GrantApplication } from "../../api/types"
+import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
 import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
 
 jest.mock("../../api/services/grantApplication");
@@ -15,11 +14,29 @@ const grantApplications = [
   makeGrantApplicationData({ status: "PENDING" })
 ];
 
+let bulkUpdateGrantApplications = jest.fn()
+
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
     (useListGrantApplicationsQuery as any).mockReturnValue({
-      data: grantApplications, isSuccess: true, isLoading: false
-    })
+      data: grantApplications, refetch: jest.fn(), isSuccess: true, isLoading: false
+    });
+
+    bulkUpdateGrantApplications = jest.fn().mockImplementation(
+      () => {
+        return {
+          unwrap: async () => Promise.resolve({
+            data: "hi ",
+          }),
+        }
+      },
+    );
+    (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
+      bulkUpdateGrantApplications,
+      {
+        isLoading: false
+      }
+    ]);
   })
 
   it("renders no cards when there are no projects", () => {
@@ -32,23 +49,15 @@ describe("<ApplicationsReceived />", () => {
   })
 
   it("renders a card for every project with PENDING status", () => {
-    const data: GrantApplication[] = [
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "APPROVED" }),
-    ];
-
-    (useListGrantApplicationsQuery as any).mockReturnValue({
-      data, isSuccess: true, isLoading: false
-    })
-
     renderWrapped(<ApplicationsReceived />)
 
-    expect(screen.getAllByTestId("application-card")).toHaveLength(2)
-    screen.getByText(data[0].project.title)
-    screen.getByText(data[0].project.description)
-    screen.getByText(data[1].project.title)
-    screen.getByText(data[1].project.description)
+    expect(screen.getAllByTestId("application-card")).toHaveLength(3)
+    screen.getByText(grantApplications[0].project!.title)
+    screen.getByText(grantApplications[0].project!.description)
+    screen.getByText(grantApplications[1].project!.title)
+    screen.getByText(grantApplications[1].project!.description)
+    screen.getByText(grantApplications[2].project!.title)
+    screen.getByText(grantApplications[2].project!.description)
   })
 
   describe("when bulkSelect is true", () => {
@@ -140,7 +149,63 @@ describe("<ApplicationsReceived />", () => {
       expect(secondApproveButton).toHaveClass("bg-teal-400 text-grey-500")
     });
 
+    describe("when at least one application is selected", () => {
+      it("displays the continue button and copy", () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 1 Grant Applications/i)).toBeInTheDocument();
+
+        const approveButton2 = screen.queryAllByTestId("approve-button")[1]
+        fireEvent.click(approveButton2)
+
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
+      })
+
+      it("opens the confirmation modal with the correct number of selected applications when the continue button is clicked", async () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      })
+
+      it("calls bulkUpdateGrantApplications when confirm button is clicked on the modal", async () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        const confirmationModalConfirmButton = screen.getByRole('button', {
+          name: /Confirm/i
+        });
+        fireEvent.click(confirmationModalConfirmButton);
+
+        expect(bulkUpdateGrantApplications).toBeCalled();
+
+        await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"));
+      })
+    });
   });
+
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject buttons on each card", () => {
       renderWrapped(<ApplicationsReceived bulkSelect={false} />)
