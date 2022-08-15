@@ -38,8 +38,6 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
         reviewedApplications = await fetchFromIPFS(applicationListPointer)
       }
 
-      console.log(reviewedApplications)
-
       for (const application of applications) {
 
         // if grant application is already reviewed overwrite the entry
