@@ -69,8 +69,8 @@ export default function ConfirmationModal(
                     <div className="mt-2">
                       <p className="text-sm text-grey-400">
                         {props.body}
-                        {bodyStyled}
                       </p>
+                      {bodyStyled}
                     </div>
                   </div>
                 </div>

@@ -188,7 +188,7 @@ export default function ApplicationsReceived({
           <ConfirmationModal
             title={"Confirm Decision"}
             body={"You have selected multiple Grant Applications to approve and/or reject."}
-            confirmButtonText={isBulkUpdateLoading ? "Confirming" : "Confirm"}
+            confirmButtonText={isBulkUpdateLoading ? "Confirming..." : "Confirm"}
             bodyStyled={
               <>
                 <div className="flex my-8 gap-16 justify-center items-center text-center">
