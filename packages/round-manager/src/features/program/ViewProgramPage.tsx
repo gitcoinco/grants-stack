@@ -26,49 +26,49 @@ export default function ViewProgram() {
   } = useListRoundsQuery({ address, signerOrProvider: provider, programId: id })
 
   const roundItems = rounds ? rounds.map((round, index) =>
-    <div
-      key={index}
-      className="relative w-full border-t border-b border-grey-100 bg-white py-4 my-4 flex items-center justify-between space-x-3"
-    >
+    <Link to={`/round/${round.id}`} key={index}>
+      <div
+        key={index}
+        className="relative w-full border-t border-b border-grey-100 bg-white py-4 my-4 flex items-center justify-between space-x-3"
+      >
 
-      <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
 
-        <p className="text-sm pb-3 mb-1 font-medium text-gray-900">
-          {round.roundMetadata!.name}
-        </p>
-
-        <div className="grid sm:grid-cols-3">
-          <p className="text-xs flex gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-grey-500 my-auto" viewBox="0 0 20 20"
-                 fill="currentColor">
-              <path fillRule="evenodd"
-                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                    clipRule="evenodd" />
-            </svg>
-            <span className="text-grey-400 my-auto">Applications: </span>
-            <span className="my-auto" data-testid="application-time-period">
-              {`${round.applicationsStartTime.toLocaleDateString()} - ${round.applicationsEndTime.toLocaleDateString()}`}
-            </span>
+          <p className="text-sm pb-3 mb-1 font-medium text-gray-900">
+            {round.roundMetadata!.name}
           </p>
-          <p className="text-xs flex gap-1 md:ml-8">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 my-auto" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd" />
-            </svg>
-            <span className="text-grey-400 my-auto">Round: </span>
-            <span className="my-auto" data-testid="round-time-period">
-              {`${round.roundStartTime.toLocaleDateString()} - ${round.roundEndTime.toLocaleDateString()}`}
-            </span>
-          </p>
+
+          <div className="grid sm:grid-cols-3">
+            <p className="text-xs flex gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-grey-500 my-auto" viewBox="0 0 20 20"
+                  fill="currentColor">
+                <path fillRule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clipRule="evenodd" />
+              </svg>
+              <span className="text-grey-400 my-auto">Applications: </span>
+              <span className="my-auto" data-testid="application-time-period">
+                {`${round.applicationsStartTime.toLocaleDateString()} - ${round.applicationsEndTime.toLocaleDateString()}`}
+              </span>
+            </p>
+            <p className="text-xs flex gap-1 md:ml-8">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 my-auto" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                      clipRule="evenodd" />
+              </svg>
+              <span className="text-grey-400 my-auto">Round: </span>
+              <span className="my-auto" data-testid="round-time-period">
+                {`${round.roundStartTime.toLocaleDateString()} - ${round.roundEndTime.toLocaleDateString()}`}
+              </span>
+            </p>
+          </div>
         </div>
+
+          <ChevronRightIcon className="h-5 w-5" />
+
       </div>
-
-      <Link to={`/round/${round.id}`} key={index}>
-        <ChevronRightIcon className="h-5 w-5" />
-      </Link>
-
-    </div>
+    </Link>
   ) : [];
 
   const operatorWallets = <div className="flex flex-row flex-wrap">
