@@ -27,7 +27,6 @@ interface ApplicationsReceivedProps {
 export default function ApplicationsReceived({
   bulkSelect = false,
   setBulkSelect = () => {},
-  ...props
 }: ApplicationsReceivedProps) {
   const [openModal, setOpenModal] = useState(false)
 
@@ -171,7 +170,7 @@ export default function ApplicationsReceived({
       </CardsContainer>
       {selected && selected?.filter(obj => obj.status !== "PENDING").length > 0 && (
         <>
-          <div className="absolute w-full left-0 bottom-0 bg-white">
+          <div className="fixed w-full left-0 bottom-0 bg-white">
             <hr />
             <div className="flex justify-end items-center py-5 pr-20">
               <span className="text-grey-400 text-sm mr-6">
@@ -194,7 +193,7 @@ export default function ApplicationsReceived({
             bodyStyled={
               <>
                 <div className="flex my-8 gap-16 justify-center items-center text-center">
-                  <div className="grid gap-2">
+                  <div className="grid gap-2" data-testid="approved-applications-count">
                     <i className="flex justify-center">
                       <CheckIcon className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1" aria-hidden="true" />
                     </i>
@@ -202,7 +201,7 @@ export default function ApplicationsReceived({
                     <span className="text-grey-500 font-semibold">{selected?.filter(obj => obj.status === "APPROVED").length}</span>
                   </div>
                   <span className="text-4xl font-thin">|</span>
-                  <div className="grid gap-2">
+                  <div className="grid gap-2" data-testid="rejected-applications-count">
                     <i className="flex justify-center">
                       <XIcon className="bg-pink-500 text-white rounded-full h-6 w-6 p-1" aria-hidden="true" />
                     </i>
@@ -216,6 +215,7 @@ export default function ApplicationsReceived({
             confirmButtonAction={handleBulkReview}
             cancelButtonAction={() => setOpenModal(false)}
             isOpen={openModal}
+            setIsOpen={setOpenModal}
           />
         </>
       )}

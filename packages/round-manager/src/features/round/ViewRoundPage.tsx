@@ -16,6 +16,7 @@ import tw from "tailwind-styled-components";
 import { Button } from "../common/styles"
 
 
+
 export default function ViewRoundPage() {
   const [bulkSelect, setBulkSelect] = useState(false)
 
@@ -67,7 +68,7 @@ export default function ViewRoundPage() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col w-screen h-screen mx-0">
+      <div className="flex flex-col w-screen mx-0">
         <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
           <div className="text-grey-400 font-bold text-sm flex flex-row items-center gap-3">
             <Link to={`/`}>
