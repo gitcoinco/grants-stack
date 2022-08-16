@@ -7,7 +7,7 @@ import { debounce } from "ts-debounce";
 import { global } from "../../global";
 // --- Identity tools
 import { ProviderID } from "../../types";
-import { fetchVerifiableCredential } from "./identity";
+import { ClientType, fetchVerifiableCredential } from "./identity";
 import { RootState } from "../../reducers";
 import Button, { ButtonVariants } from "../base/Button";
 
@@ -96,6 +96,7 @@ export default function Github({
           version: "0.0.0",
           address: props.account || "",
           org,
+          requestedClient: ClientType.GrantHub,
           proofs: {
             code, // provided by github as query params in the redirect
           },
