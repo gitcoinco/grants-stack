@@ -13,6 +13,7 @@
     "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^2.9.2",
     "@lagunovsky/redux-react-router": "^3.1.0",
+    "@rainbow-me/rainbowkit": "^0.4.6",
     "@reduxjs/toolkit": "^1.8.1",
     "@tailwindcss/forms": "^0.5.2",
     "@testing-library/jest-dom": "^5.16.4",

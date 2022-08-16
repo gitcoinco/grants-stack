@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom"
 import { WagmiConfig } from "wagmi"
 
 import { store } from "./app/store"
-import { client as WagmiClient } from "./app/wagmi"
+import { chains, client as WagmiClient } from "./app/wagmi"
 import reportWebVitals from "./reportWebVitals"
 import history from "./history"
 
@@ -22,7 +22,9 @@ import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRoundPage from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
 import NotFound from "./features/common/NotFoundPage"
-
+import {
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -32,28 +34,30 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <WagmiConfig client={WagmiClient}>
-        <ReduxRouter history={history} store={store}>
-          <Routes>
-            {/* Protected Routes */}
-            <Route element={<Auth />}>
+        <RainbowKitProvider chains={chains}>
+          <ReduxRouter history={history} store={store}>
+            <Routes>
+              {/* Protected Routes */}
+              <Route element={<Auth />}>
 
-              {/* Default Route */}
-              <Route path="/" element={<Program />} />
+                {/* Default Route */}
+                <Route path="/" element={<Program />} />
 
-              {/* Round Routes */}
-              <Route path="/round/create" element={<CreateRound />} />
-              <Route path="/round/:id" element={<ViewRoundPage />} />
-              <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
+                {/* Round Routes */}
+                <Route path="/round/create" element={<CreateRound />} />
+                <Route path="/round/:id" element={<ViewRoundPage />} />
+                <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
 
-              {/* Program Routes */}
-              <Route path="/program/create" element={<CreateProgram />} />
-              <Route path="/program/:id" element={<ViewProgram />} />
+                {/* Program Routes */}
+                <Route path="/program/create" element={<CreateProgram />} />
+                <Route path="/program/:id" element={<ViewProgram />} />
 
-              {/* 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </ReduxRouter>
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </ReduxRouter>
+        </RainbowKitProvider>
       </WagmiConfig>
     </Provider>
   </React.StrictMode>
