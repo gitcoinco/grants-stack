@@ -1,3 +1,4 @@
+import Lit from "lit-js-sdk";
 import { RoundApplicationMetadata, Project, RoundApplication } from "../types";
 
 // eslint-disable-next-line
@@ -10,14 +11,29 @@ export default class RoundApplicationBuilder {
 
   private ram: RoundApplicationMetadata;
 
+  private roundAddress: string;
+
+  private chainName: string;
+
+  private lit: any;
+
   constructor(
     enableEncryption: boolean,
     project: Project,
-    ram: RoundApplicationMetadata
+    ram: RoundApplicationMetadata,
+    roundAddress: string,
+    chainName: string,
   ) {
     this.enableEncryption = enableEncryption;
     this.project = project;
     this.ram = ram;
+    this.roundAddress = roundAddress;
+    this.chainName = chainName;
+
+    this.lit = new Lit({
+      chain: "goerli",
+      contract: "0x22c0e3EDc90f6A890A259130B416Cd5F3Ee4Aca0",
+    });
   }
 
   async encryptAnswer(answer: string): Promise<string> {
@@ -25,27 +41,9 @@ export default class RoundApplicationBuilder {
       return answer;
     }
 
-    const algorithm = {
-      name: "RSA-OAEP",
-      modulusLength: 4096,
-      publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256",
-    };
-
-    const pubKey = await crypto.subtle.importKey(
-      "jwk",
-      JSON.parse(TEST_PUB_KEY),
-      algorithm,
-      true,
-      ["encrypt"]
-    );
-    const encoded = new TextEncoder().encode(answer);
-    const encrypted = await crypto.subtle.encrypt(algorithm, pubKey, encoded);
-    const encryptedBase64 = btoa(
-      String.fromCharCode(...Array.from(new Uint8Array(encrypted)))
-    );
-
-    return encryptedBase64;
+    const result = await this.lit.encryptString(answer);
+    console.log("-------------", result);
+    return "";
   }
 
   async build(

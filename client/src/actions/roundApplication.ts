@@ -104,10 +104,14 @@ export const submitApplication =
       }
     });
 
+    const chainName = state.web3.chainID;
+
     const builder = new RoundApplicationBuilder(
       true,
       project,
-      roundApplicationMetadata
+      roundApplicationMetadata,
+      roundAddress,
+      chainName,
     );
     const application = await builder.build(roundAddress, formInputs);
 
