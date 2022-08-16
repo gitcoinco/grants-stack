@@ -12,14 +12,12 @@
     "coverage": "yarn hardhat coverage",
     "export-abi": "yarn run hardhat export-abi",
     "clear-abi": "yarn run hardhat clear-abi",
-
     "// progam-deploy-scripts": "echo '//-- Program deploy Script --//'",
     "deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network",
     "deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network",
     "link-program-implementation": "yarn hardhat run scripts/program/linkProgramImplementation.ts --network",
     "create-program": "yarn hardhat run scripts/program/createProgram.ts --network",
     "upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network",
-
     "// round-deploy-scripts": "echo '//-- Round deploy Script --//'",
     "deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network",
     "deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network",
@@ -28,7 +26,6 @@
     "apply-to-round": "yarn hardhat run scripts/round/applyToRound.ts --network",
     "update-project-metaptr": "yarn hardhat run scripts/round/updateProjectMetaPtr.ts --network",
     "upgrade-round-factory": "yarn hardhat run scripts/round/upgradeRoundFactory.ts --network",
-
     "// vote-deploy-scripts": "echo '//-- Voting deploy Script --//'",
     "deploy-bulk-voting-strategy": "yarn hardhat run scripts/votingStrategy/deployBulkVotingStrategy.ts --network"
   },
@@ -38,6 +35,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/hardhat-upgrades": "^1.18.0",
+    "@primitivefi/hardhat-dodoc": "^0.2.3",
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^2.3.1",
     "@types/chai": "^4.3.1",

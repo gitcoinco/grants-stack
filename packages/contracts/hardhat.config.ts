@@ -4,6 +4,7 @@ import { HardhatUserConfig, task } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
+import '@primitivefi/hardhat-dodoc';
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
@@ -94,6 +95,13 @@ const abiExporter = [
   }
 ];
 
+const dodoc = {
+  outputDir: './docs/contracts',
+  exclude: [
+    'contracts/dummy',
+  ]
+}
+
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
@@ -117,6 +125,7 @@ const config: HardhatUserConfig = {
     }
   },
   abiExporter: abiExporter,
+  dodoc: dodoc
 };
 
 export default config;

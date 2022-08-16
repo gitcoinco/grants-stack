@@ -88,3 +88,7 @@ To know the addresses are deployed on which network. refer [CHAINS.md](docs/CHAI
 ## Development
 
 To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
+
+## Contract Documentation
+
+The contract documentation has been generated using [primitive-dodoc](https://github.com/primitivefinance/primitive-dodoc) and can be found over at [docs/contracts](docs/contracts/)
