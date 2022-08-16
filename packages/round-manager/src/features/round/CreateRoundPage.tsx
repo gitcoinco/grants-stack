@@ -33,7 +33,7 @@ export default function CreateRound() {
     <>
       <Navbar />
       <div className="bg-[#F3F3F5]">
-        <div className="container mx-auto h-screen px-4 pt-8">
+        <div className="pb-10 container mx-auto px-4 pt-8">
           <header>
             <div className="flow-root">
               <h1 className="float-left text-[32px] mb-7">Create a Round</h1>
