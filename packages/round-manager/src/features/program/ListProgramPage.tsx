@@ -46,21 +46,23 @@ const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
     </CardFooter>
   </BasicCard>)
 
-const startAProgramCard = <ProgramCard
-  floatingIcon={
-    <div
-      className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-violet-400 text-white rounded drop-shadow-xl">
-      <PlusIcon className="h-6 w-6" aria-hidden="true" />
-    </div>
-  }
-  title={"Start a Grant Program"}
-  description={"Create a Grant Program to manage applications, round dates, and voting mechanisms, as well as approve or reject projects all in one place."}
-  footerContent={
-    <Link to="/program/create" className="text-violet-400">
-      Create Program <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
-    </Link>
-  }
-/>
+const startAProgramCard = <Link to="/program/create">
+  <ProgramCard
+    floatingIcon={
+      <div
+        className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-violet-400 text-white rounded drop-shadow-xl">
+        <PlusIcon className="h-6 w-6" aria-hidden="true" />
+      </div>
+    }
+    title={"Start a Grant Program"}
+    description={"Create a Grant Program to manage applications, round dates, and voting mechanisms, as well as approve or reject projects all in one place."}
+    footerContent={
+      <p className="text-violet-400">
+        Create Program <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
+      </p>
+    }
+  />
+</Link>
 
 function ListPrograms() {
   const { address, provider } = useWallet()
@@ -71,22 +73,24 @@ function ListPrograms() {
   } = useListProgramsQuery({ address, signerOrProvider: provider })
 
   const programList = programs?.map((program) => (
-    <ProgramCard
-      key={program.id}
-      floatingIcon={
-        <div
-          className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">
-          <RefreshIcon className="h-6 w-6" aria-hidden="true" />
-        </div>
-      }
-      title={program.metadata!.name}
-      description={`${program.operatorWallets.length} Round Operators`}
-      footerContent={
-        <Link to={`/program/${program.id}`} className="text-violet-400">
-          View details <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
-        </Link>
-      }
-    />
+    <Link to={`/program/${program.id}`}>
+      <ProgramCard
+        key={program.id}
+        floatingIcon={
+          <div
+            className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">
+            <RefreshIcon className="h-6 w-6" aria-hidden="true" />
+          </div>
+        }
+        title={program.metadata!.name}
+        description={`${program.operatorWallets.length} Round Operators`}
+        footerContent={
+          <p className="text-violet-400">
+            View details <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
+          </p>
+        }
+      />
+    </Link>
   ))
 
   return (
