@@ -15,7 +15,7 @@ const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
     name: yup.string()
       .required("This field is required.")
-      .min(8, "Round name must be less that 8 characters."),
+      .min(8, "Round name must at least 8 characters."),
   }),
   applicationsStartTime: yup.date().required("This field is required."),
   roundStartTime: yup.date()
