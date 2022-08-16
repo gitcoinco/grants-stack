@@ -164,19 +164,16 @@ export const grantApplicationApi = api.injectEndpoints({
         try {
           const ipfsHash = await updateApplicationList([application], roundId, provider)
 
-          // update projects meta pointer in round implementation contract
-          application.projectsMetaPtr = {
-            protocol: 1,
-            pointer: ipfsHash
-          }
-
           const roundImplementation = new ethers.Contract(
             roundId,
             roundImplementationContract.abi,
             signer
           )
 
-          let tx = await roundImplementation.updateProjectsMetaPtr(application.projectsMetaPtr)
+          let tx = await roundImplementation.updateProjectsMetaPtr({
+            protocol: 1,
+            pointer: ipfsHash
+          })
 
           await tx.wait() // wait for transaction receipt
 
@@ -196,7 +193,7 @@ export const grantApplicationApi = api.injectEndpoints({
     >({
       queryFn: async ({ roundId, applications, signer, provider }) => {
         try {
-          let ipfsHash = await updateApplicationList(applications, roundId, provider)
+          const ipfsHash = await updateApplicationList(applications, roundId, provider)
 
           // update projects meta pointer in round implementation contract
           const roundImplementation = new ethers.Contract(

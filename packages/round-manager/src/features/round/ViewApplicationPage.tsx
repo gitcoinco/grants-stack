@@ -145,6 +145,7 @@ export default function ViewApplicationPage() {
             confirmButtonAction={handleUpdateGrantApplication}
             cancelButtonAction={handleCancelModal}
             isOpen={openModal}
+            setIsOpen={setOpenModal}
           />
         </header>
 

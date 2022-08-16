@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import React, { Fragment, useRef } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Button } from "./styles";
 
@@ -10,6 +10,7 @@ interface ModalProps {
   cancelButtonText?: string;
   confirmButtonText?: string;
   isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   confirmButtonAction: () => void;
   cancelButtonAction?: () => void;
 }
@@ -21,22 +22,18 @@ export default function ConfirmationModal(
     cancelButtonText = "Cancel",
     confirmButtonText = "Confirm",
     bodyStyled = <></>,
-    cancelButtonAction = () => setOpen(false),
+    isOpen = false,
+    setIsOpen = () => {},
+    cancelButtonAction = () => setIsOpen(false),
     ...props
   }: ModalProps
 ) {
 
-  const [open, setOpen] = useState(false)
-
   const cancelButtonRef = useRef(null)
 
-  useEffect(() => {
-    setOpen(props.isOpen)
-  }, [props.isOpen])
-
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen} data-testid="confirm-modal"
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setIsOpen} data-testid="confirm-modal"
       >
         <Transition.Child
           as={Fragment}

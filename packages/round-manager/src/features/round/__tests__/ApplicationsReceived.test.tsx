@@ -1,6 +1,9 @@
-import { fireEvent, screen, waitForElementToBeRemoved } from "@testing-library/react"
+import { fireEvent, screen, waitForElementToBeRemoved, within } from "@testing-library/react"
 import ApplicationsReceived from "../ApplicationsReceived"
-import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
+import {
+  useBulkUpdateGrantApplicationsMutation,
+  useListGrantApplicationsQuery,
+} from "../../api/services/grantApplication"
 import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
 
 jest.mock("../../api/services/grantApplication");
@@ -169,7 +172,7 @@ describe("<ApplicationsReceived />", () => {
         expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
       })
 
-      it("opens the confirmation modal with the correct number of selected applications when the continue button is clicked", async () => {
+      it("opens the confirmation modal when the continue button is clicked", async () => {
         renderWrapped(<ApplicationsReceived bulkSelect={true} />)
 
         const approveButton = screen.queryAllByTestId("approve-button")[0]
@@ -181,6 +184,25 @@ describe("<ApplicationsReceived />", () => {
         fireEvent.click(continueButton)
 
         expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      })
+
+      it("shows the correct number of approved and rejected applications in the confirmation modal", async () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true} />)
+
+        fireEvent.click(screen.queryAllByTestId("approve-button")[0])
+        fireEvent.click(screen.queryAllByTestId("reject-button")[1])
+        fireEvent.click(screen.queryAllByTestId("approve-button")[2])
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        const approvedApplicationsCount = screen.getByTestId("approved-applications-count")
+        const rejectedApplicationsCount = screen.getByTestId("rejected-applications-count")
+
+        within(approvedApplicationsCount).getByText(/2/)
+        within(rejectedApplicationsCount).getByText(/1/)
       })
 
       it("calls bulkUpdateGrantApplications when confirm button is clicked on the modal", async () => {
