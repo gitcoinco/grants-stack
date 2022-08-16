@@ -13,6 +13,9 @@ jest.mock("../../api/services/round");
 jest.mock("../../api/services/grantApplication");
 jest.mock("../../api/services/program");
 jest.mock("wagmi");
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}))
 
 const mockRoundData: Round = makeRoundData();
 const mockProgramData = makeProgramData({

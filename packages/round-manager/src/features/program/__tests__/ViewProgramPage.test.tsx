@@ -10,6 +10,9 @@ jest.mock("../../common/Navbar")
 jest.mock("../../common/Auth")
 jest.mock("../../api/services/program")
 jest.mock("../../api/services/round")
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}))
 
 
 describe("<ViewProgram />", () => {

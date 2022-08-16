@@ -6,7 +6,7 @@ import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg"
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg"
 import Footer from "./Footer";
-import WalletConnectionButton from "./WalletConnectionButton";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 
 /**
@@ -41,7 +41,7 @@ export default function Auth() {
                 grant programs and distribute funds across different<br />
                 rounds and voting mechanisms.
               </p>
-              <WalletConnectionButton />
+              <ConnectButton />
             </div>
             <div className="basis-1/2 right-0">
               <LandingBanner className="right-0 align-middle"></LandingBanner>

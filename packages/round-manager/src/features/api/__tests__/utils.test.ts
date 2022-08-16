@@ -142,7 +142,7 @@ describe("graphql_fetch", () => {
     await graphql_fetch(`programs { id }`, ChainId.OPTIMISM_MAINNET_CHAIN_ID)
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "undefined",
+      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
       expect.anything()
     )
   })
