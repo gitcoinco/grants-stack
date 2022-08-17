@@ -52,3 +52,18 @@ Since all the data is decentralized stored, there might be PII (Personally ident
 ### Development
 
 To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
+
+### Hosting
+
+All the frontend dApps are currently hosted presently via [fleek.co](https://fleek.co/).
+
+Documented below are the environments along with the URL.
+
+Note: Live Deployment should always happen by raising a PR from `main` to `release`  
+
+**round-manager**
+
+| Env     | Git Branch | URL                               |
+|---------|------------|-----------------------------------|
+| STAGING | main       | https://rmgitcoin.on.fleek.co/    |
+| LIVE    | release    | https://round-manager.gitcoin.co/ |
