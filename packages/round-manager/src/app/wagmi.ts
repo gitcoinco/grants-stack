@@ -1,6 +1,6 @@
-import '@rainbow-me/rainbowkit/styles.css'
+import "@rainbow-me/rainbowkit/styles.css"
 
-import { getDefaultWallets } from '@rainbow-me/rainbowkit'
+import { getDefaultWallets } from "@rainbow-me/rainbowkit"
 
 import {
   createClient,
@@ -26,7 +26,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 const { connectors } = getDefaultWallets({
   appName: 'Gitcoin Round Manager',
   chains
-});
+})
 
 export const client = createClient({
   autoConnect: true,
