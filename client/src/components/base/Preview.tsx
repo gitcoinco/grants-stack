@@ -51,8 +51,10 @@ export default function Preview({
 
   useEffect(() => {
     if (props.status === Status.Completed) {
-      localResetStatus();
-      setTimeout(() => navigate(slugs.grants), 1500);
+      setTimeout(() => {
+        navigate(slugs.grants);
+        localResetStatus();
+      }, 1500);
     }
   }, [props.status]);
 
