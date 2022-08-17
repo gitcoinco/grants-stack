@@ -1,10 +1,7 @@
-import { ArrowNarrowLeftIcon, CheckIcon, MailIcon, XIcon } from "@heroicons/react/solid"
+import { ArrowNarrowLeftIcon, CheckIcon, MailIcon, ShieldCheckIcon, XCircleIcon, XIcon } from "@heroicons/react/solid"
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import {
-  useListGrantApplicationsQuery,
-  useUpdateGrantApplicationMutation
-} from "../api/services/grantApplication"
+import { useListGrantApplicationsQuery, useUpdateGrantApplicationMutation } from "../api/services/grantApplication"
 import { useListRoundsQuery } from "../api/services/round"
 import ConfirmationModal from "../common/ConfirmationModal"
 import Navbar from "../common/Navbar"
@@ -14,13 +11,16 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 import Footer from "../common/Footer"
 import { datadogLogs } from "@datadog/browser-logs"
-import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import {VerifiableCredential} from "@gitcoinco/passport-sdk-types";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier"
 import { ProjectCredentials } from "../api/types"
-// import { PassportVerifier } from "./verifier"
-
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
+
+enum VerifiedCredentialState {
+  VALID,
+  INVALID,
+  PENDING
+}
 
 export default function ViewApplicationPage() {
 
@@ -29,11 +29,15 @@ export default function ViewApplicationPage() {
 
   const [reviewDecision, setReviewDecision] = useState<ApplicationStatus | undefined>(undefined)
   const [openModal, setOpenModal] = useState(false)
+  const [verifiedProviders, setVerifiedProviders] = useState<{ [key: string]: VerifiedCredentialState }>({
+    github: VerifiedCredentialState.PENDING,
+    twitter: VerifiedCredentialState.PENDING
+  })
 
   const { roundId, id } = useParams()
   const { address, provider, signer } = useWallet()
   const navigate = useNavigate()
-  const verifier = new PassportVerifier();
+  const verifier = new PassportVerifier()
 
   const {
     application,
@@ -45,23 +49,28 @@ export default function ViewApplicationPage() {
     })
   })
 
-  const credentials: ProjectCredentials = application?.project.credentials ?? {};
-  const [credentialsVerified, setCredentialsVerified] = useState<boolean>(false);
+  const credentials: ProjectCredentials = application?.project.credentials ?? {}
 
   useEffect(() => {
     if (!credentials) {
-      return;
+      return
     }
-    const gitHubCredentials = credentials[Object.getOwnPropertyNames(credentials)[0]];
-
     const verify = async () => {
-      const verified = await verifier.verifyCredential(gitHubCredentials);
-      setCredentialsVerified(verified);
-    };
+      const newVerifiedProviders: { [key: string]: VerifiedCredentialState } = { ...verifiedProviders }
+      for (const provider of Object.keys(verifiedProviders)) {
+        const verifiableCredential = credentials[provider]
+        if (!!verifiableCredential) {
+          newVerifiedProviders[provider] = await verifier.verifyCredential(verifiableCredential)
+            ? VerifiedCredentialState.VALID
+            : VerifiedCredentialState.INVALID
+        }
+      }
 
-    verify();
+      setVerifiedProviders(newVerifiedProviders)
+    }
 
-  }, []);
+    verify()
+  }, [])
 
 
   const { round } = useListRoundsQuery({ address, signerOrProvider: provider }, {
@@ -112,16 +121,39 @@ export default function ViewApplicationPage() {
     return application?.answers!.find((answer) => answer.question === question)?.answer || "N/A"
   }
 
+  const getVerifiableCredentialVerificationResultView = (provider: string) => {
+    switch (verifiedProviders[provider]) {
+      case VerifiedCredentialState.VALID:
+        return (
+          <span className="rounded-full bg-teal-100 px-3 inline-flex flex-row justify-center items-center">
+            <ShieldCheckIcon className="w-5 h-5 text-teal-500 mr-2"
+                             data-testid={ `${ provider }-verifiable-credential` }/>
+            <p className="text-teal-500 font-medium text-xs">Verified</p>
+          </span>
+        )
+      case VerifiedCredentialState.INVALID:
+        return (
+          <span className="rounded-full bg-red-100 px-3 inline-flex flex-row justify-center items-center">
+            <XCircleIcon className="w-5 h-5 text-white mr-2"
+                             data-testid={ `${ provider }-verifiable-credential-unverified` }/>
+            <p className="text-white font-medium text-xs">Invalid</p>
+          </span>
+        )
+      default:
+        return <></>
+    }
+  }
+
   return (
     <>
-      <Navbar />
+      <Navbar/>
       <div className="container mx-auto h-screen px-4 py-7">
         <header>
           <div className="flex gap-2 mb-6">
-            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
-            <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
+            <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger"/>
+            <Link className="text-sm gap-2" to={ `/round/${ round?.id }` }>
               <span>
-                {round?.roundMetadata?.name || "..."}
+                { round?.roundMetadata?.name || "..." }
               </span>
             </Link>
           </div>
@@ -146,23 +178,23 @@ export default function ViewApplicationPage() {
                   <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
                     <Button
                       type="button"
-                      $variant={application?.status === "APPROVED" ? "solid" : "outline"}
+                      $variant={ application?.status === "APPROVED" ? "solid" : "outline" }
                       className="inline-flex justify-center px-4 py-2 text-sm"
-                      disabled={isLoading || updating}
-                      onClick={() => confirmReviewDecision("APPROVED")}
+                      disabled={ isLoading || updating }
+                      onClick={ () => confirmReviewDecision("APPROVED") }
                     >
-                      <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                      {application?.status === "APPROVED" ? "Approved" : "Approve"}
+                      <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true"/>
+                      { application?.status === "APPROVED" ? "Approved" : "Approve" }
                     </Button>
                     <Button
                       type="button"
-                      $variant={application?.status === "REJECTED" ? "solid" : "outline"}
-                      className={"inline-flex justify-center px-4 py-2 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500")}
-                      disabled={isLoading || updating}
-                      onClick={() => confirmReviewDecision("REJECTED")}
+                      $variant={ application?.status === "REJECTED" ? "solid" : "outline" }
+                      className={ "inline-flex justify-center px-4 py-2 text-sm" + (application?.status === "REJECTED" ? "" : "text-grey-500") }
+                      disabled={ isLoading || updating }
+                      onClick={ () => confirmReviewDecision("REJECTED") }
                     >
-                      <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                      {application?.status === "REJECTED" ? "Rejected" : "Reject"}
+                      <XIcon className="h-5 w-5 mr-1" aria-hidden="true"/>
+                      { application?.status === "REJECTED" ? "Rejected" : "Reject" }
                     </Button>
                   </div>
                 </div>
@@ -184,40 +216,43 @@ export default function ViewApplicationPage() {
             <div className="sm:basis-3/4 sm:mr-3">
               <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
                 <div className="text-grey-500 truncate block">
-                  <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
-                  <span className="text-xs text-grey-400">{getAnswer("Email")}</span>
+                  <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1"/>
+                  <span className="text-xs text-grey-400">{ getAnswer("Email") }</span>
                 </div>
-                <div className="text-grey-500 truncate block">
-                  <TwitterIcon className="inline-flex h-4 w-4 mr-1" />
-                  <span className="text-xs text-grey-400">{getAnswer("Twitter")}</span>
-                </div>
+                <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
+                  <TwitterIcon className="h-4 w-4 mr-2"/>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer("Twitter") }</span>
+                  {
+                    getVerifiableCredentialVerificationResultView("twitter")
+                  }
 
-                    <div className="text-grey-500 truncate block">
-                      <GithubIcon className="inline-flex h-4 w-4 text-black mr-1"/>
-                      <span className="text-xs text-grey-400">{getAnswer("Github")}</span>
-                      {
-                          credentialsVerified && "icon"
-                          // <VerifiedIcon className="" data-testid="github-verified-credential"/>
-                      }
-                    </div>
+                </span>
+
+                <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
+                  <GithubIcon className="h-4 w-4 mr-2" />
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer("Github") }</span>
+                  {
+                    getVerifiableCredentialVerificationResultView("github")
+                  }
+                </span>
 
               </div>
 
-              <hr className="my-6" />
+              <hr className="my-6"/>
 
               <h2 className="text-xs mb-2">Description</h2>
               <p className="text-base">{application?.project!.description}</p>
 
-              <hr className="my-6" />
+              <hr className="my-6"/>
 
               <h2 className="text-xs mb-2">Funding Sources</h2>
-              <p className="text-base mb-6">{getAnswer("Funding Source")}</p>
+              <p className="text-base mb-6">{ getAnswer("Funding Source") }</p>
 
               <h2 className="text-xs mb-2">Funding Profit</h2>
-              <p className="text-base mb-6">{getAnswer("Profit2022")}</p>
+              <p className="text-base mb-6">{ getAnswer("Profit2022") }</p>
 
               <h2 className="text-xs mb-2">Team Size</h2>
-              <p className="text-base mb-6">{getAnswer("Team Size")}</p>
+              <p className="text-base mb-6">{ getAnswer("Team Size") }</p>
             </div>
             <div className="sm:basis-1/4 text-center sm:ml-3"></div>
           </div>
@@ -227,10 +262,10 @@ export default function ViewApplicationPage() {
               isRoundsLoading &&
               <p>Fetching round information...</p>
             }
-          </div> */}
+          </div> */ }
 
         </main>
-        <Footer />
+        <Footer/>
       </div>
     </>
   )
