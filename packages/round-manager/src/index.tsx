@@ -4,6 +4,8 @@ import { Provider } from "react-redux"
 import { ReduxRouter } from "@lagunovsky/redux-react-router"
 import { Route, Routes } from "react-router-dom"
 import { WagmiConfig } from "wagmi"
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { initDatadog } from "./datadog"
 
 import { store } from "./app/store"
 import { chains, client as WagmiClient } from "./app/wagmi"
@@ -22,9 +24,9 @@ import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRoundPage from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
 import NotFound from "./features/common/NotFoundPage"
-import {
-  RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
+
+// Initialize datadog
+initDatadog()
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

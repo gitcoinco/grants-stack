@@ -10,6 +10,7 @@ import { Input, Button } from "../common/styles"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
 import ProgressModal from "../common/ProgressModal"
+import { datadogLogs } from "@datadog/browser-logs"
 
 
 type FormData = {
@@ -18,6 +19,9 @@ type FormData = {
 }
 
 export default function CreateProgram() {
+  datadogLogs.logger.info(`====> Route: ${window.location.href}`)
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
   const [openProgressModal, setOpenProgressModal] = useState(false)
   const { address, chain, signer } = useWallet()
 

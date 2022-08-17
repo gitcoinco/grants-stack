@@ -10,9 +10,13 @@ import { RoundApplicationForm } from "./RoundApplicationForm"
 import { Button } from "../common/styles"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
-
+import { datadogLogs } from "@datadog/browser-logs"
 
 export default function CreateRound() {
+
+  datadogLogs.logger.info('====> Route: /round/create')
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
   const { address, provider } = useWallet()
   const search = useLocation().search
   const programId = (new URLSearchParams(search)).get("programId")

@@ -14,10 +14,14 @@ import Footer from "../common/Footer"
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
 import tw from "tailwind-styled-components";
 import { Button } from "../common/styles"
-
+import { datadogLogs } from "@datadog/browser-logs"
 
 
 export default function ViewRoundPage() {
+
+  datadogLogs.logger.info('====> Route: /round/create')
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
   const [bulkSelect, setBulkSelect] = useState(false)
 
   const { id } = useParams()

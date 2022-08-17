@@ -21,6 +21,7 @@ import {
 } from "../common/styles"
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "../common/Footer";
+import { datadogLogs } from "@datadog/browser-logs"
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element,
@@ -65,6 +66,11 @@ const startAProgramCard = <Link to="/program/create">
 </Link>
 
 function ListPrograms() {
+
+  datadogLogs.logger.info('====> Route: /')
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
+
   const { address, provider } = useWallet()
   const {
     data: programs,
