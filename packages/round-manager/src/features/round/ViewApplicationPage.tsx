@@ -49,7 +49,7 @@ export default function ViewApplicationPage() {
     })
   })
 
-  const credentials: ProjectCredentials = application?.project.credentials ?? {}
+  const credentials: ProjectCredentials = application?.project!.credentials ?? {}
 
   useEffect(() => {
     if (!credentials) {

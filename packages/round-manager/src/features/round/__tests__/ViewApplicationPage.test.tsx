@@ -1,18 +1,21 @@
-import { makeGrantApplicationData, makeProjectCredentialData, renderWrapped } from "../../test-utils"
-import ViewApplicationPage from "./ViewApplicationPage"
+import { makeGrantApplicationData, makeProjectCredentialData, renderWrapped } from "../../../test-utils"
+import ViewApplicationPage from "../ViewApplicationPage"
 import { screen, waitFor } from "@testing-library/react"
-import { useListRoundsQuery } from "../api/services/round"
-import { useListGrantApplicationsQuery, useUpdateGrantApplicationMutation } from "../api/services/grantApplication"
+import { useListRoundsQuery } from "../../api/services/round"
+import { useListGrantApplicationsQuery, useUpdateGrantApplicationMutation } from "../../api/services/grantApplication"
 import { useSwitchNetwork, useDisconnect } from "wagmi"
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier"
 
-jest.mock("../api/services/grantApplication")
-jest.mock("wagmi")
-jest.mock("../api/services/round")
-jest.mock("@gitcoinco/passport-sdk-verifier")
-jest.mock("../common/Auth", () => ({
+jest.mock("../../api/services/grantApplication")
+jest.mock("../../api/services/round")
+jest.mock("../../common/Auth", () => ({
   useWallet: () => ({ provider: {} })
 }))
+jest.mock("@gitcoinco/passport-sdk-verifier")
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}))
+jest.mock("wagmi")
 
 const verifyCredentialMock = jest.spyOn(PassportVerifier.prototype, 'verifyCredential')
 
