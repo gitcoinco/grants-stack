@@ -1,8 +1,8 @@
 # grants-round
 
-This repository contains packages needed for a user to 
+This repository contains packages needed for a user to
 - Create & Manage Rounds
-- Explore available Rounds 
+- Explore available Rounds
 - Vote for Projects within a Round
 
 Project Maintained via  : `lerna`
@@ -18,11 +18,11 @@ Build Tool              : `yarn`
 │   ├── graph                   # graph which indexes data from contracts
 │   ├── round-manager           # react-frontend for round-manager
 │   ├── round-explorer          # react-frontend for round-explorer
-├── docs                        # useful documentation 
+├── docs                        # useful documentation
 ├── lerna.json                  # lerna config
 ├── package.json                # root package configuration
 └── README.md
-``` 
+```
 
 ## Packages
 
@@ -45,9 +45,9 @@ To contribute to this project, fork the project and follow the instructions at [
 
 This is built and maintained using [hardhat](https://hardhat.org)
 
-### graph 
+### graph
 
-This package holds the subgraph which indexs data with regard the 
+This package holds the subgraph which indexs data with regard the
 - ProgramFactory
 - ProgramImplementation
 - RoundFactory
@@ -57,7 +57,7 @@ More information can be found within the [graph package](packages/graph)
 
 ### round-manager
 
-This package serves the app which holds all the features w.r.t to 
+This package serves the app which holds all the features w.r.t to
 
 - creating a program
 - maintaing a program
@@ -73,7 +73,7 @@ To contribute to this project, fork the project and follow the instructions at [
 
 ### round-explorer
 
-This package serves the app which holds all the features w.r.t to 
+This package serves the app which holds all the features w.r.t to
 
 - exploring a round
 - voting for a project
@@ -84,3 +84,18 @@ More information can be found within the [round-explorer package](packages/round
 ##### Development
 
 To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-explorer/docs/DEV.md)
+
+##### Hosting
+
+All the frontend dApps are currently hosted presently via [fleek.co](https://fleek.co/).
+
+Documented below are the environments along with the URL.
+
+Note: Live Deployment should always happen by raising a PR from `main` to `release`
+
+**round-manager**
+
+| Env     | Git Branch | URL                               |
+|---------|------------|-----------------------------------|
+| STAGING | main       | https://rmgitcoin.on.fleek.co/    |
+| LIVE    | release    | https://round-manager.gitcoin.co/ |

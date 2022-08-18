@@ -13,11 +13,16 @@ import { Button } from "../common/styles"
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg"
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 import Footer from "../common/Footer"
+import { datadogLogs } from "@datadog/browser-logs"
 
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
 
 export default function ViewApplicationPage() {
+
+  datadogLogs.logger.info('====> Route: /program/create')
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
   const [reviewDecision, setReviewDecision] = useState<ApplicationStatus | undefined>(undefined)
   const [openModal, setOpenModal] = useState(false)
 

@@ -11,6 +11,13 @@ This package is meant to be used by the round operators
 It relies on the contracts deployed from the [contracts](../contracts) package.
 Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 
+## Live Links
+
+| Env     | Git Branch | URL                               |
+|---------|------------|-----------------------------------|
+| STAGING | main       | https://rmgitcoin.on.fleek.co/    |
+| LIVE    | release    | https://round-manager.gitcoin.co/ |
+
 ## Directory Structure 
 
 ```
@@ -53,17 +60,6 @@ Since all the data is decentralized stored, there might be PII (Personally ident
 
 To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
 
-### Hosting
+### Monitoring
 
-All the frontend dApps are currently hosted presently via [fleek.co](https://fleek.co/).
-
-Documented below are the environments along with the URL.
-
-Note: Live Deployment should always happen by raising a PR from `main` to `release`  
-
-**round-manager**
-
-| Env     | Git Branch | URL                               |
-|---------|------------|-----------------------------------|
-| STAGING | main       | https://rmgitcoin.on.fleek.co/    |
-| LIVE    | release    | https://round-manager.gitcoin.co/ |
+To setup monitoring for this project, follow the instructions at [MONITORING.md](docs/MONITORING.md)

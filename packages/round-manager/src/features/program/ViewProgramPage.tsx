@@ -9,9 +9,13 @@ import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
 import { abbreviateAddress } from "../api/utils"
+import { datadogLogs } from "@datadog/browser-logs"
 
 export default function ViewProgram() {
-  
+  datadogLogs.logger.info('====> Route: /program/:id')
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+
+
   const { id } = useParams()
 
   const { address, provider } = useWallet()
