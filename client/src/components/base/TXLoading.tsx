@@ -12,7 +12,7 @@ function statusMessage(status: Status, error: string | undefined) {
       return "Please confirm your transaction";
     case Status.TransactionInitiated:
       return "Your transaction is processing!";
-    case (Status.ProjectCreated, Status.Completed):
+    case Status.Completed:
       return "Project Created!";
     case Status.Error:
       return error;

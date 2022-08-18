@@ -17,7 +17,6 @@ export const enum Status {
   UploadingJSON,
   WaitingForSignature,
   TransactionInitiated,
-  ProjectCreated,
   Completed,
   Error,
 }
