@@ -22,6 +22,14 @@ enum VerifiedCredentialState {
   PENDING
 }
 
+enum ApplicationQuestions {
+  GITHUB = "Github",
+  GITHUB_ORGANIZATION = "Github Organization",
+  TWITTER = "Twitter"
+}
+
+export const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC"
+
 export default function ViewApplicationPage() {
 
   datadogLogs.logger.info('====> Route: /program/create')
@@ -60,7 +68,16 @@ export default function ViewApplicationPage() {
       for (const provider of Object.keys(verifiedProviders)) {
         const verifiableCredential = credentials[provider]
         if (!!verifiableCredential) {
-          newVerifiedProviders[provider] = await verifier.verifyCredential(verifiableCredential)
+          const vcHasValidProof = await verifier.verifyCredential(verifiableCredential)
+          const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER
+          let vcProviderMatchesProject = false
+          if (provider === "twitter") {
+            vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.TWITTER)
+          } else if (provider === "github") {
+            vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.GITHUB_ORGANIZATION)
+          }
+
+          newVerifiedProviders[provider] = vcHasValidProof && vcIssuedByValidIAMServer && vcProviderMatchesProject
             ? VerifiedCredentialState.VALID
             : VerifiedCredentialState.INVALID
         }
@@ -70,7 +87,7 @@ export default function ViewApplicationPage() {
     }
 
     verify()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const { round } = useListRoundsQuery({ address, signerOrProvider: provider }, {
@@ -221,7 +238,7 @@ export default function ViewApplicationPage() {
                 </div>
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                   <TwitterIcon className="h-4 w-4 mr-2"/>
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer("Twitter") }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.TWITTER) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("twitter")
                   }
@@ -230,7 +247,7 @@ export default function ViewApplicationPage() {
 
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                   <GithubIcon className="h-4 w-4 mr-2" />
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer("Github") }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.GITHUB) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("github")
                   }
