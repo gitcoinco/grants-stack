@@ -7,6 +7,7 @@ import { Project } from "../types";
 import PinataClient from "../services/pinata";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
+import { chains } from "../contracts/deployments";
 
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
 interface RoundApplicationLoadingAction {
@@ -98,16 +99,25 @@ export const submitApplication =
 
     // FIXME: this is temporarily until the round manager adds the encrypted field
     roundApplicationMetadata.applicationSchema.forEach((question) => {
-      if (/email/i.test(question.question.toLowerCase())) {
+      if (/email|cool/i.test(question.question.toLowerCase())) {
         // eslint-disable-next-line
         question.encrypted = true;
       }
     });
 
+    const { chainID } = state.web3;
+    const chainName = chains[chainID!];
+    if (chainID === undefined) {
+      dispatch(applicationError(roundAddress, "cannot find chain name"));
+      return;
+    }
+
     const builder = new RoundApplicationBuilder(
       true,
       project,
-      roundApplicationMetadata
+      roundApplicationMetadata,
+      roundAddress,
+      chainName
     );
     const application = await builder.build(roundAddress, formInputs);
 

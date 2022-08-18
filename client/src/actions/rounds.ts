@@ -227,6 +227,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
     applicationMetadata = JSON.parse(resp);
 
+    if (applicationMetadata.applicationSchema === undefined) {
+      applicationMetadata.applicationSchema =
+        applicationMetadata.application_schema;
+    }
+
     projectQuestionId = applicationMetadata.applicationSchema.length;
     applicationMetadata.applicationSchema.unshift({
       ...projectQuestion,
