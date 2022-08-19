@@ -3,6 +3,14 @@ const webpack = require('webpack')
 module.exports = {
   webpack: {
     configure: {
+      module: {
+        rules: [
+          {
+            test: /\.wasm$/,
+            type: 'webassembly/async'
+          }
+        ]
+      },
       resolve: {
         fallback: {
           crypto: require.resolve('crypto-browserify'),
@@ -15,6 +23,9 @@ module.exports = {
           url: require.resolve('url'),
           util: require.resolve('util')
         }
+      },
+      experiments: {
+        asyncWebAssembly: true,
       },
       ignoreWarnings: [
         // Ignore warnings raised by source-map-loader.

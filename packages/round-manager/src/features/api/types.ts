@@ -1,6 +1,8 @@
 /**
  * Supported EVM networks
  */
+import {VerifiableCredential} from "@gitcoinco/passport-sdk-types";
+
 export type Network = "goerli" | "optimism" | "optimism-kovan"
 
 export interface Web3Instance {
@@ -151,6 +153,10 @@ export interface Round {
 
 export type ProjectStatus = "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
 
+export type ProjectCredentials = {
+  [key: string]: VerifiableCredential
+}
+
 export interface GrantApplication {
   /**
    * The on-chain unique grant application ID
@@ -175,6 +181,7 @@ export interface GrantApplication {
     website: string,
     bannerImg?: string,
     logoImg: string,
+    credentials: ProjectCredentials
     metaPtr: MetadataPointer
   };
   /** List of answers to questions */
