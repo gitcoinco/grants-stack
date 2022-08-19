@@ -103,7 +103,7 @@ export default function CreateProgram() {
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+      status: isSavedToIPFS ? "complete" : isIPFSError ? "error" : (isSavingToIPFS ? "current" : "upcoming")
     },
     {
       name: "Deploying",
@@ -160,6 +160,7 @@ export default function CreateProgram() {
                       disabled={isLoading}
                       placeholder="Enter the name of the Grant Program."
                       className="placeholder:italic"
+                      data-testid="program-name"
                     />
                     {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
                   </div>
@@ -213,7 +214,7 @@ export default function CreateProgram() {
 
               <div className="px-6 align-middle pb-3.5 shadow-md">
                 <span className="italic text-grey-400">Note: You can't edit operator wallets after the grant is created.</span>
-                <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
+                <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess} data-testid="save">
                   {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
                 </Button>
               </div>
