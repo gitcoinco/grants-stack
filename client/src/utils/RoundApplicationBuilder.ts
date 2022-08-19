@@ -38,19 +38,33 @@ export default class RoundApplicationBuilder {
   async encryptAnswer(answer: string) {
     if (!this.enableEncryption) {
       return {
-        encryptedString: answer,
+        ciphertext: answer,
         encryptedSymmetricKey: "",
       };
     }
 
     const { encryptedString, encryptedSymmetricKey } =
       await this.lit.encryptString(answer);
-    const encryptedStringText = await encryptedString.text();
+    const encryptedStringText = await this.blobToDataString(encryptedString);
 
     return {
-      encryptedString: encryptedStringText,
+      ciphertext: encryptedStringText,
       encryptedSymmetricKey,
     };
+  }
+
+  async blobToDataString(blob: Blob): Promise<string> {
+    const fr = new FileReader();
+    fr.readAsDataURL(blob);
+    return new Promise<string>((resolve, reject) => {
+      fr.addEventListener("loadend", () => {
+        const { result } = fr;
+        if (result !== null && typeof result === "string") {
+          resolve(result.split(",")[1]);
+        }
+        reject(new Error("cannot read blob data"));
+      });
+    });
   }
 
   async build(
@@ -78,7 +92,9 @@ export default class RoundApplicationBuilder {
           let encryptedAnswer;
           if (question.encrypted) {
             // eslint-disable-next-line
-            encryptedAnswer = await this.encryptAnswer(formInputs[question.id] ?? "");
+            encryptedAnswer = await this.encryptAnswer(
+              formInputs[question.id] ?? ""
+            );
           } else {
             answer = formInputs[question.id];
           }

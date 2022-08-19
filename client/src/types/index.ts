@@ -140,7 +140,7 @@ export interface RoundApplication {
     answer: string | undefined;
     encryptedAnswer:
       | {
-          encryptedString: string;
+          ciphertext: string;
           encryptedSymmetricKey: string;
         }
       | undefined;
