@@ -8,9 +8,12 @@ import {
   ModalBody,
 } from "@chakra-ui/react";
 
-export type BaseModalProps = {
+export type ToggleModalProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+export type BaseModalProps = ToggleModalProps & {
   children?: JSX.Element;
   title?: string;
   footer?: JSX.Element;
