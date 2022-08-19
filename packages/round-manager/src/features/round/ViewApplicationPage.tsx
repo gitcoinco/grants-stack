@@ -12,7 +12,8 @@ import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 import Footer from "../common/Footer"
 import { datadogLogs } from "@datadog/browser-logs"
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier"
-import { ProjectCredentials } from "../api/types"
+import { GrantApplication, ProjectCredentials } from "../api/types"
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types"
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
 
@@ -68,18 +69,7 @@ export default function ViewApplicationPage() {
       for (const provider of Object.keys(verifiedProviders)) {
         const verifiableCredential = credentials[provider]
         if (!!verifiableCredential) {
-          const vcHasValidProof = await verifier.verifyCredential(verifiableCredential)
-          const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER
-          let vcProviderMatchesProject = false
-          if (provider === "twitter") {
-            vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.TWITTER)
-          } else if (provider === "github") {
-            vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.GITHUB_ORGANIZATION)
-          }
-
-          newVerifiedProviders[provider] = vcHasValidProof && vcIssuedByValidIAMServer && vcProviderMatchesProject
-            ? VerifiedCredentialState.VALID
-            : VerifiedCredentialState.INVALID
+          newVerifiedProviders[provider] = await isVerified(verifiableCredential, verifier, provider, application)
         }
       }
 
@@ -134,9 +124,6 @@ export default function ViewApplicationPage() {
     setTimeout(() => setReviewDecision(undefined), 500)
   }
 
-  const getAnswer = (question: string) => {
-    return application?.answers!.find((answer) => answer.question === question)?.answer || "N/A"
-  }
 
   const getVerifiableCredentialVerificationResultView = (provider: string) => {
     switch (verifiedProviders[provider]) {
@@ -234,11 +221,11 @@ export default function ViewApplicationPage() {
               <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
                 <div className="text-grey-500 truncate block">
                   <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1"/>
-                  <span className="text-xs text-grey-400">{ getAnswer("Email") }</span>
+                  <span className="text-xs text-grey-400">{ getAnswer("Email", application) }</span>
                 </div>
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                   <TwitterIcon className="h-4 w-4 mr-2"/>
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.TWITTER) }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.TWITTER, application) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("twitter")
                   }
@@ -247,7 +234,7 @@ export default function ViewApplicationPage() {
 
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                   <GithubIcon className="h-4 w-4 mr-2" />
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.GITHUB) }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.GITHUB, application) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("github")
                   }
@@ -263,13 +250,13 @@ export default function ViewApplicationPage() {
               <hr className="my-6"/>
 
               <h2 className="text-xs mb-2">Funding Sources</h2>
-              <p className="text-base mb-6">{ getAnswer("Funding Source") }</p>
+              <p className="text-base mb-6">{ getAnswer("Funding Source", application) }</p>
 
               <h2 className="text-xs mb-2">Funding Profit</h2>
-              <p className="text-base mb-6">{ getAnswer("Profit2022") }</p>
+              <p className="text-base mb-6">{ getAnswer("Profit2022", application) }</p>
 
               <h2 className="text-xs mb-2">Team Size</h2>
-              <p className="text-base mb-6">{ getAnswer("Team Size") }</p>
+              <p className="text-base mb-6">{ getAnswer("Team Size", application) }</p>
             </div>
             <div className="sm:basis-1/4 text-center sm:ml-3"></div>
           </div>
@@ -286,4 +273,28 @@ export default function ViewApplicationPage() {
       </div>
     </>
   )
+}
+
+const getAnswer = (question: string, application: GrantApplication | undefined) => {
+  return application?.answers!.find((answer) => answer.question === question)?.answer || "N/A"
+}
+
+function vcProviderMatchesProject(provider: string, verifiableCredential: VerifiableCredential, application: GrantApplication | undefined) {
+  let vcProviderMatchesProject = false
+  if (provider === "twitter") {
+    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.TWITTER, application)
+  } else if (provider === "github") {
+    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.GITHUB_ORGANIZATION, application)
+  }
+  return vcProviderMatchesProject
+}
+
+async function isVerified(verifiableCredential: VerifiableCredential, verifier: PassportVerifier, provider: string, application: GrantApplication | undefined) {
+  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential)
+  const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER
+  const providerMatchesProject = vcProviderMatchesProject(provider, verifiableCredential, application)
+
+  return vcHasValidProof && vcIssuedByValidIAMServer && providerMatchesProject
+    ? VerifiedCredentialState.VALID
+    : VerifiedCredentialState.INVALID
 }
