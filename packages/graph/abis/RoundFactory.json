@@ -58,6 +58,12 @@
         "internalType": "address",
         "name": "ownedBy",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "roundImplementation",
+        "type": "address"
       }
     ],
     "name": "RoundCreated",
