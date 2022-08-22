@@ -4,7 +4,8 @@ import {CheckIcon, XIcon} from "@heroicons/react/solid"
 import { XCircleIcon } from "@heroicons/react/outline";
 
 interface ProgressModalProps {
-  show: boolean;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   steps: Array<{
     name: string;
     description: string;
@@ -47,22 +48,18 @@ function ModalStep(props: {
 
 export default function ProgressModal(
   {
+    isOpen,
+    setIsOpen,
     heading = "Processing...",
     subheading = "Please hold while your operation is in progress.",
     redirectUrl = "",
     ...props
   }: ProgressModalProps
 ) {
-  const [open, setOpen] = useState(false)
-
-  useEffect(() => {
-    setOpen(props.show)
-  }, [props.show])
-
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" data-testid="progress-modal" className="relative z-10" onClose={setIsOpen}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

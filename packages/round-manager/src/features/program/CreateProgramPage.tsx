@@ -11,6 +11,7 @@ import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
 import ProgressModal from "../common/ProgressModal"
 import { datadogLogs } from "@datadog/browser-logs"
+import ErrorModal from "../common/ErrorModal"
 
 
 type FormData = {
@@ -23,17 +24,16 @@ export default function CreateProgram() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
   const [openProgressModal, setOpenProgressModal] = useState(false)
+  const [openErrorModal, setOpenErrorModal] = useState(false)
   const { address, chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    // error: ipfsError,
     isError: isIPFSError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS
   }] = useSaveToIPFSMutation()
 
   const [createProgram, {
-    // error: programError,
     isLoading,
     isSuccess,
     isError: isProgramError
@@ -67,6 +67,7 @@ export default function CreateProgram() {
   useEffect(() => {
     if (isIPFSError || isProgramError) {
       setOpenProgressModal(false)
+      setOpenErrorModal(true)
     }
   }, [isIPFSError, isProgramError])
 
@@ -221,10 +222,13 @@ export default function CreateProgram() {
             </form>
           </div>
           <ProgressModal
-            show={openProgressModal}
+            isOpen={openProgressModal}
+            setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Program."}
             steps={progressSteps}
           />
+
+          <ErrorModal isOpen={openErrorModal} setIsOpen={setOpenErrorModal} />
         </main>
       </div>
       <Footer />

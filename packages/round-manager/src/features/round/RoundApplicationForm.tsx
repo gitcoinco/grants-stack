@@ -434,7 +434,8 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
             </div>
           </form>
           <ProgressModal
-            show={openProgressModal}
+            isOpen={openProgressModal}
+          setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Round."}
             steps={progressSteps}
           />
