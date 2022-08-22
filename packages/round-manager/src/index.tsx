@@ -24,6 +24,7 @@ import ViewProgram from "./features/program/ViewProgramPage"
 import ViewRoundPage from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
 import NotFound from "./features/common/NotFoundPage"
+import AccessDenied from "./features/common/AccessDenied"
 
 // Initialize datadog
 initDatadog()
@@ -53,6 +54,9 @@ root.render(
                 {/* Program Routes */}
                 <Route path="/program/create" element={<CreateProgram />} />
                 <Route path="/program/:id" element={<ViewProgram />} />
+
+                {/* Access Denied */}
+                <Route path="/access-denied" element={<AccessDenied />} />
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />

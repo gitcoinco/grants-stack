@@ -42,6 +42,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
+    operatorWallets: [faker.finance.ethereumAddress()],
     ...overrides
   }
 }
