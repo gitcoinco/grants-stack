@@ -8,10 +8,11 @@ import { useCreateRoundMutation } from "../api/services/round"
 import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Round } from "../api/types"
 import { FormContext } from "../common/FormWizard"
-import { Input } from "../common/styles"
+import { Button, Input } from "../common/styles"
 import { generateApplicationSchema } from "../api/utils"
 import { useWallet } from "../common/Auth"
 import ProgressModal from "../common/ProgressModal"
+import { PencilIcon, XIcon } from "@heroicons/react/solid"
 
 
 const ValidationSchema = yup.object().shape({
@@ -31,6 +32,7 @@ const ValidationSchema = yup.object().shape({
 
 export function RoundApplicationForm(props: { initialData: any, stepper: any }) {
   const [openProgressModal, setOpenProgressModal] = useState(false)
+  const [edit, setEdit] = useState(false)
   const { currentStep, setCurrentStep, stepsCount, formData } = useContext(FormContext)
   const FormStepper = props.stepper
 
@@ -153,264 +155,285 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
   ]
 
   return (
-    <div className="md:grid md:grid-cols-3 md:gap-10">
-      <div className="md:col-span-1">
-        <p className="text-base leading-6">Application Form Configuration</p>
-        <p className="mt-1 text-sm text-grey-400">
-          Define the acceptance criteria grant owners can provide to apply for your grant program round.
-        </p>
+    <div>
+      <div className="md:grid md:grid-cols-3 md:gap-6">
+        <div className="md:col-span-1">
+          <p className="text-base leading-6">Review Information</p>
+          <p className="mt-1 text-sm text-grey-400">
+            Carefully review the information details Project Owners will need to fullfil the application process.
+          </p>
+          <p className="italic mt-4 text-sm text-grey-400">
+            Note: that some personal identifiable information will be stored publicly.
+          </p>
+        </div>
+        <div className="mt-5 md:mt-0 md:col-span-2">
+
+          <div className="rounded shadow-sm bg-white pt-7 pb-6 sm:px-6">
+            <p className="mb-2">Project Information</p>
+            <p className="text-sm text-grey-400 mb-6">
+              These details will be collected from project owners by default during the project creation process.
+            </p>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Name</span>
+              <span className="text-xs text-violet-400">*Required</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Website</span>
+              <span className="text-xs text-violet-400">*Required</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Logo</span>
+              <span className="text-xs text-violet-400">*Required</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Banner</span>
+              <span className="text-xs text-violet-400">*Required</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Description</span>
+              <span className="text-xs text-violet-400">*Required</span>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="mt-5 md:mt-0 md:col-span-2">
-        <form onSubmit={handleSubmit(next)} className="shadow-sm text-grey-500">
-          <div className="pt-7 pb-10 sm:px-6 bg-white">
-            <p className="mb-2"><b>Basic information</b></p>
-            <p className="text-base text-grey-400 mb-6">
-              This information will be collected from all Owners applying to the Grant and some personal identifiable information will be stored publicly.
-            </p>
-            <p className="text-base italic">
-              Note: The information entered in the fields below will be displayed in the Grant Application.
-            </p>
-
-            <p className="mt-6"><b>Project</b></p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-              {/* Name */}
-              <div className="mt-2">
-                <label className="block text-xs font-medium">
-                  Name
-                </label>
-                <Input
-                  type="text"
-                  value='i.e. "What do you call your project?"'
-                  className="text-grey-400"
-                  disabled
-                  $disabled
-                />
+      <hr className="my-6" />
+      <div className="md:grid md:grid-cols-3 md:gap-6">
+        <div className="md:col-span-1"></div>
+        <div className="mt-5 md:mt-0 md:col-span-2">
+          <form onSubmit={handleSubmit(next)} className="text-grey-500">
+            <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
+              <div className="flex">
+                <p className="flex-1 mb-2">Application Information</p>
+                {edit ?
+                  <Button
+                    type="button"
+                    $variant="outline"
+                    className="border text-pink-500 w-9 h-9 p-1.5"
+                    onClick={() => setEdit(false)}
+                  >
+                    <XIcon aria-hidden="true" />
+                  </Button>
+                  :
+                  <Button
+                    type="button"
+                    $variant="outline"
+                    className="border w-9 h-9 p-1.5"
+                    onClick={() => setEdit(true)}
+                  >
+                    <PencilIcon aria-hidden="true" />
+                  </Button>
+                }
               </div>
+              <p className="text-sm text-grey-400 mb-6">
+                Project Owners will need to fill out an application with the details below.
+              </p>
+              {!edit &&
+                <>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Payout Wallet Address</span>
+                    <span className="text-xs text-violet-400">*Required</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Email Address</span>
+                    <span className="text-xs text-violet-400">*Required</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Project Twitter</span>
+                    <span className="text-xs text-grey-400">Optional</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Your GitHub Username</span>
+                    <span className="text-xs text-grey-400">Optional</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Project GitHub Organization</span>
+                    <span className="text-xs text-grey-400">Optional</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Funding Sources</span>
+                    <span className="text-xs text-violet-400">*Required</span>
+                  </div>
+                  <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">2022 Profit</span>
+                    <span className="text-xs text-violet-400">*Required</span>
+                  </div>
+                  <hr />
+                </>
+              }
 
-              {/* Website */}
-              <div className="mt-2">
-                <label
-                  className="block text-xs font-medium">
-                  Website
-                </label>
-                <Input
-                  type="text"
-                  value="i.e. www.domain.com"
-                  className="text-grey-400"
-                  disabled
-                  $disabled
-                />
-              </div>
+              {edit &&
+                <div className="grid grid-cols-6 gap-6">
 
-              {/* Logo */}
-              <div className="col-span-1 sm:col-span-3 mt-2">
-                <label
-                  className="block text-xs font-medium mb-2">
-                  Logo Image
-                </label>
+                  {/* Email */}
+                  <div className="col-span-6 sm:col-span-3 sm:col-start-1">
+                    <label
+                      htmlFor="applicationMetadata.contact.email"
+                      className="block text-xs font-medium">
+                      Email Address
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.email")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.email}
+                      type="text"
+                      placeholder='i.e. "email@domain.com"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.email
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.email?.message}
+                      </p>
+                    }
+                  </div>
 
-                <div className="max-w-md flex px-20 py-7 border border-gray-300 border-dashed rounded-md">
-                  <div className="text-grey-400 text-xs text-center">
-                    <span>Owners will upload or drag and drop</span><br />
-                    <span>PNG or JPG (Recommended: 200x300px)</span>
+                  {/* Twitter */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.twitter"
+                      className="block text-xs font-medium">
+                      Project Twitter
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.twitter")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.email}
+                      type="text"
+                      placeholder='i.e. "twitter.com/user-handle"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.twitter
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.twitter?.message}
+                      </p>
+                    }
+                  </div>
+
+                  {/* Github */}
+                  <div className="col-span-6 sm:col-span-3 sm:col-start-1">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.github"
+                      className="block text-xs font-medium">
+                      Your GitHub Username
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.github")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.github}
+                      type="text"
+                      placeholder='i.e. "twitter.com/user-handle"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.github
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.github?.message}
+                      </p>
+                    }
+                  </div>
+
+                  {/* Github Organization */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.githubOrganization"
+                      className="block text-xs font-medium">
+                      Project GitHub Organization
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.githubOrganization")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.githubOrganization}
+                      type="text"
+                      placeholder='i.e "@github-handle"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.githubOrganization
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.githubOrganization?.message}
+                      </p>
+                    }
+                  </div>
+
+                  {/* Funding Sources */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.fundingSources"
+                      className="block text-xs font-medium">
+                      Funding Sources
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.fundingSource")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.fundingSource}
+                      type="text"
+                      placeholder='i.e. "What sources of funding do you currently have?"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.fundingSource
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.fundingSource?.message}
+                      </p>
+                    }
+                  </div>
+
+                  {/* 2022 Profit */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.profit2022"
+                      className="block text-xs font-medium">
+                      2022 Profit
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.profit2022")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.profit2022}
+                      type="text"
+                      placeholder='i.e. "Please enter your profit for 2022."'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.profit2022
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.profit2022?.message}
+                      </p>
+                    }
+                  </div>
+
+                  {/* Team Size */}
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="applicationMetadata.customQuestions.teamSize"
+                      className="block text-xs font-medium">
+                      Team Size
+                    </label>
+                    <Input
+                      {...register("applicationMetadata.customQuestions.teamSize")}
+                      $hasError={errors.applicationMetadata?.customQuestions?.teamSize}
+                      type="text"
+                      placeholder='i.e. "What is the size of your team"'
+                    />
+                    {errors.applicationMetadata?.customQuestions?.teamSize
+                      && <p className="text-xs text-pink-500">
+                        {errors.applicationMetadata?.customQuestions?.teamSize?.message}
+                      </p>
+                    }
                   </div>
                 </div>
-              </div>
-
-              {/* Banner */}
-              <div className="col-span-1 sm:col-span-3 mt-2">
-                <label
-                  className="block text-xs font-medium mb-2">
-                  Banner Image
-                </label>
-
-                <div className="max-w-md flex px-20 py-7 border border-gray-300 border-dashed rounded-md">
-                  <div className="text-grey-400 text-xs text-center">
-                    <span>Owners will upload or drag and drop</span><br />
-                    <span>PNG or JPG (Recommended: 1044x600px)</span>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Description */}
-              <div className="sm:col-start-1 sm:col-span-3 mt-2">
-                <label className="block text-xs font-medium mb-2">
-                  Description
-                </label>
-                <Input
-                  type="text"
-                  value='i.e. "Tell us more about your project."'
-                  className="text-grey-400"
-                  disabled
-                  $disabled
-                />
-              </div>
+              }
             </div>
 
-            <p className="my-6"><b>Additional Questions</b></p>
-
-            <div className="grid grid-cols-6 gap-6">
-
-              {/* Email */}
-              <div className="col-span-6 sm:col-span-3">
-                <label
-                  htmlFor="applicationMetadata.contact.email"
-                  className="block text-xs font-medium">
-                  Email
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.email")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.email}
-                  type="text"
-                  placeholder='i.e. "email@domain.com"'
-                />
-                {errors.applicationMetadata?.customQuestions?.email
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.email?.message}
-                  </p>
-                }
-              </div>
-
-              {/* Twitter */}
-              <div className="col-span-6 sm:col-span-3 sm:col-start-1">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.twitter"
-                  className="block text-xs font-medium">
-                  Twitter
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.twitter")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.email}
-                  type="text"
-                  placeholder='i.e. "twitter.com/user-handle"'
-                />
-                {errors.applicationMetadata?.customQuestions?.twitter
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.twitter?.message}
-                  </p>
-                }
-              </div>
-
-              {/* Github */}
-              <div className="col-span-6 sm:col-span-3 sm:col-start-1">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.github"
-                  className="block text-xs font-medium">
-                  GitHub
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.github")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.github}
-                  type="text"
-                  placeholder='i.e. "twitter.com/user-handle"'
-                />
-                {errors.applicationMetadata?.customQuestions?.github
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.github?.message}
-                  </p>
-                }
-              </div>
-
-              {/* Github Organization */}
-              <div className="col-span-6 sm:col-span-3">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.githubOrganization"
-                  className="block text-xs font-medium">
-                  GitHub Organization
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.githubOrganization")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.githubOrganization}
-                  type="text"
-                  placeholder='i.e "@github-handle"'
-                />
-                {errors.applicationMetadata?.customQuestions?.githubOrganization
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.githubOrganization?.message}
-                  </p>
-                }
-              </div>
-
-              {/* Funding Sources */}
-              <div className="col-span-6 sm:col-span-3">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.fundingSources"
-                  className="block text-xs font-medium">
-                  Funding Sources
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.fundingSource")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.fundingSource}
-                  type="text"
-                  placeholder='i.e. "What sources of funding do you currently have?"'
-                />
-                {errors.applicationMetadata?.customQuestions?.fundingSource
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.fundingSource?.message}
-                  </p>
-                }
-              </div>
-
-              {/* 2022 Profit */}
-              <div className="col-span-6 sm:col-span-3">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.profit2022"
-                  className="block text-xs font-medium">
-                  2022 Profit
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.profit2022")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.profit2022}
-                  type="text"
-                  placeholder='i.e. "Please enter your profit for 2022."'
-                />
-                {errors.applicationMetadata?.customQuestions?.profit2022
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.profit2022?.message}
-                  </p>
-                }
-              </div>
-
-              {/* Team Size */}
-              <div className="col-span-6 sm:col-span-3">
-                <label
-                  htmlFor="applicationMetadata.customQuestions.teamSize"
-                  className="block text-xs font-medium">
-                  Team Size
-                </label>
-                <Input
-                  {...register("applicationMetadata.customQuestions.teamSize")}
-                  $hasError={errors.applicationMetadata?.customQuestions?.teamSize}
-                  type="text"
-                  placeholder='i.e. "What is the size of your team"'
-                />
-                {errors.applicationMetadata?.customQuestions?.teamSize
-                  && <p className="text-xs text-pink-500">
-                    {errors.applicationMetadata?.customQuestions?.teamSize?.message}
-                  </p>
-                }
-              </div>
+            <div className="px-6 align-middle py-3.5 shadow-md">
+              <FormStepper
+                currentStep={currentStep}
+                stepsCount={stepsCount}
+                prev={prev}
+                disabledNext={isLoading || isSavingToIPFS || isSuccess || !props.initialData.program}
+              />
             </div>
-          </div>
-
-          <div className="px-6 align-middle py-3.5 shadow-md">
-            <FormStepper
-              currentStep={currentStep}
-              stepsCount={stepsCount}
-              prev={prev}
-              disabledNext={isLoading || isSavingToIPFS || isSuccess || !props.initialData.program}
-            />
-          </div>
-        </form>
-        <ProgressModal
-          show={openProgressModal}
-          subheading={"Please hold while we create your Grant Round."}
-          steps={progressSteps}
-        />
+          </form>
+          <ProgressModal
+            show={openProgressModal}
+            subheading={"Please hold while we create your Grant Round."}
+            steps={progressSteps}
+          />
+        </div>
       </div>
     </div>
   )
