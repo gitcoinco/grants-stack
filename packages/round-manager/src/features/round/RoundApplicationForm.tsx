@@ -270,6 +270,11 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                     <span className="text-xs text-violet-400">*Required</span>
                   </div>
                   <hr />
+                  <div className="flex my-4">
+                    <span className="flex-1 text-sm">Team Size</span>
+                    <span className="text-xs text-violet-400">*Required</span>
+                  </div>
+                  <hr />
                 </>
               }
 
