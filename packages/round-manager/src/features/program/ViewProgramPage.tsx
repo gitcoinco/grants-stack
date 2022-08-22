@@ -23,7 +23,7 @@ export default function ViewProgram() {
   const { id } = useParams()
 
   const { address, provider } = useWallet()
-  const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
+  const { program } = useListProgramsQuery({ signerOrProvider: provider, programId: id }, {
     selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
   })
 
@@ -38,9 +38,15 @@ export default function ViewProgram() {
 
   useEffect(() => {
     if (isRoundsFetched) {
-      program ? setProgramExists(true) : setProgramExists(false)
+      setProgramExists(!!program)
 
-      program?.operatorWallets.includes(address?.toLowerCase()) ? setHasAccess(true) : setHasAccess(false)
+      if(program) {
+        program.operatorWallets.includes(
+          address?.toLowerCase()
+        ) ? setHasAccess(true) : setHasAccess(false)
+      } else {
+        setHasAccess(true)
+      }
     }
   }, [isRoundsFetched, program, address])
 

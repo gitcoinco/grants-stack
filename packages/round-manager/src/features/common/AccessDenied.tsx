@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom'
 import Navbar from "./Navbar"
 import Footer from "./Footer"
-import { Button } from "../common/styles"
 import { datadogLogs } from "@datadog/browser-logs"
 
 export default function AccessDenied() {
@@ -12,26 +10,15 @@ export default function AccessDenied() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="h-screen">
         <div className="flex pt-8">
           <div className="m-auto text-center mt-5">
             <h1 className="my-5 text-sm text-red-100 font-bold">ERROR</h1>
             <h2 className="my-5 text-4xl">Access Denied!</h2>
 
-            <p className='text-grey-400 mb-5'>
+            <p className="text-grey-400 mb-5">
               It looks like you don't have access to this page..
             </p>
-
-            <Link to="/">
-              <Button
-                $variant="outline"
-                type="button"
-                className="px-3 bg-violet-100 text-violet-400 border-0 text-xs"
-              >
-                Go back home
-              </Button>
-            </Link>
-
           </div>
         </div>
       </main>

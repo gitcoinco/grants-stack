@@ -33,7 +33,7 @@ export default function ViewRoundPage() {
     round,
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
-  } = useListRoundsQuery({ address, signerOrProvider: provider }, {
+  } = useListRoundsQuery({ signerOrProvider: provider, roundId: id }, {
     selectFromResult: ({ data, isLoading, isSuccess }) => ({
       round: data?.find((round) => round.id === id),
       isLoading,
@@ -76,10 +76,15 @@ export default function ViewRoundPage() {
 
   useEffect(() => {
     if (isRoundsFetched) {
-      round ? setRoundExists(true) : setRoundExists(false)
+      setRoundExists(!!round)
 
-      round?.operatorWallets?.includes(address?.toLowerCase()) ? setHasAccess(true) : setHasAccess(false)
-
+      if (round) {
+        round.operatorWallets?.includes(
+          address?.toLowerCase()
+        ) ? setHasAccess(true) : setHasAccess(false)
+      } else {
+        setHasAccess(true)
+      }
     }
   }, [isRoundsFetched, round, address])
 

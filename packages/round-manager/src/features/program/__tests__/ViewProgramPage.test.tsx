@@ -67,11 +67,12 @@ describe("<ViewProgram />", () => {
 
   describe("when there are no rounds in the program", () => {
     beforeEach(() => {
-      (useListRoundsQuery as jest.Mock).mockReturnValue({ rounds: [], isLoading: false, isSuccess: true });
-      renderWrapped(<ViewProgram />);
+      (useListRoundsQuery as jest.Mock).mockReturnValue({ data: [], isLoading: false, isSuccess: true });
     });
 
     it("displays introductory text on the page", async () => {
+      renderWrapped(<ViewProgram />);
+
       await screen.findAllByTestId("program-details-intro");
     })
   });
@@ -85,26 +86,32 @@ describe("<ViewProgram />", () => {
       (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: stubProgram.operatorWallets[0] });
       (useListProgramsQuery as jest.Mock).mockReturnValue({ program: stubProgram });
       (useListRoundsQuery as jest.Mock).mockReturnValue({ data: [stubRound], isLoading: false, isSuccess: true });
-
-      renderWrapped(<ViewProgram />);
     });
 
 
     it("displays round name", async () => {
+      renderWrapped(<ViewProgram />);
+
       expect(screen.getByText(stubRound.roundMetadata?.name!!)).toBeInTheDocument();
     });
 
     it("displays grant application start and end dates", async () => {
+      renderWrapped(<ViewProgram />);
+
       const applicationTimePeriod = await screen.findByTestId("application-time-period");
       expect(applicationTimePeriod.textContent).toEqual(`${stubRound?.applicationsStartTime.toLocaleDateString()} - ${stubRound.applicationsEndTime.toLocaleDateString()}`);
     });
 
     it("displays round start and end dates", async () => {
+      renderWrapped(<ViewProgram />);
+
       const roundTimePeriodElement = await screen.findByTestId("round-time-period");
       expect(roundTimePeriodElement.textContent).toEqual(`${stubRound.roundStartTime.toLocaleDateString()} - ${stubRound.roundEndTime.toLocaleDateString()}`);
     });
 
     it("displays create round link", async () => {
+      renderWrapped(<ViewProgram />);
+
       await screen.findByTestId("create-round-small-link");
     })
   })

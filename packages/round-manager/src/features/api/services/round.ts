@@ -103,8 +103,8 @@ export const roundApi = api.injectEndpoints({
       },
       invalidatesTags: ["Round"]
     }),
-    listRounds: builder.query<Round[], { address: string, signerOrProvider: any, programId?: string }>({
-      queryFn: async ({ address, signerOrProvider, programId }) => {
+    listRounds: builder.query<Round[], { address?: string, signerOrProvider: any, programId?: string, roundId?:string }>({
+      queryFn: async ({ address, signerOrProvider, programId, roundId }) => {
         try {
           // fetch chain id
           const { chainId } = await signerOrProvider.getNetwork()
@@ -112,14 +112,15 @@ export const roundApi = api.injectEndpoints({
           // query the subgraph for all rounds by the given address in the given program
           const res = await graphql_fetch(
             `
-              query GetRounds($address: String!, $programId: String) {
+              query GetRounds($address: String, $programId: String, $roundId: String) {
                 rounds(where: {
-                  accounts_: {
-                    address: $address
-                  }
             `
             +
+            (address ? `accounts_: { address: $address } ` : ``)
+            +
             (programId ? `program: $programId` : ``)
+            +
+            (roundId ? `id: $roundId` : ``)
             +
             `
                 }) {
@@ -150,7 +151,7 @@ export const roundApi = api.injectEndpoints({
               }
             `,
             chainId,
-            { address: address.toLowerCase(), programId }
+            { address: address?.toLowerCase(), programId, roundId }
           )
 
           const rounds: Round[] = []
