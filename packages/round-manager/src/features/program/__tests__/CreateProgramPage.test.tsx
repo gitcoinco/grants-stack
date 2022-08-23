@@ -37,7 +37,7 @@ describe('<CreateProgramPage />',  () => {
     (useCreateProgramMutation as jest.Mock).mockReturnValue(
       [
         createProgramStub, {
-        isError: true,
+        isError: false,
         isLoading: false,
         isSuccess: false
       }]);
@@ -52,7 +52,7 @@ describe('<CreateProgramPage />',  () => {
         fireEvent.click(save);
       });
 
-      await screen.findByTestId('metadata-save-error-icon');
+      await screen.findByTestId('Storing-error-icon');
   });
 
   it("shows error modal when saving application meta data fails", async () => {
@@ -102,5 +102,48 @@ describe('<CreateProgramPage />',  () => {
 
     expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     expect(saveToIPFSStub.mock.calls.length).toEqual(saveToIpfsCalls + 1);
+  })
+
+  describe("when saving application metadata succeeds but create program transaction fails", () => {
+    beforeEach(() => {
+      (useSaveToIPFSMutation as jest.Mock).mockReturnValue(
+        [
+          saveToIPFSStub, {
+          isError: false,
+          isLoading: false,
+          isSuccess: true
+        }]);
+
+      (useCreateProgramMutation as jest.Mock).mockReturnValue(
+        [
+          createProgramStub, {
+          isError: true,
+          isLoading: false,
+          isSuccess: false
+        }]);
+    })
+    it('shows error icon when create program transaction fails', async () => {
+      renderWrapped(<CreateProgramPage />);
+      const save = screen.getByTestId('save');
+      const programName = screen.getByTestId('program-name');
+      await act(() => {
+        fireEvent.change(programName, {target: {value: 'Program A'}})
+        fireEvent.click(save);
+      });
+
+      await screen.findByTestId('Deploying-error-icon');
+    });
+
+    it("shows error modal when create program transaction fails", async () => {
+      renderWrapped(<CreateProgramPage />);
+      const save = screen.getByTestId('save');
+      const programName = screen.getByTestId('program-name');
+      await act(() => {
+        fireEvent.change(programName, {target: {value: 'Program A'}})
+        fireEvent.click(save);
+      });
+
+      expect(await screen.findByTestId('error-modal')).toBeInTheDocument();
+    });
   })
 })

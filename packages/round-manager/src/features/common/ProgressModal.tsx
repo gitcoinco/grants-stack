@@ -1,7 +1,6 @@
-import { Fragment, useEffect, useState } from "react"
+import { Fragment } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import {CheckIcon, XIcon} from "@heroicons/react/solid"
-import { XCircleIcon } from "@heroicons/react/outline";
 
 interface ProgressModalProps {
   isOpen: boolean;
@@ -130,7 +129,7 @@ export default function ProgressModal(
                               step={step}
                               icon={
                                 <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
-                                 <XIcon className="w-5 h-5 text-pink-500" data-testid="metadata-save-error-icon"/>
+                                 <XIcon className="w-5 h-5 text-pink-500" data-testid={`${step.name}-error-icon`}/>
                                 </span>
                               }
                               line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true"/>}

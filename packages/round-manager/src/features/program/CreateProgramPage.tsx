@@ -112,7 +112,7 @@ export default function CreateProgram() {
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+      status: isSuccess ? "complete" : isProgramError ? "error" : (isLoading ? "current" : "upcoming")
     },
     {
       name: "Redirecting",

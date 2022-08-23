@@ -1,6 +1,7 @@
 import React, {Fragment} from "react"
 import {Dialog, Transition} from "@headlessui/react"
 import {Button} from "./styles";
+import { InformationCircleIcon } from "@heroicons/react/outline"
 
 interface ErrorModalProps {
   isOpen: boolean;
@@ -48,14 +49,19 @@ export default function ErrorModal(
             >
               <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start flex-col">
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left ">
-                    <Dialog.Title as="h3" className="text-base leading-6 font-semibold text-grey-500" data-testid='error-heading'>
-                      {heading}
-                    </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-grey-400" data-testid='error-message' >
-                        {subheading}
-                      </p>
+                  <div className="flex flex-row justify-between">
+                    <div className="w-12 h-10 flex items-center justify-center bg-pink-100 rounded-full">
+                      <InformationCircleIcon className="w-5 h-5 text-pink-500"/>
+                    </div>
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <Dialog.Title as="h3" className="text-base leading-6 font-semibold text-grey-500" data-testid='error-heading'>
+                        {heading}
+                      </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-grey-400" data-testid='error-message' >
+                          {subheading}
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="self-end mt-12">
@@ -67,6 +73,7 @@ export default function ErrorModal(
                         tryAgainFn()
                         setIsOpen(false)
                       }}
+                      className="mr-4"
                     >Try Again</Button>
                     <Button
                       type="button"
