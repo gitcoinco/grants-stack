@@ -103,7 +103,7 @@ const loadWeb3Data = () => (dispatch: Dispatch) => {
   });
 };
 
-const loadAccountData = (account: string) => (dispatch: Dispatch) => {
+export const loadAccountData = (account: string) => (dispatch: Dispatch) => {
   const t: Web3Type = window.ethereum.isStatus
     ? Web3Type.Status
     : Web3Type.Generic;

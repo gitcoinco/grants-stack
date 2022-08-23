@@ -1,16 +1,20 @@
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import {
   createRouterMiddleware,
-  ReduxRouter
+  ReduxRouter,
 } from "@lagunovsky/redux-react-router";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
 import Datadog from "react-datadog";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Route, Routes } from "react-router";
 import {
-  applyMiddleware, createStore, Dispatch, Middleware,
-  MiddlewareAPI
+  applyMiddleware,
+  createStore,
+  Dispatch,
+  Middleware,
+  MiddlewareAPI,
 } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { WagmiConfig } from "wagmi";
@@ -34,13 +38,13 @@ import wagmiClient, { chains } from "./utils/wagmi";
 
 const logger: Middleware =
   ({ getState }: MiddlewareAPI) =>
-    (next: Dispatch) =>
-      (action) => {
-        console.log("dispatch", action);
-        const returnValue = next(action);
-        console.log("state", getState());
-        return returnValue;
-      };
+  (next: Dispatch) =>
+  (action) => {
+    console.log("dispatch", action);
+    const returnValue = next(action);
+    console.log("state", getState());
+    return returnValue;
+  };
 
 const routerMiddleware = createRouterMiddleware(history);
 
@@ -86,8 +90,8 @@ root.render(
       // Uncomment if session replay is enabled
       // defaultPrivacyLevel="mask-user-input"
     >
-      <WagmiConfig client={wagmiClient} >
-        <RainbowKitProvider chains={chains} >
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
           <ChakraProvider theme={theme} resetCSS={false}>
             <Provider store={store}>
               <ReduxRouter history={history} store={store}>
