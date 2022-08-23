@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 import { useWallet } from "../../common/Auth"
 import { useListRoundsQuery } from "../../api/services/round"
 import ViewRoundPage from "../ViewRoundPage"
@@ -178,4 +178,31 @@ describe('the view round page', () => {
       })).not.toBeInTheDocument()
     });
   });
+
+  describe("when there are approved applications and no pending applications", () => {
+    beforeEach(() => {
+      const mockApplicationData: GrantApplication[] = [
+        makeGrantApplicationData({ status: "APPROVED" }),
+        makeGrantApplicationData({ status: "APPROVED" }),
+        makeGrantApplicationData({ status: "REJECTED" }),
+      ];
+      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
+        data: mockApplicationData,
+        isLoading: false,
+        isSuccess: true
+      })
+    })
+
+    it("should display the bulk select button when on the Approved tab", async () => {
+      renderWrapped(<ViewRoundPage />)
+      const approvedTab = screen.getByRole('tab', {
+        name: /Approved/i
+      });
+      fireEvent.click(approvedTab)
+
+      expect(screen.getByRole('button', {
+        name: /Select/i
+      })).toBeInTheDocument()
+    });
+  })
 })

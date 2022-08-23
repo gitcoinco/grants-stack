@@ -14,7 +14,7 @@ import {
   Button
 } from "../common/styles"
 import { CheckIcon, XIcon } from "@heroicons/react/solid"
-import { GrantApplication } from "../api/types"
+import { GrantApplication, ProjectStatus } from "../api/types"
 import ConfirmationModal from "../common/ConfirmationModal"
 
 
@@ -57,22 +57,21 @@ export default function ApplicationsReceived({
     }
   }, [data, isSuccess, bulkSelect, signer])
 
-  const toggleSelection = (id: string, status: string) => {
-    const newState = selected?.map((obj: any) => {
-      const newStatus = obj.status === status ? "PENDING" : status
-
-      if (obj.id === id) {
-        return { ...obj, status: newStatus }
+  const toggleSelection = (id: string, status: ProjectStatus) => {
+    const newState = selected?.map((grantApp : GrantApplication) => {
+      if (grantApp.id === id) {
+        const newStatus = grantApp.status === status ? "PENDING" : status
+        return { ...grantApp, status: newStatus }
       }
 
-      return obj
+      return grantApp
     })
 
     setSelected(newState)
   }
 
   const checkSelection = (id: string) => {
-    return (selected?.find((obj: any) => obj.id === id))?.status
+    return (selected?.find((grantApp: GrantApplication) => grantApp.id === id))?.status
   }
 
   const handleBulkReview = async () => {

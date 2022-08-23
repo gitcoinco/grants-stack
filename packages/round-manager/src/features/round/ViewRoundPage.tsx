@@ -18,6 +18,11 @@ import { datadogLogs } from "@datadog/browser-logs"
 import NotFoundPage from "../common/NotFoundPage"
 import AccessDenied from "../common/AccessDenied"
 
+enum TabIndex {
+  PENDING = 0,
+  APPROVED = 1,
+  REJECTED = 2
+}
 
 export default function ViewRoundPage() {
 
@@ -54,6 +59,24 @@ export default function ViewRoundPage() {
   const pendingApplications = applications?.filter((a) => a.status === "PENDING") || []
   const approvedApplications = applications?.filter((a) => a.status === "APPROVED") || []
   const rejectedApplications = applications?.filter((a) => a.status === "REJECTED") || []
+
+  const [currentTabIndex, setCurrentTabIndex] = useState(TabIndex.PENDING);
+
+  const doesTabHaveApplications = (tabIndex: number): boolean => {
+    switch (tabIndex) {
+      case TabIndex.PENDING: {
+        return pendingApplications?.length > 0
+      }
+      case TabIndex.APPROVED: {
+        return approvedApplications?.length > 0
+      }
+      case TabIndex.REJECTED: {
+        return rejectedApplications?.length > 0
+      }
+      default:
+        return false
+    }
+  }
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
@@ -142,7 +165,7 @@ export default function ViewRoundPage() {
                 <div>
                   <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
                   <div>
-                    <Tab.Group>
+                    <Tab.Group onChange={setCurrentTabIndex}>
                       <Tab.List className="border-b mb-6 flex items-center justify-between">
                         <div className="space-x-8">
                           <Tab className={({ selected }) => tabStyles(selected)}>
@@ -179,7 +202,7 @@ export default function ViewRoundPage() {
                             }
                           </Tab>
                         </div>
-                        {pendingApplications?.length > 0 &&
+                        {doesTabHaveApplications(currentTabIndex) &&
                           <div className="justify-end">
                             <span className="text-grey-400 text-sm mr-6">
                               Save in gas fees by approving/rejecting multiple applications at once.
@@ -211,7 +234,7 @@ export default function ViewRoundPage() {
                           <ApplicationsReceived bulkSelect={bulkSelect} setBulkSelect={setBulkSelect} />
                         </Tab.Panel>
                         <Tab.Panel>
-                          <ApplicationsApproved />
+                          <ApplicationsApproved bulkSelect={bulkSelect} setBulkSelect={setBulkSelect}/>
                         </Tab.Panel>
                         <Tab.Panel>
                           <ApplicationsRejected />
