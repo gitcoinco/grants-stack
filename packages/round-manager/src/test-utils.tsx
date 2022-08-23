@@ -15,10 +15,11 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   metadata: {
     name: faker.company.bsBuzz()
   },
-  store: {
-    protocol: randomInt(1, 10),
-    pointer: faker.random.alpha({ count: 59, casing: "lower" })
-  },
+  // TODO add this back in for createProgram
+  // store: {
+  //   protocol: randomInt(1, 10),
+  //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
+  // },
   operatorWallets: [
     faker.finance.ethereumAddress()
   ],
