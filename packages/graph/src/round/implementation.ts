@@ -13,7 +13,7 @@ import {
   RoundProject
 } from "../../generated/schema";
 import { fetchMetaPtrData, generateID, updateMetaPtr } from "../utils";
-import { JSONValue, JSONValueKind, store } from '@graphprotocol/graph-ts';
+import { JSONValueKind, log, store } from '@graphprotocol/graph-ts';
 
 
 // @dev: Enum for different states a project application can be in
@@ -156,10 +156,15 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
   const projectsMetaPtr = updateMetaPtr(projectsMetaPtrId, protocol, pointer);
   round.projectsMetaPtr = projectsMetaPtr.id;
 
+  round.save();
+
   // fetch projectsMetaPtr content
   const metaPtrData = fetchMetaPtrData(protocol, pointer);
 
-  if (!metaPtrData) return;
+  if (!metaPtrData) {
+    log.warning('--> handleProjectsMetaPtrUpdated: metaPtrData is null {}', [_round])
+    return;
+  }
 
   const _projects = metaPtrData.toArray();
 
@@ -209,5 +214,4 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
     if (isProjectUpdated) project.save();
   }
 
-  round.save();
 }
