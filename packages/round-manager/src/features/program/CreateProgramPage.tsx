@@ -12,6 +12,7 @@ import Footer from "../common/Footer"
 import ProgressModal from "../common/ProgressModal"
 import { datadogLogs } from "@datadog/browser-logs"
 import ErrorModal from "../common/ErrorModal"
+import { errorModalDelayMs } from "../../constants"
 
 
 type FormData = {
@@ -66,8 +67,10 @@ export default function CreateProgram() {
 
   useEffect(() => {
     if (isIPFSError || isProgramError) {
-      setOpenProgressModal(false)
-      setOpenErrorModal(true)
+      setTimeout(() => {
+        setOpenProgressModal(false)
+        setOpenErrorModal(true)
+      }, errorModalDelayMs)
     }
   }, [isIPFSError, isProgramError])
 
@@ -228,7 +231,11 @@ export default function CreateProgram() {
             steps={progressSteps}
           />
 
-          <ErrorModal isOpen={openErrorModal} setIsOpen={setOpenErrorModal} />
+          <ErrorModal
+            isOpen={openErrorModal}
+            setIsOpen={setOpenErrorModal}
+            tryAgainFn={handleSubmit(onSubmit)}
+          />
         </main>
       </div>
       <Footer />

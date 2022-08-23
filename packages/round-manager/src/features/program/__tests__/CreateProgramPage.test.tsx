@@ -5,7 +5,6 @@ import { useWallet } from "../../common/Auth"
 
 import { useSaveToIPFSMutation } from "../../api/services/ipfs";
 import {useCreateProgramMutation} from "../../api/services/program";
-import ErrorModal from "../../common/ErrorModal";
 
 jest.mock("../../api/services/ipfs");
 jest.mock("../../api/services/program");
@@ -14,13 +13,18 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
     ConnectButton: jest.fn(),
 }))
 
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 200 // NB: use smaller delay for faster tests
+}))
+
 describe('<CreateProgramPage />',  () => {
-  let saveToIPFSStub;
+  let saveToIPFSStub: jest.MockedFn<any>;
   let createProgramStub;
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
-    saveToIPFSStub = () => ({ unwrap: async () => Promise.resolve("asdfdsf") });
+    saveToIPFSStub = jest.fn().mockImplementation(() => ({ unwrap: async () => Promise.resolve("asdfdsf") }));
     (useSaveToIPFSMutation as jest.Mock).mockReturnValue(
       [
         saveToIPFSStub, {
@@ -78,5 +82,25 @@ describe('<CreateProgramPage />',  () => {
     });
 
     expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+  })
+
+  it('choosing try again restarts the action and closes the error modal', async () => {
+    renderWrapped(<CreateProgramPage />);
+    const save = screen.getByTestId('save');
+    const programName = screen.getByTestId('program-name');
+    await act(() => {
+      fireEvent.change(programName, {target: {value: 'Program A'}})
+      fireEvent.click(save);
+    });
+
+    const saveToIpfsCalls = saveToIPFSStub.mock.calls.length;
+
+    const tryAgain = await screen.findByTestId("tryAgain");
+    await act(() => {
+      fireEvent.click(tryAgain);
+    });
+
+    expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    expect(saveToIPFSStub.mock.calls.length).toEqual(saveToIpfsCalls + 1);
   })
 })

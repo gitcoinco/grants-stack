@@ -10,7 +10,6 @@ export const ipfsApi = api.injectEndpoints({
         let result = { data: "" }
 
         try {
-          throw Error("ERROR....")
           const resp = await pinToIPFS(object)
 
           console.log('Added file to IPFS:', resp.IpfsHash)
