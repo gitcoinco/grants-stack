@@ -9,14 +9,14 @@ type DeployParams = Record<string, ProgramParams>;
 
 export const programParams: DeployParams = {
   "goerli": {
-    programFactoryContract: '0x30875E085D988fAbadf3B5aE117061D607167f02',
-    programImplementationContract: '0xd5dE70B96e145925905D0267FdF65bAa03a8681c',
-    programContract: '0x51184b429edBcDc5CA5f60c69467A45D50E2C482'
+    programFactoryContract: '0x79c2394B20A809EA693a7D64323A8846FF02029c',
+    programImplementationContract: '0x36570Ae6e66f8dcFcEAe94D2247AF7B07119CFc3',
+    programContract: '0x6c0368003C44dD7f30ecb94219961Aaf252F6222'
   },
   "optimism-mainnet": {
-    programFactoryContract: '0xd39b40aC9279EeeB86FBbDeb2C9acDF16e16cF89',
-    programImplementationContract: '0x9fcC854b145Bd3640a01c49Aa2Cfa725Ed0B4210',
-    programContract: '0x064885b5BBA853b1d11F97E04b477AB157721f82'
+    programFactoryContract: '0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E',
+    programImplementationContract: '0xED42e0f4391Fa24E579B16191F6Eb41f934c3B1c',
+    programContract: '0x378cEB3dEb7a80ec1579bfd61EE1EFB76Fc63025'
   },
   "optimism-kovan": {
     programFactoryContract: '0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011',
