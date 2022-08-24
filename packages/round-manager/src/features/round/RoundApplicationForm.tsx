@@ -11,8 +11,10 @@ import { FormContext } from "../common/FormWizard"
 import { Button, Input } from "../common/styles"
 import { generateApplicationSchema } from "../api/utils"
 import { useWallet } from "../common/Auth"
-import ProgressModal from "../common/ProgressModal"
 import { PencilIcon, XIcon } from "@heroicons/react/solid"
+import ProgressModal, { ProgressStatus } from "../common/ProgressModal"
+import ErrorModal from "../common/ErrorModal"
+import { errorModalDelayMs } from "../../constants"
 
 
 const ValidationSchema = yup.object().shape({
@@ -35,6 +37,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
   const [edit, setEdit] = useState(false)
   const { currentStep, setCurrentStep, stepsCount, formData } = useContext(FormContext)
   const FormStepper = props.stepper
+  const [openErrorModal, setOpenErrorModal] = useState(false)
 
   const search = useLocation().search
   const programId = (new URLSearchParams(search)).get("programId")
@@ -48,14 +51,12 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
   const { chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    // error: ipfsError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS,
     isError: isIPFSError,
   }] = useSaveToIPFSMutation()
 
   const [createRound, {
-    // error: roundError,
     isLoading,
     isSuccess,
     isError: isRoundError,
@@ -75,7 +76,10 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
 
   useEffect(() => {
     if (isIPFSError || isRoundError) {
-      setOpenProgressModal(false)
+      setTimeout(() =>{
+        setOpenProgressModal(false)
+        setOpenErrorModal(true)
+      }, errorModalDelayMs)
     }
   }, [isIPFSError, isRoundError])
 
@@ -140,17 +144,17 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+      status: isSavedToIPFS ? ProgressStatus.COMPLETE : isIPFSError ? ProgressStatus.ERROR : (isSavingToIPFS ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+      status: isSuccess ? ProgressStatus.COMPLETE : isRoundError ? ProgressStatus.ERROR : (isLoading ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isSuccess ? "current" : "upcoming"
+      status: isSuccess ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING
     }
   ]
 
@@ -434,9 +438,16 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
             </div>
           </form>
           <ProgressModal
-            show={openProgressModal}
+            isOpen={openProgressModal}
+          setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Round."}
             steps={progressSteps}
+          />
+
+          <ErrorModal
+            isOpen={openErrorModal}
+            setIsOpen={setOpenErrorModal}
+            tryAgainFn={handleSubmit(next)}
           />
         </div>
       </div>

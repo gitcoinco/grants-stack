@@ -9,8 +9,10 @@ import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
-import ProgressModal from "../common/ProgressModal"
+import ProgressModal, {ProgressStatus} from "../common/ProgressModal"
 import { datadogLogs } from "@datadog/browser-logs"
+import ErrorModal from "../common/ErrorModal"
+import { errorModalDelayMs } from "../../constants"
 
 
 type FormData = {
@@ -23,17 +25,16 @@ export default function CreateProgram() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
   const [openProgressModal, setOpenProgressModal] = useState(false)
+  const [openErrorModal, setOpenErrorModal] = useState(false)
   const { address, chain, signer } = useWallet()
 
   const [saveToIPFS, {
-    // error: ipfsError,
     isError: isIPFSError,
     isLoading: isSavingToIPFS,
     isSuccess: isSavedToIPFS
   }] = useSaveToIPFSMutation()
 
   const [createProgram, {
-    // error: programError,
     isLoading,
     isSuccess,
     isError: isProgramError
@@ -66,7 +67,10 @@ export default function CreateProgram() {
 
   useEffect(() => {
     if (isIPFSError || isProgramError) {
-      setOpenProgressModal(false)
+      setTimeout(() => {
+        setOpenProgressModal(false)
+        setOpenErrorModal(true)
+      }, errorModalDelayMs)
     }
   }, [isIPFSError, isProgramError])
 
@@ -103,17 +107,17 @@ export default function CreateProgram() {
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: isSavedToIPFS ? "complete" : (isSavingToIPFS ? "current" : "upcoming")
+      status: isSavedToIPFS ? ProgressStatus.COMPLETE : isIPFSError ? ProgressStatus.ERROR : (isSavingToIPFS ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: isSuccess ? "complete" : (isLoading ? "current" : "upcoming")
+      status: isSuccess ? ProgressStatus.COMPLETE : isProgramError ? ProgressStatus.ERROR : (isLoading ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isSuccess ? "current" : "upcoming"
+      status: isSuccess ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING
     }
   ]
 
@@ -160,6 +164,7 @@ export default function CreateProgram() {
                       disabled={isLoading}
                       placeholder="Enter the name of the Grant Program."
                       className="placeholder:italic"
+                      data-testid="program-name"
                     />
                     {errors.name && <p className="text-sm text-red-600">{errors.name?.message}</p>}
                   </div>
@@ -213,16 +218,23 @@ export default function CreateProgram() {
 
               <div className="px-6 align-middle pb-3.5 shadow-md">
                 <span className="italic text-grey-400">Note: You can't edit operator wallets after the grant is created.</span>
-                <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess}>
+                <Button className="float-right" type="submit" disabled={isLoading || isSavingToIPFS || isSuccess} data-testid="save">
                   {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
           </div>
           <ProgressModal
-            show={openProgressModal}
+            isOpen={openProgressModal}
+            setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Program."}
             steps={progressSteps}
+          />
+
+          <ErrorModal
+            isOpen={openErrorModal}
+            setIsOpen={setOpenErrorModal}
+            tryAgainFn={handleSubmit(onSubmit)}
           />
         </main>
       </div>
