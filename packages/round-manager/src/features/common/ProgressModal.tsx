@@ -45,6 +45,13 @@ function ModalStep(props: {
   </>;
 }
 
+export enum ProgressStatus {
+  COMPLETE = "complete",
+  CURRENT = "current",
+  UPCOMING = "upcoming",
+  ERROR = "error"
+}
+
 export default function ProgressModal(
   {
     isOpen,
@@ -99,7 +106,7 @@ export default function ProgressModal(
                   <ol className="overflow-hidden">
                     {props.steps.map((step, stepIdx) => (
                       <li key={step.name} className={classNames(stepIdx !== props.steps.length - 1 ? 'pb-10' : '', 'relative')}>
-                        {step.status === 'complete' ? (
+                        {step.status === ProgressStatus.COMPLETE ? (
                             <ModalStep
                               step={step}
                               icon={
@@ -112,7 +119,7 @@ export default function ProgressModal(
                               stepDescriptionDarkGray={true}
                               isLastStep={stepIdx === props.steps.length - 1}
                             />
-                        ) : step.status === 'current' ? (
+                        ) : step.status === ProgressStatus.CURRENT ? (
                           <ModalStep
                             step={step}
                             icon={
@@ -124,19 +131,19 @@ export default function ProgressModal(
                             stepNameDarkGray={true}
                             isLastStep={stepIdx === props.steps.length - 1}
                           />
-                        ) : step.status === 'error' ? (
+                        ) : step.status === ProgressStatus.ERROR ? (
                             <ModalStep
                               step={step}
                               icon={
                                 <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
-                                 <XIcon className="w-5 h-5 text-pink-500" data-testid={`${step.name}-error-icon`}/>
+                                 <XIcon className="w-5 h-5 text-pink-500" data-testid={`${step.name.toLowerCase()}-error-icon`}/>
                                 </span>
                               }
                               line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true"/>}
                               isLastStep={stepIdx === props.steps.length - 1}
                               stepNameDarkGray={true}
                             />
-                        ) : (
+                        ) : step.status === ProgressStatus.UPCOMING ? (
                             <ModalStep
                               step={step}
                               icon={
@@ -147,7 +154,7 @@ export default function ProgressModal(
                               line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true" />}
                               isLastStep={stepIdx === props.steps.length - 1}
                             />
-                        )}
+                        ) : <></> }
                       </li>
                     ))}
                   </ol>

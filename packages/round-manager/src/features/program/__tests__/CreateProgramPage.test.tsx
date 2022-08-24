@@ -20,7 +20,7 @@ jest.mock("../../../constants", () => ({
 
 describe('<CreateProgramPage />',  () => {
   let saveToIPFSStub: jest.MockedFn<any>;
-  let createProgramStub;
+  let createProgramStub: () => any;
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
@@ -42,18 +42,6 @@ describe('<CreateProgramPage />',  () => {
         isSuccess: false
       }]);
   })
-
-  it('shows error icon when saving application meta data fails', async () => {
-      renderWrapped(<CreateProgramPage />);
-      const save = screen.getByTestId('save');
-      const programName = screen.getByTestId('program-name');
-      await act(() => {
-        fireEvent.change(programName, {target: {value: 'Program A'}})
-        fireEvent.click(save);
-      });
-
-      await screen.findByTestId('Storing-error-icon');
-  });
 
   it("shows error modal when saving application meta data fails", async () => {
     renderWrapped(<CreateProgramPage />);
@@ -122,17 +110,6 @@ describe('<CreateProgramPage />',  () => {
           isSuccess: false
         }]);
     })
-    it('shows error icon when create program transaction fails', async () => {
-      renderWrapped(<CreateProgramPage />);
-      const save = screen.getByTestId('save');
-      const programName = screen.getByTestId('program-name');
-      await act(() => {
-        fireEvent.change(programName, {target: {value: 'Program A'}})
-        fireEvent.click(save);
-      });
-
-      await screen.findByTestId('Deploying-error-icon');
-    });
 
     it("shows error modal when create program transaction fails", async () => {
       renderWrapped(<CreateProgramPage />);

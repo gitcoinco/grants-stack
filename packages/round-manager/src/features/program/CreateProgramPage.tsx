@@ -9,7 +9,7 @@ import { useSaveToIPFSMutation } from "../api/services/ipfs"
 import { Input, Button } from "../common/styles"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
-import ProgressModal from "../common/ProgressModal"
+import ProgressModal, {ProgressStatus} from "../common/ProgressModal"
 import { datadogLogs } from "@datadog/browser-logs"
 import ErrorModal from "../common/ErrorModal"
 import { errorModalDelayMs } from "../../constants"
@@ -107,17 +107,17 @@ export default function CreateProgram() {
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: isSavedToIPFS ? "complete" : isIPFSError ? "error" : (isSavingToIPFS ? "current" : "upcoming")
+      status: isSavedToIPFS ? ProgressStatus.COMPLETE : isIPFSError ? ProgressStatus.ERROR : (isSavingToIPFS ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: isSuccess ? "complete" : isProgramError ? "error" : (isLoading ? "current" : "upcoming")
+      status: isSuccess ? ProgressStatus.COMPLETE : isProgramError ? ProgressStatus.ERROR : (isLoading ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING)
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isSuccess ? "current" : "upcoming"
+      status: isSuccess ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING
     }
   ]
 
