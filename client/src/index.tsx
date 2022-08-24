@@ -1,9 +1,9 @@
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
 import {
   createRouterMiddleware,
   ReduxRouter,
 } from "@lagunovsky/redux-react-router";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Datadog from "react-datadog";
 import ReactDOM from "react-dom/client";
@@ -59,19 +59,7 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-const colors = {
-  // example:
-  // brand: {
-  //   900: '#1a365d',
-  //   800: '#153e75',
-  //   700: '#2a69ac',
-  // },
-};
-
-const theme = extendTheme({ colors });
-
 root.render(
-  // <React.StrictMode>
   <ErrorBoundary>
     <Datadog
       applicationId="5c45f4d1-3258-4206-bbdb-b73c9af5f340"
@@ -88,8 +76,8 @@ root.render(
       // defaultPrivacyLevel="mask-user-input"
     >
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
-          <ChakraProvider theme={theme} resetCSS={false}>
+        <RainbowKitProvider chains={chains} theme={lightTheme()} coolMode>
+          <ChakraProvider resetCSS={false}>
             <Provider store={store}>
               <ReduxRouter history={history} store={store}>
                 <Layout>
@@ -113,7 +101,6 @@ root.render(
       </WagmiConfig>
     </Datadog>
   </ErrorBoundary>
-  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
