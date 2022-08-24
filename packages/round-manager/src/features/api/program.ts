@@ -8,7 +8,7 @@ import { Program } from "./types"
  * @param signerOrProvider - signer
  *
  */
-export async function listPrograms (address: string, signerOrProvider: any): Promise<Program[] | {error: string}> {
+export async function listPrograms (address: string, signerOrProvider: any): Promise<Program[]> {
   try {
     // fetch chain id
     const { chainId } = await signerOrProvider.getNetwork()

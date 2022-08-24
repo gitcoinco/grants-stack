@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom"
 
-import { useWallet } from "../common/Auth"
-import { useListProgramsQuery } from "../api/services/program"
 import {
   ArrowNarrowRightIcon,
   PlusIcon,
@@ -72,8 +70,9 @@ function ListPrograms() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
 
-  const { address, provider } = useWallet()
-  const { programs } = usePrograms(address, provider)
+  // const { address, provider } = useWallet()
+  // const { programs } = usePrograms(address, provider)
+  const { programs } = usePrograms()
 
   // TODO
   const isLoading = false;
@@ -84,10 +83,11 @@ function ListPrograms() {
   //   isSuccess
   // } = useListProgramsQuery({ address, signerOrProvider: provider })
 
-  const programList = programs?.map((program) => (
-    <Link to={`/program/${program.id}`}>
+  const programList = programs.map((program, key) => (
+    <Link to={`/program/${program.id}`} key={key}>
       <ProgramCard
         key={program.id}
+        data-testid="program-card"
         floatingIcon={
           <div
             className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">

@@ -9,6 +9,8 @@ import { store } from "./app/store"
 import history from "./history"
 import { IAM_SERVER } from "./features/round/ViewApplicationPage"
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types"
+import { initialProgramState, ProgramContext, ProgramState } from "./context/ProgramContext"
+import { MemoryRouter } from "react-router-dom"
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -163,3 +165,16 @@ export const renderWrapped = (ui: JSX.Element) => {
     </Provider>
   )
 }
+
+// TODO finish and replace other renderWrapped function
+export const renderWithContext = (
+  ui: JSX.Element,
+  programStateOverrides: Partial<ProgramState> = {}
+) =>
+  render(
+    <MemoryRouter>
+      <ProgramContext.Provider value={{ ...initialProgramState, ...programStateOverrides }}>
+        { ui }
+      </ProgramContext.Provider>
+    </MemoryRouter>
+  )
