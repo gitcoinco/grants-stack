@@ -22,6 +22,7 @@ import {
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs"
+import { usePrograms } from "../../context/ProgramContext"
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element,
@@ -72,11 +73,16 @@ function ListPrograms() {
 
 
   const { address, provider } = useWallet()
-  const {
-    data: programs,
-    isLoading,
-    isSuccess
-  } = useListProgramsQuery({ address, signerOrProvider: provider })
+  const { programs } = usePrograms(address, provider)
+
+  // TODO
+  const isLoading = false;
+  const isSuccess = true;
+  // const {
+  //   data: programs,
+  //   isLoading,
+  //   isSuccess
+  // } = useListProgramsQuery({ address, signerOrProvider: provider })
 
   const programList = programs?.map((program) => (
     <Link to={`/program/${program.id}`}>

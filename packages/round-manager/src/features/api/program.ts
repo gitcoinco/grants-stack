@@ -1,7 +1,7 @@
 import { fetchFromIPFS, graphql_fetch } from "./utils"
 import { Program } from "./types"
 
-
+// TODO consider always returning an array and also error state, so return type is consistent
 /**
  * Fetch a list of programs
  * @param address - a valid program operator
@@ -57,6 +57,6 @@ export async function listPrograms (address: string, signerOrProvider: any): Pro
 
   } catch (err) {
     console.log("error", err)
-    return { error: "Unable to fetch programs" }
+    throw Error("Unable to fetch programs")
   }
 }
