@@ -15,7 +15,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 200 // NB: use smaller delay for faster tests
+  errorModalDelayMs: 0 // NB: use smaller delay for faster tests
 }))
 
 describe('<CreateProgramPage />',  () => {
@@ -82,6 +82,7 @@ describe('<CreateProgramPage />',  () => {
     });
 
     const saveToIpfsCalls = saveToIPFSStub.mock.calls.length;
+    expect(saveToIpfsCalls).toEqual(1);
 
     const tryAgain = await screen.findByTestId("tryAgain");
     await act(() => {
