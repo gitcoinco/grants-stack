@@ -41,12 +41,19 @@ export interface Web3AccountLoadedAction {
   account: string;
 }
 
+export const WEB3_ACCOUNT_DISCONNECTED = "WEB3_ACCOUNT_DISCONNECTED";
+export interface Web3AccountDisconnectedAction {
+  type: typeof WEB3_ACCOUNT_DISCONNECTED;
+  account: string;
+}
+
 export type Web3Actions =
   | Web3InitializingAction
   | Web3InitializedAction
   | Web3ErrorAction
   | Web3ChainIDLoadedAction
-  | Web3AccountLoadedAction;
+  | Web3AccountLoadedAction
+  | Web3AccountDisconnectedAction;
 
 export const web3Initializing = (): Web3Actions => ({
   type: WEB3_INITIALIZING,
@@ -75,6 +82,11 @@ export const web3AccountLoaded = (account: string): Web3Actions => ({
 export const notWeb3Browser = (): Web3Actions => ({
   type: WEB3_ERROR,
   error: "not a web3 browser",
+});
+
+export const web3AccountDisconnected = (account: string): Web3Actions => ({
+  type: WEB3_ACCOUNT_DISCONNECTED,
+  account,
 });
 
 export const initializeWeb3 =

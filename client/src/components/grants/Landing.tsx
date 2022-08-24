@@ -11,9 +11,9 @@ function Landing() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
-    web3Initialized: state.web3.initialized,
+    // web3Initialized: state.web3.initialized,
     web3Error: state.web3.error,
-    account: state.web3.account,
+    // account: state.web3.account,
   }));
   const queryString = new URLSearchParams(window?.location?.search);
 
@@ -21,6 +21,7 @@ function Landing() {
   const queryError = queryString.get("error");
   const queryCode = queryString.get("code");
   const queryState = queryString.get("state");
+
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const provider = useProvider();
@@ -38,10 +39,10 @@ function Landing() {
       queryCode !== undefined ||
       queryState !== undefined ||
       queryError !== undefined;
-    if (props.account || !isCallback) {
+    if (address || !isCallback) {
       navigate(slugs.grants);
     }
-  }, [props.account]);
+  }, [address]);
 
   // if Twitter oauth then submit message to other windows and close self
   if (
@@ -115,7 +116,7 @@ function Landing() {
           project to applying for grants to creating impact with your project
           starting today!
         </p>
-        {!props.web3Initialized && (
+        {!isConnected && (
           <div className="mt-8">
             <ConnectButton />
             {props.web3Error !== undefined && (
