@@ -5,39 +5,46 @@ import { listPrograms } from "../features/api/program"
 
 export interface ProgramState {
   programs: Program[],
+  isLoading: boolean,
   listProgramsError?: Error
 }
 
-export const initialProgramState: ProgramState = { programs: [] }
+export const initialProgramState: ProgramState = { programs: [], isLoading: false }
 export const ProgramContext = createContext<ProgramState>(initialProgramState)
 
-export const ProgramProvider = ({children}: {children: any}) => {
+export const ProgramProvider = ({ children }: { children: any }) => {
   const [programs, setPrograms] = useState<Program[]>([])
+  const [isLoading, setLoading] = useState(false)
   const [listProgramsError, setListProgramsError] = useState<Error | undefined>()
 
-  const {address, provider} = useWallet();
+  const { address, provider } = useWallet()
 
   useEffect(() => {
+    setLoading(true)
     listPrograms(address, provider)
       .then(setPrograms)
       .catch((error) => {
         setListProgramsError(error)
         setPrograms([])
       })
-  }, [address, provider]);
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [address, provider])
 
   const providerProps = {
     programs,
+    isLoading,
     listProgramsError
-  };
+  }
 
-  return <ProgramContext.Provider value={providerProps}>
-    {children}
+  return <ProgramContext.Provider value={ providerProps }>
+    { children }
   </ProgramContext.Provider>
 }
 
 export const usePrograms = () => {
-  const { programs, listProgramsError } = useContext(ProgramContext)
+  const { programs, isLoading, listProgramsError } = useContext(ProgramContext)
 
-  return { programs, listProgramsError }
+  return { programs, isLoading, listProgramsError }
 }
