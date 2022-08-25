@@ -18,7 +18,6 @@ import {
 } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { WagmiConfig } from "wagmi";
-import { initializeWeb3 } from "./actions/web3";
 import "./browserPatches";
 import ErrorBoundary from "./components/ErrorBoundary";
 import EditProject from "./components/grants/Edit";
@@ -56,8 +55,6 @@ if (process.env.NODE_ENV !== "production" || urlParams.get("debug") !== null) {
 }
 
 const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
-store.dispatch<any>(initializeWeb3(false));
-
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -97,7 +94,6 @@ root.render(
               <ReduxRouter history={history} store={store}>
                 <Layout>
                   <Routes>
-                    <Route path={slugs.root} element={<Landing />} />
                     <Route path={slugs.grants} element={<ProjectsList />} />
                     <Route path={slugs.grant} element={<Project />} />
                     <Route path={slugs.newGrant} element={<NewProject />} />

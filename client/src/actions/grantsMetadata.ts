@@ -66,12 +66,12 @@ export const grantMetadataFetchingError = (
 const getProjectById = async (
   projectId: number,
   addresses: any,
-  signer: ethers.providers.JsonRpcSigner
+  signerOrProvider: any
 ) => {
   const projectRegistry = new ethers.Contract(
     addresses.projectRegistry,
     ProjectRegistryABI,
-    signer
+    signerOrProvider
   );
 
   const project: ProjectRegistryMetadata = await projectRegistry.projects(
@@ -146,7 +146,7 @@ export const fetchGrantData =
     const state = getState();
     const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
-    const signer = global.web3Provider?.getSigner();
+    const signer = global.signer;
 
     let project: ProjectRegistryMetadata;
 

@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../reducers";
-import { initializeWeb3 } from "../actions/web3";
 import { grantsPath, newGrantPath } from "../routes";
 import Button, { ButtonVariants } from "./base/Button";
 import Plus from "./icons/Plus";
@@ -24,11 +23,6 @@ export default function Header() {
     }),
     shallowEqual
   );
-
-  const connectHandler = (e: React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(initializeWeb3());
-  };
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-2 mb-3 text-primary-text w-full border-0 sm:border-b container mx-auto h-1/8">
@@ -69,15 +63,6 @@ export default function Header() {
                 New Project
               </Button>
             </Link>
-            <Button
-              variant={ButtonVariants.outline}
-              onClick={() => connectHandler}
-            >
-              <i className="icon">
-                <Blockchain chain={ChainLogos.ETH} />
-              </i>
-              {props.account ? shortAddress(props.account) : "Connect Wallet"}
-            </Button>
           </div>
         </div>
       </div>

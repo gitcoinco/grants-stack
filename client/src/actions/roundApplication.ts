@@ -140,7 +140,7 @@ export const submitApplication =
       status: Status.SendingTx,
     });
 
-    const signer = global.web3Provider!.getSigner();
+    const signer = global.signer;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
 
     const projectUniqueID = ethers.utils.formatBytes32String(

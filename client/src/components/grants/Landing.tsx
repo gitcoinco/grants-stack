@@ -1,11 +1,16 @@
 import { useSelector, useDispatch } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useOutletContext} from "react-router-dom";
 import { RootState } from "../../reducers";
-import { loadAccountData } from "../../actions/web3";
+import { initializeWeb3 } from "../../actions/web3";
 import { slugs } from "../../routes";
+
+export interface Web3Instance {
+  provider: any;
+  signer?: any;
+}
 
 function Landing() {
   const navigate = useNavigate();
@@ -15,19 +20,33 @@ function Landing() {
     web3Error: state.web3.error,
     account: state.web3.account,
   }));
-
   const queryString = new URLSearchParams(window?.location?.search);
+
   // Twitter oauth will attach code & state in oauth procedure
   const queryError = queryString.get("error");
   const queryCode = queryString.get("code");
   const queryState = queryString.get("state");
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { chain } = useNetwork()
+  const provider = useProvider();
+  const { data: signer } = useSigner()
+
+  // dispatch initializeWeb3 when address changes
+  useEffect(() => {
+    if (signer && provider && chain && address) {
+      dispatch(initializeWeb3(signer, provider, chain, address));
+    }
+  }, [signer, provider, chain, address]);
 
   useEffect(() => {
-    if (address !== undefined) {
-      dispatch(loadAccountData(address));
+    const isCallback =
+      queryCode !== undefined ||
+      queryState !== undefined ||
+      queryError !== undefined;
+    if (props.account || !isCallback) {
+      navigate(slugs.grants);
     }
-  }, [address]);
+  }, [props.account]);
 
   // if Twitter oauth then submit message to other windows and close self
   if (
@@ -49,6 +68,7 @@ function Landing() {
 
     return <div />;
   }
+
   // if Github oauth then submit message to other windows and close self
   if (
     (queryError || queryCode) &&
@@ -71,15 +91,14 @@ function Landing() {
     return <div />;
   }
 
-  useEffect(() => {
-    const isCallback =
-      queryCode !== undefined ||
-      queryState !== undefined ||
-      queryError !== undefined;
-    if (props.account || !isCallback) {
-      navigate(slugs.grants);
-    }
-  }, [props.account]);
+  const data = {
+    provider,
+    signer,
+  }
+
+  if (isConnected) {
+    return <Outlet context={data} />;
+  }
 
   return (
     <div className="md:flex h-full">
