@@ -94,6 +94,7 @@ root.render(
               <ReduxRouter history={history} store={store}>
                 <Layout>
                   <Routes>
+                    <Route path={slugs.root} element={<Landing />} />
                     <Route path={slugs.grants} element={<ProjectsList />} />
                     <Route path={slugs.grant} element={<Project />} />
                     <Route path={slugs.newGrant} element={<NewProject />} />
