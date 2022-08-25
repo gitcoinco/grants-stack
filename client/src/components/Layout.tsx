@@ -21,7 +21,6 @@ function Layout(ownProps: Props) {
       web3Initialized: state.web3.initialized,
       web3Error: state.web3.error,
       chainID: state.web3.chainID,
-      // account: state.web3.account,
     }),
     shallowEqual
   );

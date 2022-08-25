@@ -11,9 +11,7 @@ function Landing() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
-    // web3Initialized: state.web3.initialized,
     web3Error: state.web3.error,
-    // account: state.web3.account,
   }));
   const queryString = new URLSearchParams(window?.location?.search);
 

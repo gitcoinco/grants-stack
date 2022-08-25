@@ -8,7 +8,6 @@ import {
 } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 //! I couldn't get this damn chevron to display 🤬
-// import { ChevronDownIcon } from "@heroicons/react/solid";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAccount, useDisconnect } from "wagmi";
@@ -30,17 +29,6 @@ export default function WalletDisplay(): JSX.Element {
       dispatch({ type: "WEB3_ERROR", error });
     },
   });
-
-  // const { data: ensName } = useEnsName({
-  //   address,
-  //   chainId: 1,
-  //   onSuccess() {
-  //     dispatch({ type: "ENS_NAME_LOADED", ens: ensName });
-  //   },
-  //   onError(error) {
-  //     dispatch({ type: "WEB3_ERROR", error });
-  //   },
-  // });
 
   const avatarBg = isConnected ? "green.500" : "red.500";
 
