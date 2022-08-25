@@ -118,9 +118,6 @@ export const programApi = api.injectEndpoints({
 
           const programs: Program[] = []
 
-          console.log(res);
-
-
           for (const program of res.data.programs) {
             const metadata = await fetchFromIPFS(program.metaPtr.pointer)
 
