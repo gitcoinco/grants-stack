@@ -69,25 +69,16 @@ function ListPrograms() {
   datadogLogs.logger.info('====> Route: /')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
-
-  // const { address, provider } = useWallet()
-  // const { programs } = usePrograms(address, provider)
   const { programs } = usePrograms()
 
   // TODO
   const isLoading = false;
   const isSuccess = true;
-  // const {
-  //   data: programs,
-  //   isLoading,
-  //   isSuccess
-  // } = useListProgramsQuery({ address, signerOrProvider: provider })
 
   const programList = programs.map((program, key) => (
     <Link to={`/program/${program.id}`} key={key}>
       <ProgramCard
         key={program.id}
-        data-testid="program-card"
         floatingIcon={
           <div
             className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">
@@ -97,7 +88,7 @@ function ListPrograms() {
         title={program.metadata!.name}
         description={`${program.operatorWallets.length} Round Operators`}
         footerContent={
-          <p className="text-violet-400">
+          <p className="text-violet-400" data-testid="program-card">
             View details <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
           </p>
         }

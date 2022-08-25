@@ -25,6 +25,7 @@ import ViewRoundPage from "./features/round/ViewRoundPage"
 import ViewApplication from "./features/round/ViewApplicationPage"
 import NotFound from "./features/common/NotFoundPage"
 import AccessDenied from "./features/common/AccessDenied"
+import { ProgramProvider } from "./context/ProgramContext"
 
 // Initialize datadog
 initDatadog()
@@ -38,13 +39,14 @@ root.render(
     <Provider store={store}>
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider chains={chains}>
+
           <ReduxRouter history={history} store={store}>
             <Routes>
               {/* Protected Routes */}
               <Route element={<Auth />}>
 
                 {/* Default Route */}
-                <Route path="/" element={<Program />} />
+                <Route path="/" element={<ProgramProvider><Program /></ProgramProvider>} />
 
                 {/* Round Routes */}
                 <Route path="/round/create" element={<CreateRound />} />
@@ -63,6 +65,7 @@ root.render(
               </Route>
             </Routes>
           </ReduxRouter>
+
         </RainbowKitProvider>
       </WagmiConfig>
     </Provider>
