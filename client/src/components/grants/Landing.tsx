@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import { useNavigate, Outlet, useOutletContext} from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import { slugs } from "../../routes";
@@ -27,9 +27,9 @@ function Landing() {
   const queryCode = queryString.get("code");
   const queryState = queryString.get("state");
   const { address, isConnected } = useAccount();
-  const { chain } = useNetwork()
+  const { chain } = useNetwork();
   const provider = useProvider();
-  const { data: signer } = useSigner()
+  const { data: signer } = useSigner();
 
   // dispatch initializeWeb3 when address changes
   useEffect(() => {
@@ -94,7 +94,7 @@ function Landing() {
   const data = {
     provider,
     signer,
-  }
+  };
 
   if (isConnected) {
     return <Outlet context={data} />;

@@ -9,13 +9,11 @@ const alchemyId = process.env.ALCHEMY_ID;
 const infuraId = process.env.INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
-console.log("-----", process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
   chainsAvailable.push(chain.optimism);
 } else {
   chainsAvailable.push(chain.goerli, chain.optimismKovan);
 }
-console.log("-----", chainsAvailable);
 
 export const { chains, provider } = configureChains(chainsAvailable, [
   infuraProvider({ apiKey: infuraId, priority: 0 }),
