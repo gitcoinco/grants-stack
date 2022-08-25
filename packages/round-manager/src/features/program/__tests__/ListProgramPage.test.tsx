@@ -22,4 +22,11 @@ describe("<ListProgramPage />", () => {
 
     expect(await screen.findAllByTestId("program-card")).toHaveLength(2)
   })
+
+
+  it("shows loading while fetching list of programs", async () => {
+    renderWithContext(<ListProgramPage/>, { isLoading: true, programs: [] })
+
+    expect(await screen.queryByTestId("loading-programs")).toBeInTheDocument()
+  })
 })
