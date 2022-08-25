@@ -7,11 +7,6 @@ import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import { slugs } from "../../routes";
 
-export interface Web3Instance {
-  provider: any;
-  signer?: any;
-}
-
 function Landing() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
