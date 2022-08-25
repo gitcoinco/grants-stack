@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { grantsPath, newGrantPath } from "../routes";
 import Button, { ButtonVariants } from "./base/Button";
 import Plus from "./icons/Plus";
 import colors from "../styles/colors";
 import Hamburger from "./icons/Hamburger";
+import WalletDisplay from "./base/WalletDisplay";
 
 export default function Header() {
-  const [navbarOpen, setNavbarOpen] = React.useState(false);
+  const [navbarOpen, setNavbarOpen] = useState(false);
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-2 mb-3 text-primary-text w-full border-0 sm:border-b container mx-auto h-1/8">
@@ -48,6 +49,7 @@ export default function Header() {
                 New Project
               </Button>
             </Link>
+            <WalletDisplay />
           </div>
         </div>
       </div>

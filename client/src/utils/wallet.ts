@@ -24,3 +24,7 @@ export function networkPrettyName(chainId: number): string {
 
   return networkPrettyNames[rawName];
 }
+
+export function isValidAddress(address: string | undefined): boolean {
+  return address !== "0x0000000000000000000000000000000000000000";
+}

@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducers";
-import { newGrantPath } from "../../routes";
 import { loadProjects } from "../../actions/projects";
-import Globe from "../icons/Globe";
-import Button, { ButtonVariants } from "../base/Button";
-import Card from "./Card";
+import { RootState } from "../../reducers";
+import { Status } from "../../reducers/projects";
+import { newGrantPath } from "../../routes";
 import colors from "../../styles/colors";
 import { ProjectEvent } from "../../types";
-import { Status } from "../../reducers/projects";
+import Button, { ButtonVariants } from "../base/Button";
+import Globe from "../icons/Globe";
+import Card from "./Card";
 
 function ProjectsList() {
   const dispatch = useDispatch();
