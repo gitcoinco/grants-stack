@@ -78,8 +78,8 @@ export const programApi = api.injectEndpoints({
       },
       invalidatesTags: ["Program"]
     }),
-    listPrograms: builder.query<Program[], { address: string, signerOrProvider: any }>({
-      queryFn: async ({ address, signerOrProvider }) => {
+    listPrograms: builder.query<Program[], { address?: string, signerOrProvider: any, programId?: string }>({
+      queryFn: async ({ address, signerOrProvider, programId }) => {
         try {
           // fetch chain id
           const { chainId } = await signerOrProvider.getNetwork()
@@ -87,11 +87,15 @@ export const programApi = api.injectEndpoints({
           // get the subgraph for all programs owned by the given address
           const res = await graphql_fetch(
             `
-              query GetPrograms($address: String!) {
+              query GetPrograms($address: String, $programId: String) {
                 programs(where: {
-                  accounts_: {
-                    address: $address
-                  }
+            `
+            +
+            (address ? `accounts_: { address: $address } ` : ``)
+            +
+            (programId ? `id: $programId` : ``)
+            +
+            `
                 }) {
                   id
                   metaPtr {
@@ -109,7 +113,7 @@ export const programApi = api.injectEndpoints({
               }
             `,
             chainId,
-            { address: address.toLowerCase() }
+            { address: address?.toLowerCase(), programId }
           )
 
           const programs: Program[] = []

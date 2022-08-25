@@ -14,7 +14,7 @@ export default function NotFoundPage() {
     <>
       <Navbar />
       <main>
-        <div className="flex h-screen pt-8">
+        <div className="flex pt-8">
           <div className="m-auto text-center mt-5">
             <h1 className="my-5 text-sm text-red-100 font-bold">404 ERROR</h1>
             <h2 className="my-5 text-4xl">Uh oh! You might be a little lost</h2>

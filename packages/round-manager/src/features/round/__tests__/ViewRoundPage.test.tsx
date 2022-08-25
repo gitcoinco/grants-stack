@@ -27,10 +27,10 @@ describe('the view round page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useWallet as jest.Mock).mockReturnValue({ chain: {} });
+    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: mockRoundData.operatorWallets[0] });
 
     (useListRoundsQuery as jest.Mock).mockReturnValue({
-      data: mockRoundData,
+      round: mockRoundData,
       isLoading: false,
       isSuccess: true
     });
@@ -53,6 +53,23 @@ describe('the view round page', () => {
     (useDisconnect as jest.Mock).mockReturnValue({});
 
     (useListProgramsQuery as jest.Mock).mockReturnValue({ program: mockProgramData });
+  })
+
+  it("should display 404 when there no round is found", () => {
+    (useListRoundsQuery as jest.Mock).mockReturnValue({
+      isLoading: false,
+      isSuccess: true
+    });
+
+    renderWrapped(<ViewRoundPage />);
+    expect(screen.getByText("404 ERROR")).toBeInTheDocument();
+  })
+
+  it("should display access denied when wallet accessing is not program operator", () => {
+    (useWallet as jest.Mock).mockReturnValue({ chain: {} });
+
+    renderWrapped(<ViewRoundPage />);
+    expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   })
 
   it("should display copy when there are no applicants for a given round", () => {

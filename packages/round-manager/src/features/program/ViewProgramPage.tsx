@@ -10,16 +10,20 @@ import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
 import { abbreviateAddress } from "../api/utils"
 import { datadogLogs } from "@datadog/browser-logs"
+import { useEffect, useState } from "react"
+import NotFoundPage from "../common/NotFoundPage"
+import AccessDenied from "../common/AccessDenied"
+
 
 export default function ViewProgram() {
+
   datadogLogs.logger.info('====> Route: /program/:id')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
-
 
   const { id } = useParams()
 
   const { address, provider } = useWallet()
-  const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
+  const { program } = useListProgramsQuery({ signerOrProvider: provider, programId: id }, {
     selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
   })
 
@@ -28,6 +32,24 @@ export default function ViewProgram() {
     isLoading: isRoundsLoading,
     isSuccess: isRoundsFetched
   } = useListRoundsQuery({ address, signerOrProvider: provider, programId: id })
+
+  let [programExists, setProgramExists] = useState(true)
+  let [hasAccess, setHasAccess] = useState(true)
+
+  useEffect(() => {
+    if (isRoundsFetched) {
+      setProgramExists(!!program)
+
+      if(program) {
+        program.operatorWallets.includes(
+          address?.toLowerCase()
+        ) ? setHasAccess(true) : setHasAccess(false)
+      } else {
+        setHasAccess(true)
+      }
+    }
+  }, [isRoundsFetched, program, address])
+
 
   const roundItems = rounds ? rounds.map((round, index) =>
     <Link to={`/round/${round.id}`} key={index}>
@@ -109,47 +131,53 @@ export default function ViewProgram() {
 
   return (
     <>
-      <Navbar programCta={true} />
-      <div className="container mx-auto flex flex-col w-screen h-screen">
-        <header className="flex flex-col justify-center border-b pl-2 md:pl-20 py-6">
-          <div className="flex flex-row items-center">
-            <Link to={`/`}>
-              <p className="text-sm text-grey-400 font-semibold">My Programs</p>
-            </Link>
-            <ChevronRightIcon className="h-6 w-6 mx-3 text-sm text-grey-400" aria-hidden="true" />
-            <p className="text-sm text-grey-400 font-semibold">Program Details</p>
-          </div>
-          <h1 className="text-3xl sm:text-[32px] my-2">
-            {program?.metadata?.name || "Program Details"}
-          </h1>
-          {operatorWallets}
-        </header>
-
-        <main className="flex-grow">
-          <div className="px-2 md:px-20 py-3 md:py-6">
-            <div>
-              <div>
-                {isRoundsFetched && roundItems.length > 0 &&
-                  <div className="md:mb-8">
-                    <div className="flex flex-row justify-between">
-                      <p className="font-bold">My Rounds</p>
-                      <Link to={`/round/create?programId=${program?.id}`} className="text-violet-400 font-thin"
-                            data-testid="create-round-small-link">
-                        <PlusSmIcon className="h-5 w-5 inline -translate-y-0.5" aria-hidden="true" /> Create round
-                      </Link>
-                    </div>
-                    {roundItems}
-                  </div>
-                }
-                {isRoundsLoading && <p>Fetching your rounds...</p>}
+      {!programExists && <NotFoundPage />}
+      {!hasAccess && <AccessDenied />}
+      {programExists && hasAccess &&
+        <>
+          <Navbar programCta={true} />
+          <div className="container mx-auto flex flex-col w-screen">
+            <header className="flex flex-col justify-center border-b pl-2 md:pl-20 py-6">
+              <div className="flex flex-row items-center">
+                <Link to={`/`}>
+                  <p className="text-sm text-grey-400 font-semibold">My Programs</p>
+                </Link>
+                <ChevronRightIcon className="h-6 w-6 mx-3 text-sm text-grey-400" aria-hidden="true" />
+                <p className="text-sm text-grey-400 font-semibold">Program Details</p>
               </div>
-            </div>
-          </div>
+              <h1 className="text-3xl sm:text-[32px] my-2">
+                {program?.metadata?.name || "Program Details"}
+              </h1>
+              {operatorWallets}
+            </header>
 
-          {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
-        </main>
-      </div>
-      <Footer />
+            <main className="flex-grow">
+              <div className="px-2 md:px-20 py-3 md:py-6">
+                <div>
+                  <div>
+                    {isRoundsFetched && roundItems.length > 0 &&
+                      <div className="md:mb-8">
+                        <div className="flex flex-row justify-between">
+                          <p className="font-bold">My Rounds</p>
+                          <Link to={`/round/create?programId=${program?.id}`} className="text-violet-400 font-thin"
+                                data-testid="create-round-small-link">
+                            <PlusSmIcon className="h-5 w-5 inline -translate-y-0.5" aria-hidden="true" /> Create round
+                          </Link>
+                        </div>
+                        {roundItems}
+                      </div>
+                    }
+                    {isRoundsLoading && <p>Fetching your rounds...</p>}
+                  </div>
+                </div>
+              </div>
+
+              {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
+            </main>
+          </div>
+          <Footer />
+        </>
+      }
     </>
   )
 }
