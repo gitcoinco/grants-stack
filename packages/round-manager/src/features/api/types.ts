@@ -185,15 +185,21 @@ export interface GrantApplication {
     metaPtr: MetadataPointer
   };
   /** List of answers to questions */
-  answers?: Array<{
-    questionId: Number,
-    question: string,
-    answer: string
-  }>;
+  answers?: Array<AnswerBlock>;
   /**
    * Pointer to the list of approved/rejected grant applications in a decentralized storage
    * e.g IPFS, Ceramic etc.
    */
   projectsMetaPtr: MetadataPointer;
   status?: ProjectStatus;
+}
+
+export type AnswerBlock = {
+  questionId: Number,
+  question: string,
+  answer?: string,
+  encryptedAnswer?: {
+    ciphertext: string,
+    encryptedSymmetricKey: string
+  }
 }

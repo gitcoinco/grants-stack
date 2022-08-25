@@ -1,10 +1,14 @@
 import { Buffer } from 'buffer';
-const LitJsSdk = require('lit-js-sdk');
+import { isJestRunning } from './utils';
+
+const LitJsSdk = isJestRunning() ? null : require('lit-js-sdk');
 
 // @ts-ignore
 window.Buffer = Buffer;
 
-const client = new LitJsSdk.LitNodeClient();
+const client = LitJsSdk ? new LitJsSdk.LitNodeClient({
+  alertWhenUnauthorized: false
+}) : null ;
 
 const ROUND_OPERATOR = '0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5';
 
@@ -12,7 +16,6 @@ type LitInit = {
   chain: string,
   contract: string,
 }
-
 export class Lit {
   litNodeClient: any
   chain: string
@@ -109,33 +112,39 @@ export class Lit {
    * @returns decrypted string
    */
   async decryptString(
-    encryptedStr: string,
+    encryptedStr: string|Blob,
     encryptedSymmetricKey: string
   ) {
     if (!this.litNodeClient) {
       await this.connect();
     }
 
-    const chain = this.chain;
+    try {
+      const chain = this.chain;
 
-    // Obtain Auth Signature to verify signer is wallet owner
-    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
+      // Obtain Auth Signature to verify signer is wallet owner
+      const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
-    // Obtaining the Decrypted Symmetric Key
-    const symmetricKey = await this.litNodeClient.getEncryptionKey({
-      unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
-      toDecrypt: encryptedSymmetricKey,
-      chain,
-      authSig,
-    });
+      // Obtaining the Decrypted Symmetric Key
+      const symmetricKey = await this.litNodeClient.getEncryptionKey({
+        unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
+        toDecrypt: encryptedSymmetricKey,
+        chain,
+        authSig,
+      });
 
-    // Obtaining the Decrypted Data
-    const decryptedString = await LitJsSdk.decryptString(
-      encryptedStr,
-      symmetricKey
-    );
+      // Obtaining the Decrypted Data
+      const decryptedString = await LitJsSdk.decryptString(
+        encryptedStr,
+        symmetricKey
+        );
 
-    return decryptedString;
+      return decryptedString;
+    } catch (error) {
+
+      console.error(error);
+      return 'N/A';
+    }
 
   }
 }
