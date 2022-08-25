@@ -1,4 +1,4 @@
-import { Provider, Signer } from "@wagmi/core";
+import { Provider } from "@wagmi/core";
 
 export interface Global {
   web3Provider: Provider | undefined;

@@ -146,7 +146,7 @@ export const fetchGrantData =
     const state = getState();
     const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
-    const signer = global.signer;
+    const { signer } = global;
 
     let project: ProjectRegistryMetadata;
 

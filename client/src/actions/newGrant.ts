@@ -88,7 +88,7 @@ export const publishGrant =
 
     const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
-    const signer = global.signer;
+    const { signer } = global;
     const projectRegistry = new ethers.Contract(
       addresses.projectRegistry,
       ProjectRegistryABI,

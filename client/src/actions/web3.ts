@@ -1,7 +1,5 @@
-import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { global } from "../global";
-import { RootState } from "../reducers";
 import { chains } from "../contracts/deployments";
 import { networkPrettyNames } from "../utils/wallet";
 
@@ -79,8 +77,9 @@ export const notWeb3Browser = (): Web3Actions => ({
   error: "not a web3 browser",
 });
 
-export const initializeWeb3 = (signer: any, provider: any, chain: any, address: string) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+export const initializeWeb3 =
+  (signer: any, provider: any, chain: any, address: string) =>
+  (dispatch: Dispatch) => {
     if (!chainIds.includes(String(chain?.id))) {
       dispatch(
         web3Error(
@@ -109,4 +108,3 @@ export const initializeWeb3 = (signer: any, provider: any, chain: any, address: 
       window.location.reload();
     });
   };
-};

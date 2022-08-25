@@ -85,7 +85,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  const signer = global.signer;
+  const { signer } = global;
   const contract = new ethers.Contract(address, RoundABI, signer);
   const pinataClient = new PinataClient();
 
