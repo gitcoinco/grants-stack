@@ -1,4 +1,3 @@
-// import { Web3Provider } from "@ethersproject/providers";
 import { Provider, Signer } from "@wagmi/core";
 
 export interface Global {
