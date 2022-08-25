@@ -31,7 +31,7 @@ export default function Twitter({
     shallowEqual
   );
 
-  const signer = global.web3Provider?.getSigner();
+  const { signer } = global;
   // Open Twitter authUrl in centered window
   function openTwitterOAuthUrl(url: string): void {
     const width = 600;

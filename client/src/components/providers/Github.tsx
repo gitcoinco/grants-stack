@@ -40,7 +40,7 @@ export default function Github({
     }),
     shallowEqual
   );
-  const signer = global.web3Provider?.getSigner();
+  const { signer } = global;
   const [GHID, setGHID] = useState("");
   const [complete, setComplete] = useState(false);
 

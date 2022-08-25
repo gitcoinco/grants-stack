@@ -68,18 +68,20 @@ export const loadProjects =
     const { chainID } = state.web3;
 
     const addresses = addressesByChainID(chainID!);
-    const signer = global.web3Provider!.getSigner();
     const contract = new ethers.Contract(
       addresses.projectRegistry,
       ProjectRegistryABI,
-      signer
+      global.web3Provider!
     );
 
-    const createdFilter = contract.filters.ProjectCreated(state.web3.account);
+    const createdFilter = contract.filters.ProjectCreated(
+      null,
+      state.web3.account
+    );
     const createdEvents = await contract.queryFilter(createdFilter);
 
     const createdIds: ProjectEvent[] = createdEvents.map((event: any) => ({
-      id: BigNumber.from(event.args[1]).toNumber(),
+      id: BigNumber.from(event.args.projectID).toNumber(),
       block: event.blockNumber,
     }));
 

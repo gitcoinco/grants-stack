@@ -1,17 +1,52 @@
 import { useSelector, useDispatch } from "react-redux";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Button, { ButtonVariants } from "../base/Button";
+import { useNavigate, Outlet } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import { slugs } from "../../routes";
 
+export interface Web3Instance {
+  provider: any;
+  signer?: any;
+}
+
 function Landing() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const props = useSelector((state: RootState) => ({
+    web3Initialized: state.web3.initialized,
+    web3Error: state.web3.error,
+    account: state.web3.account,
+  }));
   const queryString = new URLSearchParams(window?.location?.search);
+
   // Twitter oauth will attach code & state in oauth procedure
   const queryError = queryString.get("error");
   const queryCode = queryString.get("code");
   const queryState = queryString.get("state");
+  const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const provider = useProvider();
+  const { data: signer } = useSigner();
+
+  // dispatch initializeWeb3 when address changes
+  useEffect(() => {
+    if (signer && provider && chain && address) {
+      dispatch(initializeWeb3(signer, provider, chain, address));
+    }
+  }, [signer, provider, chain, address]);
+
+  useEffect(() => {
+    const isCallback =
+      queryCode !== undefined ||
+      queryState !== undefined ||
+      queryError !== undefined;
+    if (props.account || !isCallback) {
+      navigate(slugs.grants);
+    }
+  }, [props.account]);
 
   // if Twitter oauth then submit message to other windows and close self
   if (
@@ -33,6 +68,7 @@ function Landing() {
 
     return <div />;
   }
+
   // if Github oauth then submit message to other windows and close self
   if (
     (queryError || queryCode) &&
@@ -54,27 +90,15 @@ function Landing() {
 
     return <div />;
   }
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const props = useSelector((state: RootState) => ({
-    web3Initialized: state.web3.initialized,
-    web3Error: state.web3.error,
-    account: state.web3.account,
-  }));
 
-  const connectHandler = () => {
-    dispatch(initializeWeb3());
+  const data = {
+    provider,
+    signer,
   };
 
-  useEffect(() => {
-    const isCallback =
-      queryCode !== undefined ||
-      queryState !== undefined ||
-      queryError !== undefined;
-    if (props.account || !isCallback) {
-      navigate(slugs.grants);
-    }
-  }, [props.account]);
+  if (isConnected) {
+    return <Outlet context={data} />;
+  }
 
   return (
     <div className="md:flex h-full">
@@ -86,23 +110,19 @@ function Landing() {
         />
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
-      <div className="w-full md:w-1/2 flex flex-col h-1/2 max-w-fit md:h-full justify-center container mx-10">
-        <h1 className="mb-8 hidden md:inline-block">Grant Hub</h1>
-        <h3 className="mb-4 pt-20 inline-block md:hidden">Grant Hub</h3>
-        <p>
-          Manage projects that generate maximum impact and receive funds
-          matching from Gitcoin, partner DAO, or independent grant program
-          rounds.
+      <div className="w-full md:w-1/2 flex flex-col absolute h-1/2 max-w-fit md:h-full justify-center container mx-10">
+        <h3 className="mb-8 hidden md:inline-block">Grant Hub</h3>
+        <h6 className="mb-4 pt-20 inline-block md:hidden">Grant Hub</h6>
+        <h1 className="md:inline-block hidden">Bring your project to life</h1>
+        <h4 className="md:hidden inline-block">Bring your project to life</h4>
+        <p className="text-black text-xl">
+          Build and fund your projects all in one place -- from creating a
+          project to applying for grants to creating impact with your project
+          starting today!
         </p>
         {!props.web3Initialized && (
           <div className="mt-8">
-            <Button
-              onClick={() => connectHandler()}
-              variant={ButtonVariants.primary}
-              styles={["w-full sm:w-auto mx-w-full ml-0"]}
-            >
-              Connect Wallet
-            </Button>
+            <ConnectButton />
             {props.web3Error !== undefined && (
               <div>
                 <div>{props.web3Error}</div>
@@ -112,13 +132,8 @@ function Landing() {
         )}
       </div>
       <img
-        className="w-1/2 hidden md:inline-block"
+        className="absolute w-1/2 md:inline-block inset-y-56 right-0"
         src="./assets/landing-background.svg"
-        alt="Jungle Background"
-      />
-      <img
-        className="h-1/2 w-full inline-block md:hidden"
-        src="./assets/mobile-landing-background.svg"
         alt="Jungle Background"
       />
     </div>

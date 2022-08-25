@@ -1,7 +1,5 @@
-import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import { global } from "../global";
-import { RootState } from "../reducers";
 import { chains } from "../contracts/deployments";
 import { networkPrettyNames } from "../utils/wallet";
 
@@ -79,16 +77,10 @@ export const notWeb3Browser = (): Web3Actions => ({
   error: "not a web3 browser",
 });
 
-declare global {
-  interface Window {
-    ethereum: any;
-  }
-}
-
-const loadWeb3Data = () => (dispatch: Dispatch) => {
-  global.web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-  global.web3Provider!.getNetwork().then(({ chainId }) => {
-    if (!chainIds.includes(String(chainId))) {
+export const initializeWeb3 =
+  (signer: any, provider: any, chain: any, address: string) =>
+  (dispatch: Dispatch) => {
+    if (!chainIds.includes(String(chain?.id))) {
       dispatch(
         web3Error(
           `wrong network, please connect to one of the following networks: ${chainNames.join(
@@ -99,52 +91,20 @@ const loadWeb3Data = () => (dispatch: Dispatch) => {
       return;
     }
 
-    dispatch(web3ChainIDLoaded(chainId));
-  });
-};
+    global.signer = signer;
+    global.web3Provider = provider;
+    global.chainID = chain?.id;
 
-const loadAccountData = (account: string) => (dispatch: Dispatch) => {
-  const t: Web3Type = window.ethereum.isStatus
-    ? Web3Type.Status
-    : Web3Type.Generic;
-  dispatch(web3Initialized(t));
-  dispatch(web3AccountLoaded(account));
-};
+    const t: Web3Type = window.ethereum.isStatus
+      ? Web3Type.Status
+      : Web3Type.Generic;
+    dispatch(web3Initialized(t));
+    dispatch(web3AccountLoaded(address));
+    dispatch(web3ChainIDLoaded(chain?.id));
 
-export const initializeWeb3 = (requestAccess = true) => {
-  if (window.ethereum) {
-    return (dispatch: Dispatch, getState: () => RootState) => {
-      const state = getState();
-      if (
-        (!requestAccess && state.web3.initializing) ||
-        state.web3.initialized
-      ) {
-        return;
-      }
-
-      dispatch(web3Initializing());
-      const method = requestAccess ? "eth_requestAccounts" : "eth_accounts";
-
-      window.ethereum
-        .request({ method })
-        .then((accounts: Array<string>) => {
-          if (accounts.length > 0) {
-            dispatch<any>(loadAccountData(accounts[0]));
-          }
-
-          // FIXME: fix dispatch<any>
-          window.ethereum.on("chainChanged", () => window.location.reload());
-          window.ethereum.on("accountsChanged", () => {
-            window.location.reload();
-          });
-          dispatch<any>(loadWeb3Data());
-        })
-        .catch((err: string) => {
-          // FIXME: handle error
-          console.log("error", err);
-          dispatch(web3Error("Unable to connect web3 account"));
-        });
-    };
-  }
-  return notWeb3Browser();
-};
+    // FIXME: fix dispatch<any>
+    window.ethereum.on("chainChanged", () => window.location.reload());
+    window.ethereum.on("accountsChanged", () => {
+      window.location.reload();
+    });
+  };

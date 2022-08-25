@@ -42,6 +42,12 @@ function Round() {
     }
   }, [dispatch, roundId]);
 
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
+
   if (props.web3ChainId !== props.roundChainId) {
     return (
       <p>
@@ -51,12 +57,6 @@ function Round() {
       </p>
     );
   }
-
-  useEffect(() => {
-    if (props.round) {
-      setRoundData(props.round);
-    }
-  }, [props.round]);
 
   if (props.status === Status.Error) {
     return <p>Error: {props.error}</p>;
