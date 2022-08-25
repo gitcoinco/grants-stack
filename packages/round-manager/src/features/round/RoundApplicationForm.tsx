@@ -76,7 +76,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
 
   useEffect(() => {
     if (isIPFSError || isRoundError) {
-      setTimeout(() =>{
+      setTimeout(() => {
         setOpenProgressModal(false)
         setOpenErrorModal(true)
       }, errorModalDelayMs)
@@ -439,7 +439,7 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
           </form>
           <ProgressModal
             isOpen={openProgressModal}
-          setIsOpen={setOpenProgressModal}
+            setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Round."}
             steps={progressSteps}
           />
