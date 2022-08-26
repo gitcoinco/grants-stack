@@ -69,10 +69,8 @@ function ListPrograms() {
   datadogLogs.logger.info('====> Route: /')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
-  const { programs } = usePrograms()
+  const { programs, isLoading } = usePrograms()
 
-  // TODO
-  const isLoading = false;
   const isSuccess = true;
 
   const programList = programs.map((program, key) => (
@@ -119,7 +117,7 @@ function ListPrograms() {
         </CardsContainer>
 
         {isLoading &&
-          <Spinner text="Fetching Programs" />
+          <Spinner text="Fetching Programs" data-testid="loading-programs" />
         }
       </main>
       <Footer />

@@ -31,7 +31,6 @@ describe("<ListProgramProvider />", () => {
     renderWithProvider()
 
     await screen.findByTestId("error-msg")
-    await screen.findByText("some error message text")
   })
 
   it("sets isLoading back to false when listPrograms call succeeds", async () => {
@@ -67,26 +66,20 @@ const TestingComponent = () => {
 
   return (
     <>
-      <ul>
+      <div>
         {
           programs.map((it, index) => (
-            <li data-testid="program" key={ index }>
-              <p>{ it.metadata?.name }</p>
-            </li>
+            <div data-testid="program" key={ index } />
           ))
         }
-      </ul>
+      </div>
 
       { listProgramsError &&
-        <p data-testid="error-msg">
-          { listProgramsError?.message || "" }
-        </p>
+        <div data-testid="error-msg" />
       }
 
       { isLoading &&
-        <p data-testid="is-loading">
-          loading...
-        </p>
+        <div data-testid="is-loading" />
       }
     </>
   )

@@ -1,5 +1,5 @@
 import { Program } from "../features/api/types"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useReducer } from "react"
 import { useWallet } from "../features/common/Auth"
 import { listPrograms } from "../features/api/program"
 
@@ -9,33 +9,57 @@ export interface ProgramState {
   listProgramsError?: Error
 }
 
+enum ActionType {
+  START_LOADING = "start-loading",
+  FINISH_LOADING = "finish-loading",
+  SET_PROGRAMS = "set-programs",
+  SET_LIST_PROGRAMS_ERROR = "set-list-programs-error"
+}
+
+interface Action {
+  type: ActionType
+  payload?: any
+}
+
+type Dispatch = (action: Action) => void
+
 export const initialProgramState: ProgramState = { programs: [], isLoading: false }
-export const ProgramContext = createContext<ProgramState>(initialProgramState)
+export const ProgramContext = createContext<{ state: ProgramState, dispatch: Dispatch } | undefined>(undefined)
+
+const fetchPrograms = async (dispatch: Dispatch, address: string, walletProvider: any) => {
+  dispatch({type: ActionType.START_LOADING})
+  listPrograms(address, walletProvider)
+    .then(programs => dispatch({type: ActionType.SET_PROGRAMS, payload: programs}))
+    .catch(error => dispatch({type: ActionType.SET_LIST_PROGRAMS_ERROR, payload: error}))
+    .finally(() => dispatch({type: ActionType.FINISH_LOADING}))
+}
+
+const programReducer = (state: ProgramState, action: Action) => {
+  switch(action.type) {
+    case ActionType.START_LOADING:
+      return { ...state, isLoading: true}
+    case ActionType.FINISH_LOADING:
+      return { ...state, isLoading: false }
+    case ActionType.SET_PROGRAMS:
+      return { ...state, programs: action.payload ?? [] }
+    case ActionType.SET_LIST_PROGRAMS_ERROR:
+      return { ...state, programs: [], listProgramsError: action.payload }
+  }
+  return state
+}
 
 export const ProgramProvider = ({ children }: { children: any }) => {
-  const [programs, setPrograms] = useState<Program[]>([])
-  const [isLoading, setLoading] = useState(false)
-  const [listProgramsError, setListProgramsError] = useState<Error | undefined>()
+  const [state, dispatch] = useReducer(programReducer, initialProgramState)
 
-  const { address, provider } = useWallet()
+  const { address, provider: walletProvider } = useWallet()
 
   useEffect(() => {
-    setLoading(true)
-    listPrograms(address, provider)
-      .then(setPrograms)
-      .catch((error) => {
-        setListProgramsError(error)
-        setPrograms([])
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [address, provider])
+    fetchPrograms(dispatch, address, walletProvider);
+  }, [address, walletProvider])
 
   const providerProps = {
-    programs,
-    isLoading,
-    listProgramsError
+    state,
+    dispatch
   }
 
   return <ProgramContext.Provider value={ providerProps }>
@@ -44,7 +68,10 @@ export const ProgramProvider = ({ children }: { children: any }) => {
 }
 
 export const usePrograms = () => {
-  const { programs, isLoading, listProgramsError } = useContext(ProgramContext)
+  const context = useContext(ProgramContext)
+  if (context === undefined) {
+    throw new Error("usePrograms must be used within a ProgramProvider");
+  }
 
-  return { programs, isLoading, listProgramsError }
+  return { ...context.state, dispatch: context.dispatch }
 }

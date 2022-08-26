@@ -169,11 +169,12 @@ export const renderWrapped = (ui: JSX.Element) => {
 // TODO finish and replace other renderWrapped function
 export const renderWithContext = (
   ui: JSX.Element,
-  programStateOverrides: Partial<ProgramState> = {}
+  programStateOverrides: Partial<ProgramState> = {},
+  dispatch: any = jest.fn()
 ) =>
   render(
     <MemoryRouter>
-      <ProgramContext.Provider value={{ ...initialProgramState, ...programStateOverrides }}>
+      <ProgramContext.Provider value={{ state:  {...initialProgramState, ...programStateOverrides }, dispatch}}>
         { ui }
       </ProgramContext.Provider>
     </MemoryRouter>
