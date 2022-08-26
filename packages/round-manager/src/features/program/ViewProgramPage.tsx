@@ -4,7 +4,6 @@ import { RefreshIcon } from "@heroicons/react/outline"
 
 import { Button } from "../common/styles"
 import { useWallet } from "../common/Auth"
-import { useListProgramsQuery } from "../api/services/program"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import Footer from "../common/Footer"
@@ -14,6 +13,7 @@ import { useEffect, useState } from "react"
 import NotFoundPage from "../common/NotFoundPage"
 import AccessDenied from "../common/AccessDenied"
 
+import { usePrograms } from "../../context/ProgramContext"
 
 export default function ViewProgram() {
 
@@ -23,9 +23,10 @@ export default function ViewProgram() {
   const { id } = useParams()
 
   const { address, provider } = useWallet()
-  const { program } = useListProgramsQuery({ signerOrProvider: provider, programId: id }, {
-    selectFromResult: ({ data }) => ({ program: data?.find((program) => program.id === id) }),
-  })
+
+  const { programs } = usePrograms();
+
+  const programToRender = programs.find(program => program.id === id);
 
   const {
     data: rounds,
@@ -99,7 +100,7 @@ export default function ViewProgram() {
 
   const operatorWallets = <div className="flex flex-row flex-wrap">
     {
-      program?.operatorWallets.map((operatorWallet, index) =>
+      programToRender?.operatorWallets.map((operatorWallet, index) =>
         <div className="bg-white text-grey-400 pb-2 pr-5" data-testid="program-operator-wallet" key={index}>
           <UserIcon className="inline h-4 w-4 text-grey-400 mr-1" />
           <span className="text-sm text-grey-400" key={index}>
@@ -121,7 +122,7 @@ export default function ViewProgram() {
       <p className="text-grey-400 text-sm" data-testid="program-details-intro">
         Manage date details and acceptance criteria for your Grant Program Round.
       </p>
-      <Link to={`/round/create?programId=${program?.id}`}>
+      <Link to={`/round/create?programId=${programToRender?.id}`}>
         <Button className="my-4 px-4 mt-10">
           <PlusIcon className="h-4 w-4 inline-flex -translate-y-0.5" aria-hidden="true" /> Create round
         </Button>
@@ -146,7 +147,7 @@ export default function ViewProgram() {
                 <p className="text-sm text-grey-400 font-semibold">Program Details</p>
               </div>
               <h1 className="text-3xl sm:text-[32px] my-2">
-                {program?.metadata?.name || "Program Details"}
+                {programToRender?.metadata?.name || "Program Details"}
               </h1>
               {operatorWallets}
             </header>
@@ -159,7 +160,7 @@ export default function ViewProgram() {
                       <div className="md:mb-8">
                         <div className="flex flex-row justify-between">
                           <p className="font-bold">My Rounds</p>
-                          <Link to={`/round/create?programId=${program?.id}`} className="text-violet-400 font-thin"
+                          <Link to={`/round/create?programId=${programToRender?.id}`} className="text-violet-400 font-thin"
                                 data-testid="create-round-small-link">
                             <PlusSmIcon className="h-5 w-5 inline -translate-y-0.5" aria-hidden="true" /> Create round
                           </Link>

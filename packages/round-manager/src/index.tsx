@@ -55,7 +55,7 @@ root.render(
 
                 {/* Program Routes */}
                 <Route path="/program/create" element={<CreateProgram />} />
-                <Route path="/program/:id" element={<ViewProgram />} />
+                <Route path="/program/:id" element={<ProgramProvider><ViewProgram /></ProgramProvider>} />
 
                 {/* Access Denied */}
                 <Route path="/access-denied" element={<AccessDenied />} />
