@@ -64,14 +64,20 @@ const startAProgramCard = <Link to="/program/create">
   />
 </Link>
 
+
+
 function ListPrograms() {
 
   datadogLogs.logger.info('====> Route: /')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
-  const { programs, isLoading } = usePrograms()
+  const { programs, isLoading, listProgramsError } = usePrograms()
 
-  const isSuccess = true;
+  function hasNoPrograms() {
+    return !programs || programs.length === 0;
+  }
+
+  const isSuccess = !isLoading && !listProgramsError;
 
   const programList = programs.map((program, key) => (
     <Link to={`/program/${program.id}`} key={key}>
@@ -96,7 +102,7 @@ function ListPrograms() {
 
   return (
     <>
-      <Navbar programCta={!!isSuccess} />
+      <Navbar programCta={isSuccess} />
       <header className="mb-2.5 bg-grey-500 overflow-hidden">
         <div className="container mx-auto flex flex-row">
           <div className="grow p-6 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">
@@ -112,7 +118,7 @@ function ListPrograms() {
       </header>
       <main className="container mx-auto p-2 md:px-20">
         <CardsContainer>
-          {isSuccess && (!programs || programs.length === 0) && startAProgramCard}
+          {isSuccess && hasNoPrograms() && startAProgramCard}
           {programList}
         </CardsContainer>
 
