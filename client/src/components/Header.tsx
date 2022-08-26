@@ -1,11 +1,11 @@
+import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { grantsPath, newGrantPath } from "../routes";
-import Button, { ButtonVariants } from "./base/Button";
-import Plus from "./icons/Plus";
 import colors from "../styles/colors";
-import Hamburger from "./icons/Hamburger";
 import WalletDisplay from "./base/WalletDisplay";
+import Hamburger from "./icons/Hamburger";
+import Plus from "./icons/Plus";
 import NetworkSelector from "./base/NetworkSelector";
 
 export default function Header() {
@@ -43,7 +43,7 @@ export default function Header() {
         >
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
             <Link to={newGrantPath()}>
-              <Button variant={ButtonVariants.primary}>
+              <Button colorScheme="purple" className="mt-3">
                 <i className="icon">
                   <Plus color={colors["quaternary-text"]} />
                 </i>
