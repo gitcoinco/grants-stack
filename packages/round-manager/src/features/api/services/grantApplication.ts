@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import { api } from ".."
 import { roundImplementationContract } from "../contracts"
-import { GrantApplication } from "../types"
+import { GrantApplication, MetadataPointer } from "../types"
 import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
 
 
@@ -82,6 +82,47 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
 
 
 /**
+ * Fetches project applications status from metaptr and updates result
+ * Note: This function is a short term fix until the indexing IPFS content
+ * via the graph is deterministic
+ *
+ * @param applications
+ * @param projectsMetaPtr
+ *
+ * @dev Once indexing IPFS content via graph is deterministic.
+ *  - redeploy subgraph
+ *  - remove updateApplicationStatusFromContract
+ *  - remove commented out status filter in GetGrantApplications query
+ */
+const updateApplicationStatusFromContract = async (
+  applications: GrantApplication[], projectsMetaPtr: MetadataPointer, filterByStatus?: string
+) => {
+
+  const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer)
+
+  // Iterate over all applications indexed by graph
+  applications.map(application => {
+    try {
+      // fetch matching application index from contract
+      const index = applicationsFromContract.findIndex(
+        (applicationFromContract: any) => application.id === applicationFromContract.id
+      )
+      // update status of application from contract / default to pending
+      application.status = (index >= 0) ? applicationsFromContract[index].status : "PENDING";
+    } catch {
+      application.status = "PENDING"
+    }
+    return application
+  })
+
+  if (filterByStatus) {
+    return applications.filter(application => application.status === filterByStatus)
+  }
+
+  return applications
+}
+
+/**
  * Contract interactions API for a Grant Application
  */
 export const grantApplicationApi = api.injectEndpoints({
@@ -103,8 +144,9 @@ export const grantApplicationApi = api.injectEndpoints({
                   round: $roundId
             `
             +
-            (status ? `status: $status` : ``)
-            +
+            // TODO : uncomment when indexing IPFS via graph
+            // (status ? `status: $status` : ``)
+            // +
             (id ? `id: $id` : ``)
             +
             `
@@ -131,6 +173,7 @@ export const grantApplicationApi = api.injectEndpoints({
           const grantApplications: GrantApplication[] = []
 
           for (const project of res.data.roundProjects) {
+
             const metadata = await fetchFromIPFS(project.metaPtr.pointer)
 
             let status = project.status
@@ -147,7 +190,15 @@ export const grantApplicationApi = api.injectEndpoints({
             })
           }
 
-          return { data: grantApplications }
+          const grantApplicationsFromContract = res.data.roundProjects.length > 0 ?
+            await updateApplicationStatusFromContract(
+              grantApplications,
+              res.data.roundProjects[0].round.projectsMetaPtr,
+              status
+            ) :
+            grantApplications
+
+          return { data: grantApplicationsFromContract }
 
         } catch (err) {
           console.log("error", err)
