@@ -1,6 +1,6 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock"
 
-import { ChainId, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+import { ChainId, fetchFromIPFS, generateApplicationSchema, graphql_fetch, pinToIPFS } from "../utils"
 
 enableFetchMocks()
 
@@ -72,14 +72,13 @@ describe("pinToIPFS", () => {
   })
 })
 
+
 describe("graphql_fetch", () => {
   beforeEach(() => {
     fetchMock.resetMocks()
   })
 
   it("should return data from a graphql endpoint", async () => {
-    fetchMock.resetMocks()
-
     fetchMock.mockResponseOnce(JSON.stringify({
       data: {
         programs: [
@@ -118,7 +117,6 @@ describe("graphql_fetch", () => {
   })
 
   it("should fetch data from the correct graphql endpoint for optimism-kovan network", async () => {
-    fetchMock.resetMocks()
 
     fetchMock.mockResponseOnce(JSON.stringify({
       data: {}
@@ -133,7 +131,6 @@ describe("graphql_fetch", () => {
   })
 
   it("should fetch data from the correct graphql endpoint for optimism network", async () => {
-    fetchMock.resetMocks()
 
     fetchMock.mockResponseOnce(JSON.stringify({
       data: {}
@@ -144,6 +141,52 @@ describe("graphql_fetch", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
       expect.anything()
+    )
+  })
+})
+
+
+describe("generateApplicationSchema", () => {
+  
+  it("should return valid application schema", () => {
+    const metadata = {
+      "customQuestions": {
+        "email": "",
+        "twitter": "",
+        "fundingSource": "What platforms have you raised funds from?",
+      }
+    }
+  
+    const schema = generateApplicationSchema(metadata)
+
+    expect(Array.isArray(schema)).toBe(true)
+    expect(schema).toContainEqual({
+      id: 2,
+      question: "Funding Source",
+      type: "TEXT",
+      required: true,
+      info: "What platforms have you raised funds from?",
+      choices: [],
+      encrypted: false
+    })
+  })
+
+  it("should mark email field as encrypted", () => {
+    const metadata = {
+      "customQuestions": {
+        "email": "",
+      }
+    }
+  
+    const schema = generateApplicationSchema(metadata)
+
+    expect(schema).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          question: "Email",
+          encrypted: true
+        })
+      ])
     )
   })
 })

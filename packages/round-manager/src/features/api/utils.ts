@@ -1,7 +1,7 @@
-import {ApplicationMetadata, IPFSObject, MetadataPointer} from "./types"
+import { IPFSObject, MetadataPointer } from "./types"
 
 export enum ChainId {
-  GOERLI_CHAIN_ID= 5,
+  GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   OPTIMISM_KOVAN_CHAIN_ID = 69,
 }
@@ -186,36 +186,39 @@ export interface SchemaQuestion {
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */
-export const generateApplicationSchema = (metadata: ApplicationMetadata): Array<SchemaQuestion> => {
+export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> => {
   if (!metadata.customQuestions) return []
 
-  const maybeQuestions = metadata.customQuestions
+  // declare schema with default fields
+  let schema: Array<SchemaQuestion> = [];
 
-  const isPresent = (item: (string | undefined)[]): item is string[] => {
-    return !!item[1]
+  for (const key of Object.keys(metadata)) {
+    if (typeof metadata[key] === "object") {
+
+      for (const subKey of Object.keys(metadata[key])) {
+        schema.push({
+          id: schema.length,
+          question: camelToTitle(subKey),
+          type: "TEXT",
+          required: true,
+          info: metadata[key][subKey],
+          choices: [],
+          encrypted: subKey === 'email'
+        })
+      }
+
+    } else {
+      schema.push({
+        id: schema.length,
+        question: camelToTitle(key),
+        type: "TEXT",
+        required: true,
+        info: metadata[key],
+        choices: [],
+        encrypted: key === 'email'
+      })
+    }
   }
 
-  // TODO(Aditya) Revisit code here to potentially package things in a dynamic way
-  const questions = [
-    ["email", maybeQuestions.email],
-    ["twitter", maybeQuestions.twitter],
-    ["website", maybeQuestions.website],
-    ["github", maybeQuestions.github],
-    ["githubOrganization", maybeQuestions.githubOrganization],
-    ["fundingSource", maybeQuestions.fundingSource],
-    ["profit2022", maybeQuestions.profit2022],
-    ["teamSize", maybeQuestions.teamSize]
-  ].filter(isPresent)
-
-  return questions.map(([name , answer], i) => {
-    return {
-      id: i,
-      question: camelToTitle(name),
-      type: "TEXT",
-      required: true,
-      info: answer,
-      choices: [],
-      encrypted: name === 'email'
-    }
-  })
+  return schema
 }
