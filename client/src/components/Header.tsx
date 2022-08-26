@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { grantsPath, newGrantPath } from "../routes";
 import Button, { ButtonVariants } from "./base/Button";
@@ -6,6 +6,7 @@ import Plus from "./icons/Plus";
 import colors from "../styles/colors";
 import Hamburger from "./icons/Hamburger";
 import WalletDisplay from "./base/WalletDisplay";
+import NetworkSelector from "./base/NetworkSelector";
 
 export default function Header() {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -49,6 +50,7 @@ export default function Header() {
                 New Project
               </Button>
             </Link>
+            <NetworkSelector />
             <WalletDisplay />
           </div>
         </div>
