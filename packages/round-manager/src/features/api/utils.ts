@@ -206,7 +206,6 @@ export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> 
           encrypted: subKey === 'email'
         })
       }
-      continue
 
     } else {
       schema.push({
