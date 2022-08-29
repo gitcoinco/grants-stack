@@ -12,7 +12,7 @@ import {
   CardDescription,
   Button,
 } from "../common/styles"
-import { CheckIcon, XIcon } from "@heroicons/react/solid"
+import { XIcon } from "@heroicons/react/solid"
 import { GrantApplication, ProjectStatus } from "../api/types"
 import { useEffect, useState } from "react"
 
@@ -24,7 +24,6 @@ interface ApplicationsApprovedProps {
 
 export default function ApplicationsApproved({
  bulkSelect = false,
- setBulkSelect = () => { },
 }: ApplicationsApprovedProps) {
   const { id } = useParams()
   const { provider, signer } = useWallet()
@@ -33,10 +32,11 @@ export default function ApplicationsApproved({
     roundId: id!, signerOrProvider: provider, status: "APPROVED"
   })
 
+  const [bulkSelectApproved, setBulkSelectApproved] = useState(bulkSelect)
   const [selected, setSelected] = useState<GrantApplication[]>([])
 
   useEffect(() => {
-    if (isSuccess || !bulkSelect) {
+    if (isSuccess || !bulkSelectApproved) {
       setSelected((data || []).map(application => {
         return {
           id: application.id,
@@ -47,7 +47,7 @@ export default function ApplicationsApproved({
         }
       }))
     }
-  }, [data, isSuccess, bulkSelect, signer])
+  }, [data, isSuccess, bulkSelectApproved, signer])
 
   const toggleRejection = (id: string) => {
     const newState = selected?.map((grantApp : GrantApplication) => {
@@ -67,24 +67,37 @@ export default function ApplicationsApproved({
   }
 
   return (
-    <CardsContainer>
-      {isSuccess && data?.map((application, index) => (
+    <>
+      <div className="justify-end">
+        <span className="text-grey-400 text-sm mr-6">
+          Save in gas fees by approving/rejecting multiple applications at once.
+        </span>
+        {bulkSelectApproved ?
+          <Button
+            type="button"
+            $variant="outline"
+            className="text-xs text-pink-500"
+            onClick={() => setBulkSelectApproved(false)}
+          >
+            Cancel
+          </Button>
+          :
+          <Button
+            type="button"
+            $variant="outline"
+            className="text-xs bg-grey-150 border-none"
+            onClick={() => setBulkSelectApproved(true)}
+          >
+            Select
+          </Button>
+        }
+      </div>
+      <CardsContainer>
+        {isSuccess && data?.map((application, index) => (
           <BasicCard key={index} className="application-card" data-testid="application-card">
           <CardHeader>
-            {bulkSelect && (
+            {bulkSelectApproved && (
                 <div className="absolute flex gap-2 translate-x-[250px] translate-y-4 mr-4" data-testid="bulk-approve-reject-buttons">
-                  {/*<Button*/}
-                  {/*  type="button"*/}
-                  {/*  $variant="solid"*/}
-                  {/*  className={*/}
-                  {/*    `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "APPROVED"*/}
-                  {/*      ? "bg-teal-400 text-grey-500" : "bg-grey-500 text-white"}`*/}
-                  {/*  }*/}
-                  {/*  onClick={() => toggleSelection(application.id, "APPROVED")}*/}
-                  {/*  data-testid="approve-button"*/}
-                  {/*>*/}
-                  {/*  <CheckIcon aria-hidden="true" />*/}
-                  {/*</Button>*/}
                   <Button
                     type="button"
                     $variant="solid"
@@ -124,11 +137,12 @@ export default function ApplicationsApproved({
               </CardContent>
               </Link>
           </BasicCard>
-      ))}
-      {isLoading &&
-        <Spinner text="Fetching Grant Applications" />
-      }
-    </CardsContainer>
+        ))}
+        {isLoading &&
+          <Spinner text="Fetching Grant Applications" />
+        }
+      </CardsContainer>
+    </>
   )
   // TODO(shavinac) add confirm step
 }

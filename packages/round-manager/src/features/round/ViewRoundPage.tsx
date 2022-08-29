@@ -13,7 +13,6 @@ import ApplicationsRejected from "./ApplicationsRejected"
 import Footer from "../common/Footer"
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
 import tw from "tailwind-styled-components";
-import { Button } from "../common/styles"
 import { datadogLogs } from "@datadog/browser-logs"
 import NotFoundPage from "../common/NotFoundPage"
 import AccessDenied from "../common/AccessDenied"
@@ -29,7 +28,8 @@ export default function ViewRoundPage() {
   datadogLogs.logger.info('====> Route: /round/create')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
-  const [bulkSelect, setBulkSelect] = useState(false)
+  const [bulkSelectReceived, setBulkSelectReceived] = useState(false)
+
 
   const { id } = useParams()
   const { address, provider } = useWallet()
@@ -62,6 +62,7 @@ export default function ViewRoundPage() {
 
   const [currentTabIndex, setCurrentTabIndex] = useState(TabIndex.PENDING);
 
+  // TODO(shavinac) consider moving select/cancel button inside each tab component -- will discuss in standup
   const doesTabHaveApplications = (tabIndex: number): boolean => {
     switch (tabIndex) {
       case TabIndex.PENDING: {
@@ -202,39 +203,13 @@ export default function ViewRoundPage() {
                             }
                           </Tab>
                         </div>
-                        {doesTabHaveApplications(currentTabIndex) &&
-                          <div className="justify-end">
-                            <span className="text-grey-400 text-sm mr-6">
-                              Save in gas fees by approving/rejecting multiple applications at once.
-                            </span>
-                            {bulkSelect ?
-                              <Button
-                                type="button"
-                                $variant="outline"
-                                className="text-xs text-pink-500"
-                                onClick={() => setBulkSelect(false)}
-                              >
-                                Cancel
-                              </Button>
-                              :
-                              <Button
-                                type="button"
-                                $variant="outline"
-                                className="text-xs bg-grey-150 border-none"
-                                onClick={() => setBulkSelect(true)}
-                              >
-                                Select
-                              </Button>
-                            }
-                          </div>
-                        }
                       </Tab.List>
                       <Tab.Panels>
                         <Tab.Panel>
-                          <ApplicationsReceived bulkSelect={bulkSelect} setBulkSelect={setBulkSelect} />
+                          <ApplicationsReceived bulkSelect={bulkSelectReceived} setBulkSelect={setBulkSelectReceived} />
                         </Tab.Panel>
                         <Tab.Panel>
-                          <ApplicationsApproved bulkSelect={bulkSelect} setBulkSelect={setBulkSelect}/>
+                          <ApplicationsApproved />
                         </Tab.Panel>
                         <Tab.Panel>
                           <ApplicationsRejected />
@@ -242,7 +217,6 @@ export default function ViewRoundPage() {
                       </Tab.Panels>
                     </Tab.Group>
                   </div>
-
                 </div>
               }
 

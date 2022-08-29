@@ -42,6 +42,52 @@ describe("<ApplicationsApproved />", () => {
     ]);
   })
 
+  describe('when approved applications are shown', () => {
+    it("should display the bulk select button", () => {
+      renderWrapped(<ApplicationsApproved />)
+      expect(screen.getByText(
+        'Save in gas fees by approving/rejecting multiple applications at once.'
+      )).toBeInTheDocument()
+      expect(screen.getByRole('button', {
+        name: /Select/i
+      })).toBeInTheDocument()
+    });
+
+    it("should display the cancel button when select is clicked", () => {
+      renderWrapped(<ApplicationsApproved />)
+      const selectButton = screen.getByRole('button', {
+        name: /Select/i
+      });
+      fireEvent.click(selectButton)
+      expect(screen.getByRole('button', {
+        name: /Cancel/i
+      })).toBeInTheDocument()
+      expect(screen.queryByRole('button', {
+        name: /Select/i
+      })).not.toBeInTheDocument()
+    });
+
+    it("should display the select button when cancel is clicked", () => {
+      renderWrapped(<ApplicationsApproved />)
+      const selectButton = screen.getByRole('button', {
+        name: /Select/i
+      });
+      fireEvent.click(selectButton)
+
+      const cancelButton = screen.getByRole('button', {
+        name: /Cancel/i
+      });
+      fireEvent.click(cancelButton)
+
+      expect(screen.queryByRole('button', {
+        name: /Cancel/i
+      })).not.toBeInTheDocument()
+      expect(screen.getByRole('button', {
+        name: /Select/i
+      })).toBeInTheDocument()
+    });
+  })
+
   describe("when bulkSelect is true", () => {
     it("renders reject buttons on each project card", () => {
       renderWrapped(<ApplicationsApproved bulkSelect={true} />);
