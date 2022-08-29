@@ -29,7 +29,11 @@ enum VerifiedCredentialState {
 enum ApplicationQuestions {
   GITHUB = "Github",
   GITHUB_ORGANIZATION = "Github Organization",
-  TWITTER = "Twitter"
+  TWITTER = "Twitter",
+  EMAIL = 'Email',
+  FUNDING_SOURCE = 'Funding Source',
+  PROFIT_2022 = 'Profit2022',
+  TEAM_SIZE = 'Team Size'
 }
 
 export const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC"
@@ -282,7 +286,7 @@ export default function ViewApplicationPage() {
               <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
                 <div className="text-grey-500 truncate block">
                   <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1"/>
-                  <span className="text-xs text-grey-400">{ getAnswer("Email") }</span>
+                  <span className="text-xs text-grey-400">{ getAnswer(ApplicationQuestions.EMAIL) }</span>
                 </div>
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                   <TwitterIcon className="h-4 w-4 mr-2"/>
@@ -311,25 +315,17 @@ export default function ViewApplicationPage() {
               <hr className="my-6"/>
 
               <h2 className="text-xs mb-2">Funding Sources</h2>
-              <p className="text-base mb-6">{ getAnswer("Funding Source") }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.FUNDING_SOURCE) }</p>
 
               <h2 className="text-xs mb-2">Funding Profit</h2>
-              <p className="text-base mb-6">{ getAnswer("Profit2022") }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.PROFIT_2022) }</p>
 
               <h2 className="text-xs mb-2">Team Size</h2>
-              <p className="text-base mb-6">{ getAnswer("Team Size") }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.TEAM_SIZE) }</p>
 
-              <p className="text-base mb-6">{getAnswer("Is your project cool enough to apply ?")}</p>
             </div>
             <div className="sm:basis-1/4 text-center sm:ml-3"></div>
           </div>
-
-          {/* <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-            {
-              isRoundsLoading &&
-              <p>Fetching round information...</p>
-            }
-          </div> */ }
 
         </main>
         <Footer/>
