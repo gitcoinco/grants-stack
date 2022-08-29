@@ -49,7 +49,7 @@ root.render(
                 <Route path="/" element={<ProgramProvider><Program /></ProgramProvider>} />
 
                 {/* Round Routes */}
-                <Route path="/round/create" element={<CreateRound />} />
+                <Route path="/round/create" element={<ProgramProvider><CreateRound /></ProgramProvider>} />
                 <Route path="/round/:id" element={<ViewRoundPage />} />
                 <Route path="/round/:roundId/application/:id" element={<ViewApplication />} />
 
