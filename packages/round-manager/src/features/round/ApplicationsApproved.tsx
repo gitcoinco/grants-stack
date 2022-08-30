@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"
+import {Link, useParams} from "react-router-dom"
 
 import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
 import { useWallet } from "../common/Auth"
@@ -15,6 +15,7 @@ import {
 import { XIcon } from "@heroicons/react/solid"
 import { GrantApplication, ProjectStatus } from "../api/types"
 import { useEffect, useState } from "react"
+import ConfirmationModal from "../common/ConfirmationModal";
 
 interface ApplicationsApprovedProps {
   bulkSelect?: boolean;
@@ -33,6 +34,7 @@ export default function ApplicationsApproved({
   })
 
   const [bulkSelectApproved, setBulkSelectApproved] = useState(bulkSelect)
+  const [openModal, setOpenModal] = useState(false)
   const [selected, setSelected] = useState<GrantApplication[]>([])
 
   useEffect(() => {
@@ -142,9 +144,31 @@ export default function ApplicationsApproved({
           <Spinner text="Fetching Grant Applications"/>
         }
       </CardsContainer>
-
-      <Continue grantApplications={selected} predicate={obj => obj.status === "REJECTED"} onClick={() => {
-      }}/>
+      {selected && selected?.filter(obj => obj.status === "REJECTED").length > 0  &&
+        <Continue grantApplications={selected} predicate={obj => obj.status === "REJECTED"}
+                  onClick={() => setOpenModal(true)}/>
+      }
+      <ConfirmationModal
+        title={"Confirm Decision"}
+        body={"You have selected multiple Grant Applications to be rejected."}
+        confirmButtonText={"Confirm"}
+        bodyStyled={
+          <>
+            <div className="flex my-8 gap-16 justify-center items-center text-center">
+              <div className="grid gap-2" data-testid="rejected-applications-count">
+                <i className="flex justify-center">
+                  <XIcon className="bg-pink-500 text-white rounded-full h-6 w-6 p-1" aria-hidden="true" />
+                </i>
+                <span className="text-xs text-grey-400 font-semibold text-center mt-2">REJECTED</span>
+                <span className="text-grey-500 font-semibold">{selected?.filter(obj => obj.status === "REJECTED").length}</span>
+              </div>
+            </div>
+            <p className="text-sm italic text-grey-400 mb-2">Changes could be subject to additional gas fees.</p>
+          </>
+        }
+        isOpen={openModal}
+        setIsOpen={setOpenModal}
+        confirmButtonAction={() => {}}/>
     </>
   )
   // TODO(shavinac) add confirm step

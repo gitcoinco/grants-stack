@@ -148,5 +148,30 @@ describe("<ApplicationsApproved />", () => {
       expect(continueButton).toBeInTheDocument();
       expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
     })
+
+    it("opens the confirmation modal when the continue button is clicked", async () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true} />)
+
+      const rejectButton = screen.queryAllByTestId("reject-button")[0]
+      fireEvent.click(rejectButton)
+
+      const continueButton = screen.getByRole('button', {
+        name: /Continue/i
+      });
+      fireEvent.click(continueButton)
+
+      expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+    })
+
+    it('does not show continue button when no applications are rejected', () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true} />)
+
+      const continueButton = screen.queryByRole('button', {
+        name: /Continue/i
+      });
+
+      expect(continueButton).not.toBeInTheDocument();
+    })
+
   });
 })
