@@ -8,6 +8,7 @@ import { Status } from "../../reducers/rounds";
 import { networkPrettyName } from "../../utils/wallet";
 import { formatDate } from "../../utils/components";
 import Button, { ButtonVariants } from "../base/Button";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -34,6 +35,19 @@ function Round() {
       roundChainId,
     };
   }, shallowEqual);
+
+  const [, setRoundToApply] = useLocalStorage("roundToApply", null);
+  const [, setToggleRoundApplicationModal] = useLocalStorage(
+    "toggleRoundApplicationModal",
+    false
+  );
+
+  useEffect(() => {
+    if (roundId) {
+      setRoundToApply(`${chainId}:${roundId}`);
+      setToggleRoundApplicationModal(true);
+    }
+  }, [roundId]);
 
   useEffect(() => {
     if (roundId !== undefined) {
