@@ -222,3 +222,6 @@ export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> 
 
   return schema
 }
+
+// Checks if tests are being run jest
+export const isJestRunning = () =>  process.env.JEST_WORKER_ID !== undefined;

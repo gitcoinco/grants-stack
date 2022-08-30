@@ -14,6 +14,9 @@ import { datadogLogs } from "@datadog/browser-logs"
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier"
 import { GrantApplication, ProjectCredentials } from "../api/types"
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types"
+import { Lit } from "../api/lit"
+import { utils } from "ethers"
+import { AnswerBlock } from "../api/types"
 
 type ApplicationStatus = "APPROVED" | "REJECTED"
 
@@ -26,7 +29,11 @@ enum VerifiedCredentialState {
 enum ApplicationQuestions {
   GITHUB = "Github",
   GITHUB_ORGANIZATION = "Github Organization",
-  TWITTER = "Twitter"
+  TWITTER = "Twitter",
+  EMAIL = 'Email',
+  FUNDING_SOURCE = 'Funding Source',
+  PROFIT_2022 = 'Profit2022',
+  TEAM_SIZE = 'Team Size'
 }
 
 export const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC"
@@ -44,7 +51,7 @@ export default function ViewApplicationPage() {
   })
 
   const { roundId, id } = useParams()
-  const { address, provider, signer } = useWallet()
+  const { chain, address, provider, signer } = useWallet()
   const navigate = useNavigate()
   const verifier = new PassportVerifier()
 
@@ -124,7 +131,6 @@ export default function ViewApplicationPage() {
     setTimeout(() => setReviewDecision(undefined), 500)
   }
 
-
   const getVerifiableCredentialVerificationResultView = (provider: string) => {
     switch (verifiedProviders[provider]) {
       case VerifiedCredentialState.VALID:
@@ -146,6 +152,65 @@ export default function ViewApplicationPage() {
       default:
         return <></>
     }
+  }
+
+
+  const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
+  useEffect(() => {
+    // Iterate through application answers and decrypt PII information
+    const decryptAnswers = async () => {
+
+      let _answerBlocks: AnswerBlock[] = []
+
+      const PREFIX = 'data:application/octet-stream;base64'
+
+      if (application?.answers && application.answers.length > 0) {
+        for (let _answerBlock of application.answers) {
+          if (_answerBlock.encryptedAnswer) {
+            try {
+              const encryptedAnswer = _answerBlock.encryptedAnswer
+              const base64EncryptedString = [PREFIX, encryptedAnswer.ciphertext].join(',')
+
+              const response = await fetch(base64EncryptedString)
+              const encryptedString: any = await response.blob()
+
+              const lit = new Lit({
+                chain: chain.name.toLowerCase(),
+                contract: utils.getAddress(roundId!),
+              })
+
+            const decryptedString = await lit.decryptString(
+              encryptedString,
+              encryptedAnswer.encryptedSymmetricKey
+            )
+
+              _answerBlock = {
+                ..._answerBlock,
+                'answer': decryptedString
+              }
+            } catch (error) {
+              _answerBlock = {
+                ..._answerBlock,
+                'answer': 'N/A'
+              }
+            }
+          }
+
+          _answerBlocks.push(_answerBlock)
+
+        }
+      }
+      setAnswerBlocks(_answerBlocks);
+    }
+
+    decryptAnswers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [application, isLoading]);
+
+  const getAnswer = (question: string) => {
+    const answerBlock = answerBlocks?.find((answerBlock: AnswerBlock) => answerBlock.question === question);
+    const answer = answerBlock ? answerBlock.answer : "N/A";
+    return answer;
   }
 
   return (
@@ -221,11 +286,11 @@ export default function ViewApplicationPage() {
               <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
                 <div className="text-grey-500 truncate block">
                   <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1"/>
-                  <span className="text-xs text-grey-400">{ getAnswer("Email", application) }</span>
+                  <span className="text-xs text-grey-400">{ getAnswer(ApplicationQuestions.EMAIL) }</span>
                 </div>
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                   <TwitterIcon className="h-4 w-4 mr-2"/>
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.TWITTER, application) }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.TWITTER) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("twitter")
                   }
@@ -234,7 +299,7 @@ export default function ViewApplicationPage() {
 
                 <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                   <GithubIcon className="h-4 w-4 mr-2" />
-                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.GITHUB, application) }</span>
+                  <span className="text-sm text-violet-400 mr-2">{ getAnswer(ApplicationQuestions.GITHUB) }</span>
                   {
                     getVerifiableCredentialVerificationResultView("github")
                   }
@@ -250,23 +315,17 @@ export default function ViewApplicationPage() {
               <hr className="my-6"/>
 
               <h2 className="text-xs mb-2">Funding Sources</h2>
-              <p className="text-base mb-6">{ getAnswer("Funding Source", application) }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.FUNDING_SOURCE) }</p>
 
               <h2 className="text-xs mb-2">Funding Profit</h2>
-              <p className="text-base mb-6">{ getAnswer("Profit2022", application) }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.PROFIT_2022) }</p>
 
               <h2 className="text-xs mb-2">Team Size</h2>
-              <p className="text-base mb-6">{ getAnswer("Team Size", application) }</p>
+              <p className="text-base mb-6">{ getAnswer(ApplicationQuestions.TEAM_SIZE) }</p>
+
             </div>
             <div className="sm:basis-1/4 text-center sm:ml-3"></div>
           </div>
-
-          {/* <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-            {
-              isRoundsLoading &&
-              <p>Fetching round information...</p>
-            }
-          </div> */ }
 
         </main>
         <Footer/>
@@ -275,16 +334,16 @@ export default function ViewApplicationPage() {
   )
 }
 
-const getAnswer = (question: string, application: GrantApplication | undefined) => {
+const getCredentialSubject = (question: string, application: GrantApplication | undefined) => {
   return application?.answers!.find((answer) => answer.question === question)?.answer || "N/A"
 }
 
 function vcProviderMatchesProject(provider: string, verifiableCredential: VerifiableCredential, application: GrantApplication | undefined) {
   let vcProviderMatchesProject = false
   if (provider === "twitter") {
-    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.TWITTER, application)
+    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getCredentialSubject(ApplicationQuestions.TWITTER, application)
   } else if (provider === "github") {
-    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getAnswer(ApplicationQuestions.GITHUB_ORGANIZATION, application)
+    vcProviderMatchesProject = verifiableCredential.credentialSubject.provider?.split("#")[1] === getCredentialSubject(ApplicationQuestions.GITHUB_ORGANIZATION, application)
   }
   return vcProviderMatchesProject
 }
