@@ -98,6 +98,9 @@ const updateApplicationStatusFromContract = async (
   applications: GrantApplication[], projectsMetaPtr: MetadataPointer, filterByStatus?: string
 ) => {
 
+  // Handle scenario where operator hasn't review any projects in the round
+  if (!projectsMetaPtr) return applications
+
   const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer)
 
   // Iterate over all applications indexed by graph
