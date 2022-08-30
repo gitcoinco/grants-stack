@@ -1,6 +1,6 @@
 import {Link, useParams} from "react-router-dom"
 
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
+import {useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery} from "../api/services/grantApplication"
 import { useWallet } from "../common/Auth"
 import { Spinner } from "../common/Spinner"
 import {
@@ -22,7 +22,6 @@ interface ApplicationsApprovedProps {
   setBulkSelect?: (bulkSelect: boolean) => void;
 }
 
-
 export default function ApplicationsApproved({
  bulkSelect = false,
 }: ApplicationsApprovedProps) {
@@ -37,6 +36,8 @@ export default function ApplicationsApproved({
   const [openModal, setOpenModal] = useState(false)
   const [selected, setSelected] = useState<GrantApplication[]>([])
 
+  const [bulkUpdateGrantApplications] = useBulkUpdateGrantApplicationsMutation()
+
   useEffect(() => {
     if (isSuccess || !bulkSelectApproved) {
       setSelected((data || []).map(application => {
@@ -49,7 +50,7 @@ export default function ApplicationsApproved({
         }
       }))
     }
-  }, [data, isSuccess, bulkSelectApproved, signer])
+  }, [data, isSuccess, bulkSelectApproved])
 
   const toggleRejection = (id: string) => {
     const newState = selected?.map((grantApp : GrantApplication) => {
@@ -66,6 +67,21 @@ export default function ApplicationsApproved({
 
   const checkSelection = (id: string) => {
     return (selected?.find((grantApp: GrantApplication) => grantApp.id === id))?.status
+  }
+
+  const handleBulkReview = async () => {
+    try {
+      await bulkUpdateGrantApplications({
+        roundId: id!,
+        applications: selected.filter(application => application.status !== "PENDING"),
+        signer,
+        provider
+      }).unwrap()
+      setBulkSelectApproved(false)
+      setOpenModal(false)
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   return (
@@ -152,6 +168,7 @@ export default function ApplicationsApproved({
         title={"Confirm Decision"}
         body={"You have selected multiple Grant Applications to be rejected."}
         confirmButtonText={"Confirm"}
+        confirmButtonAction={handleBulkReview}
         bodyStyled={
           <>
             <div className="flex my-8 gap-16 justify-center items-center text-center">
@@ -168,7 +185,7 @@ export default function ApplicationsApproved({
         }
         isOpen={openModal}
         setIsOpen={setOpenModal}
-        confirmButtonAction={() => {}}/>
+      />
     </>
   )
   // TODO(shavinac) add confirm step

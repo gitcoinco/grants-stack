@@ -23,7 +23,6 @@ interface ApplicationsReceivedProps {
   setBulkSelect?: (bulkSelect: boolean) => void;
 }
 
-
 export default function ApplicationsReceived({
   bulkSelect = false,
   setBulkSelect = () => { },

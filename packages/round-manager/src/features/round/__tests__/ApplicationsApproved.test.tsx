@@ -3,12 +3,19 @@ import {
   useBulkUpdateGrantApplicationsMutation,
   useListGrantApplicationsQuery,
 } from "../../api/services/grantApplication"
-import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
-import { fireEvent, screen } from "@testing-library/react"
+import {makeGrantApplicationData, renderWrapped} from "../../../test-utils"
+import {fireEvent, screen} from "@testing-library/react"
 
 jest.mock("../../api/services/grantApplication");
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: "0"
+  })
+}));
+
 jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({ provider: {} })
+  useWallet: () => ({ provider: {}, signer: {} })
 }))
 
 const grantApplications = [
@@ -130,6 +137,18 @@ describe("<ApplicationsApproved />", () => {
   });
 
   describe("when at least one application is selected", () => {
+    let bulkUpdateGrantApplications: any;
+
+    beforeEach(() => {
+      bulkUpdateGrantApplications = jest.fn(() => ({
+        unwrap: () => {
+        }
+      }));
+      (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockImplementation(() => {
+        return [bulkUpdateGrantApplications, {isLoading: false}];
+      });
+    })
+
     it("displays the continue button and copy", () => {
       renderWrapped(<ApplicationsApproved bulkSelect={true} />)
 
@@ -171,6 +190,32 @@ describe("<ApplicationsApproved />", () => {
       });
 
       expect(continueButton).not.toBeInTheDocument();
+    })
+    
+    it('choosing confirm kicks off the signature flow to persist rejected applications', () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true} />)
+
+      const rejectButton = screen.queryAllByTestId("reject-button")[0]
+      fireEvent.click(rejectButton)
+
+      const continueButton = screen.queryByRole('button', { name: /Continue/i });
+      fireEvent.click(continueButton!!);
+
+      const confirmButton = screen.getByRole('button', { name: /Confirm/i })
+      fireEvent.click(confirmButton!!);
+
+      screen.getByTestId("rejected-applications-count");
+      grantApplications[0].status = "REJECTED";
+
+      const selected = grantApplications.map(application => ({
+        id: application.id,
+        round: application.round,
+        recipient: application.recipient,
+        projectsMetaPtr: application.projectsMetaPtr,
+        status: application.status
+      }));
+
+      expect(bulkUpdateGrantApplications.mock.calls[0]).toEqual([{roundId: "0", applications: selected, signer: {}, provider: {}}]);
     })
 
   });
