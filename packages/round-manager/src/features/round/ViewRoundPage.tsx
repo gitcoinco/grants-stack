@@ -30,7 +30,6 @@ export default function ViewRoundPage() {
 
   const [bulkSelectReceived, setBulkSelectReceived] = useState(false)
 
-
   const { id } = useParams()
   const { address, provider } = useWallet()
 

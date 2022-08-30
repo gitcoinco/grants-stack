@@ -128,4 +128,25 @@ describe("<ApplicationsApproved />", () => {
       expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(0)
     })
   });
+
+  describe("when at least one application is selected", () => {
+    it("displays the continue button and copy", () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true} />)
+
+      const rejectButton = screen.queryAllByTestId("reject-button")[0]
+      fireEvent.click(rejectButton)
+
+      const continueButton = screen.getByRole('button', {
+        name: /Continue/i
+      });
+      expect(continueButton).toBeInTheDocument();
+      expect(screen.getByText(/You have selected 1 Grant Applications/i)).toBeInTheDocument();
+
+      const rejectButton2 = screen.queryAllByTestId("reject-button")[1]
+      fireEvent.click(rejectButton2)
+
+      expect(continueButton).toBeInTheDocument();
+      expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
+    })
+  });
 })

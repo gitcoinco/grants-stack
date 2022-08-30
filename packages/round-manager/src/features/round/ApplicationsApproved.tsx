@@ -97,20 +97,20 @@ export default function ApplicationsApproved({
           <BasicCard key={index} className="application-card" data-testid="application-card">
           <CardHeader>
             {bulkSelectApproved && (
-                <div className="absolute flex gap-2 translate-x-[250px] translate-y-4 mr-4" data-testid="bulk-approve-reject-buttons">
-                  <Button
-                    type="button"
-                    $variant="solid"
-                    className={
-                      `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "REJECTED"
-                        ? "bg-white text-pink-500" : "bg-grey-500 text-white"}`
-                    }
-                    onClick={() => toggleRejection(application.id)}
-                    data-testid="reject-button"
-                  >
-                    <XIcon aria-hidden="true" />
-                  </Button>
-                </div>)}
+              <div className="absolute flex gap-2 translate-x-[250px] translate-y-4 mr-4" data-testid="bulk-approve-reject-buttons">
+                <Button
+                  type="button"
+                  $variant="solid"
+                  className={
+                    `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "REJECTED"
+                      ? "bg-white text-pink-500" : "bg-grey-500 text-white"}`
+                  }
+                  onClick={() => toggleRejection(application.id)}
+                  data-testid="reject-button"
+                >
+                  <XIcon aria-hidden="true" />
+                </Button>
+              </div>)}
               <div>
                 <img
                   className="h-[120px] w-full object-cover rounded-t"
@@ -135,14 +135,36 @@ export default function ApplicationsApproved({
                 <CardTitle>{application.project!.title}</CardTitle>
                 <CardDescription>{application.project!.description}</CardDescription>
               </CardContent>
-              </Link>
+            </Link>
           </BasicCard>
         ))}
         {isLoading &&
-          <Spinner text="Fetching Grant Applications" />
+          <Spinner text="Fetching Grant Applications"/>
         }
       </CardsContainer>
+
+      <Continue grantApplications={selected} predicate={obj => obj.status === "REJECTED"} onClick={() => {
+      }}/>
     </>
   )
   // TODO(shavinac) add confirm step
+}
+
+function Continue(props: { grantApplications: GrantApplication[], predicate: (obj: any) => boolean, onClick: () => void }) {
+  return <div className="fixed w-full left-0 bottom-0 bg-white">
+    <hr/>
+    <div className="flex justify-end items-center py-5 pr-20">
+      <span className="text-grey-400 text-sm mr-6">
+        You have selected {props.grantApplications?.filter(props.predicate).length} Grant Applications
+      </span>
+      <Button
+        type="button"
+        $variant="solid"
+        className="text-sm px-5"
+        onClick={props.onClick}
+      >
+        Continue
+      </Button>
+    </div>
+  </div>;
 }
