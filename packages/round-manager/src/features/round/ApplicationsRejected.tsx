@@ -102,6 +102,7 @@ export default function ApplicationsRejected() {
               $variant="outline"
               className="text-xs bg-grey-150 border-none"
               onClick={() => setBulkSelectRejected(true)}
+              data-testid="select-button"
             >
               Select
             </Button>
