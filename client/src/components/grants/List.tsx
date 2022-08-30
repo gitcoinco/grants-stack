@@ -31,6 +31,7 @@ function ProjectsList() {
     "toggleRoundApplicationModal",
     false
   );
+  console.log("toggle", toggleModal);
   const [roundToApply] = useLocalStorage("roundToApply", null);
 
   const roundInfo = null; // Placeholder, get from contract call or graph
@@ -52,7 +53,7 @@ function ProjectsList() {
             </p>
           </div>
           <RoundApplyAlert
-            show
+            show={JSON.parse(toggleModal)}
             confirmHandler={() => {
               const chainId = roundToApply?.split(":")[0];
               const roundId = roundToApply?.split(":")[1];
