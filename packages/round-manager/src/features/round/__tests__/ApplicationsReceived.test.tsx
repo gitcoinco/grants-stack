@@ -225,6 +225,29 @@ describe("<ApplicationsReceived />", () => {
 
         await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"));
       })
+
+      it("closes the modal when cancel button is clicked on the modal", async () => {
+        renderWrapped(<ApplicationsReceived bulkSelect={true}/>)
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        const modal = screen.getByTestId("confirm-modal");
+
+        const modalCancelButton = within(modal).getByRole('button', {
+          name: /Cancel/i
+        });
+        fireEvent.click(modalCancelButton);
+
+        expect(bulkUpdateGrantApplications).not.toBeCalled();
+
+        expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
+      });
     });
   });
 

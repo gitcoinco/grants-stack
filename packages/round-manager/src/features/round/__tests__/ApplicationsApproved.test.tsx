@@ -4,7 +4,7 @@ import {
   useListGrantApplicationsQuery,
 } from "../../api/services/grantApplication"
 import {makeGrantApplicationData, renderWrapped} from "../../../test-utils"
-import {fireEvent, screen, waitForElementToBeRemoved} from "@testing-library/react"
+import {fireEvent, screen, waitForElementToBeRemoved, within} from "@testing-library/react";
 import {GrantApplication} from "../../api/types"
 
 jest.mock("../../api/services/grantApplication");
@@ -229,5 +229,27 @@ describe("<ApplicationsApproved />", () => {
       });
     })
 
+    it("closes the modal when cancel button is clicked on the modal", async () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true}/>)
+
+      const rejectButton = screen.queryAllByTestId("reject-button")[0]
+      fireEvent.click(rejectButton)
+
+      const continueButton = screen.getByRole('button', {
+        name: /Continue/i
+      });
+      fireEvent.click(continueButton)
+
+      const modal = screen.getByTestId("confirm-modal");
+
+      const modalCancelButton = within(modal).getByRole('button', {
+        name: /Cancel/i
+      });
+      fireEvent.click(modalCancelButton);
+
+      expect(bulkUpdateGrantApplications).not.toBeCalled();
+
+      expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
+    });
   });
 })
