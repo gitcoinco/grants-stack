@@ -53,7 +53,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src/"
