@@ -4,7 +4,8 @@ import {
   useListGrantApplicationsQuery,
 } from "../../api/services/grantApplication"
 import {makeGrantApplicationData, renderWrapped} from "../../../test-utils"
-import {fireEvent, screen} from "@testing-library/react"
+import {fireEvent, screen, waitForElementToBeRemoved} from "@testing-library/react"
+import {GrantApplication} from "../../api/types"
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("react-router-dom", () => ({
@@ -18,16 +19,18 @@ jest.mock("../../common/Auth", () => ({
   useWallet: () => ({ provider: {}, signer: {} })
 }))
 
-const grantApplications = [
-  makeGrantApplicationData({ status: "APPROVED" }),
-  makeGrantApplicationData({ status: "APPROVED" }),
-  makeGrantApplicationData({ status: "APPROVED" })
-];
+let grantApplications: GrantApplication[];
 
 let bulkUpdateGrantApplications = jest.fn()
 
 describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
+    grantApplications = [
+      makeGrantApplicationData({ status: "APPROVED" }),
+      makeGrantApplicationData({ status: "APPROVED" }),
+      makeGrantApplicationData({ status: "APPROVED" })
+    ];
+
     (useListGrantApplicationsQuery as any).mockReturnValue({
       data: grantApplications, refetch: jest.fn(), isSuccess: true, isLoading: false
     });
@@ -191,31 +194,39 @@ describe("<ApplicationsApproved />", () => {
 
       expect(continueButton).not.toBeInTheDocument();
     })
-    
-    it('choosing confirm kicks off the signature flow to persist rejected applications', () => {
-      renderWrapped(<ApplicationsApproved bulkSelect={true} />)
+
+    it('choosing confirm kicks off the signature flow to persist rejected applications', async () => {
+      renderWrapped(<ApplicationsApproved bulkSelect={true}/>)
 
       const rejectButton = screen.queryAllByTestId("reject-button")[0]
       fireEvent.click(rejectButton)
 
-      const continueButton = screen.queryByRole('button', { name: /Continue/i });
+      const continueButton = screen.queryByRole('button', {name: /Continue/i});
       fireEvent.click(continueButton!!);
 
-      const confirmButton = screen.getByRole('button', { name: /Confirm/i })
+      screen.getByTestId("rejected-applications-count");
+
+      const confirmButton = screen.getByRole('button', {name: /Confirm/i})
       fireEvent.click(confirmButton!!);
 
-      screen.getByTestId("rejected-applications-count");
+      await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"))
+
       grantApplications[0].status = "REJECTED";
 
-      const selected = grantApplications.map(application => ({
-        id: application.id,
-        round: application.round,
-        recipient: application.recipient,
-        projectsMetaPtr: application.projectsMetaPtr,
-        status: application.status
-      }));
+      const expected = {
+        id: grantApplications[0].id,
+        round: grantApplications[0].round,
+        recipient: grantApplications[0].recipient,
+        projectsMetaPtr: grantApplications[0].projectsMetaPtr,
+        status: grantApplications[0].status
+      }
 
-      expect(bulkUpdateGrantApplications.mock.calls[0]).toEqual([{roundId: "0", applications: selected, signer: {}, provider: {}}]);
+      expect(bulkUpdateGrantApplications.mock.calls[0][0]).toEqual({
+        roundId: "0",
+        applications: [expected],
+        signer: {},
+        provider: {}
+      });
     })
 
   });

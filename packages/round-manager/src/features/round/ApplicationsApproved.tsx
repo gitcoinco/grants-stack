@@ -73,7 +73,7 @@ export default function ApplicationsApproved({
     try {
       await bulkUpdateGrantApplications({
         roundId: id!,
-        applications: selected.filter(application => application.status !== "PENDING"),
+        applications: selected.filter(application => application.status === "REJECTED"),
         signer,
         provider
       }).unwrap()
