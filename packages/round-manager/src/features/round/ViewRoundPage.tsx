@@ -17,18 +17,10 @@ import { datadogLogs } from "@datadog/browser-logs"
 import NotFoundPage from "../common/NotFoundPage"
 import AccessDenied from "../common/AccessDenied"
 
-enum TabIndex {
-  PENDING = 0,
-  APPROVED = 1,
-  REJECTED = 2
-}
-
 export default function ViewRoundPage() {
 
   datadogLogs.logger.info('====> Route: /round/create')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
-
-  const [bulkSelectReceived, setBulkSelectReceived] = useState(false)
 
   const { id } = useParams()
   const { address, provider } = useWallet()
@@ -58,25 +50,6 @@ export default function ViewRoundPage() {
   const pendingApplications = applications?.filter((a) => a.status === "PENDING") || []
   const approvedApplications = applications?.filter((a) => a.status === "APPROVED") || []
   const rejectedApplications = applications?.filter((a) => a.status === "REJECTED") || []
-
-  const [currentTabIndex, setCurrentTabIndex] = useState(TabIndex.PENDING);
-
-  // TODO(shavinac) consider moving select/cancel button inside each tab component -- will discuss in standup
-  const doesTabHaveApplications = (tabIndex: number): boolean => {
-    switch (tabIndex) {
-      case TabIndex.PENDING: {
-        return pendingApplications?.length > 0
-      }
-      case TabIndex.APPROVED: {
-        return approvedApplications?.length > 0
-      }
-      case TabIndex.REJECTED: {
-        return rejectedApplications?.length > 0
-      }
-      default:
-        return false
-    }
-  }
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString()
 
@@ -165,7 +138,7 @@ export default function ViewRoundPage() {
                 <div>
                   <p className="text-bold text-md font-semibold mb-2">Grant Applications</p>
                   <div>
-                    <Tab.Group onChange={setCurrentTabIndex}>
+                    <Tab.Group>
                       <Tab.List className="border-b mb-6 flex items-center justify-between">
                         <div className="space-x-8">
                           <Tab className={({ selected }) => tabStyles(selected)}>
@@ -205,7 +178,7 @@ export default function ViewRoundPage() {
                       </Tab.List>
                       <Tab.Panels>
                         <Tab.Panel>
-                          <ApplicationsReceived bulkSelect={bulkSelectReceived} setBulkSelect={setBulkSelectReceived} />
+                          <ApplicationsReceived />
                         </Tab.Panel>
                         <Tab.Panel>
                           <ApplicationsApproved />
