@@ -98,6 +98,23 @@ describe("<ApplicationsApproved />", () => {
     });
   })
 
+  describe("when there are no approved applications", () => {
+    it("should not display the bulk select button", () => {
+      (useListGrantApplicationsQuery as any).mockReturnValue({
+        data: [], refetch: jest.fn(), isSuccess: true, isLoading: false
+      });
+
+      renderWrapped(<ApplicationsApproved />)
+
+      expect(screen.queryByText(
+        'Save in gas fees by approving/rejecting multiple applications at once.'
+      )).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', {
+        name: /Select/i
+      })).not.toBeInTheDocument()
+    })
+  })
+
   describe("when bulkSelect is true", () => {
     it("renders reject buttons on each project card", () => {
       renderWrapped(<ApplicationsApproved bulkSelect={true} />);

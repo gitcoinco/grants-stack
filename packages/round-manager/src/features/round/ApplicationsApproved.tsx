@@ -86,7 +86,7 @@ export default function ApplicationsApproved({
 
   return (
     <>
-      <div className="justify-end">
+      {data && data.length > 0 && <div className="justify-end">
         <span className="text-grey-400 text-sm mr-6">
           Save in gas fees by approving/rejecting multiple applications at once.
         </span>
@@ -109,7 +109,7 @@ export default function ApplicationsApproved({
             Select
           </Button>
         }
-      </div>
+      </div>}
       <CardsContainer>
         {isSuccess && data?.map((application, index) => (
           <BasicCard key={index} className="application-card" data-testid="application-card">
@@ -188,7 +188,6 @@ export default function ApplicationsApproved({
       />
     </>
   )
-  // TODO(shavinac) add confirm step
 }
 
 function Continue(props: { grantApplications: GrantApplication[], predicate: (obj: any) => boolean, onClick: () => void }) {

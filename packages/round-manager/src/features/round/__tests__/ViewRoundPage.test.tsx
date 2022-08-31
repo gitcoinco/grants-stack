@@ -1,10 +1,13 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { useWallet } from "../../common/Auth"
 import { useListRoundsQuery } from "../../api/services/round"
 import ViewRoundPage from "../ViewRoundPage"
 import { GrantApplication, Round } from "../../api/types"
-import { makeRoundData, renderWrapped, makeProgramData, makeGrantApplicationData } from "../../../test-utils"
-import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../../api/services/grantApplication"
+import { makeGrantApplicationData, makeProgramData, makeRoundData, renderWrapped } from "../../../test-utils"
+import {
+  useBulkUpdateGrantApplicationsMutation,
+  useListGrantApplicationsQuery,
+} from "../../api/services/grantApplication"
 import { useListProgramsQuery } from "../../api/services/program"
 import { useDisconnect, useSwitchNetwork } from "wagmi"
 
@@ -27,7 +30,7 @@ describe('the view round page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: mockRoundData.operatorWallets[0] });
+    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: mockRoundData.operatorWallets![0] });
 
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       round: mockRoundData,
@@ -95,70 +98,5 @@ describe('the view round page', () => {
     expect(parseInt(screen.getByTestId('received-application-counter').textContent!!)).toBe(2)
     expect(parseInt(screen.getByTestId('rejected-application-counter').textContent!!)).toBe(1)
     expect(parseInt(screen.getByTestId('approved-application-counter').textContent!!)).toBe(1)
-  })
-
-  describe("when there are received applications", () => {
-    beforeEach(() => {
-      const mockApplicationData: GrantApplication[] = [
-        makeGrantApplicationData({ status: "PENDING" }),
-        makeGrantApplicationData({ status: "PENDING" }),
-        makeGrantApplicationData({ status: "REJECTED" }),
-        makeGrantApplicationData({ status: "APPROVED" }),
-      ];
-      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-        data: mockApplicationData,
-        isLoading: false,
-        isSuccess: true
-      })
-    })
-  });
-
-  describe("when there are no received applications", () => {
-    it("should not display the bulk select button", () => {
-      const mockApplicationData: GrantApplication[] = [
-        makeGrantApplicationData({ status: "REJECTED" }),
-        makeGrantApplicationData({ status: "APPROVED" }),
-      ];
-      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-        data: mockApplicationData,
-        isLoading: false,
-        isSuccess: true
-      })
-      renderWrapped(<ViewRoundPage />)
-
-      expect(screen.queryByText(
-        'Save in gas fees by approving/rejecting multiple applications at once.'
-      )).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', {
-        name: /Select/i
-      })).not.toBeInTheDocument()
-    });
-  });
-
-  describe("when there are approved applications and no pending applications", () => {
-    beforeEach(() => {
-      const mockApplicationData: GrantApplication[] = [
-        makeGrantApplicationData({ status: "APPROVED" }),
-        makeGrantApplicationData({ status: "APPROVED" }),
-        makeGrantApplicationData({ status: "REJECTED" }),
-      ];
-      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-        data: mockApplicationData,
-        isLoading: false,
-        isSuccess: true
-      })
-    })
-
-    it("should display the bulk select button when on the Approved tab", async () => {
-      renderWrapped(<ViewRoundPage />)
-      const approvedTab = screen.getByRole('tab', {
-        name: /Approved/i
-      });
-      fireEvent.click(approvedTab)
-
-      expect(screen.getByRole('button', {
-        name: /Select/i
-      })).toBeInTheDocument()
-    });
   })
 })
