@@ -107,16 +107,22 @@ export const initializeWeb3 =
     global.web3Provider = provider;
     global.chainID = chain?.id;
 
-    const t: Web3Type = window.ethereum.isStatus
-      ? Web3Type.Status
-      : Web3Type.Generic;
+    let t: Web3Type;
+    if (window.ethereum) {
+      t = window.ethereum.isStatus
+        ? Web3Type.Status
+        : Web3Type.Generic;
+
+      window.ethereum.on("chainChanged", () => window.location.reload());
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+    } else {
+      t = Web3Type.Remote;
+    }
+
     dispatch(web3Initialized(t));
     dispatch(web3AccountLoaded(address));
     dispatch(web3ChainIDLoaded(chain?.id));
 
-    // FIXME: fix dispatch<any>
-    window.ethereum.on("chainChanged", () => window.location.reload());
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
-    });
   };
