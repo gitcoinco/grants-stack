@@ -4,10 +4,8 @@ import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
 import colors from "../styles/colors";
-// import WalletDisplay from "./base/WalletDisplay";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
-// import NetworkSelector from "./base/NetworkSelector";
 
 export default function Header() {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -51,8 +49,6 @@ export default function Header() {
                 New Project
               </Button>
             </Link>
-            {/* <NetworkSelector />
-            <WalletDisplay /> */}
             <ConnectButton />
           </div>
         </div>
