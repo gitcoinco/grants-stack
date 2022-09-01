@@ -1,6 +1,9 @@
 {
   "packages": [
-    "packages/*"
+    "packages/contracts",
+    "packages/graph",
+    "packages/round-manager"
   ],
-  "version": "independent"
+  "version": "independent",
+  "npmClient": "yarn"
 }
