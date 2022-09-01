@@ -5,14 +5,13 @@ import { useWallet } from "../common/Auth"
 import { useListRoundsQuery } from "../api/services/round"
 import Navbar from "../common/Navbar"
 import { CalendarIcon, ChevronRightIcon, ClockIcon } from "@heroicons/react/solid"
-import { useListProgramsQuery } from "../api/services/program"
 import { Tab } from "@headlessui/react"
 import ApplicationsReceived from "./ApplicationsReceived"
 import ApplicationsApproved from "./ApplicationsApproved"
 import ApplicationsRejected from "./ApplicationsRejected"
 import Footer from "../common/Footer"
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
-import tw from "tailwind-styled-components";
+import { useListGrantApplicationsQuery } from "../api/services/grantApplication"
+import tw from "tailwind-styled-components"
 import { Button } from "../common/styles"
 import { datadogLogs } from "@datadog/browser-logs"
 import NotFoundPage from "../common/NotFoundPage"
@@ -38,12 +37,6 @@ export default function ViewRoundPage() {
       round: data?.find((round) => round.id === id),
       isLoading,
       isSuccess
-    }),
-  })
-
-  const { program } = useListProgramsQuery({ address, signerOrProvider: provider }, {
-    selectFromResult: ({ data }) => ({
-      program: data?.find((program) => program.id === round?.ownedBy)
     }),
   })
 
@@ -102,7 +95,7 @@ export default function ViewRoundPage() {
                   <span>{"My Programs"}</span>
                 </Link>
                 <ChevronRightIcon className="h-6 w-6" />
-                <Link to={`/program/${program?.id}`}>
+                <Link to={`/program/${round?.ownedBy}`}>
                   <span>{"Program Details"}</span>
                 </Link>
                 <ChevronRightIcon className="h-6 w-6" />
