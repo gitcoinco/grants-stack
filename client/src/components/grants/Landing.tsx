@@ -24,7 +24,7 @@ function Landing() {
 
   // dispatch initializeWeb3 when address changes
   useEffect(() => {
-    if (signer && provider && chain && address) {
+    if (signer && "getAddress" in signer && provider && chain && address) {
       dispatch(initializeWeb3(signer, provider, chain, address));
     }
   }, [signer, provider, chain, address]);
