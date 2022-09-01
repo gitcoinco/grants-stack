@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom"
 
-import { useWallet } from "../common/Auth"
-import { useListProgramsQuery } from "../api/services/program"
 import {
   ArrowNarrowRightIcon,
   PlusIcon,
@@ -22,6 +20,7 @@ import {
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs"
+import { usePrograms } from "../../context/ProgramContext"
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element,
@@ -65,21 +64,23 @@ const startAProgramCard = <Link to="/program/create">
   />
 </Link>
 
+
+
 function ListPrograms() {
 
   datadogLogs.logger.info('====> Route: /')
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
+  const { programs, isLoading, listProgramsError } = usePrograms()
 
-  const { address, provider } = useWallet()
-  const {
-    data: programs,
-    isLoading,
-    isSuccess
-  } = useListProgramsQuery({ address, signerOrProvider: provider })
+  function hasNoPrograms() {
+    return !programs || programs.length === 0;
+  }
 
-  const programList = programs?.map((program) => (
-    <Link to={`/program/${program.id}`}>
+  const isSuccess = !isLoading && !listProgramsError;
+
+  const programList = programs.map((program, key) => (
+    <Link to={`/program/${program.id}`} key={key}>
       <ProgramCard
         key={program.id}
         floatingIcon={
@@ -91,7 +92,7 @@ function ListPrograms() {
         title={program.metadata!.name}
         description={`${program.operatorWallets.length} Round Operators`}
         footerContent={
-          <p className="text-violet-400">
+          <p className="text-violet-400" data-testid="program-card">
             View details <ArrowNarrowRightIcon className="h-5 w-5 inline ml-4" />
           </p>
         }
@@ -101,7 +102,7 @@ function ListPrograms() {
 
   return (
     <>
-      <Navbar programCta={!!isSuccess} />
+      <Navbar programCta={isSuccess} />
       <header className="mb-2.5 bg-grey-500 overflow-hidden">
         <div className="container mx-auto flex flex-row">
           <div className="grow p-6 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">
@@ -117,12 +118,12 @@ function ListPrograms() {
       </header>
       <main className="container mx-auto p-2 md:px-20">
         <CardsContainer>
-          {isSuccess && (!programs || programs.length === 0) && startAProgramCard}
+          {isSuccess && hasNoPrograms() && startAProgramCard}
           {programList}
         </CardsContainer>
 
         {isLoading &&
-          <Spinner text="Fetching Programs" />
+          <Spinner text="Fetching Programs" data-testid="loading-programs" />
         }
       </main>
       <Footer />

@@ -109,20 +109,23 @@ describe("ProgramFactory", function () {
         );
 
         let programAddress;
+        let programImplementation;
 
         const receipt = await txn.wait();
         if (receipt.events) {
           const event = receipt.events.find(e => e.event === 'ProgramCreated');
           if (event && event.args) {
             programAddress = event.args.programContractAddress;
+            programImplementation = event.args.programImplementation;
           }
         }
 
         expect(txn)
           .to.emit(programFactory, 'ProgramCreated')
-          .withArgs(programAddress);
+          .withArgs(programAddress, programImplementation);
 
         expect(isAddress(programAddress)).to.be.true;
+        expect(isAddress(programImplementation)).to.be.true;
 
       });
 

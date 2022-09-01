@@ -29,7 +29,11 @@ const ValidationSchema = yup.object().shape({
 })
 
 
-export function RoundDetailForm(props: { initialData: any, stepper: any }) {
+interface RoundDetailFormProps {
+  stepper: any
+}
+
+export function RoundDetailForm(props: RoundDetailFormProps) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } = useContext(FormContext)
   const { control, register, handleSubmit, formState: { errors } } = useForm<Round>({
     defaultValues: formData,

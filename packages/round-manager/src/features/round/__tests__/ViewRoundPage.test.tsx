@@ -3,27 +3,22 @@ import { useWallet } from "../../common/Auth"
 import { useListRoundsQuery } from "../../api/services/round"
 import ViewRoundPage from "../ViewRoundPage"
 import { GrantApplication, Round } from "../../api/types"
-import { makeGrantApplicationData, makeProgramData, makeRoundData, renderWrapped } from "../../../test-utils"
+import { makeGrantApplicationData, makeRoundData, renderWrapped } from "../../../test-utils"
 import {
   useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
+  useListGrantApplicationsQuery
 } from "../../api/services/grantApplication"
-import { useListProgramsQuery } from "../../api/services/program"
 import { useDisconnect, useSwitchNetwork } from "wagmi"
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/round");
 jest.mock("../../api/services/grantApplication");
-jest.mock("../../api/services/program");
 jest.mock("wagmi");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }))
 
 const mockRoundData: Round = makeRoundData();
-const mockProgramData = makeProgramData({
-  id: mockRoundData.ownedBy
-});
 const mockApplicationData: GrantApplication[] = [];
 
 describe('the view round page', () => {
@@ -54,8 +49,6 @@ describe('the view round page', () => {
 
     (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
-
-    (useListProgramsQuery as jest.Mock).mockReturnValue({ program: mockProgramData });
   })
 
   it("should display 404 when there no round is found", () => {
