@@ -2,13 +2,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
-import { slugs } from "../../routes";
 
 function Landing() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Error: state.web3.error,
@@ -31,16 +28,6 @@ function Landing() {
       dispatch(initializeWeb3(signer, provider, chain, address));
     }
   }, [signer, provider, chain, address]);
-
-  useEffect(() => {
-    const isCallback =
-      queryCode !== undefined ||
-      queryState !== undefined ||
-      queryError !== undefined;
-    if (address || !isCallback) {
-      navigate(slugs.grants);
-    }
-  }, [address]);
 
   // if Twitter oauth then submit message to other windows and close self
   if (
@@ -83,15 +70,6 @@ function Landing() {
     window.close();
 
     return <div />;
-  }
-
-  const data = {
-    provider,
-    signer,
-  };
-
-  if (isConnected) {
-    return <Outlet context={data} />;
   }
 
   return (

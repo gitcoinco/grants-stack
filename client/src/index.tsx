@@ -8,7 +8,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import Datadog from "react-datadog";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { Route, Routes } from "react-router";
+import { Route, Routes, Navigate } from "react-router";
 import {
   applyMiddleware,
   createStore,
@@ -21,7 +21,6 @@ import { WagmiConfig } from "wagmi";
 import "./browserPatches";
 import ErrorBoundary from "./components/ErrorBoundary";
 import EditProject from "./components/grants/Edit";
-import Landing from "./components/grants/Landing";
 import ProjectsList from "./components/grants/List";
 import NewProject from "./components/grants/New";
 import Project from "./components/grants/Show";
@@ -82,7 +81,10 @@ root.render(
               <ReduxRouter history={history} store={store}>
                 <Layout>
                   <Routes>
-                    <Route path={slugs.root} element={<Landing />} />
+                    <Route
+                      path={slugs.root}
+                      element={<Navigate to={slugs.grants} />}
+                    />
                     <Route path={slugs.grants} element={<ProjectsList />} />
                     <Route path={slugs.grant} element={<Project />} />
                     <Route path={slugs.newGrant} element={<NewProject />} />
