@@ -259,6 +259,39 @@ describe("generateApplicationSchema", () => {
     })
   })
 
+  it("should return valid application schema when one of the subkeys is not an object", () => {
+    const metadata = {
+      "customQuestions": {
+        "email": "",
+        "twitter": "",
+        "fundingSource": "What platforms have you raised funds from?",
+      },
+      "ofac": "Is you project OFAC compliant?"
+    }
+
+    const schema = generateApplicationSchema(metadata)
+
+    expect(Array.isArray(schema)).toBe(true)
+    expect(schema).toContainEqual({
+      id: 2,
+      question: "Funding Source",
+      type: "TEXT",
+      required: true,
+      info: "What platforms have you raised funds from?",
+      choices: [],
+      encrypted: false
+    })
+    expect(schema).toContainEqual({
+      id: 3,
+      question: "Ofac",
+      type: "TEXT",
+      required: true,
+      info: "Is you project OFAC compliant?",
+      choices: [],
+      encrypted: false
+    })
+  })
+
   it("should mark email field as encrypted", () => {
     const metadata = {
       "customQuestions": {
