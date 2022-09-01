@@ -42,13 +42,16 @@ export function TextInputAddress({
   // todo: validate address and display notif
   return (
     <div className="mt-6 w-full sm:w-1/2 static">
-      <Tooltip className="" label={tooltipValue}>
+      <label className="text-sm absolute" htmlFor={name}>
+        {label}
+      </label>
+      <Tooltip bg="purple.600" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 ml-32"
         >
           <path
             d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 
@@ -56,9 +59,6 @@ export function TextInputAddress({
           />
         </svg>
       </Tooltip>
-      <label className="text-sm" htmlFor={name}>
-        {label}
-      </label>
       <legend>{info}</legend>
       <input
         type="text"
