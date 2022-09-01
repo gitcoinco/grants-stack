@@ -1,12 +1,11 @@
 import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
 import colors from "../styles/colors";
-import WalletDisplay from "./base/WalletDisplay";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
-import NetworkSelector from "./base/NetworkSelector";
 
 export default function Header() {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -43,15 +42,14 @@ export default function Header() {
         >
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
             <Link to={newGrantPath()}>
-              <Button colorScheme="purple" className="mt-3">
+              <Button colorScheme="purple" className="mt-2 mr-2 mb-2">
                 <i className="icon">
                   <Plus color={colors["quaternary-text"]} />
                 </i>
                 New Project
               </Button>
             </Link>
-            <NetworkSelector />
-            <WalletDisplay />
+            <ConnectButton />
           </div>
         </div>
       </div>
