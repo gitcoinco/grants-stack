@@ -177,7 +177,7 @@ Emitted when a Round contract is updated
 ### RoundCreated
 
 ```solidity
-event RoundCreated(address indexed roundAddress, address indexed ownedBy)
+event RoundCreated(address indexed roundAddress, address indexed ownedBy, address indexed roundImplementation)
 ```
 
 Emitted when a new Round is created
@@ -190,6 +190,7 @@ Emitted when a new Round is created
 |---|---|---|
 | roundAddress `indexed` | address | undefined |
 | ownedBy `indexed` | address | undefined |
+| roundImplementation `indexed` | address | undefined |
 
 
 

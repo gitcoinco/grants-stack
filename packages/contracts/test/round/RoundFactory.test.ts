@@ -133,21 +133,24 @@ describe("RoundFactory", function () {
         );
 
         let roundAddress;
+        let roundImplementation;
 
         const receipt = await txn.wait();
         if (receipt.events) {
           const event = receipt.events.find(e => e.event === 'RoundCreated');
           if (event && event.args) {
             roundAddress = event.args.roundAddress;
+            roundImplementation = event.args.roundImplementation;
           }
         }
 
         expect(txn)
           .to.emit(roundFactory, 'RoundCreated')
-          .withArgs(roundAddress, programAddress);
+          .withArgs(roundAddress, programAddress, roundImplementation);
 
         expect(isAddress(roundAddress)).to.be.true;
-
+        expect(isAddress(roundImplementation)).to.be.true;
+        
       });
 
     });
