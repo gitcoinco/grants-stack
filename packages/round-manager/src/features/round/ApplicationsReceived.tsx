@@ -46,7 +46,7 @@ export default function ApplicationsReceived() {
         }
       }))
     }
-  }, [data, isSuccess, bulkSelect, signer])
+  }, [data, isSuccess, bulkSelect])
 
   const toggleSelection = (id: string, status: ProjectStatus) => {
     const newState = selected?.map((grantApp : GrantApplication) => {
