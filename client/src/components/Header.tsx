@@ -42,7 +42,7 @@ export default function Header() {
         >
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
             <Link to={newGrantPath()}>
-              <Button colorScheme="purple" className="mt-2 mr-2">
+              <Button colorScheme="purple" className="mt-2 mr-2 mb-2">
                 <i className="icon">
                   <Plus color={colors["quaternary-text"]} />
                 </i>
