@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useAccount } from "wagmi";
+import { useChainModal } from "@rainbow-me/rainbowkit";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
 import Toast from "./base/Toast";
@@ -15,6 +16,7 @@ interface Props {
 function Layout(ownProps: Props) {
   const [show, showToast] = useState(false);
   const { address: account } = useAccount();
+  const { openChainModal } = useChainModal();
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
@@ -28,6 +30,12 @@ function Layout(ownProps: Props) {
   useEffect(() => {
     showToast(props.web3Initialized);
   }, [props.web3Initialized]);
+
+  // check the network
+  if (props.web3Error !== undefined) {
+    console.log(props.web3Error);
+    if (openChainModal) openChainModal();
+  }
 
   const { children } = ownProps;
   if (!props.web3Initialized || account === undefined) {
