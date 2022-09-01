@@ -55,6 +55,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test --watchAll=false",
+    "test:coverage": "craco test --watchAll=false --coverage",
     "eject": "react-scripts eject"
   },
   "jest": {

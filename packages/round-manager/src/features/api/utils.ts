@@ -1,4 +1,5 @@
-import { IPFSObject, MetadataPointer } from "./types"
+import {IPFSObject, MetadataPointer, ProjectStatus} from "./types"
+import {Blob} from 'buffer';
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -55,7 +56,7 @@ export const graphql_fetch = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ query, variables })
+    body: JSON.stringify({query, variables})
   }).then(resp => {
     if (resp.ok) {
       return resp.json();
@@ -89,7 +90,7 @@ export const fetchFromIPFS = (cid: string) => {
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
-export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer) => {
+export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer): ProjectStatus => {
   let reviewedApplications: any = []
 
   // read data from ipfs
@@ -125,7 +126,23 @@ export const pinToIPFS = (obj: IPFSObject) => {
     }
   }
 
-  if (typeof obj.content === 'object') {
+  /* typeof Blob === 'object', so we need to check against instanceof */
+  if (obj.content instanceof Blob) {
+    // content is a blob
+    const fd = new FormData();
+    fd.append("file", obj.content)
+    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
+    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
+
+    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {...params, body: fd}
+    ).then(resp => {
+      if (resp.ok) {
+        return resp.json();
+      }
+
+      return Promise.reject(resp)
+    })
+  } else {
     // content is a JSON object
     return fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
       ...params,
@@ -133,25 +150,10 @@ export const pinToIPFS = (obj: IPFSObject) => {
         ...params.headers,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ ...params.body, pinataContent: obj.content })
+      body: JSON.stringify({...params.body, pinataContent: obj.content})
     }).then(resp => {
       if (resp.ok) {
         return resp.json()
-      }
-
-      return Promise.reject(resp)
-    })
-  } else {
-    // content is a blob
-    const fd = new FormData();
-    fd.append("file", obj.content)
-    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
-    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
-
-    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", { ...params, body: fd }
-    ).then(resp => {
-      if (resp.ok) {
-        return resp.json();
       }
 
       return Promise.reject(resp)
@@ -224,4 +226,4 @@ export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> 
 }
 
 // Checks if tests are being run jest
-export const isJestRunning = () =>  process.env.JEST_WORKER_ID !== undefined;
+export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;

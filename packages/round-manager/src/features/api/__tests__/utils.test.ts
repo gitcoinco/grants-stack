@@ -1,6 +1,15 @@
-import { enableFetchMocks, FetchMock } from "jest-fetch-mock"
+import {enableFetchMocks, FetchMock} from "jest-fetch-mock"
 
-import { ChainId, fetchFromIPFS, generateApplicationSchema, graphql_fetch, pinToIPFS } from "../utils"
+import {
+  ChainId,
+  checkGrantApplicationStatus,
+  fetchFromIPFS,
+  generateApplicationSchema,
+  graphql_fetch,
+  pinToIPFS
+} from "../utils"
+import {Blob} from "buffer";
+import {MetadataPointer} from "../types";
 
 enableFetchMocks()
 
@@ -12,7 +21,7 @@ describe("fetchFromIPFS", () => {
   })
 
   it("should return data from IPFS", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ name: "My First Metadata" }))
+    fetchMock.mockResponseOnce(JSON.stringify({name: "My First Metadata"}))
 
     const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4"
 
@@ -21,7 +30,19 @@ describe("fetchFromIPFS", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
     )
-    expect(res).toEqual({ name: "My First Metadata" })
+    expect(res).toEqual({name: "My First Metadata"})
+  })
+
+  it("should throw on invalid CID", async () => {
+    const cid = "invalidcid"
+
+    fetchMock.mockReject(new Error('fake error message'))
+
+    await expect(fetchFromIPFS(cid)).rejects.toThrow();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+    )
   })
 })
 
@@ -41,7 +62,9 @@ describe("pinToIPFS", () => {
     }))
 
     const ipfsObject = {
-      content: { name: "My First Program" },
+      content: {
+        name: "My First Program"
+      },
       metadata: {
         name: "program-metadata"
       }
@@ -70,6 +93,71 @@ describe("pinToIPFS", () => {
     )
     expect(res.IpfsHash).toEqual(cid)
   })
+
+  it("should pin blob data to IPFS", async () => {
+    const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4"
+
+    fetchMock.mockResponseOnce(JSON.stringify({
+      IpfsHash: cid,
+      PinSize: 1024,
+      TimeStamp: (new Date()).toISOString()
+    }))
+
+    const ipfsObject = {
+      content: new Blob(),
+      metadata: {
+        name: "program-metadata"
+      }
+    }
+
+    const res = await pinToIPFS(ipfsObject)
+
+    const fd = new FormData();
+    fd.append("file", ipfsObject.content)
+    fd.append("pinataOptions", JSON.stringify({
+      cidVersion: 1
+    }))
+    fd.append("pinataMetadata", JSON.stringify(ipfsObject.metadata))
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`,
+      },
+      body: fd,
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      params
+    )
+    expect(res.IpfsHash).toEqual(cid)
+  })
+})
+
+describe("checkGrantApplicationStatus", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks()
+  })
+
+  it("should return grant application status from IPFS", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify([{
+      id: 1,
+      status: 'FRAUD'
+    }]))
+
+    const metadataPointer: MetadataPointer = {
+      protocol: 1,
+      pointer: "QmPMERYmqZtbHmqd2UzRhX9F4cixnMQU2GFa2hYAsQ6J3D"
+    }
+
+    const res = await checkGrantApplicationStatus(1, metadataPointer);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
+    )
+    expect(res).toEqual('FRAUD')
+  })
 })
 
 
@@ -82,8 +170,8 @@ describe("graphql_fetch", () => {
     fetchMock.mockResponseOnce(JSON.stringify({
       data: {
         programs: [
-          { id: "0x123456789544fe81379e2951623f008d200e1d18" },
-          { id: "0x123456789567fe81379e2951623f008d200e1d20" }
+          {id: "0x123456789544fe81379e2951623f008d200e1d18"},
+          {id: "0x123456789567fe81379e2951623f008d200e1d20"}
         ]
       }
     }))
@@ -112,7 +200,7 @@ describe("graphql_fetch", () => {
       params
     )
     expect(res.data.programs[0]).toEqual(
-      { id: "0x123456789544fe81379e2951623f008d200e1d18" }
+      {id: "0x123456789544fe81379e2951623f008d200e1d18"}
     )
   })
 
@@ -147,7 +235,7 @@ describe("graphql_fetch", () => {
 
 
 describe("generateApplicationSchema", () => {
-  
+
   it("should return valid application schema", () => {
     const metadata = {
       "customQuestions": {
@@ -156,7 +244,7 @@ describe("generateApplicationSchema", () => {
         "fundingSource": "What platforms have you raised funds from?",
       }
     }
-  
+
     const schema = generateApplicationSchema(metadata)
 
     expect(Array.isArray(schema)).toBe(true)
@@ -177,7 +265,7 @@ describe("generateApplicationSchema", () => {
         "email": "",
       }
     }
-  
+
     const schema = generateApplicationSchema(metadata)
 
     expect(schema).toEqual(
