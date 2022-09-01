@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { useWallet } from "../../common/Auth"
 import { useListRoundsQuery } from "../../api/services/round"
 import ViewRoundPage from "../ViewRoundPage"
@@ -25,7 +25,7 @@ describe('the view round page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: mockRoundData.operatorWallets[0] });
+    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: mockRoundData.operatorWallets![0] });
 
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       round: mockRoundData,
@@ -92,86 +92,4 @@ describe('the view round page', () => {
     expect(parseInt(screen.getByTestId('rejected-application-counter').textContent!!)).toBe(1)
     expect(parseInt(screen.getByTestId('approved-application-counter').textContent!!)).toBe(1)
   })
-
-  describe("when there are received applications", () => {
-    beforeEach(() => {
-      const mockApplicationData: GrantApplication[] = [
-        makeGrantApplicationData({ status: "PENDING" }),
-        makeGrantApplicationData({ status: "PENDING" }),
-        makeGrantApplicationData({ status: "REJECTED" }),
-        makeGrantApplicationData({ status: "APPROVED" }),
-      ];
-      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-        data: mockApplicationData,
-        isLoading: false,
-        isSuccess: true
-      })
-    })
-
-    it("should display the bulk select button", () => {
-      renderWrapped(<ViewRoundPage />)
-      expect(screen.getByText(
-        'Save in gas fees by approving/rejecting multiple applications at once.'
-      )).toBeInTheDocument()
-      expect(screen.getByRole('button', {
-        name: /Select/i
-      })).toBeInTheDocument()
-    });
-
-    it("should display the cancel button when select is clicked", () => {
-      renderWrapped(<ViewRoundPage />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
-      expect(screen.getByRole('button', {
-        name: /Cancel/i
-      })).toBeInTheDocument()
-      expect(screen.queryByRole('button', {
-        name: /Select/i
-      })).not.toBeInTheDocument()
-    });
-
-    it("should display the select button when cancel is clicked", () => {
-      renderWrapped(<ViewRoundPage />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
-
-      const cancelButton = screen.getByRole('button', {
-        name: /Cancel/i
-      });
-      fireEvent.click(cancelButton)
-
-      expect(screen.queryByRole('button', {
-        name: /Cancel/i
-      })).not.toBeInTheDocument()
-      expect(screen.getByRole('button', {
-        name: /Select/i
-      })).toBeInTheDocument()
-    });
-  });
-
-  describe("when there are no received applications", () => {
-    it("should not display the bulk select button", () => {
-      const mockApplicationData: GrantApplication[] = [
-        makeGrantApplicationData({ status: "REJECTED" }),
-        makeGrantApplicationData({ status: "APPROVED" }),
-      ];
-      (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-        data: mockApplicationData,
-        isLoading: false,
-        isSuccess: true
-      })
-      renderWrapped(<ViewRoundPage />)
-
-      expect(screen.queryByText(
-        'Save in gas fees by approving/rejecting multiple applications at once.'
-      )).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', {
-        name: /Select/i
-      })).not.toBeInTheDocument()
-    });
-  });
 })

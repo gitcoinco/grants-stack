@@ -3,7 +3,12 @@ import { Program } from "../types"
 import { makeProgramData } from "../../../test-utils"
 import { graphql_fetch, fetchFromIPFS } from "../utils"
 
-jest.mock("../utils")
+jest.mock("../utils", () => ({
+  ...jest.requireActual("../utils"),
+  graphql_fetch: jest.fn(),
+  fetchFromIPFS: jest.fn()
+}))
+
 
 describe("program api", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {

@@ -46,7 +46,9 @@ describe('<RoundApplicationForm />',  () => {
 	})
 
 	it("shows error modal when saving round application meta data fails", async () => {
-		renderWrapped(<RoundApplicationForm initialData={{}} stepper={FormStepper} />);
+		renderWrapped(<RoundApplicationForm initialData={{ program: {
+		operatorWallets: []
+		}}} stepper={FormStepper} />);
 		const launch = screen.getByRole('button', {name: /Launch/i});
 		await act(() => {
 			fireEvent.click(launch)
@@ -56,7 +58,9 @@ describe('<RoundApplicationForm />',  () => {
 	});
 
 	it('choosing done closes the error modal', async () => {
-		renderWrapped(<RoundApplicationForm initialData={{}} stepper={FormStepper} />);
+		renderWrapped(<RoundApplicationForm initialData={{ program: {
+				operatorWallets: []
+			}}} stepper={FormStepper} />);
 		const launch = screen.getByRole('button', {name: /Launch/i});
 		await act(() => {
 			fireEvent.click(launch)
@@ -71,7 +75,9 @@ describe('<RoundApplicationForm />',  () => {
 	})
 
 	it('choosing try again restarts the action and closes the error modal', async () => {
-		renderWrapped(<RoundApplicationForm initialData={{}} stepper={FormStepper} />);
+		renderWrapped(<RoundApplicationForm initialData={{ program: {
+				operatorWallets: []
+			}}} stepper={FormStepper} />);
 
 		const launch = screen.getByRole('button', {name: /Launch/i});
 		await act(() => {
@@ -111,7 +117,9 @@ describe('<RoundApplicationForm />',  () => {
 		})
 
 		it("shows error modal when create round transaction fails", async () => {
-			renderWrapped(<RoundApplicationForm initialData={{}} stepper={FormStepper} />);
+			renderWrapped(<RoundApplicationForm initialData={{ program: {
+					operatorWallets: []
+				}}} stepper={FormStepper} />);
 			const launch = screen.getByRole('button', {name: /Launch/i});
 			await act(() => {
 				fireEvent.click(launch)

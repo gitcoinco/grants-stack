@@ -14,22 +14,13 @@ import {
   Button
 } from "../common/styles"
 import { CheckIcon, XIcon } from "@heroicons/react/solid"
-import { GrantApplication } from "../api/types"
+import { GrantApplication, ProjectStatus } from "../api/types"
 import ConfirmationModal from "../common/ConfirmationModal"
 
 
-interface ApplicationsReceivedProps {
-  bulkSelect?: boolean;
-  setBulkSelect?: (bulkSelect: boolean) => void;
-}
-
-
-export default function ApplicationsReceived({
-  bulkSelect = false,
-  setBulkSelect = () => { },
-}: ApplicationsReceivedProps) {
+export default function ApplicationsReceived() {
   const [openModal, setOpenModal] = useState(false)
-
+  const [bulkSelect, setBulkSelect] = useState(false)
   const { id } = useParams()
   const { provider, signer } = useWallet()
 
@@ -57,22 +48,21 @@ export default function ApplicationsReceived({
     }
   }, [data, isSuccess, bulkSelect, signer])
 
-  const toggleSelection = (id: string, status: string) => {
-    const newState = selected?.map((obj: any) => {
-      const newStatus = obj.status === status ? "PENDING" : status
-
-      if (obj.id === id) {
-        return { ...obj, status: newStatus }
+  const toggleSelection = (id: string, status: ProjectStatus) => {
+    const newState = selected?.map((grantApp : GrantApplication) => {
+      if (grantApp.id === id) {
+        const newStatus = grantApp.status === status ? "PENDING" : status
+        return { ...grantApp, status: newStatus }
       }
 
-      return obj
+      return grantApp
     })
 
     setSelected(newState)
   }
 
   const checkSelection = (id: string) => {
-    return (selected?.find((obj: any) => obj.id === id))?.status
+    return (selected?.find((grantApp: GrantApplication) => grantApp.id === id))?.status
   }
 
   const handleBulkReview = async () => {
@@ -93,6 +83,31 @@ export default function ApplicationsReceived({
 
   return (
     <div>
+      {data && data.length > 0 && <div className="justify-end">
+        <span className="text-grey-400 text-sm mr-6">
+          Save in gas fees by approving/rejecting multiple applications at once.
+        </span>
+        {bulkSelect ?
+          <Button
+            type="button"
+            $variant="outline"
+            className="text-xs text-pink-500"
+            onClick={() => setBulkSelect(false)}
+          >
+            Cancel
+          </Button>
+          :
+          <Button
+            type="button"
+            $variant="outline"
+            className="text-xs bg-grey-150 border-none"
+            onClick={() => setBulkSelect(true)}
+            data-testid="select"
+          >
+            Select
+          </Button>
+        }
+      </div>}
       <CardsContainer>
         {isSuccess && data?.map((application, index) => (
           <BasicCard key={index} className="application-card" data-testid="application-card">

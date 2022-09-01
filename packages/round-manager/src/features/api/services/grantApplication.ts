@@ -88,6 +88,7 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
  *
  * @param applications
  * @param projectsMetaPtr
+ * @param filterByStatus
  *
  * @dev Once indexing IPFS content via graph is deterministic.
  *  - redeploy subgraph
@@ -99,7 +100,7 @@ const updateApplicationStatusFromContract = async (
 ) => {
 
   // Handle scenario where operator hasn't review any projects in the round
-  if (!projectsMetaPtr) return applications
+  if (!projectsMetaPtr) return filterByStatus ? applications.filter(application => application.status === filterByStatus) : applications
 
   const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer)
 
