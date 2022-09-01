@@ -7,7 +7,12 @@ import {
   ProjectOption,
   Round,
 } from "../../types";
-import { Select, TextArea, TextInput } from "../grants/inputs";
+import {
+  Select,
+  TextArea,
+  TextInput,
+  TextInputAddress,
+} from "../grants/inputs";
 import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
@@ -116,20 +121,35 @@ export default function Form({
                     changeHandler={handleInput}
                   />
                   <p className="text-xs mt-4 mb-1">
-                    To complete your application to ${round.roundMetadata.name},
+                    To complete your application to {round.roundMetadata.name},
                     a little more info is needed:
                   </p>
                   <hr />
                 </>
               );
             case "TEXT":
-            case "RECIPIENT": // FIXME: separate RECIPIENT to have address validation
               return (
                 <TextInput
                   key={input.id}
                   label={input.question}
                   placeholder={input.info}
                   name={`${input.id}`}
+                  value={formInputs[`${input.id}`] ?? ""}
+                  disabled={preview}
+                  changeHandler={handleInput}
+                />
+              );
+            case "RECIPIENT": // todo: FIXME: separate RECIPIENT to have address validation
+              return (
+                <TextInputAddress
+                  key={input.id}
+                  label={input.question}
+                  placeholder={input.info}
+                  name={`${input.id}`}
+                  tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
+                  If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
+                  and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
+                  sending the balance of any full grant."
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
