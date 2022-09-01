@@ -39,7 +39,7 @@ export function TextInputAddress({
   disabled,
   changeHandler,
 }: AddressInputProps) {
-  // todo: validate address and display notif
+  // todo: validate address
   return (
     <div className="mt-6 w-full sm:w-1/2 static">
       <label className="text-sm absolute" htmlFor={name}>

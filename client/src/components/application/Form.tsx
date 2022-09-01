@@ -59,6 +59,13 @@ export default function Form({
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
 
+  const handleInputAddress = (e: ChangeHandlers) => {
+    const { value } = e.target;
+    // todo: validate address
+
+    setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
   const validate = async () => {
     try {
       await validateApplication(schema, formInputs);
@@ -139,7 +146,7 @@ export default function Form({
                   changeHandler={handleInput}
                 />
               );
-            case "RECIPIENT": // todo: FIXME: separate RECIPIENT to have address validation
+            case "RECIPIENT":
               return (
                 <TextInputAddress
                   key={input.id}
@@ -152,7 +159,7 @@ export default function Form({
                   sending the balance of any full grant."
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
-                  changeHandler={handleInput}
+                  changeHandler={handleInputAddress}
                 />
               );
             case "TEXTAREA":
