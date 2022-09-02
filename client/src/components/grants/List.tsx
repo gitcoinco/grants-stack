@@ -31,7 +31,6 @@ function ProjectsList() {
     "toggleRoundApplicationModal",
     false
   );
-  console.log("toggle", toggleModal);
   const [roundToApply] = useLocalStorage("roundToApply", null);
 
   const roundInfo = null; // Placeholder, get from contract call or graph
@@ -58,7 +57,6 @@ function ProjectsList() {
               const chainId = roundToApply?.split(":")[0];
               const roundId = roundToApply?.split(":")[1];
               const path = roundPath(chainId, roundId);
-              console.log("path", path);
 
               navigate(path);
             }}
@@ -93,17 +91,12 @@ function ProjectsList() {
         </>
       )}
       <CallbackModal
-        modalOpen={
-          typeof toggleModal === "boolean"
-            ? toggleModal
-            : toggleModal === "true"
-        }
+        modalOpen={toggleModal}
         confirmText="Apply to Grand Round"
         confirmHandler={() => {
           const chainId = roundToApply?.split(":")[0];
           const roundId = roundToApply?.split(":")[1];
           const path = roundPath(chainId, roundId);
-          console.log("path", path);
 
           navigate(path);
         }}
