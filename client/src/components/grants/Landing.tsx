@@ -73,7 +73,7 @@ function Landing() {
   }
 
   return (
-    <div className="md:flex h-full">
+    <div className="md:flex h-full w-full">
       <div className="flex absolute top-0 left-10">
         <img
           className="py-4 mr-4"
@@ -82,12 +82,20 @@ function Landing() {
         />
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
-      <div className="w-full md:w-1/2 flex flex-col absolute h-1/2 max-w-fit md:h-full justify-center container mx-10">
-        <h3 className="mb-8 hidden md:inline-block">Grant Hub</h3>
-        <h6 className="mb-4 pt-20 inline-block md:hidden">Grant Hub</h6>
-        <h1 className="md:inline-block hidden">Bring your project to life</h1>
-        <h4 className="md:hidden inline-block">Bring your project to life</h4>
-        <p className="text-black text-xl">
+      <div className="w-1/2 md:w-1/2 flex flex-col absolute h-1/2 max-w-fit md:h-full justify-center container mx-10">
+        <h3 className="mb-8 hidden sm:hidden xs:hidden md:inline-block">
+          Grant Hub
+        </h3>
+        <h6 className="mb-4 pt-20 inline-block md:hidden lg:hidden">
+          Grant Hub
+        </h6>
+        <h1 className="sm:hidden xs:hidden md:inline-block w-auto sm:w-4/5">
+          Bring your project to life
+        </h1>
+        <h4 className="md:hidden lg:hidden inline-block w-full">
+          Bring your project to life
+        </h4>
+        <p className="text-black text-xl w-3/4">
           Build and fund your projects all in one place -- from creating a
           project to applying for grants to creating impact with your project
           starting today!
@@ -104,7 +112,7 @@ function Landing() {
         )}
       </div>
       <img
-        className="absolute w-1/2 md:inline-block inset-y-56 right-0"
+        className="absolute w-1/2 md:inline-block right-0 xs:hidden sm:hidden"
         src="./assets/landing-background.svg"
         alt="Jungle Background"
       />
