@@ -1,4 +1,5 @@
 import {enableFetchMocks, FetchMock} from "jest-fetch-mock"
+import {Blob} from 'node:buffer';
 
 import {
   ChainId,
@@ -8,7 +9,7 @@ import {
   graphql_fetch,
   pinToIPFS
 } from "../utils"
-import {Blob} from "buffer";
+
 import {MetadataPointer} from "../types";
 
 enableFetchMocks()
@@ -36,9 +37,11 @@ describe("fetchFromIPFS", () => {
   it("should throw on invalid CID", async () => {
     const cid = "invalidcid"
 
-    fetchMock.mockReject(new Error('fake error message'))
+    fetchMock.mockResponseOnce("", {
+      status: 404
+    })
 
-    await expect(fetchFromIPFS(cid)).rejects.toThrow();
+    await expect(fetchFromIPFS(cid)).rejects.toHaveProperty('status', 404);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
@@ -104,13 +107,49 @@ describe("pinToIPFS", () => {
     }))
 
     const ipfsObject = {
-      content: new Blob(),
+      content: new Blob([]),
       metadata: {
         name: "program-metadata"
       }
     }
 
     const res = await pinToIPFS(ipfsObject)
+
+    const fd = new FormData();
+    fd.append("file", ipfsObject.content as Blob)
+    fd.append("pinataOptions", JSON.stringify({
+      cidVersion: 1
+    }))
+    fd.append("pinataMetadata", JSON.stringify(ipfsObject.metadata))
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`,
+      },
+      body: fd,
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      params
+    )
+    expect(res.IpfsHash).toEqual(cid)
+  })
+
+  it("should reject upon failure to pin blob data", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 403
+    }) /*Common error-expired API credentials*/
+
+    const ipfsObject = {
+      content: new Blob([]),
+      metadata: {
+        name: "program-metadata"
+      }
+    }
+
+    await expect(pinToIPFS(ipfsObject)).rejects.toHaveProperty('status', 403);
 
     const fd = new FormData();
     fd.append("file", ipfsObject.content)
@@ -131,7 +170,51 @@ describe("pinToIPFS", () => {
       "https://api.pinata.cloud/pinning/pinFileToIPFS",
       params
     )
-    expect(res.IpfsHash).toEqual(cid)
+  })
+
+  it("should reject upon failure to pin json data", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 403
+    }) /*Common error-expired API credentials*/
+
+    const cid = "bafkreih475g3yk67xjenvlatgumnbtqay7edgyrxevoqzihjltjm3f6cf4"
+
+    fetchMock.mockResponseOnce(JSON.stringify({
+      IpfsHash: cid,
+      PinSize: 1024,
+      TimeStamp: (new Date()).toISOString()
+    }))
+
+    const ipfsObject = {
+      content: {
+        name: "My First Program"
+      },
+      metadata: {
+        name: "program-metadata"
+      }
+    }
+
+    await expect(pinToIPFS(ipfsObject)).rejects.toHaveProperty('status', 403);
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        pinataMetadata: ipfsObject.metadata,
+        pinataOptions: {
+          cidVersion: 1
+        },
+        pinataContent: ipfsObject.content
+      }),
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+      params
+    )
   })
 })
 
@@ -151,7 +234,7 @@ describe("checkGrantApplicationStatus", () => {
       pointer: "QmPMERYmqZtbHmqd2UzRhX9F4cixnMQU2GFa2hYAsQ6J3D"
     }
 
-    const res = await checkGrantApplicationStatus(1, metadataPointer);
+    const res = await checkGrantApplicationStatus("1", metadataPointer);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
@@ -201,6 +284,35 @@ describe("graphql_fetch", () => {
     )
     expect(res.data.programs[0]).toEqual(
       {id: "0x123456789544fe81379e2951623f008d200e1d18"}
+    )
+  })
+  it("should reject on non-200 status code", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 400
+    })
+
+    const query = `
+      programs {
+        id
+      }
+    `
+
+    await expect(graphql_fetch(query, ChainId.GOERLI_CHAIN_ID)).rejects.toHaveProperty('status', 400);
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query,
+        variables: {}
+      }),
+    }
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      params
     )
   })
 

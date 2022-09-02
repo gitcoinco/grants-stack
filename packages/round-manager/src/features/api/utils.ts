@@ -1,5 +1,4 @@
 import {IPFSObject, MetadataPointer, ProjectStatus} from "./types"
-import {Blob} from 'buffer';
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -90,7 +89,7 @@ export const fetchFromIPFS = (cid: string) => {
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
-export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer): ProjectStatus => {
+export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer): Promise<ProjectStatus> => {
   let reviewedApplications: any = []
 
   // read data from ipfs
