@@ -1,55 +1,27 @@
-import { Fragment } from "react"
+import React, { Fragment } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import {CheckIcon, XIcon} from "@heroicons/react/solid"
-
-interface ProgressModalProps {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  steps: Array<{
-    name: string;
-    description: string;
-    status: "complete" | "current" | "upcoming" | "error"
-  }>;
-  heading?: string;
-  subheading?: string;
-  redirectUrl?: string;
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
-function ModalStep(props: {
-  step: { name: string; description: string; status: "complete" | "current" | "upcoming" | "error" },
-  icon: JSX.Element,
-  line: JSX.Element,
-  stepNameDarkGray?: boolean,
-  stepDescriptionDarkGray?: boolean,
-  isAriaHidden?: boolean,
-  isAriaCurrent?: boolean,
-  isLastStep?: boolean
-}) {
-  return <>
-    {!props.isLastStep ? (
-        props.line
-    ) : null}
-    <div className="relative flex items-start group" aria-current={!!props.isAriaCurrent}>
-      <span className="h-9 flex items-center" aria-hidden={!!props.isAriaHidden}>
-        {props.icon}
-      </span>
-      <span className="ml-4 min-w-0 flex flex-col">
-        <span className={`text-xs font-semibold tracking-wide uppercase ${props.stepNameDarkGray ? "text-grey-500" : "text-grey-400"}`}>{props.step.name}</span>
-        <span className={`text-sm ${props.stepDescriptionDarkGray ? "text-grey-500" : "text-grey-400"}`}>{props.step.description}</span>
-      </span>
-    </div>
-  </>;
-}
+import { CheckIcon, XIcon } from "@heroicons/react/solid"
 
 export enum ProgressStatus {
   COMPLETE = "complete",
   CURRENT = "current",
   UPCOMING = "upcoming",
   ERROR = "error"
+}
+
+export type Step = {
+  name: string;
+  description: string;
+  status: ProgressStatus
+};
+
+interface ProgressModalProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  steps: Step[];
+  heading?: string;
+  subheading?: string;
+  redirectUrl?: string;
 }
 
 export default function ProgressModal(
@@ -60,7 +32,7 @@ export default function ProgressModal(
     subheading = "Please hold while your operation is in progress.",
     redirectUrl = "",
     ...props
-  }: ProgressModalProps
+  }: ProgressModalProps,
 ) {
 
   return (
@@ -75,7 +47,7 @@ export default function ProgressModal(
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity"/>
         </Transition.Child>
 
         <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -89,7 +61,8 @@ export default function ProgressModal(
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
+              <Dialog.Panel
+                className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title as="h3" className="text-base leading-6 font-semibold text-grey-500">
@@ -105,56 +78,69 @@ export default function ProgressModal(
                 <nav aria-label="Progress" className="ml-4 mt-11 mb-6">
                   <ol className="overflow-hidden">
                     {props.steps.map((step, stepIdx) => (
-                      <li key={step.name} className={classNames(stepIdx !== props.steps.length - 1 ? 'pb-10' : '', 'relative')}>
+                      <li key={step.name}
+                          className={`relative ${stepIdx !== props.steps.length - 1 ? 'pb-10' : ''}`}>
                         {step.status === ProgressStatus.COMPLETE ? (
-                            <ModalStep
-                              step={step}
-                              icon={
-                                <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
-                                  <CheckIcon className="w-5 h-5 text-white" aria-hidden="true" />
+                          <ModalStep
+                            step={step}
+                            icon={
+                              <span
+                                className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full"
+                                data-testid={`${step.name}-complete-icon`}>
+                                  <CheckIcon className="w-5 h-5 text-white" aria-hidden="true"/>
                                 </span>
-                              }
-                              line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-teal-500" aria-hidden="true" />}
-                              stepNameDarkGray={true}
-                              stepDescriptionDarkGray={true}
-                              isLastStep={stepIdx === props.steps.length - 1}
-                            />
+                            }
+                            line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-teal-500"
+                                       aria-hidden="true"/>}
+                            nameColor={"text-grey-500"}
+                            descriptionColor={"text-grey-500"}
+                            isLastStep={stepIdx === props.steps.length - 1}
+                          />
                         ) : step.status === ProgressStatus.CURRENT ? (
                           <ModalStep
                             step={step}
                             icon={
-                              <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
-                                <span className="h-2.5 w-2.5 bg-violet-500 rounded-full" />
+                              <span
+                                className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                                <span className="h-2.5 w-2.5 bg-violet-500 rounded-full"
+                                      data-testid={`${step.name}-current-icon`}/>
                               </span>
                             }
-                            line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true" />}
-                            stepNameDarkGray={true}
+                            line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-200"
+                                       aria-hidden="true"/>}
+                            nameColor="text-violet-500"
                             isLastStep={stepIdx === props.steps.length - 1}
                           />
                         ) : step.status === ProgressStatus.ERROR ? (
-                            <ModalStep
-                              step={step}
-                              icon={
-                                <span className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
-                                 <XIcon className="w-5 h-5 text-pink-500" data-testid={`${step.name.toLowerCase()}-error-icon`}/>
+                          <ModalStep
+                            step={step}
+                            icon={
+                              <span
+                                className="relative z-10 w-8 h-8 flex items-center justify-center border-2 bg-white border-pink-500 rounded-full">
+                                 <XIcon className="w-5 h-5 text-pink-500" data-testid={`${step.name}-error-icon`}/>
                                 </span>
-                              }
-                              line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true"/>}
-                              isLastStep={stepIdx === props.steps.length - 1}
-                              stepNameDarkGray={true}
-                            />
+                            }
+                            line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-300"
+                                       aria-hidden="true"/>}
+                            isLastStep={stepIdx === props.steps.length - 1}
+                            nameColor="text-grey-500"
+                          />
                         ) : step.status === ProgressStatus.UPCOMING ? (
-                            <ModalStep
-                              step={step}
-                              icon={
-                                <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-300 rounded-full group-hover:border-gray-400">
-                                  <span className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300" />
+                          <ModalStep
+                            step={step}
+                            icon={
+                              <span
+                                className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"
+                                data-testid={`${step.name}-upcoming-icon`}>
+
                                 </span>
-                              }
-                              line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true" />}
-                              isLastStep={stepIdx === props.steps.length - 1}
-                            />
-                        ) : <></> }
+                            }
+                            line={<div className="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-grey-300"
+                                       aria-hidden="true"/>}
+                            isLastStep={stepIdx === props.steps.length - 1}
+                            nameColor="text-grey-400"
+                          />
+                        ) : <></>}
                       </li>
                     ))}
                   </ol>
@@ -168,4 +154,30 @@ export default function ProgressModal(
       </Dialog>
     </Transition.Root>
   )
+}
+
+function ModalStep(props: {
+  step: Step,
+  icon: JSX.Element,
+  line: JSX.Element,
+  nameColor: string,
+  descriptionColor?: string,
+  isAriaHidden?: boolean,
+  isAriaCurrent?: boolean,
+  isLastStep?: boolean
+}) {
+  return <>
+    {!props.isLastStep ? (
+      props.line
+    ) : null}
+    <div className="relative flex items-start group" aria-current={!!props.isAriaCurrent}>
+      <span className="h-9 flex items-center" aria-hidden={!!props.isAriaHidden}>
+        {props.icon}
+      </span>
+      <span className="ml-4 min-w-0 flex flex-col">
+        <span className={`text-xs font-semibold tracking-wide uppercase ${props.nameColor}`}>{props.step.name}</span>
+        <span className={`text-sm ${props.descriptionColor ?? 'text-grey-400'}`}>{props.step.description}</span>
+      </span>
+    </div>
+  </>
 }
