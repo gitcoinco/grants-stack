@@ -53,7 +53,7 @@ function ProjectsList() {
             </p>
           </div>
           <RoundApplyAlert
-            show={JSON.parse(toggleModal)}
+            show={toggleModal}
             confirmHandler={() => {
               const chainId = roundToApply?.split(":")[0];
               const roundId = roundToApply?.split(":")[1];

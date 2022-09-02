@@ -68,7 +68,7 @@ function Apply() {
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
-      setToggleRoundApplicationModal(JSON.stringify(true));
+      setToggleRoundApplicationModal(true);
     }
   }, [roundId]);
 
