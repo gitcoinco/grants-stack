@@ -1,5 +1,4 @@
 import {enableFetchMocks, FetchMock} from "jest-fetch-mock"
-import {Blob} from 'node:buffer';
 
 import {
   ChainId,

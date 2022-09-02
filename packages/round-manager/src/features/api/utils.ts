@@ -1,5 +1,4 @@
 import {IPFSObject, MetadataPointer, ProjectStatus} from "./types"
-import {Blob} from 'node:buffer';
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
