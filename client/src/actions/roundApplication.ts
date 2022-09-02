@@ -8,6 +8,7 @@ import PinataClient from "../services/pinata";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
 import { chains } from "../contracts/deployments";
+import utils from "../utils/roundApplication";
 
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
 interface RoundApplicationLoadingAction {
@@ -142,10 +143,11 @@ export const submitApplication =
 
     const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-
-    const projectUniqueID = ethers.utils.formatBytes32String(
-      projectId.toString()
+    const projectUniqueID = utils.generateUniqueRoundApplicationID(
+      chainID,
+      Number(projectId)
     );
+
     try {
       await contract.applyToRound(projectUniqueID, metaPtr);
       dispatch({
