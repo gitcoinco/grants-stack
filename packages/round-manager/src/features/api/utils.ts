@@ -1,4 +1,5 @@
 import {IPFSObject, MetadataPointer, ProjectStatus} from "./types"
+import {Blob} from 'node:buffer';
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -89,7 +90,7 @@ export const fetchFromIPFS = (cid: string) => {
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
-export const checkGrantApplicationStatus = async (id: string, projectsMetaPtr: MetadataPointer): Promise<ProjectStatus> => {
+export const checkGrantApplicationStatus = async (id: number, projectsMetaPtr: MetadataPointer): Promise<ProjectStatus> => {
   let reviewedApplications: any = []
 
   // read data from ipfs
@@ -129,7 +130,7 @@ export const pinToIPFS = (obj: IPFSObject) => {
   if (obj.content instanceof Blob) {
     // content is a blob
     const fd = new FormData();
-    fd.append("file", obj.content)
+    fd.append("file", obj.content as Blob)
     fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
     fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
 
