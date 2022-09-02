@@ -176,7 +176,7 @@ Emitted when a Program contract is updated
 ### ProgramCreated
 
 ```solidity
-event ProgramCreated(address indexed programContractAddress)
+event ProgramCreated(address indexed programContractAddress, address indexed programImplementation)
 ```
 
 Emitted when a new Program is created
@@ -188,6 +188,7 @@ Emitted when a new Program is created
 | Name | Type | Description |
 |---|---|---|
 | programContractAddress `indexed` | address | undefined |
+| programImplementation `indexed` | address | undefined |
 
 
 

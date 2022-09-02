@@ -163,6 +163,8 @@ export default function ProgressModal(
             </Transition.Child>
           </div>
         </div>
+        {/* Adding invisible button as modal needs to be displayed with a button */}
+        <button className="h-0 w-0 overflow-hidden"/>
       </Dialog>
     </Transition.Root>
   )

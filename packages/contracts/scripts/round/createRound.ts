@@ -58,7 +58,7 @@ export async function main() {
     roundEndTime, // _roundEndTime
     '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
     { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
-    { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" }, // _applicationMetaPtr
+    { protocol: 1, pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia" }, // _applicationMetaPtr
     [
       '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
       '0xB8cEF765721A6da910f14Be93e7684e9a3714123'

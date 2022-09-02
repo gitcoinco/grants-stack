@@ -4,7 +4,7 @@ const programFactory = [
   "event Initialized(uint8 version)",
   "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
   "event ProgramContractUpdated(address programContractAddress)",
-  "event ProgramCreated(address indexed programContractAddress)",
+  "event ProgramCreated(address indexed programContractAddress, address indexed programImplementation)",
   "function create(bytes encodedParameters) returns (address)",
   "function initialize()",
   "function owner() view returns (address)",

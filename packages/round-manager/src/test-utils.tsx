@@ -9,16 +9,19 @@ import { store } from "./app/store"
 import history from "./history"
 import { IAM_SERVER } from "./features/round/ViewApplicationPage"
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types"
+import { initialProgramState, ProgramContext, ProgramState } from "./context/ProgramContext"
+import { MemoryRouter } from "react-router-dom"
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
   metadata: {
     name: faker.company.bsBuzz()
   },
-  store: {
-    protocol: randomInt(1, 10),
-    pointer: faker.random.alpha({ count: 59, casing: "lower" })
-  },
+  // TODO add this back in for createProgram
+  // store: {
+  //   protocol: randomInt(1, 10),
+  //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
+  // },
   operatorWallets: [
     faker.finance.ethereumAddress()
   ],
@@ -162,3 +165,17 @@ export const renderWrapped = (ui: JSX.Element) => {
     </Provider>
   )
 }
+
+// TODO finish and replace other renderWrapped function
+export const renderWithContext = (
+  ui: JSX.Element,
+  programStateOverrides: Partial<ProgramState> = {},
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <ProgramContext.Provider value={{ state:  {...initialProgramState, ...programStateOverrides }, dispatch}}>
+        { ui }
+      </ProgramContext.Provider>
+    </MemoryRouter>
+  )

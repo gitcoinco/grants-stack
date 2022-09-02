@@ -17,7 +17,7 @@ contract ProgramFactory is OwnableUpgradeable {
   event ProgramContractUpdated(address programContractAddress);
 
   /// @notice Emitted when a new Program is created
-  event ProgramCreated(address indexed programContractAddress);
+  event ProgramCreated(address indexed programContractAddress, address indexed programImplementation);
 
 
   /// @notice constructor function which ensure deployer is set as owner
@@ -51,9 +51,7 @@ contract ProgramFactory is OwnableUpgradeable {
   ) external returns (address) {
 
     address clone = ClonesUpgradeable.clone(programContract);
-
-    emit ProgramCreated(clone);
-
+    emit ProgramCreated(clone, programContract);
     ProgramImplementation(clone).initialize(encodedParameters);
 
     return clone;
