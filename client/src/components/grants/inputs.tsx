@@ -38,8 +38,10 @@ export function TextInputAddress({
   placeholder,
   disabled,
   changeHandler,
+  displayError, // a string that will be: (visible | invisible)
 }: AddressInputProps) {
   // todo: validate address
+
   return (
     <div className="mt-6 w-full sm:w-1/2 static">
       <label className="text-sm absolute" htmlFor={name}>
@@ -69,6 +71,9 @@ export function TextInputAddress({
         disabled={disabled}
         onChange={changeHandler}
       />
+      <span className={`text-red-500 ${displayError}`}>
+        This is not a valid payment address
+      </span>
     </div>
   );
 }

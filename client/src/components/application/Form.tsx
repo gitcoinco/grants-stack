@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
+import { useProvider } from "wagmi";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
@@ -19,6 +20,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
+import { isValidAddress } from "../../utils/wallet";
 
 interface DynamicFormInputs {
   [key: string]: string;
@@ -37,6 +39,7 @@ export default function Form({
   round: Round;
 }) {
   const dispatch = useDispatch();
+  const provider = useProvider();
 
   const props = useSelector(
     (state: RootState) => ({
@@ -51,6 +54,8 @@ export default function Form({
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
+  const [displayAddressError, setDisplayAddressError] = useState("invisible");
+  const [disableProgress, setDisableProgress] = useState(false);
 
   const schema = roundApplication.applicationSchema;
 
@@ -59,9 +64,32 @@ export default function Form({
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
 
-  const handleInputAddress = (e: ChangeHandlers) => {
+  const handleInputAddress = async (e: ChangeHandlers) => {
     const { value } = e.target;
-    // todo: validate address
+    let isContract;
+    const isValid = isValidAddress(value);
+    try {
+      if (value.length === 42 && !isValid) {
+        const code = await provider.getCode(value);
+        if (code === "0x") {
+          isContract = false;
+          setDisableProgress(false);
+        } else {
+          isContract = true;
+          setDisableProgress(true);
+        }
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+    console.log("valid", isValid);
+    if (value.length !== 42 && !isValid && !isContract) {
+      setDisplayAddressError("visible");
+      setDisableProgress(true);
+    } else {
+      setDisplayAddressError("invisible");
+      setDisableProgress(false);
+    }
 
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
@@ -160,6 +188,7 @@ export default function Form({
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInputAddress}
+                  displayError={displayAddressError}
                 />
               );
             case "TEXTAREA":
@@ -222,6 +251,7 @@ export default function Form({
         <div className="flex justify-end">
           {!preview ? (
             <Button
+              disabled={disableProgress}
               variant={ButtonVariants.primary}
               onClick={() => setPreview(true)}
             >

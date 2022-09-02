@@ -69,6 +69,7 @@ export type AddressInputProps = {
   placeholder?: string;
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
+  displayError?: string;
 };
 
 export interface ProjectEvent {
