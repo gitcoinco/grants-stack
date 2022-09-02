@@ -9,7 +9,7 @@ export default function useLocalStorage(key: string, defaultValue: any): any[] {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = localStorage.get(key);
-      return item ?? defaultValue;
+      return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
       dataDog.addError(error);
       console.error(error);
@@ -22,11 +22,12 @@ export default function useLocalStorage(key: string, defaultValue: any): any[] {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      localStorage.add(key, valueToStore);
+      localStorage.add(key, JSON.stringify(valueToStore));
     } catch (error) {
       dataDog.addError(error);
       console.error(error);
     }
   };
+
   return [storedValue, setValue];
 }
