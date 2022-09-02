@@ -189,6 +189,21 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
             </div>
             <hr />
             <div className="flex my-4">
+              <span className="flex-1 text-sm">Project Twitter</span>
+              <span className="text-xs text-grey-400">Optional</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Your GitHub Username</span>
+              <span className="text-xs text-grey-400">Optional</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
+              <span className="flex-1 text-sm">Project GitHub Organization</span>
+              <span className="text-xs text-grey-400">Optional</span>
+            </div>
+            <hr />
+            <div className="flex my-4">
               <span className="flex-1 text-sm">Project Logo</span>
               <span className="text-xs text-violet-400">*Required</span>
             </div>
@@ -249,20 +264,6 @@ export function RoundApplicationForm(props: { initialData: any, stepper: any }) 
                     <span className="text-xs text-violet-400">*Required</span>
                   </div>
                   <hr />
-                  <div className="flex my-4">
-                    <span className="flex-1 text-sm">Project Twitter</span>
-                    <span className="text-xs text-grey-400">Optional</span>
-                  </div>
-                  <hr />
-                  <div className="flex my-4">
-                    <span className="flex-1 text-sm">Your GitHub Username</span>
-                    <span className="text-xs text-grey-400">Optional</span>
-                  </div>
-                  <hr />
-                  <div className="flex my-4">
-                    <span className="flex-1 text-sm">Project GitHub Organization</span>
-                    <span className="text-xs text-grey-400">Optional</span>
-                  </div>
                   <hr />
                   <div className="flex my-4">
                     <span className="flex-1 text-sm">Funding Sources</span>
