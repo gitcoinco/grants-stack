@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loadProjects } from "../../actions/projects";
+import { checkRoundApplications } from "../../actions/roundApplication";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
@@ -16,28 +17,51 @@ import Card from "./Card";
 
 function ProjectsList() {
   const dispatch = useDispatch();
-  const props = useSelector(
-    (state: RootState) => ({
-      loading: state.projects.status === Status.Loading,
-      projects: state.projects.projects,
-      chainID: state.web3.chainID,
-    }),
-    shallowEqual
-  );
-
-  const navigate = useNavigate();
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
     false
   );
+
   const [roundToApply] = useLocalStorage("roundToApply", null);
+
+  const props = useSelector((state: RootState) => {
+    // undefined while the round application is loading, boolean once it's loaded
+    let alreadyApplied: undefined | boolean;
+    if (roundToApply) {
+      const roundAddress = roundToApply.split(":")[1];
+      const round = state.roundApplication[roundAddress];
+      if (round !== undefined) {
+        alreadyApplied = round.projectsIDs.length > 0;
+      }
+    }
+
+    const showRoundDialog =
+      toggleModal && roundToApply && alreadyApplied === false;
+
+    return {
+      loading: state.projects.status === Status.Loading,
+      projects: state.projects.projects,
+      chainID: state.web3.chainID,
+      showRoundDialog,
+    };
+  }, shallowEqual);
+
+  const navigate = useNavigate();
 
   const roundInfo = null; // Placeholder, get from contract call or graph
 
   useEffect(() => {
     dispatch(loadProjects());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (roundToApply && props.projects.length > 0) {
+      const [chainID, roundAddress] = roundToApply.split(":");
+      const ids = props.projects.map((p) => p.id);
+      dispatch(checkRoundApplications(chainID, roundAddress, ids));
+    }
+  }, [props.projects]);
 
   return (
     <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
@@ -52,7 +76,7 @@ function ProjectsList() {
             </p>
           </div>
           <RoundApplyAlert
-            show={toggleModal}
+            show={props.showRoundDialog}
             confirmHandler={() => {
               const chainId = roundToApply?.split(":")[0];
               const roundId = roundToApply?.split(":")[1];
@@ -91,7 +115,7 @@ function ProjectsList() {
         </>
       )}
       <CallbackModal
-        modalOpen={toggleModal}
+        modalOpen={props.showRoundDialog}
         confirmText="Apply to Grand Round"
         confirmHandler={() => {
           const chainId = roundToApply?.split(":")[0];
