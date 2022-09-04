@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
@@ -17,6 +17,7 @@ function Layout(ownProps: Props) {
   const [show, showToast] = useState(false);
   const { address: account } = useAccount();
   const { openChainModal } = useChainModal();
+  const { chain } = useNetwork();
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
@@ -31,9 +32,8 @@ function Layout(ownProps: Props) {
     showToast(props.web3Initialized);
   }, [props.web3Initialized]);
 
-  // check the network
-  if (props.web3Error !== undefined) {
-    console.log(props.web3Error);
+  // check the network and show a modal if not on mainnet optimism
+  if (props.web3Error !== undefined && chain?.id !== props.chainID) {
     if (openChainModal) openChainModal();
   }
 
