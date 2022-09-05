@@ -159,7 +159,7 @@ describe("<ApplicationsRejected />", () => {
 
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject buttons on each card", () => {
-      renderWrapped(<ApplicationsRejected bulkSelect={false} />)
+      renderWrapped(<ApplicationsRejected />)
       expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(0)
     })
   });
@@ -215,7 +215,7 @@ describe("<ApplicationsRejected />", () => {
     })
 
     it('does not show continue button when no applications are rejected', () => {
-      renderWrapped(<ApplicationsRejected bulkSelect={true} />)
+      renderWrapped(<ApplicationsRejected />)
 
       const continueButton = screen.queryByRole('button', {
         name: /Continue/i
@@ -261,10 +261,12 @@ describe("<ApplicationsRejected />", () => {
     })
 
     it("closes the modal when cancel button is clicked on the modal", async () => {
-      renderWrapped(<ApplicationsRejected bulkSelect={true}/>)
+      renderWrapped(<ApplicationsRejected />)
+      const select = screen.getByTestId('select-button');
+      fireEvent.click(select);
 
-      const rejectButton = screen.queryAllByTestId("reject-button")[0]
-      fireEvent.click(rejectButton)
+      const approveButton = screen.queryAllByTestId("approve-button")[0]
+      fireEvent.click(approveButton)
 
       const continueButton = screen.getByRole('button', {
         name: /Continue/i
