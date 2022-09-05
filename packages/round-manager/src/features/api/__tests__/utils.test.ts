@@ -224,7 +224,7 @@ describe("checkGrantApplicationStatus", () => {
 
   it("should return grant application status from IPFS", async () => {
     fetchMock.mockResponseOnce(JSON.stringify([{
-      id: 1,
+      id: "1",
       status: 'FRAUD'
     }]))
 
@@ -233,7 +233,7 @@ describe("checkGrantApplicationStatus", () => {
       pointer: "QmPMERYmqZtbHmqd2UzRhX9F4cixnMQU2GFa2hYAsQ6J3D"
     }
 
-    const res = await checkGrantApplicationStatus(1, metadataPointer);
+    const res = await checkGrantApplicationStatus("1", metadataPointer);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${metadataPointer.pointer}`
