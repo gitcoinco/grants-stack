@@ -40,7 +40,7 @@ const ProgramCard: React.FC<ProgramCardProps> = (props: ProgramCardProps) => (
       </CardDescription>
     </CardContent>
     <CardFooter>
-      <CardFooterContent className="justify-end p-6">
+      <CardFooterContent className="justify-end p-6 bg-[#F3F3F5]">
         {props.footerContent}
       </CardFooterContent>
     </CardFooter>
@@ -86,7 +86,7 @@ function ListPrograms() {
         floatingIcon={
           <div
             className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">
-            <RefreshIcon className="h-6 w-6" aria-hidden="true" />
+            <RefreshIcon className="h-6 w-6 text-gray-500" aria-hidden="true" />
           </div>
         }
         title={program.metadata!.name}
