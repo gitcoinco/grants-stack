@@ -29,7 +29,6 @@ const initialState = {};
 const roundApplicationInitialState = {
   status: Status.Undefined,
   error: undefined,
-  applied: false,
   projectsIDs: [],
 };
 

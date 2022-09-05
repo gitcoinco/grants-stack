@@ -36,14 +36,16 @@ function ProjectsList() {
       }
     }
 
-    const showRoundDialog =
+    const showRoundModal =
       toggleModal && roundToApply && alreadyApplied === false;
+    const showRoundAlert = alreadyApplied === false;
 
     return {
       loading: state.projects.status === Status.Loading,
       projects: state.projects.projects,
       chainID: state.web3.chainID,
-      showRoundDialog,
+      showRoundModal,
+      showRoundAlert,
     };
   }, shallowEqual);
 
@@ -76,7 +78,7 @@ function ProjectsList() {
             </p>
           </div>
           <RoundApplyAlert
-            show={props.showRoundDialog}
+            show={props.showRoundAlert}
             confirmHandler={() => {
               const chainId = roundToApply?.split(":")[0];
               const roundId = roundToApply?.split(":")[1];
@@ -115,7 +117,7 @@ function ProjectsList() {
         </>
       )}
       <CallbackModal
-        modalOpen={props.showRoundDialog}
+        modalOpen={props.showRoundModal}
         confirmText="Apply to Grand Round"
         confirmHandler={() => {
           const chainId = roundToApply?.split(":")[0];
