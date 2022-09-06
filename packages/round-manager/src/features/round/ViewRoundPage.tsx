@@ -81,7 +81,7 @@ export default function ViewRoundPage() {
     <>
       {!roundExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
-      { roundExists && hasAccess &&
+      {roundExists && hasAccess &&
         <>
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
