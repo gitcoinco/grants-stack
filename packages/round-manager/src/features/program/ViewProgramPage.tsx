@@ -30,6 +30,8 @@ export default function ViewProgram() {
 
   const { programs } = usePrograms();
 
+  // TODO(shavinac) should fetch program by id directly (to check for existence), if requested program id not in context?
+  //    this is to cover the case where program exists, but user does not have access
   const programToRender = programs.find((program) => program.id === id);
 
   const {
