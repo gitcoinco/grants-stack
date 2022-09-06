@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { screen } from "@testing-library/react";
+
+import { render, screen } from "@testing-library/react";
 import { useListRoundsQuery } from "../../api/services/round";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, Round } from "../../api/types";
 import {
   makeGrantApplicationData,
   makeRoundData,
-  renderWithApplicationContext,
+  wrapWithProgramContext,
+  wrapWithRoundContext,
+  wrapWithApplicationContext,
+  makeProgramData,
 } from "../../../test-utils";
 import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useParams } from "react-router-dom";
+import { useWallet } from "../../common/Auth";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/round");
@@ -26,8 +32,14 @@ Object.assign(navigator, {
   },
 });
 
+import { faker } from "@faker-js/faker";
+
 const mockRoundData: Round = makeRoundData();
-const mockApplicationData: GrantApplication[] = [];
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: jest.fn(),
+}));
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
@@ -39,7 +51,11 @@ jest.mock("../../common/Auth", () => ({
 
 describe("the view round page", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockRoundData.id,
+      };
+    });
 
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       round: mockRoundData,
@@ -59,49 +75,78 @@ describe("the view round page", () => {
   });
 
   it("should display 404 when there no round is found", () => {
-    (useListRoundsQuery as jest.Mock).mockReturnValue({
-      isLoading: false,
-      isSuccess: true,
+    (useParams as jest.Mock).mockReturnValueOnce({
+      id: undefined,
     });
 
-    renderWithApplicationContext(<ViewRoundPage />, {
-      applications: [],
-      isLoading: false,
-    });
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [],
+            isLoading: false,
+          }),
+          { programs: [] }
+        ),
+        {
+          applications: [],
+          isLoading: false,
+        }
+      )
+    );
 
-    // renderWrapped(<ViewRoundPage />);
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
-  it("should display access denied when wallet accessing is not program operator", () => {
-    (useListRoundsQuery as jest.Mock).mockReturnValue({
-      round: makeRoundData(),
-      isLoading: false,
-      isSuccess: true,
-    });
-
-    renderWithApplicationContext(<ViewRoundPage />, {
-      applications: mockApplicationData,
-      isLoading: false,
-    });
-
+  it("should display access denied when wallet accessing is not round operator", () => {
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [{ ...mockRoundData, operatorWallets: [] }],
+            isLoading: false,
+          }),
+          { programs: [] }
+        ),
+        {
+          applications: [],
+        }
+      )
+    );
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
 
   it("should display Copy to Clipboard", () => {
-    renderWithApplicationContext(<ViewRoundPage />, {
-      applications: [],
-      isLoading: false,
-    });
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            isLoading: false,
+          }),
+          { programs: [] }
+        )
+      )
+    );
     expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
   });
 
   it("should display copy when there are no applicants for a given round", () => {
-    renderWithApplicationContext(<ViewRoundPage />, {
-      applications: [],
-      isLoading: false,
-    });
-
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            isLoading: false,
+          }),
+          { programs: [] }
+        ),
+        {
+          applications: [],
+          isLoading: false,
+        }
+      )
+    );
     expect(screen.getByText("No Applications")).toBeInTheDocument();
   });
 
@@ -118,10 +163,21 @@ describe("the view round page", () => {
     mockApplicationData[2].status = "REJECTED";
     mockApplicationData[3].status = "APPROVED";
 
-    renderWithApplicationContext(<ViewRoundPage />, {
-      applications: mockApplicationData,
-      isLoading: false,
-    });
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            isLoading: false,
+          }),
+          { programs: [] }
+        ),
+        {
+          applications: mockApplicationData,
+          isLoading: false,
+        }
+      )
+    );
 
     expect(
       parseInt(screen.getByTestId("received-application-counter").textContent!)
@@ -135,11 +191,17 @@ describe("the view round page", () => {
   });
 
   it("should display loading spinner when round is loading", () => {
-    (useListRoundsQuery as jest.Mock).mockReturnValue({
-      isLoading: true,
-    });
-
-    renderWithApplicationContext(<ViewRoundPage />);
+    render(
+      wrapWithApplicationContext(
+        wrapWithProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [],
+            isLoading: true,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });

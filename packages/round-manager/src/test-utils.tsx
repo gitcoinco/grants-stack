@@ -21,6 +21,11 @@ import {
 } from "./context/program/ReadProgramContext";
 import { MemoryRouter } from "react-router-dom";
 import {
+  initialRoundState,
+  RoundContext,
+  RoundState,
+} from "./context/RoundContext";
+import {
   ApplicationContext,
   ApplicationState,
   initialApplicationState,
@@ -208,8 +213,8 @@ export const renderWrapped = (ui: JSX.Element) => {
   );
 };
 
-// TODO finish and replace other renderWrapped function
-export const renderWithContext = (
+// TODO finish and replace other renderWrapped function @vacekj
+export const renderWithProgramContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<ReadProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -249,3 +254,79 @@ export const renderWithApplicationContext = (
       </ApplicationContext.Provider>
     </MemoryRouter>
   );
+
+export const wrapWithApplicationContext = (
+  ui: JSX.Element,
+  grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) => (
+  <ApplicationContext.Provider
+    value={{
+      state: {
+        ...initialApplicationState,
+        ...grantApplicationStateOverrides,
+      },
+      dispatch,
+    }}
+  >
+    {ui}
+  </ApplicationContext.Provider>
+);
+
+export const wrapWithProgramContext = (
+  ui: JSX.Element,
+  programStateOverrides: Partial<ProgramState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) => (
+  <MemoryRouter>
+    <ProgramContext.Provider
+      value={{
+        state: { ...initialProgramState, ...programStateOverrides },
+        dispatch,
+      }}
+    >
+      {ui}
+    </ProgramContext.Provider>
+  </MemoryRouter>
+);
+
+export const wrapWithRoundContext = (
+  ui: JSX.Element,
+  roundStateOverrides: Partial<RoundState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) => (
+  <RoundContext.Provider
+    value={{
+      state: { ...initialRoundState, ...roundStateOverrides },
+      dispatch,
+    }}
+  >
+    {ui}
+  </RoundContext.Provider>
+);
+
+type ContextMock<T> = {
+  context: React.Context<any>;
+  value: T;
+};
+
+/**
+ * Wraps the element in an arbitrary amount of contexts for testing purposes
+ * @param element the final child element. Can be a React component, an HTML tag, or even a string, null. etc. See ReactElement type
+ * @param contexts the contexts to wrap the element with, including their values
+ */
+export function wrapInContexts<T>(
+  element: React.ReactNode,
+  contexts: ContextMock<T>[]
+) {
+  return (
+    <>
+      {contexts.reduceRight((acc, { context, value }) => {
+        return <context.Provider value={value}>{acc}</context.Provider>;
+      }, element)}
+    </>
+  );
+}

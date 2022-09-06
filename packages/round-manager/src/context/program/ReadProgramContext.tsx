@@ -26,14 +26,15 @@ interface Action {
 
 type Dispatch = (action: Action) => void;
 
+export type ProgramContextType =
+  | { state: ReadProgramState; dispatch: Dispatch }
+  | undefined;
+
 export const initialReadProgramState: ReadProgramState = {
   programs: [],
   isLoading: false,
 };
-
-export const ReadProgramContext = createContext<
-  { state: ReadProgramState; dispatch: Dispatch } | undefined
->(undefined);
+export const ReadProgramContext = createContext<ProgramContextType>(undefined);
 
 const fetchProgramsByAddress = async (
   dispatch: Dispatch,

@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 /**
  * Fetch a list of programs
  * @param address - a valid program operator
- * @param signerOrProvider - signer
+ * @param signerOrProvider - provider
  *
  */
 export async function listPrograms(

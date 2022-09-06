@@ -27,6 +27,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
 import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
+import { RoundProvider } from "./context/RoundContext";
 
 // Initialize datadog
 initDatadog();
@@ -66,17 +67,21 @@ root.render(
                 <Route
                   path="/round/:id"
                   element={
-                    <ApplicationProvider>
-                      <ViewRoundPage />
-                    </ApplicationProvider>
+                    <RoundProvider>
+                      <ApplicationProvider>
+                        <ViewRoundPage />
+                      </ApplicationProvider>
+                    </RoundProvider>
                   }
                 />
                 <Route
                   path="/round/:roundId/application/:id"
                   element={
-                    <ApplicationProvider>
-                      <ViewApplication />
-                    </ApplicationProvider>
+                    <RoundProvider>
+                      <ApplicationProvider>
+                        <ViewApplication />
+                      </ApplicationProvider>
+                    </RoundProvider>
                   }
                 />
 
@@ -92,9 +97,11 @@ root.render(
                 <Route
                   path="/program/:id"
                   element={
-                    <ReadProgramProvider>
-                      <ViewProgram />
-                    </ReadProgramProvider>
+                    <RoundProvider>
+                      <ReadProgramProvider>
+                        <ViewProgram />
+                      </ReadProgramProvider>
+                    </RoundProvider>
                   }
                 />
 
