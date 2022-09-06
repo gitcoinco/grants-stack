@@ -157,11 +157,13 @@ export type ProjectCredentials = {
   [key: string]: VerifiableCredential
 }
 
+export type GrantApplicationId = string;
+
 export interface GrantApplication {
   /**
    * The on-chain unique grant application ID
    */
-  id: string;
+  id: GrantApplicationId;
   /**
    * The round contract address applied to
    */
