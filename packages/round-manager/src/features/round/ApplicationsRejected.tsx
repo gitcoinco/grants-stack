@@ -1,21 +1,20 @@
-import { CheckIcon } from "@heroicons/react/solid"
-import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {Link, useParams} from "react-router-dom"
 
-import { useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery } from "../api/services/grantApplication"
-import { GrantApplication, ProjectStatus } from "../api/types"
-import { useWallet } from "../common/Auth"
+import {useBulkUpdateGrantApplicationsMutation, useListGrantApplicationsQuery} from "../api/services/grantApplication"
+import {GrantApplication, ProjectStatus} from "../api/types"
+import {useWallet} from "../common/Auth"
 import ConfirmationModal from "../common/ConfirmationModal"
-import { Spinner } from "../common/Spinner"
+import {Spinner} from "../common/Spinner"
+import {BasicCard, CardContent, CardDescription, CardHeader, CardsContainer, CardTitle} from "../common/styles"
 import {
-  CardsContainer,
-  BasicCard,
-  CardHeader,
-  CardContent,
-  CardTitle,
-  CardDescription,
-  Button
-} from "../common/styles"
+  AdditionalGasFeesNote,
+  ApplicationHeader,
+  ApprovedApplicationsCount,
+  Cancel,
+  Continue,
+  Select
+} from "./BulkApplicationCommon";
 
 
 export default function ApplicationsRejected() {
@@ -61,7 +60,7 @@ export default function ApplicationsRejected() {
     setSelected(newState)
   }
 
-  const checkSelection = (id: string) => {
+  const checkSelectionStatus = (id: string) => {
     return (selected?.find((grantApp: GrantApplication) => grantApp.id === id))?.status
   }
 
@@ -88,24 +87,8 @@ export default function ApplicationsRejected() {
             Save in gas fees by approving/rejecting multiple applications at once.
           </span>
           {bulkSelectRejected ?
-            <Button
-              type="button"
-              $variant="outline"
-              className="text-xs text-pink-500"
-              onClick={() => setBulkSelectRejected(false)}
-            >
-              Cancel
-            </Button>
-            :
-            <Button
-              type="button"
-              $variant="outline"
-              className="text-xs bg-grey-150 border-none"
-              onClick={() => setBulkSelectRejected(true)}
-              data-testid="select-button"
-            >
-              Select
-            </Button>
+            <Cancel onClick={() => setBulkSelectRejected(false)}/> :
+            <Select onClick={() => setBulkSelectRejected(true)}/>
           }
         </div>
       }
@@ -113,40 +96,11 @@ export default function ApplicationsRejected() {
         {isSuccess && data?.map((application, index) => (
           <BasicCard key={index} className="application-card" data-testid="application-card">
             <CardHeader>
-              {bulkSelectRejected && (
-                <div className="absolute flex gap-2 translate-x-[250px] translate-y-4 mr-4" data-testid="bulk-approve-reject-buttons">
-                  <Button
-                    type="button"
-                    $variant="solid"
-                    className={
-                      `border border-grey-400 w-9 h-8 p-2.5 ${checkSelection(application.id) === "APPROVED"
-                        ? "bg-teal-400 text-grey-500" : "bg-grey-500 text-white"}`
-                    }
-                    onClick={() => toggleApproval(application.id)}
-                    data-testid="approve-button"
-                  >
-                    <CheckIcon aria-hidden="true" />
-                  </Button>
-                </div>)
-              }
-              <div>
-                <img
-                  className="h-[120px] w-full object-cover rounded-t"
-                  src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project!.bannerImg}`}
-                  alt=""
-                />
-              </div>
-              <div className="pl-4">
-                <div className="-mt-6 sm:-mt-6 sm:flex sm:items-end sm:space-x-5">
-                  <div className="flex">
-                    <img
-                      className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
-                      src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${application.project!.logoImg}`}
-                      alt=""
-                    />
-                  </div>
-                </div>
-              </div>
+              <ApplicationHeader bulkSelect={bulkSelectRejected}
+                applicationStatus={checkSelectionStatus(application.id)}
+                approveOnClick={() => toggleApproval(application.id)}
+                application={application}
+              />
             </CardHeader>
             <Link key={index} to={`/round/${id}/application/${application.id}`}>
               <CardContent>
@@ -161,7 +115,7 @@ export default function ApplicationsRejected() {
         }
       </CardsContainer>
       {selected && selected?.filter(obj => obj.status === "APPROVED").length > 0 &&
-        <Continue grantApplications={selected} predicate={obj => obj.status === "APPROVED"}
+        <Continue grantApplications={selected} status="APPROVED"
           onClick={() => setOpenModal(true)} />
       }
       <ConfirmationModal
@@ -174,15 +128,9 @@ export default function ApplicationsRejected() {
               {"You have selected multiple Grant Applications to be approved."}
             </p>
             <div className="flex my-8 gap-16 justify-center items-center text-center">
-              <div className="grid gap-2" data-testid="approved-applications-count">
-                <i className="flex justify-center">
-                  <CheckIcon className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1" aria-hidden="true" />
-                </i>
-                <span className="text-xs text-grey-400 font-semibold text-center mt-2">APPROVED</span>
-                <span className="text-grey-500 font-semibold">{selected?.filter(obj => obj.status === "APPROVED").length}</span>
-              </div>
+              <ApprovedApplicationsCount grantApplications={selected}/>
             </div>
-            <p className="text-sm italic text-grey-400 mb-2">Changes could be subject to additional gas fees.</p>
+            <AdditionalGasFeesNote />
           </>
         }
         isOpen={openModal}
@@ -192,23 +140,3 @@ export default function ApplicationsRejected() {
   )
 }
 
-function Continue(props: { grantApplications: GrantApplication[], predicate: (obj: any) => boolean, onClick: () => void }) {
-  return (
-    <div className="fixed w-full left-0 bottom-0 bg-white">
-      <hr />
-      <div className="flex justify-end items-center py-5 pr-20">
-        <span className="text-grey-400 text-sm mr-6">
-          You have selected {props.grantApplications?.filter(props.predicate).length} Grant Applications
-        </span>
-        <Button
-          type="button"
-          $variant="solid"
-          className="text-sm px-5"
-          onClick={props.onClick}
-        >
-          Continue
-        </Button>
-      </div>
-    </div>
-  )
-}
