@@ -12,11 +12,10 @@ import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg"
 import Footer from "../common/Footer"
 import { datadogLogs } from "@datadog/browser-logs"
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier"
-import { GrantApplication, ProjectCredentials } from "../api/types"
+import { AnswerBlock, GrantApplication, ProjectCredentials } from "../api/types"
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types"
 import { Lit } from "../api/lit"
 import { utils } from "ethers"
-import { AnswerBlock } from "../api/types"
 import NotFoundPage from "../common/NotFoundPage"
 import AccessDenied from "../common/AccessDenied"
 
@@ -230,8 +229,7 @@ export default function ViewApplicationPage() {
 
   const getAnswer = (question: string) => {
     const answerBlock = answerBlocks?.find((answerBlock: AnswerBlock) => answerBlock.question === question);
-    const answer = answerBlock ? answerBlock.answer : "N/A";
-    return answer;
+    return answerBlock ? answerBlock.answer : "N/A";
   }
 
   return (
@@ -296,7 +294,11 @@ export default function ViewApplicationPage() {
                 </div>
               </div>
               <ConfirmationModal
-                body={`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
+                body={
+                  <p className="text-sm text-grey-400">
+                    {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
+                  </p>
+                }
                 confirmButtonAction={handleUpdateGrantApplication}
                 cancelButtonAction={handleCancelModal}
                 isOpen={openModal}

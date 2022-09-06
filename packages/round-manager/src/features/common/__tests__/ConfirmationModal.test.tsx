@@ -51,5 +51,29 @@ describe("<ConfirmationModal />", () => {
     expect(confirmButtonAction).toBeCalledTimes(1);
   })
 
-  // TODO(shavinac) refactor out redundant/unused props, or add tests for them
+  it("should display custom text for button that executes confirmButtonAction when confirmButtonText is provided in props", () => {
+    const confirmButtonText = "My Cool Button"
+    const confirmButtonAction = jest.fn()
+    renderWrapped(<ConfirmationModal isOpen setIsOpen={jest.fn()} confirmButtonAction={confirmButtonAction} confirmButtonText={confirmButtonText} />)
+
+    const confirmButton = screen.getByRole("button", {name: confirmButtonText});
+    fireEvent.click(confirmButton)
+
+    expect(confirmButtonAction).toBeCalledTimes(1);
+  })
+
+  it("should display custom title text when title is provided in props", () => {
+    const modalTitle = "My cool modal"
+    renderWrapped(<ConfirmationModal isOpen={true} setIsOpen={jest.fn()} confirmButtonAction={jest.fn()} title={modalTitle} />)
+
+    expect(screen.getByText(modalTitle)).toBeInTheDocument()
+  })
+
+  it("should render body element inside the modal if provided in props", () => {
+    const testId = "modal-body"
+    const body = <div data-testid={testId}/>
+    renderWrapped(<ConfirmationModal isOpen={true} setIsOpen={jest.fn()} confirmButtonAction={jest.fn()} body={body} />)
+
+    expect(screen.getByTestId(testId)).toBeInTheDocument()
+  })
 })
