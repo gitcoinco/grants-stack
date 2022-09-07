@@ -86,7 +86,7 @@ function ListPrograms() {
         floatingIcon={
           <div
             className="relative flex justify-center items-center h-16 w-16 translate-x-6 -translate-y-8 bg-teal-500 text-white rounded drop-shadow-xl">
-            <RefreshIcon className="h-6 w-6" aria-hidden="true" />
+            <RefreshIcon className="h-6 w-6 text-grey-500" aria-hidden="true" />
           </div>
         }
         title={program.metadata!.name}
@@ -101,7 +101,7 @@ function ListPrograms() {
   ))
 
   return (
-    <>
+    <div className="bg-grey-150">
       <Navbar programCta={isSuccess} />
       <header className="mb-2.5 bg-grey-500 overflow-hidden">
         <div className="container mx-auto flex flex-row">
@@ -127,7 +127,7 @@ function ListPrograms() {
         }
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 
