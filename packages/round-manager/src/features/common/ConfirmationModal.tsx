@@ -5,9 +5,7 @@ import { Button } from "./styles";
 
 interface ModalProps {
   title?: string;
-  body?: string;
-  bodyStyled?: JSX.Element;
-  cancelButtonText?: string;
+  body?: JSX.Element;
   confirmButtonText?: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,20 +13,16 @@ interface ModalProps {
   cancelButtonAction?: () => void;
 }
 
-
 export default function ConfirmationModal(
   {
     title = "Please Confirm Decision",
-    cancelButtonText = "Cancel",
-    confirmButtonText = "Confirm",
-    bodyStyled = <></>,
     isOpen = false,
     setIsOpen = () => {},
+    confirmButtonText = "Confirm",
     cancelButtonAction = () => setIsOpen(false),
     ...props
   }: ModalProps
 ) {
-
   const cancelButtonRef = useRef(null)
 
   return (
@@ -65,10 +59,7 @@ export default function ConfirmationModal(
                       {title}
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-grey-400">
-                        {props.body}
-                      </p>
-                      {bodyStyled}
+                      {props.body}
                     </div>
                   </div>
                 </div>
@@ -87,7 +78,7 @@ export default function ConfirmationModal(
                     onClick={cancelButtonAction}
                     ref={cancelButtonRef}
                   >
-                    {cancelButtonText}
+                    Cancel
                   </Button>
                 </div>
               </Dialog.Panel>

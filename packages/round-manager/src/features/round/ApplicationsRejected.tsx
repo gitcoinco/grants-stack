@@ -166,11 +166,13 @@ export default function ApplicationsRejected() {
       }
       <ConfirmationModal
         title={"Confirm Decision"}
-        body={"You have selected multiple Grant Applications to be approved."}
         confirmButtonText={isBulkUpdateLoading ? "Confirming..." : "Confirm"}
         confirmButtonAction={handleBulkReview}
-        bodyStyled={
+        body={
           <>
+            <p className="text-sm text-grey-400">
+              {"You have selected multiple Grant Applications to be approved."}
+            </p>
             <div className="flex my-8 gap-16 justify-center items-center text-center">
               <div className="grid gap-2" data-testid="approved-applications-count">
                 <i className="flex justify-center">
