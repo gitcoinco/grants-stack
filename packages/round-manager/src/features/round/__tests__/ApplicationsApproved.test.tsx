@@ -115,7 +115,7 @@ describe("<ApplicationsApproved />", () => {
     });
 
     it("does not display approve options in approved applications tab", () => {
-      renderWrapped(<ApplicationsApproved />)
+      setupInBulkSelectionMode();
       const approveButtons = screen.queryAllByTestId("approve-button")
       expect(approveButtons.length).toEqual(0)
     });
@@ -147,8 +147,6 @@ describe("<ApplicationsApproved />", () => {
     })
   });
 
-
-
   describe("when at least one application is selected", () => {
     let bulkUpdateGrantApplications: any;
 
@@ -162,13 +160,18 @@ describe("<ApplicationsApproved />", () => {
       });
     })
 
-    it("displays the continue option and copy", () => {
+    it("displays the continue option and copy only when an application is rejected", () => {
       setupInBulkSelectionMode();
+
+      let continueButton = screen.queryByRole('button', {
+        name: /Continue/i
+      });
+      expect(continueButton).not.toBeInTheDocument();
 
       const rejectButton = screen.queryAllByTestId("reject-button")[0]
       fireEvent.click(rejectButton)
 
-      const continueButton = screen.getByRole('button', {
+      continueButton = screen.getByRole('button', {
         name: /Continue/i
       });
       expect(continueButton).toBeInTheDocument();
@@ -193,14 +196,6 @@ describe("<ApplicationsApproved />", () => {
       fireEvent.click(continueButton)
 
       expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
-    })
-
-    it('does not show continue when no applications are rejected', () => {
-      const continueButton = screen.queryByRole('button', {
-        name: /Continue/i
-      });
-
-      expect(continueButton).not.toBeInTheDocument();
     })
 
     it('choosing confirm kicks off the signature flow to persist rejected applications', async () => {

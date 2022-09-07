@@ -5,7 +5,6 @@ import {
   useListGrantApplicationsQuery,
 } from "../../api/services/grantApplication"
 import { makeGrantApplicationData, renderWrapped } from "../../../test-utils"
-import ApplicationsRejected from "../ApplicationsRejected";
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("../../common/Auth", () => ({
@@ -19,6 +18,14 @@ const grantApplications = [
 ];
 
 let bulkUpdateGrantApplications = jest.fn()
+
+function setupInBulkSelectionMode() {
+  renderWrapped(<ApplicationsReceived/>)
+  const selectButton = screen.getByRole('button', {
+    name: /Select/i,
+  })
+  fireEvent.click(selectButton)
+}
 
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
@@ -63,7 +70,7 @@ describe("<ApplicationsReceived />", () => {
   describe('when received applications are shown', () => {
 
     it("should display the bulk select option", () => {
-      renderWrapped(<ApplicationsRejected />)
+      renderWrapped(<ApplicationsReceived />)
       expect(screen.getByText(
         'Save in gas fees by approving/rejecting multiple applications at once.'
       )).toBeInTheDocument()
@@ -73,11 +80,7 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("should display the cancel option when select is selected", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
       expect(screen.getByRole('button', {
         name: /Cancel/i
       })).toBeInTheDocument()
@@ -87,11 +90,7 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("should display the select option when cancel is selected", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
 
       const cancelButton = screen.getByRole('button', {
         name: /Cancel/i
@@ -131,20 +130,13 @@ describe("<ApplicationsReceived />", () => {
   describe("when choosing select", () => {
 
     it( "renders approve and reject options on each project", () => {
-      renderWrapped(<ApplicationsReceived />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
+
       expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(grantApplications.length)
     });
 
     it("displays an approved button as selected when approve button is selected", () => {
-      renderWrapped(<ApplicationsReceived />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
 
       const approveButton = screen.queryAllByTestId("approve-button")[0]
 
@@ -154,11 +146,7 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("displays a rejected option as selected when reject option is selected", () => {
-      renderWrapped(<ApplicationsReceived />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
 
       const rejectButton = screen.queryAllByTestId("reject-button")[0]
       fireEvent.click(rejectButton)
@@ -168,11 +156,7 @@ describe("<ApplicationsReceived />", () => {
 
     describe("and when an approve option is already selected", () => {
       it("selects the reject option and unselects the approve option when the reject option selected", () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
 
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         const rejectButton = screen.queryAllByTestId("reject-button")[0]
@@ -185,11 +169,7 @@ describe("<ApplicationsReceived />", () => {
       });
 
       it("unselects the approve option when that selected approve option is selected", () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
 
         const approveButton = screen.queryAllByTestId("approve-button")[0]
 
@@ -202,11 +182,7 @@ describe("<ApplicationsReceived />", () => {
 
     describe("and when an reject option is already selected", () => {
       it("selects the approve button and unselects the reject button when the approve button is selected", () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
 
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         const rejectButton = screen.queryAllByTestId("reject-button")[0]
@@ -218,11 +194,7 @@ describe("<ApplicationsReceived />", () => {
         expect(rejectButton).not.toHaveClass("bg-white text-pink-500")
       });
       it("unselects the reject option when that selected reject option is selected", () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
 
         const rejectButton = screen.queryAllByTestId("reject-button")[0]
 
@@ -234,11 +206,7 @@ describe("<ApplicationsReceived />", () => {
     });
 
     it("should approve individual applications independently", () => {
-      renderWrapped(<ApplicationsReceived />)
-      const selectButton = screen.getByRole('button', {
-        name: /Select/i
-      });
-      fireEvent.click(selectButton)
+      setupInBulkSelectionMode()
 
       const firstApproveButton = screen.queryAllByTestId("approve-button")[0]
       fireEvent.click(firstApproveButton)
@@ -251,13 +219,9 @@ describe("<ApplicationsReceived />", () => {
 
     describe("when at least one application is selected", () => {
 
-
       it("displays the continue option and copy", () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
+
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         fireEvent.click(approveButton)
 
@@ -275,11 +239,8 @@ describe("<ApplicationsReceived />", () => {
       })
 
       it("opens confirmation when continue is selected", async () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
+
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         fireEvent.click(approveButton)
 
@@ -292,11 +253,8 @@ describe("<ApplicationsReceived />", () => {
       })
 
       it("shows the correct number of approved and rejected applications in the confirmation modal", async () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
+
         fireEvent.click(screen.queryAllByTestId("approve-button")[0])
         fireEvent.click(screen.queryAllByTestId("reject-button")[1])
         fireEvent.click(screen.queryAllByTestId("approve-button")[2])
@@ -314,11 +272,8 @@ describe("<ApplicationsReceived />", () => {
       })
 
       it("calls bulkUpdateGrantApplications when confirm is selected", async () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
+
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         fireEvent.click(approveButton)
 
@@ -338,11 +293,8 @@ describe("<ApplicationsReceived />", () => {
       })
 
       it("closes confirmation when cancel is selected", async () => {
-        renderWrapped(<ApplicationsReceived />)
-        const selectButton = screen.getByRole('button', {
-          name: /Select/i
-        });
-        fireEvent.click(selectButton)
+        setupInBulkSelectionMode()
+
         const approveButton = screen.queryAllByTestId("approve-button")[0]
         fireEvent.click(approveButton)
 

@@ -23,6 +23,12 @@ let grantApplications: GrantApplication[];
 
 let bulkUpdateGrantApplications = jest.fn()
 
+function setupInBulkSelectionMode() {
+  renderWrapped(<ApplicationsRejected/>)
+  const select = screen.getByTestId('select')
+  fireEvent.click(select)
+}
+
 describe("<ApplicationsRejected />", () => {
   beforeEach(() => {
     grantApplications = [
@@ -117,25 +123,19 @@ describe("<ApplicationsRejected />", () => {
   })
 
   describe("when bulk select is active", () => {
-    it("renders approve buttons on each project card", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
+    it("renders approve buttons on each project card and does not display reject options", () => {
+      setupInBulkSelectionMode()
 
       expect(screen.queryAllByTestId("approve-button"))
         .toHaveLength(grantApplications.length);
-    });
 
-    it("does not display reject options in rejected applications tab", () => {
-      renderWrapped(<ApplicationsRejected />)
       const rejectButtons = screen.queryAllByTestId("reject-button")
       expect(rejectButtons.length).toEqual(0)
     });
 
     it("selects an approved option", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
+      setupInBulkSelectionMode()
+
       const approveButton = screen.queryAllByTestId("approve-button")[0]
       fireEvent.click(approveButton)
 
@@ -143,15 +143,123 @@ describe("<ApplicationsRejected />", () => {
     });
 
     it("unselects an approve option", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
+      setupInBulkSelectionMode()
 
       const approveButton = screen.queryAllByTestId("approve-button")[0]
       fireEvent.click(approveButton)
       fireEvent.click(approveButton)
 
       expect(approveButton).not.toHaveClass("bg-teal-400 text-grey-500")
+    });
+
+    describe("when at least one application is selected", () => {
+      let bulkUpdateGrantApplications: any;
+
+      beforeEach(() => {
+        bulkUpdateGrantApplications = jest.fn(() => ({
+          unwrap: () => {
+          }
+        }));
+        (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockImplementation(() => {
+          return [bulkUpdateGrantApplications, {isLoading: false}];
+        });
+      })
+
+      it("displays the continue option and copy after an application is approved", () => {
+        setupInBulkSelectionMode()
+
+        let continueButton = screen.queryByRole('button', {
+          name: /Continue/i
+        });
+
+        expect(continueButton).not.toBeInTheDocument();
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 1 Grant Applications/i)).toBeInTheDocument();
+
+        const approveButton2 = screen.queryAllByTestId("approve-button")[1]
+        fireEvent.click(approveButton2)
+
+        expect(continueButton).toBeInTheDocument();
+        expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
+      })
+
+      it("opens confirmation when the continue is selected", async () => {
+        setupInBulkSelectionMode()
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      })
+
+      it('choosing confirm kicks off the signature flow to persist approved applications', async () => {
+        setupInBulkSelectionMode()
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.queryByRole('button', {name: /Continue/i});
+        fireEvent.click(continueButton!!);
+
+        screen.getByTestId("approved-applications-count");
+
+        const confirmButton = screen.getByRole('button', {name: /Confirm/i})
+        fireEvent.click(confirmButton!!);
+
+        await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"))
+
+        grantApplications[0].status = "APPROVED";
+
+        const expected = {
+          id: grantApplications[0].id,
+          round: grantApplications[0].round,
+          recipient: grantApplications[0].recipient,
+          projectsMetaPtr: grantApplications[0].projectsMetaPtr,
+          status: grantApplications[0].status
+        }
+
+        expect(bulkUpdateGrantApplications.mock.calls[0][0]).toEqual({
+          roundId: "0",
+          applications: [expected],
+          signer: {},
+          provider: {}
+        });
+      })
+
+      it("closes confirmation when cancel is selected", async () => {
+        setupInBulkSelectionMode()
+
+        const approveButton = screen.queryAllByTestId("approve-button")[0]
+        fireEvent.click(approveButton)
+
+        const continueButton = screen.getByRole('button', {
+          name: /Continue/i
+        });
+        fireEvent.click(continueButton)
+
+        const modal = screen.getByTestId("confirm-modal");
+
+        const modalCancelButton = within(modal).getByRole('button', {
+          name: /Cancel/i
+        });
+        fireEvent.click(modalCancelButton);
+
+        expect(bulkUpdateGrantApplications).not.toBeCalled();
+
+        expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -160,125 +268,5 @@ describe("<ApplicationsRejected />", () => {
       renderWrapped(<ApplicationsRejected />)
       expect(screen.queryAllByTestId("bulk-approve-reject-buttons")).toHaveLength(0)
     })
-  });
-
-  describe("when at least one application is selected", () => {
-    let bulkUpdateGrantApplications: any;
-
-    beforeEach(() => {
-      bulkUpdateGrantApplications = jest.fn(() => ({
-        unwrap: () => {
-        }
-      }));
-      (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockImplementation(() => {
-        return [bulkUpdateGrantApplications, {isLoading: false}];
-      });
-    })
-
-    it("displays the continue option and copy", () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
-
-      const approveButton = screen.queryAllByTestId("approve-button")[0]
-      fireEvent.click(approveButton)
-
-      const continueButton = screen.getByRole('button', {
-        name: /Continue/i
-      });
-      expect(continueButton).toBeInTheDocument();
-      expect(screen.getByText(/You have selected 1 Grant Applications/i)).toBeInTheDocument();
-
-      const approveButton2 = screen.queryAllByTestId("approve-button")[1]
-      fireEvent.click(approveButton2)
-
-      expect(continueButton).toBeInTheDocument();
-      expect(screen.getByText(/You have selected 2 Grant Applications/i)).toBeInTheDocument();
-    })
-
-    it("opens confirmation when the continue is selected", async () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
-
-      const approveButton = screen.queryAllByTestId("approve-button")[0]
-      fireEvent.click(approveButton)
-
-      const continueButton = screen.getByRole('button', {
-        name: /Continue/i
-      });
-      fireEvent.click(continueButton)
-
-      expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
-    })
-
-    it('does not show continue option when no applications are rejected', () => {
-      const continueButton = screen.queryByRole('button', {
-        name: /Continue/i
-      });
-
-      expect(continueButton).not.toBeInTheDocument();
-    })
-
-    it('choosing confirm kicks off the signature flow to persist approved applications', async () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
-
-      const approveButton = screen.queryAllByTestId("approve-button")[0]
-      fireEvent.click(approveButton)
-
-      const continueButton = screen.queryByRole('button', {name: /Continue/i});
-      fireEvent.click(continueButton!!);
-
-      screen.getByTestId("approved-applications-count");
-
-      const confirmButton = screen.getByRole('button', {name: /Confirm/i})
-      fireEvent.click(confirmButton!!);
-
-      await waitForElementToBeRemoved(() => screen.queryByTestId("confirm-modal"))
-
-      grantApplications[0].status = "APPROVED";
-
-      const expected = {
-        id: grantApplications[0].id,
-        round: grantApplications[0].round,
-        recipient: grantApplications[0].recipient,
-        projectsMetaPtr: grantApplications[0].projectsMetaPtr,
-        status: grantApplications[0].status
-      }
-
-      expect(bulkUpdateGrantApplications.mock.calls[0][0]).toEqual({
-        roundId: "0",
-        applications: [expected],
-        signer: {},
-        provider: {}
-      });
-    })
-
-    it("closes confirmation when cancel is selected", async () => {
-      renderWrapped(<ApplicationsRejected />)
-      const select = screen.getByTestId('select');
-      fireEvent.click(select);
-
-      const approveButton = screen.queryAllByTestId("approve-button")[0]
-      fireEvent.click(approveButton)
-
-      const continueButton = screen.getByRole('button', {
-        name: /Continue/i
-      });
-      fireEvent.click(continueButton)
-
-      const modal = screen.getByTestId("confirm-modal");
-
-      const modalCancelButton = within(modal).getByRole('button', {
-        name: /Cancel/i
-      });
-      fireEvent.click(modalCancelButton);
-
-      expect(bulkUpdateGrantApplications).not.toBeCalled();
-
-      expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
-    });
   });
 })
