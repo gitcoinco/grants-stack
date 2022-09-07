@@ -1,10 +1,13 @@
+import { ethers } from "ethers";
 import { Buffer } from "buffer";
-import LitJsSdk from "lit-js-sdk";
+import { isJestRunning } from "../utils/utils";
+
+const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
 // @ts-ignore
 window.Buffer = Buffer;
 
-const client = new LitJsSdk.LitNodeClient();
+const client = LitJsSdk ? new LitJsSdk.LitNodeClient() : null;
 
 const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
@@ -27,7 +30,7 @@ export default class Lit {
    */
   constructor(initConfig: LitInit) {
     this.chain = initConfig.chain;
-    this.contract = initConfig.contract;
+    this.contract = ethers.utils.getAddress(initConfig.contract);
   }
 
   /**
