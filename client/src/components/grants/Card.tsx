@@ -12,7 +12,7 @@ function Card({ projectId }: { projectId: number }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
-    const status = grantMetadata?.status;
+    const status = grantMetadata?.status || Status.Undefined;
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
