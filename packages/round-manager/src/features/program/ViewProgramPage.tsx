@@ -28,10 +28,14 @@ export default function ViewProgram() {
 
   const { address, provider } = useWallet();
 
-  const { programs } = usePrograms();
+  const { programs , dispatch} = usePrograms();
+  // const { programToRender, programIsLoading } = useProgramById
 
-  // TODO(shavinac) should fetch program by id directly (to check for existence), if requested program id not in context?
-  //    this is to cover the case where program exists, but user does not have access
+  // TODO - fetchProgramById side effect to add another program to `programs`
+  useEffect(() => {
+    // addProgramById
+    // fetchProgramById(id, provider)
+  },[id])
   const programToRender = programs.find((program) => program.id === id);
 
   const {

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ProgramProvider, usePrograms } from "../ProgramContext";
+import { useProgramById, ProgramProvider, usePrograms } from "../ProgramContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeProgramData } from "../../test-utils";
-import { listPrograms } from "../../features/api/program";
+import { getProgramById, listPrograms } from "../../features/api/program";
+import { Program } from "../../features/api/types"
 
 const mockWallet = { address: "0x0", provider: {} };
 
@@ -20,54 +21,122 @@ describe("<ListProgramProvider />", () => {
     jest.resetAllMocks();
   });
 
-  it("provides programs based on current wallet address", async () => {
-    (listPrograms as any).mockResolvedValue([
+  describe("usePrograms()", () => {
+    it("provides programs based on current wallet address", async () => {
+      (listPrograms as any).mockResolvedValue([
       makeProgramData(),
       makeProgramData(),
     ]);
-    renderWithProvider();
+      renderWithProvider();
 
-    expect(await screen.findAllByTestId("program")).toHaveLength(2);
-  });
-
-  it("propagates error state when failing to list programs", async () => {
-    (listPrograms as any).mockRejectedValue(Error("some error message text"));
-    renderWithProvider();
-
-    await screen.findByTestId("error-msg");
-  });
-
-  it("sets isLoading back to false when listPrograms call succeeds", async () => {
-    (listPrograms as any).mockResolvedValue([]);
-    renderWithProvider();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
+      expect(await screen.findAllByTestId("program")).toHaveLength(2);
     });
-  });
 
-  it("sets isLoading back to false when listPrograms call fails", async () => {
-    (listPrograms as any).mockRejectedValue(Error("some error"));
-    renderWithProvider();
+    it("propagates error state when failing to list programs", async () => {
+      (listPrograms as any).mockRejectedValue(Error("some error message text"));
+      renderWithProvider();
 
-    await waitFor(() => {
-      expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
+      await screen.findByTestId("error-msg");
     });
-  });
 
-  it("sets isLoading to true when listPrograms call is in progress", async () => {
-    const listProgramsPromise = new Promise(() => {
+    it("sets isLoading back to false when listPrograms call succeeds", async () => {
+      (listPrograms as any).mockResolvedValue([]);
+      renderWithProvider();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
+      });
+    });
+
+    it("sets isLoading back to false and error when listPrograms call fails", async () => {
+      (listPrograms as any).mockRejectedValue(Error("some error"));
+      renderWithProvider();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
+      });
+
+      screen.getByTestId("error-msg");
+    });
+
+    it("sets isLoading to true when listPrograms call is in progress", async () => {
+      const listProgramsPromise = new Promise(() => {
       /**/
     });
 
-    (listPrograms as any).mockReturnValue(listProgramsPromise);
-    renderWithProvider();
+      (listPrograms as any).mockReturnValue(listProgramsPromise);
+      renderWithProvider();
 
-    screen.getByTestId("is-loading");
-  });
+      await screen.findByTestId("is-loading");
+    });
+  })
+
+  describe("useProgramById()", () => {
+    it("provides programs based on given program id", async () => {
+      const expectedProgram = makeProgramData();
+      const expectedProgramId: string = expectedProgram.id!;
+      (getProgramById as any).mockResolvedValue(expectedProgram);
+
+      render(
+        <ProgramProvider>
+          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        </ProgramProvider>
+      )
+
+      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument()
+    })
+
+    it("sets isLoading to true when getProgramById call is in progress", async () => {
+      const expectedProgram = makeProgramData();
+      const expectedProgramId: string = expectedProgram.id!;
+      (getProgramById as any).mockReturnValue(new Promise<Program>(() => {}));
+
+      render(
+        <ProgramProvider>
+          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        </ProgramProvider>
+      )
+
+      expect(await screen.findByTestId("is-loading-program-by-id")).toBeInTheDocument();
+    })
+
+    it("sets isLoading back to false and when getProgramById call succeeds", async () => {
+      const expectedProgram = makeProgramData();
+      const expectedProgramId: string = expectedProgram.id!;
+      (getProgramById as any).mockResolvedValue(expectedProgram);
+
+      render(
+        <ProgramProvider>
+          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        </ProgramProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("is-loading-program-by-id")).not.toBeInTheDocument();
+      })
+    })
+
+    it("sets isLoading back to false when getProgramById call fails", async () => {
+      const expectedProgram = makeProgramData();
+      const expectedProgramId: string = expectedProgram.id!;
+      (getProgramById as any).mockRejectedValue(new Error(":("));
+
+      render(
+        <ProgramProvider>
+          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+        </ProgramProvider>
+      )
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("is-loading-program-by-id")).not.toBeInTheDocument();
+      })
+
+      screen.getByTestId("program-by-id-error-msg");
+    })
+  })
 });
 
-const TestingComponent = () => {
+const TestingUseProgramsComponent = () => {
   const { programs, listProgramsError, isLoading } = usePrograms();
 
   return (
@@ -85,10 +154,30 @@ const TestingComponent = () => {
   );
 };
 
+const TestingUseProgramByIdComponent = (props: {
+  expectedProgramId?: string
+}) => {
+  const { program, isLoading, getProgramByIdError } = useProgramById(props.expectedProgramId)
+  return (
+    <>
+      {program ?
+        <div>{program.id}</div>
+        : <div>No Program Found</div>}
+
+      {isLoading &&
+        <div data-testid="is-loading-program-by-id"></div>
+      }
+
+      { getProgramByIdError &&
+        <div data-testid="program-by-id-error-msg" />
+      }
+    </>
+  )
+}
 function renderWithProvider() {
   render(
     <ProgramProvider>
-      <TestingComponent></TestingComponent>
+      <TestingUseProgramsComponent></TestingUseProgramsComponent>
     </ProgramProvider>
   );
 }

@@ -65,6 +65,7 @@ export async function listPrograms(
   }
 }
 
+// TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(programId: string, signerOrProvider: any): Promise<Program> {
   try {
     // fetch chain id
