@@ -9,11 +9,12 @@ export default function RoundApplyAlert({
   show,
   confirmHandler,
 }: RoundApplyAlertProps) {
+  if (!show) {
+    return null;
+  }
+
   return (
-    <div
-      className="relative h-14 bg-purple-200 p-2 rounded"
-      style={{ display: show ? "block" : "none" }}
-    >
+    <div className="relative h-14 bg-purple-200 p-2 rounded">
       <p className="p-2 font-bold">
         Apply to Optimism Grant Round and get your project funded!
       </p>

@@ -6,12 +6,16 @@ import { fetchGrantData } from "../../actions/grantsMetadata";
 import { grantPath } from "../../routes";
 import TextLoading from "../base/TextLoading";
 import { getProjectImage, ImgTypes } from "../../utils/components";
+import { Status } from "../../reducers/grantsMetadata";
 
 function Card({ projectId }: { projectId: number }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
-    const loading = grantMetadata ? grantMetadata.loading : true;
+    const status = grantMetadata?.status;
+    const loading = grantMetadata
+      ? grantMetadata.status === Status.Loading
+      : false;
     const project = grantMetadata?.metadata;
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
@@ -22,17 +26,15 @@ function Card({ projectId }: { projectId: number }) {
       currentProject: project,
       bannerImg,
       logoImg,
+      status,
     };
   }, shallowEqual);
 
   useEffect(() => {
-    // called twice
-    // 1 - when it loads or projectId changes (it checks if it's cached in local storage)
-    // 2 - when ipfs is initialized (it fetches it if not loaded yet)
-    if (projectId !== undefined && props.currentProject === undefined) {
+    if (projectId !== undefined && props.status === Status.Undefined) {
       dispatch(fetchGrantData(projectId));
     }
-  }, [dispatch, projectId, props.currentProject]);
+  }, [dispatch, projectId, props.currentProject, props.status]);
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">

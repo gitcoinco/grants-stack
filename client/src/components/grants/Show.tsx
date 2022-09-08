@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { grantsPath, editPath } from "../../routes";
 import { RootState } from "../../reducers";
+import { Status } from "../../reducers/grantsMetadata";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "../base/Button";
 import { global } from "../../global";
@@ -23,7 +24,9 @@ function Project() {
 
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[Number(params.id)];
-    const loading = grantMetadata ? grantMetadata.loading : false;
+    const loading = grantMetadata
+      ? grantMetadata.status === Status.Loading
+      : false;
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
