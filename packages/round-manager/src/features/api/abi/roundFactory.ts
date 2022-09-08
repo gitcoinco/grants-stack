@@ -11,7 +11,7 @@ const roundFactory = [
   "function renounceOwnership()",
   "function roundContract() view returns (address)",
   "function transferOwnership(address newOwner)",
-  "function updateRoundContract(address newRoundContract)"
-]
+  "function updateRoundContract(address newRoundContract)",
+];
 
-export default roundFactory
+export default roundFactory;

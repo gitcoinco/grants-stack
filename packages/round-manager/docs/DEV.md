@@ -11,6 +11,7 @@ $ yarn install
 ```
 
 Create environment files, and fill in environment variables with your own values
+
 ```sh
 cp ../.env.sample ../.env
 ```
@@ -21,7 +22,7 @@ For `REACT_APP_PINATA_JWT` and `REACT_APP_PINATA_GATEWAY`, create your own Pinat
 
 The `REACT_APP_INFURA_ID` can be filled by creating a free Infura account
 
-`REACT_APP_SUBGRAPH_GOERLI_API`, `REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API`, and     `REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API` can be found at 
+`REACT_APP_SUBGRAPH_GOERLI_API`, `REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API`, and `REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API` can be found at
 `grants-round/blob/main/packages/graph/README.md`
 
 ### Run in Development
@@ -69,6 +70,7 @@ $ serve -s build -l 3000
 ```
 
 ### Adding a new route
+
 Global routing configuration is held in `src/index.tsx`. Below is an example of a route definition
 
 ```jsx=
@@ -87,8 +89,8 @@ A protected route i.e a routed which requires a user's wallet connection should 
 
 Find more information about routing [here](https://reactrouter.com/docs/en/v6).
 
-
 ### Creating a new feature
+
 This is as easy as creating a new folder in the `features` directory that holds all the resources for that particular feature.
 
 The directory structure requires that all components and services which are related to a particular feature be kept in a subdirectory of the `features` directory.
@@ -105,6 +107,7 @@ Observe the directory structure for Authentication feature in `features/auth`
 It contains the `ProtectedRoute` component and `web3Service` which extends the base API service defined in `src/api.ts` by endpoint injection.
 
 ### Defining a new API
+
 Some features require server-side state management which involves keeping the UI in sync with an external data source e.g REST/GraphQL API service, Smart Contract etc. We use [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) which is
 
 > a powerful data fetching and caching tool. It is designed to simplify common cases for loading data in a web application, eliminating the need to hand-write data fetching & caching logic yourself
@@ -146,6 +149,7 @@ const { data, error, refetch, isSuccess, isFetching, isLoading } = useGetWeb3Que
 ```
 
 ### Tools
+
 [Redux Toolkit](https://redux-toolkit.js.org/)
 [RTK Query](https://redux-toolkit.js.org/tutorials/rtk-query)
 [React Hook Form](https://react-hook-form.com/get-started)

@@ -1,9 +1,9 @@
 /**
  * Supported EVM networks
  */
-import {VerifiableCredential} from "@gitcoinco/passport-sdk-types";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
-export type Network = "goerli" | "optimism" | "optimism-kovan"
+export type Network = "goerli" | "optimism" | "optimism-kovan";
 
 export interface Web3Instance {
   /**
@@ -17,7 +17,7 @@ export interface Web3Instance {
     id: number;
     name: string;
     network: Network;
-  },
+  };
   provider: any;
   signer?: any;
 }
@@ -45,7 +45,7 @@ export interface IPFSObject {
   metadata?: {
     name?: string;
     keyvalues?: object;
-  }
+  };
 }
 
 /** Base Contract interface */
@@ -69,7 +69,7 @@ export interface Program {
    * Metadata of the Grant Program to be stored off-chain
    */
   metadata?: {
-    name: string
+    name: string;
   };
   /**
    * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
@@ -83,14 +83,14 @@ export interface Program {
 
 export interface ApplicationMetadata {
   customQuestions?: {
-    email?: string,
-    twitter?: string,
-    website?: string,
-    github?: string,
-    githubOrganization?: string,
-    fundingSource?: string,
-    profit2022?: string,
-    teamSize?: string,
+    email?: string;
+    twitter?: string;
+    website?: string;
+    github?: string;
+    githubOrganization?: string;
+    fundingSource?: string;
+    profit2022?: string;
+    teamSize?: string;
   };
 }
 
@@ -103,7 +103,7 @@ export interface Round {
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
-    name: string,
+    name: string;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -151,11 +151,16 @@ export interface Round {
   operatorWallets?: Array<string>;
 }
 
-export type ProjectStatus = "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
+export type ProjectStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "APPEAL"
+  | "FRAUD";
 
 export type ProjectCredentials = {
-  [key: string]: VerifiableCredential
-}
+  [key: string]: VerifiableCredential;
+};
 
 export type GrantApplicationId = string;
 
@@ -176,15 +181,15 @@ export interface GrantApplication {
    * Project information
    */
   project?: {
-    lastUpdated: Number, // unix timestamp in milliseconds
-    id: string,
-    title: string,
-    description: string,
-    website: string,
-    bannerImg?: string,
-    logoImg: string,
-    credentials: ProjectCredentials
-    metaPtr: MetadataPointer
+    lastUpdated: number; // unix timestamp in milliseconds
+    id: string;
+    title: string;
+    description: string;
+    website: string;
+    bannerImg?: string;
+    logoImg: string;
+    credentials: ProjectCredentials;
+    metaPtr: MetadataPointer;
   };
   /** List of answers to questions */
   answers?: Array<AnswerBlock>;
@@ -197,11 +202,11 @@ export interface GrantApplication {
 }
 
 export type AnswerBlock = {
-  questionId: Number,
-  question: string,
-  answer?: string,
+  questionId: number;
+  question: string;
+  answer?: string;
   encryptedAnswer?: {
-    ciphertext: string,
-    encryptedSymmetricKey: string
-  }
-}
+    ciphertext: string;
+    encryptedSymmetricKey: string;
+  };
+};

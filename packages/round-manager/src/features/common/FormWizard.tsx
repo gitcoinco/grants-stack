@@ -1,20 +1,24 @@
-import { createContext, useState } from "react"
+import { createContext, useState } from "react";
 
-import { FormStepper } from "./FormStepper"
+import { FormStepper } from "./FormStepper";
 
 export interface FormWizardProps {
-  initialCurrentStep?: number,
-  initialData?: object,
-  steps: Array<(props: any) => JSX.Element>,
+  initialCurrentStep?: number;
+  initialData?: object;
+  steps: Array<(props: any) => JSX.Element>;
 }
 
-export const FormContext = createContext({} as any)
+export const FormContext = createContext({} as any);
 
-export function FormWizard({ initialCurrentStep = 1, initialData = {}, steps }: FormWizardProps) {
-  const [currentStep, setCurrentStep] = useState(initialCurrentStep)
-  const [formData, setFormData] = useState({})
+export function FormWizard({
+  initialCurrentStep = 1,
+  initialData = {},
+  steps,
+}: FormWizardProps) {
+  const [currentStep, setCurrentStep] = useState(initialCurrentStep);
+  const [formData, setFormData] = useState({});
 
-  const Content = steps[currentStep - 1]
+  const Content = steps[currentStep - 1];
 
   return (
     <FormContext.Provider
@@ -28,5 +32,5 @@ export function FormWizard({ initialCurrentStep = 1, initialData = {}, steps }: 
     >
       <Content stepper={FormStepper} initialData={initialData} />
     </FormContext.Provider>
-  )
+  );
 }

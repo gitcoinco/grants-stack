@@ -1,66 +1,72 @@
-import { act, fireEvent, screen } from "@testing-library/react"
-import {renderWrapped} from "../../../test-utils";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWrapped } from "../../../test-utils";
 import CreateProgramPage from "../CreateProgramPage";
-import { useWallet } from "../../common/Auth"
+import { useWallet } from "../../common/Auth";
 
 import { useSaveToIPFSMutation } from "../../api/services/ipfs";
-import {useCreateProgramMutation} from "../../api/services/program";
+import { useCreateProgramMutation } from "../../api/services/program";
 
 jest.mock("../../api/services/ipfs");
 jest.mock("../../api/services/program");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
-    ConnectButton: jest.fn(),
-}))
+  ConnectButton: jest.fn(),
+}));
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
-  errorModalDelayMs: 0 // NB: use smaller delay for faster tests
-}))
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+}));
 
-describe('<CreateProgramPage />',  () => {
+describe("<CreateProgramPage />", () => {
   let saveToIPFSStub: jest.MockedFn<any>;
   let createProgramStub: () => any;
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
-    saveToIPFSStub = jest.fn().mockImplementation(() => ({ unwrap: async () => Promise.resolve("asdfdsf") }));
-    (useSaveToIPFSMutation as jest.Mock).mockReturnValue(
-      [
-        saveToIPFSStub, {
+    saveToIPFSStub = jest.fn().mockImplementation(() => ({
+      unwrap: async () => Promise.resolve("asdfdsf"),
+    }));
+    (useSaveToIPFSMutation as jest.Mock).mockReturnValue([
+      saveToIPFSStub,
+      {
         isError: true,
         isLoading: false,
-        isSuccess: false
-      }]);
+        isSuccess: false,
+      },
+    ]);
 
-    createProgramStub = () => ({ unwrap: async () => Promise.resolve("asdfdsf") });
-    (useCreateProgramMutation as jest.Mock).mockReturnValue(
-      [
-        createProgramStub, {
+    createProgramStub = () => ({
+      unwrap: async () => Promise.resolve("asdfdsf"),
+    });
+    (useCreateProgramMutation as jest.Mock).mockReturnValue([
+      createProgramStub,
+      {
         isError: false,
         isLoading: false,
-        isSuccess: false
-      }]);
-  })
+        isSuccess: false,
+      },
+    ]);
+  });
 
   it("shows error modal when saving application meta data fails", async () => {
     renderWrapped(<CreateProgramPage />);
-    const save = screen.getByTestId('save');
-    const programName = screen.getByTestId('program-name');
+    const save = screen.getByTestId("save");
+    const programName = screen.getByTestId("program-name");
     await act(() => {
-      fireEvent.change(programName, {target: {value: 'Program A'}})
+      fireEvent.change(programName, { target: { value: "Program A" } });
       fireEvent.click(save);
     });
 
-    expect(await screen.findByTestId('error-modal')).toBeInTheDocument();
+    expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
   });
 
-  it('choosing done closes the error modal', async () => {
+  it("choosing done closes the error modal", async () => {
     renderWrapped(<CreateProgramPage />);
-    const save = screen.getByTestId('save');
-    const programName = screen.getByTestId('program-name');
+    const save = screen.getByTestId("save");
+    const programName = screen.getByTestId("program-name");
     await act(() => {
-      fireEvent.change(programName, {target: {value: 'Program A'}})
+      fireEvent.change(programName, { target: { value: "Program A" } });
       fireEvent.click(save);
     });
 
@@ -70,14 +76,14 @@ describe('<CreateProgramPage />',  () => {
     });
 
     expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
-  })
+  });
 
-  it('choosing try again restarts the action and closes the error modal', async () => {
+  it("choosing try again restarts the action and closes the error modal", async () => {
     renderWrapped(<CreateProgramPage />);
-    const save = screen.getByTestId('save');
-    const programName = screen.getByTestId('program-name');
+    const save = screen.getByTestId("save");
+    const programName = screen.getByTestId("program-name");
     await act(() => {
-      fireEvent.change(programName, {target: {value: 'Program A'}})
+      fireEvent.change(programName, { target: { value: "Program A" } });
       fireEvent.click(save);
     });
 
@@ -91,37 +97,39 @@ describe('<CreateProgramPage />',  () => {
 
     expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     expect(saveToIPFSStub.mock.calls.length).toEqual(saveToIpfsCalls + 1);
-  })
+  });
 
   describe("when saving application metadata succeeds but create program transaction fails", () => {
     beforeEach(() => {
-      (useSaveToIPFSMutation as jest.Mock).mockReturnValue(
-        [
-          saveToIPFSStub, {
+      (useSaveToIPFSMutation as jest.Mock).mockReturnValue([
+        saveToIPFSStub,
+        {
           isError: false,
           isLoading: false,
-          isSuccess: true
-        }]);
+          isSuccess: true,
+        },
+      ]);
 
-      (useCreateProgramMutation as jest.Mock).mockReturnValue(
-        [
-          createProgramStub, {
+      (useCreateProgramMutation as jest.Mock).mockReturnValue([
+        createProgramStub,
+        {
           isError: true,
           isLoading: false,
-          isSuccess: false
-        }]);
-    })
+          isSuccess: false,
+        },
+      ]);
+    });
 
     it("shows error modal when create program transaction fails", async () => {
       renderWrapped(<CreateProgramPage />);
-      const save = screen.getByTestId('save');
-      const programName = screen.getByTestId('program-name');
+      const save = screen.getByTestId("save");
+      const programName = screen.getByTestId("program-name");
       await act(() => {
-        fireEvent.change(programName, {target: {value: 'Program A'}})
+        fireEvent.change(programName, { target: { value: "Program A" } });
         fireEvent.click(save);
       });
 
-      expect(await screen.findByTestId('error-modal')).toBeInTheDocument();
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
-  })
-})
+  });
+});

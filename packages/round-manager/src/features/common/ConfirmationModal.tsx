@@ -1,7 +1,6 @@
-import React, { Fragment, useRef } from "react"
-import { Dialog, Transition } from "@headlessui/react"
+import React, { Fragment, useRef } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "./styles";
-
 
 interface ModalProps {
   title?: string;
@@ -13,21 +12,26 @@ interface ModalProps {
   cancelButtonAction?: () => void;
 }
 
-export default function ConfirmationModal(
-  {
-    title = "Please Confirm Decision",
-    isOpen = false,
-    setIsOpen = () => {},
-    confirmButtonText = "Confirm",
-    cancelButtonAction = () => setIsOpen(false),
-    ...props
-  }: ModalProps
-) {
-  const cancelButtonRef = useRef(null)
+export default function ConfirmationModal({
+  title = "Please Confirm Decision",
+  isOpen = false,
+  setIsOpen = () => {
+    /**/
+  },
+  confirmButtonText = "Confirm",
+  cancelButtonAction = () => setIsOpen(false),
+  ...props
+}: ModalProps) {
+  const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setIsOpen} data-testid="confirm-modal"
+      <Dialog
+        as="div"
+        className="relative z-10"
+        initialFocus={cancelButtonRef}
+        onClose={setIsOpen}
+        data-testid="confirm-modal"
       >
         <Transition.Child
           as={Fragment}
@@ -55,12 +59,13 @@ export default function ConfirmationModal(
               <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left">
-                    <Dialog.Title as="h3" className="text-base leading-6 font-semibold text-grey-500">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-base leading-6 font-semibold text-grey-500"
+                    >
                       {title}
                     </Dialog.Title>
-                    <div className="mt-2">
-                      {props.body}
-                    </div>
+                    <div className="mt-2">{props.body}</div>
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
@@ -87,5 +92,5 @@ export default function ConfirmationModal(
         </div>
       </Dialog>
     </Transition.Root>
-  )
+  );
 }

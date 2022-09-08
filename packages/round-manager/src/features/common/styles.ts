@@ -1,9 +1,8 @@
-import tw from "tailwind-styled-components"
-
+import tw from "tailwind-styled-components";
 
 type ButtonProps = {
-  $variant: 'solid' | 'outline'
-}
+  $variant: "solid" | "outline";
+};
 export const Button = tw.button`
   bg-violet-400 text-white
   py-2.5 px-10
@@ -15,35 +14,34 @@ export const Button = tw.button`
   disabled:text-slate-500
   disabled:border-slate-200
   disabled:shadow-none
-  ${(p: ButtonProps) => (
-    p.$variant === "outline" ? "bg-white text-grey-500 border border-grey-100" : "bg-violet-400 text-white"
-  )}
-`
+  ${(p: ButtonProps) =>
+    p.$variant === "outline"
+      ? "bg-white text-grey-500 border border-grey-100"
+      : "bg-violet-400 text-white"}
+`;
 
 type InputProps = {
-  $hasError: boolean
-  $disabled: boolean
-}
+  $hasError: boolean;
+  $disabled: boolean;
+};
 
 export const Input = tw.input<InputProps>`
   block
   mt-1 mb-2 w-full sm:text-sm border-grey-100
   shadow-sm rounded-md
-  ${(p: InputProps) => (
-    p.$hasError ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
-      : "focus:ring-violet-400 focus:border-violet-400"
-  )}
-  ${(p: InputProps) => (
-    p.$disabled && "bg-[#F1F1F1]"
-  )}
-`
+  ${(p: InputProps) =>
+    p.$hasError
+      ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+      : "focus:ring-violet-400 focus:border-violet-400"}
+  ${(p: InputProps) => p.$disabled && "bg-[#F1F1F1]"}
+`;
 
 export const CardsContainer = tw.div`
   flex
   flex-row
   flex-wrap
   w-full
-`
+`;
 
 export const BasicCard = tw.div`
   w-[302px]
@@ -54,18 +52,18 @@ export const BasicCard = tw.div`
   rounded
   bg-white
   shadow-md
-  `
-  
-  export const CardHeader = tw.div`
+  `;
+
+export const CardHeader = tw.div`
   w-full
   h-36
   rounded-t
-`
+`;
 
 export const CardContent = tw.div`
   p-4
   pt-0
-`
+`;
 
 export const CardTitle = tw.p`
   w-full
@@ -74,7 +72,7 @@ export const CardTitle = tw.p`
   font-normal
   text-ellipsis
   line-clamp-2
-`
+`;
 
 export const CardDescription = tw.p`
   text-xs
@@ -82,7 +80,7 @@ export const CardDescription = tw.p`
   line-clamp-2
   text-grey-400
   leading-relaxed
-`
+`;
 
 export const CardFooter = tw.div`
   absolute
@@ -91,7 +89,7 @@ export const CardFooter = tw.div`
   bg-zinc-50
   h-16
   w-full
-`
+`;
 
 export const CardFooterContent = tw.div`
   flex
@@ -99,4 +97,4 @@ export const CardFooterContent = tw.div`
   items-center
   h-full
   w-full
-  `
+  `;

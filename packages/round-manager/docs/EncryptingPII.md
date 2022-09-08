@@ -1,8 +1,9 @@
-# Encrypting PII information 
+# Encrypting PII information
 
-When a round is created, the operators specify a list of additional questions AKA (application schema) which would be asked to a project when the apply to the round. 
+When a round is created, the operators specify a list of additional questions AKA (application schema) which would be asked to a project when the apply to the round.
 The schema is stored in IPFS and when a project applies to the round, this schema is used to generate the form which they then fill out which is then stored in IPFS
-Some of these questions would contain Personally identifiable information(PII) which would need to encrypted and could be decrypted only 
+Some of these questions would contain Personally identifiable information(PII) which would need to encrypted and could be decrypted only
+
 - owners of the project
 - round operators
 
@@ -13,7 +14,7 @@ Documentation related to supported chains can be found on [lit-docs](https://dev
 
 **To Encrypt data**
 
-You would use the `encryptString` function. 
+You would use the `encryptString` function.
 It would be upto the grant-hub / project manager to specify the conditions on who would be allowed to decrypt the data and this would be done by specifying the `unifiedAccessControlConditions`.
 
 To ensure only the round operators are allowed, `isRoundOperatorAccessControl` would have to be set as the `unifiedAccessControlConditions.
@@ -30,24 +31,23 @@ Ideally when the project applies to the round, the would be expected to pass:
 Here is an example of the entire flow in action.
 
 ```javascript
-
 // Init LIT config
 const lit = new Lit({
   chain: "goerli",
-  contract: "0x22c0e3EDc90f6A890A259130B416Cd5F3Ee4Aca0"
+  contract: "0x22c0e3EDc90f6A890A259130B416Cd5F3Ee4Aca0",
 });
 
 // Encrypt
-lit.encryptString("Hello World").then(async res => {
+lit.encryptString("Hello World").then(async (res) => {
+  const encryptedString = res.encryptedString;
+  const encryptedSymmetricKey = res.encryptedSymmetricKey;
 
-const encryptedString = res.encryptedString;
-const encryptedSymmetricKey = res.encryptedSymmetricKey;
+  // Decrypt
+  const decryptedString = await lit.decryptString(
+    encryptedString,
+    encryptedSymmetricKey
+  );
 
-// Decrypt
-const decryptedString = await lit.decryptString(encryptedString, encryptedSymmetricKey);
-
-console.log(decryptedString);
-
-})
-
+  console.log(decryptedString);
+});
 ```

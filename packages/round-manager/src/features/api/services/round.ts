@@ -1,21 +1,23 @@
-import { ethers } from "ethers"
+import { ethers } from "ethers";
 
-import { api } from ".."
-import { roundFactoryContract } from "../contracts"
-import { Round } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
-
+import { api } from "..";
+import { roundFactoryContract } from "../contracts";
+import { Round } from "../types";
+import { fetchFromIPFS, graphql_fetch } from "../utils";
 
 /**
  * Contract interactions API for a Round
  */
 export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createRound: builder.mutation<string, { round: Round, signerOrProvider: any }>({
+    createRound: builder.mutation<
+      string,
+      { round: Round; signerOrProvider: any }
+    >({
       queryFn: async ({ round, signerOrProvider }) => {
         try {
           // fetch chain id
-          const chainId = await signerOrProvider.getChainId()
+          const chainId = await signerOrProvider.getChainId();
 
           // load round factory contract
           const _roundFactoryContract = roundFactoryContract(chainId);
@@ -23,13 +25,15 @@ export const roundApi = api.injectEndpoints({
             _roundFactoryContract.address!,
             _roundFactoryContract.abi,
             signerOrProvider
-          )
+          );
 
           if (!round.applicationsEndTime) {
-            round.applicationsEndTime = round.roundStartTime
+            round.applicationsEndTime = round.roundStartTime;
           }
 
-          round.operatorWallets = round.operatorWallets!.filter(e => e !== "")
+          round.operatorWallets = round.operatorWallets!.filter(
+            (e) => e !== ""
+          );
 
           // encode input parameters
           const params = [
@@ -42,8 +46,8 @@ export const roundApi = api.injectEndpoints({
             round.store,
             round.applicationStore,
             round.operatorWallets.slice(0, 1),
-            round.operatorWallets
-          ]
+            round.operatorWallets,
+          ];
 
           const encodedParamaters = ethers.utils.defaultAbiCoder.encode(
             [
@@ -56,73 +60,78 @@ export const roundApi = api.injectEndpoints({
               "tuple(uint256 protocol, string pointer)",
               "tuple(uint256 protocol, string pointer)",
               "address[]",
-              "address[]"
+              "address[]",
             ],
             params
-          )
+          );
 
           // Deploy a new Round contract
-          let tx = await roundFactory.create(encodedParamaters, round.ownedBy)
+          const tx = await roundFactory.create(
+            encodedParamaters,
+            round.ownedBy
+          );
 
-          const receipt = await tx.wait() // wait for transaction receipt
+          const receipt = await tx.wait(); // wait for transaction receipt
 
-          let roundAddress
+          let roundAddress;
 
           if (receipt.events) {
             const event = receipt.events.find(
-              (e: { event: string }) => e.event === 'RoundCreated'
-            )
+              (e: { event: string }) => e.event === "RoundCreated"
+            );
             if (event && event.args) {
-              roundAddress = event.args.roundAddress
+              roundAddress = event.args.roundAddress;
             }
           }
 
-          console.log("✅ Transaction hash: ", tx.hash)
-          console.log("✅ Round address: ", roundAddress)
+          console.log("✅ Transaction hash: ", tx.hash);
+          console.log("✅ Round address: ", roundAddress);
 
-          return { data: tx.hash }
-
+          return { data: tx.hash };
         } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to create round" }
+          console.log("error", err);
+          return { error: "Unable to create round" };
         }
       },
-      invalidatesTags: ["Round"]
+      invalidatesTags: ["Round"],
     }),
     updateRound: builder.mutation<string, Round>({
       queryFn: async ({ id, ...round }) => {
         try {
-          let res = "TODO"
+          const res = "TODO";
 
-          return { data: res }
-
+          return { data: res };
         } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to update round" }
+          console.log("error", err);
+          return { error: "Unable to update round" };
         }
       },
-      invalidatesTags: ["Round"]
+      invalidatesTags: ["Round"],
     }),
-    listRounds: builder.query<Round[], { address?: string, signerOrProvider: any, programId?: string, roundId?:string }>({
+    listRounds: builder.query<
+      Round[],
+      {
+        address?: string;
+        signerOrProvider: any;
+        programId?: string;
+        roundId?: string;
+      }
+    >({
       queryFn: async ({ address, signerOrProvider, programId, roundId }) => {
         try {
           // fetch chain id
-          const { chainId } = await signerOrProvider.getNetwork()
+          const { chainId } = await signerOrProvider.getNetwork();
 
           // query the subgraph for all rounds by the given address in the given program
           const res = await graphql_fetch(
             `
               query GetRounds($address: String, $programId: String, $roundId: String) {
                 rounds(where: {
-            `
-            +
-            (address ? `accounts_: { address: $address } ` : ``)
-            +
-            (programId ? `program: $programId` : ``)
-            +
-            (roundId ? `id: $roundId` : ``)
-            +
-            `
+            ` +
+              (address ? `accounts_: { address: $address } ` : ``) +
+              (programId ? `program: $programId` : ``) +
+              (roundId ? `id: $roundId` : ``) +
+              `
                 }) {
                   id
                   program {
@@ -152,52 +161,52 @@ export const roundApi = api.injectEndpoints({
             `,
             chainId,
             { address: address?.toLowerCase(), programId, roundId }
-          )
+          );
 
-          const rounds: Round[] = []
+          const rounds: Round[] = [];
 
           for (const round of res.data.rounds) {
             // fetch round and application metadata from IPFS
-            const [
-              roundMetadata,
-              applicationMetadata
-            ] = await Promise.all([
+            const [roundMetadata, applicationMetadata] = await Promise.all([
               fetchFromIPFS(round.roundMetaPtr.pointer),
-              fetchFromIPFS(round.applicationMetaPtr.pointer)
-            ])
+              fetchFromIPFS(round.applicationMetaPtr.pointer),
+            ]);
 
-            const operatorWallets = round.roles[0].accounts.map((account: any) => account.address)
+            const operatorWallets = round.roles[0].accounts.map(
+              (account: any) => account.address
+            );
 
             rounds.push({
               id: round.id,
               roundMetadata,
               applicationMetadata,
-              applicationsStartTime: new Date(round.applicationsStartTime * 1000),
+              applicationsStartTime: new Date(
+                round.applicationsStartTime * 1000
+              ),
               applicationsEndTime: new Date(round.applicationsEndTime * 1000),
               roundStartTime: new Date(round.roundStartTime * 1000),
               roundEndTime: new Date(round.roundEndTime * 1000),
               token: round.token,
               votingStrategy: round.votingStrategy,
               ownedBy: round.program.id,
-              operatorWallets: operatorWallets
-            })
+              operatorWallets: operatorWallets,
+            });
           }
 
-          return { data: rounds }
-
+          return { data: rounds };
         } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to fetch rounds" }
+          console.log("error", err);
+          return { error: "Unable to fetch rounds" };
         }
       },
-      providesTags: ["Round"]
-    })
+      providesTags: ["Round"],
+    }),
   }),
-  overrideExisting: false
-})
+  overrideExisting: false,
+});
 
 export const {
   useListRoundsQuery,
   useCreateRoundMutation,
-  useUpdateRoundMutation
-} = roundApi
+  useUpdateRoundMutation,
+} = roundApi;

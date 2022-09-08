@@ -1,5 +1,5 @@
-import { fetchFromIPFS, graphql_fetch } from "./utils"
-import { Program } from "./types"
+import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { Program } from "./types";
 
 // TODO consider always returning an array and also error state, so return type is consistent
 /**
@@ -8,10 +8,13 @@ import { Program } from "./types"
  * @param signerOrProvider - signer
  *
  */
-export async function listPrograms (address: string, signerOrProvider: any): Promise<Program[]> {
+export async function listPrograms(
+  address: string,
+  signerOrProvider: any
+): Promise<Program[]> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork()
+    const { chainId } = await signerOrProvider.getNetwork();
 
     // get the subgraph for all programs owned by the given address
     const res = await graphql_fetch(
@@ -39,24 +42,25 @@ export async function listPrograms (address: string, signerOrProvider: any): Pro
             `,
       chainId,
       { address: address.toLowerCase() }
-    )
+    );
 
-    const programs: Program[] = []
+    const programs: Program[] = [];
 
     for (const program of res.data.programs) {
-      const metadata = await fetchFromIPFS(program.metaPtr.pointer)
+      const metadata = await fetchFromIPFS(program.metaPtr.pointer);
 
       programs.push({
         id: program.id,
         metadata,
-        operatorWallets: program.roles[0].accounts.map((program: any) => program.address)
-      })
+        operatorWallets: program.roles[0].accounts.map(
+          (program: any) => program.address
+        ),
+      });
     }
 
-    return programs
-
+    return programs;
   } catch (err) {
-    console.log("error", err)
-    throw Error("Unable to fetch programs")
+    console.log("error", err);
+    throw Error("Unable to fetch programs");
   }
 }

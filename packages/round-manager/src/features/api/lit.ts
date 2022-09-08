@@ -1,25 +1,27 @@
-import { Buffer } from 'buffer';
-import { isJestRunning } from './utils';
+import { Buffer } from "buffer";
+import { isJestRunning } from "./utils";
 
-const LitJsSdk = isJestRunning() ? null : require('lit-js-sdk');
+const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
-// @ts-ignore
 window.Buffer = Buffer;
 
-const client = LitJsSdk ? new LitJsSdk.LitNodeClient({
-  alertWhenUnauthorized: false
-}) : null ;
+const client = LitJsSdk
+  ? new LitJsSdk.LitNodeClient({
+      alertWhenUnauthorized: false,
+    })
+  : null;
 
-const ROUND_OPERATOR = '0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5';
+const ROUND_OPERATOR =
+  "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
 
 type LitInit = {
-  chain: string,
-  contract: string,
-}
+  chain: string;
+  contract: string;
+};
 export class Lit {
-  litNodeClient: any
-  chain: string
-  contract: string
+  litNodeClient: any;
+  chain: string;
+  contract: string;
 
   /**
    * constructor
@@ -40,27 +42,24 @@ export class Lit {
         conditionType: "evmContract",
         contractAddress: this.contract,
         functionName: "hasRole",
-        functionParams: [
-          ROUND_OPERATOR,
-          ":userAddress"
-        ],
+        functionParams: [ROUND_OPERATOR, ":userAddress"],
         functionAbi: {
-          "inputs": [
-            { "internalType": "bytes32", "name": "role", "type": "bytes32" },
-            { "internalType": "address", "name": "account", "type": "address" }
+          inputs: [
+            { internalType: "bytes32", name: "role", type: "bytes32" },
+            { internalType: "address", name: "account", type: "address" },
           ],
-          "name": "hasRole",
-          "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-          "stateMutability": "view",
-          "type": "function"
+          name: "hasRole",
+          outputs: [{ internalType: "bool", name: "", type: "bool" }],
+          stateMutability: "view",
+          type: "function",
         },
         chain: this.chain,
-        returnValueTest:{
-          "key": "",
-          "comparator": "=",
-          "value": "true"
+        returnValueTest: {
+          key: "",
+          comparator: "=",
+          value: "true",
         },
-      }
+      },
     ];
   }
 
@@ -88,7 +87,9 @@ export class Lit {
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
     // Encrypting Content and generating symmetric key
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(content);
+    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
+      content
+    );
 
     // Saving the Encrypted Content to the Lit Nodes
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
@@ -100,7 +101,10 @@ export class Lit {
 
     return {
       encryptedString,
-      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
+      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(
+        encryptedSymmetricKey,
+        "base16"
+      ),
     };
   }
 
@@ -112,7 +116,7 @@ export class Lit {
    * @returns decrypted string
    */
   async decryptString(
-    encryptedStr: string|Blob,
+    encryptedStr: string | Blob,
     encryptedSymmetricKey: string
   ) {
     if (!this.litNodeClient) {
@@ -137,14 +141,12 @@ export class Lit {
       const decryptedString = await LitJsSdk.decryptString(
         encryptedStr,
         symmetricKey
-        );
+      );
 
       return decryptedString;
     } catch (error) {
-
       console.error(error);
-      return 'N/A';
+      return "N/A";
     }
-
   }
 }

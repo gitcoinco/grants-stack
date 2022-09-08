@@ -1,9 +1,8 @@
 import { ReactComponent as SpinnerLogo } from "../../assets/spinner.svg";
 
-
 type SpinnerProps = {
-  text: string
-}
+  text: string;
+};
 
 export function Spinner(props: SpinnerProps) {
   return (
@@ -13,5 +12,5 @@ export function Spinner(props: SpinnerProps) {
         <p>{props.text}</p>
       </div>
     </div>
-  )
+  );
 }
