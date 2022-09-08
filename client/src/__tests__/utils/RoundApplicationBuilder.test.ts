@@ -131,7 +131,6 @@ describe("round application builder", () => {
     );
 
     const emailAnswer = application.answers[0];
-    console.log(emailAnswer);
     expect(emailAnswer.answer).toBeUndefined();
     expect(emailAnswer.encryptedAnswer).not.toBeUndefined();
     expect(emailAnswer.encryptedAnswer.ciphertext).not.toBeUndefined();
