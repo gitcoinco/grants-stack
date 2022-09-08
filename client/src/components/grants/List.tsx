@@ -80,51 +80,49 @@ function ProjectsList() {
 
   return (
     <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
-      <>
-        <div className="flex flex-col mt-4 mb-4">
-          <h3>My Projects</h3>
-          <p className="text-base">
-            Manage projects across multiple grants programs.
-          </p>
-        </div>
-        <RoundApplyAlert
-          show={props.showRoundAlert}
-          confirmHandler={() => {
-            const chainId = roundToApply?.split(":")[0];
-            const roundId = roundToApply?.split(":")[1];
-            const path = roundPath(chainId, roundId);
+      <div className="flex flex-col mt-4 mb-4">
+        <h3>My Projects</h3>
+        <p className="text-base">
+          Manage projects across multiple grants programs.
+        </p>
+      </div>
+      <RoundApplyAlert
+        show={props.showRoundAlert}
+        confirmHandler={() => {
+          const chainId = roundToApply?.split(":")[0];
+          const roundId = roundToApply?.split(":")[1];
+          const path = roundPath(chainId, roundId);
 
-            navigate(path);
-          }}
-        />
-        <div className="grow">
-          {props.projects.length ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {props.projects.map((event: ProjectEvent) => (
-                <Card projectId={event.id} key={event.id} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex h-full justify-center items-center">
-              <div className="flex flex-col items-center">
-                <div className="w-10">
-                  <Globe color={colors["primary-background"]} />
-                </div>
-                <h4 className="mt-6">No projects</h4>
-                <p className="text-xs mt-6">
-                  It looks like you haven&apos;t created any projects yet.
-                </p>
-                <p className="text-xs">Learn More</p>
-                <Link to={newGrantPath()} className="mt-6">
-                  <Button variant={ButtonVariants.outline}>
-                    Create a Project
-                  </Button>
-                </Link>
+          navigate(path);
+        }}
+      />
+      <div className="grow">
+        {props.projects.length ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {props.projects.map((event: ProjectEvent) => (
+              <Card projectId={event.id} key={event.id} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex h-full justify-center items-center">
+            <div className="flex flex-col items-center">
+              <div className="w-10">
+                <Globe color={colors["primary-background"]} />
               </div>
+              <h4 className="mt-6">No projects</h4>
+              <p className="text-xs mt-6">
+                It looks like you haven&apos;t created any projects yet.
+              </p>
+              <p className="text-xs">Learn More</p>
+              <Link to={newGrantPath()} className="mt-6">
+                <Button variant={ButtonVariants.outline}>
+                  Create a Project
+                </Button>
+              </Link>
             </div>
-          )}
-        </div>
-      </>
+          </div>
+        )}
+      </div>
       <CallbackModal
         modalOpen={props.showRoundModal}
         confirmText="Apply to Grant Round"
