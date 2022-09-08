@@ -1,8 +1,9 @@
 import tw from "tailwind-styled-components";
 
 type ButtonProps = {
-  $variant: "solid" | "outline";
+  $variant?: "solid" | "outline";
 };
+
 export const Button = tw.button`
   bg-violet-400 text-white
   py-2.5 px-10
