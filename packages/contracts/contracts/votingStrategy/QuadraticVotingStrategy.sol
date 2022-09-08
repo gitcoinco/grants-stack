@@ -38,7 +38,7 @@ contract QuadraticVotingStrategy is IVotingStrategy, ReentrancyGuard {
                 encodedVotes[i],
                 (address, uint256)
             );
-            require((voteCreditsUsed[voterAddress] + voteCredits) < VOTE_CREDITS, "QuadraticVotingStrategy: No vote credits left);
+            require((voteCreditsUsed[voterAddress] + voteCredits) < VOTE_CREDITS, "QuadraticVotingStrategy: No vote credits left");
             uint256 votes = Math.sqrt(voteCredits);
             voteCreditsUsed[voterAddress] +=  voteCredits;
             totalVoteCount[granteeAddress] += votes;
