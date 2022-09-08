@@ -2,69 +2,54 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/uitls/math/Math.sol";
 import "./IVotingStrategy.sol";
 
-/**
- * Allows voters to cast votes using non transferable ERC20 voting tokens
- *
- * Emits event upon every transfer.
- */
 contract QuadraticVotingStrategy is IVotingStrategy, ReentrancyGuard {
-  
-  // --- Event ---
 
-  /// @notice Emitted when a new vote is sent
-  event Voted(
-    uint256 votes,                   // votes
-    address indexed voter,            // voter address
-    address indexed grantAddress,     // grant address
-    address indexed roundAddress      // round address
-  );
+    using Math for uint256;
 
-  // --- Core methods ---
+    uint256 public immutable VOTE_CREDITS;
 
-  /**
-   * @notice Invoked by RoundImplementation which allows
-   * a voted to cast weighted votes to multiple grants during a round
-   *
-   * @dev
-   * - more voters -> higher the gas
-   * - this would be triggered when a voter casts their vote via round explorer
-   *
-   * @param encodedVotes encoded list of votes
-   * @param voterAddress voter address
-   */
-  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
-    /// @dev iterate over multiple donations and transfer funds
-    for (uint256 i = 0; i < encodedVotes.length; i++) {
+    address public voterBadge;
+    address[] public voters;
+    address[] public grantee;
 
-      (uint256 _votes, address _grantAddress) = abi.decode(encodedVotes[i], (uint256, address));
-
-      /// @dev erc20 transfer to grant address
-      // slither-disable-next-line missing-zero-check,calls-loop,low-level-calls,reentrancy-events
-      (bool success, bytes memory returndata) = _token.call(abi.encodeWithSelector(
-        IERC20.burn.selector,
-        voterAddress,
-        _grantAddress,
-        _votes
-      ));
-
-      // First, we assert that the address is a contract, since all message calls to EOAs are successful
-      // Then, we assert that we get a low-level message call success (this is for non-compliant ERC20s)
-      // If return data length exceeds 0, we validate it as a boolean and expect true (for compliant ERC20s)
-      if (_token.code.length > 0 && success && (returndata.length == 0 || abi.decode(returndata, (bool)))) {
-        /// @dev emit event for voted
-        emit Voted(
-          _votes,
-          voterAddress,
-          _grantAddress,
-          msg.sender
-        );
-      }
+    mapping(address => bool) public voterAdded;
+    mapping(address => uint256) public voteCreditsUsed;
+    mapping(address => bool) public granteeAdded;
+    mapping(address => uint256) public totalVoteCount; // Total votes received by a grantee
+    
+    constructor(uint256 _voteCredits, address _voterBadge){
+        VOTE_CREDITS = _voteCredits;
+        voterBadge = _voterBadge;
     }
 
-  }
+    function vote(bytes[] calldata encodedVotes, address voterAddress)
+        external
+        override
+        nonReentrant
+    {
+        require(IERC721(voterBadge).balanceOf(voterAddress) > 0, "QuadraticVotingStrategy: Invalid voter");
+        require(voteCreditsUsed[voterAddress] < VOTE_CREDITS, "QuadraticVotingStrategy: No vote credits left");
+        for (uint256 i = 0; i < encodedVotes.length; i++) {
+            (address granteeAddress, uint256 voteCredits) = abi.decode(
+                encodedVotes[i],
+                (address, uint256)
+            );
+            require((voteCreditsUsed[voterAddress] + voteCredits) < VOTE_CREDITS, "QuadraticVotingStrategy: No vote credits left);
+            uint256 votes = Math.sqrt(voteCredits);
+            voteCreditsUsed[voterAddress] +=  voteCredits;
+            totalVoteCount[granteeAddress] += votes;
+            if (!voterAdded[voterAddress]) {
+                voters.push(voterAddress);
+                voterAdded[voterAddress] = true;
+            }
+            if (!granteeAdded[granteeAddress]) {
+                grantee.push(granteeAddress);
+                granteeAdded[voterAddress] = true;
+            }
+        }
+    }
 }
-
-/// Discussion
-/// - should contract should be pausable & ownable
