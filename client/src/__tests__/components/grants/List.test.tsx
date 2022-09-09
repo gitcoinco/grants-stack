@@ -85,7 +85,7 @@ describe("<List />", () => {
 
       when(useLocalStorage as jest.Mock)
         .calledWith("roundToApply", null)
-        .mockReturnValue(["0x1234"]);
+        .mockReturnValue(["5:0x1234"]);
 
       store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
       store.dispatch({
