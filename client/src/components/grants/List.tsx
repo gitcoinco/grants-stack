@@ -14,6 +14,7 @@ import CallbackModal from "../base/CallbackModal";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
+import { parseRoundToApply } from "../../utils/utils";
 
 function ProjectsList() {
   const dispatch = useDispatch();
@@ -27,14 +28,14 @@ function ProjectsList() {
 
   const props = useSelector((state: RootState) => {
     // undefined while the round application is loading, boolean once it's loaded
-    let roundToApplyApplication;
+    let existingApplication;
 
     let alreadyApplied: undefined | boolean;
     if (roundToApply) {
       const roundAddress = roundToApply.split(":")[1];
-      roundToApplyApplication = state.roundApplication[roundAddress];
-      if (roundToApplyApplication !== undefined) {
-        alreadyApplied = roundToApplyApplication.projectsIDs.length > 0;
+      existingApplication = state.roundApplication[roundAddress];
+      if (existingApplication !== undefined) {
+        alreadyApplied = existingApplication.projectsIDs.length > 0;
       }
     }
     const showRoundModal =
@@ -46,7 +47,7 @@ function ProjectsList() {
       loading: state.projects.status === Status.Loading,
       projects: state.projects.projects,
       chainID: state.web3.chainID,
-      roundToApplyApplication,
+      existingApplication,
       showRoundModal,
       showRoundAlert,
     };
@@ -64,15 +65,19 @@ function ProjectsList() {
 
   useEffect(() => {
     if (roundToApply && props.projects.length > 0) {
-      const [chainID, roundAddress] = roundToApply.split(":");
+      const { chainID, roundAddress } = parseRoundToApply(roundToApply);
       const ids = props.projects.map((p) => p.id);
 
       // not loaded yet
-      if (props.roundToApplyApplication === undefined) {
-        dispatch(checkRoundApplications(chainID, roundAddress, ids));
+      if (
+        props.existingApplication === undefined &&
+        chainID !== undefined &&
+        roundAddress !== undefined
+      ) {
+        dispatch(checkRoundApplications(Number(chainID), roundAddress, ids));
       }
     }
-  }, [props.projects, props.roundToApplyApplication]);
+  }, [props.projects, props.existingApplication]);
 
   if (props.loading) {
     return <>loading...</>;
@@ -89,9 +94,8 @@ function ProjectsList() {
       <RoundApplyAlert
         show={props.showRoundAlert}
         confirmHandler={() => {
-          const chainId = roundToApply?.split(":")[0];
-          const roundId = roundToApply?.split(":")[1];
-          const path = roundPath(chainId, roundId);
+          const { chainID, roundAddress } = parseRoundToApply(roundToApply);
+          const path = roundPath(chainID, roundAddress);
 
           navigate(path);
         }}
