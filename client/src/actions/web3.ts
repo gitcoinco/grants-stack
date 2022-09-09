@@ -6,7 +6,7 @@ import { networkPrettyNames } from "../utils/wallet";
 const chainIds = Object.keys(chains);
 const chainNames = Object.values(networkPrettyNames);
 
-enum Web3Type {
+export enum Web3Type {
   Generic,
   Remote,
   Status,
