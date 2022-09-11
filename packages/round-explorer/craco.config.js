@@ -1,6 +1,16 @@
+const webpack = require('webpack')
+
 module.exports = {
   webpack: {
     configure: {
+      module: {
+        rules: [
+          {
+            test: /\.wasm$/,
+            type: 'webassembly/async'
+          }
+        ]
+      },
       resolve: {
         fallback: {
           crypto: require.resolve('crypto-browserify'),
@@ -14,6 +24,9 @@ module.exports = {
           util: require.resolve('util')
         }
       },
+      experiments: {
+        asyncWebAssembly: true,
+      },
       ignoreWarnings: [
         // Ignore warnings raised by source-map-loader.
         // some third party packages may ship miss-configured sourcemaps, that interrupts the build
@@ -23,7 +36,7 @@ module.exports = {
          * @param {import('webpack').WebpackError} warning
          * @returns {boolean}
          */
-         function ignoreSourcemapsloaderWarnings(warning) {
+        function ignoreSourcemapsloaderWarnings(warning) {
           return (
             warning.module &&
             warning.module.resource.includes('node_modules') &&
@@ -32,6 +45,13 @@ module.exports = {
           )
         },
       ]
-    }
+    },
+    plugins: {
+      add: [
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        }),
+      ],
+    },
   },
 }

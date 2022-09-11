@@ -2,8 +2,13 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
 import { ReduxRouter } from "@lagunovsky/redux-react-router"
-import { store } from "./app/store";
 import { Route, Routes } from "react-router-dom"
+import { WagmiConfig } from "wagmi"
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { initDatadog } from "./datadog"
+
+import { store } from "./app/store"
+import { chains, client as WagmiClient } from "./app/wagmi"
 import reportWebVitals from "./reportWebVitals"
 import history from "./history"
 
@@ -11,36 +16,46 @@ import "./index.css"
 
 
 // Routes
-import ProtectedRoute from "./features/common/ProtectedRoute"
-import ListCartItems from "./features/cart/ListCartItemsPage"
-import ListGrants from "./features/explorer/ListGrantsPage"
+import Auth from "./features/common/Auth"
+import NotFound from "./features/common/NotFoundPage"
+import AccessDenied from "./features/common/AccessDenied"
+import ViewRoundPage from "./features/round/ViewRoundPage"
 
+// Initialize datadog
+initDatadog()
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 )
 
 root.render(
-  <React.StrictMode>
+<React.StrictMode>
     <Provider store={store}>
-      <ReduxRouter history={history} store={store}>
-        <Routes>
-          <Route path="/" element={<ListGrants />} />
+      <WagmiConfig client={WagmiClient}>
+        <RainbowKitProvider chains={chains}>
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
+          <ReduxRouter history={history} store={store}>
+            <Routes>
+              {/* Protected Routes */}
+              <Route element={<Auth />}>
 
-            {/* Default Route */}
+                {/* Default Route */}
+                <Route path="/" element={<NotFound />} />
 
-            {/* Cart Routes */}
-            <Route path="/cart" element={<ListCartItems />} />
+                {/* Round Routes */}
+                <Route path="/round/:id" element={<ViewRoundPage />} />
 
-          </Route>
+                {/* Access Denied */}
+                <Route path="/access-denied" element={<AccessDenied />} />
 
-          {/* 404 */}
-          <Route path="*" element={<p>There's nothing here: 404!</p>} />
-        </Routes>
-      </ReduxRouter>
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </ReduxRouter>
+
+        </RainbowKitProvider>
+      </WagmiConfig>
     </Provider>
   </React.StrictMode>
 );
