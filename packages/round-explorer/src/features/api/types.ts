@@ -1,12 +1,20 @@
+export type Network = "goerli" | "optimism" | "optimism-kovan"
+
 export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
    */
-  account: string;
+  address: string;
   /**
-   * Chain ID of the currently connected network
+   * Chain ID & name of the currently connected network
    */
-  chainId: number;
+  chain: {
+    id: number;
+    name: string;
+    network: Network;
+  },
+  provider: any;
+  signer?: any;
 }
 
 export interface Metadata {
@@ -21,15 +29,18 @@ export interface Metadata {
   pointer: string;
 }
 
-export interface IPFSFile {
+export interface IPFSObject {
   /**
    * File content to be saved in IPFS
    */
-  content: string;
+  content: object | Blob;
   /**
-   * Optional path
+   * Optional metadata
    */
-  path?: string;
+  metadata?: {
+    name?: string;
+    keyvalues?: object;
+  }
 }
 
 /** Base Contract interface */
