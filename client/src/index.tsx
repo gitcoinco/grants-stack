@@ -4,10 +4,10 @@ import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { Route, Routes, Navigate } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { WagmiConfig } from "wagmi";
-import Datadog from "./utils/datadog";
 import "./browserPatches";
+import PageNotFound from "./components/base/PageNotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import EditProject from "./components/grants/Edit";
 import ProjectsList from "./components/grants/List";
@@ -19,9 +19,10 @@ import RoundShow from "./components/rounds/Show";
 import history from "./history";
 import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
-import "./styles/index.css";
-import wagmiClient, { chains } from "./utils/wagmi";
 import setupStore from "./store";
+import "./styles/index.css";
+import Datadog from "./utils/datadog";
+import wagmiClient, { chains } from "./utils/wagmi";
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -51,6 +52,7 @@ root.render(
                       path={slugs.roundApplication}
                       element={<RoundApply />}
                     />
+                    <Route path="*" element={<PageNotFound />} />
                   </Routes>
                 </Layout>
               </ReduxRouter>
