@@ -6,7 +6,6 @@ import {
   WEB3_CHAIN_ID_LOADED,
   WEB3_ACCOUNT_LOADED,
   Web3Errors,
-  WEB3_BAD_CHAIN_ERROR,
 } from "../actions/web3";
 
 export interface Web3State {
@@ -67,13 +66,6 @@ export const web3Reducer = (
       return {
         ...state,
         account: action.account,
-      };
-    }
-
-    case WEB3_BAD_CHAIN_ERROR: {
-      return {
-        ...state,
-        error: action.error,
       };
     }
   }

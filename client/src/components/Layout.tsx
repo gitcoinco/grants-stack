@@ -8,6 +8,7 @@ import Toast from "./base/Toast";
 import Landing from "./grants/Landing";
 import Header from "./Header";
 import Globe from "./icons/Globe";
+import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 
 interface Props {
   children: JSX.Element;
@@ -34,21 +35,14 @@ function Layout(ownProps: Props) {
   // check the network and show a modal
   useEffect(() => {
     function checkNetwork() {
-      if (props.web3Error === "wrong network") {
+      if (props.web3Error === WEB3_BAD_CHAIN_ERROR) {
         console.log("Wrong chain");
         if (openChainModal) openChainModal();
-        return;
       }
-      if (props.web3Error !== undefined) {
-        console.log("General web3 error", props.web3Error);
-        return;
-      }
-
-      console.log("No errors");
     }
 
     checkNetwork();
-  }, [props.web3Error, props.chainID]);
+  }, [props.web3Error]);
 
   const { children } = ownProps;
   if (!props.web3Initialized || account === undefined) {

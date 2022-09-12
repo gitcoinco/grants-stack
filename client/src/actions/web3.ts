@@ -48,12 +48,7 @@ export interface Web3AccountDisconnectedAction {
 }
 
 export const WEB3_BAD_CHAIN_ERROR = "WEB3_BAD_CHAIN_ERROR";
-export type Web3Errors = typeof WEB3_BAD_CHAIN_ERROR | string;
-
-export interface Web3ChainIdErrorAction {
-  type: typeof WEB3_BAD_CHAIN_ERROR;
-  error: string;
-}
+export type Web3Errors = typeof WEB3_ERROR | string;
 
 export type Web3Actions =
   | Web3InitializingAction
@@ -61,13 +56,7 @@ export type Web3Actions =
   | Web3ErrorAction
   | Web3ChainIDLoadedAction
   | Web3AccountLoadedAction
-  | Web3AccountDisconnectedAction
-  | Web3ChainIdErrorAction;
-
-export const web3BadChainIdError = (): Web3Actions => ({
-  type: WEB3_BAD_CHAIN_ERROR,
-  error: "wrong network",
-});
+  | Web3AccountDisconnectedAction;
 
 export const web3Initializing = (): Web3Actions => ({
   type: WEB3_INITIALIZING,
@@ -107,7 +96,7 @@ export const initializeWeb3 =
   (signer: any, provider: any, chain: any, address: string) =>
   (dispatch: Dispatch) => {
     if (!chainIds.includes(String(chain?.id))) {
-      dispatch(web3BadChainIdError());
+      dispatch(web3Error(WEB3_BAD_CHAIN_ERROR));
       return;
     }
 
