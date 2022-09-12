@@ -22,8 +22,8 @@ export const Button = tw.button`
 `;
 
 type InputProps = {
-  $hasError: boolean;
-  $disabled: boolean;
+  $hasError?: any;
+  $disabled?: any;
 };
 
 export const Input = tw.input<InputProps>`
@@ -34,7 +34,7 @@ export const Input = tw.input<InputProps>`
     p.$hasError
       ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
       : "focus:ring-violet-400 focus:border-violet-400"}
-  ${(p: InputProps) => p.$disabled && "bg-[#F1F1F1]"}
+  ${(p: InputProps) => (p.$disabled ? "bg-[#F1F1F1]" : "")}
 `;
 
 export const CardsContainer = tw.div`
