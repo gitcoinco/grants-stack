@@ -9,9 +9,10 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   root: true,
-  parserOptions: { project: ["./tsconfig.json"] },
   rules: {
     "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
   settings: {
     react: {
