@@ -5,13 +5,15 @@ import {
   WEB3_ERROR,
   WEB3_CHAIN_ID_LOADED,
   WEB3_ACCOUNT_LOADED,
+  Web3Errors,
+  WEB3_BAD_CHAIN_ERROR,
 } from "../actions/web3";
 
 export interface Web3State {
   initializing: boolean;
   initialized: boolean;
   chainID: number | undefined;
-  error: string | undefined;
+  error: Web3Errors | undefined;
   account: string | undefined;
 }
 
@@ -65,6 +67,13 @@ export const web3Reducer = (
       return {
         ...state,
         account: action.account,
+      };
+    }
+
+    case WEB3_BAD_CHAIN_ERROR: {
+      return {
+        ...state,
+        error: action.error,
       };
     }
   }

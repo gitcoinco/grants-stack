@@ -1,10 +1,10 @@
 import { Dispatch } from "redux";
 import { global } from "../global";
 import { chains } from "../contracts/deployments";
-import { networkPrettyNames } from "../utils/wallet";
+// import { networkPrettyNames } from "../utils/wallet";
 
 const chainIds = Object.keys(chains);
-const chainNames = Object.values(networkPrettyNames);
+// const chainNames = Object.values(networkPrettyNames);
 
 enum Web3Type {
   Generic,
@@ -47,13 +47,27 @@ export interface Web3AccountDisconnectedAction {
   account: string;
 }
 
+export const WEB3_BAD_CHAIN_ERROR = "WEB3_BAD_CHAIN_ERROR";
+export type Web3Errors = typeof WEB3_BAD_CHAIN_ERROR | string;
+
+export interface Web3ChainIdErrorAction {
+  type: typeof WEB3_BAD_CHAIN_ERROR;
+  error: string;
+}
+
 export type Web3Actions =
   | Web3InitializingAction
   | Web3InitializedAction
   | Web3ErrorAction
   | Web3ChainIDLoadedAction
   | Web3AccountLoadedAction
-  | Web3AccountDisconnectedAction;
+  | Web3AccountDisconnectedAction
+  | Web3ChainIdErrorAction;
+
+export const web3BadChainIdError = (): Web3Actions => ({
+  type: WEB3_BAD_CHAIN_ERROR,
+  error: "wrong network",
+});
 
 export const web3Initializing = (): Web3Actions => ({
   type: WEB3_INITIALIZING,
@@ -93,13 +107,7 @@ export const initializeWeb3 =
   (signer: any, provider: any, chain: any, address: string) =>
   (dispatch: Dispatch) => {
     if (!chainIds.includes(String(chain?.id))) {
-      dispatch(
-        web3Error(
-          `wrong network, please connect to one of the following networks: ${chainNames.join(
-            ", "
-          )}`
-        )
-      );
+      dispatch(web3BadChainIdError());
       return;
     }
 

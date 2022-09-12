@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
@@ -17,7 +17,6 @@ function Layout(ownProps: Props) {
   const [show, showToast] = useState(false);
   const { address: account } = useAccount();
   const { openChainModal } = useChainModal();
-  const { chain } = useNetwork();
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
@@ -32,10 +31,24 @@ function Layout(ownProps: Props) {
     showToast(props.web3Initialized);
   }, [props.web3Initialized]);
 
-  // check the network and show a modal if not on mainnet optimism
-  if (props.web3Error !== undefined && chain?.id !== props.chainID) {
-    if (openChainModal) openChainModal();
-  }
+  // check the network and show a modal
+  useEffect(() => {
+    function checkNetwork() {
+      if (props.web3Error === "wrong network") {
+        console.log("Wrong chain");
+        if (openChainModal) openChainModal();
+        return;
+      }
+      if (props.web3Error !== undefined) {
+        console.log("General web3 error", props.web3Error);
+        return;
+      }
+
+      console.log("No errors");
+    }
+
+    checkNetwork();
+  }, [props.web3Error, props.chainID]);
 
   const { children } = ownProps;
   if (!props.web3Initialized || account === undefined) {
