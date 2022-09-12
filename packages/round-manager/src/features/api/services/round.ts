@@ -4,6 +4,7 @@ import { api } from "..";
 import { roundFactoryContract } from "../contracts";
 import { Round } from "../types";
 import { fetchFromIPFS, graphql_fetch } from "../utils";
+import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * Contract interactions API for a Round
@@ -12,7 +13,7 @@ export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createRound: builder.mutation<
       string,
-      { round: Round; signerOrProvider: any }
+      { round: Round; signerOrProvider: Signer }
     >({
       queryFn: async ({ round, signerOrProvider }) => {
         try {
@@ -96,6 +97,7 @@ export const roundApi = api.injectEndpoints({
       invalidatesTags: ["Round"],
     }),
     updateRound: builder.mutation<string, Round>({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       queryFn: async ({ id, ...round }) => {
         try {
           const res = "TODO";

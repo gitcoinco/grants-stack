@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { screen } from "@testing-library/react";
 import { useWallet } from "../../common/Auth";
 import { useListRoundsQuery } from "../../api/services/round";

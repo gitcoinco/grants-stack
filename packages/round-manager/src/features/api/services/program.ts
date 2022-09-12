@@ -3,6 +3,8 @@ import { api } from "..";
 import { programFactoryContract } from "../contracts";
 import { Program } from "../types";
 import { fetchFromIPFS, graphql_fetch } from "../utils";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider } from "@ethersproject/providers";
 
 /**
  * Contract interactions API for a Grant Program
@@ -11,7 +13,7 @@ export const programApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createProgram: builder.mutation<
       string,
-      { program: Program; signerOrProvider: any }
+      { program: Program; signerOrProvider: Signer }
     >({
       queryFn: async ({
         program: { store: metadata, operatorWallets },
@@ -24,6 +26,9 @@ export const programApi = api.injectEndpoints({
           // load program factory contract
           const _programFactoryContract = programFactoryContract(chainId);
           const programFactory = new ethers.Contract(
+            /* programFactoryContract always returns a Contract with an address field, even if chainId doesn't
+             * match, so we can assume the address is a string */
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             _programFactoryContract.address!,
             _programFactoryContract.abi,
             signerOrProvider
@@ -69,6 +74,7 @@ export const programApi = api.injectEndpoints({
       invalidatesTags: ["Program", "IPFS"],
     }),
     updateProgram: builder.mutation<string, Program>({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       queryFn: async ({ id, ...program }) => {
         try {
           const res = "TODO";
@@ -83,7 +89,7 @@ export const programApi = api.injectEndpoints({
     }),
     listPrograms: builder.query<
       Program[],
-      { address?: string; signerOrProvider: any; programId?: string }
+      { address?: string; signerOrProvider: Web3Provider; programId?: string }
     >({
       queryFn: async ({ address, signerOrProvider, programId }) => {
         try {
@@ -128,7 +134,7 @@ export const programApi = api.injectEndpoints({
               id: program.id,
               metadata,
               operatorWallets: program.roles[0].accounts.map(
-                (program: any) => program.address
+                (account: { address: string }) => account.address
               ),
             });
           }

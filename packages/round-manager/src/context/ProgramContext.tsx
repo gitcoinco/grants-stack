@@ -1,7 +1,8 @@
 import { Program } from "../features/api/types";
-import { createContext, useContext, useEffect, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../features/common/Auth";
 import { listPrograms } from "../features/api/program";
+import { Web3Provider } from "@ethersproject/providers";
 
 export interface ProgramState {
   programs: Program[];
@@ -34,7 +35,7 @@ export const ProgramContext = createContext<
 const fetchPrograms = async (
   dispatch: Dispatch,
   address: string,
-  walletProvider: any
+  walletProvider: Web3Provider
 ) => {
   dispatch({ type: ActionType.START_LOADING });
   listPrograms(address, walletProvider)
@@ -61,7 +62,11 @@ const programReducer = (state: ProgramState, action: Action) => {
   return state;
 };
 
-export const ProgramProvider = ({ children }: { children: any }) => {
+export const ProgramProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [state, dispatch] = useReducer(programReducer, initialProgramState);
 
   const { address, provider: walletProvider } = useWallet();

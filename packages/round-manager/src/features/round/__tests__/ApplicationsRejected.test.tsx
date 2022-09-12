@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ApplicationsRejected from "../ApplicationsRejected";
 import {
   useBulkUpdateGrantApplicationsMutation,
@@ -245,13 +246,15 @@ describe("<ApplicationsRejected />", () => {
 
         const continueButton = screen.queryByRole("button", {
           name: /Continue/i,
-        });
-        fireEvent.click(continueButton!);
+        }) as HTMLButtonElement;
+        fireEvent.click(continueButton);
 
         screen.getByTestId("approved-applications-count");
 
-        const confirmButton = screen.getByRole("button", { name: /Confirm/i });
-        fireEvent.click(confirmButton!);
+        const confirmButton = screen.getByRole("button", {
+          name: /Confirm/i,
+        }) as HTMLButtonElement;
+        fireEvent.click(confirmButton);
 
         await waitForElementToBeRemoved(() =>
           screen.queryByTestId("confirm-modal")

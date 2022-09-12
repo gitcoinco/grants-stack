@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from "@testing-library/react";
 import { FormWizard } from "../FormWizard";
 import { randomInt } from "crypto";

@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
+import { FormStepper as FS } from "../common/FormStepper";
 import { useCreateRoundMutation } from "../api/services/round";
 import { useSaveToIPFSMutation } from "../api/services/ipfs";
 import { Round } from "../api/types";
@@ -32,7 +32,7 @@ const ValidationSchema = yup.object().shape({
 
 export function RoundApplicationForm(props: {
   initialData: any;
-  stepper: any;
+  stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -125,6 +125,8 @@ export function RoundApplicationForm(props: {
           ...data,
           votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
           token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
+          /* Reasonable to assume programId is non-null since we would redirect to 404 otherwise */
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           ownedBy: programId!,
           store: {
             protocol: 1, // IPFS protocol ID is 1
@@ -145,7 +147,7 @@ export function RoundApplicationForm(props: {
     }
   };
 
-  const progressSteps: any = [
+  const progressSteps = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
@@ -516,7 +518,7 @@ export function RoundApplicationForm(props: {
                 currentStep={currentStep}
                 stepsCount={stepsCount}
                 prev={prev}
-                disabledNext={
+                disableNext={
                   isLoading ||
                   isSavingToIPFS ||
                   isSuccess ||

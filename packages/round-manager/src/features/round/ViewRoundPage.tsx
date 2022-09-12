@@ -43,6 +43,8 @@ export default function ViewRoundPage() {
   );
 
   const { data: applications } = useListGrantApplicationsQuery({
+    /* Non-issue since if ID was null or undef., we wouldn't render this page, but a 404 instead  */
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     roundId: id!,
     signerOrProvider: provider,
   });

@@ -19,6 +19,8 @@ type LitInit = {
   contract: string;
 };
 export class Lit {
+  /* Lit doesn't provide types as of 12. 9. 2022 */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   litNodeClient: any;
   chain: string;
   contract: string;

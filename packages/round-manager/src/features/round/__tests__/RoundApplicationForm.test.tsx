@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { act, fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import { RoundApplicationForm } from "../RoundApplicationForm";

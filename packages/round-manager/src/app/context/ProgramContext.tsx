@@ -9,4 +9,6 @@ const initialState: ProgramState = {
   programs: [],
 };
 
+/*TODO: this seems to be implemented in /src/context, safe to delete? */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const programContext = createContext(initialState);

@@ -9,6 +9,7 @@ import * as yup from "yup";
 import { Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Input } from "../common/styles";
+import { FormStepper } from "../common/FormStepper";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -34,7 +35,7 @@ const ValidationSchema = yup.object().shape({
 });
 
 interface RoundDetailFormProps {
-  stepper: any;
+  stepper: typeof FormStepper;
 }
 
 export function RoundDetailForm(props: RoundDetailFormProps) {

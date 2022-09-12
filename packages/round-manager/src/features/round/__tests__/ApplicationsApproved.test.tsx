@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any */
 import ApplicationsApproved from "../ApplicationsApproved";
 import {
   useBulkUpdateGrantApplicationsMutation,

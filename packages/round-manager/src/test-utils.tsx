@@ -1,4 +1,3 @@
-import React from "react";
 import {
   GrantApplication,
   Program,
@@ -176,6 +175,7 @@ export const renderWrapped = (ui: JSX.Element) => {
 export const renderWithContext = (
   ui: JSX.Element,
   programStateOverrides: Partial<ProgramState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
   render(

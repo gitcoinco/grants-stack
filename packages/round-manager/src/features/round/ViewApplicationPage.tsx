@@ -69,7 +69,7 @@ export default function ViewApplicationPage() {
     twitter: VerifiedCredentialState.PENDING,
   });
 
-  const { roundId, id } = useParams();
+  const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address, provider, signer } = useWallet();
   const navigate = useNavigate();
   const verifier = new PassportVerifier();
@@ -79,6 +79,8 @@ export default function ViewApplicationPage() {
     isLoading,
     isSuccess: isApplicationFetched,
   } = useListGrantApplicationsQuery(
+    /* Non-issue since if ID was null or undef., we wouldn't render this page, but a 404 instead  */
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     { roundId: roundId!, signerOrProvider: provider, id },
     {
       selectFromResult: ({ data, isLoading, isSuccess }) => ({
@@ -135,7 +137,7 @@ export default function ViewApplicationPage() {
       setOpenModal(false);
 
       await updateGrantApplication({
-        roundId: roundId!,
+        roundId,
         application: {
           status: reviewDecision!,
           id: application!.id,
@@ -225,11 +227,11 @@ export default function ViewApplicationPage() {
               ].join(",");
 
               const response = await fetch(base64EncryptedString);
-              const encryptedString: any = await response.blob();
+              const encryptedString: Blob = await response.blob();
 
               const lit = new Lit({
                 chain: chain.name.toLowerCase(),
-                contract: utils.getAddress(roundId!),
+                contract: utils.getAddress(roundId),
               });
 
               const decryptedString = await lit.decryptString(
@@ -255,7 +257,9 @@ export default function ViewApplicationPage() {
       setAnswerBlocks(_answerBlocks);
     };
 
-    if (isApplicationFetched && hasAccess) decryptAnswers();
+    if (isApplicationFetched && hasAccess) {
+      decryptAnswers();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application, isLoading, hasAccess, isApplicationFetched]);
 

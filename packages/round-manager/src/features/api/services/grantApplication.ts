@@ -8,17 +8,19 @@ import {
   graphql_fetch,
   pinToIPFS,
 } from "../utils";
+import { Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 const updateApplicationList = (
   applications: GrantApplication[],
   roundId: string,
-  provider: any
+  provider: Web3Provider
 ): Promise<string> => {
   /* ESLint ignore is fine since we handle the throws*/
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
-      let reviewedApplications: any = [];
+      let reviewedApplications: any[] = [];
       let foundEntry = false;
 
       // fetch latest ipfs pointer to the list of application for the round
@@ -154,7 +156,7 @@ export const grantApplicationApi = api.injectEndpoints({
       GrantApplication[],
       {
         roundId: string;
-        signerOrProvider: any;
+        signerOrProvider: Web3Provider;
         id?: string;
         status?: "PENDING" | "APPROVED" | "REJECTED";
       }
@@ -240,8 +242,8 @@ export const grantApplicationApi = api.injectEndpoints({
       {
         roundId: string;
         application: GrantApplication;
-        signer: any;
-        provider: any;
+        signer: Signer;
+        provider: Web3Provider;
       }
     >({
       queryFn: async ({ roundId, application, signer, provider }) => {
@@ -268,8 +270,8 @@ export const grantApplicationApi = api.injectEndpoints({
           console.log("✅ Transaction hash: ", tx.hash);
 
           return { data: tx.hash };
-        } catch (err: any) {
-          return { error: err.message };
+        } catch (err: unknown) {
+          return { error: (err as Error).message };
         }
       },
       invalidatesTags: ["GrantApplication", "Round"],
@@ -279,8 +281,8 @@ export const grantApplicationApi = api.injectEndpoints({
       {
         roundId: string;
         applications: GrantApplication[];
-        signer: any;
-        provider: any;
+        signer: Signer;
+        provider: Web3Provider;
       }
     >({
       queryFn: async ({ roundId, applications, signer, provider }) => {

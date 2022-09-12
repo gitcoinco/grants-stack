@@ -1,5 +1,6 @@
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import { Program } from "./types";
+import { Web3Provider } from "@ethersproject/providers";
 
 // TODO consider always returning an array and also error state, so return type is consistent
 /**
@@ -10,7 +11,7 @@ import { Program } from "./types";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: any
+  signerOrProvider: Web3Provider
 ): Promise<Program[]> {
   try {
     // fetch chain id
@@ -53,7 +54,7 @@ export async function listPrograms(
         id: program.id,
         metadata,
         operatorWallets: program.roles[0].accounts.map(
-          (program: any) => program.address
+          (account: { address: string }) => account.address
         ),
       });
     }

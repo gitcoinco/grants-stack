@@ -3,7 +3,7 @@ import { Button } from "./styles";
 export interface FormStepperProps {
   currentStep: number;
   stepsCount: number;
-  disableNext: boolean;
+  disableNext?: boolean;
   prev: () => void;
 }
 
