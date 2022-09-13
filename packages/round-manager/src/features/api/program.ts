@@ -66,10 +66,13 @@ export async function listPrograms(
 }
 
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
-export async function getProgramById(programId: string, signerOrProvider: any): Promise<Program> {
+export async function getProgramById(
+  programId: string,
+  signerOrProvider: any
+): Promise<Program> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork()
+    const { chainId } = await signerOrProvider.getNetwork();
 
     // get the subgraph for program by $programId
     const res = await graphql_fetch(
@@ -94,20 +97,21 @@ export async function getProgramById(programId: string, signerOrProvider: any): 
               }
             `,
       chainId,
-      {programId}
-    )
+      { programId }
+    );
 
-    const programDataFromGraph = res.data.programs[0]
-    const metadata = await fetchFromIPFS(programDataFromGraph.metaPtr.pointer)
+    const programDataFromGraph = res.data.programs[0];
+    const metadata = await fetchFromIPFS(programDataFromGraph.metaPtr.pointer);
 
     return {
       id: programDataFromGraph.id,
       metadata,
-      operatorWallets: programDataFromGraph.roles[0].accounts.map((program: any) => program.address)
-    }
-
+      operatorWallets: programDataFromGraph.roles[0].accounts.map(
+        (program: any) => program.address
+      ),
+    };
   } catch (err) {
-    console.log("error", err)
-    throw Error("Unable to fetch program")
+    console.log("error", err);
+    throw Error("Unable to fetch program");
   }
 }

@@ -1,11 +1,5 @@
 import { Program } from "../features/api/types";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../features/common/Auth";
 import { getProgramById, listPrograms } from "../features/api/program";
 import { Web3Provider } from "@ethersproject/providers";
@@ -129,7 +123,7 @@ export const usePrograms = (): ProgramState & { dispatch: Dispatch } => {
 
   useEffect(() => {
     fetchProgramsByAddress(context.dispatch, address, walletProvider);
-  }, [address, walletProvider]);
+  }, [address, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { ...context.state, dispatch: context.dispatch };
 };
@@ -153,7 +147,7 @@ export const useProgramById = (
       // TODO(shavinac) - don't need to do a new fetch if program is already in context
       fetchProgramsById(context.dispatch, id, walletProvider);
     }
-  }, [id, walletProvider]);
+  }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     program: context.state.programs.find((program) => program.id === id),
@@ -161,26 +155,3 @@ export const useProgramById = (
     getProgramByIdError: context.state.getProgramByIdError,
   };
 };
-
-// export const useProgramById = (provider: any, id?: string): { programToRender?: Program, programIsLoading: boolean } => {
-//   const [programToRender, setProgramToRender] = useState<Program>()
-//   const [programIsLoading, setProgramIsLoading] = useState(true)
-//
-//   useEffect(() => {
-//     const fetchProgramToRender = async () => {
-//       if (id) {
-//         const program = await getProgramById(id, provider)
-//         setProgramToRender(program)
-//         setProgramIsLoading(false)
-//       }
-//     }
-//     setProgramIsLoading(true)
-//     fetchProgramToRender()
-//       .catch(() => {
-//         setProgramToRender(undefined)
-//         setProgramIsLoading(false)
-//       })
-//   },[id, provider])
-//
-//   return {programToRender, programIsLoading}
-// }

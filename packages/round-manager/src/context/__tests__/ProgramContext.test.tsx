@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useProgramById, ProgramProvider, usePrograms } from "../ProgramContext";
+import {
+  useProgramById,
+  ProgramProvider,
+  usePrograms,
+} from "../ProgramContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeProgramData } from "../../test-utils";
 import { getProgramById, listPrograms } from "../../features/api/program";
-import { Program } from "../../features/api/types"
+import { Program } from "../../features/api/types";
 
 const mockWallet = { address: "0x0", provider: {} };
 
@@ -24,9 +28,9 @@ describe("<ListProgramProvider />", () => {
   describe("usePrograms()", () => {
     it("provides programs based on current wallet address", async () => {
       (listPrograms as any).mockResolvedValue([
-      makeProgramData(),
-      makeProgramData(),
-    ]);
+        makeProgramData(),
+        makeProgramData(),
+      ]);
       renderWithProvider();
 
       expect(await screen.findAllByTestId("program")).toHaveLength(2);
@@ -61,15 +65,15 @@ describe("<ListProgramProvider />", () => {
 
     it("sets isLoading to true when listPrograms call is in progress", async () => {
       const listProgramsPromise = new Promise(() => {
-      /**/
-    });
+        /**/
+      });
 
       (listPrograms as any).mockReturnValue(listProgramsPromise);
       renderWithProvider();
 
       await screen.findByTestId("is-loading");
     });
-  })
+  });
 
   describe("useProgramById()", () => {
     it("provides programs based on given program id", async () => {
@@ -79,12 +83,14 @@ describe("<ListProgramProvider />", () => {
 
       render(
         <ProgramProvider>
-          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+          <TestingUseProgramByIdComponent
+            expectedProgramId={expectedProgramId}
+          />
         </ProgramProvider>
-      )
+      );
 
-      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument()
-    })
+      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument();
+    });
 
     it("sets isLoading to true when getProgramById call is in progress", async () => {
       const expectedProgram = makeProgramData();
@@ -93,12 +99,16 @@ describe("<ListProgramProvider />", () => {
 
       render(
         <ProgramProvider>
-          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+          <TestingUseProgramByIdComponent
+            expectedProgramId={expectedProgramId}
+          />
         </ProgramProvider>
-      )
+      );
 
-      expect(await screen.findByTestId("is-loading-program-by-id")).toBeInTheDocument();
-    })
+      expect(
+        await screen.findByTestId("is-loading-program-by-id")
+      ).toBeInTheDocument();
+    });
 
     it("sets isLoading back to false and when getProgramById call succeeds", async () => {
       const expectedProgram = makeProgramData();
@@ -107,14 +117,18 @@ describe("<ListProgramProvider />", () => {
 
       render(
         <ProgramProvider>
-          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+          <TestingUseProgramByIdComponent
+            expectedProgramId={expectedProgramId}
+          />
         </ProgramProvider>
-      )
+      );
 
       await waitFor(() => {
-        expect(screen.queryByTestId("is-loading-program-by-id")).not.toBeInTheDocument();
-      })
-    })
+        expect(
+          screen.queryByTestId("is-loading-program-by-id")
+        ).not.toBeInTheDocument();
+      });
+    });
 
     it("sets isLoading back to false when getProgramById call fails", async () => {
       const expectedProgram = makeProgramData();
@@ -123,17 +137,21 @@ describe("<ListProgramProvider />", () => {
 
       render(
         <ProgramProvider>
-          <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
+          <TestingUseProgramByIdComponent
+            expectedProgramId={expectedProgramId}
+          />
         </ProgramProvider>
-      )
+      );
 
       await waitFor(() => {
-        expect(screen.queryByTestId("is-loading-program-by-id")).not.toBeInTheDocument();
-      })
+        expect(
+          screen.queryByTestId("is-loading-program-by-id")
+        ).not.toBeInTheDocument();
+      });
 
       screen.getByTestId("program-by-id-error-msg");
-    })
-  })
+    });
+  });
 });
 
 const TestingUseProgramsComponent = () => {
@@ -155,25 +173,21 @@ const TestingUseProgramsComponent = () => {
 };
 
 const TestingUseProgramByIdComponent = (props: {
-  expectedProgramId?: string
+  expectedProgramId?: string;
 }) => {
-  const { program, isLoading, getProgramByIdError } = useProgramById(props.expectedProgramId)
+  const { program, isLoading, getProgramByIdError } = useProgramById(
+    props.expectedProgramId
+  );
   return (
     <>
-      {program ?
-        <div>{program.id}</div>
-        : <div>No Program Found</div>}
+      {program ? <div>{program.id}</div> : <div>No Program Found</div>}
 
-      {isLoading &&
-        <div data-testid="is-loading-program-by-id"></div>
-      }
+      {isLoading && <div data-testid="is-loading-program-by-id"></div>}
 
-      { getProgramByIdError &&
-        <div data-testid="program-by-id-error-msg" />
-      }
+      {getProgramByIdError && <div data-testid="program-by-id-error-msg" />}
     </>
-  )
-}
+  );
+};
 function renderWithProvider() {
   render(
     <ProgramProvider>
