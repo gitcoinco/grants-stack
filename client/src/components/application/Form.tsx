@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
+import { Stack } from "@chakra-ui/react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
@@ -53,7 +54,6 @@ export default function Form({
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [displayAddressError, setDisplayAddressError] = useState("invisible");
-  const [disableProgress, setDisableProgress] = useState(false);
 
   const schema = roundApplication.applicationSchema;
 
@@ -65,13 +65,10 @@ export default function Form({
   const handleInputAddress = async (e: ChangeHandlers) => {
     const { value } = e.target;
     const isValid = isValidAddress(value);
-    console.log("valid", isValid);
-    if (value.length !== 42 && !isValid) {
+    if (!isValid) {
       setDisplayAddressError("visible");
-      setDisableProgress(true);
     } else {
       setDisplayAddressError("invisible");
-      setDisableProgress(false);
     }
 
     setFormInputs({ ...formInputs, [e.target.name]: value });
@@ -226,6 +223,22 @@ export default function Form({
               );
           }
         })}
+        {/* Radio for safe or multi-sig */}
+        <div className="relative">
+          <Stack>
+            <span className="absolute text-purple-700 inset-y-0 right-1/2">
+              * required
+            </span>
+            <Radio
+              label="Is your payout wallet a Gnosis Safe or multi-sig?"
+              choices={["Yes", "No"]}
+              changeHandler={() => {}}
+              name="isSafe"
+              value={formInputs.isSafe ?? "No"}
+              info=""
+            />
+          </Stack>
+        </div>
         {!formValidation.valid && submitted && (
           <p className="text-danger-text w-full text-center font-semibold my-2">
             {formValidation.message}
@@ -234,7 +247,7 @@ export default function Form({
         <div className="flex justify-end">
           {!preview ? (
             <Button
-              disabled={disableProgress}
+              disabled={!formValidation.valid}
               variant={ButtonVariants.primary}
               onClick={() => setPreview(true)}
             >
