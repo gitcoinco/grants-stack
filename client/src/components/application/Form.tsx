@@ -116,7 +116,7 @@ export default function Form({
                     changeHandler={handleInput}
                   />
                   <p className="text-xs mt-4 mb-1">
-                    To complete your application to ${round.roundMetadata.name},
+                    To complete your application to {round.roundMetadata.name},
                     a little more info is needed:
                   </p>
                   <hr />

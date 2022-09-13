@@ -10,10 +10,13 @@ export function TextInput({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-6 w-full sm:w-1/2">
+    <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      <span className="absolute text-purple-700 inset-y-0 right-0">
+        * required
+      </span>
       <legend>{info}</legend>
       <input
         type="text"
@@ -79,7 +82,7 @@ export function TextArea({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-6">
+    <div className="mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
@@ -109,10 +112,13 @@ export function Select({
   changeHandler,
 }: SelectInputProps) {
   return (
-    <div>
+    <div className="relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      <span className="absolute text-purple-700 inset-y-0 right-1/2">
+        * required
+      </span>
       <legend>{info}</legend>
       <select
         id={name}
