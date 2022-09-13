@@ -62,7 +62,7 @@ describe("deterministicJSON", () => {
     });
   });
 
-  it("converts an object to a determinist JSON", async () => {
+  it("converts an object to a deterministic JSON", async () => {
     scenarios.forEach((scenario) => {
       const result = objectToDeterministicJSON(scenario.input);
       expect(result).toEqual(JSON.stringify(scenario.expected));
