@@ -10,6 +10,20 @@ Before running any command, make sure to install dependencies:
 $ yarn install
 ```
 
+Create environment files, and fill in environment variables with your own values
+```sh
+cp ../.env.sample ../.env
+```
+
+The following may be helpful when filling in the the environment variables.
+
+For `REACT_APP_PINATA_JWT` and `REACT_APP_PINATA_GATEWAY`, create your own Pinata account
+
+The `REACT_APP_INFURA_ID` can be filled by creating a free Infura account
+
+`REACT_APP_SUBGRAPH_GOERLI_API`, `REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API`, and     `REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API` can be found at 
+`grants-round/blob/main/packages/graph/README.md`
+
 ### Run in Development
 
 Runs the app in the development mode.\

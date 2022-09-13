@@ -10,7 +10,14 @@ It relies on the contracts deployed from the [contracts](../contracts) package.
 Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 
 
-### Directory Structure 
+## Live Links
+
+| Env     | Git Branch | URL                               |
+|---------|------------|-----------------------------------|
+| STAGING | main       | https://regitcoin.on.fleek.co/    |
+| LIVE    | release    | https://round-explorer.gitcoin.co/ |
+
+## Directory Structure 
 
 ```
 .
@@ -18,10 +25,9 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 ├── src
 │   ├── app                     # Stores/Hooks
 │   ├── features
-│       ├── auth                # components/services related to authentication/authorization
-│       ├── explorer            # Explorer related components/services
-│       ├── cart                # Cart related components/services 
-│   ├── api.ts                  # Empty API service (feature APIs will inject endpoints)
+│       ├── api                 # API services
+│       ├── common              # Common features
+│       ├── round               # Round related components/services 
 │   ├── browserPatches.tsx      # Browser polyfill
 │   ├── index.tsx               # Routes
 │   ├── index.css               # Global CSS
