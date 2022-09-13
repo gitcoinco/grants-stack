@@ -1,14 +1,14 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import "react-datetime/css/react-datetime.css";
-import { XIcon } from "@heroicons/react/solid";
-import { FormWizard } from "../common/FormWizard";
-import { RoundDetailForm } from "./RoundDetailForm";
-import { RoundApplicationForm } from "./RoundApplicationForm";
-import { Button } from "../common/styles";
+import {XIcon} from "@heroicons/react/solid";
+import {FormWizard} from "../common/FormWizard";
+import {RoundDetailForm} from "./RoundDetailForm";
+import {RoundApplicationForm} from "./RoundApplicationForm";
+import {Button} from "../common/styles";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import { datadogLogs } from "@datadog/browser-logs";
-import { usePrograms } from "../../context/ProgramContext";
+import {datadogLogs} from "@datadog/browser-logs";
+import {useProgramById} from "../../context/ProgramContext";
 
 export default function CreateRound() {
   datadogLogs.logger.info("====> Route: /round/create");
@@ -17,8 +17,7 @@ export default function CreateRound() {
   const [searchParams] = useSearchParams();
   const programId = searchParams.get("programId");
 
-  const { programs } = usePrograms();
-  const program = programs.find((program) => program.id === programId);
+  const { program } = useProgramById(programId);
 
   const navigate = useNavigate();
 

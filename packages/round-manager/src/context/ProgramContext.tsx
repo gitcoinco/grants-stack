@@ -11,7 +11,6 @@ export interface ProgramState {
   getProgramByIdError?: Error;
 }
 
-// TODO match value <-> name
 enum ActionType {
   SET_LOADING = "SET_LOADING",
   FINISH_LOADING = "FINISH_LOADING",
@@ -135,7 +134,6 @@ export const useProgramById = (
   isLoading: boolean;
   getProgramByIdError?: Error;
 } => {
-  // const {programs, isLoading, dispatch} = usePrograms()
   const context = useContext(ProgramContext);
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
@@ -144,8 +142,11 @@ export const useProgramById = (
   const { provider: walletProvider } = useWallet();
   useEffect(() => {
     if (id) {
-      // TODO(shavinac) - don't need to do a new fetch if program is already in context
-      fetchProgramsById(context.dispatch, id, walletProvider);
+      const existingProgram = context.state.programs.find((program) => program.id === id)
+
+      if (!existingProgram) {
+        fetchProgramsById(context.dispatch, id, walletProvider);
+      }
     }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 

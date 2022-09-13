@@ -36,6 +36,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: stubProgram.operatorWallets[0],
+      provider: { getNetwork: () => ({ chainId: "0x0"}) }
     });
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       data: [],
@@ -44,8 +45,8 @@ describe("<ViewProgram />", () => {
     });
   });
 
-  it("should display 404 when there no program is found", () => {
-    renderWithContext(<ViewProgram />, { programs: [] });
+  it("should display 404 when no program is found", () => {
+    renderWithContext(<ViewProgram />, { programs: [], isLoading: false });
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
