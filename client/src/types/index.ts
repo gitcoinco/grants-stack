@@ -63,6 +63,7 @@ export type InputProps = {
 export interface ProjectEvent {
   id: number;
   block: number;
+  createdAtBlock?: number;
 }
 
 export interface MetaPtr {

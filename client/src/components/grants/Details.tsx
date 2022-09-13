@@ -1,5 +1,5 @@
 import colors from "../../styles/colors";
-import { Metadata, FormInputs, Project } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -15,6 +15,7 @@ function Verified() {
 
 export default function Details({
   project,
+  createdAt,
   updatedAt,
   bannerImg,
   logoImg,
@@ -22,6 +23,7 @@ export default function Details({
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
+  createdAt: string;
   bannerImg: string | Blob;
   logoImg: string | Blob;
   preview?: boolean;
@@ -58,6 +60,18 @@ export default function Details({
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
       <div className="grid grid-cols-2 gap-4 pb-6 mb-6">
+        <div>
+          <p className="flex text-sm">
+            <Calendar color={colors["secondary-text"]} /> Created On:{" "}
+            <span className="ml-2">{createdAt}</span>
+          </p>
+        </div>
+        <div>
+          <p className="flex text-sm">
+            <Calendar color={colors["secondary-text"]} /> Last Edited:{" "}
+            <span className="ml-2">{updatedAt}</span>
+          </p>
+        </div>
         <a
           target="_blank"
           href={project?.website}
@@ -66,14 +80,7 @@ export default function Details({
         >
           <LinkIcon color={colors["secondary-text"]} />{" "}
           <span className="ml-1">{project?.website}</span>
-          {/* TODO add created at updated timestamp */}
         </a>
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />{" "}
-            <span className="ml-2">{updatedAt}</span>
-          </p>
-        </div>
         {project?.projectTwitter && (
           <div className="flex justify-start items-center">
             <img
