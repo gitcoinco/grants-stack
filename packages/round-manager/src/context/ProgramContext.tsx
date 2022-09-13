@@ -1,5 +1,11 @@
 import { Program } from "../features/api/types";
-import React, { createContext, useContext, useEffect, useReducer, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useWallet } from "../features/common/Auth";
 import { getProgramById, listPrograms } from "../features/api/program";
 import { Web3Provider } from "@ethersproject/providers";
@@ -13,12 +19,12 @@ export interface ProgramState {
 
 // TODO match value <-> name
 enum ActionType {
-  START_LOADING = "start-loading",
-  FINISH_LOADING = "finish-loading",
-  SET_PROGRAMS = "set-programs",
-  SET_LIST_PROGRAMS_ERROR = "set-list-programs-error",
-  ADD_PROGRAM = "add-program",
-  SET_GET_PROGRAM_ERROR = "SET_GET_PROGRAM_ERROR",
+  SET_LOADING = "SET_LOADING",
+  FINISH_LOADING = "FINISH_LOADING",
+  SET_PROGRAMS = "SET_PROGRAMS",
+  SET_ERROR_LIST_PROGRAMS = "SET_ERROR_LIST_PROGRAMS",
+  ADD_PROGRAM = "ADD_PROGRAM",
+  SET_ERROR_GET_PROGRAM = "SET_ERROR_GET_PROGRAM",
 }
 
 interface Action {
@@ -41,38 +47,54 @@ const fetchProgramsByAddress = async (
   address: string,
   walletProvider: Web3Provider
 ) => {
-  dispatch({ type: ActionType.START_LOADING });
+  dispatch({ type: ActionType.SET_LOADING, payload: true });
   listPrograms(address, walletProvider)
     .then((programs) =>
       dispatch({ type: ActionType.SET_PROGRAMS, payload: programs })
     )
     .catch((error) =>
-      dispatch({ type: ActionType.SET_LIST_PROGRAMS_ERROR, payload: error })
+      dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error })
     )
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
-const fetchProgramsById = async (dispatch: Dispatch, programId: string, walletProvider: any) => {
-  dispatch({type: ActionType.START_LOADING});
+const fetchProgramsById = async (
+  dispatch: Dispatch,
+  programId: string,
+  walletProvider: any
+) => {
+  dispatch({ type: ActionType.SET_LOADING, payload: true });
   getProgramById(programId, walletProvider)
-    .then(program => dispatch({type: ActionType.ADD_PROGRAM, payload: program}))
-    .catch(error => dispatch({type: ActionType.SET_GET_PROGRAM_ERROR, payload: error}))
-    .finally(() => dispatch({type: ActionType.FINISH_LOADING}))
+    .then((program) =>
+      dispatch({ type: ActionType.ADD_PROGRAM, payload: program })
+    )
+    .catch((error) =>
+      dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error })
+    )
+    .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
 const programReducer = (state: ProgramState, action: Action) => {
   switch (action.type) {
-    case ActionType.START_LOADING:
-      return { ...state, isLoading: true };
+    case ActionType.SET_LOADING:
+      return { ...state, isLoading: action.payload };
     case ActionType.FINISH_LOADING:
       return { ...state, isLoading: false };
     case ActionType.SET_PROGRAMS:
-      return { ...state, programs: action.payload ?? [], listProgramsError: undefined };
-    case ActionType.SET_LIST_PROGRAMS_ERROR:
+      return {
+        ...state,
+        programs: action.payload ?? [],
+        listProgramsError: undefined,
+      };
+    case ActionType.SET_ERROR_LIST_PROGRAMS:
       return { ...state, programs: [], listProgramsError: action.payload };
     case ActionType.ADD_PROGRAM:
-      return { ...state, programs: state.programs.concat(action.payload), getProgramByIdError: undefined }
-    case ActionType.SET_GET_PROGRAM_ERROR:
+      return {
+        ...state,
+        programs: state.programs.concat(action.payload),
+        getProgramByIdError: undefined,
+      };
+    case ActionType.SET_ERROR_GET_PROGRAM:
       return { ...state, getProgramByIdError: action.payload };
   }
   return state;
@@ -103,36 +125,42 @@ export const usePrograms = (): ProgramState & { dispatch: Dispatch } => {
     throw new Error("usePrograms must be used within a ProgramProvider");
   }
 
-  const { address, provider: walletProvider } = useWallet()
+  const { address, provider: walletProvider } = useWallet();
 
   useEffect(() => {
     fetchProgramsByAddress(context.dispatch, address, walletProvider);
-  }, [address, walletProvider])
+  }, [address, walletProvider]);
 
   return { ...context.state, dispatch: context.dispatch };
 };
 
-export const useProgramById = (id?: string): { program: Program | undefined, isLoading: boolean, getProgramByIdError?: Error } => {
+export const useProgramById = (
+  id?: string
+): {
+  program: Program | undefined;
+  isLoading: boolean;
+  getProgramByIdError?: Error;
+} => {
   // const {programs, isLoading, dispatch} = usePrograms()
-  const context = useContext(ProgramContext)
+  const context = useContext(ProgramContext);
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { provider: walletProvider } = useWallet()
+  const { provider: walletProvider } = useWallet();
   useEffect(() => {
     if (id) {
       // TODO(shavinac) - don't need to do a new fetch if program is already in context
-      fetchProgramsById(context.dispatch, id, walletProvider)
+      fetchProgramsById(context.dispatch, id, walletProvider);
     }
-  },[id, walletProvider])
+  }, [id, walletProvider]);
 
   return {
-    program: context.state.programs.find(program => program.id === id),
+    program: context.state.programs.find((program) => program.id === id),
     isLoading: context.state.isLoading,
-    getProgramByIdError: context.state.getProgramByIdError
-  }
-}
+    getProgramByIdError: context.state.getProgramByIdError,
+  };
+};
 
 // export const useProgramById = (provider: any, id?: string): { programToRender?: Program, programIsLoading: boolean } => {
 //   const [programToRender, setProgramToRender] = useState<Program>()

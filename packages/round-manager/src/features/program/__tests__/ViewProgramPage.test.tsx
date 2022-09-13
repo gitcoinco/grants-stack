@@ -81,6 +81,12 @@ describe("<ViewProgram />", () => {
     expect(wallets.length).toEqual(operatorWallets.length);
   });
 
+  it("displays a loading spinner if loading", () => {
+    renderWithContext(<ViewProgram />, { isLoading: true });
+
+    screen.getByTestId("loading-spinner");
+  });
+
   describe("when there are no rounds in the program", () => {
     beforeEach(() => {
       (useListRoundsQuery as jest.Mock).mockReturnValue({
