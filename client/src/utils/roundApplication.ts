@@ -12,6 +12,4 @@ const generateUniqueRoundApplicationID = (
   );
 };
 
-export default {
-  generateUniqueRoundApplicationID,
-};
+export default generateUniqueRoundApplicationID;

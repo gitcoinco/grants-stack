@@ -162,6 +162,11 @@ export interface RoundApplication {
   }>;
 }
 
+export interface SignedRoundApplication {
+  signature: string;
+  application: RoundApplication;
+}
+
 export type ProviderID = "ClearTextTwitter" | "ClearTextGithubOrg";
 
 export type ProjectCredentials = {
