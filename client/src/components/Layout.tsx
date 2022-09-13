@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useAccount } from "wagmi";
+import { useChainModal } from "@rainbow-me/rainbowkit";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
 import Toast from "./base/Toast";
 import Landing from "./grants/Landing";
 import Header from "./Header";
 import Globe from "./icons/Globe";
+import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 
 interface Props {
   children: JSX.Element;
@@ -15,6 +17,7 @@ interface Props {
 function Layout(ownProps: Props) {
   const [show, showToast] = useState(false);
   const { address: account } = useAccount();
+  const { openChainModal } = useChainModal();
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
@@ -28,6 +31,18 @@ function Layout(ownProps: Props) {
   useEffect(() => {
     showToast(props.web3Initialized);
   }, [props.web3Initialized]);
+
+  // check the network and show a modal
+  useEffect(() => {
+    function checkNetwork() {
+      if (props.web3Error === WEB3_BAD_CHAIN_ERROR) {
+        console.log("Wrong chain");
+        if (openChainModal) openChainModal();
+      }
+    }
+
+    checkNetwork();
+  }, [props.web3Error]);
 
   const { children } = ownProps;
   if (!props.web3Initialized || account === undefined) {
