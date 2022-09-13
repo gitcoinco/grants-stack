@@ -14,19 +14,19 @@ export const objectToSortedTuples = (obj: Obj): Result => {
   }
 
   const keys = Object.keys(obj);
-  const result: Result = [];
+  const initialResult: Result = [];
 
-  return keys.reduce((result, key) => {
+  return keys.reduce((res, key) => {
     const value = obj[key];
 
     if (value === undefined) {
-      return result;
+      return res;
     }
 
     const sorted = objectToSortedTuples(value);
-    result.push([key, sorted] as Result);
-    return result;
-  }, result);
+    res.push([key, sorted] as Result);
+    return res;
+  }, initialResult);
 };
 
 export const objectToDeterministicJSON = (obj: Obj): string => {
