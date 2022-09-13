@@ -1,6 +1,9 @@
-import {IPFSObject, MetadataPointer, ProjectStatus, GrantApplicationId} from "./types"
-
-
+import {
+  IPFSObject,
+  MetadataPointer,
+  ProjectStatus,
+  GrantApplicationId,
+} from "./types";
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -15,26 +18,25 @@ export enum ChainId {
  * @returns the subgraph endpoint
  */
 const getGraphQLEndpoint = async (chainId: ChainId) => {
-  let endpoint
+  let endpoint;
 
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`
-      break
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
+      break;
     }
     case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`
-      break
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`;
+      break;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
     }
   }
 
   return endpoint;
-}
-
+};
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -47,9 +49,8 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 export const graphql_fetch = async (
   query: string,
   chainId: ChainId,
-  variables: object = {},
+  variables: object = {}
 ) => {
-
   const endpoint = await getGraphQLEndpoint(chainId);
 
   return fetch(endpoint, {
@@ -57,16 +58,15 @@ export const graphql_fetch = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({query, variables})
-  }).then(resp => {
+    body: JSON.stringify({ query, variables }),
+  }).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }
 
-    return Promise.reject(resp)
-  })
-}
-
+    return Promise.reject(resp);
+  });
+};
 
 /**
  * Fetch data from IPFS
@@ -75,15 +75,16 @@ export const graphql_fetch = async (
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  return fetch(`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
+  return fetch(
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+  ).then((resp) => {
     if (resp.ok) {
-      return resp.json()
+      return resp.json();
     }
 
-    return Promise.reject(resp)
-  })
-}
-
+    return Promise.reject(resp);
+  });
+};
 
 /**
  * Check status of a grant application
@@ -91,19 +92,21 @@ export const fetchFromIPFS = (cid: string) => {
  * @param id - the application id
  * @param projectsMetaPtr - the pointer to a decentralized storage
  */
-export const checkGrantApplicationStatus = async (id: GrantApplicationId, projectsMetaPtr: MetadataPointer): Promise<ProjectStatus> => {
-  let reviewedApplications: any = []
+export const checkGrantApplicationStatus = async (
+  id: GrantApplicationId,
+  projectsMetaPtr: MetadataPointer
+): Promise<ProjectStatus> => {
+  let reviewedApplications: any = [];
 
   // read data from ipfs
   if (projectsMetaPtr) {
-    reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer)
+    reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer);
   }
 
-  const obj = reviewedApplications.find((o: any) => o.id === id)
+  const obj = reviewedApplications.find((o: any) => o.id === id);
 
-  return obj ? obj.status : "PENDING"
-}
-
+  return obj ? obj.status : "PENDING";
+};
 
 /**
  * Pin data to IPFS
@@ -113,74 +116,76 @@ export const checkGrantApplicationStatus = async (id: GrantApplicationId, projec
  * @returns the unique content identifier that points to the data
  */
 export const pinToIPFS = (obj: IPFSObject) => {
-
-  let params: any = {
+  const params: any = {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`
+      Authorization: `Bearer ${process.env.REACT_APP_PINATA_JWT}`,
     },
     body: {
       pinataMetadata: obj.metadata,
       pinataOptions: {
-        cidVersion: 1
-      }
-    }
-  }
+        cidVersion: 1,
+      },
+    },
+  };
 
   /* typeof Blob === 'object', so we need to check against instanceof */
   if (obj.content instanceof Blob) {
     // content is a blob
     const fd = new FormData();
-    fd.append("file", obj.content as Blob)
-    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
-    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
+    fd.append("file", obj.content as Blob);
+    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions));
+    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata));
 
-    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {...params, body: fd}
-    ).then(resp => {
+    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+      ...params,
+      body: fd,
+    }).then((resp) => {
       if (resp.ok) {
         return resp.json();
       }
 
-      return Promise.reject(resp)
-    })
+      return Promise.reject(resp);
+    });
   } else {
     // content is a JSON object
     return fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
       ...params,
       headers: {
         ...params.headers,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({...params.body, pinataContent: obj.content})
-    }).then(resp => {
+      body: JSON.stringify({ ...params.body, pinataContent: obj.content }),
+    }).then((resp) => {
       if (resp.ok) {
-        return resp.json()
+        return resp.json();
       }
 
-      return Promise.reject(resp)
-    })
+      return Promise.reject(resp);
+    });
   }
-}
-
+};
 
 /**
  * Converts camelCaseText to Title Case Text
  */
-const camelToTitle = (camelCase: string) => camelCase
-  .replace(/([A-Z])/g, (match) => ` ${match}`)
-  .replace(/^./, (match) => match.toUpperCase())
-  .trim()
+const camelToTitle = (camelCase: string) =>
+  camelCase
+    .replace(/([A-Z])/g, (match) => ` ${match}`)
+    .replace(/^./, (match) => match.toUpperCase())
+    .trim();
 
-export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
+export const abbreviateAddress = (address: string) =>
+  `${address.slice(0, 8)}...${address.slice(-4)}`;
 
 export interface SchemaQuestion {
-  id: number,
-  question: string,
-  type: "TEXT",
-  required: true,
-  info: string,
-  choices: [],
-  encrypted: boolean
+  id: number;
+  question: string;
+  type: "TEXT";
+  required: true;
+  info: string;
+  choices: [];
+  encrypted: boolean;
 }
 
 /**
@@ -189,15 +194,16 @@ export interface SchemaQuestion {
  * @param metadata - The metadata of a round application
  * @returns The application schema
  */
-export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> => {
-  if (!metadata.customQuestions) return []
+export const generateApplicationSchema = (
+  metadata: any
+): Array<SchemaQuestion> => {
+  if (!metadata.customQuestions) return [];
 
   // declare schema with default fields
-  let schema: Array<SchemaQuestion> = [];
+  const schema: Array<SchemaQuestion> = [];
 
   for (const key of Object.keys(metadata)) {
     if (typeof metadata[key] === "object") {
-
       for (const subKey of Object.keys(metadata[key])) {
         schema.push({
           id: schema.length,
@@ -206,10 +212,9 @@ export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> 
           required: true,
           info: metadata[key][subKey],
           choices: [],
-          encrypted: subKey === 'email'
-        })
+          encrypted: subKey === "email",
+        });
       }
-
     } else {
       schema.push({
         id: schema.length,
@@ -218,13 +223,13 @@ export const generateApplicationSchema = (metadata: any): Array<SchemaQuestion> 
         required: true,
         info: metadata[key],
         choices: [],
-        encrypted: key === 'email'
-      })
+        encrypted: key === "email",
+      });
     }
   }
 
-  return schema
-}
+  return schema;
+};
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;

@@ -12,7 +12,6 @@
     "compile": "yarn hh-compile",
     "test": "yarn hh-test && yarn rm-test",
 
-
     "// contracts script": "====== packages/contract specific ======",
     "hh-test": "cd packages/contracts; yarn run test",
     "hh-compile": "cd packages/contracts; yarn compile",
