@@ -1,0 +1,29 @@
+name: package/round-explorer - Build -> Test
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Install Dependencies
+        run: |
+          yarn install
+          cd packages/round-explorer
+          yarn install
+
+      - name: Build Round Explorer
+        run: |
+          yarn re-build
+          
+      - name: Test Round Explorer
+        run: |
+          yarn re-test
