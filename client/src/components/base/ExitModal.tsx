@@ -1,3 +1,6 @@
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { formReset } from "../../actions/projectForm";
 import { slugs } from "../../routes";
 import colors from "../../styles/colors";
 import Shield from "../icons/Shield";
@@ -10,6 +13,13 @@ interface ExitProps {
 }
 
 export default function ExitModal({ modalOpen, toggleModal }: ExitProps) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const exitForm = () => {
+    navigate(slugs.grants);
+    dispatch(formReset());
+  };
+
   return (
     <BaseModal isOpen={modalOpen} onClose={() => toggleModal(false)}>
       <>
@@ -32,7 +42,7 @@ export default function ExitModal({ modalOpen, toggleModal }: ExitProps) {
           >
             Go Back
           </Button>
-          <Button path={slugs.grants} variant={ButtonVariants.danger}>
+          <Button onClick={exitForm} variant={ButtonVariants.danger}>
             Yes, Exit
           </Button>
         </div>

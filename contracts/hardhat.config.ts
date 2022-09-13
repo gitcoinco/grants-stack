@@ -35,9 +35,6 @@ const config: HardhatUserConfig = {
     },
     optimism: {
       url: process.env.OPTIMISM_URL || "",
-      accounts: {
-        mnemonic: process.env.MNEMONIC,
-      },
     },
     optimisticKovan: {
       url: process.env.OPTIMISTIC_KOVAN_URL || "",

@@ -85,7 +85,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  const signer = global.web3Provider!.getSigner();
+  const { signer } = global;
   const contract = new ethers.Contract(address, RoundABI, signer);
   const pinataClient = new PinataClient();
 
@@ -226,6 +226,11 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   try {
     const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
     applicationMetadata = JSON.parse(resp);
+
+    if (applicationMetadata.applicationSchema === undefined) {
+      applicationMetadata.applicationSchema =
+        applicationMetadata.application_schema;
+    }
 
     projectQuestionId = applicationMetadata.applicationSchema.length;
     applicationMetadata.applicationSchema.unshift({

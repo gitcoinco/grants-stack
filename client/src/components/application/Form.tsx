@@ -128,7 +128,7 @@ export default function Form({
                 <TextInput
                   key={input.id}
                   label={input.question}
-                  info={input.info}
+                  placeholder={input.info}
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
@@ -140,7 +140,7 @@ export default function Form({
                 <TextArea
                   key={input.id}
                   label={input.question}
-                  info={input.info}
+                  placeholder={input.info}
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
@@ -157,7 +157,6 @@ export default function Form({
                     formInputs[`${input.id}`] ??
                     (input.choices && input.choices[0])
                   }
-                  info={input.info}
                   choices={input.choices}
                   disabled={preview}
                   changeHandler={handleInput}
@@ -179,6 +178,7 @@ export default function Form({
                 <TextInput
                   key={input.id}
                   label={input.question}
+                  placeholder={input.info}
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}

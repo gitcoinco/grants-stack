@@ -13,7 +13,7 @@
 ### addProjectOwner
 
 ```solidity
-function addProjectOwner(uint96 projectID, address newOwner) external nonpayable
+function addProjectOwner(uint256 projectID, address newOwner) external nonpayable
 ```
 
 Associate a new owner with a project
@@ -24,7 +24,7 @@ Associate a new owner with a project
 
 | Name | Type | Description |
 |---|---|---|
-| projectID | uint96 | ID of previously created project |
+| projectID | uint256 | ID of previously created project |
 | newOwner | address | address of new project owner |
 
 ### createProject
@@ -46,7 +46,7 @@ function createProject(MetaPtr metadata) external nonpayable
 ### getProjectOwners
 
 ```solidity
-function getProjectOwners(uint96 projectID) external view returns (address[])
+function getProjectOwners(uint256 projectID) external view returns (address[])
 ```
 
 Retrieve list of project owners 
@@ -57,7 +57,7 @@ Retrieve list of project owners
 
 | Name | Type | Description |
 |---|---|---|
-| projectID | uint96 | ID of project  |
+| projectID | uint256 | ID of project  |
 
 #### Returns
 
@@ -79,7 +79,7 @@ Initializes the contract after an upgrade
 ### projectOwnersCount
 
 ```solidity
-function projectOwnersCount(uint96 projectID) external view returns (uint256)
+function projectOwnersCount(uint256 projectID) external view returns (uint256)
 ```
 
 Retrieve count of existing project owners
@@ -90,7 +90,7 @@ Retrieve count of existing project owners
 
 | Name | Type | Description |
 |---|---|---|
-| projectID | uint96 | ID of project  |
+| projectID | uint256 | ID of project  |
 
 #### Returns
 
@@ -101,7 +101,7 @@ Retrieve count of existing project owners
 ### projects
 
 ```solidity
-function projects(uint96) external view returns (uint96 id, struct MetaPtr metadata)
+function projects(uint256) external view returns (uint256 id, struct MetaPtr metadata)
 ```
 
 
@@ -112,19 +112,19 @@ function projects(uint96) external view returns (uint96 id, struct MetaPtr metad
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint96 | undefined |
+| _0 | uint256 | undefined |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| id | uint96 | undefined |
+| id | uint256 | undefined |
 | metadata | MetaPtr | undefined |
 
 ### projectsCount
 
 ```solidity
-function projectsCount() external view returns (uint96)
+function projectsCount() external view returns (uint256)
 ```
 
 
@@ -136,12 +136,12 @@ function projectsCount() external view returns (uint96)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint96 | undefined |
+| _0 | uint256 | undefined |
 
 ### projectsOwners
 
 ```solidity
-function projectsOwners(uint96) external view returns (uint256 count)
+function projectsOwners(uint256) external view returns (uint256 count)
 ```
 
 
@@ -152,7 +152,7 @@ function projectsOwners(uint96) external view returns (uint256 count)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint96 | undefined |
+| _0 | uint256 | undefined |
 
 #### Returns
 
@@ -163,7 +163,7 @@ function projectsOwners(uint96) external view returns (uint256 count)
 ### removeProjectOwner
 
 ```solidity
-function removeProjectOwner(uint96 projectID, address prevOwner, address owner) external nonpayable
+function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external nonpayable
 ```
 
 Disassociate an existing owner from a project
@@ -174,14 +174,14 @@ Disassociate an existing owner from a project
 
 | Name | Type | Description |
 |---|---|---|
-| projectID | uint96 | ID of previously created project |
+| projectID | uint256 | ID of previously created project |
 | prevOwner | address | Address of previous owner in OwnerList |
 | owner | address | Address of new Owner |
 
 ### updateProjectMetadata
 
 ```solidity
-function updateProjectMetadata(uint96 projectID, MetaPtr metadata) external nonpayable
+function updateProjectMetadata(uint256 projectID, MetaPtr metadata) external nonpayable
 ```
 
 
@@ -192,7 +192,7 @@ function updateProjectMetadata(uint96 projectID, MetaPtr metadata) external nonp
 
 | Name | Type | Description |
 |---|---|---|
-| projectID | uint96 | undefined |
+| projectID | uint256 | undefined |
 | metadata | MetaPtr | undefined |
 
 
@@ -218,7 +218,7 @@ event Initialized(uint8 version)
 ### MetadataUpdated
 
 ```solidity
-event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr)
+event MetadataUpdated(uint256 indexed projectID, MetaPtr metaPtr)
 ```
 
 
@@ -229,13 +229,13 @@ event MetadataUpdated(uint96 indexed projectID, MetaPtr metaPtr)
 
 | Name | Type | Description |
 |---|---|---|
-| projectID `indexed` | uint96 | undefined |
+| projectID `indexed` | uint256 | undefined |
 | metaPtr  | MetaPtr | undefined |
 
 ### OwnerAdded
 
 ```solidity
-event OwnerAdded(address owner, uint96 projectID)
+event OwnerAdded(uint256 indexed projectID, address indexed owner)
 ```
 
 
@@ -246,13 +246,13 @@ event OwnerAdded(address owner, uint96 projectID)
 
 | Name | Type | Description |
 |---|---|---|
-| owner  | address | undefined |
-| projectID  | uint96 | undefined |
+| projectID `indexed` | uint256 | undefined |
+| owner `indexed` | address | undefined |
 
 ### OwnerRemoved
 
 ```solidity
-event OwnerRemoved(address owner, uint96 projectID)
+event OwnerRemoved(uint256 indexed projectID, address indexed owner)
 ```
 
 
@@ -263,13 +263,13 @@ event OwnerRemoved(address owner, uint96 projectID)
 
 | Name | Type | Description |
 |---|---|---|
-| owner  | address | undefined |
-| projectID  | uint96 | undefined |
+| projectID `indexed` | uint256 | undefined |
+| owner `indexed` | address | undefined |
 
 ### ProjectCreated
 
 ```solidity
-event ProjectCreated(address indexed owner, uint96 projectID)
+event ProjectCreated(uint256 indexed projectID, address indexed owner)
 ```
 
 
@@ -280,8 +280,8 @@ event ProjectCreated(address indexed owner, uint96 projectID)
 
 | Name | Type | Description |
 |---|---|---|
+| projectID `indexed` | uint256 | undefined |
 | owner `indexed` | address | undefined |
-| projectID  | uint96 | undefined |
 
 
 

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 export enum ButtonVariants {
   primary = "primary",
+  secondary = "secondary",
   outline = "outline",
   danger = "danger",
   outlineDanger = "danger-outline",

@@ -1,13 +1,7 @@
 import { object, string } from "yup";
-import { RoundApplicationQuestion } from "../../types";
+import { FormInputs, RoundApplicationQuestion } from "../../types";
 
-export interface FormSchema {
-  title: string;
-  description: string;
-  website: string;
-}
-
-export async function validateProjectForm(inputs: FormSchema) {
+export async function validateProjectForm(inputs: FormInputs) {
   const schema = object({
     title: string().required("Project Name is required"),
     description: string().required("Project Description is required"),

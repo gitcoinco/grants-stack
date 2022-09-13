@@ -13,6 +13,7 @@ import {
   RoundApplicationState,
   roundApplicationReducer,
 } from "./roundApplication";
+import { ProjectFormState, projectFormReducer } from "./projectForm";
 
 export interface RootState {
   router: ReduxRouterState;
@@ -22,6 +23,7 @@ export interface RootState {
   grantsMetadata: GrantsMetadataState;
   rounds: RoundsState;
   roundApplication: RoundApplicationState;
+  projectForm: ProjectFormState;
 }
 
 export const createRootReducer = () =>
@@ -33,4 +35,5 @@ export const createRootReducer = () =>
     grantsMetadata: grantsMetadataReducer,
     rounds: roundsReducer,
     roundApplication: roundApplicationReducer,
+    projectForm: projectFormReducer,
   });

@@ -16,3 +16,6 @@ button.base-btn:disabled {
 .base-btn.danger-outline {
   @apply text-danger-text border-solid border border-tertiary-text
 }
+.base-btn.secondary {
+  @apply text-primary-background bg-primary-background/25
+}

@@ -10,6 +10,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import colors from "../../styles/colors";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -20,12 +21,18 @@ function Apply() {
   const navigate = useNavigate();
 
   const [modalOpen, toggleModal] = useState(false);
+  const [, setRoundToApply] = useLocalStorage("roundToApply", null);
+  const [, setToggleRoundApplicationModal] = useLocalStorage(
+    "toggleRoundApplicationModal",
+    false
+  );
+
+  const { roundId, chainId } = params;
 
   const props = useSelector((state: RootState) => {
-    const { id } = params;
-    const roundState = state.rounds[id!];
+    const roundState = state.rounds[roundId!];
     const roundStatus = roundState ? roundState.status : RoundStatus.Undefined;
-    const applicationState = state.roundApplication[id!];
+    const applicationState = state.roundApplication[roundId!];
     const applicationStatus: ApplicationStatus = applicationState
       ? applicationState.status
       : ApplicationStatus.Undefined;
@@ -38,7 +45,6 @@ function Apply() {
       : undefined;
 
     return {
-      id,
       roundState,
       roundStatus,
       roundError,
@@ -50,10 +56,21 @@ function Apply() {
   }, shallowEqual);
 
   useEffect(() => {
-    if (props.id !== undefined && props.round === undefined) {
-      navigate(roundPath(props.id));
+    if (
+      roundId !== undefined &&
+      chainId !== undefined &&
+      props.round === undefined
+    ) {
+      navigate(roundPath(chainId, roundId));
     }
-  }, [dispatch, props.id, props.round]);
+  }, [dispatch, roundId, props.round]);
+
+  useEffect(() => {
+    if (roundId) {
+      setRoundToApply(`${chainId}:${roundId}`);
+      setToggleRoundApplicationModal(true);
+    }
+  }, [roundId]);
 
   if (props.roundStatus === RoundStatus.Error) {
     return <div>Error loading round data: {props.roundError}</div>;

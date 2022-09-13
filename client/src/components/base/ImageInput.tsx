@@ -1,44 +1,34 @@
 import { useRef, useState } from "react";
+import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
-import { Metadata } from "../../types";
-import { getProjectImage, ImgTypes } from "../../utils/components";
 import CloudUpload from "../icons/CloudUpload";
 import Toast from "./Toast";
+import ImageCrop from "./images/ImageCrop";
 
-type Dimensions = {
+export type Dimensions = {
   width: number;
   height: number;
-};
-
-const validateDimensions = (
-  image: HTMLImageElement,
-  dimensions: Dimensions
-) => {
-  const { naturalHeight, naturalWidth } = image;
-
-  return (
-    naturalHeight === dimensions.height && naturalWidth === dimensions.width
-  );
 };
 
 export default function ImageInput({
   label,
   dimensions,
-  currentProject,
+  existingImg,
   circle,
+  info,
   imgHandler,
 }: {
   label: string;
-  dimensions: {
-    width: number;
-    height: number;
-  };
-  currentProject?: Metadata;
+  dimensions: Dimensions;
+  existingImg?: string;
   circle?: Boolean;
+  info?: string;
   imgHandler: (file: Blob) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
-  const [tempImg, setTempImg] = useState<string | undefined>();
+  const [imgSrc, setImgSrc] = useState<string | undefined>();
+  const [showCrop, setShowCrop] = useState(false);
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | undefined>();
   const [validation, setValidation] = useState({
     error: false,
     msg: "",
@@ -71,18 +61,10 @@ export default function ImageInput({
     e.stopPropagation();
 
     const files = getFiles(e);
-    if (files) {
-      if (files.length === 0) {
-        return;
-      }
-      const file = files[0];
-      // remove validation message
-      setValidation({
-        error: false,
-        msg: "",
-      });
+
+    if (files && files.length > 0) {
       // ensure image is < 2mb
-      if (file.size > 2000000) {
+      if (files[0].size > 2000000) {
         setValidation({
           error: true,
           msg: "Image must be less than 2mb",
@@ -91,35 +73,32 @@ export default function ImageInput({
       }
 
       const reader = new FileReader();
-      reader.onload = () => {
-        const img: HTMLImageElement = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-          if (!validateDimensions(img, dimensions)) {
-            setValidation({
-              error: true,
-              msg: `Image must be ${dimensions.width}px x ${dimensions.height}px`,
-            });
-            setTempImg(undefined);
-          } else {
-            setValidation({
-              error: false,
-              msg: "",
-            });
-            imgHandler(file);
-            setTempImg(URL.createObjectURL(file));
-          }
-        };
-      };
-
-      reader.readAsDataURL(file);
+      reader.addEventListener("load", () => {
+        if (reader.result) {
+          setImgSrc(reader.result.toString() || "");
+          setShowCrop(true);
+        }
+      });
+      reader.readAsDataURL(files[0]);
     }
   };
 
+  const blobExistingImg = async (imgUrl: string) => {
+    const img = await fetch(imgUrl);
+    const blob = await img.blob();
+    // Emit blob so that if image is not updated it will still be saved on the update
+    imgHandler(blob);
+  };
+
   const currentImg = () => {
-    if (tempImg) return tempImg;
-    if (!currentProject) return "";
-    return getProjectImage(false, ImgTypes.bannerImg, currentProject);
+    if (!existingImg) return "";
+
+    // Fetch existing img path from Pinata for display
+    const pinataClient = new PinataClient();
+    const imgUrl = pinataClient.fileURL(existingImg);
+
+    blobExistingImg(imgUrl);
+    return imgUrl;
   };
 
   const onButtonClick = () => {
@@ -131,7 +110,10 @@ export default function ImageInput({
   return (
     <>
       <div className="mt-6 w-full">
-        <label htmlFor={label}>{label}</label>
+        <label className="text-sm" htmlFor={label}>
+          {label}
+        </label>
+        <legend>{info}</legend>
         <div className="flex">
           <input
             ref={fileInput}
@@ -160,7 +142,14 @@ export default function ImageInput({
             </button>
           )}
           <div className="w-1/3">
-            {currentImg().length > 0 && (
+            {canvas && (
+              <img
+                className={`max-h-28 ${circle && "rounded-full"}`}
+                src={canvas.toDataURL("image/jpeg", 1)}
+                alt="Project Logo Preview"
+              />
+            )}
+            {currentImg() && canvas === undefined && (
               <img
                 className={`max-h-28 ${circle && "rounded-full"}`}
                 src={currentImg()}
@@ -185,6 +174,16 @@ export default function ImageInput({
           {validation.msg}
         </p>
       </Toast>
+      <ImageCrop
+        isOpen={showCrop}
+        imgSrc={imgSrc ?? ""}
+        dimensions={dimensions}
+        onClose={() => setShowCrop(false)}
+        saveCrop={(imgUrl) => {
+          setCanvas(imgUrl);
+          imgUrl.toBlob((blob) => blob && imgHandler(blob));
+        }}
+      />
     </>
   );
 }

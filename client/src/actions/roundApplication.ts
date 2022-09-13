@@ -3,11 +3,14 @@ import { ethers } from "ethers";
 import { Status } from "../reducers/roundApplication";
 import { RootState } from "../reducers";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { Metadata, Project } from "../types";
+import { Project } from "../types";
 import PinataClient from "../services/pinata";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
+import { chains } from "../contracts/deployments";
+import utils from "../utils/roundApplication";
 
+// FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
 interface RoundApplicationLoadingAction {
   type: typeof ROUND_APPLICATION_LOADING;
@@ -22,16 +25,32 @@ interface RoundApplicationErrorAction {
   error: string;
 }
 
+// FIXME: rename to ROUND_APPLICATION_APPLIED
 export const ROUND_APPLICATION_LOADED = "ROUND_APPLICATION_LOADED";
 interface RoundApplicationLoadedAction {
   type: typeof ROUND_APPLICATION_LOADED;
   roundAddress: string;
 }
 
+export const ROUND_APPLICATION_FOUND = "ROUND_APPLICATION_FOUND";
+interface RoundApplicationFoundAction {
+  type: typeof ROUND_APPLICATION_FOUND;
+  roundAddress: string;
+  projectID: number;
+}
+
+export const ROUND_APPLICATION_NOT_FOUND = "ROUND_APPLICATION_NOT_FOUND";
+interface RoundApplicationNotFoundAction {
+  type: typeof ROUND_APPLICATION_NOT_FOUND;
+  roundAddress: string;
+}
+
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
-  | RoundApplicationLoadedAction;
+  | RoundApplicationLoadedAction
+  | RoundApplicationFoundAction
+  | RoundApplicationNotFoundAction;
 
 const applicationError = (
   roundAddress: string,
@@ -75,7 +94,7 @@ export const submitApplication =
     }
 
     const projectId = formInputs[projectQuestionId];
-    const projectMetadata: Metadata | undefined =
+    const projectMetadata: any =
       state.grantsMetadata[Number(projectId)].metadata;
     if (projectMetadata === undefined) {
       dispatch(
@@ -92,24 +111,31 @@ export const submitApplication =
       website: projectMetadata.website,
       bannerImg: projectMetadata.bannerImg!,
       logoImg: projectMetadata.logoImg!,
-      metaPtr: {
-        protocol: String(projectMetadata.protocol),
-        pointer: projectMetadata.pointer,
-      },
+      credentials: projectMetadata.credentials,
+      metaPtr: projectMetadata.metaPtr,
     };
 
     // FIXME: this is temporarily until the round manager adds the encrypted field
     roundApplicationMetadata.applicationSchema.forEach((question) => {
-      if (/email/i.test(question.question.toLowerCase())) {
+      if (/email|cool/i.test(question.question.toLowerCase())) {
         // eslint-disable-next-line
         question.encrypted = true;
       }
     });
 
+    const { chainID } = state.web3;
+    const chainName = chains[chainID!];
+    if (chainID === undefined) {
+      dispatch(applicationError(roundAddress, "cannot find chain name"));
+      return;
+    }
+
     const builder = new RoundApplicationBuilder(
       true,
       project,
-      roundApplicationMetadata
+      roundApplicationMetadata,
+      roundAddress,
+      chainName
     );
     const application = await builder.build(roundAddress, formInputs);
 
@@ -132,12 +158,13 @@ export const submitApplication =
       status: Status.SendingTx,
     });
 
-    const signer = global.web3Provider!.getSigner();
+    const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-
-    const projectUniqueID = ethers.utils.formatBytes32String(
-      projectId.toString()
+    const projectUniqueID = utils.generateUniqueRoundApplicationID(
+      chainID,
+      Number(projectId)
     );
+
     try {
       await contract.applyToRound(projectUniqueID, metaPtr);
       dispatch({
@@ -151,5 +178,47 @@ export const submitApplication =
         roundAddress,
         error: "error calling applyToRound",
       });
+    }
+  };
+
+export const checkRoundApplications =
+  (chainID: number, roundAddress: string, projectIDs: Array<number>) =>
+  async (dispatch: Dispatch) => {
+    const { signer } = global;
+    const contract = new ethers.Contract(roundAddress, RoundABI, signer);
+    const uniqueIDsToIDs = Object.fromEntries(
+      projectIDs.map((id: number) => [
+        utils.generateUniqueRoundApplicationID(chainID, id),
+        id,
+      ])
+    );
+
+    const applicationFilter = contract.filters.NewProjectApplication(
+      Object.keys(uniqueIDsToIDs)
+    );
+
+    let applicationEvents = [];
+    try {
+      applicationEvents = await contract.queryFilter(applicationFilter);
+      applicationEvents.forEach((event) => {
+        const projectID = uniqueIDsToIDs[event?.args?.project];
+        if (projectID !== undefined) {
+          dispatch({
+            type: ROUND_APPLICATION_FOUND,
+            roundAddress,
+            projectID,
+          });
+        }
+      });
+    } catch (e) {
+      // FIXME: dispatch an error?
+      console.error("error getting round applications");
+    } finally {
+      if (applicationEvents.length === 0) {
+        dispatch({
+          type: ROUND_APPLICATION_NOT_FOUND,
+          roundAddress,
+        });
+      }
     }
   };

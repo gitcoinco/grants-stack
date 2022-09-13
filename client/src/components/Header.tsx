@@ -1,34 +1,14 @@
-import React from "react";
+import { Button } from "@chakra-ui/react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState } from "../reducers";
-import { initializeWeb3 } from "../actions/web3";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
-import Button, { ButtonVariants } from "./base/Button";
-import Plus from "./icons/Plus";
 import colors from "../styles/colors";
-import { shortAddress } from "../utils/wallet";
-import { ChainLogos, Blockchain } from "./icons/Blockchain";
 import Hamburger from "./icons/Hamburger";
+import Plus from "./icons/Plus";
 
 export default function Header() {
-  const [navbarOpen, setNavbarOpen] = React.useState(false);
-
-  const dispatch = useDispatch();
-  const props = useSelector(
-    (state: RootState) => ({
-      web3Initialized: state.web3.initialized,
-      web3Error: state.web3.error,
-      chainID: state.web3.chainID,
-      account: state.web3.account,
-    }),
-    shallowEqual
-  );
-
-  const connectHandler = (e: React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(initializeWeb3());
-  };
+  const [navbarOpen, setNavbarOpen] = useState(false);
 
   return (
     <header className="flex items-center justify-between px-4 sm:px-2 mb-3 text-primary-text w-full border-0 sm:border-b container mx-auto h-1/8">
@@ -62,22 +42,14 @@ export default function Header() {
         >
           <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
             <Link to={newGrantPath()}>
-              <Button variant={ButtonVariants.primary}>
+              <Button colorScheme="purple" className="mt-2 mr-2 mb-2">
                 <i className="icon">
                   <Plus color={colors["quaternary-text"]} />
                 </i>
                 New Project
               </Button>
             </Link>
-            <Button
-              variant={ButtonVariants.outline}
-              onClick={() => connectHandler}
-            >
-              <i className="icon">
-                <Blockchain chain={ChainLogos.ETH} />
-              </i>
-              {props.account ? shortAddress(props.account) : "Connect Wallet"}
-            </Button>
+            <ConnectButton />
           </div>
         </div>
       </div>

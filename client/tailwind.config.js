@@ -16,6 +16,7 @@ module.exports = {
         "tertiary-text": "#E2E0E7",
         "quaternary-text": "#FFFFFF",
         "danger-text": "#D03E63",
+        "green-text": "#11BC92"
       }
     }
   },

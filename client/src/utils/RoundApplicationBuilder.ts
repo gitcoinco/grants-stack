@@ -1,7 +1,5 @@
+import Lit from "../services/lit";
 import { RoundApplicationMetadata, Project, RoundApplication } from "../types";
-
-// eslint-disable-next-line
-const TEST_PUB_KEY = `{"alg":"RSA-OAEP-256","e":"AQAB","ext":true,"key_ops":["encrypt"],"kty":"RSA","n":"rbdXxZMJb7LCvaH6ZCzkI8VpkdZEMu46-t4-vk8WKtk-pQ02JivvGY93v3TT7K1UQxhjpmSvYuCofp0mXT32rMf83p7zxo6pN2dwxDAXbEvQSHmXPrvmi1xvfl_agAJvMQPKDi2tiHYdRlzAllaBGWSW1rH91ClSM63tTUyBl6d_KOsifkU21_0w4OwIk6OYCb1CJj_mFhbUKKlrz-hAvJiySWVyTrCOiILY5ZzvFZ6dsCKpLDRqQHD7wxg5tLERvRfEEWrA2kBXioRN4YJUAGSS1UPnDAGlukVFL--G2-BNbhENwFgc3J5sR4ZYFbSA4SeY1FjkMbhRqJpbc_Z2nP18bb-tngm7E08908ubq7jaPPj_7FP_1JJ6qXzOmbfAST04uVnRLURdf0yV0KYaovIDVBF8jKNm9yVvXqlz4AlNK5kHCsWuGvNMW6O886CIOWo1pjpXO2itnSlnkjUdlxtUf2GmwPVUfCwAfnIdynkyrgU8Zk5OkVqCy9QQuiPvyg1leMIB2iFxhzF8AM2migr1F-vP5l7BwTksHvemeQ3AXx9VMBp55CryG2112sLXkOsSqUmWOUvy7mjRz9ns9JTVj56NThd11KC-yfh2fa4fiHl71aW49noRYZOrMQl_9YZyqyoDV7ltQAUC7-0x32WuVV_UhC4u4XyBwI4snXs"}`;
 
 export default class RoundApplicationBuilder {
   enableEncryption: boolean;
@@ -10,42 +8,63 @@ export default class RoundApplicationBuilder {
 
   private ram: RoundApplicationMetadata;
 
+  private roundAddress: string;
+
+  private chainName: string;
+
+  private lit: Lit;
+
   constructor(
     enableEncryption: boolean,
     project: Project,
-    ram: RoundApplicationMetadata
+    ram: RoundApplicationMetadata,
+    roundAddress: string,
+    chainName: string
   ) {
     this.enableEncryption = enableEncryption;
     this.project = project;
     this.ram = ram;
-  }
+    this.roundAddress = roundAddress;
+    this.chainName = chainName;
 
-  async encryptAnswer(answer: string): Promise<string> {
-    if (!this.enableEncryption) {
-      return answer;
-    }
-
-    const algorithm = {
-      name: "RSA-OAEP",
-      modulusLength: 4096,
-      publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256",
+    const litInit = {
+      chain: chainName,
+      contract: this.roundAddress,
     };
 
-    const pubKey = await crypto.subtle.importKey(
-      "jwk",
-      JSON.parse(TEST_PUB_KEY),
-      algorithm,
-      true,
-      ["encrypt"]
-    );
-    const encoded = new TextEncoder().encode(answer);
-    const encrypted = await crypto.subtle.encrypt(algorithm, pubKey, encoded);
-    const encryptedBase64 = btoa(
-      String.fromCharCode(...Array.from(new Uint8Array(encrypted)))
-    );
+    this.lit = new Lit(litInit);
+  }
 
-    return encryptedBase64;
+  async encryptAnswer(answer: string) {
+    if (!this.enableEncryption) {
+      return {
+        ciphertext: answer,
+        encryptedSymmetricKey: "",
+      };
+    }
+
+    const { encryptedString, encryptedSymmetricKey } =
+      await this.lit.encryptString(answer);
+    const encryptedStringText = await this.blobToDataString(encryptedString);
+
+    return {
+      ciphertext: encryptedStringText,
+      encryptedSymmetricKey,
+    };
+  }
+
+  async blobToDataString(blob: Blob): Promise<string> {
+    const fr = new FileReader();
+    fr.readAsDataURL(blob);
+    return new Promise<string>((resolve, reject) => {
+      fr.addEventListener("loadend", () => {
+        const { result } = fr;
+        if (result !== null && typeof result === "string") {
+          resolve(result.split(",")[1]);
+        }
+        reject(new Error("cannot read blob data"));
+      });
+    });
   }
 
   async build(
@@ -68,16 +87,23 @@ export default class RoundApplicationBuilder {
           break;
         default:
           // eslint-disable-next-line
-          let answer = formInputs[question.id];
+          let answer;
+          // eslint-disable-next-line
+          let encryptedAnswer;
           if (question.encrypted) {
             // eslint-disable-next-line
-            answer = await this.encryptAnswer(answer);
+            encryptedAnswer = await this.encryptAnswer(
+              formInputs[question.id] ?? ""
+            );
+          } else {
+            answer = formInputs[question.id];
           }
 
           answers.push({
             questionId: question.id,
             question: question.question,
             answer,
+            encryptedAnswer,
           });
       }
     }

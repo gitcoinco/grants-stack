@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
+import { useAccount } from "wagmi";
 import { RootState } from "../reducers";
+import colors from "../styles/colors";
+import Toast from "./base/Toast";
 import Landing from "./grants/Landing";
 import Header from "./Header";
-import Toast from "./base/Toast";
 import Globe from "./icons/Globe";
-import colors from "../styles/colors";
 
 interface Props {
   children: JSX.Element;
@@ -13,13 +14,13 @@ interface Props {
 
 function Layout(ownProps: Props) {
   const [show, showToast] = useState(false);
+  const { address: account } = useAccount();
   const props = useSelector(
     (state: RootState) => ({
       web3Initializing: state.web3.initializing,
       web3Initialized: state.web3.initialized,
       web3Error: state.web3.error,
       chainID: state.web3.chainID,
-      account: state.web3.account,
     }),
     shallowEqual
   );
@@ -29,7 +30,7 @@ function Layout(ownProps: Props) {
   }, [props.web3Initialized]);
 
   const { children } = ownProps;
-  if (!props.web3Initialized || props.account === undefined) {
+  if (!props.web3Initialized || account === undefined) {
     return <Landing />;
   }
 
@@ -37,7 +38,7 @@ function Layout(ownProps: Props) {
     <div className="flex flex-col min-h-screen relative">
       <Header />
       <main className="container mx-auto dark:bg-primary-background grow relative">
-        {!props.web3Error && props.web3Initialized && props.chainID && children}
+        {props.web3Error === undefined && children}
         {props.web3Error && <p>{props.web3Error}</p>}
       </main>
       <Toast fadeOut show={show} onClose={() => showToast(false)}>
