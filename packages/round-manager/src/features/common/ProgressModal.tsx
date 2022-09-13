@@ -29,8 +29,6 @@ export default function ProgressModal({
   setIsOpen,
   heading = "Processing...",
   subheading = "Please hold while your operation is in progress.",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  redirectUrl = "",
   ...props
 }: ProgressModalProps) {
   return (

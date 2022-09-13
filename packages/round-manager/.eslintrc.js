@@ -19,6 +19,7 @@ module.exports = {
       files: ["**/*.test.{ts,tsx}"],
       rules: {
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
       },
     },
   ],
