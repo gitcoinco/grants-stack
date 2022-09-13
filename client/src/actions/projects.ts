@@ -32,7 +32,7 @@ const projectsLoading = () => ({
   type: PROJECTS_LOADING,
 });
 
-const projectsLoaded = (projects: Event[]) => ({
+const projectsLoaded = (projects: ProjectEvent[]) => ({
   type: PROJECTS_LOADED,
   projects,
 });
@@ -44,7 +44,7 @@ const projectsUnload = () => ({
 export function aggregateEvents(
   created: ProjectEvent[],
   updated: ProjectEvent[]
-): Event[] {
+): ProjectEvent[] {
   const result = [...created, ...updated].reduce(
     (prev: any, cur: ProjectEvent) => {
       const value = prev;

@@ -4,7 +4,7 @@ import { chains } from "../contracts/deployments";
 
 const chainIds = Object.keys(chains);
 
-enum Web3Type {
+export enum Web3Type {
   Generic,
   Remote,
   Status,

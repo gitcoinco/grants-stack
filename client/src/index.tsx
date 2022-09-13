@@ -1,23 +1,12 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import {
-  createRouterMiddleware,
-  ReduxRouter,
-} from "@lagunovsky/redux-react-router";
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import Datadog from "react-datadog";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Route, Routes, Navigate } from "react-router";
-import {
-  applyMiddleware,
-  createStore,
-  Dispatch,
-  Middleware,
-  MiddlewareAPI,
-} from "redux";
-import thunkMiddleware from "redux-thunk";
 import { WagmiConfig } from "wagmi";
+import Datadog from "./utils/datadog";
 import "./browserPatches";
 import ErrorBoundary from "./components/ErrorBoundary";
 import EditProject from "./components/grants/Edit";
@@ -28,52 +17,20 @@ import Layout from "./components/Layout";
 import RoundApply from "./components/rounds/Apply";
 import RoundShow from "./components/rounds/Show";
 import history from "./history";
-import { createRootReducer } from "./reducers";
 import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
 import "./styles/index.css";
 import wagmiClient, { chains } from "./utils/wagmi";
+import setupStore from "./store";
 
-const logger: Middleware =
-  ({ getState }: MiddlewareAPI) =>
-  (next: Dispatch) =>
-  (action) => {
-    console.log("dispatch", action);
-    const returnValue = next(action);
-    console.log("state", getState());
-    return returnValue;
-  };
-
-const routerMiddleware = createRouterMiddleware(history);
-
-let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
-
-const urlParams = new URLSearchParams(window.location.search);
-if (process.env.NODE_ENV !== "production" || urlParams.get("debug") !== null) {
-  middlewares = [...middlewares, logger];
-}
-
-const store = createStore(createRootReducer(), applyMiddleware(...middlewares));
+const store = setupStore();
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
 root.render(
   <ErrorBoundary>
-    <Datadog
-      applicationId="5c45f4d1-3258-4206-bbdb-b73c9af5f340"
-      clientToken="pubf505ad0eca99217895614fb3000dea1f"
-      site="datadoghq.eu"
-      service="grant-hub"
-      // Specify a version number to identify the deployed version of your application in Datadog
-      // version="1.0.0"
-      sampleRate={100}
-      premiumSampleRate={100}
-      // trackInteractions
-      sessionReplayRecording={false}
-      // Uncomment if session replay is enabled
-      // defaultPrivacyLevel="mask-user-input"
-    >
+    <Datadog>
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} theme={lightTheme()} coolMode>
           <ChakraProvider resetCSS={false}>
