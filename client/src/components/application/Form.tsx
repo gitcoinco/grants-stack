@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
-import { useProvider } from "wagmi";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
@@ -39,7 +38,6 @@ export default function Form({
   round: Round;
 }) {
   const dispatch = useDispatch();
-  const provider = useProvider();
 
   const props = useSelector(
     (state: RootState) => ({
@@ -66,24 +64,9 @@ export default function Form({
 
   const handleInputAddress = async (e: ChangeHandlers) => {
     const { value } = e.target;
-    let isContract;
     const isValid = isValidAddress(value);
-    try {
-      if (value.length === 42 && !isValid) {
-        const code = await provider.getCode(value);
-        if (code === "0x") {
-          isContract = false;
-          setDisableProgress(false);
-        } else {
-          isContract = true;
-          setDisableProgress(true);
-        }
-      }
-    } catch (error) {
-      console.log("Error", error);
-    }
     console.log("valid", isValid);
-    if (value.length !== 42 && !isValid && !isContract) {
+    if (value.length !== 42 && !isValid) {
       setDisplayAddressError("visible");
       setDisableProgress(true);
     } else {

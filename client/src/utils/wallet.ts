@@ -27,10 +27,5 @@ export function networkPrettyName(chainId: number): string {
 }
 
 export function isValidAddress(address: string): boolean {
-  let isValid = false;
-  if (ethers.utils.isAddress(address)) {
-    isValid = true;
-  }
-
-  return isValid;
+  return ethers.utils.isAddress(address);
 }
