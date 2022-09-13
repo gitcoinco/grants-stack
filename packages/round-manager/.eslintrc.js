@@ -14,6 +14,14 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
   },
+  overrides: [
+    {
+      files: ["**/*.test.{ts,tsx}"],
+      rules: {
+        "@typescript-eslint/no-empty-function": "off",
+      },
+    },
+  ],
   settings: {
     react: {
       version: "detect",

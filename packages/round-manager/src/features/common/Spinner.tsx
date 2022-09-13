@@ -6,7 +6,7 @@ type SpinnerProps = {
 
 export function Spinner(props: SpinnerProps) {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen" data-testid="loading-spinner">
       <div className="m-auto">
         <SpinnerLogo className="mb-4 m-auto" style={{ maxWidth: 100 }} />
         <p>{props.text}</p>

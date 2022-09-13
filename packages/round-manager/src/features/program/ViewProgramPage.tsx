@@ -18,7 +18,8 @@ import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 
-import { usePrograms } from "../../context/ProgramContext";
+import { useProgramById } from "../../context/ProgramContext";
+import { Spinner } from "../common/Spinner";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -28,9 +29,7 @@ export default function ViewProgram() {
 
   const { address, provider } = useWallet();
 
-  const { programs } = usePrograms();
-
-  const programToRender = programs.find((program) => program.id === id);
+  const { program: programToRender, isLoading } = useProgramById(id);
 
   const {
     data: rounds,
@@ -167,7 +166,9 @@ export default function ViewProgram() {
     </div>
   );
 
-  return (
+  return isLoading ? (
+    <Spinner text="Fetching Program" />
+  ) : (
     <>
       {!programExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
