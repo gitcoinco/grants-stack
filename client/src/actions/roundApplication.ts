@@ -8,7 +8,9 @@ import PinataClient from "../services/pinata";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
 import { chains } from "../contracts/deployments";
+import utils from "../utils/roundApplication";
 
+// FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
 interface RoundApplicationLoadingAction {
   type: typeof ROUND_APPLICATION_LOADING;
@@ -23,16 +25,32 @@ interface RoundApplicationErrorAction {
   error: string;
 }
 
+// FIXME: rename to ROUND_APPLICATION_APPLIED
 export const ROUND_APPLICATION_LOADED = "ROUND_APPLICATION_LOADED";
 interface RoundApplicationLoadedAction {
   type: typeof ROUND_APPLICATION_LOADED;
   roundAddress: string;
 }
 
+export const ROUND_APPLICATION_FOUND = "ROUND_APPLICATION_FOUND";
+interface RoundApplicationFoundAction {
+  type: typeof ROUND_APPLICATION_FOUND;
+  roundAddress: string;
+  projectID: number;
+}
+
+export const ROUND_APPLICATION_NOT_FOUND = "ROUND_APPLICATION_NOT_FOUND";
+interface RoundApplicationNotFoundAction {
+  type: typeof ROUND_APPLICATION_NOT_FOUND;
+  roundAddress: string;
+}
+
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
-  | RoundApplicationLoadedAction;
+  | RoundApplicationLoadedAction
+  | RoundApplicationFoundAction
+  | RoundApplicationNotFoundAction;
 
 const applicationError = (
   roundAddress: string,
@@ -142,10 +160,11 @@ export const submitApplication =
 
     const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-
-    const projectUniqueID = ethers.utils.formatBytes32String(
-      projectId.toString()
+    const projectUniqueID = utils.generateUniqueRoundApplicationID(
+      chainID,
+      Number(projectId)
     );
+
     try {
       await contract.applyToRound(projectUniqueID, metaPtr);
       dispatch({
@@ -159,5 +178,47 @@ export const submitApplication =
         roundAddress,
         error: "error calling applyToRound",
       });
+    }
+  };
+
+export const checkRoundApplications =
+  (chainID: number, roundAddress: string, projectIDs: Array<number>) =>
+  async (dispatch: Dispatch) => {
+    const { signer } = global;
+    const contract = new ethers.Contract(roundAddress, RoundABI, signer);
+    const uniqueIDsToIDs = Object.fromEntries(
+      projectIDs.map((id: number) => [
+        utils.generateUniqueRoundApplicationID(chainID, id),
+        id,
+      ])
+    );
+
+    const applicationFilter = contract.filters.NewProjectApplication(
+      Object.keys(uniqueIDsToIDs)
+    );
+
+    let applicationEvents = [];
+    try {
+      applicationEvents = await contract.queryFilter(applicationFilter);
+      applicationEvents.forEach((event) => {
+        const projectID = uniqueIDsToIDs[event?.args?.project];
+        if (projectID !== undefined) {
+          dispatch({
+            type: ROUND_APPLICATION_FOUND,
+            roundAddress,
+            projectID,
+          });
+        }
+      });
+    } catch (e) {
+      // FIXME: dispatch an error?
+      console.error("error getting round applications");
+    } finally {
+      if (applicationEvents.length === 0) {
+        dispatch({
+          type: ROUND_APPLICATION_NOT_FOUND,
+          roundAddress,
+        });
+      }
     }
   };

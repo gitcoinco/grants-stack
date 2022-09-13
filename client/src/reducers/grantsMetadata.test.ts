@@ -5,7 +5,7 @@ import {
   grantMetadataLoadingURI,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
-import { grantsMetadataReducer } from "./grantsMetadata";
+import { grantsMetadataReducer, Status } from "./grantsMetadata";
 
 const grantId = 1;
 
@@ -21,7 +21,7 @@ describe("grantsMetaData reducer", () => {
     store.dispatch(grantMetadataLoadingURI(1));
     store.dispatch(grantMetadataLoading(grantId));
     expect(store.getState().grantsMetaData[1]).toEqual({
-      loading: true,
+      status: Status.Loading,
       metadata: undefined,
     });
   });
@@ -47,7 +47,7 @@ describe("grantsMetaData reducer", () => {
     );
 
     expect(store.getState().grantsMetaData[1]).toEqual({
-      loading: false,
+      status: Status.Loaded,
       metadata: grantMetadata,
     });
   });

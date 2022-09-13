@@ -4,6 +4,7 @@ import { ValidationError } from "yup";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import ImageInput from "./ImageInput";
 import { RootState } from "../../reducers";
+import { Status } from "../../reducers/grantsMetadata";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import Button, { ButtonVariants } from "./Button";
 import { validateProjectForm } from "./formValidation";
@@ -29,7 +30,7 @@ function ProjectForm({
     const grantMetadata = state.grantsMetadata[Number(currentProjectId)];
     return {
       id: currentProjectId,
-      loading: grantMetadata ? grantMetadata.loading : false,
+      loading: grantMetadata ? grantMetadata.status === Status.Loading : false,
       currentProject: grantMetadata?.metadata,
       status: state.newGrant.status,
       error: state.newGrant.error,

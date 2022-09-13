@@ -6,11 +6,16 @@ import {
   GRANT_METADATA_FETCHING_ERROR,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
-import { Status } from "./newGrant";
+
+export const enum Status {
+  Undefined = 0,
+  Loading,
+  Loaded,
+  Error,
+}
 
 export interface GrantsMetadataState {
   [id: number]: {
-    loading: boolean;
     metadata: Metadata | undefined;
     status: Status;
     error: string | undefined;
@@ -29,7 +34,7 @@ export const grantsMetadataReducer = (
         ...state,
         [action.id]: {
           ...state[action.id],
-          loading: true,
+          status: Status.Loading,
         },
       };
     }
@@ -39,7 +44,7 @@ export const grantsMetadataReducer = (
         ...state,
         [action.id]: {
           ...state[action.id],
-          loading: true,
+          status: Status.Loading,
           metadata: undefined,
         },
       };
@@ -50,7 +55,7 @@ export const grantsMetadataReducer = (
         ...state,
         [action.data.id]: {
           ...state[action.data.id],
-          loading: false,
+          status: Status.Loaded,
           metadata: action.data,
         },
       };
@@ -60,7 +65,6 @@ export const grantsMetadataReducer = (
       return {
         ...state,
         [action.id]: {
-          loading: false,
           metadata: undefined,
           status: Status.Error,
           error: action.error,
