@@ -46,10 +46,13 @@ export function TextInputAddress({
   // todo: validate address
 
   return (
-    <div className="mt-6 w-full sm:w-1/2 static">
+    <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm absolute" htmlFor={name}>
         {label}
       </label>
+      <span className="absolute text-purple-700 inset-y-0 right-0">
+        * required
+      </span>
       <Tooltip bg="purple.600" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
