@@ -60,6 +60,18 @@ export type InputProps = {
   changeHandler: (event: ChangeHandlers) => void;
 };
 
+export type AddressInputProps = {
+  label: string;
+  name: string;
+  info?: string;
+  tooltipValue?: string;
+  value?: string | number;
+  placeholder?: string;
+  disabled?: boolean;
+  changeHandler: (event: ChangeHandlers) => void;
+  displayError?: string;
+};
+
 export interface ProjectEvent {
   id: number;
   block: number;

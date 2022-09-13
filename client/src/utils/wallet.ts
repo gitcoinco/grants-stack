@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 // This just disables default export as this utils file will be intended to return multiple utils
 import { getAddress } from "@ethersproject/address";
+import { ethers } from "ethers";
 import { chains } from "../contracts/deployments";
 
 export function shortAddress(address: string): string {
@@ -25,6 +26,6 @@ export function networkPrettyName(chainId: number): string {
   return networkPrettyNames[rawName];
 }
 
-export function isValidAddress(address: string | undefined): boolean {
-  return address !== "0x0000000000000000000000000000000000000000";
+export function isValidAddress(address: string): boolean {
+  return ethers.utils.isAddress(address);
 }
