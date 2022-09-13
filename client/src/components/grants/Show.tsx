@@ -93,7 +93,7 @@ function Project() {
       // If user reloads Show projects will not exist
       dispatch(loadProjects());
     }
-  }, [props.id, props.currentProject, global, dispatch, props.projects]);
+  }, [props.id, props.currentProject, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
