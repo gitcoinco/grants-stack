@@ -31,10 +31,14 @@ let bulkUpdateGrantApplications = jest.fn();
 describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
     grantApplications = [
-      makeGrantApplicationData({ status: "APPROVED" }),
-      makeGrantApplicationData({ status: "APPROVED" }),
-      makeGrantApplicationData({ status: "APPROVED" }),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
     ];
+
+    grantApplications.forEach((application) => {
+      application.status = "APPROVED";
+    });
 
     (useListGrantApplicationsQuery as any).mockReturnValue({
       data: grantApplications,

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  githubCredentialData,
+  ApplicationAndCredentialRelatedData,
   makeGrantApplicationData,
+  makeApplicationAndCredentialRelatedDataForGithub,
+  makeApplicationAndCredentialRelatedDataForTwitter,
   renderWrapped,
-  twitterCredentialData,
 } from "../../../test-utils";
 import ViewApplicationPage from "../ViewApplicationPage";
 import { screen, waitFor } from "@testing-library/react";
@@ -14,7 +15,7 @@ import {
 } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import { ProjectCredentials } from "../../api/types";
+import { AnswerBlock } from "../../api/types";
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("../../api/services/round");
@@ -40,15 +41,20 @@ describe("ViewApplicationPage", () => {
   });
 
   it.each([
-    ["github", { github: githubCredentialData }],
-    ["twitter", { twitter: twitterCredentialData }],
+    ["github", [makeApplicationAndCredentialRelatedDataForGithub()]],
+    ["twitter", [makeApplicationAndCredentialRelatedDataForTwitter()]],
   ])(
     "shows no project %s verification when you have an invalid verifiable credential for it",
-    async (provider: string, projectCredentials: ProjectCredentials) => {
+    async (
+      provider: string,
+      applicationAndCredentialRelatedData: ApplicationAndCredentialRelatedData[]
+    ) => {
       verifyCredentialMock.mockResolvedValue(false);
 
       const verifiableGithubCredential = {
-        application: makeGrantApplicationData({}, projectCredentials),
+        application: makeGrantApplicationData(
+          applicationAndCredentialRelatedData
+        ),
       };
 
       (useListGrantApplicationsQuery as any).mockReturnValue(
@@ -100,15 +106,20 @@ describe("ViewApplicationPage", () => {
   );
 
   it.each([
-    ["github", { github: githubCredentialData }],
-    ["twitter", { twitter: twitterCredentialData }],
+    ["github", [makeApplicationAndCredentialRelatedDataForGithub()]],
+    ["twitter", [makeApplicationAndCredentialRelatedDataForTwitter()]],
   ])(
     "shows project %s verification when you have a valid verifiable credential for it",
-    async (provider: string, projectCredentials: ProjectCredentials) => {
+    async (
+      provider: string,
+      applicationAndCredentialRelatedData: ApplicationAndCredentialRelatedData[]
+    ) => {
       verifyCredentialMock.mockResolvedValue(true);
 
       const grantApplicationWithValidVc = {
-        application: makeGrantApplicationData({}, projectCredentials),
+        application: makeGrantApplicationData(
+          applicationAndCredentialRelatedData
+        ),
       };
 
       (useListGrantApplicationsQuery as any).mockReturnValue(
@@ -132,12 +143,14 @@ describe("ViewApplicationPage", () => {
     const fakeIssuer =
       "did:key:z6Mks2YNwbkzDgKLuQs1TS3whP9RdXrGXtVqt5JcCLoQu86W";
 
-    const projectCredentials = { github: { ...githubCredentialData } };
-    projectCredentials.github.issuer = fakeIssuer;
-
     const grantApplication = {
-      application: makeGrantApplicationData({}, projectCredentials),
+      application: makeGrantApplicationData([
+        makeApplicationAndCredentialRelatedDataForGithub(),
+      ]),
     };
+
+    grantApplication.application.project!.credentials["github"].issuer =
+      fakeIssuer;
 
     (useListGrantApplicationsQuery as any).mockReturnValue(grantApplication);
     (useUpdateGrantApplicationMutation as any).mockReturnValue([
@@ -161,19 +174,17 @@ describe("ViewApplicationPage", () => {
   it.each([
     {
       provider: "github",
-      projectCredentials: {
-        github: githubCredentialData,
-      } as ProjectCredentials,
-      vcProviderString: "ClearTextGithubOrg#gitcoinco#6887938",
+      applicationAndVCRelatedDataArray: [
+        makeApplicationAndCredentialRelatedDataForGithub(),
+      ],
       question: "Github Organization",
       applicationAccountName: "notgitcoinco",
     },
     {
       provider: "twitter",
-      projectCredentials: {
-        twitter: twitterCredentialData,
-      } as ProjectCredentials,
-      vcProviderString: "ClearTextTwitter#DpoppDev",
+      applicationAndVCRelatedDataArray: [
+        makeApplicationAndCredentialRelatedDataForTwitter(),
+      ],
       question: "Twitter",
       applicationAccountName: "notDpoppDev",
     },
@@ -181,24 +192,21 @@ describe("ViewApplicationPage", () => {
     "shows invalid badge for $provider when $question account name in grant application doesn't match account name in VC provider",
     async ({
       provider,
-      projectCredentials,
-      vcProviderString,
+      applicationAndVCRelatedDataArray,
       question,
       applicationAccountName,
     }) => {
-      projectCredentials[provider].credentialSubject.provider =
-        vcProviderString;
-
       const grantApplication = {
-        application: makeGrantApplicationData(
-          {
-            answers: [
-              { questionId: 0, question, answer: applicationAccountName },
-            ],
-          },
-          projectCredentials
-        ),
+        application: makeGrantApplicationData(applicationAndVCRelatedDataArray),
       };
+      const wrongAnswers: AnswerBlock[] = [
+        {
+          questionId: 0,
+          question,
+          answer: applicationAccountName,
+        },
+      ];
+      grantApplication.application.answers = wrongAnswers;
 
       (useListGrantApplicationsQuery as any).mockReturnValue(grantApplication);
       (useUpdateGrantApplicationMutation as any).mockReturnValue([
@@ -216,6 +224,50 @@ describe("ViewApplicationPage", () => {
           screen.getByTestId(`${provider}-verifiable-credential-unverified`)
         ).toBeInTheDocument();
       });
+
+      expect(
+        screen.queryByTestId(`${provider}-verifiable-credential`)
+      ).not.toBeInTheDocument();
+    }
+  );
+
+  it.each([
+    {
+      provider: "github",
+      applicationAndVCRelatedDataArray: [
+        makeApplicationAndCredentialRelatedDataForGithub(),
+      ],
+    },
+    {
+      provider: "twitter",
+      applicationAndVCRelatedDataArray: [
+        makeApplicationAndCredentialRelatedDataForTwitter(),
+      ],
+    },
+  ])(
+    "shows invalid $provider badge when project owner address does not match vc",
+    async ({ provider, applicationAndVCRelatedDataArray }) => {
+      (useUpdateGrantApplicationMutation as any).mockReturnValue([
+        jest.fn(),
+        { isLoading: false },
+      ]);
+
+      verifyCredentialMock.mockResolvedValue(true);
+      const grantApplicationData = {
+        application: makeGrantApplicationData(applicationAndVCRelatedDataArray),
+      };
+
+      grantApplicationData!.application.project!.owners.forEach((it) => {
+        it.address = "bad";
+      });
+
+      (useListGrantApplicationsQuery as any).mockReturnValue(
+        grantApplicationData
+      );
+
+      renderWrapped(<ViewApplicationPage />);
+
+      await screen.findByTestId(`${provider}-verifiable-credential-unverified`);
 
       expect(
         screen.queryByTestId(`${provider}-verifiable-credential`)

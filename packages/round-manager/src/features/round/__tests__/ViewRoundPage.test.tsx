@@ -94,11 +94,17 @@ describe("the view round page", () => {
 
   it("should indicate how many of each kind of application there are", () => {
     const mockApplicationData: GrantApplication[] = [
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "PENDING" }),
-      makeGrantApplicationData({ status: "REJECTED" }),
-      makeGrantApplicationData({ status: "APPROVED" }),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
     ];
+
+    mockApplicationData[0].status = "PENDING";
+    mockApplicationData[1].status = "PENDING";
+    mockApplicationData[2].status = "REJECTED";
+    mockApplicationData[3].status = "APPROVED";
+
     (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
       data: mockApplicationData,
       isLoading: false,

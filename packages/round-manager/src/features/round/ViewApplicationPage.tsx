@@ -468,6 +468,12 @@ function vcProviderMatchesProject(
   return vcProviderMatchesProject;
 }
 
+function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
+  const vcIdSplit = vc.credentialSubject.id.split(":");
+  const addressFromId = vcIdSplit[vcIdSplit.length - 1];
+  return addressFromId === address;
+}
+
 async function isVerified(
   verifiableCredential: VerifiableCredential,
   verifier: PassportVerifier,
@@ -481,8 +487,14 @@ async function isVerified(
     verifiableCredential,
     application
   );
+  const vcIssuedToAtLeastOneProjectOwner = (
+    application?.project?.owners ?? []
+  ).some((owner) => vcIssuedToAddress(verifiableCredential, owner.address));
 
-  return vcHasValidProof && vcIssuedByValidIAMServer && providerMatchesProject
+  return vcHasValidProof &&
+    vcIssuedByValidIAMServer &&
+    providerMatchesProject &&
+    vcIssuedToAtLeastOneProjectOwner
     ? VerifiedCredentialState.VALID
     : VerifiedCredentialState.INVALID;
 }

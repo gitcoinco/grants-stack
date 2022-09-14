@@ -164,6 +164,10 @@ export type ProjectCredentials = {
 
 export type GrantApplicationId = string;
 
+interface Owner {
+  address: string;
+}
+
 export interface GrantApplication {
   /**
    * The on-chain unique grant application ID
@@ -183,6 +187,7 @@ export interface GrantApplication {
   project?: {
     lastUpdated: number; // unix timestamp in milliseconds
     id: string;
+    owners: Owner[];
     title: string;
     description: string;
     website: string;
