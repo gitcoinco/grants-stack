@@ -26,7 +26,7 @@ export default function ViewRoundPage() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const { id } = useParams();
-  const { address, provider } = useWallet();
+  const { address, provider, chain } = useWallet();
 
   const {
     round,
@@ -141,7 +141,7 @@ export default function ViewRoundPage() {
                   <div className="text-right absolute bottom-0">
                     <p className="text-xs mb-1">Copy link to round application</p>
                     <CopyToClipboardButton 
-                      textToCopy={window.location.href}
+                      textToCopy={`https://granthub.gitcoin.co/#/chains/${chain.id}/rounds/${id}`}
                       styles="text-xs p-2"
                       iconStyle="h-4 w-4 mr-1"
                     />
