@@ -3,11 +3,10 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./Math.sol";
 import "./IVotingStrategy.sol";
 
 contract QuadraticVotingStrategy is IVotingStrategy, ReentrancyGuard {
-    using Math for uint256;
 
     uint256 public immutable VOTE_CREDITS;
 
@@ -38,7 +37,7 @@ contract QuadraticVotingStrategy is IVotingStrategy, ReentrancyGuard {
                 (address, uint256)
             );
             require((voteCreditsUsed[voterAddress] + voteCredits) < VOTE_CREDITS, "QuadraticVotingStrategy: No vote credits left");
-            uint256 votes = voteCredits.sqrt();
+            uint256 votes = Math.sqrt(voteCredits);
             voteCreditsUsed[voterAddress] +=  voteCredits;
             totalVoteCount[granteeAddress] += votes;
             if (!voterAdded[voterAddress]) {

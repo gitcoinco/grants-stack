@@ -21,7 +21,7 @@ describe("QuadraticVotingStrategy", function () {
         "QuadraticVotingStrategy"
       );
       QuadraticVotingStrategy = <QuadraticVotingStrategy>(
-        await deployContract(user0, QuadraticVotingStrategyArtifact, [1000, 0x0])
+        await deployContract(user0, QuadraticVotingStrategyArtifact, [1000, '0xa3374B34A855b0bF6b96401D8c367608d9c8a048'])
       );
 
       // Verify deploy
@@ -33,6 +33,19 @@ describe("QuadraticVotingStrategy", function () {
     });
   });
 
-  describe("core functions", () => {}});
+  describe("core functions", () => {
+    before(async () => {
+      [user0, user1] = await ethers.getSigners();
+
+      // Deploy QuadraticVotingStrategy contract
+      QuadraticVotingStrategyArtifact = await artifacts.readArtifact(
+        "QuadraticVotingStrategy"
+      );
+      QuadraticVotingStrategy = <QuadraticVotingStrategy>(
+        await deployContract(user0, QuadraticVotingStrategyArtifact, [1000, '0xa3374B34A855b0bF6b96401D8c367608d9c8a048'])
+      );
+    });
+
+  });
 
 });
