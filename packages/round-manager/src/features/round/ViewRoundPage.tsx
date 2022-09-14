@@ -19,6 +19,7 @@ import tw from "tailwind-styled-components";
 import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
+import CopyToClipboardButton from "../common/CopyToClipboardButton"
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/create");
@@ -116,7 +117,7 @@ export default function ViewRoundPage() {
                 {round?.roundMetadata?.name || "Round Details"}
               </h1>
               <div className="flex flex-row flex-wrap">
-                <div className="flex mr-8 lg:mr-36 pb-3">
+                <div className="flex mr-8 lg:mr-36">
                   <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
                   <p className="text-sm mr-1 text-grey-400">Applications:</p>
                   <p className="text-sm">
@@ -134,6 +135,17 @@ export default function ViewRoundPage() {
                     <span className="mx-1">-</span>
                     {formatDate(round?.roundEndTime) || "..."}
                   </p>
+                </div>
+
+                <div className="flex justify-end grow relative">
+                  <div className="text-right absolute bottom-0">
+                    <p className="text-xs mb-1">Copy link to round application</p>
+                    <CopyToClipboardButton 
+                      textToCopy={window.location.href}
+                      styles="text-xs p-2"
+                      iconStyle="h-4 w-4 mr-1"
+                    />
+                  </div>
                 </div>
               </div>
             </header>

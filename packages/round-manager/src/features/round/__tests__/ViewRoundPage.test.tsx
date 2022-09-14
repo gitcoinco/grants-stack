@@ -23,6 +23,12 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
 
+Object.assign(navigator, {
+  clipboard: {
+    writeText: () => {},
+  },
+});
+
 const mockRoundData: Round = makeRoundData();
 const mockApplicationData: GrantApplication[] = [];
 
@@ -75,6 +81,11 @@ describe("the view round page", () => {
     renderWrapped(<ViewRoundPage />);
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
+
+  it("should display Copy to Clipboard", () => {
+    renderWrapped(<ViewRoundPage />);
+    expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
+  })
 
   it("should display copy when there are no applicants for a given round", () => {
     renderWrapped(<ViewRoundPage />);
