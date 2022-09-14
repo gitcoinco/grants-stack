@@ -19,7 +19,7 @@ import tw from "tailwind-styled-components";
 import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import CopyToClipboardButton from "../common/CopyToClipboardButton"
+import CopyToClipboardButton from "../common/CopyToClipboardButton";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/create");

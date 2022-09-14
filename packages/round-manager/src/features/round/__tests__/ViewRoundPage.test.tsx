@@ -85,7 +85,7 @@ describe("the view round page", () => {
   it("should display Copy to Clipboard", () => {
     renderWrapped(<ViewRoundPage />);
     expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
-  })
+  });
 
   it("should display copy when there are no applicants for a given round", () => {
     renderWrapped(<ViewRoundPage />);
