@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import { SafeTransferLib } from "@rari-capital/solmate/src/utils/SafeTransferLib.sol";
-import { ERC721 } from "@rari-capital/solmate/src/tokens/ERC721.sol";
+import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -59,7 +58,7 @@ contract VoterBadge is ERC721, Ownable {
      * @notice Withdraw the contract ETH balance
      */
     function withdraw() external onlyOwner {
-        SafeTransferLib.safeTransferETH(msg.sender, address(this).balance);
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     /**
