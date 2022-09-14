@@ -134,11 +134,8 @@ export default function Form({
           changeHandler={handleInput}
         />
         {/* Radio for safe or multi-sig */}
-        <div className="relative">
+        <div className="relative mt-2">
           <Stack>
-            <span className="absolute text-purple-700 inset-y-0 right-1/2">
-              * required
-            </span>
             <Radio
               label="Is your payout wallet a Gnosis Safe or multi-sig?"
               choices={["Yes", "No"]}

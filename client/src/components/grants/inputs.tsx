@@ -16,7 +16,7 @@ export function TextInput({
         {label}
       </label>
       <span className="absolute text-purple-700 inset-y-0 right-0">
-        * required
+        *Required
       </span>
       <legend>{info}</legend>
       <input
@@ -43,15 +43,13 @@ export function TextInputAddress({
   changeHandler,
   displayError, // a string that will be: (visible | invisible)
 }: AddressInputProps) {
-  // todo: validate address
-
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm absolute" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute text-purple-700 inset-y-0 right-0">
-        * required
+      <span className="absolute mr-8 text-purple-700 inset-y-0 right-0 ml-4">
+        *Required
       </span>
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
         <svg
@@ -59,7 +57,7 @@ export function TextInputAddress({
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="w-6 h-6 ml-32"
+          className="w-6 h-6 ml-auto text-purple-700"
         >
           <path
             d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 
@@ -169,8 +167,8 @@ export function Select({
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute text-purple-700 inset-y-0 right-1/2">
-        * required
+      <span className="absolute text-purple-700 inset-y-0 md:right-0 lg:right-1/2 sm:right-0 ml-4">
+        *Required
       </span>
       <legend>{info}</legend>
       <select
