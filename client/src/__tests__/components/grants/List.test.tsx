@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom"
 import { when } from "jest-when";
 import { Store } from "redux";
 import { RootState } from "../../../reducers";
