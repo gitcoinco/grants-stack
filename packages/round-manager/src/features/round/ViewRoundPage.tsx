@@ -20,6 +20,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import { Spinner } from "../common/Spinner";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/create");
@@ -139,8 +140,10 @@ export default function ViewRoundPage() {
 
                 <div className="flex justify-end grow relative">
                   <div className="text-right absolute bottom-0">
-                    <p className="text-xs mb-1">Copy link to round application</p>
-                    <CopyToClipboardButton 
+                    <p className="text-xs mb-1">
+                      Copy link to round application
+                    </p>
+                    <CopyToClipboardButton
                       textToCopy={`https://granthub.gitcoin.co/#/chains/${chain.id}/rounds/${id}`}
                       styles="text-xs p-2"
                       iconStyle="h-4 w-4 mr-1"
@@ -236,7 +239,9 @@ export default function ViewRoundPage() {
               )}
 
               <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-                {isRoundsLoading && <p>Fetching round information...</p>}
+                {isRoundsLoading && (
+                  <Spinner text="We're fetching your Round." />
+                )}
               </div>
             </main>
           </div>

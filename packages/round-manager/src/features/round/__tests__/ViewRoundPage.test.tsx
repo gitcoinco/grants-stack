@@ -117,4 +117,14 @@ describe("the view round page", () => {
       parseInt(screen.getByTestId("approved-application-counter").textContent!)
     ).toBe(1);
   });
+
+  it("should display loading spinner when round is loading", () => {
+    (useListRoundsQuery as jest.Mock).mockReturnValue({
+      isLoading: true,
+    });
+
+    renderWrapped(<ViewRoundPage />);
+
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
 });

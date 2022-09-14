@@ -146,15 +146,10 @@ export default function ApplicationsReceived() {
               </Link>
             </BasicCard>
           ))}
-        {isLoading && <Spinner text="Fetching Grant Applications" />}
-        {!isLoading && data?.length === 0 && (
-          <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
-            <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
-              <NoApplicationsForRoundIcon className="w-6 h-6" />
-            </div>
-            <NoApplicationsMessage />
-          </div>
+        {isLoading && (
+          <Spinner text="We're fetching your Grant Applications." />
         )}
+        {!isLoading && data?.length === 0 && <NoApplicationsContent />}
       </CardsContainer>
       {selected &&
         selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (
@@ -211,6 +206,17 @@ function NoApplicationsMessage() {
         Try promoting your Grant Program to get more traction!
       </div>
     </>
+  );
+}
+
+function NoApplicationsContent() {
+  return (
+    <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
+      <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
+        <NoApplicationsForRoundIcon className="w-6 h-6" />
+      </div>
+      <NoApplicationsMessage />
+    </div>
   );
 }
 

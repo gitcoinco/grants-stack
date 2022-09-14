@@ -66,6 +66,17 @@ describe("<ApplicationsRejected />", () => {
     ]);
   });
 
+  it("should display a loading spinner if rejected applications are loading", () => {
+    (useListGrantApplicationsQuery as any).mockReturnValue({
+      data: [],
+      isLoading: true,
+    });
+
+    renderWrapped(<ApplicationsRejected />);
+
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
+
   describe("when rejected applications are shown", () => {
     it("should display bulk select", () => {
       renderWrapped(<ApplicationsRejected />);

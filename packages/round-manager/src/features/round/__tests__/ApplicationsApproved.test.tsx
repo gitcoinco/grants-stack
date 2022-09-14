@@ -59,6 +59,17 @@ describe("<ApplicationsApproved />", () => {
     ]);
   });
 
+  it("should display a loading spinner if approved applications are loading", () => {
+    (useListGrantApplicationsQuery as any).mockReturnValue({
+      data: [],
+      isLoading: true,
+    });
+
+    renderWrapped(<ApplicationsApproved />);
+
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
+
   describe("when approved applications are shown", () => {
     it("should display bulk select", () => {
       renderWrapped(<ApplicationsApproved />);

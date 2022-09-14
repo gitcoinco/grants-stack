@@ -139,7 +139,9 @@ export default function ApplicationsRejected() {
               </Link>
             </BasicCard>
           ))}
-        {isLoading && <Spinner text="Fetching Grant Applications" />}
+        {isLoading && (
+          <Spinner text="We're fetching your Grant Applications." />
+        )}
       </CardsContainer>
       {selected &&
         selected?.filter((obj) => obj.status === "APPROVED").length > 0 && (

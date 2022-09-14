@@ -58,6 +58,17 @@ describe("<ApplicationsReceived />", () => {
     ]);
   });
 
+  it("should display a loading spinner if received applications are loading", () => {
+    (useListGrantApplicationsQuery as any).mockReturnValue({
+      data: [],
+      isLoading: true,
+    });
+
+    renderWrapped(<ApplicationsReceived />);
+
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+  });
+
   describe("when there are no approved applications", () => {
     it("should not display the bulk select option", () => {
       (useListGrantApplicationsQuery as any).mockReturnValue({

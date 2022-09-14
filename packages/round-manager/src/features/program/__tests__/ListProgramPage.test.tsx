@@ -33,6 +33,6 @@ describe("<ListProgramPage />", () => {
   it("shows loading while fetching list of programs", async () => {
     renderWithContext(<ListProgramPage />, { isLoading: true, programs: [] });
 
-    screen.getByText("Fetching Programs");
+    screen.getByTestId("loading-spinner");
   });
 });
