@@ -16,7 +16,6 @@ const updateApplicationList = async (
   roundId: string,
   provider: Web3Provider
 ): Promise<string> => {
-  /* ESLint ignore is fine since we handle the throws*/
   try {
     let reviewedApplications: any[] = [];
     let foundEntry = false;
