@@ -6,7 +6,7 @@ import { BytesLike, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { encodeRoundParameters } from "../../scripts/utils";
-import { BulkVotingStrategy, RoundFactory, RoundImplementation } from "../../typechain";
+import { QuadraticFundingVotingStrategy, RoundFactory, RoundImplementation } from "../../typechain";
 
 
 type MetaPtr = {
@@ -27,7 +27,7 @@ describe("RoundImplementation", function () {
   let roundImplementationArtifact: Artifact;
 
   // Voting Strategy
-  let votingStrategy: BulkVotingStrategy;
+  let votingStrategy: QuadraticFundingVotingStrategy;
   let votingStrategyArtifact: Artifact;
 
   // Variable declarations
@@ -52,8 +52,8 @@ describe("RoundImplementation", function () {
     [user] = await ethers.getSigners();
 
     // Deploy VotingStrategy contract
-    votingStrategyArtifact = await artifacts.readArtifact('BulkVotingStrategy');
-    votingStrategy = <BulkVotingStrategy>await deployContract(user, votingStrategyArtifact, []);
+    votingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategy');
+    votingStrategy = <QuadraticFundingVotingStrategy>await deployContract(user, votingStrategyArtifact, []);
   })
 
   describe('constructor', () => {

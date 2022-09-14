@@ -25,7 +25,7 @@ export async function main() {
   await confirmContinue({
     "contract"                : "GrantRoundImplementation Clone",
     "grantRoundContract"      : grantRoundContract,
-    "votingStrategyContract"  : networkParams.bulkVotingStrategyContract,
+    "votingStrategyContract"  : networkParams.quadraticFundingVotingStrategyContract,
     "function"                : "vote",
     "network"                 : network.name,
     "chainId"                 : network.config.chainId

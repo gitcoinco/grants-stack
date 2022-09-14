@@ -11,7 +11,7 @@ import "./IVotingStrategy.sol";
  *
  * Emits event upon every transfer.
  */
-contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
+contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
   
   // --- Event ---
 

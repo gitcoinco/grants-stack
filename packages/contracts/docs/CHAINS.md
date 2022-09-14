@@ -6,7 +6,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| BulkVotingStrategy    | 0xF9A74d7c97276f5DF38086F3A0F96fAA385619Ee |
+| QuadraticFundingVotingStrategy    | 0xF9A74d7c97276f5DF38086F3A0F96fAA385619Ee |
 | RoundFactory          | 0x89f01CD69087669f8e49F6FB8aD475F622Ac8791 |
 | RoundImplementation   | 0x2707e86cBb3Db85b1Ceb78bA9C9580e2F35736fD |
 | Round                 | 0x8140b7168d6acBf528FC68Ea94D75E9d2B5aF721 |
@@ -19,7 +19,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| BulkVotingStrategy    | 0x4a850F463D1C4842937c5Bc9540dBc803D744c9F |
+| QuadraticFundingVotingStrategy    | 0x4a850F463D1C4842937c5Bc9540dBc803D744c9F |
 | RoundFactory          | 0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C |
 | RoundImplementation   | 0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59 |
 | Round                 | 0x2DF6c42dd2d7a13c19Ca5f7858fB7cC05A2933ed |
@@ -32,7 +32,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| BulkVotingStrategy    | 0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c |
+| QuadraticFundingVotingStrategy    | 0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c |
 | RoundFactory          | 0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF |
 | RoundImplementation   | 0x5C46ae4a950E0e0280006403B9e517462FD16dAc |
 | Round                 | 0x3EE29458f2121E2C20421cd188F2CAbd99347d54 |

@@ -92,14 +92,14 @@ yarn run link-round-implementation goerli
 
 ### VotingStrategy Setup
 
-The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the BulkVotingStrategy contract on goerli
+The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the QuadraticFundingVotingStrategy contract on goerli
 
 1. Create an `.env` file and fill out
     - `INFURA_ID`               : Infura ID for deploying contract
     - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
     - `ETHERSCAN_API_KEY`       : API key for etherscan verification
 
-2. Deploy the BulkVotingStrategy contract.
+2. Deploy the QuadraticFundingVotingStrategy contract.
 ```shell
 yarn run deploy-bulk-voting-strategy goerli
 ```
@@ -108,7 +108,7 @@ yarn run deploy-bulk-voting-strategy goerli
 ```javascript
 export const params: DeployParams = {
   goerli: {
-    BulkVotingStrategyContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
+    QuadraticFundingVotingStrategyContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
     ...
   },
   ...

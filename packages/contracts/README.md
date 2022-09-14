@@ -18,7 +18,7 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 ├   ├   ├── RoundImplementation.sol     # round contract 
 ├   ├── votingStrategy                  # voting strategy
 ├   ├   ├── IVotingStrategy.sol         # voting strategy interface
-├   ├   ├── BulkVotingStrategy.sol      # bulk voting strategy
+├   ├   ├── QuadraticFundingVotingStrategy.sol      # bulk voting strategy
 ├── scripts                             # Deploy scripts for smart contracts
 ├── docs                                # documentation 
 ├── test                                # Test for smart contracts
@@ -69,7 +69,7 @@ The ProgramFactory enables us to have upgradable contracts on ProgramImplementat
 ## Round Setup
 
 1. To create a round, you would not deploy a contract but instead, rely on the create function on the `RoundFactory` to create a new `RoundImplementation` contract.
-2. The user would have to choose a voting strategy like `BulkVotingStrategy` (already deployed via instruction mention in DEPLOY_STEPS.md)
+2. The user would have to choose a voting strategy like `QuadraticFundingVotingStrategy` (already deployed via instruction mention in DEPLOY_STEPS.md)
 3. Any interaction in terms of updating parameters etc can be performed against the `RoundImplementation` contract itself
 
 

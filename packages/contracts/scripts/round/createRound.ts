@@ -51,7 +51,7 @@ export async function main() {
   const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
   const params = [
-    networkParams.bulkVotingStrategyContract, // _votingStrategyAddress
+    networkParams.quadraticFundingVotingStrategyContract, // _votingStrategyAddress
     applicationsStartTime, // _applicationsStartTime
     applicationsEndTime, // _applicationsEndTime
     roundStartTime, // _roundStartTime

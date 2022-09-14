@@ -1,4 +1,4 @@
-# BulkVotingStrategy
+# QuadraticFundingVotingStrategy
 
 
 
