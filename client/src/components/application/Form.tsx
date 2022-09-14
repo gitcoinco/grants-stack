@@ -7,6 +7,7 @@ import {
   RoundApplicationMetadata,
   ProjectOption,
   Round,
+  DynamicFormInputs,
 } from "../../types";
 import {
   Select,
@@ -21,10 +22,6 @@ import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
 import { isValidAddress } from "../../utils/wallet";
-
-interface DynamicFormInputs {
-  [key: string]: string;
-}
 
 const validation = {
   message: "",
@@ -101,6 +98,7 @@ export default function Form({
   // perform validation after the fields state is updated
   useEffect(() => {
     validate();
+    console.log("isSafe", formInputs.isSafe);
   }, [formInputs]);
 
   useEffect(() => {
@@ -232,9 +230,9 @@ export default function Form({
             <Radio
               label="Is your payout wallet a Gnosis Safe or multi-sig?"
               choices={["Yes", "No"]}
-              changeHandler={() => {}}
+              changeHandler={handleInput}
               name="isSafe"
-              value={formInputs.isSafe ?? "No"}
+              value={formInputs.isSafe ?? ""}
               info=""
             />
           </Stack>

@@ -53,7 +53,7 @@ export function TextInputAddress({
       <span className="absolute text-purple-700 inset-y-0 right-0">
         * required
       </span>
-      <Tooltip bg="purple.600" hasArrow label={tooltipValue}>
+      <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

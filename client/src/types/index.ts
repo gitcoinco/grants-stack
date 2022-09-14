@@ -183,3 +183,7 @@ export enum ProjectFormStatus {
   Verification,
   Preview,
 }
+
+export type DynamicFormInputs = {
+  [key: string]: string;
+};
