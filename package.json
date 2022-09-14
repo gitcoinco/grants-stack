@@ -24,11 +24,11 @@
     "rm-slither": "cd packages/round-manager; slither .",
 
 
-    "// round explorer script": "====== packages/round-explorer specific ======",
-    "re-build": "cd packages/round-explorer; yarn build",
-    "re-test": "cd packages/round-explorer; yarn test",
-    "re-start": "cd packages/round-explorer; yarn start",
-    "re-slither": "cd packages/round-explorer; slither ."
+    "// grant explorer script": "====== packages/grant-explorer specific ======",
+    "re-build": "cd packages/grant-explorer; yarn build",
+    "re-test": "cd packages/grant-explorer; yarn test",
+    "re-start": "cd packages/grant-explorer; yarn start",
+    "re-slither": "cd packages/grant-explorer; slither ."
   },
   "devDependencies": {
     "lerna": "^4.0.0"

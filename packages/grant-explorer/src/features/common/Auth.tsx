@@ -32,7 +32,7 @@ export default function Auth() {
           :
           <div className="container mx-auto flex flex-row bg-white">
             <div className="basis-1/2 m-auto">
-              <h1 className="mb-6">Round Explorer</h1>
+              <h1 className="mb-6">Grant Explorer</h1>
               <ConnectButton />
             </div>
           </div>

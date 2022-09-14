@@ -1,4 +1,4 @@
-# round-explorer
+# grant-explorer
 
 This package serves the app which holds all the features w.r.t to 
 
@@ -14,8 +14,8 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 | Env     | Git Branch | URL                               |
 |---------|------------|-----------------------------------|
-| STAGING | main       | https://regitcoin.on.fleek.co/    |
-| LIVE    | release    | https://round-explorer.gitcoin.co/ |
+| STAGING | main       | https://gegitcoin.on.fleek.co/    |
+| LIVE    | release    | https://grant-explorer.gitcoin.co/ |
 
 ## Directory Structure 
 

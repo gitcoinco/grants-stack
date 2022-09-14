@@ -18,7 +18,7 @@ function vote(bytes[] _encodedVotes, address _voterAddress) external nonpayable
 
 Invoked by RoundImplementation to allow voter to case vote for grants during a round.
 
-*- allows contributor to do cast multiple votes which could be weighted. - should be invoked by RoundImplementation contract - ideally IVotingStrategy implementation should emit events after a vote is cast - this would be triggered when a voter casts their vote via round explorer*
+*- allows contributor to do cast multiple votes which could be weighted. - should be invoked by RoundImplementation contract - ideally IVotingStrategy implementation should emit events after a vote is cast - this would be triggered when a voter casts their vote via grant explorer*
 
 #### Parameters
 

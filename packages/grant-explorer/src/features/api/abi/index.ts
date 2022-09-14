@@ -1,5 +1,5 @@
 /**
- * This file contains ABI exports for Gitcoin Grants Round Explorer
+ * This file contains ABI exports for Gitcoin Grants Explorer
  */
 
 import programImplementation  from "./programImplementation"

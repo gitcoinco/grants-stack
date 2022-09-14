@@ -32,7 +32,7 @@ contract BulkVotingStrategy is IVotingStrategy, ReentrancyGuard {
    *
    * @dev
    * - more voters -> higher the gas
-   * - this would be triggered when a voter casts their vote via round explorer
+   * - this would be triggered when a voter casts their vote via grant explorer
    *
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address

@@ -1,5 +1,5 @@
 /**
- * This file contains all contract definitions for Gitcoin Grants Round Explorer
+ * This file contains all contract definitions for Gitcoin Grants Explorer
  */
 
 /////////////////////////////////////////////////
