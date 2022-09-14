@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
-import { Stack } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Stack,
+} from "@chakra-ui/react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
@@ -51,6 +58,7 @@ export default function Form({
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [displayAddressError, setDisplayAddressError] = useState("invisible");
+  const [showProjectDetails] = useState(true);
 
   const schema = roundApplication.applicationSchema;
 
@@ -122,6 +130,10 @@ export default function Form({
   const projectSelect =
     schema.find((item) => item.type === "PROJECT") ?? undefined;
 
+  useEffect(() => {
+    // todo: this is a hack to get the project details to show up
+  }, [formInputs]);
+
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
@@ -133,6 +145,28 @@ export default function Form({
           disabled={preview}
           changeHandler={handleInput}
         />
+        {showProjectDetails && (
+          <Accordion className="w-1/2 mt-4" allowToggle>
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Box flex="1" textAlign="left">
+                    Project Details
+                  </Box>
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                {/* <Details
+                  project={props.roundApplication.project}}
+                  bannerImg=""
+                  logoImg=""
+                  updatedAt=""
+                  key={projectSelect?.id}
+                /> */}
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        )}
         {/* Radio for safe or multi-sig */}
         <div className="relative mt-2">
           <Stack>
