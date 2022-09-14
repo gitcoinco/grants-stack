@@ -1,6 +1,6 @@
 ## Development
 
-This section documents the basics running instructions on running / developing on the round-explorer package.
+This section documents the basics running instructions on running / developing on the grant-explorer package.
 
 ### Pre Requisites
 

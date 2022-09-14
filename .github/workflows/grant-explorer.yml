@@ -1,4 +1,4 @@
-name: package/round-explorer - Build -> Test
+name: package/grant-explorer - Build -> Test
 on:
   push:
   pull_request:
@@ -17,13 +17,13 @@ jobs:
       - name: Install Dependencies
         run: |
           yarn install
-          cd packages/round-explorer
+          cd packages/grant-explorer
           yarn install
 
-      - name: Build Round Explorer
+      - name: Build Grant Explorer
         run: |
           yarn re-build
           
-      - name: Test Round Explorer
+      - name: Test Grant Explorer
         run: |
           yarn re-test

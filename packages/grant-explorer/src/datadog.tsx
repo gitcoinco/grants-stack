@@ -13,7 +13,7 @@ export const initDatadog = () => {
     applicationId: process.env.REACT_APP_DATADOG_APPLICATION_ID || "",
     clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN || "",
     site:  process.env.REACT_APP_DATADOG_SITE || "datadoghq.eu",
-    service: process.env.REACT_APP_DATADOG_SERVICE || "round-explorer-staging",
+    service: process.env.REACT_APP_DATADOG_SERVICE || "grant-explorer-staging",
     // Specify a version number to identify the deployed version of your application in Datadog
     // version: '1.0.0',
     sampleRate: 100,
@@ -28,6 +28,6 @@ export const initDatadog = () => {
     site: "datadoghq.eu",
     forwardErrorsToLogs: true,
     sampleRate: 100,
-    service: "round-explorer",
+    service: "grant-explorer",
   });
 };
