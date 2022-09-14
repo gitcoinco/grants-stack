@@ -130,11 +130,11 @@ describe("round application builder", () => {
       roundApplicationMetadata.applicationSchema.length - 2
     );
 
-    const emailAnswer = application.answers[0];
+    const emailAnswer = application.answers[0]!;
     expect(emailAnswer.answer).toBeUndefined();
     expect(emailAnswer.encryptedAnswer).not.toBeUndefined();
-    expect(emailAnswer.encryptedAnswer.ciphertext).not.toBeUndefined();
-    expect(emailAnswer.encryptedAnswer.encryptedSymmetricKey).not.toBeUndefined();
+    expect(emailAnswer.encryptedAnswer!.ciphertext).not.toBeUndefined();
+    expect(emailAnswer.encryptedAnswer!.encryptedSymmetricKey).not.toBeUndefined();
   });
 });
 

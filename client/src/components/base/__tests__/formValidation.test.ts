@@ -1,5 +1,6 @@
 import { ValidationError } from "yup";
 import { validateProjectForm, validateApplication } from "../formValidation";
+import { RoundApplicationQuestion } from "../../../types";
 
 const validInputs = {
   title: "Project Title",
@@ -39,24 +40,26 @@ describe("Form Validation", () => {
       expect(error.name).toBe("ValidationError");
     }
   });
+
   it("Validates application form", async () => {
     const formInputs = {
-      text_area_question: "Text Area Response",
+      2: "Text Area Response",
     };
-    const defaultInputs = [
+
+    const defaultInputs: RoundApplicationQuestion[] = [
       {
+        id: 1,
         question: "Text Question",
         type: "TEXT",
         required: true,
         info: "This is your text question",
-        id: "text_question",
       },
       {
         question: "Text Area Question",
         type: "TEXTAREA",
         required: true,
         info: "This is a text question",
-        id: "text_area_question",
+        id: 2,
       },
       {
         question: "Radio Input Question",
@@ -64,11 +67,12 @@ describe("Form Validation", () => {
         required: false,
         info: "This is a radio question",
         choices: ["Option 1", "Option 2"],
-        id: "radio_input_question",
+        id: 3,
       },
     ];
     try {
       await validateApplication(defaultInputs, formInputs);
+      throw(new Error("expected to catch a validation error but there was no error"));
     } catch (e) {
       const error = e as ValidationError;
       expect(error.message).toBe("Text Question is required");
