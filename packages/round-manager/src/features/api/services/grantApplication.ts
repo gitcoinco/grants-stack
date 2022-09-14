@@ -11,24 +11,21 @@ import {
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
 
-const updateApplicationList = (
+const updateApplicationList = async (
   applications: GrantApplication[],
   roundId: string,
   provider: Web3Provider
 ): Promise<string> => {
-  /* ESLint ignore is fine since we handle the throws*/
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve, reject) => {
-    try {
-      let reviewedApplications: any[] = [];
-      let foundEntry = false;
+  try {
+    let reviewedApplications: any[] = [];
+    let foundEntry = false;
 
-      // fetch latest ipfs pointer to the list of application for the round
+    // fetch latest ipfs pointer to the list of application for the round
 
-      const { chainId } = await provider.getNetwork(); // fetch chain id
+    const { chainId } = await provider.getNetwork(); // fetch chain id
 
-      const res = await graphql_fetch(
-        `
+    const res = await graphql_fetch(
+      `
           query GetApplicationListPointer($roundId: String!) {
             rounds(first: 1, where: {
               id: $roundId
@@ -39,57 +36,55 @@ const updateApplicationList = (
             }
           }
         `,
-        chainId,
-        { roundId }
-      );
+      chainId,
+      { roundId }
+    );
 
-      const applicationListPointer =
-        res.data.rounds[0].projectsMetaPtr?.pointer;
+    const applicationListPointer = res.data.rounds[0].projectsMetaPtr?.pointer;
 
-      // read data from ipfs
-      if (applicationListPointer) {
-        reviewedApplications = await fetchFromIPFS(applicationListPointer);
-      }
+    // read data from ipfs
+    if (applicationListPointer) {
+      reviewedApplications = await fetchFromIPFS(applicationListPointer);
+    }
 
-      for (const application of applications) {
-        // if grant application is already reviewed overwrite the entry
-        foundEntry = reviewedApplications.find((o: any, i: any) => {
-          if (o.id === application.id) {
-            reviewedApplications[i] = {
-              id: application.id,
-              status: application.status,
-              payoutAddress: application.recipient,
-            };
-            return true; // stop searching
-          }
-          return false;
-        });
-
-        // create a new reviewed application entry
-        if (!foundEntry || !applicationListPointer) {
-          reviewedApplications.push({
+    for (const application of applications) {
+      // if grant application is already reviewed overwrite the entry
+      foundEntry = reviewedApplications.find((o: any, i: any) => {
+        if (o.id === application.id) {
+          reviewedApplications[i] = {
             id: application.id,
             status: application.status,
             payoutAddress: application.recipient,
-          });
+          };
+          return true; // stop searching
         }
-      }
-
-      // pin new list IPFS
-      const resp = await pinToIPFS({
-        content: reviewedApplications,
-        metadata: {
-          name: "reviewed-applications",
-        },
+        return false;
       });
-      console.log("✅  Saved data to IPFS:", resp.IpfsHash);
 
-      resolve(resp.IpfsHash);
-    } catch (err) {
-      console.log("error", err);
-      reject("Unable to update grant application");
+      // create a new reviewed application entry
+      if (!foundEntry || !applicationListPointer) {
+        reviewedApplications.push({
+          id: application.id,
+          status: application.status,
+          payoutAddress: application.recipient,
+        });
+      }
     }
-  });
+
+    // pin new list IPFS
+    const resp = await pinToIPFS({
+      content: reviewedApplications,
+      metadata: {
+        name: "reviewed-applications",
+      },
+    });
+    console.log("✅  Saved data to IPFS:", resp.IpfsHash);
+
+    return resp.IpfsHash;
+  } catch (err) {
+    console.log("error", err);
+    throw "Unable to update grant application";
+  }
 };
 
 /**
