@@ -36,7 +36,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: stubProgram.operatorWallets[0],
-      provider: { getNetwork: () => ({ chainId: "0x0"}) }
+      provider: { getNetwork: () => ({ chainId: "0x0" }) },
     });
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       data: [],
@@ -132,8 +132,7 @@ describe("<ViewProgram />", () => {
       renderWithContext(<ViewProgram />, { programs: [stubProgram] });
 
       expect(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain,@typescript-eslint/no-non-null-assertion
-        screen.getByText(stubRound.roundMetadata?.name!)
+        screen.getByText(stubRound.roundMetadata!.name!)
       ).toBeInTheDocument();
     });
 

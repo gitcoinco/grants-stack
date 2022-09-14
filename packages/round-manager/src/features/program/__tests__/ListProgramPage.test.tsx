@@ -3,7 +3,11 @@ import { screen } from "@testing-library/react";
 import { makeProgramData, renderWithContext } from "../../../test-utils";
 
 jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({ provider: {} }),
+  useWallet: () => ({
+    chain: {},
+    address: "0x0",
+    provider: { getNetwork: () => ({ chainId: "0" }) },
+  }),
 }));
 jest.mock("wagmi");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -12,7 +16,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 describe("<ListProgramPage />", () => {
   it("does not render a list of programs when no programs have been created", () => {
-    renderWithContext(<ListProgramPage />, { programs: [] });
+    renderWithContext(<ListProgramPage />, { programs: [], isLoading: false });
 
     expect(screen.queryAllByTestId("program-card")).toHaveLength(0);
   });
@@ -20,6 +24,7 @@ describe("<ListProgramPage />", () => {
   it("renders a list of programs when programs have been created", async () => {
     renderWithContext(<ListProgramPage />, {
       programs: [makeProgramData(), makeProgramData()],
+      isLoading: false,
     });
 
     expect(await screen.findAllByTestId("program-card")).toHaveLength(2);
