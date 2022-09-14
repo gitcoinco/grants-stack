@@ -117,29 +117,61 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
+  const recipientAddressInput =
+    schema.find((item) => item.type === "RECIPIENT") ?? undefined;
+  const projectSelect =
+    schema.find((item) => item.type === "PROJECT") ?? undefined;
+
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
+        <Select
+          key={projectSelect?.id}
+          name={`${projectSelect?.id}`}
+          label={projectSelect?.question ?? ""}
+          options={projectOptions ?? []}
+          disabled={preview}
+          changeHandler={handleInput}
+        />
+        {/* Radio for safe or multi-sig */}
+        <div className="relative">
+          <Stack>
+            <span className="absolute text-purple-700 inset-y-0 right-1/2">
+              * required
+            </span>
+            <Radio
+              label="Is your payout wallet a Gnosis Safe or multi-sig?"
+              choices={["Yes", "No"]}
+              changeHandler={handleInput}
+              name="isSafe"
+              value={formInputs.isSafe ?? ""}
+              info=""
+            />
+          </Stack>
+        </div>
+        <TextInputAddress
+          key={recipientAddressInput?.id}
+          label={recipientAddressInput?.question ?? "Payout Wallet Address"}
+          placeholder={recipientAddressInput?.info}
+          name={`${recipientAddressInput?.id}`}
+          tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
+          If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
+          and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
+          sending the balance of any full grant."
+          value={formInputs[`${recipientAddressInput?.id}`] ?? ""}
+          disabled={preview}
+          changeHandler={handleInputAddress}
+          displayError={displayAddressError}
+        />
+        <p className="text-xs mt-4 mb-1">
+          To complete your application to {round.roundMetadata.name}, a little
+          more info is needed:
+        </p>
+        <hr />
         {schema.map((input) => {
           switch (input.type) {
             case "PROJECT":
-              return (
-                <>
-                  <Select
-                    key={input.id}
-                    name={`${input.id}`}
-                    label={input.question}
-                    options={projectOptions ?? []}
-                    disabled={preview}
-                    changeHandler={handleInput}
-                  />
-                  <p className="text-xs mt-4 mb-1">
-                    To complete your application to {round.roundMetadata.name},
-                    a little more info is needed:
-                  </p>
-                  <hr />
-                </>
-              );
+              return <div />;
             case "TEXT":
               return (
                 <TextInput
@@ -153,22 +185,7 @@ export default function Form({
                 />
               );
             case "RECIPIENT":
-              return (
-                <TextInputAddress
-                  key={input.id}
-                  label={input.question}
-                  placeholder={input.info}
-                  name={`${input.id}`}
-                  tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
-                  If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
-                  and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
-                  sending the balance of any full grant."
-                  value={formInputs[`${input.id}`] ?? ""}
-                  disabled={preview}
-                  changeHandler={handleInputAddress}
-                  displayError={displayAddressError}
-                />
-              );
+              return <div />;
             case "TEXTAREA":
               return (
                 <TextArea
@@ -221,22 +238,6 @@ export default function Form({
               );
           }
         })}
-        {/* Radio for safe or multi-sig */}
-        <div className="relative">
-          <Stack>
-            <span className="absolute text-purple-700 inset-y-0 right-1/2">
-              * required
-            </span>
-            <Radio
-              label="Is your payout wallet a Gnosis Safe or multi-sig?"
-              choices={["Yes", "No"]}
-              changeHandler={handleInput}
-              name="isSafe"
-              value={formInputs.isSafe ?? ""}
-              info=""
-            />
-          </Stack>
-        </div>
         {!formValidation.valid && submitted && (
           <p className="text-danger-text w-full text-center font-semibold my-2">
             {formValidation.message}
