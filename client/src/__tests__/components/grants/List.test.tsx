@@ -1,8 +1,8 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom";
 import { when } from "jest-when";
 import { Store } from "redux";
-import { RootState } from "../../../reducers";
 import { screen } from "@testing-library/react";
+import { RootState } from "../../../reducers";
 import List from "../../../components/grants/List";
 import setupStore from "../../../store";
 import { loadProjects } from "../../../actions/projects";
@@ -48,7 +48,6 @@ const projectsMetadata: Metadata[] = [
     website: "",
   },
 ];
-
 
 describe("<List />", () => {
   beforeEach(() => {
@@ -288,11 +287,17 @@ describe("<List />", () => {
           renderWrapped(<List />, store);
 
           expect(screen.getByText("Apply to Grant Round")).toBeInTheDocument();
-          expect(screen.getByText("Time to get your project funded!")).toBeInTheDocument();
+          expect(
+            screen.getByText("Time to get your project funded!")
+          ).toBeInTheDocument();
         });
 
         test("should not be visible with toggleRoundApplicationModal set to true but already applied", async () => {
-          store.dispatch({ type: "ROUND_APPLICATION_FOUND", roundAddress, project: projects[0].id });
+          store.dispatch({
+            type: "ROUND_APPLICATION_FOUND",
+            roundAddress,
+            project: projects[0].id,
+          });
 
           when(useLocalStorage as jest.Mock)
             .calledWith("toggleRoundApplicationModal", false)
@@ -301,7 +306,9 @@ describe("<List />", () => {
           renderWrapped(<List />, store);
 
           expect(screen.queryByText("Apply to Grant Round")).toBeNull();
-          expect(screen.queryByText("Time to get your project funded!")).toBeNull();
+          expect(
+            screen.queryByText("Time to get your project funded!")
+          ).toBeNull();
         });
       });
     });

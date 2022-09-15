@@ -59,7 +59,8 @@
     "test:dev": "jest --watch=true",
     "test:coverage": "jest --watchAll=false --coverage",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
+    "lint:fix": "eslint ./src --fix --cache"
   },
   "eslintConfig": {
     "extends": [

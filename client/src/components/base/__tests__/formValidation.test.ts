@@ -72,7 +72,9 @@ describe("Form Validation", () => {
     ];
     try {
       await validateApplication(defaultInputs, formInputs);
-      throw(new Error("expected to catch a validation error but there was no error"));
+      throw new Error(
+        "expected to catch a validation error but there was no error"
+      );
     } catch (e) {
       const error = e as ValidationError;
       expect(error.message).toBe("Text Question is required");

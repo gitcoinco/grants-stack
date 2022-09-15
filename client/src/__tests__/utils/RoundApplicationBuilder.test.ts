@@ -105,7 +105,9 @@ describe("round application builder", () => {
   it("builds", async () => {
     (Lit as jest.Mock).mockReturnValue({
       encryptString: () => ({
-        encryptedString: new Blob(["encTest"], { type: "application/octet-stream" }),
+        encryptedString: new Blob(["encTest"], {
+          type: "application/octet-stream",
+        }),
         encryptedSymmetricKey: "symKeyTest",
       }),
     });
@@ -134,7 +136,9 @@ describe("round application builder", () => {
     expect(emailAnswer.answer).toBeUndefined();
     expect(emailAnswer.encryptedAnswer).not.toBeUndefined();
     expect(emailAnswer.encryptedAnswer!.ciphertext).not.toBeUndefined();
-    expect(emailAnswer.encryptedAnswer!.encryptedSymmetricKey).not.toBeUndefined();
+    expect(
+      emailAnswer.encryptedAnswer!.encryptedSymmetricKey
+    ).not.toBeUndefined();
   });
 });
 

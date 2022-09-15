@@ -4,7 +4,7 @@ interface Props {
   children: JSX.Element;
 }
 
-export default function ({ children }: Props) {
+export default function DatadogComponent({ children }: Props) {
   if (process.env.NODE_ENV === "development") {
     return children;
   }
