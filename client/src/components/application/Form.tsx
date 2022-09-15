@@ -29,6 +29,7 @@ import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
 import { isValidAddress } from "../../utils/wallet";
+import ToggleDetails from "../grants/ToggleDetails";
 
 const validation = {
   message: "",
@@ -153,7 +154,6 @@ export default function Form({
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        <hr />
         {schema.map((input) => {
           switch (input.type) {
             case "PROJECT":
@@ -173,23 +173,23 @@ export default function Form({
                         <h2>
                           <AccordionButton>
                             <Box flex="1" textAlign="left">
-                              Project Details (
-                              {props.selectedProjectMetadata.title})
+                              Project Details
                             </Box>
                           </AccordionButton>
                         </h2>
                         <AccordionPanel pb={4}>
-                          {/* <Details
-                  project={props.roundApplication.project}}
-                  bannerImg=""
-                  logoImg=""
-                  updatedAt=""
-                  key={projectSelect?.id}
-                /> */}
+                          <ToggleDetails
+                            project={props.selectedProjectMetadata}
+                          />
                         </AccordionPanel>
                       </AccordionItem>
                     </Accordion>
                   )}
+                  <p className="text-xs mt-4 mb-1">
+                    To complete your application to {round.roundMetadata.name},
+                    a little more info is needed:
+                  </p>
+                  <hr />
                 </>
               );
             case "TEXT":
@@ -236,10 +236,6 @@ export default function Form({
                     changeHandler={handleInputAddress}
                     displayError={displayAddressError}
                   />
-                  <p className="text-xs mt-4 mb-1">
-                    To complete your application to {round.roundMetadata.name},
-                    a little more info is needed:
-                  </p>
                 </>
               );
             case "TEXTAREA":
