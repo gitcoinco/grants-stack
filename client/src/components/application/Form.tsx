@@ -161,6 +161,7 @@ export default function Form({
           disabled={preview}
           changeHandler={handleInputAddress}
           displayError={displayAddressError}
+          required={recipientAddressInput?.required ?? true}
         />
         <p className="text-xs mt-4 mb-1">
           To complete your application to {round.roundMetadata.name}, a little

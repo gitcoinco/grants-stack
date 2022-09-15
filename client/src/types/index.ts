@@ -71,6 +71,7 @@ export type AddressInputProps = {
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
   displayError?: string;
+  required: boolean;
 };
 
 export interface ProjectEvent {

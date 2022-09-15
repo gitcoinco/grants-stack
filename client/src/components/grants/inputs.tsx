@@ -45,15 +45,18 @@ export function TextInputAddress({
   disabled,
   changeHandler,
   displayError, // a string that will be: (visible | invisible)
+  required,
 }: AddressInputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm absolute" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
-        *Required
-      </span>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          *Required
+        </span>
+      )}
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
