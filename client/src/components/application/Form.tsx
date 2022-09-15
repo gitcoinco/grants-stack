@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { ValidationError } from "yup";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Stack,
-} from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   ChangeHandlers,
@@ -29,7 +22,7 @@ import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
 import { isValidAddress } from "../../utils/wallet";
-import ToggleDetails from "../grants/ToggleDetails";
+import Toggle from "../grants/Toggle";
 
 const validation = {
   message: "",
@@ -167,24 +160,10 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleProjectInput}
                   />
-                  {showProjectDetails && props.selectedProjectMetadata && (
-                    <Accordion className="w-1/2 mt-4" allowToggle>
-                      <AccordionItem>
-                        <h2>
-                          <AccordionButton>
-                            <Box flex="1" textAlign="left">
-                              Project Details
-                            </Box>
-                          </AccordionButton>
-                        </h2>
-                        <AccordionPanel pb={4}>
-                          <ToggleDetails
-                            project={props.selectedProjectMetadata}
-                          />
-                        </AccordionPanel>
-                      </AccordionItem>
-                    </Accordion>
-                  )}
+                  <Toggle
+                    projectMetadata={props.selectedProjectMetadata}
+                    showProjectDetails={showProjectDetails}
+                  />
                   <p className="text-xs mt-4 mb-1">
                     To complete your application to {round.roundMetadata.name},
                     a little more info is needed:
