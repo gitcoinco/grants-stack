@@ -70,7 +70,7 @@ export default function Details({
         </a>
         <div>
           <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />{" "}
+            <Calendar color={colors["secondary-text"]} /> Created:{" "}
             <span className="ml-2">{updatedAt}</span>
           </p>
         </div>
