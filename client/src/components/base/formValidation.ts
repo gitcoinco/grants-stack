@@ -20,7 +20,7 @@ export async function validateApplication(
 ) {
   const schema = defaultInputs.reduce((acc, input) => {
     const { id, required } = input;
-    if (id) {
+    if (id !== undefined) {
       return {
         ...acc,
         [id]: required
