@@ -185,9 +185,9 @@ function ProjectForm({
           >
             <strong className="text-sm font-medium">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
-              {formValidation.errorCount} error
-              {formValidation.errorCount === 1 ? "" : "s"} with your form
-              submission
+              {formValidation.errorCount}{" "}
+              {formValidation.errorCount === 1 ? "error" : "errors"} with your
+              form submission
             </strong>
 
             <ul className="mt-1 ml-2 text-xs list-disc list-inside">
