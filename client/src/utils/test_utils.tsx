@@ -1,9 +1,8 @@
-import react from "react";
 import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { render } from "@testing-library/react";
 import history from "../history";
 import setupStore from "../store";
-import { render } from "@testing-library/react";
 
 export const renderWrapped = (ui: React.ReactElement, store = setupStore()) => {
   const wrapped = (
@@ -16,3 +15,5 @@ export const renderWrapped = (ui: React.ReactElement, store = setupStore()) => {
 
   return { store, ...render(wrapped) };
 };
+
+export default {};
