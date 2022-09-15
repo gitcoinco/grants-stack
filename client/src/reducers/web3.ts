@@ -5,13 +5,14 @@ import {
   WEB3_ERROR,
   WEB3_CHAIN_ID_LOADED,
   WEB3_ACCOUNT_LOADED,
+  Web3Errors,
 } from "../actions/web3";
 
 export interface Web3State {
   initializing: boolean;
   initialized: boolean;
   chainID: number | undefined;
-  error: string | undefined;
+  error: Web3Errors | undefined;
   account: string | undefined;
 }
 

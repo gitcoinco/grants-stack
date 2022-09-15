@@ -7,13 +7,19 @@ import {
   ProjectOption,
   Round,
 } from "../../types";
-import { Select, TextArea, TextInput } from "../grants/inputs";
+import {
+  Select,
+  TextArea,
+  TextInput,
+  TextInputAddress,
+} from "../grants/inputs";
 import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
 import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
+import { isValidAddress } from "../../utils/wallet";
 
 interface DynamicFormInputs {
   [key: string]: string;
@@ -46,11 +52,28 @@ export default function Form({
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
+  const [displayAddressError, setDisplayAddressError] = useState("invisible");
+  const [disableProgress, setDisableProgress] = useState(false);
 
   const schema = roundApplication.applicationSchema;
 
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
+    setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
+  const handleInputAddress = async (e: ChangeHandlers) => {
+    const { value } = e.target;
+    const isValid = isValidAddress(value);
+    console.log("valid", isValid);
+    if (value.length !== 42 && !isValid) {
+      setDisplayAddressError("visible");
+      setDisableProgress(true);
+    } else {
+      setDisplayAddressError("invisible");
+      setDisableProgress(false);
+    }
+
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
 
@@ -116,14 +139,13 @@ export default function Form({
                     changeHandler={handleInput}
                   />
                   <p className="text-xs mt-4 mb-1">
-                    To complete your application to ${round.roundMetadata.name},
+                    To complete your application to {round.roundMetadata.name},
                     a little more info is needed:
                   </p>
                   <hr />
                 </>
               );
             case "TEXT":
-            case "RECIPIENT": // FIXME: separate RECIPIENT to have address validation
               return (
                 <TextInput
                   key={input.id}
@@ -133,6 +155,23 @@ export default function Form({
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
+                />
+              );
+            case "RECIPIENT":
+              return (
+                <TextInputAddress
+                  key={input.id}
+                  label={input.question}
+                  placeholder={input.info}
+                  name={`${input.id}`}
+                  tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
+                  If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
+                  and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
+                  sending the balance of any full grant."
+                  value={formInputs[`${input.id}`] ?? ""}
+                  disabled={preview}
+                  changeHandler={handleInputAddress}
+                  displayError={displayAddressError}
                 />
               );
             case "TEXTAREA":
@@ -195,6 +234,7 @@ export default function Form({
         <div className="flex justify-end">
           {!preview ? (
             <Button
+              disabled={disableProgress}
               variant={ButtonVariants.primary}
               onClick={() => setPreview(true)}
             >

@@ -101,7 +101,7 @@ function Apply() {
   return (
     <div className="mx-4">
       <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Grant Application</h3>
+        <h3 className="mb-2">Grant Round Application</h3>
         <div className="w-full mb-2 inline-block sm:hidden">
           <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
         </div>
@@ -110,7 +110,7 @@ function Apply() {
           onClick={() => toggleModal(true)}
           styles={["w-full sm:w-auto mx-w-full ml-0"]}
         >
-          <i className="icon mt-1.5">
+          <i className="icon mt-1">
             <Cross color={colors["danger-background"]} />
           </i>{" "}
           <span className="pl-2">Exit</span>

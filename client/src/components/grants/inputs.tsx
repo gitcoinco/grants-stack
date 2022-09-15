@@ -1,4 +1,5 @@
-import { InputProps, ProjectOption } from "../../types";
+import { Tooltip } from "@chakra-ui/react";
+import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 export function TextInput({
   label,
@@ -10,10 +11,13 @@ export function TextInput({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-6 w-full sm:w-1/2">
+    <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      <span className="absolute text-purple-700 inset-y-0 right-0">
+        * required
+      </span>
       <legend>{info}</legend>
       <input
         type="text"
@@ -24,6 +28,55 @@ export function TextInput({
         disabled={disabled}
         onChange={changeHandler}
       />
+    </div>
+  );
+}
+
+export function TextInputAddress({
+  label,
+  info,
+  name,
+  value,
+  tooltipValue,
+  placeholder,
+  disabled,
+  changeHandler,
+  displayError, // a string that will be: (visible | invisible)
+}: AddressInputProps) {
+  // todo: validate address
+
+  return (
+    <div className="mt-6 w-full sm:w-1/2 static">
+      <label className="text-sm absolute" htmlFor={name}>
+        {label}
+      </label>
+      <Tooltip bg="purple.600" hasArrow label={tooltipValue}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="w-6 h-6 ml-32"
+        >
+          <path
+            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 
+              11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+          />
+        </svg>
+      </Tooltip>
+      <legend>{info}</legend>
+      <input
+        type="text"
+        id={label}
+        name={name}
+        value={value ?? ""}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={changeHandler}
+      />
+      <span className={`text-red-500 ${displayError}`}>
+        This is not a valid payment address
+      </span>
     </div>
   );
 }
@@ -79,7 +132,7 @@ export function TextArea({
   changeHandler,
 }: InputProps) {
   return (
-    <div className="mt-6">
+    <div className="mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
@@ -109,10 +162,13 @@ export function Select({
   changeHandler,
 }: SelectInputProps) {
   return (
-    <div>
+    <div className="relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      <span className="absolute text-purple-700 inset-y-0 right-1/2">
+        * required
+      </span>
       <legend>{info}</legend>
       <select
         id={name}
