@@ -199,6 +199,7 @@ export default function Form({
                     options={projectOptions ?? []}
                     disabled={preview}
                     changeHandler={handleProjectInput}
+                    required={input.required ?? true}
                   />
                   <Toggle
                     projectMetadata={props.selectedProjectMetadata}
@@ -237,6 +238,7 @@ export default function Form({
                         name="isSafe"
                         value={formInputs.isSafe ?? ""}
                         info=""
+                        required={input.required ?? true}
                       />
                     </Stack>
                   </div>
@@ -253,6 +255,7 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInputAddress}
                     displayError={displayAddressError}
+                    required={input.required ?? true}
                   />
                 </>
               );
