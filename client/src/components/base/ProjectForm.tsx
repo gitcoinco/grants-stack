@@ -124,14 +124,14 @@ function ProjectForm({
           placeholder="What's the project name?"
           value={props.formMetaData.title}
           changeHandler={handleInput}
-          required={false}
+          required
         />
         <WebsiteInput
           label="Project Website"
           name="website"
           value={props.formMetaData.website}
           changeHandler={handleInput}
-          required={false}
+          required
         />
         <ImageInput
           label="Project Logo"
@@ -182,7 +182,7 @@ function ProjectForm({
           placeholder="What is the project about and what kind of impact does it aim to have?"
           value={props.formMetaData.description}
           changeHandler={handleInput}
-          required={false}
+          required
         />
         {!formValidation.valid && submitted && (
           <div

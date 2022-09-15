@@ -18,7 +18,7 @@ export function TextInput({
       </label>
       {required && (
         <span className="absolute text-purple-700 inset-y-0 right-0">
-          *Required
+          * Required
         </span>
       )}
       <legend>{info}</legend>
@@ -54,7 +54,7 @@ export function TextInputAddress({
       </label>
       {required && (
         <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
-          *Required
+          * Required
         </span>
       )}
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
@@ -95,6 +95,7 @@ export function WebsiteInput({
   disabled,
   info,
   changeHandler,
+  required,
 }: InputProps) {
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -103,11 +104,16 @@ export function WebsiteInput({
     changeHandler(event);
   };
   return (
-    <div className="mt-6 w-full sm:w-2/3">
+    <div className="mt-6 w-full sm:w-2/3 relative">
       <label className="text-sm" htmlFor={name}>
         {" "}
         {label}{" "}
       </label>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <div className="flex">
         {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -137,12 +143,18 @@ export function TextArea({
   placeholder,
   disabled,
   changeHandler,
+  required,
 }: InputProps) {
   return (
-    <div className="mt-6 w-full sm:w-1/2">
+    <div className="mt-6 w-full sm:w-1/2 relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <textarea
         id={label}
@@ -176,7 +188,7 @@ export function Select({
       </label>
       {required && (
         <span className="absolute text-purple-700 inset-y-0 right-0">
-          *Required
+          * Required
         </span>
       )}
       <legend>{info}</legend>
