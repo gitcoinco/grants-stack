@@ -3,8 +3,10 @@ import { Metadata, FormInputs, Project } from "../../types";
 function Section({ title, text }: { title: string; text: string | undefined }) {
   return (
     <div className="flex flex-col items-left justify-left m-2">
-      <span className="text-2xl">{title}</span>
-      <span className="ml-4">{text}</span>
+      <label htmlFor={text} className="text-xl">
+        {title}
+      </label>
+      <input className="ml-4" name={text} type="text" value={text} disabled />
     </div>
   );
 }
@@ -23,13 +25,13 @@ export default function ToggleDetails({
         title="Project Github Organization"
         text={project?.projectGithub}
       />
-      <div className="w-full md:w-2/3 mb-40">
+      <div className="w-full md:w-2/3 mt-2">
         <img
           className="w-full mb-4"
           src={
             project?.bannerImg instanceof Blob
               ? URL.createObjectURL(project?.bannerImg)
-              : project?.bannerImg
+              : "./assets/card-img.png"
           }
           onError={(e) => {
             e.currentTarget.onerror = null;
@@ -44,7 +46,7 @@ export default function ToggleDetails({
           src={
             project?.logoImg instanceof Blob
               ? URL.createObjectURL(project?.logoImg)
-              : project?.logoImg
+              : "./icons/lightning.svg"
           }
           onError={(e) => {
             e.currentTarget.onerror = null;
