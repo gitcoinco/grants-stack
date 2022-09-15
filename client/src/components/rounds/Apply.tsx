@@ -118,11 +118,17 @@ function Apply() {
       </div>
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
-          <p className="font-semibold">Your Grant Application to:</p>
+          <p className="font-semibold">Grant Round</p>
           <p>{props.round.roundMetadata.name}</p>
+          <p className="font-semibold mt-4">Application Date</p>
           <p>
             {formatDate(props.round.applicationsStartTime)} -{" "}
             {formatDate(props.round.applicationsEndTime)}
+          </p>
+          <p className="font-semibold mt-4">Round Date</p>
+          <p>
+            {formatDate(props.round.roundStartTime)} -{" "}
+            {formatDate(props.round.roundEndTime)}
           </p>
         </div>
         <div className="w-full md:w-2/3">
