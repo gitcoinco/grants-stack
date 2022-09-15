@@ -18,10 +18,6 @@ const projects: ProjectEvent[] = [
 ];
 
 describe("<List />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe("useEffect/fetchGrantData", () => {
     test("should be called the first time", async () => {
       const store = setupStore();

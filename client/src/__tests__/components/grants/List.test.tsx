@@ -51,7 +51,6 @@ const projectsMetadata: Metadata[] = [
 
 describe("<List />", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     (useLocalStorage as jest.Mock).mockReturnValue([null]);
   });
 
