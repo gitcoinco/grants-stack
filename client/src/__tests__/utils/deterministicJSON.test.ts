@@ -1,4 +1,9 @@
-import { objectToSortedTuples, objectToDeterministicJSON, Obj, Tuple, Result } from "../../utils/deterministicJSON";
+import {
+  objectToSortedTuples,
+  objectToDeterministicJSON,
+  Obj,
+  Result,
+} from "../../utils/deterministicJSON";
 
 interface Scenarios {
   input: Obj;
