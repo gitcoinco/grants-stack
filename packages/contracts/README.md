@@ -18,7 +18,7 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 ├   ├   ├── RoundImplementation.sol     # round contract 
 ├   ├── votingStrategy                  # voting strategy
 ├   ├   ├── IVotingStrategy.sol         # voting strategy interface
-├   ├   ├── QuadraticFundingVotingStrategy.sol      # bulk voting strategy
+├   ├   ├── QuadraticFundingVotingStrategy.sol      # QF voting strategy
 ├── scripts                             # Deploy scripts for smart contracts
 ├── docs                                # documentation 
 ├── test                                # Test for smart contracts
