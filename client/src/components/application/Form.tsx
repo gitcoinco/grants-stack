@@ -44,14 +44,6 @@ export default function Form({
 }) {
   const dispatch = useDispatch();
 
-  const props = useSelector(
-    (state: RootState) => ({
-      projects: state.projects.projects,
-      allProjectMetadata: state.grantsMetadata,
-    }),
-    shallowEqual
-  );
-
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [submitted, setSubmitted] = useState(false);
   const [preview, setPreview] = useState(false);
@@ -59,12 +51,36 @@ export default function Form({
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [displayAddressError, setDisplayAddressError] = useState("invisible");
   const [showProjectDetails] = useState(true);
+  const [selectedProjectID, setSelectedProjectID] = useState<
+    string | undefined
+  >(undefined);
+
+  const props = useSelector((state: RootState) => {
+    const allProjectMetadata = state.grantsMetadata;
+    let selectedProjectMetadata;
+    if (selectedProjectID !== undefined && selectedProjectID !== "") {
+      selectedProjectMetadata =
+        allProjectMetadata[Number(selectedProjectID)]?.metadata;
+    }
+
+    return {
+      projects: state.projects.projects,
+      allProjectMetadata,
+      selectedProjectMetadata,
+    };
+  }, shallowEqual);
 
   const schema = roundApplication.applicationSchema;
 
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
+  const handleProjectInput = (e: ChangeHandlers) => {
+    const { value } = e.target;
+    setSelectedProjectID(value);
+    handleInput(e);
   };
 
   const handleInputAddress = async (e: ChangeHandlers) => {
