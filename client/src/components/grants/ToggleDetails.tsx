@@ -25,7 +25,7 @@ export default function ToggleDetails({
         title="Project Github Organization"
         text={project?.projectGithub}
       />
-      <div className="w-full md:w-2/3 mt-2">
+      <div className="w-full mt-2">
         <img
           className="w-full mb-4"
           src={
