@@ -142,7 +142,9 @@ export const useProgramById = (
   const { provider: walletProvider } = useWallet();
   useEffect(() => {
     if (id) {
-      const existingProgram = context.state.programs.find((program) => program.id === id)
+      const existingProgram = context.state.programs.find(
+        (program) => program.id === id
+      );
 
       if (!existingProgram) {
         fetchProgramsById(context.dispatch, id, walletProvider);

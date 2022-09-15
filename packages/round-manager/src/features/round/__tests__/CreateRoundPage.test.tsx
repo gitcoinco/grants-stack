@@ -23,7 +23,11 @@ jest.mock("react-router-dom", () => ({
 
 describe("<CreateRoundPage />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({ chain: {}, address: "0x0", provider: { getNetwork: () => ({ chainId: "0x0"}) }});
+    (useWallet as jest.Mock).mockReturnValue({
+      chain: {},
+      address: "0x0",
+      provider: { getNetwork: () => ({ chainId: "0x0" }) },
+    });
   });
 
   it("sends program to form wizard", () => {

@@ -126,9 +126,7 @@ function ListPrograms() {
           {programList}
         </CardsContainer>
 
-        {isLoading && (
-          <Spinner text="Fetching Programs" data-testid="loading-programs" />
-        )}
+        {isLoading && <Spinner text="We're fetching your Programs." />}
       </main>
       <Footer />
     </div>
