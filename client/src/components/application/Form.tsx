@@ -132,6 +132,7 @@ export default function Form({
           options={projectOptions ?? []}
           disabled={preview}
           changeHandler={handleInput}
+          required={projectSelect?.required ?? false}
         />
         {/* Radio for safe or multi-sig */}
         <div className="relative mt-2">
@@ -143,6 +144,7 @@ export default function Form({
               name="isSafe"
               value={formInputs.isSafe ?? ""}
               info=""
+              required
             />
           </Stack>
         </div>
@@ -179,6 +181,7 @@ export default function Form({
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
+                  required={input.required ?? false}
                 />
               );
             case "RECIPIENT":
@@ -193,6 +196,7 @@ export default function Form({
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
+                  required={input.required ?? false}
                 />
               );
             case "RADIO":
@@ -208,6 +212,7 @@ export default function Form({
                   choices={input.choices}
                   disabled={preview}
                   changeHandler={handleInput}
+                  required={input.required ?? false}
                 />
               );
             // case "MULTIPLE":
@@ -231,6 +236,7 @@ export default function Form({
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
+                  required={input.required ?? false}
                 />
               );
           }

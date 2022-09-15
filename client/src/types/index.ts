@@ -58,6 +58,7 @@ export type InputProps = {
   placeholder?: string;
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
+  required: boolean;
 };
 
 export type AddressInputProps = {
