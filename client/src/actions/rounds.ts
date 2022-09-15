@@ -232,19 +232,19 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
         applicationMetadata.application_schema;
     }
 
+    recipientQuestionId = applicationMetadata.applicationSchema.length;
+    applicationMetadata.applicationSchema.unshift({
+      ...recipientAddressQuestion,
+      id: recipientQuestionId,
+    });
+    applicationMetadata.recipientQuestionId = recipientQuestionId;
+
     projectQuestionId = applicationMetadata.applicationSchema.length;
     applicationMetadata.applicationSchema.unshift({
       ...projectQuestion,
       id: projectQuestionId,
     });
     applicationMetadata.projectQuestionId = projectQuestionId;
-
-    recipientQuestionId = applicationMetadata.applicationSchema.length;
-    applicationMetadata.applicationSchema.push({
-      ...recipientAddressQuestion,
-      id: recipientQuestionId,
-    });
-    applicationMetadata.recipientQuestionId = recipientQuestionId;
   } catch (e) {
     dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
