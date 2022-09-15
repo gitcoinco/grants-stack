@@ -1,5 +1,5 @@
 import colors from "../../styles/colors";
-import { Metadata, FormInputs, Project } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -129,7 +129,7 @@ export default function Details({
         )}
       </div>
 
-      <p className="text-xs text-primary-text mb-1">Description</p>
+      <p className="text-primary-text mb-1 font-bold">Description</p>
       <p className="mb-12">{project?.description}</p>
     </div>
   );
