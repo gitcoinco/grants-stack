@@ -136,10 +136,6 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
-  useEffect(() => {
-    // todo: this is a hack to get the project details to show up
-  }, [formInputs]);
-
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
