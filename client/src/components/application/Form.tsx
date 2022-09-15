@@ -8,6 +8,7 @@ import {
   ProjectOption,
   Round,
   DynamicFormInputs,
+  Metadata,
 } from "../../types";
 import {
   Select,
@@ -51,7 +52,7 @@ export default function Form({
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
-    let selectedProjectMetadata;
+    let selectedProjectMetadata: Metadata | undefined;
     if (selectedProjectID !== undefined && selectedProjectID !== "") {
       selectedProjectMetadata =
         allProjectMetadata[Number(selectedProjectID)]?.metadata;
@@ -135,11 +136,6 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
-  const recipientAddressInput =
-    schema.find((item) => item.type === "RECIPIENT") ?? undefined;
-  const projectSelect =
-    schema.find((item) => item.type === "PROJECT") ?? undefined;
-
   useEffect(() => {
     // todo: this is a hack to get the project details to show up
   }, [formInputs]);
@@ -153,9 +149,9 @@ export default function Form({
               return (
                 <>
                   <Select
-                    key={projectSelect?.id}
-                    name={`${projectSelect?.id}`}
-                    label={projectSelect?.question ?? ""}
+                    key={input.id}
+                    name={`${input.id}`}
+                    label={input.question}
                     options={projectOptions ?? []}
                     disabled={preview}
                     changeHandler={handleProjectInput}
@@ -200,17 +196,15 @@ export default function Form({
                     </Stack>
                   </div>
                   <TextInputAddress
-                    key={recipientAddressInput?.id}
-                    label={
-                      recipientAddressInput?.question ?? "Payout Wallet Address"
-                    }
-                    placeholder={recipientAddressInput?.info}
-                    name={`${recipientAddressInput?.id}`}
+                    key={input.id}
+                    label={input.question ?? "Payout Wallet Address"}
+                    placeholder={input.info}
+                    name={`${input.id}`}
                     tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
           If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism,
           and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before
           sending the balance of any full grant."
-                    value={formInputs[`${recipientAddressInput?.id}`] ?? ""}
+                    value={formInputs[`${input.id}`] ?? ""}
                     disabled={preview}
                     changeHandler={handleInputAddress}
                     displayError={displayAddressError}
