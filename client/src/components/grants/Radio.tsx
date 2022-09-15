@@ -14,7 +14,12 @@ export default function Radio({
 }: RadioInputProps) {
   return (
     <div>
-      <label htmlFor={name}>{label}</label>
+      <label className="text-sm" htmlFor={name}>
+        {label}
+      </label>
+      <span className="absolute text-purple-700 ml-4 md:right-1/2 sm:right-0 lg:right-1/2">
+        *Required
+      </span>
       <legend>{info}</legend>
       <fieldset className="mt-4" id={name}>
         <div className="space-y-2">
