@@ -136,57 +136,9 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
-  const recipientAddressInput =
-    schema.find((item) => item.type === "RECIPIENT") ?? undefined;
-  const projectSelect =
-    schema.find((item) => item.type === "PROJECT") ?? undefined;
-
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        <Select
-          key={projectSelect?.id}
-          name={`${projectSelect?.id}`}
-          label={projectSelect?.question ?? ""}
-          options={projectOptions ?? []}
-          disabled={preview}
-          changeHandler={handleInput}
-          required={projectSelect?.required ?? false}
-        />
-        {/* Radio for safe or multi-sig */}
-        <div className="relative mt-2">
-          <Stack>
-            <Radio
-              label="Is your payout wallet a Gnosis Safe or multi-sig?"
-              choices={["Yes", "No"]}
-              changeHandler={handleInput}
-              name="isSafe"
-              value={formInputs.isSafe ?? ""}
-              info=""
-              required
-            />
-          </Stack>
-        </div>
-        <TextInputAddress
-          key={recipientAddressInput?.id}
-          label={recipientAddressInput?.question ?? "Payout Wallet Address"}
-          placeholder={recipientAddressInput?.info}
-          name={`${recipientAddressInput?.id}`}
-          tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
-          If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
-          and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
-          sending the balance of any full grant."
-          value={formInputs[`${recipientAddressInput?.id}`] ?? ""}
-          disabled={preview}
-          changeHandler={handleInputAddress}
-          displayError={displayAddressError}
-          required={recipientAddressInput?.required ?? true}
-        />
-        <p className="text-xs mt-4 mb-1">
-          To complete your application to {round.roundMetadata.name}, a little
-          more info is needed:
-        </p>
-        <hr />
         {schema.map((input) => {
           switch (input.type) {
             case "PROJECT":
@@ -209,7 +161,7 @@ export default function Form({
                     To complete your application to {round.roundMetadata.name},
                     a little more info is needed:
                   </p>
-                  <hr />
+                  <hr className="w-1/2" />
                 </>
               );
             case "TEXT":

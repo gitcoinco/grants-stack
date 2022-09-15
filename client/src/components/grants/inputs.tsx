@@ -175,7 +175,7 @@ export function Select({
         {label}
       </label>
       {required && (
-        <span className="absolute text-purple-700 inset-y-0 right-0">
+        <span className="absolute w-1/2 text-purple-700 inset-y-0 right-20">
           *Required
         </span>
       )}
