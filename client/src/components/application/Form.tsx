@@ -153,72 +153,45 @@ export default function Form({
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        <Select
-          key={projectSelect?.id}
-          name={`${projectSelect?.id}`}
-          label={projectSelect?.question ?? ""}
-          options={projectOptions ?? []}
-          disabled={preview}
-          changeHandler={handleInput}
-        />
-        {showProjectDetails && (
-          <Accordion className="w-1/2 mt-4" allowToggle>
-            <AccordionItem>
-              <h2>
-                <AccordionButton>
-                  <Box flex="1" textAlign="left">
-                    Project Details
-                  </Box>
-                </AccordionButton>
-              </h2>
-              <AccordionPanel pb={4}>
-                {/* <Details
+        <hr />
+        {schema.map((input) => {
+          switch (input.type) {
+            case "PROJECT":
+              return (
+                <>
+                  <Select
+                    key={projectSelect?.id}
+                    name={`${projectSelect?.id}`}
+                    label={projectSelect?.question ?? ""}
+                    options={projectOptions ?? []}
+                    disabled={preview}
+                    changeHandler={handleProjectInput}
+                  />
+                  {showProjectDetails && props.selectedProjectMetadata && (
+                    <Accordion className="w-1/2 mt-4" allowToggle>
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton>
+                            <Box flex="1" textAlign="left">
+                              Project Details (
+                              {props.selectedProjectMetadata.title})
+                            </Box>
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                          {/* <Details
                   project={props.roundApplication.project}}
                   bannerImg=""
                   logoImg=""
                   updatedAt=""
                   key={projectSelect?.id}
                 /> */}
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
-        )}
-        {/* Radio for safe or multi-sig */}
-        <div className="relative mt-2">
-          <Stack>
-            <Radio
-              label="Is your payout wallet a Gnosis Safe or multi-sig?"
-              choices={["Yes", "No"]}
-              changeHandler={handleInput}
-              name="isSafe"
-              value={formInputs.isSafe ?? ""}
-              info=""
-            />
-          </Stack>
-        </div>
-        <TextInputAddress
-          key={recipientAddressInput?.id}
-          label={recipientAddressInput?.question ?? "Payout Wallet Address"}
-          placeholder={recipientAddressInput?.info}
-          name={`${recipientAddressInput?.id}`}
-          tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
-          If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism, 
-          and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before 
-          sending the balance of any full grant."
-          value={formInputs[`${recipientAddressInput?.id}`] ?? ""}
-          disabled={preview}
-          changeHandler={handleInputAddress}
-          displayError={displayAddressError}
-        />
-        <p className="text-xs mt-4 mb-1">
-          To complete your application to {round.roundMetadata.name}, a little
-          more info is needed:
-        </p>
-        <hr />
-        {schema.map((input) => {
-          switch (input.type) {
-            case "PROJECT":
-              return <div />;
+                        </AccordionPanel>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
+                </>
+              );
             case "TEXT":
               return (
                 <TextInput
@@ -232,7 +205,43 @@ export default function Form({
                 />
               );
             case "RECIPIENT":
-              return <div />;
+              /* Radio for safe or multi-sig */
+              return (
+                <>
+                  <div className="relative mt-2">
+                    <Stack>
+                      <Radio
+                        label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                        choices={["Yes", "No"]}
+                        changeHandler={handleInput}
+                        name="isSafe"
+                        value={formInputs.isSafe ?? ""}
+                        info=""
+                      />
+                    </Stack>
+                  </div>
+                  <TextInputAddress
+                    key={recipientAddressInput?.id}
+                    label={
+                      recipientAddressInput?.question ?? "Payout Wallet Address"
+                    }
+                    placeholder={recipientAddressInput?.info}
+                    name={`${recipientAddressInput?.id}`}
+                    tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
+          If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism,
+          and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before
+          sending the balance of any full grant."
+                    value={formInputs[`${recipientAddressInput?.id}`] ?? ""}
+                    disabled={preview}
+                    changeHandler={handleInputAddress}
+                    displayError={displayAddressError}
+                  />
+                  <p className="text-xs mt-4 mb-1">
+                    To complete your application to {round.roundMetadata.name},
+                    a little more info is needed:
+                  </p>
+                </>
+              );
             case "TEXTAREA":
               return (
                 <TextArea
