@@ -9,15 +9,18 @@ export function TextInput({
   placeholder,
   disabled,
   changeHandler,
+  required,
 }: InputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute text-purple-700 inset-y-0 right-0">
-        *Required
-      </span>
+      {required && (
+        <span className="absolute text-purple-700 inset-y-0 right-0">
+          *Required
+        </span>
+      )}
       <legend>{info}</legend>
       <input
         type="text"
@@ -42,15 +45,18 @@ export function TextInputAddress({
   disabled,
   changeHandler,
   displayError, // a string that will be: (visible | invisible)
+  required,
 }: AddressInputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm absolute" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute mr-8 text-purple-700 inset-y-0 right-0 ml-4">
-        *Required
-      </span>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          *Required
+        </span>
+      )}
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -161,15 +167,18 @@ export function Select({
   options,
   disabled,
   changeHandler,
+  required,
 }: SelectInputProps) {
   return (
     <div className="relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute text-purple-700 inset-y-0 md:right-0 lg:right-1/2 sm:right-0 ml-4">
-        *Required
-      </span>
+      {required && (
+        <span className="absolute text-purple-700 inset-y-0 right-0">
+          *Required
+        </span>
+      )}
       <legend>{info}</legend>
       <select
         id={name}
