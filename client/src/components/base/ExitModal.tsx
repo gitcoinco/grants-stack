@@ -31,7 +31,7 @@ export default function ExitModal({ modalOpen, toggleModal }: ExitProps) {
           </div>
           <div className="w-4/5">
             <h5 className="font-semibold mb-2">Save Changes?</h5>
-            <p className="mb-4">You are about to loose any changes made.</p>
+            <p className="mb-4">You are about to lose any changes made.</p>
             <p className="mb-4">Are you sure you want to exit?</p>
           </div>
         </div>
