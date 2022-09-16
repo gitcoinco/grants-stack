@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { grantsPath, editPath } from "../../routes";
+import { fetchGrantData } from "../../actions/grantsMetadata";
+import { loadProjects } from "../../actions/projects";
+import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
-import { fetchGrantData } from "../../actions/grantsMetadata";
-import Button, { ButtonVariants } from "../base/Button";
-import { global } from "../../global";
-import Pencil from "../icons/Pencil";
+import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
-import Arrow from "../icons/Arrow";
-import { getProjectImage, ImgTypes } from "../../utils/components";
 import { ProjectEvent } from "../../types";
-import { loadProjects } from "../../actions/projects";
+import { getProjectImage, ImgTypes } from "../../utils/components";
+import Button, { ButtonVariants } from "../base/Button";
+import Arrow from "../icons/Arrow";
+import Pencil from "../icons/Pencil";
 import Details from "./Details";
 
 function Project() {
-  const [updatedAt, setUpdated] = useState("");
+  const [updatedAt, setUpdatedAt] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
@@ -58,20 +59,30 @@ function Project() {
 
   useEffect(() => {
     async function fetchTimeStamp(projects: ProjectEvent[], projectId: string) {
+      console.log("DASA projects", projects);
       if (global) {
         const currentProject = projects.find(
           (project) => project.id === Number(projectId)
         );
         if (currentProject) {
-          const blockData = await global.web3Provider?.getBlock(
+          const updatedBlockData = await global.web3Provider?.getBlock(
             currentProject.block
           );
 
-          const formattedDate = new Date(
-            (blockData?.timestamp ?? 0) * 1000
+          const createdBlockData = await global.web3Provider?.getBlock(
+            currentProject.createdAtBlock!
+          );
+
+          const formattedUpdatedAtDate = new Date(
+            (updatedBlockData?.timestamp ?? 0) * 1000
           ).toLocaleString();
 
-          setUpdated(formattedDate);
+          const formattedCreatedAtDate = new Date(
+            (createdBlockData?.timestamp ?? 0) * 1000
+          ).toLocaleString();
+
+          setUpdatedAt(formattedUpdatedAtDate);
+          setCreatedAt(formattedCreatedAtDate);
         }
       }
     }
@@ -124,6 +135,7 @@ function Project() {
           </div>
           <Details
             project={props.currentProject}
+            createdAt={createdAt}
             updatedAt={updatedAt}
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
