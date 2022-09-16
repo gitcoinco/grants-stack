@@ -77,6 +77,7 @@ export type AddressInputProps = {
 export interface ProjectEvent {
   id: number;
   block: number;
+  createdAtBlock?: number;
 }
 
 export interface MetaPtr {
