@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { publishGrant, resetStatus } from "../../actions/newGrant";
+import { formReset } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/newGrant";
-import { formatDate } from "../../utils/components";
 import { slugs } from "../../routes";
+import { ProjectFormStatus } from "../../types";
+import { formatDate } from "../../utils/components";
 import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
-import { ProjectFormStatus } from "../../types";
-import { formReset } from "../../actions/projectForm";
 
 export default function Preview({
   currentProjectId,
@@ -66,9 +66,11 @@ export default function Preview({
 
   return (
     <div>
+      {/* TODO: fetch proper "created at" date */}
       <Details
         preview
         updatedAt={formatDate(Date.now() / 1000)}
+        createdAt={formatDate(Date.now() / 1000)}
         project={project}
         logoImg={props.metadata?.logoImg ?? "./icons/lightning.svg"}
         bannerImg={props.metadata?.bannerImg ?? "./assets/card-img.png"}

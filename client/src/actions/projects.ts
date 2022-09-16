@@ -1,9 +1,9 @@
+import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
-import { ethers, BigNumber } from "ethers";
-import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { global } from "../global";
 import { addressesByChainID } from "../contracts/deployments";
+import { global } from "../global";
+import { RootState } from "../reducers";
 import { ProjectEvent } from "../types";
 import { fetchGrantData } from "./grantsMetadata";
 
@@ -49,7 +49,15 @@ export function aggregateEvents(
     (prev: any, cur: ProjectEvent) => {
       const value = prev;
       if (value[cur.id] === undefined || cur.block > value[cur.id].block) {
+        let createdAtBlock;
+        if (value[cur.id] === undefined) {
+          createdAtBlock = cur.block;
+        } else {
+          createdAtBlock =
+            value[cur.id].block > cur.block ? cur.block : value[cur.id].block;
+        }
         value[cur.id] = cur;
+        value[cur.id].createdAtBlock = createdAtBlock;
       }
       return value;
     },
