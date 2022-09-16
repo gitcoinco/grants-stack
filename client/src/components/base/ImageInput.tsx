@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useRef, useState } from "react";
 import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
@@ -90,7 +91,7 @@ export default function ImageInput({
     imgHandler(blob);
   };
 
-  const currentImg = () => {
+  const loadCurrentImg = (existingImg?: string) => {
     if (!existingImg) return "";
 
     // Fetch existing img path from Pinata for display
@@ -106,6 +107,13 @@ export default function ImageInput({
       fileInput.current.click();
     }
   };
+
+  const [currentImg, setCurrentImg] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const i = loadCurrentImg(existingImg);
+    setCurrentImg(i);
+  }, [existingImg]);
 
   return (
     <>
@@ -149,10 +157,10 @@ export default function ImageInput({
                 alt="Project Logo Preview"
               />
             )}
-            {currentImg() && canvas === undefined && (
+            {currentImg !== undefined && currentImg !== "" && canvas === undefined && (
               <img
                 className={`max-h-28 ${circle && "rounded-full"}`}
-                src={currentImg()}
+                src={currentImg}
                 alt="Project Logo Preview"
               />
             )}

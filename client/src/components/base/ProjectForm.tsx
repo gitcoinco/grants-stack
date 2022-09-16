@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { metadataSaved } from "../../actions/projectForm";
+import { metadataSaved, metadataImageSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { ChangeHandlers, FormInputs, ProjectFormStatus } from "../../types";
@@ -76,6 +76,16 @@ function ProjectForm({
     }
   }, [dispatch, currentProjectId, props.currentProject]);
 
+  const logoChangedHandler = (logo?: Blob) => {
+    setLogoImg(logo);
+    dispatch(metadataImageSaved(logo, "logoImg"));
+  }
+
+  const bannerChangedHandler = (banner?: Blob) => {
+    setBannerImg(banner);
+    dispatch(metadataImageSaved(banner, "bannerImg"));
+  }
+
   const validate = async () => {
     try {
       await validateProjectForm(props.formMetaData);
@@ -141,7 +151,7 @@ function ProjectForm({
           }}
           circle
           existingImg={props.currentProject?.logoImg}
-          imgHandler={(buffer: Blob) => setLogoImg(buffer)}
+          imgHandler={(buffer: Blob) => logoChangedHandler(buffer)}
         />
         <ImageInput
           label="Project Banner"
@@ -150,7 +160,7 @@ function ProjectForm({
             height: 500,
           }}
           existingImg={props.currentProject?.bannerImg}
-          imgHandler={(buffer: Blob) => setBannerImg(buffer)}
+          imgHandler={(buffer: Blob) => bannerChangedHandler(buffer)}
         />
         <TextInput
           label="Project Twitter"
