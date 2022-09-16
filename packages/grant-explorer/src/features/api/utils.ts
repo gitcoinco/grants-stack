@@ -1,5 +1,69 @@
 import { IPFSObject } from "./types"
 
+export enum ChainId {
+  GOERLI_CHAIN_ID = 5,
+  OPTIMISM_MAINNET_CHAIN_ID = 10,
+  OPTIMISM_KOVAN_CHAIN_ID = 69,
+}
+
+/**
+ * Fetch subgraph network for provided web3 network
+ *
+ * @param chainId - The chain ID of the blockchain2
+ * @returns the subgraph endpoint
+ */
+const getGraphQLEndpoint = async (chainId: ChainId) => {
+  let endpoint;
+
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
+      break;
+    }
+    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`;
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+    }
+  }
+
+  return endpoint;
+};
+
+/**
+ * Fetch data from a GraphQL endpoint
+ *
+ * @param query - The query to be executed
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param variables - The variables to be used in the query
+ * @returns The result of the query
+ */
+export const graphql_fetch = async (
+  query: string,
+  chainId: ChainId,
+  variables: object = {}
+) => {
+  const endpoint = await getGraphQLEndpoint(chainId);
+
+  return fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query, variables }),
+  }).then((resp) => {
+    if (resp.ok) {
+      return resp.json();
+    }
+
+    return Promise.reject(resp);
+  });
+};
+
+
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images

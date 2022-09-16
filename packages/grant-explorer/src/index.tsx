@@ -2,6 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
 import { ReduxRouter } from "@lagunovsky/redux-react-router"
+import { RoundProvider } from "./context/RoundContext"
 import { Route, Routes } from "react-router-dom"
 import { WagmiConfig } from "wagmi"
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
@@ -19,7 +20,7 @@ import "./index.css"
 import Auth from "./features/common/Auth"
 import NotFound from "./features/common/NotFoundPage"
 import AccessDenied from "./features/common/AccessDenied"
-import ViewRoundPage from "./features/round/ViewRoundPage"
+import ViewRound from "./features/round/ViewRoundPage"
 
 // Initialize datadog
 initDatadog()
@@ -43,7 +44,14 @@ root.render(
                 <Route path="/" element={<NotFound />} />
 
                 {/* Round Routes */}
-                <Route path="/round/:id" element={<ViewRoundPage />} />
+                <Route 
+                  path="/round/:chainId/:roundId" 
+                  element={
+                    <RoundProvider>
+                      <ViewRound />
+                    </RoundProvider>
+                  }
+                />
 
                 {/* Access Denied */}
                 <Route path="/access-denied" element={<AccessDenied />} />

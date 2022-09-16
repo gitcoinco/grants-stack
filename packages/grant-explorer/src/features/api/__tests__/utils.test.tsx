@@ -1,13 +1,122 @@
 import {enableFetchMocks, FetchMock} from "jest-fetch-mock"
 
 import {
+  ChainId,
   fetchFromIPFS,
+  graphql_fetch,
   pinToIPFS
 } from "../utils"
 
 enableFetchMocks()
 
 const fetchMock = fetch as FetchMock
+
+describe("graphql_fetch", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
+  it("should return data from a graphql endpoint", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        data: {
+          rounds: [
+            { id: "0x123456789544fe81379e2951623f008d200e1d18" },
+            { id: "0x123456789567fe81379e2951623f008d200e1d20" },
+          ],
+        },
+      })
+    );
+
+    const query = `
+      rounds {
+        id
+      }
+    `;
+
+    const res = await graphql_fetch(query, ChainId.GOERLI_CHAIN_ID);
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        variables: {},
+      }),
+    };
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      params
+    );
+    expect(res.data.rounds[0]).toEqual({
+      id: "0x123456789544fe81379e2951623f008d200e1d18",
+    });
+  });
+  it("should reject on non-200 status code", async () => {
+    fetchMock.mockResponseOnce("", {
+      status: 400,
+    });
+
+    const query = `
+      rounds {
+        id
+      }
+    `;
+
+    await expect(
+      graphql_fetch(query, ChainId.GOERLI_CHAIN_ID)
+    ).rejects.toHaveProperty("status", 400);
+
+    const params = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        variables: {},
+      }),
+    };
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      params
+    );
+  });
+
+  it("should fetch data from the correct graphql endpoint for optimism-kovan network", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        data: {},
+      })
+    );
+
+    await graphql_fetch(`rounds { id }`, ChainId.OPTIMISM_KOVAN_CHAIN_ID);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
+      expect.anything()
+    );
+  });
+
+  it("should fetch data from the correct graphql endpoint for optimism network", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        data: {},
+      })
+    );
+
+    await graphql_fetch(`rounds { id }`, ChainId.OPTIMISM_MAINNET_CHAIN_ID);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
+      expect.anything()
+    );
+  });
+});
 
 describe("fetchFromIPFS", () => {
   beforeEach(() => {
@@ -59,10 +168,10 @@ describe("pinToIPFS", () => {
 
     const ipfsObject = {
       content: {
-        name: "My First Program"
+        name: "My First Round"
       },
       metadata: {
-        name: "program-metadata"
+        name: "round-metadata"
       }
     }
 
@@ -102,7 +211,7 @@ describe("pinToIPFS", () => {
     const ipfsObject = {
       content: new Blob([]),
       metadata: {
-        name: "program-metadata"
+        name: "round-metadata"
       }
     }
 
@@ -138,7 +247,7 @@ describe("pinToIPFS", () => {
     const ipfsObject = {
       content: new Blob([]),
       metadata: {
-        name: "program-metadata"
+        name: "round-metadata"
       }
     }
 
@@ -180,10 +289,10 @@ describe("pinToIPFS", () => {
 
     const ipfsObject = {
       content: {
-        name: "My First Program"
+        name: "My First Round"
       },
       metadata: {
-        name: "program-metadata"
+        name: "round-metadata"
       }
     }
 
