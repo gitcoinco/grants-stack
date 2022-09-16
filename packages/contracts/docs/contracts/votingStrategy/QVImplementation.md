@@ -462,7 +462,7 @@ event RoleRevoked(bytes32 indexed role, address indexed account, address indexed
 ### Tallied
 
 ```solidity
-event Tallied(address indexed sender, bytes indexed currentTally)
+event Tallied(bytes oldTally, bytes indexed currentTally)
 ```
 
 Emitted when the votes are tallied
@@ -473,7 +473,7 @@ Emitted when the votes are tallied
 
 | Name | Type | Description |
 |---|---|---|
-| sender `indexed` | address | undefined |
+| oldTally  | bytes | undefined |
 | currentTally `indexed` | bytes | undefined |
 
 ### Voted
@@ -498,7 +498,7 @@ Emited when a voter votes for a grantee
 ### VoterRegisterUpdated
 
 ```solidity
-event VoterRegisterUpdated(address indexed oldVoterBadge, address indexed newVoterBadge)
+event VoterRegisterUpdated(address indexed oldVoterRegister, address indexed newVoterRegister)
 ```
 
 Emitted when the voter badge is updated
@@ -509,8 +509,8 @@ Emitted when the voter badge is updated
 
 | Name | Type | Description |
 |---|---|---|
-| oldVoterBadge `indexed` | address | undefined |
-| newVoterBadge `indexed` | address | undefined |
+| oldVoterRegister `indexed` | address | undefined |
+| newVoterRegister `indexed` | address | undefined |
 
 
 
