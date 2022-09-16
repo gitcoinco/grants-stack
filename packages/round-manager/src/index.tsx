@@ -25,6 +25,7 @@ import ViewApplication from "./features/round/ViewApplicationPage";
 import NotFound from "./features/common/NotFoundPage";
 import AccessDenied from "./features/common/AccessDenied";
 import { ProgramProvider } from "./context/ProgramContext";
+import { ApplicationProvider } from "./context/ApplicationContext";
 
 // Initialize datadog
 initDatadog();
@@ -64,7 +65,11 @@ root.render(
                 <Route path="/round/:id" element={<ViewRoundPage />} />
                 <Route
                   path="/round/:roundId/application/:id"
-                  element={<ViewApplication />}
+                  element={
+                    <ApplicationProvider>
+                      <ViewApplication />
+                    </ApplicationProvider>
+                  }
                 />
 
                 {/* Program Routes */}

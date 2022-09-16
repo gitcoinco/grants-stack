@@ -2,14 +2,10 @@ import { ethers } from "ethers";
 import { api } from "..";
 import { roundImplementationContract } from "../contracts";
 import { GrantApplication, MetadataPointer } from "../types";
-import {
-  checkGrantApplicationStatus,
-  fetchFromIPFS,
-  graphql_fetch,
-  pinToIPFS,
-} from "../utils";
+import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
+import { checkGrantApplicationStatus } from "../application";
 
 const updateApplicationList = async (
   applications: GrantApplication[],
@@ -101,7 +97,7 @@ const updateApplicationList = async (
  *  - remove updateApplicationStatusFromContract
  *  - remove commented out status filter in GetGrantApplications query
  */
-const updateApplicationStatusFromContract = async (
+export const updateApplicationStatusFromContract = async (
   applications: GrantApplication[],
   projectsMetaPtr: MetadataPointer,
   filterByStatus?: string

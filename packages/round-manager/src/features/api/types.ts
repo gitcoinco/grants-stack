@@ -164,9 +164,22 @@ export type ProjectCredentials = {
 
 export type GrantApplicationId = string;
 
-interface Owner {
+interface ProjectOwner {
   address: string;
 }
+
+export type Project = {
+  lastUpdated: number; // unix timestamp in milliseconds
+  id: string;
+  owners: ProjectOwner[];
+  title: string;
+  description: string;
+  website: string;
+  bannerImg?: string;
+  logoImg: string;
+  credentials: ProjectCredentials;
+  metaPtr: MetadataPointer;
+};
 
 export interface GrantApplication {
   /**
@@ -184,18 +197,7 @@ export interface GrantApplication {
   /**
    * Project information
    */
-  project?: {
-    lastUpdated: number; // unix timestamp in milliseconds
-    id: string;
-    owners: Owner[];
-    title: string;
-    description: string;
-    website: string;
-    bannerImg?: string;
-    logoImg: string;
-    credentials: ProjectCredentials;
-    metaPtr: MetadataPointer;
-  };
+  project?: Project;
   /** List of answers to questions */
   answers?: Array<AnswerBlock>;
   /**

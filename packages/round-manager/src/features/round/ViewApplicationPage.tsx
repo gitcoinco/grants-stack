@@ -32,6 +32,10 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
+import {
+  ApplicationProvider,
+  useApplicationById,
+} from "../../context/ApplicationContext";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -71,25 +75,12 @@ export default function ViewApplicationPage() {
 
   const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address, provider, signer } = useWallet();
+
   const navigate = useNavigate();
   const verifier = new PassportVerifier();
 
-  const {
-    application,
-    isLoading,
-    isSuccess: isApplicationFetched,
-  } = useListGrantApplicationsQuery(
-    /* Non-issue since if ID was null or undef., we wouldn't render this page, but a 404 instead  */
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    { roundId: roundId!, signerOrProvider: provider, id },
-    {
-      selectFromResult: ({ data, isLoading, isSuccess }) => ({
-        application: data?.find((application) => application.id === id),
-        isLoading,
-        isSuccess,
-      }),
-    }
-  );
+  const { application, isLoading, getApplicationByIdError } =
+    useApplicationById(id);
 
   const credentials: ProjectCredentials =
     application?.project!.credentials ?? {};
@@ -196,17 +187,14 @@ export default function ViewApplicationPage() {
   const [hasAccess, setHasAccess] = useState(true);
 
   useEffect(() => {
-    if (isApplicationFetched) {
-      setApplicationExists(!!application);
+    if (!isLoading) {
+      setApplicationExists(!getApplicationByIdError && !!application);
+
       if (round) {
-        round.operatorWallets?.includes(address?.toLowerCase())
-          ? setHasAccess(true)
-          : setHasAccess(false);
-      } else {
-        setHasAccess(true);
+        setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
     }
-  }, [address, application, isApplicationFetched, round]);
+  }, [address, application, isLoading, round]);
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {
@@ -257,11 +245,11 @@ export default function ViewApplicationPage() {
       setAnswerBlocks(_answerBlocks);
     };
 
-    if (isApplicationFetched && hasAccess) {
+    if (isLoading && hasAccess) {
       decryptAnswers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [application, isLoading, hasAccess, isApplicationFetched]);
+  }, [application, hasAccess, isLoading]);
 
   const getAnswer = (question: string) => {
     const answerBlock = answerBlocks?.find(
@@ -273,7 +261,7 @@ export default function ViewApplicationPage() {
   return (
     <>
       {!applicationExists && <NotFoundPage />}
-      {!hasAccess && <AccessDenied />}
+      {applicationExists && !hasAccess && <AccessDenied />}
       {applicationExists && hasAccess && (
         <>
           <Navbar />

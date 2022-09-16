@@ -9,12 +9,6 @@ jest.mock("../utils", () => ({
   fetchFromIPFS: jest.fn(),
 }));
 
-jest.mock("../utils", () => ({
-  ...jest.requireActual("../utils"),
-  graphql_fetch: jest.fn(),
-  fetchFromIPFS: jest.fn(),
-}));
-
 describe("listPrograms", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     // const address = "0x0"

@@ -14,7 +14,6 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import history from "./history";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
   initialProgramState,
   ProgramContext,

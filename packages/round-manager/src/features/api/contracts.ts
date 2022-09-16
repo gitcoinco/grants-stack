@@ -69,3 +69,29 @@ export const roundFactoryContract = (
 export const roundImplementationContract: Contract = {
   abi: abi.roundImplementation,
 };
+
+export const projectRegistryContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
+      break;
+    }
+    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
+      address = "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5";
+    }
+  }
+
+  return {
+    address: address,
+    abi: abi.projectRegistry,
+  };
+};
