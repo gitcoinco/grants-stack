@@ -33,9 +33,9 @@ function DEFAULT_ADMIN_ROLE() external view returns (bytes32)
 function ROUND_OPERATOR_ROLE() external view returns (bytes32)
 ```
 
-round operator role
 
 
+*Round operator role*
 
 
 #### Returns
@@ -50,7 +50,7 @@ round operator role
 function VOTE_CREDITS() external view returns (uint256)
 ```
 
-
+The voters initial vote credit amount
 
 
 
@@ -60,6 +60,23 @@ function VOTE_CREDITS() external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | undefined |
+
+### currentTally
+
+```solidity
+function currentTally() external view returns (bytes)
+```
+
+The tally count.
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes | undefined |
 
 ### getRoleAdmin
 
@@ -144,50 +161,6 @@ function grantRole(bytes32 role, address account) external nonpayable
 |---|---|---|
 | role | bytes32 | undefined |
 | account | address | undefined |
-
-### grantee
-
-```solidity
-function grantee(uint256) external view returns (address)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
-
-### granteeAdded
-
-```solidity
-function granteeAdded(address) external view returns (bool)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | bool | undefined |
 
 ### hasRole
 
@@ -284,13 +257,13 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 |---|---|---|
 | _0 | bool | undefined |
 
-### totalVoteCount
+### tallies
 
 ```solidity
-function totalVoteCount(address) external view returns (uint256)
+function tallies(bytes32) external view returns (uint256 voteCredits, uint256 votes)
 ```
 
-
+Mapping of vote ID to vote data.
 
 
 
@@ -298,21 +271,33 @@ function totalVoteCount(address) external view returns (uint256)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | bytes32 | undefined |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| voteCredits | uint256 | undefined |
+| votes | uint256 | undefined |
 
-### updateVoterBadge
+### tally
 
 ```solidity
-function updateVoterBadge(address newVoterBadge) external nonpayable
+function tally() external nonpayable
 ```
 
+Tally the votes.
 
+*This function will calculate and store the a tally of the votes. This can be called at any time by anyone.*
+
+
+### updateVoterRegister
+
+```solidity
+function updateVoterRegister(address newVoterRegister) external nonpayable
+```
+
+Update voter badge (only by ROUND_OPERATOR_ROLE)
 
 
 
@@ -320,7 +305,7 @@ function updateVoterBadge(address newVoterBadge) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| newVoterBadge | address | New voter badge |
+| newVoterRegister | address | New voter badge |
 
 ### vote
 
@@ -345,7 +330,7 @@ Invoked by RoundImplementation which allows a voter to cast votes to multiple gr
 function voteCreditsUsed(address) external view returns (uint256)
 ```
 
-
+Mapping of voter address to vote credits used.
 
 
 
@@ -361,35 +346,13 @@ function voteCreditsUsed(address) external view returns (uint256)
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### voterAdded
+### voterRegister
 
 ```solidity
-function voterAdded(address) external view returns (bool)
+function voterRegister() external view returns (address)
 ```
 
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | bool | undefined |
-
-### voterBadge
-
-```solidity
-function voterBadge() external view returns (address)
-```
-
-
+The voter register contract
 
 
 
@@ -400,13 +363,13 @@ function voterBadge() external view returns (address)
 |---|---|---|
 | _0 | address | undefined |
 
-### voters
+### votesData
 
 ```solidity
-function voters(uint256) external view returns (address)
+function votesData(uint256) external view returns (bytes)
 ```
 
-
+Vote data storage
 
 
 
@@ -420,7 +383,7 @@ function voters(uint256) external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | bytes | undefined |
 
 
 
@@ -496,10 +459,27 @@ event RoleRevoked(bytes32 indexed role, address indexed account, address indexed
 | account `indexed` | address | undefined |
 | sender `indexed` | address | undefined |
 
+### Tallied
+
+```solidity
+event Tallied(address indexed sender, bytes indexed currentTally)
+```
+
+Emitted when the votes are tallied
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+| currentTally `indexed` | bytes | undefined |
+
 ### Voted
 
 ```solidity
-event Voted(address indexed voterAddress, address indexed granteeAddress, uint256 indexed voteCredits, uint256 votes)
+event Voted(address indexed voterAddress, bytes32 indexed grantID, uint256 indexed voteCredits, uint256 votes)
 ```
 
 Emited when a voter votes for a grantee
@@ -511,14 +491,14 @@ Emited when a voter votes for a grantee
 | Name | Type | Description |
 |---|---|---|
 | voterAddress `indexed` | address | undefined |
-| granteeAddress `indexed` | address | undefined |
+| grantID `indexed` | bytes32 | undefined |
 | voteCredits `indexed` | uint256 | undefined |
 | votes  | uint256 | undefined |
 
-### VoterBadgeUpdated
+### VoterRegisterUpdated
 
 ```solidity
-event VoterBadgeUpdated(address indexed oldVoterBadge, address indexed newVoterBadge)
+event VoterRegisterUpdated(address indexed oldVoterBadge, address indexed newVoterBadge)
 ```
 
 Emitted when the voter badge is updated
