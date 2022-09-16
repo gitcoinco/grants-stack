@@ -15,19 +15,11 @@ cp ../.env.example ../.env
 
 ### Compile
 
-Compile the smart contracts with Hardhat:
+Compile the smart contracts and generate TypeChain artifacts:
 
 ```sh
 $ yarn clean
 $ yarn build
-```
-
-### TypeChain
-
-Compile the smart contracts and generate TypeChain artifacts:
-
-```sh
-$ yarn typechain
 ```
 
 ### Lint Solidity
@@ -48,7 +40,7 @@ $ yarn lint:ts
 
 ### Test
 
-Run the Mocha tests:
+Run the tests:
 
 ```sh
 $ yarn test
