@@ -1,9 +1,13 @@
 export const chains: { [key: number]: string } = {
   5: "goerli",
+  10: "optimism",
   69: "optimisticKovan",
 };
 
 export const addresses: { [key: string]: any } = {
+  optimism: {
+    projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
+  },
   goerli: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
