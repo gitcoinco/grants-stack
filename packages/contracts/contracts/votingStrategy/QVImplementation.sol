@@ -82,11 +82,6 @@ contract QVImplementation is
     bytes[] public votesData;
 
     /**
-     * @notice A unique set of the the tally
-     */
-    Set tallySet;
-
-    /**
      * @notice The tally count.
      */
     bytes public currentTally;
@@ -100,6 +95,11 @@ contract QVImplementation is
      * @notice Mapping of voter address to vote credits used.
      */
     mapping(address => uint256) public voteCreditsUsed;
+
+    /**
+     * @notice A unique set of the the tally
+     */
+    Set tallySet;
 
     /**
      * @notice Instantiates a new QV contract
