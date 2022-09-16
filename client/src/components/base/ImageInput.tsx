@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
 import CloudUpload from "../icons/CloudUpload";
@@ -91,12 +90,12 @@ export default function ImageInput({
     imgHandler(blob);
   };
 
-  const loadCurrentImg = (existingImg?: string) => {
-    if (!existingImg) return "";
+  const loadCurrentImg = (image?: string) => {
+    if (!image) return "";
 
     // Fetch existing img path from Pinata for display
     const pinataClient = new PinataClient();
-    const imgUrl = pinataClient.fileURL(existingImg);
+    const imgUrl = pinataClient.fileURL(image);
 
     blobExistingImg(imgUrl);
     return imgUrl;
@@ -157,13 +156,15 @@ export default function ImageInput({
                 alt="Project Logo Preview"
               />
             )}
-            {currentImg !== undefined && currentImg !== "" && canvas === undefined && (
-              <img
-                className={`max-h-28 ${circle && "rounded-full"}`}
-                src={currentImg}
-                alt="Project Logo Preview"
-              />
-            )}
+            {currentImg !== undefined &&
+              currentImg !== "" &&
+              canvas === undefined && (
+                <img
+                  className={`max-h-28 ${circle && "rounded-full"}`}
+                  src={currentImg}
+                  alt="Project Logo Preview"
+                />
+              )}
           </div>
         </div>
       </div>

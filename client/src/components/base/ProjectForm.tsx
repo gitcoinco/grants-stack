@@ -79,12 +79,12 @@ function ProjectForm({
   const logoChangedHandler = (logo?: Blob) => {
     setLogoImg(logo);
     dispatch(metadataImageSaved(logo, "logoImg"));
-  }
+  };
 
   const bannerChangedHandler = (banner?: Blob) => {
     setBannerImg(banner);
     dispatch(metadataImageSaved(banner, "bannerImg"));
-  }
+  };
 
   const validate = async () => {
     try {

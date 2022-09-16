@@ -25,7 +25,11 @@ export interface CredentialsSaved {
   credentials?: ProjectCredentials;
 }
 
-export type ProjectFormActions = MetadataSaved | MetadataImageSaved | CredentialsSaved | FormReset;
+export type ProjectFormActions =
+  | MetadataSaved
+  | MetadataImageSaved
+  | CredentialsSaved
+  | FormReset;
 
 export const formReset = (): ProjectFormActions => ({
   type: FORM_RESET,
@@ -50,10 +54,13 @@ export const metadataSaved = ({
   },
 });
 
-export const metadataImageSaved = (image: Blob | undefined, fieldName: string) => ({
+export const metadataImageSaved = (
+  image: Blob | undefined,
+  fieldName: string
+) => ({
   type: METADATA_IMAGE_SAVED,
   image,
-  fieldName
+  fieldName,
 });
 
 export const credentialsSaved = ({

@@ -28,7 +28,7 @@ export const projectFormReducer = (
         metadata: {
           ...state.metadata,
           ...action.metadata,
-        }
+        },
       };
     }
 
@@ -38,7 +38,7 @@ export const projectFormReducer = (
         metadata: {
           ...state.metadata,
           [action.fieldName]: action.image,
-        }
+        },
       };
     }
 
