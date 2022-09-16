@@ -58,6 +58,20 @@ export type InputProps = {
   placeholder?: string;
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
+  required: boolean;
+};
+
+export type AddressInputProps = {
+  label: string;
+  name: string;
+  info?: string;
+  tooltipValue?: string;
+  value?: string | number;
+  placeholder?: string;
+  disabled?: boolean;
+  changeHandler: (event: ChangeHandlers) => void;
+  displayError?: string;
+  required: boolean;
 };
 
 export interface ProjectEvent {
@@ -171,3 +185,7 @@ export enum ProjectFormStatus {
   Verification,
   Preview,
 }
+
+export type DynamicFormInputs = {
+  [key: string]: string;
+};

@@ -1,4 +1,5 @@
-import { InputProps, ProjectOption } from "../../types";
+import { Tooltip } from "@chakra-ui/react";
+import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 export function TextInput({
   label,
@@ -8,12 +9,18 @@ export function TextInput({
   placeholder,
   disabled,
   changeHandler,
+  required,
 }: InputProps) {
   return (
-    <div className="mt-6 w-full sm:w-1/2">
+    <div className="relative mt-6 w-full sm:w-1/2">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      {required && (
+        <span className="absolute text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <input
         type="text"
@@ -28,6 +35,59 @@ export function TextInput({
   );
 }
 
+export function TextInputAddress({
+  label,
+  info,
+  name,
+  value,
+  tooltipValue,
+  placeholder,
+  disabled,
+  changeHandler,
+  displayError, // a string that will be: (visible | invisible)
+  required,
+}: AddressInputProps) {
+  return (
+    <div className="relative mt-6 w-full sm:w-1/2">
+      <label className="text-sm absolute" htmlFor={name}>
+        {label}
+      </label>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
+      <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="w-6 h-6 ml-auto text-purple-700"
+        >
+          <path
+            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 
+              11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+          />
+        </svg>
+      </Tooltip>
+      <legend>{info}</legend>
+      <input
+        type="text"
+        id={label}
+        name={name}
+        value={value ?? ""}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={changeHandler}
+      />
+      <span className={`text-red-500 ${displayError}`}>
+        This is not a valid payment address
+      </span>
+    </div>
+  );
+}
+
 export function WebsiteInput({
   label,
   name,
@@ -35,6 +95,7 @@ export function WebsiteInput({
   disabled,
   info,
   changeHandler,
+  required,
 }: InputProps) {
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -43,11 +104,16 @@ export function WebsiteInput({
     changeHandler(event);
   };
   return (
-    <div className="mt-6 w-full sm:w-2/3">
+    <div className="mt-6 w-full sm:w-2/3 relative">
       <label className="text-sm" htmlFor={name}>
         {" "}
         {label}{" "}
       </label>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <div className="flex">
         {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -77,12 +143,18 @@ export function TextArea({
   placeholder,
   disabled,
   changeHandler,
+  required,
 }: InputProps) {
   return (
-    <div className="mt-6">
+    <div className="mt-6 w-full sm:w-1/2 relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      {required && (
+        <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <textarea
         id={label}
@@ -107,12 +179,18 @@ export function Select({
   options,
   disabled,
   changeHandler,
+  required,
 }: SelectInputProps) {
   return (
-    <div>
+    <div className="relative">
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
+      {required && (
+        <span className="absolute text-purple-700 inset-y-0 right-0">
+          * Required
+        </span>
+      )}
       <legend>{info}</legend>
       <select
         id={name}
