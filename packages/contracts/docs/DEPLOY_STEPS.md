@@ -108,7 +108,7 @@ yarn run deploy-quadratic-funding-voting-strategy goerli
 ```javascript
 export const params: DeployParams = {
   goerli: {
-    QuadraticFundingVotingStrategyContract: 'DEPLOYED_BULK_VOTE_CONTRACT',
+    QuadraticFundingVotingStrategyContract: 'DEPLOYED_QUADRATIC_FUNDING_VOTE_CONTRACT',
     ...
   },
   ...
