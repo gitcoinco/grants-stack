@@ -79,21 +79,21 @@ contract VoterBadge is ERC721, Ownable {
         address,
         uint256
     ) public pure override {
-        revert("VoterBadge: SOULBOUND");
+        revert("SOULBOUND");
     }
 
     /**
      * @notice Override the ERC721 Approve method to revert
      */
     function approve(address, uint256) public pure override {
-        revert("VoterBadge: SOULBOUND");
+        revert("SOULBOUND");
     }
 
     /**
      * @notice Override the ERC721 setApprovalForAll method to revert
      */
     function setApprovalForAll(address, bool) public pure override {
-        revert("VoterBadge: SOULBOUND");
+        revert("SOULBOUND");
     }
 
     /**
