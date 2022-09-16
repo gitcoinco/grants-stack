@@ -101,7 +101,7 @@ The section here shows how to set up voting strategy for the first time on a giv
 
 2. Deploy the QuadraticFundingVotingStrategy contract.
 ```shell
-yarn run deploy-bulk-voting-strategy goerli
+yarn run deploy-quadratic-funding-voting-strategy goerli
 ```
 
 3. Update `round.config.ts` with deployed contracts based on your network
