@@ -1,4 +1,4 @@
-// yarn hardhat run scripts/votingMechanism/castBulkVotingStrategy.ts --network goerli
+// yarn hardhat run scripts/votingMechanism/castQuadraticFundingVotingStrategy.ts --network goerli
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
