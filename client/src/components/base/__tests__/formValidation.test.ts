@@ -1,6 +1,6 @@
 import { ValidationError } from "yup";
-import { validateProjectForm, validateApplication } from "../formValidation";
 import { RoundApplicationQuestion } from "../../../types";
+import { validateApplication, validateProjectForm } from "../formValidation";
 
 const validInputs = {
   title: "Project Title",
@@ -23,7 +23,8 @@ describe("Form Validation", () => {
       await validateProjectForm(validInputs);
     } catch (e) {
       const error = e as ValidationError;
-      expect(error.message).toBe("Project Name is required");
+      const innerError = error.inner[0] as ValidationError;
+      expect(innerError.message).toBe("Project Name is required");
       expect(error.name).toBe("ValidationError");
     }
   });
@@ -34,7 +35,8 @@ describe("Form Validation", () => {
       await validateProjectForm(validInputs);
     } catch (e) {
       const error = e as ValidationError;
-      expect(error.message).toBe(
+      const innerError = error.inner[1] as ValidationError;
+      expect(innerError.message).toBe(
         "Project Website must be a valid url. e.g. https://gitcoin.co/"
       );
       expect(error.name).toBe("ValidationError");

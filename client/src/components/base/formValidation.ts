@@ -10,7 +10,7 @@ export async function validateProjectForm(inputs: FormInputs) {
       .required("Project Website is required"),
   });
 
-  const validatedInputs = await schema.validate(inputs);
+  const validatedInputs = await schema.validate(inputs, { abortEarly: false });
   return validatedInputs;
 }
 

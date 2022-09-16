@@ -81,6 +81,12 @@ export default function Details({
           <LinkIcon color={colors["secondary-text"]} />{" "}
           <span className="ml-1">{project?.website}</span>
         </a>
+        <div>
+          <p className="flex text-sm">
+            <Calendar color={colors["secondary-text"]} /> Created:{" "}
+            <span className="ml-2">{updatedAt}</span>
+          </p>
+        </div>
         {project?.projectTwitter && (
           <div className="flex justify-start items-center">
             <img
@@ -136,7 +142,7 @@ export default function Details({
         )}
       </div>
 
-      <p className="text-xs text-primary-text mb-1">Description</p>
+      <p className="text-primary-text mb-1 font-bold">Description</p>
       <p className="mb-12">{project?.description}</p>
     </div>
   );

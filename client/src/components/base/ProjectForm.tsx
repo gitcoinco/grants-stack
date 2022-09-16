@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
-import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
-import ImageInput from "./ImageInput";
+import { fetchGrantData } from "../../actions/grantsMetadata";
+import { metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
-import { fetchGrantData } from "../../actions/grantsMetadata";
-import Button, { ButtonVariants } from "./Button";
-import { validateProjectForm } from "./formValidation";
-import ExitModal from "./ExitModal";
 import { ChangeHandlers, FormInputs, ProjectFormStatus } from "../../types";
-import { metadataSaved } from "../../actions/projectForm";
+import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
+import Button, { ButtonVariants } from "./Button";
+import ExitModal from "./ExitModal";
+import { validateProjectForm } from "./formValidation";
+import ImageInput from "./ImageInput";
 
 const validation = {
-  message: "",
+  messages: [""],
   valid: false,
+  errorCount: 0,
 };
 
 function ProjectForm({
@@ -79,14 +80,16 @@ function ProjectForm({
     try {
       await validateProjectForm(props.formMetaData);
       setFormValidation({
-        message: "",
+        messages: [],
         valid: true,
+        errorCount: 0,
       });
     } catch (e) {
       const error = e as ValidationError;
       setFormValidation({
-        message: error.message,
+        messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,
+        errorCount: error.inner.length,
       });
     }
   };
@@ -121,12 +124,14 @@ function ProjectForm({
           placeholder="What's the project name?"
           value={props.formMetaData.title}
           changeHandler={handleInput}
+          required
         />
         <WebsiteInput
           label="Project Website"
           name="website"
           value={props.formMetaData.website}
           changeHandler={handleInput}
+          required
         />
         <ImageInput
           label="Project Logo"
@@ -153,6 +158,7 @@ function ProjectForm({
           placeholder="twitterusername"
           value={props.formMetaData.projectTwitter}
           changeHandler={handleInput}
+          required={false}
         />
         <TextInput
           label="Your Github Username"
@@ -160,6 +166,7 @@ function ProjectForm({
           placeholder="githubusername"
           value={props.formMetaData.userGithub}
           changeHandler={handleInput}
+          required={false}
         />
         <TextInput
           label="Project Github Organization"
@@ -167,6 +174,7 @@ function ProjectForm({
           placeholder="githuborgname"
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
+          required={false}
         />
         <TextArea
           label="Project Description"
@@ -174,11 +182,26 @@ function ProjectForm({
           placeholder="What is the project about and what kind of impact does it aim to have?"
           value={props.formMetaData.description}
           changeHandler={handleInput}
+          required
         />
         {!formValidation.valid && submitted && (
-          <p className="text-danger-text w-full text-center font-semibold my-2">
-            {formValidation.message}
-          </p>
+          <div
+            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            role="alert"
+          >
+            <strong className="text-sm font-medium">
+              There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
+              {formValidation.errorCount}{" "}
+              {formValidation.errorCount === 1 ? "error" : "errors"} with your
+              form submission
+            </strong>
+
+            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+              {formValidation.messages.map((o) => (
+                <li key={o}>{o}</li>
+              ))}
+            </ul>
+          </div>
         )}
         <div className="flex w-full justify-end mt-6">
           <Button
