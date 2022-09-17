@@ -10,7 +10,7 @@ const infuraId = process.env.INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
 if (process.env.NODE_ENV === "production") {
-  chainsAvailable.push(chain.goerli);
+  chainsAvailable.push(chain.optimism);
 } else {
   chainsAvailable.push(chain.goerli, chain.optimismKovan);
 }
