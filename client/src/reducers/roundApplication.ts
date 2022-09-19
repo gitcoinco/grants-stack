@@ -10,6 +10,7 @@ import {
 export const enum Status {
   Undefined = 0,
   BuildingApplication,
+  SigningApplication,
   UploadingMetadata,
   SendingTx,
   Sent,

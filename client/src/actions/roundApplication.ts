@@ -3,12 +3,13 @@ import { ethers } from "ethers";
 import { Status } from "../reducers/roundApplication";
 import { RootState } from "../reducers";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { Project } from "../types";
+import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import PinataClient from "../services/pinata";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
 import { chains } from "../contracts/deployments";
-import utils from "../utils/roundApplication";
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
+import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -137,16 +138,53 @@ export const submitApplication =
       roundAddress,
       chainName
     );
-    const application = await builder.build(roundAddress, formInputs);
+    const application: RoundApplication = await builder.build(
+      roundAddress,
+      formInputs
+    );
+
+    const deterministicApplication = objectToDeterministicJSON(
+      application as any
+    );
+
+    const { signer } = global;
+
+    const hash = ethers.utils.solidityKeccak256(
+      ["string"],
+      [deterministicApplication]
+    );
+
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
+      roundAddress,
+      status: Status.SigningApplication,
+    });
+
+    let signature: string;
+    try {
+      signature = await signer.signMessage(hash);
+    } catch (e) {
+      dispatch({
+        type: ROUND_APPLICATION_ERROR,
+        roundAddress,
+        error: "error signing round application",
+      });
+      return;
+    }
+
+    const signedApplication: SignedRoundApplication = {
+      signature,
+      application,
+    };
 
     const pinataClient = new PinataClient();
-
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
       status: Status.UploadingMetadata,
     });
-    const resp = await pinataClient.pinJSON(application);
+
+    const resp = await pinataClient.pinJSON(signedApplication);
     const metaPtr = {
       protocol: "1",
       pointer: resp.IpfsHash,
@@ -158,9 +196,8 @@ export const submitApplication =
       status: Status.SendingTx,
     });
 
-    const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
-    const projectUniqueID = utils.generateUniqueRoundApplicationID(
+    const projectUniqueID = generateUniqueRoundApplicationID(
       chainID,
       Number(projectId)
     );
@@ -188,7 +225,7 @@ export const checkRoundApplications =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const uniqueIDsToIDs = Object.fromEntries(
       projectIDs.map((id: number) => [
-        utils.generateUniqueRoundApplicationID(chainID, id),
+        generateUniqueRoundApplicationID(chainID, id),
         id,
       ])
     );
