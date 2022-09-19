@@ -76,6 +76,7 @@
     ]
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.5.0",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
     "tailwind-styled-components": "^2.1.7",
