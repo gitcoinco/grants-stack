@@ -4,7 +4,7 @@ import { deployContract } from "ethereum-waffle";
 import { isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
-import { QVImplementation } from "../typechain";
+import { QVImplementation, VoterRegister } from "../typechain";
 import { BigNumber, utils } from "ethers";
 
 describe("QVImplementation", function () {
@@ -12,6 +12,28 @@ describe("QVImplementation", function () {
   let user1: SignerWithAddress;
   let QVImplementation: QVImplementation;
   let QVImplementationArtifact: Artifact;
+  let VoterRegisterArtifact: Artifact;
+  let VoterRegister: VoterRegister;
+  const encoder = new utils.AbiCoder();
+
+  const encodeParameters = (
+    _voteCredits: number,
+    _voterRegister: string,
+    _adminRoles: string[],
+    _roundOperators: string[]
+  ): string => {
+    return encoder.encode(
+      ["tuple(uint256, address, address[], address[])"],
+      [[_voteCredits, _voterRegister, _adminRoles, _roundOperators]]
+    );
+  };
+
+  const encodeVote = (grantID: string, voteCredits: number): string => {
+    return encoder.encode(
+      ["tuple(bytes32, uint256)"],
+      [[grantID, voteCredits]]
+    );
+  };
 
   describe("constructor", () => {
     it("deploys properly", async () => {
@@ -21,7 +43,7 @@ describe("QVImplementation", function () {
         "QVImplementation"
       );
       QVImplementation = <QVImplementation>(
-        await deployContract(user0, QVImplementationArtifact,[])
+        await deployContract(user0, QVImplementationArtifact, [])
       );
 
       // Verify deploy
@@ -42,10 +64,70 @@ describe("QVImplementation", function () {
         "QVImplementation"
       );
       QVImplementation = <QVImplementation>(
-        await deployContract(user0, QVImplementationArtifact,[])
+        await deployContract(user0, QVImplementationArtifact, [])
       );
+
+      VoterRegisterArtifact = await artifacts.readArtifact("VoterRegister");
+      VoterRegister = <VoterRegister>(
+        await deployContract(user0, VoterRegisterArtifact, [
+          "TEST",
+          "TEST",
+          "TEST",
+        ])
+      );
+
+      const encodedParams = encodeParameters(
+        100,
+        VoterRegister.address,
+        [user0.address],
+        [user0.address]
+      );
+      QVImplementation.initialize(encodedParams);
     });
 
-  });
+    describe("test: vote", () => {
+      it("should allow a minted user to vote", () => {
+        // mint the voter register
+        VoterRegister.mint(user0.address);
 
+        const encodedVotes = [
+          encodeVote(
+            "0x657468657265756d000000000000000000000000000000000000000000000000",
+            10
+          ),
+          encodeVote(
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            4
+          ),
+        ];
+        QVImplementation.vote(encodedVotes, user0.address);
+      });
+      // it("should prevent unregistered users from voting", () => {
+      //   const encodedVotes = [
+      //     encodeVote(
+      //       "0x657468657265756d000000000000000000000000000000000000000000000000",
+      //       10
+      //     ),
+      //   ];
+      //   expect(QVImplementation.vote(encodedVotes, user1.address)).to.be
+      //     .reverted;
+      // });
+    });
+
+    describe("test: tally", () => {
+      it("should tally the votes", async () => {
+        await QVImplementation.tally();
+        const encodedTally = await QVImplementation.currentTally();
+        console.log(encodedTally); 
+
+        // const [grantID, totalVoteCredits, totalVotes] = encoder.decode(
+        //   ["tuple(bytes32[], uint256[], uint256[])"],
+        //   encodedTally
+        // );
+        // expect(grantID[0]).to.equal(
+        //   "0x0000000000000000000000000000000000000000000000000000000000000000"
+        // );
+      });
+    });
+  });
 });
