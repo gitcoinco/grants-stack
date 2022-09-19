@@ -1,20 +1,79 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../reducers";
+import { fetchGrantData } from "../../actions/grantsMetadata";
 import ProjectForm from "../base/ProjectForm";
 import Button, { ButtonVariants } from "../base/Button";
+import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
 import colors from "../../styles/colors";
 import Cross from "../icons/Cross";
 import ExitModal from "../base/ExitModal";
 import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
+import { metadataSaved, metadataImageSaved, credentialsSaved} from "../../actions/projectForm";
 
 function EditProject() {
   const params = useParams();
+  const dispatch = useDispatch();
+
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
     ProjectFormStatus.Metadata
   );
+
+  const projectID = params.id;
+
+  const props = useSelector((state: RootState) => {
+    const grantMetadata = state.grantsMetadata[Number(projectID)];
+    return {
+      id: projectID,
+      projectMetadata: grantMetadata?.metadata,
+      metadataStatus: grantMetadata
+        ? grantMetadata.status
+        : GrantsMetadataStatus.Undefined,
+      error: state.newGrant.error,
+      formMetaData: state.projectForm.metadata,
+    };
+  }, shallowEqual);
+
+  useEffect(() => {
+    if (
+      projectID !== undefined &&
+      props.metadataStatus === GrantsMetadataStatus.Undefined
+    ) {
+      dispatch(fetchGrantData(Number(projectID)));
+    }
+  }, [dispatch, projectID, props.metadataStatus]);
+
+  useEffect(() => {
+    if (props.projectMetadata !== undefined) {
+      dispatch(
+        metadataSaved({
+          ...props.projectMetadata,
+        })
+      );
+
+      if (props.projectMetadata.credentials !== undefined) {
+        dispatch(credentialsSaved(props.projectMetadata.credentials));
+      }
+    }
+  }, [props.projectMetadata]);
+
+  if (
+    props.metadataStatus === GrantsMetadataStatus.Undefined ||
+    props.metadataStatus === GrantsMetadataStatus.Loading
+  ) {
+    return <>loading...</>;
+  }
+
+  if (
+    props.projectMetadata === undefined ||
+    props.metadataStatus === GrantsMetadataStatus.Error
+  ) {
+    return <>Couldn&apos;t load project data.</>;
+  }
 
   const currentForm = (status: ProjectFormStatus) => {
     switch (status) {
@@ -22,7 +81,7 @@ function EditProject() {
         return (
           <ProjectForm
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
-            currentProjectId={params.id}
+            projectID={projectID}
           />
         );
       case ProjectFormStatus.Verification:
@@ -39,11 +98,7 @@ function EditProject() {
           />
         );
       default:
-        return (
-          <ProjectForm
-            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
-          />
-        );
+        return null;
     }
   };
 

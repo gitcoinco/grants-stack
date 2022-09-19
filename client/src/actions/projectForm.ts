@@ -42,6 +42,8 @@ export const metadataSaved = ({
   projectTwitter,
   userGithub,
   projectGithub,
+  logoImg,
+  bannerImg,
 }: FormInputs): ProjectFormActions => ({
   type: METADATA_SAVED,
   metadata: {
@@ -51,11 +53,13 @@ export const metadataSaved = ({
     projectTwitter,
     userGithub,
     projectGithub,
+    logoImg,
+    bannerImg,
   },
 });
 
 export const metadataImageSaved = (
-  image: Blob | undefined,
+  image: Blob | string | undefined,
   fieldName: string
 ) => ({
   type: METADATA_IMAGE_SAVED,

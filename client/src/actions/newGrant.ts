@@ -71,13 +71,13 @@ export const publishGrant =
 
     const pinataClient = new PinataClient();
     dispatch(grantStatus(Status.UploadingImages, undefined));
-    if (formMetaData?.bannerImg) {
-      const resp = await pinataClient.pinFile(formMetaData.bannerImg);
+    if (formMetaData?.bannerImgData !== undefined) {
+      const resp = await pinataClient.pinFile(formMetaData.bannerImgData);
       application.bannerImg = resp.IpfsHash;
     }
 
-    if (formMetaData?.logoImg) {
-      const resp = await pinataClient.pinFile(formMetaData.logoImg);
+    if (formMetaData?.logoImgData !== undefined) {
+      const resp = await pinataClient.pinFile(formMetaData.logoImgData);
       application.logoImg = resp.IpfsHash;
     }
 

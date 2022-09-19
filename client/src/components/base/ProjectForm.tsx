@@ -4,8 +4,12 @@ import { ValidationError } from "yup";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { metadataSaved, metadataImageSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
-import { Status } from "../../reducers/grantsMetadata";
-import { ChangeHandlers, FormInputs, ProjectFormStatus } from "../../types";
+import {
+  ChangeHandlers,
+  // FormInputs,
+  ProjectFormStatus,
+  Metadata,
+} from "../../types";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import Button, { ButtonVariants } from "./Button";
 import ExitModal from "./ExitModal";
@@ -19,25 +23,22 @@ const validation = {
 };
 
 function ProjectForm({
-  currentProjectId,
+  projectID,
   setVerifying,
 }: {
-  currentProjectId?: string;
+  projectID?: string;
   setVerifying: (verifying: ProjectFormStatus) => void;
 }) {
   const dispatch = useDispatch();
 
-  const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(currentProjectId)];
-    return {
-      id: currentProjectId,
-      loading: grantMetadata ? grantMetadata.status === Status.Loading : false,
-      currentProject: grantMetadata?.metadata,
+  const props = useSelector(
+    (state: RootState) => ({
       status: state.newGrant.status,
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
-    };
-  }, shallowEqual);
+    }),
+    shallowEqual
+  );
 
   const [formValidation, setFormValidation] = useState(validation);
   const [submitted, setSubmitted] = useState(false);
@@ -52,38 +53,18 @@ function ProjectForm({
       metadataSaved({
         ...props.formMetaData,
         [e.target.name]: value,
-        bannerImg,
-        logoImg,
       })
     );
   };
 
-  useEffect(() => {
-    // called twice
-    // 1 - when it loads or id changes (it checks if it's cached in local storage)
-    if (currentProjectId !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(Number(currentProjectId)));
-    }
-
-    const currentProject = props.currentProject as FormInputs;
-
-    if (currentProject) {
-      dispatch(
-        metadataSaved({
-          ...currentProject,
-        })
-      );
-    }
-  }, [dispatch, currentProjectId, props.currentProject]);
-
   const logoChangedHandler = (logo?: Blob) => {
     setLogoImg(logo);
-    dispatch(metadataImageSaved(logo, "logoImg"));
+    dispatch(metadataImageSaved(logo, "logoImgData"));
   };
 
   const bannerChangedHandler = (banner?: Blob) => {
     setBannerImg(banner);
-    dispatch(metadataImageSaved(banner, "bannerImg"));
+    dispatch(metadataImageSaved(banner, "bannerImgData"));
   };
 
   const validate = async () => {
@@ -103,6 +84,7 @@ function ProjectForm({
       });
     }
   };
+
   // perform validation after the fields state is updated
   useEffect(() => {
     validate();
@@ -114,16 +96,6 @@ function ProjectForm({
       setVerifying(ProjectFormStatus.Verification);
     }
   };
-
-  if (
-    // if it's undefined we don't have anything to load
-    currentProjectId !== undefined &&
-    props.currentProject === undefined &&
-    props.loading &&
-    props.currentProject === undefined
-  ) {
-    return <>Loading grant data from IPFS... </>;
-  }
 
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
@@ -143,6 +115,7 @@ function ProjectForm({
           changeHandler={handleInput}
           required
         />
+
         <ImageInput
           label="Project Logo"
           dimensions={{
@@ -150,18 +123,22 @@ function ProjectForm({
             height: 300,
           }}
           circle
-          existingImg={props.currentProject?.logoImg}
+          imageHash={props.formMetaData.logoImg}
+          imageData={props.formMetaData.logoImgData}
           imgHandler={(buffer: Blob) => logoChangedHandler(buffer)}
         />
+
         <ImageInput
           label="Project Banner"
           dimensions={{
             width: 1500,
             height: 500,
           }}
-          existingImg={props.currentProject?.bannerImg}
+          imageHash={props.formMetaData.bannerImg}
+          imageData={props.formMetaData.bannerImgData}
           imgHandler={(buffer: Blob) => bannerChangedHandler(buffer)}
         />
+
         <TextInput
           label="Project Twitter"
           name="projectTwitter"
@@ -170,6 +147,7 @@ function ProjectForm({
           changeHandler={handleInput}
           required={false}
         />
+
         <TextInput
           label="Your Github Username"
           name="userGithub"
