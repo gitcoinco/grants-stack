@@ -18,7 +18,7 @@ export function TextInput({
       </label>
       {required && (
         <span className="absolute text-purple-700 inset-y-0 right-0">
-          * Required
+          *Required
         </span>
       )}
       <legend>{info}</legend>
@@ -44,7 +44,6 @@ export function TextInputAddress({
   placeholder,
   disabled,
   changeHandler,
-  displayError, // a string that will be: (visible | invisible)
   required,
 }: AddressInputProps) {
   return (
@@ -54,7 +53,7 @@ export function TextInputAddress({
       </label>
       {required && (
         <span className="absolute mr-8 text-purple-700 inset-y-0 right-0">
-          * Required
+          *Required
         </span>
       )}
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
@@ -81,9 +80,6 @@ export function TextInputAddress({
         disabled={disabled}
         onChange={changeHandler}
       />
-      <span className={`text-red-500 ${displayError}`}>
-        This is not a valid payment address
-      </span>
     </div>
   );
 }

@@ -26,8 +26,9 @@ import { isValidAddress } from "../../utils/wallet";
 import Toggle from "../grants/Toggle";
 
 const validation = {
-  message: "",
+  messages: [""],
   valid: false,
+  errorCount: 0,
 };
 
 export default function Form({
@@ -44,7 +45,6 @@ export default function Form({
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
-  const [displayAddressError, setDisplayAddressError] = useState("invisible");
   const [showProjectDetails] = useState(true);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
@@ -82,26 +82,32 @@ export default function Form({
     const { value } = e.target;
     const isValid = isValidAddress(value);
     if (!isValid) {
-      setDisplayAddressError("visible");
+      setFormValidation({
+        messages: ["Invalid address"],
+        valid: false,
+        errorCount: validation.errorCount + 1,
+      });
     } else {
-      setDisplayAddressError("invisible");
+      setFormValidation(validation);
     }
 
-    setFormInputs({ ...formInputs, [e.target.name]: value });
+    handleInput(e);
   };
 
   const validate = async () => {
     try {
       await validateApplication(schema, formInputs);
       setFormValidation({
-        message: "",
+        messages: [],
         valid: true,
+        errorCount: 0,
       });
     } catch (e) {
       const error = e as ValidationError;
       setFormValidation({
-        message: error.message,
+        messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,
+        errorCount: error.inner.length,
       });
     }
   };
@@ -206,7 +212,6 @@ export default function Form({
                     value={formInputs[`${input.id}`] ?? ""}
                     disabled={preview}
                     changeHandler={handleInputAddress}
-                    displayError={displayAddressError}
                     required={input.required ?? true}
                   />
                 </>
@@ -267,9 +272,23 @@ export default function Form({
           }
         })}
         {!formValidation.valid && submitted && (
-          <p className="text-danger-text w-full text-center font-semibold my-2">
-            {formValidation.message}
-          </p>
+          <div
+            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            role="alert"
+          >
+            <strong className="text-sm font-medium">
+              There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
+              {formValidation.errorCount}{" "}
+              {formValidation.errorCount === 1 ? "error" : "errors"} with your
+              form submission
+            </strong>
+
+            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+              {formValidation.messages.map((o) => (
+                <li key={o}>{o}</li>
+              ))}
+            </ul>
+          </div>
         )}
         <div className="flex justify-end">
           {!preview ? (

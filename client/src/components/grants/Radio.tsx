@@ -2,6 +2,7 @@ import { InputProps } from "../../types";
 
 type RadioInputProps = InputProps & {
   choices?: string[];
+  required: boolean;
 };
 
 export default function Radio({
@@ -11,15 +12,18 @@ export default function Radio({
   info,
   choices = [],
   changeHandler,
+  required,
 }: RadioInputProps) {
   return (
     <div>
       <label className="text-sm" htmlFor={name}>
         {label}
       </label>
-      <span className="absolute text-purple-700 ml-4 md:right-1/2 sm:right-0 lg:right-1/2">
-        *Required
-      </span>
+      {required && (
+        <span className="absolute text-purple-700 ml-4 md:right-1/2 sm:right-0 lg:right-1/2">
+          *Required
+        </span>
+      )}
       <legend>{info}</legend>
       <fieldset className="mt-4" id={name}>
         <div className="space-y-2">
