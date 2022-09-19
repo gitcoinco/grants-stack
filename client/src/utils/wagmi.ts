@@ -9,7 +9,7 @@ const alchemyId = process.env.ALCHEMY_ID;
 const infuraId = process.env.INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
-if (process.env.NODE_ENV === "production") {
+if (process.env.REACT_APP_ENV === "production") {
   chainsAvailable.push(chain.optimism);
 } else {
   chainsAvailable.push(chain.goerli, chain.optimismKovan);
