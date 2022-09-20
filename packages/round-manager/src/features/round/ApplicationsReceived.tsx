@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
 import {
   useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
 } from "../api/services/grantApplication";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
@@ -16,7 +15,7 @@ import {
   CardsContainer,
   CardTitle,
 } from "../common/styles";
-import { GrantApplication, ProjectStatus } from "../api/types";
+import { ApplicationStatus, GrantApplication, ProjectStatus } from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
   AdditionalGasFeesNote,
@@ -26,32 +25,27 @@ import {
   RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
+import { useApplicationByRoundId } from "../../context/ApplicationContext";
 
 export default function ApplicationsReceived() {
-  const [openModal, setOpenModal] = useState(false);
-  const [bulkSelect, setBulkSelect] = useState(false);
   const { id } = useParams();
   const { provider, signer } = useWallet();
 
-  const { data, refetch, isLoading, isSuccess } = useListGrantApplicationsQuery(
-    {
-      /* Non-issue since if ID was null or undef., we wouldn't render this page, but a 404 instead  */
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      roundId: id!,
-      signerOrProvider: provider,
-      status: "PENDING",
-    }
-  );
+  const { applications, isLoading } = useApplicationByRoundId(id!);
+  const pendingApplications = applications?.filter((a) => a.status == ApplicationStatus.PENDING.toString()) || [];
+
+  const [bulkSelect, setBulkSelect] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selected, setSelected] = useState<GrantApplication[]>([]);
 
   const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
     useBulkUpdateGrantApplicationsMutation();
 
-  const [selected, setSelected] = useState<GrantApplication[]>([]);
 
   useEffect(() => {
-    if (isSuccess || !bulkSelect) {
+    if (!isLoading || !bulkSelect) {
       setSelected(
-        (data || []).map((application) => {
+        (pendingApplications || []).map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -62,7 +56,7 @@ export default function ApplicationsReceived() {
         })
       );
     }
-  }, [data, isSuccess, bulkSelect]);
+  }, [applications, isLoading, bulkSelect]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSelection = (id: string, status: ProjectStatus) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
@@ -94,7 +88,7 @@ export default function ApplicationsReceived() {
       }).unwrap();
       setBulkSelect(false);
       setOpenModal(false);
-      refetch();
+      // refetch();
     } catch (e) {
       console.error(e);
     }
@@ -102,7 +96,7 @@ export default function ApplicationsReceived() {
 
   return (
     <div>
-      {data && data.length > 0 && (
+      {pendingApplications && pendingApplications.length > 0 && (
         <div className="flex items-center justify-end mb-4">
           <span className="text-grey-400 text-sm mr-6">
             Save in gas fees by approving/rejecting multiple applications at
@@ -116,8 +110,8 @@ export default function ApplicationsReceived() {
         </div>
       )}
       <CardsContainer>
-        {isSuccess &&
-          data?.map((application, index) => (
+        {!isLoading &&
+          pendingApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"
@@ -149,7 +143,7 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && data?.length === 0 && <NoApplicationsContent />}
+        {!isLoading && pendingApplications?.length === 0 && <NoApplicationsContent />}
       </CardsContainer>
       {selected &&
         selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (

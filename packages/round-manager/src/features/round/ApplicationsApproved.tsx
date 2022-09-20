@@ -2,7 +2,6 @@ import { Link, useParams } from "react-router-dom";
 
 import {
   useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
 } from "../api/services/grantApplication";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
@@ -14,7 +13,7 @@ import {
   CardsContainer,
   CardTitle,
 } from "../common/styles";
-import { GrantApplication, ProjectStatus } from "../api/types";
+import { ApplicationStatus, GrantApplication, ProjectStatus } from "../api/types";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
@@ -25,16 +24,15 @@ import {
   RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
+import { useApplicationByRoundId } from "../../context/ApplicationContext";
 
 export default function ApplicationsApproved() {
   const { id } = useParams();
   const { provider, signer } = useWallet();
 
-  const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!,
-    signerOrProvider: provider,
-    status: "APPROVED",
-  });
+  const { applications, isLoading } = useApplicationByRoundId(id!);
+  const approvedApplications = applications?.filter((a: GrantApplication) => a.status === ApplicationStatus.APPROVED.toString()) || [];
+
   const [bulkSelectApproved, setBulkSelectApproved] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
@@ -42,9 +40,9 @@ export default function ApplicationsApproved() {
     useBulkUpdateGrantApplicationsMutation();
 
   useEffect(() => {
-    if (isSuccess || !bulkSelectApproved) {
+    if (!isLoading || !bulkSelectApproved) {
       setSelected(
-        (data || []).map((application) => {
+        (approvedApplications).map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -55,7 +53,7 @@ export default function ApplicationsApproved() {
         })
       );
     }
-  }, [data, isSuccess, bulkSelectApproved]);
+  }, [applications, isLoading, bulkSelectApproved,]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleRejection = (id: string) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
@@ -95,7 +93,7 @@ export default function ApplicationsApproved() {
 
   return (
     <>
-      {data && data.length > 0 && (
+      {approvedApplications && approvedApplications.length > 0 && (
         <div className="flex items-center justify-end mb-4">
           <span className="text-grey-400 text-sm mr-6">
             Save in gas fees by approving/rejecting multiple applications at
@@ -109,8 +107,8 @@ export default function ApplicationsApproved() {
         </div>
       )}
       <CardsContainer>
-        {isSuccess &&
-          data?.map((application, index) => (
+        {!isLoading &&
+          approvedApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"

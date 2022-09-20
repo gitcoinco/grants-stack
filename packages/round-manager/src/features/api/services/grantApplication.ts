@@ -1,11 +1,10 @@
 import { ethers } from "ethers";
 import { api } from "..";
 import { roundImplementationContract } from "../contracts";
-import { GrantApplication, MetadataPointer } from "../types";
+import { GrantApplication } from "../types";
 import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
-import { checkGrantApplicationStatus } from "../application";
 
 const updateApplicationList = async (
   applications: GrantApplication[],
@@ -84,150 +83,10 @@ const updateApplicationList = async (
 };
 
 /**
- * Fetches project applications status from metaptr and updates result
- * Note: This function is a short term fix until the indexing IPFS content
- * via the graph is deterministic
- *
- * @param applications
- * @param projectsMetaPtr
- * @param filterByStatus
- *
- * @dev Once indexing IPFS content via graph is deterministic.
- *  - redeploy subgraph
- *  - remove updateApplicationStatusFromContract
- *  - remove commented out status filter in GetGrantApplications query
- */
-export const updateApplicationStatusFromContract = async (
-  applications: GrantApplication[],
-  projectsMetaPtr: MetadataPointer,
-  filterByStatus?: string
-) => {
-  // Handle scenario where operator hasn't review any projects in the round
-  if (!projectsMetaPtr)
-    return filterByStatus
-      ? applications.filter(
-          (application) => application.status === filterByStatus
-        )
-      : applications;
-
-  const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer);
-
-  // Iterate over all applications indexed by graph
-  applications.map((application) => {
-    try {
-      // fetch matching application index from contract
-      const index = applicationsFromContract.findIndex(
-        (applicationFromContract: any) =>
-          application.id === applicationFromContract.id
-      );
-      // update status of application from contract / default to pending
-      application.status =
-        index >= 0 ? applicationsFromContract[index].status : "PENDING";
-    } catch {
-      application.status = "PENDING";
-    }
-    return application;
-  });
-
-  if (filterByStatus) {
-    return applications.filter(
-      (application) => application.status === filterByStatus
-    );
-  }
-
-  return applications;
-};
-
-/**
  * Contract interactions API for a Grant Application
  */
 export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    listGrantApplications: builder.query<
-      GrantApplication[],
-      {
-        roundId: string;
-        signerOrProvider: Web3Provider;
-        id?: string;
-        status?: "PENDING" | "APPROVED" | "REJECTED";
-      }
-    >({
-      queryFn: async ({ roundId, signerOrProvider, id, status }) => {
-        try {
-          // fetch chain id
-          const { chainId } = await signerOrProvider.getNetwork();
-
-          // query the subgraph for all rounds by the given account in the given program
-          const res = await graphql_fetch(
-            `
-              query GetGrantApplications($roundId: String!, $id: String, $status: String) {
-                roundProjects(where: {
-                  round: $roundId
-            ` +
-              // TODO : uncomment when indexing IPFS via graph
-              // (status ? `status: $status` : ``)
-              // +
-              (id ? `id: $id` : ``) +
-              `
-                }) {
-                  id
-                  metaPtr {
-                    protocol
-                    pointer
-                  }
-                  status
-                  round {
-                    projectsMetaPtr {
-                      protocol
-                      pointer
-                    }
-                  }
-                }
-              }
-            `,
-            chainId,
-            { roundId, id, status }
-          );
-
-          const grantApplications: GrantApplication[] = [];
-
-          for (const project of res.data.roundProjects) {
-            const metadata = await fetchFromIPFS(project.metaPtr.pointer);
-
-            let status = project.status;
-
-            if (id) {
-              status = await checkGrantApplicationStatus(
-                project.id,
-                project.round.projectsMetaPtr
-              );
-            }
-
-            grantApplications.push({
-              ...metadata,
-              status,
-              id: project.id,
-              projectsMetaPtr: project.round.projectsMetaPtr,
-            });
-          }
-
-          const grantApplicationsFromContract =
-            res.data.roundProjects.length > 0
-              ? await updateApplicationStatusFromContract(
-                  grantApplications,
-                  res.data.roundProjects[0].round.projectsMetaPtr,
-                  status
-                )
-              : grantApplications;
-
-          return { data: grantApplicationsFromContract };
-        } catch (err) {
-          console.log("error", err);
-          return { error: "Unable to fetch grant applications" };
-        }
-      },
-      providesTags: ["GrantApplication"],
-    }),
     updateGrantApplication: builder.mutation<
       string,
       {
@@ -313,7 +172,6 @@ export const grantApplicationApi = api.injectEndpoints({
 });
 
 export const {
-  useListGrantApplicationsQuery,
   useUpdateGrantApplicationMutation,
   useBulkUpdateGrantApplicationsMutation,
 } = grantApplicationApi;

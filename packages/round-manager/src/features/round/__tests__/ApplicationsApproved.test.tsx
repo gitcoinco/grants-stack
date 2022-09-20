@@ -2,16 +2,14 @@
 import ApplicationsApproved from "../ApplicationsApproved";
 import {
   useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
 } from "../../api/services/grantApplication";
-import { makeGrantApplicationData, renderWrapped } from "../../../test-utils";
+import { makeGrantApplicationData, renderWithApplicationContext } from "../../../test-utils";
 import {
   fireEvent,
   screen,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { GrantApplication } from "../../api/types";
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("react-router-dom", () => ({
@@ -21,31 +19,28 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 jest.mock("../../common/Auth", () => ({
-  useWallet: () => ({ provider: {}, signer: {} }),
+  useWallet: () => ({
+    chain: {},
+    address: "0x0",
+    provider: { getNetwork: () => ({ chainId: "0" }) },
+  }),
 }));
 
-let grantApplications: GrantApplication[];
+let grantApplications = [
+  makeGrantApplicationData(),
+  makeGrantApplicationData(),
+  makeGrantApplicationData(),
+];
+
+grantApplications.forEach((application) => {
+  application.status = "APPROVED";
+});
+
 
 let bulkUpdateGrantApplications = jest.fn();
 
 describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
-    grantApplications = [
-      makeGrantApplicationData(),
-      makeGrantApplicationData(),
-      makeGrantApplicationData(),
-    ];
-
-    grantApplications.forEach((application) => {
-      application.status = "APPROVED";
-    });
-
-    (useListGrantApplicationsQuery as any).mockReturnValue({
-      data: grantApplications,
-      refetch: jest.fn(),
-      isSuccess: true,
-      isLoading: false,
-    });
 
     bulkUpdateGrantApplications = jest.fn().mockImplementation(() => {
       return {
@@ -64,19 +59,21 @@ describe("<ApplicationsApproved />", () => {
   });
 
   it("should display a loading spinner if approved applications are loading", () => {
-    (useListGrantApplicationsQuery as any).mockReturnValue({
-      data: [],
+
+    renderWithApplicationContext(<ApplicationsApproved />, {
+      applications: [],
       isLoading: true,
     });
-
-    renderWrapped(<ApplicationsApproved />);
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
 
   describe("when approved applications are shown", () => {
     it("should display bulk select", () => {
-      renderWrapped(<ApplicationsApproved />);
+      renderWithApplicationContext(<ApplicationsApproved />, {
+        applications: grantApplications,
+        isLoading: false,
+      });
       expect(
         screen.getByText(
           "Save in gas fees by approving/rejecting multiple applications at once."
@@ -126,14 +123,10 @@ describe("<ApplicationsApproved />", () => {
 
   describe("when there are no approved applications", () => {
     it("should not display bulk select", () => {
-      (useListGrantApplicationsQuery as any).mockReturnValue({
-        data: [],
-        refetch: jest.fn(),
-        isSuccess: true,
+      renderWithApplicationContext(<ApplicationsApproved />, {
+        applications: [],
         isLoading: false,
       });
-
-      renderWrapped(<ApplicationsApproved />);
 
       expect(
         screen.queryByText(
@@ -184,7 +177,10 @@ describe("<ApplicationsApproved />", () => {
 
   describe("when bulk select is inactive", () => {
     it("does not render approve and reject buttons on each card", () => {
-      renderWrapped(<ApplicationsApproved />);
+      renderWithApplicationContext(<ApplicationsApproved />, {
+        applications: grantApplications,
+        isLoading: false,
+      });
       expect(
         screen.queryAllByTestId("bulk-approve-reject-buttons")
       ).toHaveLength(0);
@@ -279,12 +275,10 @@ describe("<ApplicationsApproved />", () => {
         status: grantApplications[0].status,
       };
 
-      expect(bulkUpdateGrantApplications.mock.calls[0][0]).toEqual({
-        roundId: "0",
-        applications: [expected],
-        signer: {},
-        provider: {},
-      });
+      const actual = bulkUpdateGrantApplications.mock.calls[0][0];
+      expect(actual.applications).toEqual([expected]);
+      expect(actual.roundId).toEqual("0");
+      expect(actual.signer).toBeUndefined();
     });
 
     it("shows confirming status when processing rejection", async () => {
@@ -342,7 +336,10 @@ describe("<ApplicationsApproved />", () => {
 });
 
 const setupInBulkSelectionMode = () => {
-  renderWrapped(<ApplicationsApproved />);
+  renderWithApplicationContext(<ApplicationsApproved />, {
+    applications: grantApplications,
+    isLoading: false,
+  });
   const selectButton = screen.getByRole("button", {
     name: /Select/i,
   });
