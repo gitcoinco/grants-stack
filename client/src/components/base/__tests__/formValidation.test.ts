@@ -47,6 +47,7 @@ describe("Form Validation", () => {
     const formInputs = {
       2: "Text Area Response",
       4: "Recipient Address Response",
+      isSafe: "No",
     };
 
     const defaultInputs: RoundApplicationQuestion[] = [
