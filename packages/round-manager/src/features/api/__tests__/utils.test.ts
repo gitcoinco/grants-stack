@@ -2,7 +2,6 @@ import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
 
 import {
   ChainId,
-  checkGrantApplicationStatus,
   fetchFromIPFS,
   generateApplicationSchema,
   graphql_fetch,
@@ -10,6 +9,7 @@ import {
 } from "../utils";
 
 import { MetadataPointer } from "../types";
+import { checkGrantApplicationStatus } from "../application";
 
 enableFetchMocks();
 

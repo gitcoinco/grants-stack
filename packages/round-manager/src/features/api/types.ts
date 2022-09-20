@@ -164,6 +164,23 @@ export type ProjectCredentials = {
 
 export type GrantApplicationId = string;
 
+interface ProjectOwner {
+  address: string;
+}
+
+export type Project = {
+  lastUpdated: number; // unix timestamp in milliseconds
+  id: string;
+  owners: ProjectOwner[];
+  title: string;
+  description: string;
+  website: string;
+  bannerImg?: string;
+  logoImg: string;
+  credentials: ProjectCredentials;
+  metaPtr: MetadataPointer;
+};
+
 export interface GrantApplication {
   /**
    * The on-chain unique grant application ID
@@ -180,17 +197,7 @@ export interface GrantApplication {
   /**
    * Project information
    */
-  project?: {
-    lastUpdated: number; // unix timestamp in milliseconds
-    id: string;
-    title: string;
-    description: string;
-    website: string;
-    bannerImg?: string;
-    logoImg: string;
-    credentials: ProjectCredentials;
-    metaPtr: MetadataPointer;
-  };
+  project?: Project;
   /** List of answers to questions */
   answers?: Array<AnswerBlock>;
   /**

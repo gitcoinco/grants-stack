@@ -38,10 +38,14 @@ function setupInBulkSelectionMode() {
 describe("<ApplicationsRejected />", () => {
   beforeEach(() => {
     grantApplications = [
-      makeGrantApplicationData({ status: "REJECTED" }),
-      makeGrantApplicationData({ status: "REJECTED" }),
-      makeGrantApplicationData({ status: "REJECTED" }),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
+      makeGrantApplicationData(),
     ];
+
+    grantApplications.forEach((application) => {
+      application.status = "REJECTED";
+    });
 
     (useListGrantApplicationsQuery as any).mockReturnValue({
       data: grantApplications,

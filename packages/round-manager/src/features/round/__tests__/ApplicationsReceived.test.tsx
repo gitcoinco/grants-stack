@@ -18,10 +18,14 @@ jest.mock("../../common/Auth", () => ({
 }));
 
 const grantApplications = [
-  makeGrantApplicationData({ status: "PENDING" }),
-  makeGrantApplicationData({ status: "PENDING" }),
-  makeGrantApplicationData({ status: "PENDING" }),
+  makeGrantApplicationData(),
+  makeGrantApplicationData(),
+  makeGrantApplicationData(),
 ];
+
+grantApplications.forEach((application) => {
+  application.status = "PENDING";
+});
 
 let bulkUpdateGrantApplications = jest.fn();
 
