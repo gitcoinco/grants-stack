@@ -102,31 +102,41 @@ describe("QVImplementation", function () {
         ];
         QVImplementation.vote(encodedVotes, user0.address);
       });
-      // it("should prevent unregistered users from voting", () => {
-      //   const encodedVotes = [
-      //     encodeVote(
-      //       "0x657468657265756d000000000000000000000000000000000000000000000000",
-      //       10
-      //     ),
-      //   ];
-      //   expect(QVImplementation.vote(encodedVotes, user1.address)).to.be
-      //     .reverted;
-      // });
+      it("should prevent unregistered users from voting", () => {
+        const encodedVotes = [
+          encodeVote(
+            "0x657468657265756d000000000000000000000000000000000000000000000000",
+            10
+          ),
+        ];
+        expect(QVImplementation.vote(encodedVotes, user1.address)).to.be
+          .reverted;
+      });
+      it("should emit an event on vote", async () => {
+        // mint the voter register
+        VoterRegister.mint(user1.address);
+
+        const encodedVotes = [
+          encodeVote(
+            "0x657468657265756d000000000000000000000000000000000000000000000000",
+            16
+          ),
+        ];
+        expect(QVImplementation.vote(encodedVotes, user1.address))
+          .to.emit(QVImplementation, "Voted")
+          .withArgs(
+            user1.address,
+            "0x657468657265756d000000000000000000000000000000000000000000000000",
+            BigNumber.from(16),
+            BigNumber.from(4)
+          );
+      });
     });
 
     describe("test: tally", () => {
       it("should tally the votes", async () => {
-        await QVImplementation.tally();
-        const encodedTally = await QVImplementation.currentTally();
-        console.log(encodedTally); 
-
-        // const [grantID, totalVoteCredits, totalVotes] = encoder.decode(
-        //   ["tuple(bytes32[], uint256[], uint256[])"],
-        //   encodedTally
-        // );
-        // expect(grantID[0]).to.equal(
-        //   "0x0000000000000000000000000000000000000000000000000000000000000000"
-        // );
+        expect(QVImplementation.tally()).to.emit(QVImplementation, "Tallied");
+        // TODO: check that the votes were tallied correctly
       });
     });
   });
