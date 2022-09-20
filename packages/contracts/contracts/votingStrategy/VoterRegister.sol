@@ -10,7 +10,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
  * @notice Badge contract is a minimalist soulbound ERC-721 implementation
  * @author GITCOIN
  */
-contract VoterBadge is ERC721, Ownable {
+contract VoterRegister is ERC721, Ownable {
 
     /**
      * @notice BaseURI of the NFT
