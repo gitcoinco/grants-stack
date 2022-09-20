@@ -30,6 +30,7 @@ export async function validateApplication(
         [id]: required
           ? string().required(`${input.question} is required`)
           : string(),
+        isSafe: string().required("Is this project safe is required"),
       };
     }
     return acc;

@@ -45,6 +45,7 @@ export default function Form({
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [showProjectDetails] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(false);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
@@ -107,24 +108,29 @@ export default function Form({
       });
     } catch (e) {
       const error = e as ValidationError;
+      console.log(error);
       setFormValidation({
-        messages: error.inner.map((er) => (er as ValidationError).message),
+        messages: [error.message],
         valid: false,
-        errorCount: error.inner.length,
+        errorCount: validation.errorCount + 1,
       });
+      setDisableSubmit(true);
     }
   };
 
-  const handleSubmitApplication = async () => {
+  const handlePreviewClick = async () => {
     await validate();
+    setPreview(true);
+  };
+
+  const handleSubmitApplication = async () => {
+    // await validate();
     if (formValidation.valid) {
       dispatch(submitApplication(round.address, formInputs));
     }
   };
 
-  // perform validation after the fields state is updated
   useEffect(() => {
-    validate();
     console.log("isSafe", formInputs.isSafe);
   }, [formInputs]);
 
@@ -297,7 +303,7 @@ export default function Form({
           {!preview ? (
             <Button
               variant={ButtonVariants.primary}
-              onClick={() => setPreview(true)}
+              onClick={() => handlePreviewClick()}
             >
               Preview Application
             </Button>
@@ -312,6 +318,7 @@ export default function Form({
               <Button
                 variant={ButtonVariants.primary}
                 onClick={handleSubmitApplication}
+                disabled={disableSubmit}
               >
                 Submit
               </Button>
