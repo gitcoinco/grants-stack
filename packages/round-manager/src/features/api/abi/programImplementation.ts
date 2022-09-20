@@ -18,7 +18,7 @@ const programImplementation = [
   "function renounceRole(bytes32 role, address account)",
   "function revokeRole(bytes32 role, address account)",
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
-  "function updateMetaPtr(tuple(uint256 protocol, string pointer) newMetaPtr)"
-]
+  "function updateMetaPtr(tuple(uint256 protocol, string pointer) newMetaPtr)",
+];
 
-export default programImplementation
+export default programImplementation;

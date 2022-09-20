@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600&family=Miriam+Libre:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply text-grey-500;
+    font-family: Libre Franklin;
+  }
+
+  h1 {
+    @apply text-7xl;
+    font-family: Miriam Libre;
+  }
+
+  h2 {
+    @apply text-5xl;
+    font-family: Miriam Libre;
+  }
+
+  h3 {
+    @apply text-3xl;
+    font-family: Miriam Libre;
+  }
+
+  h4 {
+    @apply text-2xl;
+    font-family: Miriam Libre;
+  }
+
+  h5 {
+    @apply text-base;
+    font-family: Miriam Libre;
+  }
+
+  h6 {
+    @apply text-sm;
+    font-family: Miriam Libre;
+  }
+
+  p {
+    @apply text-base;
+  }
+}

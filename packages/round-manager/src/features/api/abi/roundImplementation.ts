@@ -41,8 +41,7 @@ const roundImplementation = [
   "function updateRoundMetaPtr(tuple(uint256 protocol, string pointer) newRoundMetaPtr)",
   "function updateRoundStartTime(uint256 newRoundStartTime)",
   "function vote(bytes[] encodedVotes)",
-  "function votingStrategy() view returns (address)"
-]
+  "function votingStrategy() view returns (address)",
+];
 
-
-export default roundImplementation
+export default roundImplementation;

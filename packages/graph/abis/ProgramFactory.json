@@ -52,6 +52,12 @@
         "internalType": "address",
         "name": "programContractAddress",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "programImplementation",
+        "type": "address"
       }
     ],
     "name": "ProgramCreated",

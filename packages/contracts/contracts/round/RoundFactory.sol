@@ -30,7 +30,7 @@ contract RoundFactory is OwnableUpgradeable {
   event RoundContractUpdated(address roundAddress);
 
   /// @notice Emitted when a new Round is created
-  event RoundCreated(address indexed roundAddress, address indexed ownedBy);
+  event RoundCreated(address indexed roundAddress, address indexed ownedBy, address indexed roundImplementation);
 
 
   /// @notice constructor function which ensure deployer is set as owner
@@ -67,7 +67,7 @@ contract RoundFactory is OwnableUpgradeable {
 
     address clone = ClonesUpgradeable.clone(roundContract);
 
-    emit RoundCreated(clone, ownedBy);
+    emit RoundCreated(clone, ownedBy, roundContract);
 
     RoundImplementation(clone).initialize(
       encodedParameters

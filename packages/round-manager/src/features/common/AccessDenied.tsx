@@ -1,11 +1,10 @@
-import Navbar from "./Navbar"
-import Footer from "./Footer"
-import { datadogLogs } from "@datadog/browser-logs"
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export default function AccessDenied() {
-
-  datadogLogs.logger.info(`====> Route: NotFound`)
-  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+  datadogLogs.logger.info(`====> Route: NotFound`);
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   return (
     <>
@@ -24,5 +23,5 @@ export default function AccessDenied() {
       </main>
       <Footer />
     </>
-  )
+  );
 }

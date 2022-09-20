@@ -1,22 +1,31 @@
-import { ethers } from "ethers"
-import { api } from ".."
-import { roundImplementationContract } from "../contracts"
-import { GrantApplication, MetadataPointer } from "../types"
-import { checkGrantApplicationStatus, fetchFromIPFS, graphql_fetch, pinToIPFS } from "../utils"
+import { ethers } from "ethers";
+import { api } from "..";
+import { roundImplementationContract } from "../contracts";
+import { GrantApplication, MetadataPointer } from "../types";
+import {
+  checkGrantApplicationStatus,
+  fetchFromIPFS,
+  graphql_fetch,
+  pinToIPFS,
+} from "../utils";
+import { Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
 
+const updateApplicationList = async (
+  applications: GrantApplication[],
+  roundId: string,
+  provider: Web3Provider
+): Promise<string> => {
+  try {
+    let reviewedApplications: any[] = [];
+    let foundEntry = false;
 
-const updateApplicationList = (applications: GrantApplication[], roundId: string, provider: any): Promise<string> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let reviewedApplications: any = []
-      let foundEntry = false
+    // fetch latest ipfs pointer to the list of application for the round
 
-      // fetch latest ipfs pointer to the list of application for the round
+    const { chainId } = await provider.getNetwork(); // fetch chain id
 
-      const { chainId } = await provider.getNetwork() // fetch chain id
-
-      const res = await graphql_fetch(
-        `
+    const res = await graphql_fetch(
+      `
           query GetApplicationListPointer($roundId: String!) {
             rounds(first: 1, where: {
               id: $roundId
@@ -27,59 +36,56 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
             }
           }
         `,
-        chainId,
-        { roundId }
-      )
+      chainId,
+      { roundId }
+    );
 
-      const applicationListPointer = res.data.rounds[0].projectsMetaPtr?.pointer
+    const applicationListPointer = res.data.rounds[0].projectsMetaPtr?.pointer;
 
-      // read data from ipfs
-      if (applicationListPointer) {
-        reviewedApplications = await fetchFromIPFS(applicationListPointer)
-      }
+    // read data from ipfs
+    if (applicationListPointer) {
+      reviewedApplications = await fetchFromIPFS(applicationListPointer);
+    }
 
-      for (const application of applications) {
-
-        // if grant application is already reviewed overwrite the entry
-        foundEntry = reviewedApplications.find((o: any, i: any) => {
-          if (o.id === application.id) {
-            reviewedApplications[i] = {
-              id: application.id,
-              status: application.status,
-              payoutAddress: application.recipient
-            }
-            return true // stop searching
-          }
-          return false
-        })
-
-        // create a new reviewed application entry
-        if (!foundEntry || !applicationListPointer) {
-          reviewedApplications.push({
+    for (const application of applications) {
+      // if grant application is already reviewed overwrite the entry
+      foundEntry = reviewedApplications.find((o: any, i: any) => {
+        if (o.id === application.id) {
+          reviewedApplications[i] = {
             id: application.id,
             status: application.status,
-            payoutAddress: application.recipient
-          })
+            payoutAddress: application.recipient,
+          };
+          return true; // stop searching
         }
+        return false;
+      });
+
+      // create a new reviewed application entry
+      if (!foundEntry || !applicationListPointer) {
+        reviewedApplications.push({
+          id: application.id,
+          status: application.status,
+          payoutAddress: application.recipient,
+        });
       }
-
-      // pin new list IPFS
-      const resp = await pinToIPFS({
-        content: reviewedApplications,
-        metadata: {
-          name: "reviewed-applications"
-        }
-      })
-      console.log("✅  Saved data to IPFS:", resp.IpfsHash)
-
-      resolve(resp.IpfsHash)
-    } catch (err) {
-      console.log("error", err)
-      reject("Unable to update grant application")
     }
-  })
-}
 
+    // pin new list IPFS
+    const resp = await pinToIPFS({
+      content: reviewedApplications,
+      metadata: {
+        name: "reviewed-applications",
+      },
+    });
+    console.log("✅  Saved data to IPFS:", resp.IpfsHash);
+
+    return resp.IpfsHash;
+  } catch (err) {
+    console.log("error", err);
+    throw "Unable to update grant application";
+  }
+};
 
 /**
  * Fetches project applications status from metaptr and updates result
@@ -88,6 +94,7 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
  *
  * @param applications
  * @param projectsMetaPtr
+ * @param filterByStatus
  *
  * @dev Once indexing IPFS content via graph is deterministic.
  *  - redeploy subgraph
@@ -95,35 +102,45 @@ const updateApplicationList = (applications: GrantApplication[], roundId: string
  *  - remove commented out status filter in GetGrantApplications query
  */
 const updateApplicationStatusFromContract = async (
-  applications: GrantApplication[], projectsMetaPtr: MetadataPointer, filterByStatus?: string
+  applications: GrantApplication[],
+  projectsMetaPtr: MetadataPointer,
+  filterByStatus?: string
 ) => {
-
   // Handle scenario where operator hasn't review any projects in the round
-  if (!projectsMetaPtr) return applications
+  if (!projectsMetaPtr)
+    return filterByStatus
+      ? applications.filter(
+          (application) => application.status === filterByStatus
+        )
+      : applications;
 
-  const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer)
+  const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer);
 
   // Iterate over all applications indexed by graph
-  applications.map(application => {
+  applications.map((application) => {
     try {
       // fetch matching application index from contract
       const index = applicationsFromContract.findIndex(
-        (applicationFromContract: any) => application.id === applicationFromContract.id
-      )
+        (applicationFromContract: any) =>
+          application.id === applicationFromContract.id
+      );
       // update status of application from contract / default to pending
-      application.status = (index >= 0) ? applicationsFromContract[index].status : "PENDING";
+      application.status =
+        index >= 0 ? applicationsFromContract[index].status : "PENDING";
     } catch {
-      application.status = "PENDING"
+      application.status = "PENDING";
     }
-    return application
-  })
+    return application;
+  });
 
   if (filterByStatus) {
-    return applications.filter(application => application.status === filterByStatus)
+    return applications.filter(
+      (application) => application.status === filterByStatus
+    );
   }
 
-  return applications
-}
+  return applications;
+};
 
 /**
  * Contract interactions API for a Grant Application
@@ -132,12 +149,17 @@ export const grantApplicationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     listGrantApplications: builder.query<
       GrantApplication[],
-      { roundId: string, signerOrProvider: any, id?: string, status?: "PENDING" | "APPROVED" | "REJECTED" }
+      {
+        roundId: string;
+        signerOrProvider: Web3Provider;
+        id?: string;
+        status?: "PENDING" | "APPROVED" | "REJECTED";
+      }
     >({
       queryFn: async ({ roundId, signerOrProvider, id, status }) => {
         try {
           // fetch chain id
-          const { chainId } = await signerOrProvider.getNetwork()
+          const { chainId } = await signerOrProvider.getNetwork();
 
           // query the subgraph for all rounds by the given account in the given program
           const res = await graphql_fetch(
@@ -145,14 +167,12 @@ export const grantApplicationApi = api.injectEndpoints({
               query GetGrantApplications($roundId: String!, $id: String, $status: String) {
                 roundProjects(where: {
                   round: $roundId
-            `
-            +
-            // TODO : uncomment when indexing IPFS via graph
-            // (status ? `status: $status` : ``)
-            // +
-            (id ? `id: $id` : ``)
-            +
-            `
+            ` +
+              // TODO : uncomment when indexing IPFS via graph
+              // (status ? `status: $status` : ``)
+              // +
+              (id ? `id: $id` : ``) +
+              `
                 }) {
                   id
                   metaPtr {
@@ -171,18 +191,20 @@ export const grantApplicationApi = api.injectEndpoints({
             `,
             chainId,
             { roundId, id, status }
-          )
+          );
 
-          const grantApplications: GrantApplication[] = []
+          const grantApplications: GrantApplication[] = [];
 
           for (const project of res.data.roundProjects) {
+            const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
-            const metadata = await fetchFromIPFS(project.metaPtr.pointer)
-
-            let status = project.status
+            let status = project.status;
 
             if (id) {
-              status = await checkGrantApplicationStatus(project.id, project.round.projectsMetaPtr)
+              status = await checkGrantApplicationStatus(
+                project.id,
+                project.round.projectsMetaPtr
+              );
             }
 
             grantApplications.push({
@@ -190,96 +212,112 @@ export const grantApplicationApi = api.injectEndpoints({
               status,
               id: project.id,
               projectsMetaPtr: project.round.projectsMetaPtr,
-            })
+            });
           }
 
-          const grantApplicationsFromContract = res.data.roundProjects.length > 0 ?
-            await updateApplicationStatusFromContract(
-              grantApplications,
-              res.data.roundProjects[0].round.projectsMetaPtr,
-              status
-            ) :
-            grantApplications
+          const grantApplicationsFromContract =
+            res.data.roundProjects.length > 0
+              ? await updateApplicationStatusFromContract(
+                  grantApplications,
+                  res.data.roundProjects[0].round.projectsMetaPtr,
+                  status
+                )
+              : grantApplications;
 
-          return { data: grantApplicationsFromContract }
-
+          return { data: grantApplicationsFromContract };
         } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to fetch grant applications" }
+          console.log("error", err);
+          return { error: "Unable to fetch grant applications" };
         }
       },
-      providesTags: ["GrantApplication"]
+      providesTags: ["GrantApplication"],
     }),
     updateGrantApplication: builder.mutation<
       string,
-      { roundId: string, application: GrantApplication, signer: any, provider: any }
+      {
+        roundId: string;
+        application: GrantApplication;
+        signer: Signer;
+        provider: Web3Provider;
+      }
     >({
       queryFn: async ({ roundId, application, signer, provider }) => {
         try {
-          const ipfsHash = await updateApplicationList([application], roundId, provider)
+          const ipfsHash = await updateApplicationList(
+            [application],
+            roundId,
+            provider
+          );
 
           const roundImplementation = new ethers.Contract(
             roundId,
             roundImplementationContract.abi,
             signer
-          )
+          );
 
-          let tx = await roundImplementation.updateProjectsMetaPtr({
+          const tx = await roundImplementation.updateProjectsMetaPtr({
             protocol: 1,
-            pointer: ipfsHash
-          })
+            pointer: ipfsHash,
+          });
 
-          await tx.wait() // wait for transaction receipt
+          await tx.wait(); // wait for transaction receipt
 
-          console.log("✅ Transaction hash: ", tx.hash)
+          console.log("✅ Transaction hash: ", tx.hash);
 
-          return { data: tx.hash }
-
-        } catch (err: any) {
-          return { error: err.message }
+          return { data: tx.hash };
+        } catch (err: unknown) {
+          return { error: (err as Error).message };
         }
       },
-      invalidatesTags: ["GrantApplication", "Round"]
+      invalidatesTags: ["GrantApplication", "Round"],
     }),
     bulkUpdateGrantApplications: builder.mutation<
       string,
-      { roundId: string, applications: GrantApplication[], signer: any, provider: any }
+      {
+        roundId: string;
+        applications: GrantApplication[];
+        signer: Signer;
+        provider: Web3Provider;
+      }
     >({
       queryFn: async ({ roundId, applications, signer, provider }) => {
         try {
-          const ipfsHash = await updateApplicationList(applications, roundId, provider)
+          const ipfsHash = await updateApplicationList(
+            applications,
+            roundId,
+            provider
+          );
 
           // update projects meta pointer in round implementation contract
           const roundImplementation = new ethers.Contract(
             roundId,
             roundImplementationContract.abi,
             signer
-          )
+          );
 
-          let tx = await roundImplementation.updateProjectsMetaPtr({
+          const tx = await roundImplementation.updateProjectsMetaPtr({
             protocol: 1,
-            pointer: ipfsHash
-          })
+            pointer: ipfsHash,
+          });
 
-          await tx.wait() // wait for transaction receipt
+          await tx.wait(); // wait for transaction receipt
 
-          console.log("✅ Transaction hash: ", tx.hash)
+          console.log("✅ Transaction hash: ", tx.hash);
 
-          return { data: tx.hash }
-
+          return { data: tx.hash };
         } catch (err) {
-          console.log("error", err)
-          return { error: "Unable to update the grant applications" }
+          console.log("error", err);
+          return { error: "Unable to update the grant applications" };
         }
       },
-      invalidatesTags: ["GrantApplication", "Round"]
+      invalidatesTags: ["GrantApplication", "Round"],
     }),
   }),
-  overrideExisting: false
-})
+  overrideExisting: false,
+});
 
 export const {
   useListGrantApplicationsQuery,
   useUpdateGrantApplicationMutation,
-  useBulkUpdateGrantApplicationsMutation
-} = grantApplicationApi
+  useBulkUpdateGrantApplicationsMutation,
+} = grantApplicationApi;
