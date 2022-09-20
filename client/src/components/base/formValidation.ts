@@ -1,5 +1,9 @@
 import { object, string } from "yup";
-import { FormInputs, RoundApplicationQuestion } from "../../types";
+import {
+  DynamicFormInputs,
+  FormInputs,
+  RoundApplicationQuestion,
+} from "../../types";
 
 export async function validateProjectForm(inputs: FormInputs) {
   const schema = object({
@@ -16,7 +20,7 @@ export async function validateProjectForm(inputs: FormInputs) {
 
 export async function validateApplication(
   defaultInputs: RoundApplicationQuestion[],
-  formInputs: any
+  formInputs: DynamicFormInputs
 ) {
   const schema = defaultInputs.reduce((acc, input) => {
     const { id, required } = input;

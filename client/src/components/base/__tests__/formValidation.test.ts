@@ -46,6 +46,7 @@ describe("Form Validation", () => {
   it("Validates application form", async () => {
     const formInputs = {
       2: "Text Area Response",
+      4: "Recipient Address Response",
     };
 
     const defaultInputs: RoundApplicationQuestion[] = [
@@ -71,6 +72,13 @@ describe("Form Validation", () => {
         choices: ["Option 1", "Option 2"],
         id: 3,
       },
+      {
+        id: 4,
+        question: "Recipient Address",
+        type: "RECIPIENT",
+        required: true,
+        info: "This is your recipient address",
+      }
     ];
     try {
       await validateApplication(defaultInputs, formInputs);

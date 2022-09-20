@@ -41,7 +41,6 @@ export default function Form({
   const dispatch = useDispatch();
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
-  const [submitted, setSubmitted] = useState(false);
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
@@ -94,6 +93,10 @@ export default function Form({
     handleInput(e);
   };
 
+  const handleRadioInput = async (e: ChangeHandlers) => {
+    handleInput(e);
+  };
+
   const validate = async () => {
     try {
       await validateApplication(schema, formInputs);
@@ -113,7 +116,6 @@ export default function Form({
   };
 
   const handleSubmitApplication = async () => {
-    setSubmitted(true);
     await validate();
     if (formValidation.valid) {
       dispatch(submitApplication(round.address, formInputs));
@@ -192,11 +194,12 @@ export default function Form({
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
                         choices={["Yes", "No"]}
-                        changeHandler={handleInput}
+                        changeHandler={handleRadioInput}
                         name="isSafe"
-                        value={formInputs.isSafe ?? ""}
+                        value={formInputs.isSafe}
                         info=""
                         required={input.required ?? true}
+                        disabled={preview}
                       />
                     </Stack>
                   </div>
@@ -209,7 +212,7 @@ export default function Form({
           If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism,
           and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before
           sending the balance of any full grant."
-                    value={formInputs[`${input.id}`] ?? ""}
+                    value={formInputs[`${input.id}`]}
                     disabled={preview}
                     changeHandler={handleInputAddress}
                     required={input.required ?? true}
@@ -263,7 +266,7 @@ export default function Form({
                   label={input.question}
                   placeholder={input.info}
                   name={`${input.id}`}
-                  value={formInputs[`${input.id}`] ?? ""}
+                  value={formInputs[`${input.id}`]}
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
@@ -271,7 +274,7 @@ export default function Form({
               );
           }
         })}
-        {!formValidation.valid && submitted && (
+        {!formValidation.valid && preview && (
           <div
             className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
             role="alert"
@@ -293,7 +296,6 @@ export default function Form({
         <div className="flex justify-end">
           {!preview ? (
             <Button
-              disabled={!formValidation.valid}
               variant={ButtonVariants.primary}
               onClick={() => setPreview(true)}
             >

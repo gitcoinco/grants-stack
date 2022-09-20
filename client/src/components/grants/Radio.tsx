@@ -3,6 +3,7 @@ import { InputProps } from "../../types";
 type RadioInputProps = InputProps & {
   choices?: string[];
   required: boolean;
+  disabled: boolean;
 };
 
 export default function Radio({
@@ -13,6 +14,7 @@ export default function Radio({
   choices = [],
   changeHandler,
   required,
+  disabled,
 }: RadioInputProps) {
   return (
     <div>
@@ -25,7 +27,7 @@ export default function Radio({
         </span>
       )}
       <legend>{info}</legend>
-      <fieldset className="mt-4" id={name}>
+      <fieldset className="mt-4" id={name} disabled={disabled}>
         <div className="space-y-2">
           {choices.map((choice) => {
             const choiceId = choice.toLowerCase().replaceAll(" ", "_");
