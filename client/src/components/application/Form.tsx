@@ -110,9 +110,9 @@ export default function Form({
       const error = e as ValidationError;
       console.log(error);
       setFormValidation({
-        messages: [error.message],
+        messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,
-        errorCount: validation.errorCount + 1,
+        errorCount: error.inner.length,
       });
       setDisableSubmit(true);
     }
@@ -124,15 +124,10 @@ export default function Form({
   };
 
   const handleSubmitApplication = async () => {
-    // await validate();
     if (formValidation.valid) {
       dispatch(submitApplication(round.address, formInputs));
     }
   };
-
-  useEffect(() => {
-    console.log("isSafe", formInputs.isSafe);
-  }, [formInputs]);
 
   useEffect(() => {
     dispatch(loadProjects(true));

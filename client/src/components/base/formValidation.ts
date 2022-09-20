@@ -30,12 +30,14 @@ export async function validateApplication(
         [id]: required
           ? string().required(`${input.question} is required`)
           : string(),
-        isSafe: string().required("Is this project safe is required"),
+        isSafe: string().required("Is this project a safe is required"),
       };
     }
     return acc;
   }, {});
 
-  const validatedInputs = await object(schema).validate(formInputs);
+  const validatedInputs = await object(schema).validate(formInputs, {
+    abortEarly: false,
+  });
   return validatedInputs;
 }
