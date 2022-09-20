@@ -1,5 +1,5 @@
 import { makeGrantApplicationData } from "../../../test-utils";
-import { getApplicationById } from "../application";
+import { getApplicationById, getApplicationsByRoundId } from "../application";
 import { fetchFromIPFS, graphql_fetch } from "../utils";
 import { GrantApplication } from "../types";
 import { Contract } from "ethers";
@@ -101,5 +101,74 @@ describe("getApplicationById", () => {
     );
 
     consoleErrorSpy.mockClear();
+  });
+});
+
+describe("getApplicationsByRoundId", () => {
+  
+  let expectedApplications: GrantApplication[];
+
+  beforeEach(() => {
+    expectedApplications = [makeGrantApplicationData()];
+    // const projectOwners = expectedApplication.project?.owners.map(
+    //   (it) => it.address
+    // );
+
+    // (Contract as any).mockImplementation(() => {
+    //   return {
+    //     getProjectOwners: () => projectOwners,
+    //   };
+    // });
+  });
+
+
+  it("should retrieve applications given an round id", async () => {
+    const expectedApplication = expectedApplications[0]
+    const roundId = expectedApplication.round;
+    const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
+    const expectedApplicationMetaPtr = {
+      protocol: 1,
+      pointer: "bafkreigfajf5ud3js6bmh3lwg5sp7cqyrqoy7e65y25myyqjywllxvcw2u",
+    };
+    (graphql_fetch as jest.Mock).mockResolvedValue({
+      data: {
+        roundProjects: [
+          {
+            id: expectedApplication.id,
+            metaPtr: expectedApplicationMetaPtr,
+            status: "PENDING",
+            round: {
+              projectsMetaPtr: expectedProjectsMetaPtr,
+            },
+          },
+        ],
+      },
+    });
+
+    (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
+      if (metaptr === expectedApplicationMetaPtr.pointer) {
+        return {
+          round: expectedApplication.round,
+          recipient: expectedApplication.recipient,
+          project: expectedApplication.project,
+          answers: expectedApplication.answers,
+        };
+      }
+      if (metaptr === expectedProjectsMetaPtr.pointer) {
+        return [
+          {
+            id: expectedApplication.id,
+            status: expectedApplication.status,
+          },
+        ];
+      }
+    });
+
+    const actualApplications = await getApplicationsByRoundId(
+      roundId,
+      signerOrProviderStub
+    );
+
+    expect(actualApplications).toEqual(expectedApplications);
   });
 });

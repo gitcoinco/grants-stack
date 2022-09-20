@@ -218,3 +218,9 @@ export type AnswerBlock = {
     encryptedSymmetricKey: string;
   };
 };
+
+export enum ApplicationStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED"
+}

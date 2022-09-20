@@ -20,6 +20,7 @@ import {
   ProgramState,
 } from "./context/ProgramContext";
 import { MemoryRouter } from "react-router-dom";
+import { ApplicationContext, ApplicationState, initialApplicationState } from "./context/ApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -202,3 +203,23 @@ export const renderWithContext = (
       </ProgramContext.Provider>
     </MemoryRouter>
   );
+
+export const renderWithApplicationContext = (
+  ui: JSX.Element,
+  grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <ApplicationContext.Provider
+        value={{
+          state: { ...initialApplicationState, ...grantApplicationStateOverrides },
+          dispatch,
+        }}
+      >
+        {ui}
+      </ApplicationContext.Provider>
+    </MemoryRouter>
+  );
+  

@@ -6,7 +6,6 @@ import {
   Project,
   ProjectStatus,
 } from "./types";
-import { updateApplicationStatusFromContract } from "./services/grantApplication";
 import { projectRegistryContract } from "./contracts";
 import { Contract } from "ethers";
 
@@ -19,25 +18,25 @@ export const getApplicationById = async (
 
     const res = await graphql_fetch(
       `
-              query GetGrantApplications($id: String) {
-                roundProjects(where: {
-                 id: $id
-                }) {
-                  id
-                  metaPtr {
-                    protocol
-                    pointer
-                  }
-                  status
-                  round {
-                    projectsMetaPtr {
-                      protocol
-                      pointer
-                    }
-                  }
-                }
+        query GetGrantApplications($id: String) {
+          roundProjects(where: {
+            id: $id
+          }) {
+            id
+            metaPtr {
+              protocol
+              pointer
+            }
+            status
+            round {
+              projectsMetaPtr {
+                protocol
+                pointer
               }
-            `,
+            }
+          }
+        }
+      `,
       chainId,
       { id }
     );
@@ -67,9 +66,82 @@ export const getApplicationById = async (
       );
 
     return grantApplicationsFromContract[0];
-  } catch (e) {
-    console.error("error", e);
-    throw e;
+  } catch (err) {
+    console.error("error", err);
+    throw err;
+  }
+};
+
+
+export const getApplicationsByRoundId = async (
+  roundId: string,
+  signerOrProvider: any
+): Promise<GrantApplication[]> => {
+
+  try {
+    // fetch chain id
+    const { chainId } = await signerOrProvider.getNetwork();
+
+    // query the subgraph for all rounds by the given account in the given program
+    const res = await graphql_fetch(
+      `
+        query GetApplicationsByRoundId($roundId: String!, $status: String) {
+          roundProjects(where: {
+            round: $roundId
+      ` +
+        // TODO : uncomment when indexing IPFS via graph
+        // (status ? `status: $status` : ``)
+        // +
+      `
+          }) {
+            id
+            metaPtr {
+              protocol
+              pointer
+            }
+            status
+            round {
+              projectsMetaPtr {
+                protocol
+                pointer
+              }
+            }
+          }
+        }
+      `,
+      chainId,
+      { roundId }
+    );
+
+    const grantApplications: GrantApplication[] = [];
+
+    for (const project of res.data.roundProjects) {
+      const metadata = await fetchFromIPFS(project.metaPtr.pointer);
+
+      // const signature = metadata?.signature;
+      const application = metadata.application ? metadata.application : metadata;
+
+      grantApplications.push({
+        ...application,
+        status: project.status,
+        id: project.id,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+      });
+
+    }
+
+    const grantApplicationsFromContract =
+      res.data.roundProjects.length > 0
+        ? await updateApplicationStatusFromContract(
+            grantApplications,
+            res.data.roundProjects[0].round.projectsMetaPtr
+          )
+        : grantApplications;
+
+    return grantApplicationsFromContract;
+  } catch (err) {
+    console.error("error", err);
+    throw err;
   }
 };
 
@@ -104,6 +176,8 @@ const fetchApplicationData = async (
       async (project: any): Promise<GrantApplication> => {
         const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
+        const application = metadata.application ? metadata.application: metadata;
+
         let status = project.status;
 
         if (id) {
@@ -113,7 +187,7 @@ const fetchApplicationData = async (
           );
         }
 
-        const projectRegistryId = metadata.project.id;
+        const projectRegistryId = application.project.id;
         const projectOwners = await projectRegistry.getProjectOwners(
           projectRegistryId
         );
@@ -132,3 +206,58 @@ const fetchApplicationData = async (
       }
     )
   );
+
+/**
+ * Fetches project applications status from metaptr and updates result
+ * Note: This function is a short term fix until the indexing IPFS content
+ * via the graph is deterministic
+ *
+ * @param applications
+ * @param projectsMetaPtr
+ * @param filterByStatus
+ *
+ * @dev Once indexing IPFS content via graph is deterministic.
+ *  - redeploy subgraph
+ *  - remove updateApplicationStatusFromContract
+ *  - remove commented out status filter in GetGrantApplications query
+ */
+const updateApplicationStatusFromContract = async (
+  applications: GrantApplication[],
+  projectsMetaPtr: MetadataPointer,
+  filterByStatus?: string
+) => {
+  // Handle scenario where operator hasn't review any projects in the round
+  if (!projectsMetaPtr)
+    return filterByStatus
+      ? applications.filter(
+          (application) => application.status === filterByStatus
+        )
+      : applications;
+
+  const applicationsFromContract = await fetchFromIPFS(projectsMetaPtr.pointer);
+
+  // Iterate over all applications indexed by graph
+  applications.map((application) => {
+    try {
+      // fetch matching application index from contract
+      const index = applicationsFromContract.findIndex(
+        (applicationFromContract: any) =>
+          application.id === applicationFromContract.id
+      );
+      // update status of application from contract / default to pending
+      application.status =
+        index >= 0 ? applicationsFromContract[index].status : "PENDING";
+    } catch {
+      application.status = "PENDING";
+    }
+    return application;
+  });
+
+  if (filterByStatus) {
+    return applications.filter(
+      (application) => application.status === filterByStatus
+    );
+  }
+
+  return applications;
+};
