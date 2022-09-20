@@ -78,7 +78,7 @@ describe("Form Validation", () => {
         type: "RECIPIENT",
         required: true,
         info: "This is your recipient address",
-      }
+      },
     ];
     try {
       await validateApplication(defaultInputs, formInputs);

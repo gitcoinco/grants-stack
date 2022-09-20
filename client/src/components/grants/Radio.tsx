@@ -3,7 +3,6 @@ import { InputProps } from "../../types";
 type RadioInputProps = InputProps & {
   choices?: string[];
   required: boolean;
-  disabled: boolean;
 };
 
 export default function Radio({
