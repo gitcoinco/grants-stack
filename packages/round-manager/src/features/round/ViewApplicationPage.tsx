@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  useListGrantApplicationsQuery,
   useUpdateGrantApplicationMutation,
 } from "../api/services/grantApplication";
 import { useListRoundsQuery } from "../api/services/round";
@@ -33,9 +32,9 @@ import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import {
-  ApplicationProvider,
   useApplicationById,
 } from "../../context/ApplicationContext";
+import { Spinner } from "../common/Spinner";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -194,7 +193,7 @@ export default function ViewApplicationPage() {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
     }
-  }, [address, application, isLoading, round]);
+  }, [address, application, isLoading, round, getApplicationByIdError]);
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {
@@ -245,7 +244,7 @@ export default function ViewApplicationPage() {
       setAnswerBlocks(_answerBlocks);
     };
 
-    if (isLoading && hasAccess) {
+    if (!isLoading && hasAccess) {
       decryptAnswers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -259,169 +258,173 @@ export default function ViewApplicationPage() {
   };
 
   return (
-    <>
-      {!applicationExists && <NotFoundPage />}
-      {applicationExists && !hasAccess && <AccessDenied />}
-      {applicationExists && hasAccess && (
-        <>
-          <Navbar />
-          <div className="container mx-auto h-screen px-4 py-7">
-            <header>
-              <div className="flex gap-2 mb-6">
-                <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
-                <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
-                  <span>{round?.roundMetadata?.name || "..."}</span>
-                </Link>
-              </div>
-              <div>
-                <div>
-                  <img
-                    className="h-32 w-full object-cover lg:h-80 rounded"
-                    src={`https://${
-                      process.env.REACT_APP_PINATA_GATEWAY
-                    }/ipfs/${application?.project!.bannerImg}`}
-                    alt=""
-                  />
+    isLoading ? (
+      <Spinner text="We're fetching the round application." />
+    ) : (
+      <>
+        {!applicationExists && <NotFoundPage />}
+        {applicationExists && !hasAccess && <AccessDenied />}
+        {applicationExists && hasAccess && (
+          <>
+            <Navbar />
+            <div className="container mx-auto h-screen px-4 py-7">
+              <header>
+                <div className="flex gap-2 mb-6">
+                  <ArrowNarrowLeftIcon className="h-3 w-3 mt-1 bigger" />
+                  <Link className="text-sm gap-2" to={`/round/${round?.id}`}>
+                    <span>{round?.roundMetadata?.name || "..."}</span>
+                  </Link>
                 </div>
-                <div className="pl-4 sm:pl-6 lg:pl-8">
-                  <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
-                    <div className="flex">
-                      <img
-                        className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
-                        src={`https://${
-                          process.env.REACT_APP_PINATA_GATEWAY
-                        }/ipfs/${application?.project!.logoImg}`}
-                        alt=""
-                      />
-                    </div>
-                    <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-                      <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        <Button
-                          type="button"
-                          $variant={
-                            application?.status === "APPROVED"
-                              ? "solid"
-                              : "outline"
-                          }
-                          className="inline-flex justify-center px-4 py-2 text-sm"
-                          disabled={isLoading || updating}
-                          onClick={() => confirmReviewDecision("APPROVED")}
-                        >
-                          <CheckIcon
-                            className="h-5 w-5 mr-1"
-                            aria-hidden="true"
-                          />
-                          {application?.status === "APPROVED"
-                            ? "Approved"
-                            : "Approve"}
-                        </Button>
-                        <Button
-                          type="button"
-                          $variant={
-                            application?.status === "REJECTED"
-                              ? "solid"
-                              : "outline"
-                          }
-                          className={
-                            "inline-flex justify-center px-4 py-2 text-sm" +
-                            (application?.status === "REJECTED"
-                              ? ""
-                              : "text-grey-500")
-                          }
-                          disabled={isLoading || updating}
-                          onClick={() => confirmReviewDecision("REJECTED")}
-                        >
-                          <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                          {application?.status === "REJECTED"
-                            ? "Rejected"
-                            : "Reject"}
-                        </Button>
+                <div>
+                  <div>
+                    <img
+                      className="h-32 w-full object-cover lg:h-80 rounded"
+                      src={`https://${
+                        process.env.REACT_APP_PINATA_GATEWAY
+                      }/ipfs/${application?.project!.bannerImg}`}
+                      alt=""
+                    />
+                  </div>
+                  <div className="pl-4 sm:pl-6 lg:pl-8">
+                    <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                      <div className="flex">
+                        <img
+                          className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
+                          src={`https://${
+                            process.env.REACT_APP_PINATA_GATEWAY
+                          }/ipfs/${application?.project!.logoImg}`}
+                          alt=""
+                        />
+                      </div>
+                      <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                        <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                          <Button
+                            type="button"
+                            $variant={
+                              application?.status === "APPROVED"
+                                ? "solid"
+                                : "outline"
+                            }
+                            className="inline-flex justify-center px-4 py-2 text-sm"
+                            disabled={isLoading || updating}
+                            onClick={() => confirmReviewDecision("APPROVED")}
+                          >
+                            <CheckIcon
+                              className="h-5 w-5 mr-1"
+                              aria-hidden="true"
+                            />
+                            {application?.status === "APPROVED"
+                              ? "Approved"
+                              : "Approve"}
+                          </Button>
+                          <Button
+                            type="button"
+                            $variant={
+                              application?.status === "REJECTED"
+                                ? "solid"
+                                : "outline"
+                            }
+                            className={
+                              "inline-flex justify-center px-4 py-2 text-sm" +
+                              (application?.status === "REJECTED"
+                                ? ""
+                                : "text-grey-500")
+                            }
+                            disabled={isLoading || updating}
+                            onClick={() => confirmReviewDecision("REJECTED")}
+                          >
+                            <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+                            {application?.status === "REJECTED"
+                              ? "Rejected"
+                              : "Reject"}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <ConfirmationModal
-                body={
-                  <p className="text-sm text-grey-400">
-                    {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
-                  </p>
-                }
-                confirmButtonAction={handleUpdateGrantApplication}
-                cancelButtonAction={handleCancelModal}
-                isOpen={openModal}
-                setIsOpen={setOpenModal}
-              />
-            </header>
+                <ConfirmationModal
+                  body={
+                    <p className="text-sm text-grey-400">
+                      {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
+                    </p>
+                  }
+                  confirmButtonAction={handleUpdateGrantApplication}
+                  cancelButtonAction={handleCancelModal}
+                  isOpen={openModal}
+                  setIsOpen={setOpenModal}
+                />
+              </header>
 
-            <main>
-              <h1 className="text-2xl mt-6">
-                {application?.project!.title || "..."}
-              </h1>
-              <div className="sm:flex sm:justify-between my-6">
-                <div className="sm:basis-3/4 sm:mr-3">
-                  <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
-                    <div className="text-grey-500 truncate block">
-                      <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
-                      <span className="text-xs text-grey-400">
-                        {getAnswer(ApplicationQuestions.EMAIL)}
+              <main>
+                <h1 className="text-2xl mt-6">
+                  {application?.project!.title || "..."}
+                </h1>
+                <div className="sm:flex sm:justify-between my-6">
+                  <div className="sm:basis-3/4 sm:mr-3">
+                    <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
+                      <div className="text-grey-500 truncate block">
+                        <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
+                        <span className="text-xs text-grey-400">
+                          {getAnswer(ApplicationQuestions.EMAIL)}
+                        </span>
+                      </div>
+                      <span
+                        className="text-grey-500 flex flex-row justify-start items-center"
+                        data-testid="twitter-info"
+                      >
+                        <TwitterIcon className="h-4 w-4 mr-2" />
+                        <span className="text-sm text-violet-400 mr-2">
+                          {getAnswer(ApplicationQuestions.TWITTER)}
+                        </span>
+                        {getVerifiableCredentialVerificationResultView("twitter")}
+                      </span>
+
+                      <span
+                        className="text-grey-500 flex flex-row justify-start items-center"
+                        data-testid="github-info"
+                      >
+                        <GithubIcon className="h-4 w-4 mr-2" />
+                        <span className="text-sm text-violet-400 mr-2">
+                          {getAnswer(ApplicationQuestions.GITHUB)}
+                        </span>
+                        {getVerifiableCredentialVerificationResultView("github")}
                       </span>
                     </div>
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="twitter-info"
-                    >
-                      <TwitterIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
-                        {getAnswer(ApplicationQuestions.TWITTER)}
-                      </span>
-                      {getVerifiableCredentialVerificationResultView("twitter")}
-                    </span>
 
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="github-info"
-                    >
-                      <GithubIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
-                        {getAnswer(ApplicationQuestions.GITHUB)}
-                      </span>
-                      {getVerifiableCredentialVerificationResultView("github")}
-                    </span>
+                    <hr className="my-6" />
+
+                    <h2 className="text-xs mb-2">Description</h2>
+                    <p className="text-base">
+                      {application?.project!.description}
+                    </p>
+
+                    <hr className="my-6" />
+
+                    <h2 className="text-xs mb-2">Funding Sources</h2>
+                    <p className="text-base mb-6">
+                      {getAnswer(ApplicationQuestions.FUNDING_SOURCE)}
+                    </p>
+
+                    <h2 className="text-xs mb-2">Funding Profit</h2>
+                    <p className="text-base mb-6">
+                      {getAnswer(ApplicationQuestions.PROFIT_2022)}
+                    </p>
+
+                    <h2 className="text-xs mb-2">Team Size</h2>
+                    <p className="text-base mb-6">
+                      {getAnswer(ApplicationQuestions.TEAM_SIZE)}
+                    </p>
                   </div>
-
-                  <hr className="my-6" />
-
-                  <h2 className="text-xs mb-2">Description</h2>
-                  <p className="text-base">
-                    {application?.project!.description}
-                  </p>
-
-                  <hr className="my-6" />
-
-                  <h2 className="text-xs mb-2">Funding Sources</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.FUNDING_SOURCE)}
-                  </p>
-
-                  <h2 className="text-xs mb-2">Funding Profit</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.PROFIT_2022)}
-                  </p>
-
-                  <h2 className="text-xs mb-2">Team Size</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.TEAM_SIZE)}
-                  </p>
+                  <div className="sm:basis-1/4 text-center sm:ml-3"></div>
                 </div>
-                <div className="sm:basis-1/4 text-center sm:ml-3"></div>
-              </div>
-            </main>
-            <Footer />
-          </div>
-        </>
-      )}
-    </>
+              </main>
+              <Footer />
+            </div>
+          </>
+        )}
+      </>
+    )
   );
 }
 

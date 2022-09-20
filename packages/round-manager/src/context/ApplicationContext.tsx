@@ -80,7 +80,7 @@ export const ApplicationProvider = ({
 
 function fetchApplicationById(
   dispatch: Dispatch,
-  id: string | undefined,
+  id: string,
   walletProvider: any
 ) {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
@@ -95,7 +95,7 @@ function fetchApplicationById(
 }
 
 export const useApplicationById = (
-  id?: string
+  id: string
 ): {
   application: GrantApplication | undefined;
   isLoading: boolean;
@@ -113,7 +113,7 @@ export const useApplicationById = (
 
   useEffect(() => {
     fetchApplicationById(context.dispatch, id, walletProvider);
-  }, [id, walletProvider]);
+  }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     application: context.state.application,
