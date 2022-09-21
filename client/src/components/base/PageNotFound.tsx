@@ -4,9 +4,8 @@ import Button, { ButtonVariants } from "./Button";
 function PageNotFound() {
   return (
     <div className="h-full w-full absolute flex flex-col justify-center items-center">
-      <div className="w-full lg:w-1/3 sm:w-2/3">
-        <h2 className="text-center">404</h2>
-        <h4 className="text-center">Page not found</h4>
+      <div className="w-full lg:w-3/5 sm:w-2/3">
+        <img alt="404 Page not Found" src="./assets/404.png" />
         <div className="p-8 flex flex-col">
           <p className="mt-4 mb-12 w-full text-center">
             The page you are looking for does not exist.
