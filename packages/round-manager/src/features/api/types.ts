@@ -104,6 +104,7 @@ export interface Round {
    */
   roundMetadata?: {
     name: string;
+    programContractAddress: string;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.

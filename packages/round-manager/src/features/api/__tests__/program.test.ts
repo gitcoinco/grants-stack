@@ -43,6 +43,7 @@ describe("listPrograms", () => {
     });
 
     const actualPrograms = await listPrograms("0x0", {
+      // @ts-expect-error Mocked out for testing purposes
       getNetwork: async () => Promise.resolve({ chainId: "ahjdfaskjlfja" }),
     });
 
