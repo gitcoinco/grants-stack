@@ -72,8 +72,10 @@ export default function Preview({
         updatedAt={formatDate(Date.now() / 1000)}
         createdAt={formatDate(Date.now() / 1000)}
         project={project}
-        logoImg={props.metadata?.logoImg ?? "./icons/lightning.svg"}
-        bannerImg={props.metadata?.bannerImg ?? "./assets/card-img.png"}
+        logoImg={props.metadata?.logoImg ?? "./assets/default-project-logo.png"}
+        bannerImg={
+          props.metadata?.bannerImg ?? "./assets/default-project-banner.png"
+        }
       />
       <div className="flex justify-end">
         <Button
