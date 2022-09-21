@@ -57,7 +57,7 @@ export type RoundsActions =
   | RoundsUnloadedAction
   | RoundsLoadingErrorAction;
 
-const roundLoaded = (address: string, round: Round): RoundsActions => ({
+export const roundLoaded = (address: string, round: Round): RoundsActions => ({
   type: ROUNDS_ROUND_LOADED,
   address,
   round,

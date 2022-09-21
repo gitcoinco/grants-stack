@@ -5,7 +5,7 @@ import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/rounds";
-import { roundApplicationPath, rootPath } from "../../routes";
+import { roundApplicationPath, newGrantPath } from "../../routes";
 import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
@@ -37,8 +37,6 @@ function Round() {
       projects: allProjectMetadata,
     };
   }, shallowEqual);
-
-  console.log("Projects", props.projects);
 
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [, setToggleRoundApplicationModal] = useLocalStorage(
@@ -108,7 +106,7 @@ function Round() {
               </Button>
             </Link>
           ) : (
-            <Link to={rootPath()}>
+            <Link to={newGrantPath()}>
               <Button
                 styles={["w-full justify-center"]}
                 variant={ButtonVariants.primary}
