@@ -108,7 +108,7 @@ const TestingUseApplicationByIdComponent = (props: {
   expectedApplicationId?: string;
 }) => {
   const { application, isLoading, getApplicationByIdError } =
-    useApplicationById(props.expectedApplicationId);
+    useApplicationById(props.expectedApplicationId!);
   return (
     <>
       {application ? (
