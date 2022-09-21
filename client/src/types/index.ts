@@ -70,7 +70,6 @@ export type AddressInputProps = {
   placeholder?: string;
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
-  displayError?: string;
   required: boolean;
 };
 
