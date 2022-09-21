@@ -21,6 +21,7 @@ function Round() {
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
     const roundState = state.rounds[roundId!];
+    const projectStatus = state.projects.status;
     const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
@@ -35,6 +36,7 @@ function Round() {
       web3ChainId,
       roundChainId,
       projects: allProjectMetadata,
+      projectStatus,
     };
   }, shallowEqual);
 
