@@ -7,8 +7,8 @@ export enum ImgTypes {
 }
 
 const defaultImgs = {
-  bannerImg: "./assets/card-img.png",
-  logoImg: "./icons/lightning.svg",
+  bannerImg: "./assets/default-project-banner.png",
+  logoImg: "./assets/default-project-logo.png",
 };
 
 export const getProjectImage = (

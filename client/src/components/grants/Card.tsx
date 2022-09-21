@@ -44,7 +44,7 @@ function Card({ projectId }: { projectId: number }) {
           src={props.bannerImg}
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "./assets/card-img.png";
+            e.currentTarget.src = "./assets/default-project-banner.png";
           }}
           alt="project banner"
         />
@@ -56,7 +56,7 @@ function Card({ projectId }: { projectId: number }) {
                 src={props.logoImg}
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = "./icons/lightning.svg";
+                  e.currentTarget.src = "./assets/default-project-logo.png";
                 }}
                 alt="project logo"
               />
