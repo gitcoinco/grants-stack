@@ -1,26 +1,27 @@
 import { screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
-import ProgressModal, { ProgressStatus, Step } from "../ProgressModal";
+import ProgressModal, { Step } from "../ProgressModal";
+import { ProgressStatus } from "../../api/types";
 
 const completedStep = {
   name: "My Todo List",
   description: "Done :)",
-  status: ProgressStatus.COMPLETE,
+  status: ProgressStatus.IS_SUCCESS,
 };
 const currentStep = {
   name: "My Current Step",
   description: "Work in progress",
-  status: ProgressStatus.CURRENT,
+  status: ProgressStatus.IN_PROGRESS,
 };
 const errorStep = {
   name: "Oh no!",
   description: "Something went wrong :(",
-  status: ProgressStatus.ERROR,
+  status: ProgressStatus.IS_ERROR,
 };
 const upcomingStep = {
   name: "My Weekend Plan",
   description: "To be completed in the future",
-  status: ProgressStatus.UPCOMING,
+  status: ProgressStatus.NOT_STARTED,
 };
 
 const steps = [completedStep, currentStep, errorStep, upcomingStep];

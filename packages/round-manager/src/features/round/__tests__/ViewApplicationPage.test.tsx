@@ -17,7 +17,7 @@ import {
   ApplicationContext,
   ApplicationState,
   initialApplicationState,
-} from "../../../context/ApplicationContext";
+} from "../../../context/application/ApplicationContext";
 import { MemoryRouter } from "react-router-dom";
 import { getApplicationById } from "../../api/application";
 import { faker } from "@faker-js/faker";

@@ -29,7 +29,7 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationById } from "../../context/ApplicationContext";
+import { useApplicationById } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 

@@ -1,10 +1,9 @@
-import { Program } from "../features/api/types";
+import { Program, Web3Instance } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useWallet } from "../features/common/Auth";
-import { getProgramById, listPrograms } from "../features/api/program";
-import { Web3Provider } from "@ethersproject/providers";
+import { useWallet } from "../../features/common/Auth";
+import { getProgramById, listPrograms } from "../../features/api/program";
 
-export interface ProgramState {
+export interface ReadProgramState {
   programs: Program[];
   isLoading: boolean;
   listProgramsError?: Error;
@@ -27,18 +26,19 @@ interface Action {
 
 type Dispatch = (action: Action) => void;
 
-export const initialProgramState: ProgramState = {
+export const initialReadProgramState: ReadProgramState = {
   programs: [],
   isLoading: false,
 };
-export const ProgramContext = createContext<
-  { state: ProgramState; dispatch: Dispatch } | undefined
+
+export const ReadProgramContext = createContext<
+  { state: ReadProgramState; dispatch: Dispatch } | undefined
 >(undefined);
 
 const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
-  walletProvider: Web3Provider
+  walletProvider: Web3Instance["provider"]
 ) => {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   listPrograms(address, walletProvider)
@@ -67,7 +67,7 @@ const fetchProgramsById = async (
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
-const programReducer = (state: ProgramState, action: Action) => {
+const programReducer = (state: ReadProgramState, action: Action) => {
   switch (action.type) {
     case ActionType.SET_LOADING:
       return { ...state, isLoading: action.payload };
@@ -93,12 +93,12 @@ const programReducer = (state: ProgramState, action: Action) => {
   return state;
 };
 
-export const ProgramProvider = ({
+export const ReadProgramProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(programReducer, initialProgramState);
+  const [state, dispatch] = useReducer(programReducer, initialReadProgramState);
 
   const providerProps = {
     state,
@@ -106,14 +106,14 @@ export const ProgramProvider = ({
   };
 
   return (
-    <ProgramContext.Provider value={providerProps}>
+    <ReadProgramContext.Provider value={providerProps}>
       {children}
-    </ProgramContext.Provider>
+    </ReadProgramContext.Provider>
   );
 };
 
-export const usePrograms = (): ProgramState & { dispatch: Dispatch } => {
-  const context = useContext(ProgramContext);
+export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
+  const context = useContext(ReadProgramContext);
   if (context === undefined) {
     throw new Error("usePrograms must be used within a ProgramProvider");
   }
@@ -134,7 +134,7 @@ export const useProgramById = (
   isLoading: boolean;
   getProgramByIdError?: Error;
 } => {
-  const context = useContext(ProgramContext);
+  const context = useContext(ReadProgramContext);
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }

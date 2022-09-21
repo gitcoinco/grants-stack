@@ -1,18 +1,18 @@
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { PlusSmIcon, XIcon } from "@heroicons/react/solid";
 
 import { useWallet } from "../common/Auth";
-import { useCreateProgramMutation } from "../api/services/program";
-import { useSaveToIPFSMutation } from "../api/services/ipfs";
-import { Input, Button } from "../common/styles";
+import { Button, Input } from "../common/styles";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import ProgressModal, { ProgressStatus } from "../common/ProgressModal";
+import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
+import { ProgressStatus } from "../api/types";
+import { useCreateProgram } from "../../context/program/CreateProgramContext";
 
 type FormData = {
   name: string;
@@ -21,23 +21,25 @@ type FormData = {
 
 export default function CreateProgram() {
   datadogLogs.logger.info(`====> Route: ${window.location.href}`);
-  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const { address, chain, signer } = useWallet();
 
-  const [
-    saveToIPFS,
-    {
-      isError: isIPFSError,
-      isLoading: isSavingToIPFS,
-      isSuccess: isSavedToIPFS,
-    },
-  ] = useSaveToIPFSMutation();
+  // TODO - remove if all rtk stuff removed
+  const { address, chain } = useWallet();
 
-  const [createProgram, { isLoading, isSuccess, isError: isProgramError }] =
-    useCreateProgramMutation();
+  const {
+    createProgram,
+    IPFSCurrentStatus,
+    contractDeploymentStatus,
+    indexingStatus,
+  } = useCreateProgram();
+
+  const createProgramInProgress =
+    IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
+    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    indexingStatus === ProgressStatus.IN_PROGRESS;
 
   const navigate = useNavigate();
   const { register, control, formState, handleSubmit } = useForm<FormData>({
@@ -45,6 +47,7 @@ export default function CreateProgram() {
       operators: [{ wallet: address }],
     },
   });
+
   const { fields, append, remove } = useFieldArray({
     name: "operators",
     control,
@@ -53,49 +56,38 @@ export default function CreateProgram() {
   const { errors } = formState;
 
   useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
+      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      indexingStatus === ProgressStatus.IS_SUCCESS
+    ) {
+      redirectToPrograms(navigate, 2000);
     }
-
-    if (isLoading) {
-      setOpenProgressModal(true);
-    }
-  }, [isSuccess, isLoading, navigate]);
+  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
 
   useEffect(() => {
-    if (isIPFSError || isProgramError) {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      contractDeploymentStatus === ProgressStatus.IS_ERROR
+    ) {
       setTimeout(() => {
         setOpenProgressModal(false);
         setOpenErrorModal(true);
       }, errorModalDelayMs);
     }
-  }, [isIPFSError, isProgramError]);
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      redirectToPrograms(navigate, 5000);
+    }
+  }, [navigate, IPFSCurrentStatus, contractDeploymentStatus, indexingStatus]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       setOpenProgressModal(true);
-
-      // Save program metadata to IPFS
-      const metadataPointer = await saveToIPFS({
-        content: { name: data.name },
-        metadata: {
-          name: "program-metadata",
-        },
-      }).unwrap();
-
-      // Deploy program contract
-      await createProgram({
-        program: {
-          store: {
-            protocol: 1, // IPFS protocol ID is 1
-            pointer: metadataPointer,
-          },
-          operatorWallets: data.operators.map((op) => op.wallet),
-        },
-        signerOrProvider: signer,
-      }).unwrap();
+      createProgram(
+        data.name,
+        data.operators.map((op) => op.wallet)
+      );
     } catch (e) {
       console.error(e);
     }
@@ -105,32 +97,27 @@ export default function CreateProgram() {
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
-      status: isSavedToIPFS
-        ? ProgressStatus.COMPLETE
-        : isIPFSError
-        ? ProgressStatus.ERROR
-        : isSavingToIPFS
-        ? ProgressStatus.CURRENT
-        : ProgressStatus.UPCOMING,
+      status: IPFSCurrentStatus,
     },
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: isSuccess
-        ? ProgressStatus.COMPLETE
-        : isProgramError
-        ? ProgressStatus.ERROR
-        : isLoading
-        ? ProgressStatus.CURRENT
-        : ProgressStatus.UPCOMING,
+      status: contractDeploymentStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isSuccess ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING,
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
     },
   ];
-
   return (
     <div className="bg-[#F3F3F5]">
       <Navbar />
@@ -176,7 +163,7 @@ export default function CreateProgram() {
                       {...register("name", { required: true })}
                       $hasError={errors.name}
                       type="text"
-                      disabled={isLoading}
+                      disabled={createProgramInProgress}
                       placeholder="Enter the name of the Grant Program."
                       className="placeholder:italic"
                       data-testid="program-name"
@@ -201,7 +188,7 @@ export default function CreateProgram() {
                         <Input
                           {...register(`operators.${index}.wallet`)}
                           type="text"
-                          disabled={isLoading}
+                          disabled={createProgramInProgress}
                           className="basis:3/4 md:basis-2/3 placeholder:italic"
                           placeholder="Enter a valid wallet address (32 characters)."
                         />
@@ -242,10 +229,12 @@ export default function CreateProgram() {
                 <Button
                   className="float-right"
                   type="submit"
-                  disabled={isLoading || isSavingToIPFS || isSuccess}
+                  disabled={IPFSCurrentStatus === ProgressStatus.IN_PROGRESS}
                   data-testid="save"
                 >
-                  {isLoading || isSavingToIPFS ? "Saving..." : "Save"}
+                  {IPFSCurrentStatus === ProgressStatus.IN_PROGRESS
+                    ? "Saving..."
+                    : "Save"}
                 </Button>
               </div>
             </form>
@@ -267,4 +256,10 @@ export default function CreateProgram() {
       <Footer />
     </div>
   );
+}
+
+function redirectToPrograms(navigate: NavigateFunction, waitSeconds: number) {
+  setTimeout(() => {
+    navigate("/");
+  }, waitSeconds);
 }

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 
-import { useProgramById } from "../../context/ProgramContext";
+import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
 
 export default function ViewProgram() {

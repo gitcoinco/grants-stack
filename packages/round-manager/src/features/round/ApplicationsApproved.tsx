@@ -26,7 +26,7 @@ import {
   RejectedApplicationsCount,
   Select,
 } from "./BulkApplicationCommon";
-import { useApplicationByRoundId } from "../../context/ApplicationContext";
+import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 
 export default function ApplicationsApproved() {
   const { id } = useParams();

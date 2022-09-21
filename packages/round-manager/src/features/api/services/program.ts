@@ -48,7 +48,6 @@ export const programApi = api.injectEndpoints({
 
           // Deploy a new Program contract
           const tx = await programFactory.create(encodedParamaters);
-
           const receipt = await tx.wait(); // wait for transaction receipt
 
           let programAddress;

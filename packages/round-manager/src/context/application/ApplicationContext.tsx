@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { GrantApplication } from "../features/api/types";
-import { useWallet } from "../features/common/Auth";
+import { GrantApplication } from "../../features/api/types";
+import { useWallet } from "../../features/common/Auth";
 import {
   getApplicationById,
   getApplicationsByRoundId,
-} from "../features/api/application";
+} from "../../features/api/application";
 import { Web3Provider } from "@ethersproject/providers";
 
 enum ActionType {

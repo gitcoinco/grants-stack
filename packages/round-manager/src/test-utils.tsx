@@ -15,16 +15,16 @@ import { store } from "./app/store";
 import history from "./history";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import {
-  initialProgramState,
-  ProgramContext,
-  ProgramState,
-} from "./context/ProgramContext";
+  initialReadProgramState,
+  ReadProgramState,
+  ReadProgramContext,
+} from "./context/program/ReadProgramContext";
 import { MemoryRouter } from "react-router-dom";
 import {
   ApplicationContext,
   ApplicationState,
   initialApplicationState,
-} from "./context/ApplicationContext";
+} from "./context/application/ApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -211,20 +211,20 @@ export const renderWrapped = (ui: JSX.Element) => {
 // TODO finish and replace other renderWrapped function
 export const renderWithContext = (
   ui: JSX.Element,
-  programStateOverrides: Partial<ProgramState> = {},
+  programStateOverrides: Partial<ReadProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
   render(
     <MemoryRouter>
-      <ProgramContext.Provider
+      <ReadProgramContext.Provider
         value={{
-          state: { ...initialProgramState, ...programStateOverrides },
+          state: { ...initialReadProgramState, ...programStateOverrides },
           dispatch,
         }}
       >
         {ui}
-      </ProgramContext.Provider>
+      </ReadProgramContext.Provider>
     </MemoryRouter>
   );
 
