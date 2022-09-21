@@ -127,7 +127,7 @@ export type Round = {
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
-}
+};
 
 export type ProjectOption = {
   id: number | undefined;

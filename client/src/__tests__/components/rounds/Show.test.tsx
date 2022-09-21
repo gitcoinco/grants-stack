@@ -2,9 +2,8 @@ import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import Show from "../../../components/rounds/Show";
 import setupStore from "../../../store";
-import { unloadRounds, loadRound, roundLoaded } from "../../../actions/rounds";
+import { unloadRounds, loadRound } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
-import { ProjectEvent, Round } from "../../../types";
 import {
   renderWrapped,
   buildRound,
