@@ -31,11 +31,11 @@ export default function ToggleDetails({
           src={
             project?.bannerImg instanceof Blob
               ? URL.createObjectURL(project?.bannerImg)
-              : "./assets/card-img.png"
+              : "./assets/default-project-banner.png"
           }
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "./assets/card-img.png";
+            e.currentTarget.src = "./assets/default-project-banner.png";
           }}
           alt="project banner"
         />
@@ -46,11 +46,11 @@ export default function ToggleDetails({
           src={
             project?.logoImg instanceof Blob
               ? URL.createObjectURL(project?.logoImg)
-              : "./icons/lightning.svg"
+              : "./assets/default-project-logo.png"
           }
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "./icons/lightning.svg";
+            e.currentTarget.src = "./assets/default-project-logo.png";
           }}
           alt="project logo"
         />

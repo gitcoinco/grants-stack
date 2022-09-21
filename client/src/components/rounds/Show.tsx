@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducers";
-import { roundApplicationPath } from "../../routes";
 import { loadRound, unloadRounds } from "../../actions/rounds";
-import { Status } from "../../reducers/rounds";
-import { networkPrettyName } from "../../utils/wallet";
-import { formatDate } from "../../utils/components";
-import Button, { ButtonVariants } from "../base/Button";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { RootState } from "../../reducers";
+import { Status } from "../../reducers/rounds";
+import { roundApplicationPath, newGrantPath } from "../../routes";
+import { formatDate } from "../../utils/components";
+import { networkPrettyName } from "../../utils/wallet";
+import Button, { ButtonVariants } from "../base/Button";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -19,6 +19,7 @@ function Round() {
   const { roundId, chainId } = params;
 
   const props = useSelector((state: RootState) => {
+    const allProjectMetadata = state.grantsMetadata;
     const roundState = state.rounds[roundId!];
     const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
@@ -33,6 +34,7 @@ function Round() {
       round,
       web3ChainId,
       roundChainId,
+      projects: allProjectMetadata,
     };
   }, shallowEqual);
 
@@ -94,14 +96,25 @@ function Round() {
             Date: {formatDate(roundData?.applicationsStartTime)} -{" "}
             {formatDate(roundData?.applicationsEndTime)}
           </p>
-          <Link to={roundApplicationPath(chainId!, roundId!)}>
-            <Button
-              styles={["w-full justify-center"]}
-              variant={ButtonVariants.primary}
-            >
-              Apply to this round
-            </Button>
-          </Link>
+          {Object.keys(props.projects).length !== 0 ? (
+            <Link to={roundApplicationPath(chainId!, roundId!)}>
+              <Button
+                styles={["w-full justify-center"]}
+                variant={ButtonVariants.primary}
+              >
+                Apply to this round
+              </Button>
+            </Link>
+          ) : (
+            <Link to={newGrantPath()}>
+              <Button
+                styles={["w-full justify-center"]}
+                variant={ButtonVariants.primary}
+              >
+                Create Project
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

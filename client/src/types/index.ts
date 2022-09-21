@@ -115,7 +115,7 @@ export interface RoundApplicationMetadata {
   recipientQuestionId?: number;
 }
 
-export interface Round {
+export type Round = {
   address: string;
   applicationsStartTime: number;
   applicationsEndTime: number;
@@ -126,7 +126,7 @@ export interface Round {
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
-}
+};
 
 export type ProjectOption = {
   id: number | undefined;
