@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
@@ -21,7 +22,6 @@ function Round() {
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
     const roundState = state.rounds[roundId!];
-    const projectStatus = state.projects.status;
     const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
@@ -36,7 +36,6 @@ function Round() {
       web3ChainId,
       roundChainId,
       projects: allProjectMetadata,
-      projectStatus,
     };
   }, shallowEqual);
 
@@ -63,6 +62,7 @@ function Round() {
   useEffect(() => {
     if (props.round) {
       setRoundData(props.round);
+      dispatch(loadProjects(true));
     }
   }, [props.round]);
 
