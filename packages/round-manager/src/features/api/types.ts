@@ -84,10 +84,6 @@ export interface Program {
 export interface ApplicationMetadata {
   customQuestions?: {
     email?: string;
-    twitter?: string;
-    website?: string;
-    github?: string;
-    githubOrganization?: string;
     fundingSource?: string;
     profit2022?: string;
     teamSize?: string;

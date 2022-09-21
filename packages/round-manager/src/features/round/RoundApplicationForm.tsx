@@ -20,9 +20,6 @@ const ValidationSchema = yup.object().shape({
   applicationMetadata: yup.object({
     customQuestions: yup.object({
       email: yup.string(),
-      twitter: yup.string(),
-      github: yup.string(),
-      githubOrganization: yup.string(),
       fundingSource: yup.string(),
       profit2022: yup.string(),
       teamSize: yup.string(),
@@ -337,92 +334,6 @@ export function RoundApplicationForm(props: {
                         {
                           errors.applicationMetadata?.customQuestions?.email
                             ?.message
-                        }
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Twitter */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <label
-                      htmlFor="applicationMetadata.customQuestions.twitter"
-                      className="block text-xs font-medium"
-                    >
-                      Project Twitter
-                    </label>
-                    <Input
-                      {...register(
-                        "applicationMetadata.customQuestions.twitter"
-                      )}
-                      $hasError={
-                        errors.applicationMetadata?.customQuestions?.email
-                      }
-                      type="text"
-                      placeholder='i.e. "twitter.com/user-handle"'
-                    />
-                    {errors.applicationMetadata?.customQuestions?.twitter && (
-                      <p className="text-xs text-pink-500">
-                        {
-                          errors.applicationMetadata?.customQuestions?.twitter
-                            ?.message
-                        }
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Github */}
-                  <div className="col-span-6 sm:col-span-3 sm:col-start-1">
-                    <label
-                      htmlFor="applicationMetadata.customQuestions.github"
-                      className="block text-xs font-medium"
-                    >
-                      Your GitHub Username
-                    </label>
-                    <Input
-                      {...register(
-                        "applicationMetadata.customQuestions.github"
-                      )}
-                      $hasError={
-                        errors.applicationMetadata?.customQuestions?.github
-                      }
-                      type="text"
-                      placeholder='i.e. "twitter.com/user-handle"'
-                    />
-                    {errors.applicationMetadata?.customQuestions?.github && (
-                      <p className="text-xs text-pink-500">
-                        {
-                          errors.applicationMetadata?.customQuestions?.github
-                            ?.message
-                        }
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Github Organization */}
-                  <div className="col-span-6 sm:col-span-3">
-                    <label
-                      htmlFor="applicationMetadata.customQuestions.githubOrganization"
-                      className="block text-xs font-medium"
-                    >
-                      Project GitHub Organization
-                    </label>
-                    <Input
-                      {...register(
-                        "applicationMetadata.customQuestions.githubOrganization"
-                      )}
-                      $hasError={
-                        errors.applicationMetadata?.customQuestions
-                          ?.githubOrganization
-                      }
-                      type="text"
-                      placeholder='i.e "@github-handle"'
-                    />
-                    {errors.applicationMetadata?.customQuestions
-                      ?.githubOrganization && (
-                      <p className="text-xs text-pink-500">
-                        {
-                          errors.applicationMetadata?.customQuestions
-                            ?.githubOrganization?.message
                         }
                       </p>
                     )}
