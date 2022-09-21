@@ -42,7 +42,8 @@ export function RoundApplicationForm(props: {
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const search = useLocation().search;
-  const programId = new URLSearchParams(search).get("programId");
+  /* Reasonable to assume programId is non-null since we would redirect to 404 otherwise */
+  const programId = new URLSearchParams(search).get("programId") as string;
 
   const navigate = useNavigate();
   const {
@@ -98,10 +99,16 @@ export function RoundApplicationForm(props: {
 
       const data = { ...formData, ...values };
 
+      /* Add Program contract address to Round metadata*/
+      const roundMetadataWithProgramContractAddress = {
+        ...data.roundMetadata,
+        programContractAddress: programId!,
+      };
+
       // Save round and application metadata to IPFS
       const [metadataPointer, applicationMetadataPointer] = await Promise.all([
         saveToIPFS({
-          content: data.roundMetadata,
+          content: roundMetadataWithProgramContractAddress,
           metadata: {
             name: "round-metadata",
           },
@@ -125,8 +132,6 @@ export function RoundApplicationForm(props: {
           ...data,
           votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
           token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
-          /* Reasonable to assume programId is non-null since we would redirect to 404 otherwise */
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           ownedBy: programId!,
           store: {
             protocol: 1, // IPFS protocol ID is 1
