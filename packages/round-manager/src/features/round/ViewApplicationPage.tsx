@@ -300,7 +300,7 @@ export default function ViewApplicationPage() {
                               ? "solid"
                               : "outline"
                           }
-                          className="inline-flex justify-center px-4 py-2 text-sm"
+                          className="inline-flex justify-center px-4 py-2 text-sm m-auto"
                           disabled={isLoading || updating}
                           onClick={() => confirmReviewDecision("APPROVED")}
                         >
@@ -320,7 +320,7 @@ export default function ViewApplicationPage() {
                               : "outline"
                           }
                           className={
-                            "inline-flex justify-center px-4 py-2 text-sm" +
+                            "inline-flex justify-center px-4 py-2 text-sm m-auto" +
                             (application?.status === "REJECTED"
                               ? ""
                               : "text-grey-500")
