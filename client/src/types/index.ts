@@ -70,7 +70,6 @@ export type AddressInputProps = {
   placeholder?: string;
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
-  displayError?: string;
   required: boolean;
 };
 
@@ -116,7 +115,7 @@ export interface RoundApplicationMetadata {
   recipientQuestionId?: number;
 }
 
-export interface Round {
+export type Round = {
   address: string;
   applicationsStartTime: number;
   applicationsEndTime: number;
@@ -127,7 +126,7 @@ export interface Round {
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
-}
+};
 
 export type ProjectOption = {
   id: number | undefined;
