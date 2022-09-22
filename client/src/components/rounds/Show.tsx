@@ -88,7 +88,10 @@ function Round() {
     return <p>Error: {props.error}</p>;
   }
 
-  if (props.status !== Status.Loaded) {
+  if (
+    props.status !== Status.Loaded ||
+    props.projectsStatus !== ProjectStatus.Loaded
+  ) {
     return <p>loading...</p>;
   }
 
