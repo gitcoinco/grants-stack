@@ -84,7 +84,7 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-        })
+        });
 
         renderWrapped(<Show />, store);
 
