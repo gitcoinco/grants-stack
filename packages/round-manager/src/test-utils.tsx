@@ -20,7 +20,11 @@ import {
   ProgramState,
 } from "./context/ProgramContext";
 import { MemoryRouter } from "react-router-dom";
-import { ApplicationContext, ApplicationState, initialApplicationState } from "./context/ApplicationContext";
+import {
+  ApplicationContext,
+  ApplicationState,
+  initialApplicationState,
+} from "./context/ApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -214,7 +218,10 @@ export const renderWithApplicationContext = (
     <MemoryRouter>
       <ApplicationContext.Provider
         value={{
-          state: { ...initialApplicationState, ...grantApplicationStateOverrides },
+          state: {
+            ...initialApplicationState,
+            ...grantApplicationStateOverrides,
+          },
           dispatch,
         }}
       >
@@ -222,4 +229,3 @@ export const renderWithApplicationContext = (
       </ApplicationContext.Provider>
     </MemoryRouter>
   );
-  

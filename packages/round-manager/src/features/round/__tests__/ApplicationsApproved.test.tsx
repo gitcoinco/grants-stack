@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any */
 import ApplicationsApproved from "../ApplicationsApproved";
+import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../../api/services/grantApplication";
-import { makeGrantApplicationData, renderWithApplicationContext } from "../../../test-utils";
+  makeGrantApplicationData,
+  renderWithApplicationContext,
+} from "../../../test-utils";
 import {
   fireEvent,
   screen,
@@ -26,7 +27,7 @@ jest.mock("../../common/Auth", () => ({
   }),
 }));
 
-let grantApplications = [
+const grantApplications = [
   makeGrantApplicationData(),
   makeGrantApplicationData(),
   makeGrantApplicationData(),
@@ -36,12 +37,10 @@ grantApplications.forEach((application) => {
   application.status = "APPROVED";
 });
 
-
 let bulkUpdateGrantApplications = jest.fn();
 
 describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
-
     bulkUpdateGrantApplications = jest.fn().mockImplementation(() => {
       return {
         unwrap: async () =>
@@ -59,7 +58,6 @@ describe("<ApplicationsApproved />", () => {
   });
 
   it("should display a loading spinner if approved applications are loading", () => {
-
     renderWithApplicationContext(<ApplicationsApproved />, {
       applications: [],
       isLoading: true,

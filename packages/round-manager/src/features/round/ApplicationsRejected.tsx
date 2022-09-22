@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useApplicationByRoundId } from "../../context/ApplicationContext";
 
+import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../api/services/grantApplication";
-import { ApplicationStatus, GrantApplication, ProjectStatus } from "../api/types";
+  ApplicationStatus,
+  GrantApplication,
+  ProjectStatus,
+} from "../api/types";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import { Spinner } from "../common/Spinner";
@@ -31,7 +33,10 @@ export default function ApplicationsRejected() {
   const { provider, signer } = useWallet();
 
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const rejectedApplications = applications?.filter((a) => a.status == ApplicationStatus.REJECTED.toString()) || [];
+  const rejectedApplications =
+    applications?.filter(
+      (a) => a.status == ApplicationStatus.REJECTED.toString()
+    ) || [];
 
   const [bulkSelectRejected, setBulkSelectRejected] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -43,7 +48,7 @@ export default function ApplicationsRejected() {
   useEffect(() => {
     if (!isLoading || !bulkSelectRejected) {
       setSelected(
-        (rejectedApplications)?.map((application) => {
+        rejectedApplications?.map((application) => {
           return {
             id: application.id,
             round: application.round,

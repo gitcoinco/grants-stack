@@ -6,10 +6,11 @@ import {
   within,
 } from "@testing-library/react";
 import ApplicationsReceived from "../ApplicationsReceived";
+import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../../api/services/grantApplication";
-import { makeGrantApplicationData, renderWithApplicationContext } from "../../../test-utils";
+  makeGrantApplicationData,
+  renderWithApplicationContext,
+} from "../../../test-utils";
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("../../common/Auth", () => ({
@@ -46,7 +47,6 @@ function setupInBulkSelectionMode() {
 
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
-
     bulkUpdateGrantApplications = jest.fn().mockImplementation(() => {
       return {
         unwrap: async () =>
@@ -94,7 +94,6 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when received applications are shown", () => {
     it("should display the bulk select option", () => {
-      
       renderWithApplicationContext(<ApplicationsReceived />, {
         applications: grantApplications,
         isLoading: false,
@@ -148,7 +147,6 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("renders no cards when there are no projects", () => {
-
     renderWithApplicationContext(<ApplicationsReceived />, {
       applications: [],
       isLoading: false,
@@ -160,7 +158,7 @@ describe("<ApplicationsReceived />", () => {
   it("renders a card for every project with PENDING status", () => {
     renderWithApplicationContext(<ApplicationsReceived />, {
       applications: grantApplications,
-      isLoading: false
+      isLoading: false,
     });
 
     expect(screen.getAllByTestId("application-card")).toHaveLength(3);

@@ -72,12 +72,10 @@ export const getApplicationById = async (
   }
 };
 
-
 export const getApplicationsByRoundId = async (
   roundId: string,
   signerOrProvider: any
 ): Promise<GrantApplication[]> => {
-
   try {
     // fetch chain id
     const { chainId } = await signerOrProvider.getNetwork();
@@ -92,7 +90,7 @@ export const getApplicationsByRoundId = async (
         // TODO : uncomment when indexing IPFS via graph
         // (status ? `status: $status` : ``)
         // +
-      `
+        `
           }) {
             id
             metaPtr {
@@ -119,7 +117,9 @@ export const getApplicationsByRoundId = async (
       const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
       // const signature = metadata?.signature;
-      const application = metadata.application ? metadata.application : metadata;
+      const application = metadata.application
+        ? metadata.application
+        : metadata;
 
       grantApplications.push({
         ...application,
@@ -127,7 +127,6 @@ export const getApplicationsByRoundId = async (
         id: project.id,
         projectsMetaPtr: project.round.projectsMetaPtr,
       });
-
     }
 
     const grantApplicationsFromContract =
@@ -176,7 +175,9 @@ const fetchApplicationData = async (
       async (project: any): Promise<GrantApplication> => {
         const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
-        const application = metadata.application ? metadata.application: metadata;
+        const application = metadata.application
+          ? metadata.application
+          : metadata;
 
         let status = project.status;
 

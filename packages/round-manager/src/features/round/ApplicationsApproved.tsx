@@ -1,8 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 
-import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../api/services/grantApplication";
+import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import {
@@ -13,7 +11,11 @@ import {
   CardsContainer,
   CardTitle,
 } from "../common/styles";
-import { ApplicationStatus, GrantApplication, ProjectStatus } from "../api/types";
+import {
+  ApplicationStatus,
+  GrantApplication,
+  ProjectStatus,
+} from "../api/types";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
@@ -31,7 +33,11 @@ export default function ApplicationsApproved() {
   const { provider, signer } = useWallet();
 
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const approvedApplications = applications?.filter((a: GrantApplication) => a.status === ApplicationStatus.APPROVED.toString()) || [];
+  const approvedApplications =
+    applications?.filter(
+      (a: GrantApplication) =>
+        a.status === ApplicationStatus.APPROVED.toString()
+    ) || [];
 
   const [bulkSelectApproved, setBulkSelectApproved] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -42,7 +48,7 @@ export default function ApplicationsApproved() {
   useEffect(() => {
     if (!isLoading || !bulkSelectApproved) {
       setSelected(
-        (approvedApplications).map((application) => {
+        approvedApplications.map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -53,7 +59,7 @@ export default function ApplicationsApproved() {
         })
       );
     }
-  }, [applications, isLoading, bulkSelectApproved,]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [applications, isLoading, bulkSelectApproved]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleRejection = (id: string) => {
     const newState = selected?.map((grantApp: GrantApplication) => {

@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ApplicationProvider, useApplicationById, useApplicationByRoundId } from "../ApplicationContext";
+import {
+  ApplicationProvider,
+  useApplicationById,
+  useApplicationByRoundId,
+} from "../ApplicationContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeGrantApplicationData } from "../../test-utils";
 import { GrantApplication } from "../../features/api/types";
-import { getApplicationById, getApplicationsByRoundId } from "../../features/api/application";
-import { act } from 'react-dom/test-utils';
+import {
+  getApplicationById,
+  getApplicationsByRoundId,
+} from "../../features/api/application";
 
 const mockWallet = { address: "0x0", provider: {} };
 
@@ -109,7 +115,9 @@ describe("<ApplicationProvider />", () => {
       const expectedApplication = makeGrantApplicationData();
       const expectedRoundId: string = expectedApplication.round!;
 
-      (getApplicationsByRoundId as any).mockResolvedValue([expectedApplication]);
+      (getApplicationsByRoundId as any).mockResolvedValue([
+        expectedApplication,
+      ]);
 
       render(
         <ApplicationProvider>
@@ -147,7 +155,9 @@ describe("<ApplicationProvider />", () => {
       const expectedApplication = makeGrantApplicationData();
       const expectedRoundId: string = expectedApplication.round!;
 
-      (getApplicationsByRoundId as any).mockResolvedValue([expectedApplication]);
+      (getApplicationsByRoundId as any).mockResolvedValue([
+        expectedApplication,
+      ]);
 
       render(
         <ApplicationProvider>
@@ -192,11 +202,9 @@ describe("<ApplicationProvider />", () => {
 const TestingUseApplicationByIdComponent = (props: {
   expectedApplicationId: string;
 }) => {
-
-  if (!props.expectedApplicationId) return(<></>);
-
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(props.expectedApplicationId!);
+
   return (
     <>
       {application ? (
@@ -217,11 +225,8 @@ const TestingUseApplicationByIdComponent = (props: {
 const TestingUseApplicationByRoundIdComponent = (props: {
   expectedRoundId: string;
 }) => {
-  if (!props.expectedRoundId) return(<></>)
-
-  const { applications, isLoading, getApplicationByRoundIdError } = useApplicationByRoundId(
-    props.expectedRoundId
-  );
+  const { applications, isLoading, getApplicationByRoundIdError } =
+    useApplicationByRoundId(props.expectedRoundId);
 
   return (
     <>
@@ -231,15 +236,16 @@ const TestingUseApplicationByRoundIdComponent = (props: {
         </div>
       ))}
 
-      {!applications || applications.length == 0 && 
-        <div>No Applications Found</div>
-      }
+      {!applications ||
+        (applications.length == 0 && <div>No Applications Found</div>)}
 
-      {isLoading && <div data-testid="is-loading-application-by-round-id"></div>}
+      {isLoading && (
+        <div data-testid="is-loading-application-by-round-id"></div>
+      )}
 
-      {getApplicationByRoundIdError &&
+      {getApplicationByRoundIdError && (
         <div data-testid="application-by-round-id-error-msg" />
-      }
+      )}
     </>
   );
 };

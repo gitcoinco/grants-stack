@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ApplicationsRejected from "../ApplicationsRejected";
+import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../../api/services/grantApplication";
-import { makeGrantApplicationData, renderWithApplicationContext } from "../../../test-utils";
+  makeGrantApplicationData,
+  renderWithApplicationContext,
+} from "../../../test-utils";
 import {
   fireEvent,
   screen,
@@ -51,7 +52,6 @@ function setupInBulkSelectionMode() {
 
 describe("<ApplicationsRejected />", () => {
   beforeEach(() => {
-
     bulkUpdateGrantApplications = jest.fn().mockImplementation(() => {
       return {
         unwrap: async () =>
@@ -122,7 +122,7 @@ describe("<ApplicationsRejected />", () => {
         applications: grantApplications,
         isLoading: false,
       });
-    
+
       const selectButton = screen.getByRole("button", {
         name: /Select/i,
       });
@@ -152,8 +152,6 @@ describe("<ApplicationsRejected />", () => {
         applications: [],
         isLoading: false,
       });
-
-      
 
       expect(
         screen.queryByText(
@@ -294,7 +292,6 @@ describe("<ApplicationsRejected />", () => {
         expect(actual.applications).toEqual([expected]);
         expect(actual.roundId).toEqual("0");
         expect(actual.signer).toBeUndefined();
-
       });
 
       it("closes confirmation when cancel is selected", async () => {

@@ -48,11 +48,17 @@ export default function ViewRoundPage() {
   const { applications } = useApplicationByRoundId(id!);
 
   const pendingApplications =
-    applications?.filter((a) => a.status === ApplicationStatus.PENDING.toString()) || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.PENDING.toString()
+    ) || [];
   const approvedApplications =
-    applications?.filter((a) => a.status === ApplicationStatus.APPROVED.toString()) || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.APPROVED.toString()
+    ) || [];
   const rejectedApplications =
-    applications?.filter((a) => a.status === ApplicationStatus.REJECTED.toString()) || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.REJECTED.toString()
+    ) || [];
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString();
 

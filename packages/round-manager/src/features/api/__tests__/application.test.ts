@@ -105,25 +105,14 @@ describe("getApplicationById", () => {
 });
 
 describe("getApplicationsByRoundId", () => {
-  
   let expectedApplications: GrantApplication[];
 
   beforeEach(() => {
     expectedApplications = [makeGrantApplicationData()];
-    // const projectOwners = expectedApplication.project?.owners.map(
-    //   (it) => it.address
-    // );
-
-    // (Contract as any).mockImplementation(() => {
-    //   return {
-    //     getProjectOwners: () => projectOwners,
-    //   };
-    // });
   });
 
-
   it("should retrieve applications given an round id", async () => {
-    const expectedApplication = expectedApplications[0]
+    const expectedApplication = expectedApplications[0];
     const roundId = expectedApplication.round;
     const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
     const expectedApplicationMetaPtr = {

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
-import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../api/services/grantApplication";
+import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import {
@@ -15,7 +13,11 @@ import {
   CardsContainer,
   CardTitle,
 } from "../common/styles";
-import { ApplicationStatus, GrantApplication, ProjectStatus } from "../api/types";
+import {
+  ApplicationStatus,
+  GrantApplication,
+  ProjectStatus,
+} from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
 import {
   AdditionalGasFeesNote,
@@ -32,7 +34,10 @@ export default function ApplicationsReceived() {
   const { provider, signer } = useWallet();
 
   const { applications, isLoading } = useApplicationByRoundId(id!);
-  const pendingApplications = applications?.filter((a) => a.status == ApplicationStatus.PENDING.toString()) || [];
+  const pendingApplications =
+    applications?.filter(
+      (a) => a.status == ApplicationStatus.PENDING.toString()
+    ) || [];
 
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -40,7 +45,6 @@ export default function ApplicationsReceived() {
 
   const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
     useBulkUpdateGrantApplicationsMutation();
-
 
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
@@ -143,7 +147,9 @@ export default function ApplicationsReceived() {
         {isLoading && (
           <Spinner text="We're fetching your Grant Applications." />
         )}
-        {!isLoading && pendingApplications?.length === 0 && <NoApplicationsContent />}
+        {!isLoading && pendingApplications?.length === 0 && (
+          <NoApplicationsContent />
+        )}
       </CardsContainer>
       {selected &&
         selected?.filter((obj) => obj.status !== "PENDING").length > 0 && (

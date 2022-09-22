@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { screen } from "@testing-library/react";
-import { useWallet } from "../../common/Auth";
 import { useListRoundsQuery } from "../../api/services/round";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, Round } from "../../api/types";
@@ -9,9 +8,7 @@ import {
   makeRoundData,
   renderWithApplicationContext,
 } from "../../../test-utils";
-import {
-  useBulkUpdateGrantApplicationsMutation,
-} from "../../api/services/grantApplication";
+import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 
 jest.mock("../../common/Auth");
@@ -77,7 +74,6 @@ describe("the view round page", () => {
   });
 
   it("should display access denied when wallet accessing is not program operator", () => {
-
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       round: makeRoundData(),
       isLoading: false,

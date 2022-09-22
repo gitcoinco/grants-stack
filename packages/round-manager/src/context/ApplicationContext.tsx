@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { GrantApplication } from "../features/api/types";
 import { useWallet } from "../features/common/Auth";
-import { getApplicationById, getApplicationsByRoundId } from "../features/api/application";
+import {
+  getApplicationById,
+  getApplicationsByRoundId,
+} from "../features/api/application";
 import { Web3Provider } from "@ethersproject/providers";
 
 enum ActionType {
-  SET_APPLICATIONS = "SET_APPLICATIONS",
+  SET_APPLICATION = "SET_APPLICATION",
   SET_ROUND_APPLICATIONS = "SET_ROUND_APPLICATIONS",
   SET_LOADING = "SET_LOADING",
   SET_ERROR_GET_APPLICATION = "SET_ERROR_GET_APPLICATION",
@@ -36,7 +39,7 @@ const applicationReducer = (
   action: Action
 ): ApplicationState => {
   switch (action.type) {
-    case ActionType.SET_APPLICATIONS:
+    case ActionType.SET_APPLICATION:
       return {
         ...state,
         application: action.payload,
@@ -102,7 +105,7 @@ function fetchApplicationById(
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getApplicationById(id, walletProvider)
     .then((application) => {
-      dispatch({ type: ActionType.SET_APPLICATIONS, payload: application });
+      dispatch({ type: ActionType.SET_APPLICATION, payload: application });
     })
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_APPLICATION, payload: error })
@@ -113,15 +116,21 @@ function fetchApplicationById(
 const fetchApplicationsByRoundId = async (
   dispatch: Dispatch,
   roundId: string,
-  walletProvider: Web3Provider,
+  walletProvider: Web3Provider
 ) => {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getApplicationsByRoundId(roundId, walletProvider)
     .then((applications) =>
-      dispatch({ type: ActionType.SET_ROUND_APPLICATIONS, payload: applications })
+      dispatch({
+        type: ActionType.SET_ROUND_APPLICATIONS,
+        payload: applications,
+      })
     )
     .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS, payload: error })
+      dispatch({
+        type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS,
+        payload: error,
+      })
     )
     .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
 };
@@ -155,7 +164,7 @@ export const useApplicationById = (
 };
 
 export const useApplicationByRoundId = (
-  roundId: string,
+  roundId: string
 ): {
   applications: GrantApplication[] | undefined;
   isLoading: boolean;
@@ -172,7 +181,7 @@ export const useApplicationByRoundId = (
   const { provider: walletProvider } = useWallet();
 
   useEffect(() => {
-    fetchApplicationsByRoundId(context.dispatch, roundId, walletProvider)
+    fetchApplicationsByRoundId(context.dispatch, roundId, walletProvider);
   }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {

@@ -68,7 +68,8 @@ root.render(
                     <ApplicationProvider>
                       <ViewRoundPage />
                     </ApplicationProvider>
-                  } />
+                  }
+                />
                 <Route
                   path="/round/:roundId/application/:id"
                   element={
