@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import PinataClient from "../../services/pinata";
 import colors from "../../styles/colors";
 import CloudUpload from "../icons/CloudUpload";
-import Toast from "./Toast";
 import ImageCrop from "./images/ImageCrop";
+import Toast from "./Toast";
 
 export type Dimensions = {
   width: number;
@@ -108,8 +108,8 @@ export default function ImageInput({
   };
 
   return (
-    <>
-      <div className="mt-6 w-full">
+    <div className="w-full">
+      <div className="mt-6 w-full sm:w-3/4">
         <label className="text-sm" htmlFor={label}>
           {label}
         </label>
@@ -184,6 +184,6 @@ export default function ImageInput({
           imgUrl.toBlob((blob) => blob && imgHandler(blob));
         }}
       />
-    </>
+    </div>
   );
 }
