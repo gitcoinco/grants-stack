@@ -68,6 +68,10 @@ describe("<Show />", () => {
           data: buildProjectMetadata({}),
         });
 
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+        });
+
         renderWrapped(<Show />, store);
 
         expect(screen.getByText("Apply to this round")).toBeInTheDocument();
@@ -77,6 +81,10 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
         (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+        })
 
         renderWrapped(<Show />, store);
 
