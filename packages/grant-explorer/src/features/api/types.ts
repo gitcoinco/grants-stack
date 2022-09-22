@@ -1,4 +1,4 @@
-export type Network = "goerli" | "optimism" | "optimism-kovan"
+export type Network = "goerli" | "optimism"
 
 export interface Web3Instance {
   /**

@@ -3,7 +3,7 @@
  */
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
-export type Network = "goerli" | "optimism" | "optimism-kovan";
+export type Network = "goerli" | "optimism";
 
 export interface Web3Instance {
   /**

@@ -14,7 +14,6 @@ import { infuraProvider } from "wagmi/providers/infura"
 export const { chains, provider, webSocketProvider } = configureChains(
   [
     chain.goerli,
-    chain.optimismKovan,
     chain.optimism
   ],
   [

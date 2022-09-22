@@ -17,10 +17,6 @@ export const programFactoryContract = (
       address = "0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E";
       break;
     }
-    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
-      address = "0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011";
-      break;
-    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x79c2394B20A809EA693a7D64323A8846FF02029c";
@@ -49,10 +45,6 @@ export const roundFactoryContract = (
       address = "0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C";
       break;
     }
-    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
-      address = "0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF";
-      break;
-    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791";
@@ -78,10 +70,6 @@ export const projectRegistryContract = (
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
-      break;
-    }
-    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
-      address = "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
