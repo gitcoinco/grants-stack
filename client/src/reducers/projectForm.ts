@@ -1,5 +1,6 @@
 import {
   METADATA_SAVED,
+  METADATA_IMAGE_SAVED,
   CREDENTIALS_SAVED,
   FORM_RESET,
   ProjectFormActions,
@@ -24,15 +25,30 @@ export const projectFormReducer = (
     case METADATA_SAVED: {
       return {
         ...state,
-        metadata: action.metadata,
+        metadata: {
+          ...state.metadata,
+          ...action.metadata,
+        },
       };
     }
+
+    case METADATA_IMAGE_SAVED: {
+      return {
+        ...state,
+        metadata: {
+          ...state.metadata,
+          [action.fieldName]: action.image,
+        },
+      };
+    }
+
     case CREDENTIALS_SAVED: {
       return {
         ...state,
         credentials: action.credentials,
       };
     }
+
     case FORM_RESET: {
       return initialState;
     }
