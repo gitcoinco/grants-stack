@@ -36,22 +36,23 @@ describe("<Show />", () => {
 
     describe("useEffect/loadProjects", () => {
       test("should be called the first time", async () => {
-        const store = setupStore();
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
         (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
-  
+
         renderWrapped(<Show />, store);
-  
+
         expect(loadProjects).toBeCalledTimes(1);
       });
-  
+
       test("should not be called if it's already loading", async () => {
-        const store = setupStore();
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+
         store.dispatch({ type: "PROJECTS_LOADING" });
-  
+
         renderWrapped(<Show />, store);
-  
+
         expect(loadProjects).toBeCalledTimes(0);
       });
     });
