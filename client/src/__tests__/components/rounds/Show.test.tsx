@@ -9,8 +9,10 @@ import {
   buildRound,
   buildProjectMetadata,
 } from "../../../utils/test_utils";
+import { loadProjects } from "../../../actions/projects";
 
 jest.mock("../../../actions/rounds");
+jest.mock("../../../actions/projects");
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -32,10 +34,33 @@ describe("<Show />", () => {
       store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
     });
 
+    describe("useEffect/loadProjects", () => {
+      test("should be called the first time", async () => {
+        const store = setupStore();
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+  
+        renderWrapped(<Show />, store);
+  
+        expect(loadProjects).toBeCalledTimes(1);
+      });
+  
+      test("should not be called if it's already loading", async () => {
+        const store = setupStore();
+        store.dispatch({ type: "PROJECTS_LOADING" });
+  
+        renderWrapped(<Show />, store);
+  
+        expect(loadProjects).toBeCalledTimes(0);
+      });
+    });
+
     describe("apply button", () => {
       test("should allow you to apply to a round with a project", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -50,6 +75,7 @@ describe("<Show />", () => {
       test("should send you to project creation page", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
         renderWrapped(<Show />, store);
 

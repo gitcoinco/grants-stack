@@ -6,6 +6,7 @@ import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/rounds";
+import { Status as ProjectStatus } from "../../reducers/projects";
 import { roundApplicationPath, newGrantPath } from "../../routes";
 import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
@@ -21,6 +22,7 @@ function Round() {
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
+    const projectsStatus = state.projects.status;
     const roundState = state.rounds[roundId!];
     const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
@@ -36,6 +38,7 @@ function Round() {
       web3ChainId,
       roundChainId,
       projects: allProjectMetadata,
+      projectsStatus,
     };
   }, shallowEqual);
 
@@ -62,9 +65,14 @@ function Round() {
   useEffect(() => {
     if (props.round) {
       setRoundData(props.round);
-      dispatch(loadProjects(true));
     }
   }, [props.round]);
+
+  useEffect(() => {
+    if (props.projectsStatus === ProjectStatus.Undefined) {
+      dispatch(loadProjects(true));
+    }
+  }, [props.projectsStatus, dispatch]);
 
   if (props.web3ChainId !== props.roundChainId) {
     return (
