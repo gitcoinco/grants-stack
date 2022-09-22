@@ -16,15 +16,19 @@ export default function Radio({
   disabled,
 }: RadioInputProps) {
   return (
-    <div>
-      <label className="text-sm" htmlFor={name}>
-        {label}
-      </label>
-      {required && (
-        <span className="absolute text-purple-700 ml-4 md:right-1/2 sm:right-0 lg:right-1/2">
-          *Required
-        </span>
-      )}
+    <div className="mt-6 w-full sm:w-1/2 relative">
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required && (
+            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
+          )}
+        </div>
+      </div>
       <legend>{info}</legend>
       <fieldset className="mt-4" id={name} disabled={disabled}>
         <div className="space-y-2">

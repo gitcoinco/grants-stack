@@ -1,12 +1,18 @@
-import { Metadata, FormInputs, Project } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 
 function Section({ title, text }: { title: string; text: string | undefined }) {
   return (
     <div className="flex flex-col items-left justify-left m-2">
-      <label htmlFor={text} className="text-xl">
+      <label htmlFor={text} className="text-sm">
         {title}
       </label>
-      <input className="ml-4" name={text} type="text" value={text} disabled />
+      <input
+        className="ml-4 text-sm"
+        name={text}
+        type="text"
+        value={text}
+        disabled
+      />
     </div>
   );
 }
