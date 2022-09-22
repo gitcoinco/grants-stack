@@ -31,6 +31,7 @@ import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import { useApplicationById } from "../../context/ApplicationContext";
 import { Spinner } from "../common/Spinner";
+import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -271,25 +272,21 @@ export default function ViewApplicationPage() {
                 </Link>
               </div>
               <div>
-                <div>
-                  <img
-                    className="h-32 w-full object-cover lg:h-80 rounded"
-                    src={`https://${
-                      process.env.REACT_APP_PINATA_GATEWAY
-                    }/ipfs/${application?.project!.bannerImg}`}
-                    alt=""
+                {application && (
+                  <ApplicationBanner
+                    classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
+                    application={application}
                   />
-                </div>
+                )}
                 <div className="pl-4 sm:pl-6 lg:pl-8">
                   <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                     <div className="flex">
-                      <img
-                        className="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
-                        src={`https://${
-                          process.env.REACT_APP_PINATA_GATEWAY
-                        }/ipfs/${application?.project!.logoImg}`}
-                        alt=""
-                      />
+                      {application && (
+                        <ApplicationLogo
+                          classNameOverride="h-24 w-24 rounded-full ring-4 ring-white bg-white sm:h-32 sm:w-32"
+                          application={application}
+                        />
+                      )}
                     </div>
                     <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                       <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">

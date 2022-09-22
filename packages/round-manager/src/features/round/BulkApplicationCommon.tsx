@@ -1,6 +1,8 @@
 import { GrantApplication, ProjectStatus } from "../api/types";
 import { Button } from "../common/styles";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
+import DefaultBannerImage from "../../assets/default_banner.png";
+import DefaultLogoImage from "../../assets/default_logo.png";
 
 export function NumberOfStatus(props: {
   grantApplications: GrantApplication[];
@@ -22,17 +24,27 @@ export function NumberOfStatus(props: {
   );
 }
 
-export function ApplicationLogo(props: { application: any }) {
+export function ApplicationLogo(props: {
+  application: GrantApplication;
+  classNameOverride?: string;
+}) {
+  const applicationLogoImage = props.application.project!.logoImg
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
+        props.application.project!.logoImg
+      }`
+    : DefaultLogoImage;
+
   return (
     <div className="pl-4">
       <div className="-mt-6 sm:-mt-6 sm:flex sm:items-end sm:space-x-5">
         <div className="flex">
           <img
-            className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
-            src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
-              props.application.project!.logoImg
-            }`}
-            alt=""
+            className={
+              props.classNameOverride ??
+              "h-12 w-12 rounded-full ring-4 ring-white bg-white"
+            }
+            src={applicationLogoImage}
+            alt="Application Logo"
           />
         </div>
       </div>
@@ -40,15 +52,24 @@ export function ApplicationLogo(props: { application: any }) {
   );
 }
 
-export function ApplicationBanner(props: { application: any }) {
+export function ApplicationBanner(props: {
+  application: GrantApplication;
+  classNameOverride?: string;
+}) {
+  const applicationBannerImage = props.application.project!.bannerImg
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
+        props.application.project!.bannerImg
+      }`
+    : DefaultBannerImage;
+
   return (
     <div>
       <img
-        className="h-[120px] w-full object-cover rounded-t"
-        src={`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
-          props.application.project!.bannerImg
-        }`}
-        alt=""
+        className={
+          props.classNameOverride ?? "h-[120px] w-full object-cover rounded-t"
+        }
+        src={applicationBannerImage}
+        alt="Application Banner"
       />
     </div>
   );
@@ -121,7 +142,7 @@ export function ApplicationHeader(props: {
     | undefined;
   approveOnClick?: () => void;
   rejectOnClick?: () => void;
-  application: any;
+  application: GrantApplication;
 }) {
   return (
     <div className="relative">
