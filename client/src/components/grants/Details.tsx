@@ -37,7 +37,7 @@ export default function Details({
         }
         onError={(e) => {
           e.currentTarget.onerror = null;
-          e.currentTarget.src = "./assets/card-img.png";
+          e.currentTarget.src = "./assets/default-project-logo.png";
         }}
         alt="project banner"
       />
@@ -51,7 +51,7 @@ export default function Details({
               }
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = "./icons/lightning.svg";
+                e.currentTarget.src = "./assets/default-project-logo.png";
               }}
               alt="project logo"
             />
@@ -62,14 +62,8 @@ export default function Details({
       <div className="grid grid-cols-2 gap-4 pb-6 mb-6">
         <div>
           <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} /> Created On:{" "}
-            <span className="ml-2">{createdAt}</span>
-          </p>
-        </div>
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} /> Last Edited:{" "}
-            <span className="ml-2">{updatedAt}</span>
+            <Calendar color={colors["secondary-text"]} />
+            <span className="ml-1">Created: {createdAt}</span>
           </p>
         </div>
         <a
@@ -83,8 +77,8 @@ export default function Details({
         </a>
         <div>
           <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} /> Created:{" "}
-            <span className="ml-2">{updatedAt}</span>
+            <Calendar color={colors["secondary-text"]} />
+            <span className="ml-1">Last Edited: {updatedAt}</span>
           </p>
         </div>
         {project?.projectTwitter && (

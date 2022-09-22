@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../reducers";
-import { roundApplicationPath } from "../../routes";
+import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
-import { Status } from "../../reducers/rounds";
-import { networkPrettyName } from "../../utils/wallet";
-import { formatDate } from "../../utils/components";
-import Button, { ButtonVariants } from "../base/Button";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { RootState } from "../../reducers";
+import { Status } from "../../reducers/rounds";
+import { Status as ProjectStatus } from "../../reducers/projects";
+import { roundApplicationPath, newGrantPath } from "../../routes";
+import { formatDate } from "../../utils/components";
+import { networkPrettyName } from "../../utils/wallet";
+import Button, { ButtonVariants } from "../base/Button";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -19,6 +21,8 @@ function Round() {
   const { roundId, chainId } = params;
 
   const props = useSelector((state: RootState) => {
+    const allProjectMetadata = state.grantsMetadata;
+    const projectsStatus = state.projects.status;
     const roundState = state.rounds[roundId!];
     const status = roundState ? roundState.status : Status.Undefined;
     const error = roundState ? roundState.error : undefined;
@@ -33,6 +37,8 @@ function Round() {
       round,
       web3ChainId,
       roundChainId,
+      projects: allProjectMetadata,
+      projectsStatus,
     };
   }, shallowEqual);
 
@@ -62,6 +68,12 @@ function Round() {
     }
   }, [props.round]);
 
+  useEffect(() => {
+    if (props.projectsStatus === ProjectStatus.Undefined) {
+      dispatch(loadProjects(true));
+    }
+  }, [props.projectsStatus, dispatch]);
+
   if (props.web3ChainId !== props.roundChainId) {
     return (
       <p>
@@ -76,7 +88,10 @@ function Round() {
     return <p>Error: {props.error}</p>;
   }
 
-  if (props.status !== Status.Loaded) {
+  if (
+    props.status !== Status.Loaded ||
+    props.projectsStatus !== ProjectStatus.Loaded
+  ) {
     return <p>loading...</p>;
   }
 
@@ -94,14 +109,25 @@ function Round() {
             Date: {formatDate(roundData?.applicationsStartTime)} -{" "}
             {formatDate(roundData?.applicationsEndTime)}
           </p>
-          <Link to={roundApplicationPath(chainId!, roundId!)}>
-            <Button
-              styles={["w-full justify-center"]}
-              variant={ButtonVariants.primary}
-            >
-              Apply to this round
-            </Button>
-          </Link>
+          {Object.keys(props.projects).length !== 0 ? (
+            <Link to={roundApplicationPath(chainId!, roundId!)}>
+              <Button
+                styles={["w-full justify-center"]}
+                variant={ButtonVariants.primary}
+              >
+                Apply to this round
+              </Button>
+            </Link>
+          ) : (
+            <Link to={newGrantPath()}>
+              <Button
+                styles={["w-full justify-center"]}
+                variant={ButtonVariants.primary}
+              >
+                Create Project
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

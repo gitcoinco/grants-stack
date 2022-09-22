@@ -20,14 +20,14 @@ import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
-import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
 import { isValidAddress } from "../../utils/wallet";
 import Toggle from "../grants/Toggle";
 
 const validation = {
-  message: "",
+  messages: [""],
   valid: false,
+  errorCount: 0,
 };
 
 export default function Form({
@@ -40,12 +40,11 @@ export default function Form({
   const dispatch = useDispatch();
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
-  const [submitted, setSubmitted] = useState(false);
   const [preview, setPreview] = useState(false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
-  const [displayAddressError, setDisplayAddressError] = useState("invisible");
   const [showProjectDetails] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(false);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
@@ -82,47 +81,52 @@ export default function Form({
     const { value } = e.target;
     const isValid = isValidAddress(value);
     if (!isValid) {
-      setDisplayAddressError("visible");
+      setFormValidation({
+        messages: ["Invalid address"],
+        valid: false,
+        errorCount: validation.errorCount + 1,
+      });
     } else {
-      setDisplayAddressError("invisible");
+      setFormValidation(validation);
     }
 
-    setFormInputs({ ...formInputs, [e.target.name]: value });
+    handleInput(e);
+  };
+
+  const handleRadioInput = async (e: ChangeHandlers) => {
+    handleInput(e);
   };
 
   const validate = async () => {
     try {
       await validateApplication(schema, formInputs);
       setFormValidation({
-        message: "",
+        messages: [],
         valid: true,
+        errorCount: 0,
       });
     } catch (e) {
       const error = e as ValidationError;
+      console.log(error);
       setFormValidation({
-        message: error.message,
+        messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,
+        errorCount: error.inner.length,
       });
+      setDisableSubmit(true);
     }
   };
 
-  const handleSubmitApplication = async () => {
-    setSubmitted(true);
+  const handlePreviewClick = async () => {
     await validate();
+    setPreview(true);
+  };
+
+  const handleSubmitApplication = async () => {
     if (formValidation.valid) {
       dispatch(submitApplication(round.address, formInputs));
     }
   };
-
-  // perform validation after the fields state is updated
-  useEffect(() => {
-    validate();
-    console.log("isSafe", formInputs.isSafe);
-  }, [formInputs]);
-
-  useEffect(() => {
-    dispatch(loadProjects(true));
-  }, [dispatch]);
 
   useEffect(() => {
     const currentOptions = props.projects.map(
@@ -186,11 +190,12 @@ export default function Form({
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
                         choices={["Yes", "No"]}
-                        changeHandler={handleInput}
+                        changeHandler={handleRadioInput}
                         name="isSafe"
-                        value={formInputs.isSafe ?? ""}
+                        value={formInputs.isSafe}
                         info=""
                         required={input.required ?? true}
+                        disabled={preview}
                       />
                     </Stack>
                   </div>
@@ -203,10 +208,9 @@ export default function Form({
           If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism,
           and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before
           sending the balance of any full grant."
-                    value={formInputs[`${input.id}`] ?? ""}
+                    value={formInputs[`${input.id}`]}
                     disabled={preview}
                     changeHandler={handleInputAddress}
-                    displayError={displayAddressError}
                     required={input.required ?? true}
                   />
                 </>
@@ -258,7 +262,7 @@ export default function Form({
                   label={input.question}
                   placeholder={input.info}
                   name={`${input.id}`}
-                  value={formInputs[`${input.id}`] ?? ""}
+                  value={formInputs[`${input.id}`]}
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
@@ -266,17 +270,30 @@ export default function Form({
               );
           }
         })}
-        {!formValidation.valid && submitted && (
-          <p className="text-danger-text w-full text-center font-semibold my-2">
-            {formValidation.message}
-          </p>
+        {!formValidation.valid && preview && (
+          <div
+            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            role="alert"
+          >
+            <strong className="text-sm font-medium">
+              There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
+              {formValidation.errorCount}{" "}
+              {formValidation.errorCount === 1 ? "error" : "errors"} with your
+              form submission
+            </strong>
+
+            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+              {formValidation.messages.map((o) => (
+                <li key={o}>{o}</li>
+              ))}
+            </ul>
+          </div>
         )}
         <div className="flex justify-end">
           {!preview ? (
             <Button
-              disabled={!formValidation.valid}
               variant={ButtonVariants.primary}
-              onClick={() => setPreview(true)}
+              onClick={() => handlePreviewClick()}
             >
               Preview Application
             </Button>
@@ -291,6 +308,7 @@ export default function Form({
               <Button
                 variant={ButtonVariants.primary}
                 onClick={handleSubmitApplication}
+                disabled={disableSubmit}
               >
                 Submit
               </Button>
