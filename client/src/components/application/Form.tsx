@@ -20,7 +20,6 @@ import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
 import Button, { ButtonVariants } from "../base/Button";
 import { RootState } from "../../reducers";
-import { loadProjects } from "../../actions/projects";
 import { submitApplication } from "../../actions/roundApplication";
 import { isValidAddress } from "../../utils/wallet";
 import Toggle from "../grants/Toggle";
@@ -128,10 +127,6 @@ export default function Form({
       dispatch(submitApplication(round.address, formInputs));
     }
   };
-
-  useEffect(() => {
-    dispatch(loadProjects(true));
-  }, [dispatch]);
 
   useEffect(() => {
     const currentOptions = props.projects.map(
