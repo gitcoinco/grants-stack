@@ -177,7 +177,7 @@ export type Project = {
   description: string;
   website: string;
   bannerImg?: string;
-  logoImg: string;
+  logoImg?: string;
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
 };
