@@ -22,6 +22,7 @@ export default function Details({
   bannerImg,
   logoImg,
   preview,
+  alert,
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
@@ -29,8 +30,9 @@ export default function Details({
   bannerImg: string | Blob;
   logoImg: string | Blob;
   preview?: boolean;
+  alert?: boolean | undefined;
 }) {
-  const [showAlert, setShowAlert] = useState(true);
+  const [showAlert, setShowAlert] = useState(alert ?? true);
   const discordLink = (
     <a href="https://discord.gg/nwYzGuuruJ">Grant Hub Discord</a>
   );

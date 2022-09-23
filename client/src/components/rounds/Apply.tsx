@@ -3,7 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { grantsPath, roundPath } from "../../routes";
+import { roundPath } from "../../routes";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import colors from "../../styles/colors";
@@ -36,7 +36,6 @@ function Apply() {
     const applicationStatus: ApplicationStatus = applicationState
       ? applicationState.status
       : ApplicationStatus.Undefined;
-    const { projects } = state.projects;
 
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
@@ -53,7 +52,6 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
-      projects,
     };
   }, shallowEqual);
 
@@ -92,10 +90,9 @@ function Apply() {
     );
   }
 
-  // todo: redirect to project details page
-  // todo: need the id of the project that was created
   if (props.applicationStatus === ApplicationStatus.Sent) {
-    navigate(grantsPath());
+    // todo: need the id of the project that was used to apply
+    // todo: redirect to project details page
   }
 
   if (props.applicationStatus !== ApplicationStatus.Undefined) {

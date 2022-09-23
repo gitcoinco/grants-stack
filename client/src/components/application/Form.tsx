@@ -105,6 +105,7 @@ export default function Form({
         valid: true,
         errorCount: 0,
       });
+      setDisableSubmit(false);
     } catch (e) {
       const error = e as ValidationError;
       console.log(error);
