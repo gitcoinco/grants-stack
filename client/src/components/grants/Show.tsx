@@ -59,7 +59,6 @@ function Project() {
 
   useEffect(() => {
     async function fetchTimeStamp(projects: ProjectEvent[], projectId: string) {
-      console.log("DASA projects", projects);
       if (global) {
         const currentProject = projects.find(
           (project) => project.id === Number(projectId)

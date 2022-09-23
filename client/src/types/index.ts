@@ -11,8 +11,6 @@ export interface Metadata {
   id: number;
   title: string;
   description: string;
-  roadmap: string;
-  challenges: string;
   website: string;
   bannerImg?: string;
   logoImg?: string;
