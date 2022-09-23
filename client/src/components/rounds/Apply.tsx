@@ -40,8 +40,6 @@ function Apply() {
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
 
-    console.log("DASA round", round);
-
     const applicationError = applicationState
       ? applicationState.error
       : undefined;
