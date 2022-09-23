@@ -47,6 +47,18 @@ module.exports = {
           100: "#D44D6E",
         },
       },
+      keyframes: {
+        violetTransition: {
+          '5%': {
+            'background-color': "#F0EBFF",
+            'color': "#6F3FF5",
+          },
+          '0%, 80%': {
+            'background-color': "#6F3FF5",
+            'color': "#FFF",
+          },
+        }
+      }
     },
   },
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/line-clamp")],
