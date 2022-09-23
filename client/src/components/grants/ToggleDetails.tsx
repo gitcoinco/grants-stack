@@ -7,7 +7,7 @@ function Section({ title, text }: { title: string; text: string | undefined }) {
         {title}
       </label>
       <input
-        className="ml-4 text-sm"
+        className="text-sm"
         name={text}
         type="text"
         value={text}
