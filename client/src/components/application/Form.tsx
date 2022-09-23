@@ -130,10 +130,6 @@ export default function Form({
   };
 
   useEffect(() => {
-    dispatch(loadProjects(true));
-  }, [dispatch]);
-
-  useEffect(() => {
     const currentOptions = props.projects.map(
       (project): ProjectOption => ({
         id: project.id,

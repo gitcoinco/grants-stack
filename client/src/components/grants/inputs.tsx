@@ -1,6 +1,13 @@
 import { Tooltip } from "@chakra-ui/react";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
+const optionalSpan = (
+  <span className="absolute text-gray-400 inset-y-0 right-0">Optional</span>
+);
+const requiredSpan = (
+  <span className="absolute text-purple-700 inset-y-0 right-0">*Required</span>
+);
+
 export function TextInput({
   label,
   info,
@@ -20,9 +27,7 @@ export function TextInput({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
-          )}
+          {required ? requiredSpan : optionalSpan}
         </div>
       </div>
       <legend>{info}</legend>
@@ -59,9 +64,7 @@ export function TextInputAddress({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
-          )}
+          {required ? requiredSpan : optionalSpan}
         </div>
       </div>
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
@@ -116,9 +119,7 @@ export function WebsiteInput({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
-          )}
+          {required ? requiredSpan : optionalSpan}
         </div>
       </div>
       <legend>{info}</legend>
@@ -161,9 +162,7 @@ export function TextArea({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
-          )}
+          {required ? requiredSpan : optionalSpan}
         </div>
       </div>
       <legend>{info}</legend>
@@ -201,9 +200,7 @@ export function Select({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
-          )}
+          {required ? requiredSpan : optionalSpan}
         </div>
       </div>
       <legend>{info}</legend>
