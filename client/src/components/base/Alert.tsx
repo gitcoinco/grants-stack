@@ -5,7 +5,7 @@ import {
   AlertTitle,
   Box,
   CloseButton,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 
 export enum AlertStatus {
@@ -18,37 +18,38 @@ export enum AlertStatus {
 
 interface AlertProps {
   status: AlertStatus;
+  title: string;
+  body: any;
   variant?: string;
-  flexDirection?: string;
   alignItems?: string;
   justifyContent?: string;
-  textAlign?: string;
   height?: string;
 }
 
 function Alert({
   status,
+  title,
+  body,
   variant,
-  flexDirection,
   alignItems,
   justifyContent,
-  textAlign,
   height,
 }: AlertProps) {
-  const {
-    isOpen: isVisible,
-    onClose,
-    onOpen,
-  } = useDisclosure({ defaultIsOpen: true })
+  const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true });
 
   return isVisible ? (
-    <ChakraAlert className="mb-2 rounded-lg" status={status}>
+    <ChakraAlert
+      className="mb-2 rounded-lg"
+      status={status}
+      variant={variant}
+      alignItems={alignItems}
+      justifyContent={justifyContent}
+      height={height}
+    >
       <AlertIcon />
       <Box>
-        <AlertTitle>Success!</AlertTitle>
-        <AlertDescription>
-          Your application has been received. We will review your application and respond within the next 48 hours.
-        </AlertDescription>
+        <AlertTitle>{title}</AlertTitle>
+        <AlertDescription>{body}</AlertDescription>
       </Box>
       <CloseButton
         alignSelf="flex-end"

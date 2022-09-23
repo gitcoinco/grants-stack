@@ -1,3 +1,4 @@
+import { useState } from "react";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import Alert, { AlertStatus } from "../base/Alert";
@@ -29,9 +30,26 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
+  const [showAlert, setShowAlert] = useState(true);
+  const discordLink = (
+    <a href="https://discord.gg/nwYzGuuruJ">Grant Hub Discord</a>
+  );
+
+  setTimeout(() => {
+    setShowAlert(false);
+  }, 15000);
+
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
-      <Alert status={AlertStatus.success} />
+      {showAlert && (
+        <Alert
+          title="Success!"
+          status={AlertStatus.success}
+          body={`Your application will be reviewed by the grant round team and you will
+          receive an email if your project is approved for the grant round. If you have
+          any questions or feedback, feel free to reach us out on the ${discordLink} !`}
+        />
+      )}
       <img
         className="w-full mb-4"
         src={

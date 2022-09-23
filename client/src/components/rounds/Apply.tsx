@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../reducers";
-import { roundPath } from "../../routes";
+import { grantsPath, roundPath } from "../../routes";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import Form from "../application/Form";
@@ -36,6 +36,7 @@ function Apply() {
     const applicationStatus: ApplicationStatus = applicationState
       ? applicationState.status
       : ApplicationStatus.Undefined;
+    const { projects } = state.projects;
 
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
@@ -52,6 +53,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      projects,
     };
   }, shallowEqual);
 
@@ -90,9 +92,10 @@ function Apply() {
     );
   }
 
-  // todo: add successfull application modal/alert and redirect to project details page
+  // todo: redirect to project details page
+  // todo: need the id of the project that was created
   if (props.applicationStatus === ApplicationStatus.Sent) {
-    return <div>Applied to round successfully.</div>;
+    navigate(grantsPath());
   }
 
   if (props.applicationStatus !== ApplicationStatus.Undefined) {
