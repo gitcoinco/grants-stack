@@ -20,6 +20,11 @@ import {
   ProgramState,
 } from "./context/ProgramContext";
 import { MemoryRouter } from "react-router-dom";
+import {
+  ApplicationContext,
+  ApplicationState,
+  initialApplicationState,
+} from "./context/ApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -89,13 +94,33 @@ export const makeApplicationAndCredentialRelatedDataForTwitter = (
   },
 });
 
+interface MakeGrantApplicationDataParams {
+  credentialProviderAndAnswersTestData?: ApplicationAndCredentialRelatedData[];
+  ownerAddress?: string;
+  applicationIdOverride?: string;
+  roundIdOverride?: string;
+}
+
 export const makeGrantApplicationData = (
-  credentialProviderAndAnswersTestData: ApplicationAndCredentialRelatedData[] = [],
-  ownerAddress: string = faker.finance.ethereumAddress()
+  overrides?: MakeGrantApplicationDataParams
 ): GrantApplication => {
+  const {
+    credentialProviderAndAnswersTestData,
+    ownerAddress,
+    applicationIdOverride,
+    roundIdOverride,
+  } = {
+    credentialProviderAndAnswersTestData: [],
+    ownerAddress: faker.finance.ethereumAddress(),
+    ...overrides,
+  };
+
   return {
-    id: faker.random.alpha({ count: 10, casing: "lower" }),
-    round: faker.random.alpha({ count: 59, casing: "lower" }),
+    id:
+      applicationIdOverride ||
+      faker.random.alpha({ count: 10, casing: "lower" }),
+    round:
+      roundIdOverride || faker.random.alpha({ count: 59, casing: "lower" }),
     recipient: faker.finance.ethereumAddress(),
     project: {
       lastUpdated: 1659714564,
@@ -200,5 +225,27 @@ export const renderWithContext = (
       >
         {ui}
       </ProgramContext.Provider>
+    </MemoryRouter>
+  );
+
+export const renderWithApplicationContext = (
+  ui: JSX.Element,
+  grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <ApplicationContext.Provider
+        value={{
+          state: {
+            ...initialApplicationState,
+            ...grantApplicationStateOverrides,
+          },
+          dispatch,
+        }}
+      >
+        {ui}
+      </ApplicationContext.Provider>
     </MemoryRouter>
   );

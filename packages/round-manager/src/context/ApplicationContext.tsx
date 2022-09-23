@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { GrantApplication } from "../features/api/types";
 import { useWallet } from "../features/common/Auth";
-import { getApplicationById } from "../features/api/application";
+import {
+  getApplicationById,
+  getApplicationsByRoundId,
+} from "../features/api/application";
+import { Web3Provider } from "@ethersproject/providers";
 
 enum ActionType {
-  SET_APPLICATIONS = "SET_APPLICATIONS",
+  SET_APPLICATION = "SET_APPLICATION",
+  SET_ROUND_APPLICATIONS = "SET_ROUND_APPLICATIONS",
   SET_LOADING = "SET_LOADING",
   SET_ERROR_GET_APPLICATION = "SET_ERROR_GET_APPLICATION",
+  SET_ERROR_GET_ROUND_APPLICATIONS = "SET_ERROR_GET_ROUND_APPLICATIONS",
 }
 
 interface Action {
@@ -17,9 +23,10 @@ interface Action {
 type Dispatch = (action: Action) => void;
 
 export interface ApplicationState {
-  application?: GrantApplication;
+  applications: GrantApplication[];
   isLoading: boolean;
   getApplicationByIdError?: Error;
+  getApplicationByRoundIdError?: Error;
 }
 
 export const ApplicationContext = createContext<
@@ -31,10 +38,17 @@ const applicationReducer = (
   action: Action
 ): ApplicationState => {
   switch (action.type) {
-    case ActionType.SET_APPLICATIONS:
+    case ActionType.SET_APPLICATION:
       return {
         ...state,
-        application: action.payload,
+        applications: state.applications.concat(action.payload),
+        getApplicationByIdError: undefined,
+      };
+    case ActionType.SET_ROUND_APPLICATIONS:
+      return {
+        ...state,
+        applications: action.payload,
+        getApplicationByRoundIdError: undefined,
       };
     case ActionType.SET_LOADING:
       return {
@@ -46,13 +60,19 @@ const applicationReducer = (
         ...state,
         getApplicationByIdError: action.payload,
       };
+    case ActionType.SET_ERROR_GET_ROUND_APPLICATIONS:
+      return {
+        ...state,
+        applications: [],
+        getApplicationByRoundIdError: action.payload,
+      };
+    default:
+      return state;
   }
-
-  return state;
 };
 
 export const initialApplicationState: ApplicationState = {
-  application: undefined,
+  applications: [],
   isLoading: false,
 };
 
@@ -81,18 +101,40 @@ export const ApplicationProvider = ({
 function fetchApplicationById(
   dispatch: Dispatch,
   id: string,
-  walletProvider: any
+  walletProvider: Web3Provider
 ) {
   dispatch({ type: ActionType.SET_LOADING, payload: true });
-  getApplicationById(id!, walletProvider)
+  getApplicationById(id, walletProvider)
     .then((application) => {
-      dispatch({ type: ActionType.SET_APPLICATIONS, payload: application });
+      dispatch({ type: ActionType.SET_APPLICATION, payload: application });
     })
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_APPLICATION, payload: error })
     )
     .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
 }
+
+const fetchApplicationsByRoundId = async (
+  dispatch: Dispatch,
+  roundId: string,
+  walletProvider: Web3Provider
+) => {
+  dispatch({ type: ActionType.SET_LOADING, payload: true });
+  getApplicationsByRoundId(roundId, walletProvider)
+    .then((applications) =>
+      dispatch({
+        type: ActionType.SET_ROUND_APPLICATIONS,
+        payload: applications,
+      })
+    )
+    .catch((error) =>
+      dispatch({
+        type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS,
+        payload: error,
+      })
+    )
+    .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
+};
 
 export const useApplicationById = (
   id: string
@@ -112,12 +154,49 @@ export const useApplicationById = (
   const { provider: walletProvider } = useWallet();
 
   useEffect(() => {
-    fetchApplicationById(context.dispatch, id, walletProvider);
+    if (id) {
+      const existingApplication = context.state.applications.find(
+        (application) => application.id === id
+      );
+      if (!existingApplication) {
+        fetchApplicationById(context.dispatch, id, walletProvider);
+      }
+    }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
-    application: context.state.application,
+    application: context.state.applications.find(
+      (application) => application.id === id
+    ),
     isLoading: context.state.isLoading,
     getApplicationByIdError: context.state.getApplicationByIdError,
+  };
+};
+
+export const useApplicationByRoundId = (
+  roundId: string
+): {
+  applications: GrantApplication[] | undefined;
+  isLoading: boolean;
+  getApplicationByRoundIdError?: Error;
+} => {
+  const context = useContext(ApplicationContext);
+
+  if (context === undefined) {
+    throw new Error(
+      "useApplicationByRoundId must be used within a ApplicationProvider"
+    );
+  }
+
+  const { provider: walletProvider } = useWallet();
+
+  useEffect(() => {
+    fetchApplicationsByRoundId(context.dispatch, roundId, walletProvider);
+  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return {
+    applications: context.state.applications,
+    isLoading: context.state.isLoading,
+    getApplicationByRoundIdError: context.state.getApplicationByRoundIdError,
   };
 };

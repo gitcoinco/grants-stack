@@ -14,13 +14,14 @@ import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsRejected from "./ApplicationsRejected";
 import Footer from "../common/Footer";
-import { useListGrantApplicationsQuery } from "../api/services/grantApplication";
 import tw from "tailwind-styled-components";
 import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import { Spinner } from "../common/Spinner";
+import { useApplicationByRoundId } from "../../context/ApplicationContext";
+import { ApplicationStatus } from "../api/types";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/create");
@@ -44,19 +45,20 @@ export default function ViewRoundPage() {
     }
   );
 
-  const { data: applications } = useListGrantApplicationsQuery({
-    /* Non-issue since if ID was null or undef., we wouldn't render this page, but a 404 instead  */
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    roundId: id!,
-    signerOrProvider: provider,
-  });
+  const { applications } = useApplicationByRoundId(id!);
 
   const pendingApplications =
-    applications?.filter((a) => a.status === "PENDING") || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.PENDING.toString()
+    ) || [];
   const approvedApplications =
-    applications?.filter((a) => a.status === "APPROVED") || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.APPROVED.toString()
+    ) || [];
   const rejectedApplications =
-    applications?.filter((a) => a.status === "REJECTED") || [];
+    applications?.filter(
+      (a) => a.status === ApplicationStatus.REJECTED.toString()
+    ) || [];
 
   const formatDate = (date: Date | undefined) => date?.toLocaleDateString();
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useApplicationByRoundId } from "../../context/ApplicationContext";
 
+import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import {
-  useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
-} from "../api/services/grantApplication";
-import { GrantApplication, ProjectStatus } from "../api/types";
+  ApplicationStatus,
+  GrantApplication,
+  ProjectStatus,
+} from "../api/types";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import { Spinner } from "../common/Spinner";
@@ -30,11 +32,11 @@ export default function ApplicationsRejected() {
   const { id } = useParams();
   const { provider, signer } = useWallet();
 
-  const { data, isLoading, isSuccess } = useListGrantApplicationsQuery({
-    roundId: id!,
-    signerOrProvider: provider,
-    status: "REJECTED",
-  });
+  const { applications, isLoading } = useApplicationByRoundId(id!);
+  const rejectedApplications =
+    applications?.filter(
+      (a) => a.status == ApplicationStatus.REJECTED.toString()
+    ) || [];
 
   const [bulkSelectRejected, setBulkSelectRejected] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -44,9 +46,9 @@ export default function ApplicationsRejected() {
     useBulkUpdateGrantApplicationsMutation();
 
   useEffect(() => {
-    if (isSuccess || !bulkSelectRejected) {
+    if (!isLoading || !bulkSelectRejected) {
       setSelected(
-        (data || []).map((application) => {
+        rejectedApplications?.map((application) => {
           return {
             id: application.id,
             round: application.round,
@@ -57,7 +59,7 @@ export default function ApplicationsRejected() {
         })
       );
     }
-  }, [data, isSuccess, bulkSelectRejected]);
+  }, [applications, isLoading, bulkSelectRejected]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleApproval = (id: string) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
@@ -97,7 +99,7 @@ export default function ApplicationsRejected() {
 
   return (
     <>
-      {data && data.length > 0 && (
+      {rejectedApplications && rejectedApplications.length > 0 && (
         <div className="flex items-center justify-end mb-4">
           <span className="text-grey-400 text-sm mr-6">
             Save in gas fees by approving/rejecting multiple applications at
@@ -111,8 +113,8 @@ export default function ApplicationsRejected() {
         </div>
       )}
       <CardsContainer>
-        {isSuccess &&
-          data?.map((application, index) => (
+        {!isLoading &&
+          rejectedApplications?.map((application, index) => (
             <BasicCard
               key={index}
               className="application-card"

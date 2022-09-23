@@ -36,6 +36,13 @@ jest.mock("../../common/Auth", () => ({
   }),
 }));
 const mockAddress = "0x0";
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: "some-application-id",
+  }),
+}));
+const applicationIdOverride = "some-application-id";
 
 jest.mock("@gitcoinco/passport-sdk-verifier");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -67,9 +74,11 @@ describe("ViewApplicationPage", () => {
       applicationAndCredentialRelatedData: ApplicationAndCredentialRelatedData[]
     ) => {
       verifyCredentialMock.mockResolvedValue(false);
-      const grantApplicationStub = makeGrantApplicationData(
-        applicationAndCredentialRelatedData
-      );
+      const grantApplicationStub = makeGrantApplicationData({
+        credentialProviderAndAnswersTestData:
+          applicationAndCredentialRelatedData,
+        applicationIdOverride,
+      });
       (getApplicationById as any).mockResolvedValue(grantApplicationStub);
       (useUpdateGrantApplicationMutation as any).mockReturnValue([
         jest.fn(),
@@ -77,7 +86,7 @@ describe("ViewApplicationPage", () => {
       ]);
 
       renderWithContext(<ViewApplicationPage />, {
-        application: grantApplicationStub,
+        applications: [grantApplicationStub],
         isLoading: false,
       });
 
@@ -96,7 +105,9 @@ describe("ViewApplicationPage", () => {
     "shows no project %s verification when you do not have a verifiable credential for it",
     async (provider) => {
       const noGithubVerification = {
-        application: makeGrantApplicationData(),
+        application: makeGrantApplicationData({
+          applicationIdOverride,
+        }),
         isLoading: false,
       };
       (getApplicationById as any).mockResolvedValue(
@@ -125,9 +136,11 @@ describe("ViewApplicationPage", () => {
       applicationAndCredentialRelatedData: ApplicationAndCredentialRelatedData[]
     ) => {
       verifyCredentialMock.mockResolvedValue(true);
-      const grantApplicationWithValidVc = makeGrantApplicationData(
-        applicationAndCredentialRelatedData
-      );
+      const grantApplicationWithValidVc = makeGrantApplicationData({
+        credentialProviderAndAnswersTestData:
+          applicationAndCredentialRelatedData,
+        applicationIdOverride,
+      });
       (getApplicationById as any).mockResolvedValue(
         grantApplicationWithValidVc
       );
@@ -137,7 +150,7 @@ describe("ViewApplicationPage", () => {
       ]);
 
       renderWithContext(<ViewApplicationPage />, {
-        application: grantApplicationWithValidVc,
+        applications: [grantApplicationWithValidVc],
       });
 
       expect(
@@ -150,9 +163,12 @@ describe("ViewApplicationPage", () => {
     verifyCredentialMock.mockResolvedValue(true);
     const fakeIssuer =
       "did:key:z6Mks2YNwbkzDgKLuQs1TS3whP9RdXrGXtVqt5JcCLoQu86W";
-    const grantApplication = makeGrantApplicationData([
-      makeApplicationAndCredentialRelatedDataForGithub(),
-    ]);
+    const grantApplication = makeGrantApplicationData({
+      credentialProviderAndAnswersTestData: [
+        makeApplicationAndCredentialRelatedDataForGithub(),
+      ],
+      applicationIdOverride,
+    });
     grantApplication.project!.credentials["github"].issuer = fakeIssuer;
     (getApplicationById as any).mockResolvedValue(grantApplication);
     (useUpdateGrantApplicationMutation as any).mockReturnValue([
@@ -161,7 +177,7 @@ describe("ViewApplicationPage", () => {
     ]);
 
     renderWithContext(<ViewApplicationPage />, {
-      application: grantApplication,
+      applications: [grantApplication],
     });
 
     await waitFor(() => {
@@ -199,9 +215,10 @@ describe("ViewApplicationPage", () => {
       question,
       applicationAccountName,
     }) => {
-      const grantApplication = makeGrantApplicationData(
-        applicationAndVCRelatedDataArray
-      );
+      const grantApplication = makeGrantApplicationData({
+        credentialProviderAndAnswersTestData: applicationAndVCRelatedDataArray,
+        applicationIdOverride,
+      });
       const wrongAnswers: AnswerBlock[] = [
         {
           questionId: 0,
@@ -217,7 +234,7 @@ describe("ViewApplicationPage", () => {
       ]);
 
       renderWithContext(<ViewApplicationPage />, {
-        application: grantApplication,
+        applications: [grantApplication],
       });
 
       await waitFor(() => {
@@ -252,16 +269,17 @@ describe("ViewApplicationPage", () => {
         { isLoading: false },
       ]);
       verifyCredentialMock.mockResolvedValue(true);
-      const grantApplicationData = makeGrantApplicationData(
-        applicationAndVCRelatedDataArray
-      );
+      const grantApplicationData = makeGrantApplicationData({
+        credentialProviderAndAnswersTestData: applicationAndVCRelatedDataArray,
+        applicationIdOverride,
+      });
       grantApplicationData!.project!.owners.forEach((it) => {
         it.address = "bad";
       });
       (getApplicationById as any).mockResolvedValue(grantApplicationData);
 
       renderWithContext(<ViewApplicationPage />, {
-        application: grantApplicationData,
+        applications: [grantApplicationData],
       });
 
       await screen.findByTestId(`${provider}-verifiable-credential-unverified`);
@@ -279,7 +297,7 @@ describe("ViewApplicationPage", () => {
     ]);
 
     renderWithContext(<ViewApplicationPage />, {
-      application: undefined,
+      applications: [],
       isLoading: false,
       getApplicationByIdError: new Error("No application :("),
     });
@@ -289,7 +307,7 @@ describe("ViewApplicationPage", () => {
   });
 
   it("should display access denied when wallet accessing is not round operator", () => {
-    const application = makeGrantApplicationData();
+    const application = makeGrantApplicationData({ applicationIdOverride });
     (getApplicationById as any).mockResolvedValue(application);
     (useUpdateGrantApplicationMutation as any).mockReturnValue([
       jest.fn(),
@@ -301,7 +319,7 @@ describe("ViewApplicationPage", () => {
       }),
     });
 
-    renderWithContext(<ViewApplicationPage />, { application });
+    renderWithContext(<ViewApplicationPage />, { applications: [application] });
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
     expect(screen.queryByText("404 ERROR")).not.toBeInTheDocument();
   });

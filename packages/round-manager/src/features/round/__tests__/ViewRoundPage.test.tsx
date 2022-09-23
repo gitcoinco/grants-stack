@@ -1,24 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { screen } from "@testing-library/react";
-import { useWallet } from "../../common/Auth";
 import { useListRoundsQuery } from "../../api/services/round";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, Round } from "../../api/types";
 import {
   makeGrantApplicationData,
   makeRoundData,
-  renderWrapped,
+  renderWithApplicationContext,
 } from "../../../test-utils";
-import {
-  useBulkUpdateGrantApplicationsMutation,
-  useListGrantApplicationsQuery,
-} from "../../api/services/grantApplication";
+import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/round");
 jest.mock("../../api/services/grantApplication");
 jest.mock("wagmi");
+
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -32,24 +29,20 @@ Object.assign(navigator, {
 const mockRoundData: Round = makeRoundData();
 const mockApplicationData: GrantApplication[] = [];
 
+jest.mock("../../common/Auth", () => ({
+  useWallet: () => ({
+    chain: {},
+    address: mockRoundData.operatorWallets![0],
+    provider: { getNetwork: () => ({ chainId: "0" }) },
+  }),
+}));
+
 describe("the view round page", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: mockRoundData.operatorWallets![0],
-    });
-
     (useListRoundsQuery as jest.Mock).mockReturnValue({
       round: mockRoundData,
-      isLoading: false,
-      isSuccess: true,
-    });
-
-    (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-      data: mockApplicationData,
-      refetch: jest.fn(),
       isLoading: false,
       isSuccess: true,
     });
@@ -71,24 +64,44 @@ describe("the view round page", () => {
       isSuccess: true,
     });
 
-    renderWrapped(<ViewRoundPage />);
+    renderWithApplicationContext(<ViewRoundPage />, {
+      applications: [],
+      isLoading: false,
+    });
+
+    // renderWrapped(<ViewRoundPage />);
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
   it("should display access denied when wallet accessing is not program operator", () => {
-    (useWallet as jest.Mock).mockReturnValue({ chain: {} });
+    (useListRoundsQuery as jest.Mock).mockReturnValue({
+      round: makeRoundData(),
+      isLoading: false,
+      isSuccess: true,
+    });
 
-    renderWrapped(<ViewRoundPage />);
+    renderWithApplicationContext(<ViewRoundPage />, {
+      applications: mockApplicationData,
+      isLoading: false,
+    });
+
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
 
   it("should display Copy to Clipboard", () => {
-    renderWrapped(<ViewRoundPage />);
+    renderWithApplicationContext(<ViewRoundPage />, {
+      applications: [],
+      isLoading: false,
+    });
     expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
   });
 
   it("should display copy when there are no applicants for a given round", () => {
-    renderWrapped(<ViewRoundPage />);
+    renderWithApplicationContext(<ViewRoundPage />, {
+      applications: [],
+      isLoading: false,
+    });
+
     expect(screen.getByText("No Applications")).toBeInTheDocument();
   });
 
@@ -105,13 +118,10 @@ describe("the view round page", () => {
     mockApplicationData[2].status = "REJECTED";
     mockApplicationData[3].status = "APPROVED";
 
-    (useListGrantApplicationsQuery as jest.Mock).mockReturnValue({
-      data: mockApplicationData,
+    renderWithApplicationContext(<ViewRoundPage />, {
+      applications: mockApplicationData,
       isLoading: false,
-      isSuccess: true,
     });
-
-    renderWrapped(<ViewRoundPage />);
 
     expect(
       parseInt(screen.getByTestId("received-application-counter").textContent!)
@@ -129,7 +139,7 @@ describe("the view round page", () => {
       isLoading: true,
     });
 
-    renderWrapped(<ViewRoundPage />);
+    renderWithApplicationContext(<ViewRoundPage />);
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
