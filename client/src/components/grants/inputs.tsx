@@ -20,10 +20,16 @@ export function TextInput({
 }: InputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
-      <label className="text-sm" htmlFor={name}>
-        {label}
-      </label>
-      {required ? requiredSpan : optionalSpan}
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required ? requiredSpan : optionalSpan}
+        </div>
+      </div>
       <legend>{info}</legend>
       <input
         type="text"
@@ -51,16 +57,16 @@ export function TextInputAddress({
 }: AddressInputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
-      <label className="text-sm absolute" htmlFor={name}>
-        {label}
-      </label>
-      {required ? (
-        <span className="absolute text-purple-700 inset-y-0 right-10">
-          *Required
-        </span>
-      ) : (
-        optionalSpan
-      )}
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required ? requiredSpan : optionalSpan}
+        </div>
+      </div>
       <Tooltip bg="purple.700" hasArrow label={tooltipValue}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -105,12 +111,17 @@ export function WebsiteInput({
     changeHandler(event);
   };
   return (
-    <div className="mt-6 w-full sm:w-2/3 relative">
-      <label className="text-sm" htmlFor={name}>
-        {" "}
-        {label}{" "}
-      </label>
-      {required ? requiredSpan : optionalSpan}
+    <div className="mt-6 w-full sm:w-1/2 relative">
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required ? requiredSpan : optionalSpan}
+        </div>
+      </div>
       <legend>{info}</legend>
       <div className="flex">
         {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -144,10 +155,16 @@ export function TextArea({
 }: InputProps) {
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
-      <label className="text-sm" htmlFor={name}>
-        {label}
-      </label>
-      {required ? requiredSpan : optionalSpan}
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required ? requiredSpan : optionalSpan}
+        </div>
+      </div>
       <legend>{info}</legend>
       <textarea
         id={label}
@@ -176,10 +193,16 @@ export function Select({
 }: SelectInputProps) {
   return (
     <div className="relative">
-      <label className="text-sm" htmlFor={name}>
-        {label}
-      </label>
-      {required ? requiredSpan : optionalSpan}
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className="shrink ml-2">
+          {required ? requiredSpan : optionalSpan}
+        </div>
+      </div>
       <legend>{info}</legend>
       <select
         id={name}
