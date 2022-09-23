@@ -188,17 +188,18 @@ const fetchApplicationData = async (
           );
         }
 
-        const projectRegistryId = application.project.id;
+        const projectMetadata = application.project;
+        const projectRegistryId = projectMetadata.id;
         const projectOwners = await projectRegistry.getProjectOwners(
           projectRegistryId
         );
         const grantApplicationProjectMetadata: Project = {
-          ...metadata.project,
+          ...projectMetadata,
           owners: projectOwners.map((address: string) => ({ address })),
         };
 
         return {
-          ...metadata,
+          ...application,
           status,
           id: project.id,
           project: grantApplicationProjectMetadata,

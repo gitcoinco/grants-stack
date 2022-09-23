@@ -102,6 +102,58 @@ describe("getApplicationById", () => {
 
     consoleErrorSpy.mockClear();
   });
+
+  it("should retrieve application data for a signed application", async () => {
+    const applicationId = expectedApplication.id;
+    const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
+    const expectedApplicationMetaPtr = {
+      protocol: 1,
+      pointer: "bafkreigfajf5ud3js6bmh3lwg5sp7cqyrqoy7e65y25myyqjywllxvcw2u",
+    };
+    (graphql_fetch as jest.Mock).mockResolvedValue({
+      data: {
+        roundProjects: [
+          {
+            id: expectedApplication.id,
+            metaPtr: expectedApplicationMetaPtr,
+            status: "PENDING",
+            round: {
+              projectsMetaPtr: expectedProjectsMetaPtr,
+            },
+          },
+        ],
+      },
+    });
+
+    (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
+      if (metaptr === expectedApplicationMetaPtr.pointer) {
+        return {
+          signature: "someSignature",
+          application: {
+            round: expectedApplication.round,
+            recipient: expectedApplication.recipient,
+            project: expectedApplication.project,
+            answers: expectedApplication.answers,
+          },
+        };
+      }
+      if (metaptr === expectedProjectsMetaPtr.pointer) {
+        return [
+          {
+            id: expectedApplication.id,
+            status: expectedApplication.status,
+          },
+        ];
+      }
+    });
+
+    const actualApplication = await getApplicationById(
+      applicationId,
+      signerOrProviderStub
+    );
+
+    expect(actualApplication).toEqual(expectedApplication);
+  });
 });
 
 describe("getApplicationsByRoundId", () => {
@@ -141,6 +193,59 @@ describe("getApplicationsByRoundId", () => {
           recipient: expectedApplication.recipient,
           project: expectedApplication.project,
           answers: expectedApplication.answers,
+        };
+      }
+      if (metaptr === expectedProjectsMetaPtr.pointer) {
+        return [
+          {
+            id: expectedApplication.id,
+            status: expectedApplication.status,
+          },
+        ];
+      }
+    });
+
+    const actualApplications = await getApplicationsByRoundId(
+      roundId,
+      signerOrProviderStub
+    );
+
+    expect(actualApplications).toEqual(expectedApplications);
+  });
+
+  it("should retrieve signed applications given an round id", async () => {
+    const expectedApplication = expectedApplications[0];
+    const roundId = expectedApplication.round;
+    const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
+    const expectedApplicationMetaPtr = {
+      protocol: 1,
+      pointer: "bafkreigfajf5ud3js6bmh3lwg5sp7cqyrqoy7e65y25myyqjywllxvcw2u",
+    };
+    (graphql_fetch as jest.Mock).mockResolvedValue({
+      data: {
+        roundProjects: [
+          {
+            id: expectedApplication.id,
+            metaPtr: expectedApplicationMetaPtr,
+            status: "PENDING",
+            round: {
+              projectsMetaPtr: expectedProjectsMetaPtr,
+            },
+          },
+        ],
+      },
+    });
+
+    (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
+      if (metaptr === expectedApplicationMetaPtr.pointer) {
+        return {
+          signature: "some-signature",
+          application: {
+            round: expectedApplication.round,
+            recipient: expectedApplication.recipient,
+            project: expectedApplication.project,
+            answers: expectedApplication.answers,
+          },
         };
       }
       if (metaptr === expectedProjectsMetaPtr.pointer) {
