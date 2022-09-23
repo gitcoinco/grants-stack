@@ -20,11 +20,18 @@ jest.mock("../../common/Auth", () => ({
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
 }));
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: "some-round-id",
+  }),
+}));
+const roundIdOverride = "some-round-id";
 
 const grantApplications = [
-  makeGrantApplicationData(),
-  makeGrantApplicationData(),
-  makeGrantApplicationData(),
+  makeGrantApplicationData({ roundIdOverride }),
+  makeGrantApplicationData({ roundIdOverride }),
+  makeGrantApplicationData({ roundIdOverride }),
 ];
 
 grantApplications.forEach((application) => {

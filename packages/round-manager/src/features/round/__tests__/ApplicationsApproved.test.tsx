@@ -16,9 +16,10 @@ jest.mock("../../api/services/grantApplication");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: "0",
+    id: "some-round-id",
   }),
 }));
+const roundIdOverride = "some-round-id";
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},
@@ -28,9 +29,9 @@ jest.mock("../../common/Auth", () => ({
 }));
 
 const grantApplications = [
-  makeGrantApplicationData(),
-  makeGrantApplicationData(),
-  makeGrantApplicationData(),
+  makeGrantApplicationData({ roundIdOverride }),
+  makeGrantApplicationData({ roundIdOverride }),
+  makeGrantApplicationData({ roundIdOverride }),
 ];
 
 grantApplications.forEach((application) => {
@@ -275,7 +276,7 @@ describe("<ApplicationsApproved />", () => {
 
       const actual = bulkUpdateGrantApplications.mock.calls[0][0];
       expect(actual.applications).toEqual([expected]);
-      expect(actual.roundId).toEqual("0");
+      expect(actual.roundId).toEqual(roundIdOverride);
       expect(actual.signer).toBeUndefined();
     });
 

@@ -23,8 +23,7 @@ interface Action {
 type Dispatch = (action: Action) => void;
 
 export interface ApplicationState {
-  application?: GrantApplication;
-  applications?: GrantApplication[];
+  applications: GrantApplication[];
   isLoading: boolean;
   getApplicationByIdError?: Error;
   getApplicationByRoundIdError?: Error;
@@ -42,12 +41,14 @@ const applicationReducer = (
     case ActionType.SET_APPLICATION:
       return {
         ...state,
-        application: action.payload,
+        applications: state.applications.concat(action.payload),
+        getApplicationByIdError: undefined,
       };
     case ActionType.SET_ROUND_APPLICATIONS:
       return {
         ...state,
         applications: action.payload,
+        getApplicationByRoundIdError: undefined,
       };
     case ActionType.SET_LOADING:
       return {
@@ -62,6 +63,7 @@ const applicationReducer = (
     case ActionType.SET_ERROR_GET_ROUND_APPLICATIONS:
       return {
         ...state,
+        applications: [],
         getApplicationByRoundIdError: action.payload,
       };
     default:
@@ -70,8 +72,7 @@ const applicationReducer = (
 };
 
 export const initialApplicationState: ApplicationState = {
-  application: undefined,
-  applications: undefined,
+  applications: [],
   isLoading: false,
 };
 
@@ -153,11 +154,20 @@ export const useApplicationById = (
   const { provider: walletProvider } = useWallet();
 
   useEffect(() => {
-    fetchApplicationById(context.dispatch, id, walletProvider);
+    if (id) {
+      const existingApplication = context.state.applications.find(
+        (application) => application.id === id
+      );
+      if (!existingApplication) {
+        fetchApplicationById(context.dispatch, id, walletProvider);
+      }
+    }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
-    application: context.state.application,
+    application: context.state.applications.find(
+      (application) => application.id === id
+    ),
     isLoading: context.state.isLoading,
     getApplicationByIdError: context.state.getApplicationByIdError,
   };

@@ -94,13 +94,33 @@ export const makeApplicationAndCredentialRelatedDataForTwitter = (
   },
 });
 
+interface MakeGrantApplicationDataParams {
+  credentialProviderAndAnswersTestData?: ApplicationAndCredentialRelatedData[];
+  ownerAddress?: string;
+  applicationIdOverride?: string;
+  roundIdOverride?: string;
+}
+
 export const makeGrantApplicationData = (
-  credentialProviderAndAnswersTestData: ApplicationAndCredentialRelatedData[] = [],
-  ownerAddress: string = faker.finance.ethereumAddress()
+  overrides?: MakeGrantApplicationDataParams
 ): GrantApplication => {
+  const {
+    credentialProviderAndAnswersTestData,
+    ownerAddress,
+    applicationIdOverride,
+    roundIdOverride,
+  } = {
+    credentialProviderAndAnswersTestData: [],
+    ownerAddress: faker.finance.ethereumAddress(),
+    ...overrides,
+  };
+
   return {
-    id: faker.random.alpha({ count: 10, casing: "lower" }),
-    round: faker.random.alpha({ count: 59, casing: "lower" }),
+    id:
+      applicationIdOverride ||
+      faker.random.alpha({ count: 10, casing: "lower" }),
+    round:
+      roundIdOverride || faker.random.alpha({ count: 59, casing: "lower" }),
     recipient: faker.finance.ethereumAddress(),
     project: {
       lastUpdated: 1659714564,
