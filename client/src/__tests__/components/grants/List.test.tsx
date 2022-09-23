@@ -33,8 +33,6 @@ const projectsMetadata: Metadata[] = [
     id: 1,
     title: "First Project",
     description: "",
-    roadmap: "",
-    challenges: "",
     website: "",
   },
   {
@@ -43,8 +41,6 @@ const projectsMetadata: Metadata[] = [
     id: 2,
     title: "Second Project",
     description: "",
-    roadmap: "",
-    challenges: "",
     website: "",
   },
 ];

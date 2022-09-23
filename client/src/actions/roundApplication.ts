@@ -10,6 +10,7 @@ import { global } from "../global";
 import { chains } from "../contracts/deployments";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
+import { metadataToProject } from "../utils/utils";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -104,17 +105,7 @@ export const submitApplication =
       return;
     }
 
-    const project: Project = {
-      lastUpdated: 0,
-      id: projectId,
-      title: projectMetadata.title,
-      description: projectMetadata.description,
-      website: projectMetadata.website,
-      bannerImg: projectMetadata.bannerImg!,
-      logoImg: projectMetadata.logoImg!,
-      credentials: projectMetadata.credentials,
-      metaPtr: projectMetadata.metaPtr,
-    };
+    const project: Project = metadataToProject(projectMetadata, 0);
 
     // FIXME: this is temporarily until the round manager adds the encrypted field
     roundApplicationMetadata.applicationSchema.forEach((question) => {

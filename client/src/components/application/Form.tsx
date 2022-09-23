@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
-import { ValidationError } from "yup";
 import { Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { ValidationError } from "yup";
+import { submitApplication } from "../../actions/roundApplication";
+import { RootState } from "../../reducers";
 import {
   ChangeHandlers,
-  RoundApplicationMetadata,
-  ProjectOption,
-  Round,
   DynamicFormInputs,
   Metadata,
+  ProjectOption,
+  Round,
+  RoundApplicationMetadata,
 } from "../../types";
+import { isValidAddress } from "../../utils/wallet";
+import Button, { ButtonVariants } from "../base/Button";
+import { validateApplication } from "../base/formValidation";
 import {
   Select,
   TextArea,
   TextInput,
   TextInputAddress,
 } from "../grants/inputs";
-import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
-import Button, { ButtonVariants } from "../base/Button";
-import { RootState } from "../../reducers";
-import { submitApplication } from "../../actions/roundApplication";
-import { isValidAddress } from "../../utils/wallet";
 import Toggle from "../grants/Toggle";
 
 const validation = {
@@ -148,24 +148,30 @@ export default function Form({
             case "PROJECT":
               return (
                 <>
-                  <Select
-                    key={input.id}
-                    name={`${input.id}`}
-                    label={input.question}
-                    options={projectOptions ?? []}
-                    disabled={preview}
-                    changeHandler={handleProjectInput}
-                    required={input.required ?? true}
-                  />
-                  <Toggle
-                    projectMetadata={props.selectedProjectMetadata}
-                    showProjectDetails={showProjectDetails}
-                  />
-                  <p className="text-xs mt-4 mb-1">
-                    To complete your application to {round.roundMetadata.name},
-                    a little more info is needed:
-                  </p>
-                  <hr className="w-1/2" />
+                  <div className="mt-6 w-full sm:w-1/2 relative">
+                    <Select
+                      key={input.id}
+                      name={`${input.id}`}
+                      label={input.question}
+                      options={projectOptions ?? []}
+                      disabled={preview}
+                      changeHandler={handleProjectInput}
+                      required={input.required ?? true}
+                    />
+                  </div>
+                  <div>
+                    <Toggle
+                      projectMetadata={props.selectedProjectMetadata}
+                      showProjectDetails={showProjectDetails}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
+                      To complete your application to {round.roundMetadata.name}
+                      , a little more info is needed:
+                    </p>
+                    <hr className="w-1/2" />
+                  </div>
                 </>
               );
             case "TEXT":
