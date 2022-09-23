@@ -1,5 +1,6 @@
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
+import Alert, { AlertStatus } from "../base/Alert";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -30,6 +31,7 @@ export default function Details({
 }) {
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
+      <Alert status={AlertStatus.success} />
       <img
         className="w-full mb-4"
         src={

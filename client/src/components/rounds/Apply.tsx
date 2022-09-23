@@ -90,6 +90,7 @@ function Apply() {
     );
   }
 
+  // todo: add successfull application modal/alert and redirect to project details page
   if (props.applicationStatus === ApplicationStatus.Sent) {
     return <div>Applied to round successfully.</div>;
   }
