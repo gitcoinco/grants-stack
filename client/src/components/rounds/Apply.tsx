@@ -3,7 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { roundPath } from "../../routes";
+import { grantPath, roundPath } from "../../routes";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import colors from "../../styles/colors";
@@ -39,6 +39,7 @@ function Apply() {
 
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
+    const { selectedProjectId } = state.user;
 
     const applicationError = applicationState
       ? applicationState.error
@@ -52,6 +53,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      selectedProjectId,
     };
   }, shallowEqual);
 
@@ -90,9 +92,11 @@ function Apply() {
     );
   }
 
+  // todo: navigating to early...
   if (props.applicationStatus === ApplicationStatus.Sent) {
-    // todo: need the id of the project that was used to apply
-    // todo: redirect to project details page
+    if (props.selectedProjectId) {
+      navigate(grantPath(props.selectedProjectId!));
+    }
   }
 
   if (props.applicationStatus !== ApplicationStatus.Undefined) {
