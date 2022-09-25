@@ -34,7 +34,25 @@ export default function Details({
 }) {
   const [showAlert, setShowAlert] = useState(alert ?? true);
   const discordLink = (
-    <a href="https://discord.gg/nwYzGuuruJ">Grant Hub Discord</a>
+    <a className="text-purple-600" href="https://discord.gg/nwYzGuuruJ">
+      Grant Hub Discord
+    </a>
+  );
+
+  const successfullSubmissionBody = (
+    <p className="text-black">
+      Your application will be reviewed by the grant round team and you will
+      receive an email if your project is approved for the grant round. If you
+      have any questions or feedback, feel free to reach us out on the{" "}
+      {discordLink}!
+    </p>
+  );
+
+  // ToDo: make the round name dynamic
+  const successfullSubmissionTitle = (
+    <p className="text-green-800 text-xl">
+      Thank you for applying to Optimism Grant Round!
+    </p>
   );
 
   setTimeout(() => {
@@ -45,11 +63,9 @@ export default function Details({
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
       {showAlert && (
         <Alert
-          title="Success!"
+          title={successfullSubmissionTitle}
           status={AlertStatus.success}
-          body={`Your application will be reviewed by the grant round team and you will
-          receive an email if your project is approved for the grant round. If you have
-          any questions or feedback, feel free to reach us out on the ${discordLink} !`}
+          body={successfullSubmissionBody}
         />
       )}
       <img

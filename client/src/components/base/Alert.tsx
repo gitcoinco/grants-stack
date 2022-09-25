@@ -18,8 +18,8 @@ export enum AlertStatus {
 
 interface AlertProps {
   status: AlertStatus;
-  title: string;
-  body: any;
+  title: React.ReactNode | string;
+  body: React.ReactNode | string;
   variant?: string;
   alignItems?: string;
   justifyContent?: string;
