@@ -76,7 +76,7 @@ function Project() {
             (updatedBlockData?.timestamp ?? 0) * 1000
           ).toLocaleString("en", {
             year: "numeric",
-            month: "short",
+            month: "long",
             day: "numeric",
           });
 
@@ -84,7 +84,7 @@ function Project() {
             (createdBlockData?.timestamp ?? 0) * 1000
           ).toLocaleString("en", {
             year: "numeric",
-            month: "short",
+            month: "long",
             day: "numeric",
           });
 
