@@ -105,7 +105,7 @@ export default function Details({
         {project?.projectGithub && (
           <div className="flex justify-start items-center">
             <img
-              className="h-3 mr-2 mt-1"
+              className="h-4 mr-2 mt-1"
               src="./assets/github_logo.png"
               alt="Github Logo"
             />
@@ -123,7 +123,7 @@ export default function Details({
         {project?.projectGithub && (
           <div className="flex justify-start items-center">
             <img
-              className="h-3 mr-2 mt-1"
+              className="h-4 mr-2 mt-1"
               src="./assets/github_logo.png"
               alt="Github Logo"
             />
