@@ -279,17 +279,17 @@ export default function Form({
         })}
         {!formValidation.valid && preview && (
           <div
-            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm font-medium">
+            <strong className="text-sm text-gitcoin-pink-500 font-medium">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
 
-            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+            <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
               {formValidation.messages.map((o) => (
                 <li key={o}>{o}</li>
               ))}
