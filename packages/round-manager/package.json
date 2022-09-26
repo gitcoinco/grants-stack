@@ -60,7 +60,8 @@
     "format": "prettier . --write",
     "lint": "eslint ./src --cache",
     "lint:fix": "eslint ./src --fix --cache",
-    "prepare": "cd ../.. && husky install"
+    "prepare": "cd ../.. && husky install",
+    "lint-staged": "lint-staged"
   },
   "jest": {
     "transformIgnorePatterns": [
