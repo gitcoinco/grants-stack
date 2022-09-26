@@ -74,11 +74,19 @@ function Project() {
 
           const formattedUpdatedAtDate = new Date(
             (updatedBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString();
+          ).toLocaleString("en", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
 
           const formattedCreatedAtDate = new Date(
             (createdBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString();
+          ).toLocaleString("en", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
 
           setUpdatedAt(formattedUpdatedAtDate);
           setCreatedAt(formattedCreatedAtDate);
