@@ -9,6 +9,9 @@ function PageNotFound() {
           <p className="font-semibold text-red-700 uppercase text-center">
             404 Error
           </p>
+          <p className="mt-2 w-full text-center text-4xl font-medium text-black">
+            Uh oh! You might be a little lost.
+          </p>
           <p className="mt-2 w-full text-center">
             It looks like the page you are looking for doesn&apos;t exist.
             <br />
