@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import { render } from "@testing-library/react";
 import { wrapInContexts } from "./test-utils";
-import { ProgramContextType } from "./context/ProgramContext";
+import { ProgramContextType } from "./context/program/ReadProgramContext";
 
 type ExampleContextValueType = { value: string | null };
 const ExampleContext = createContext<ExampleContextValueType>({ value: null });
