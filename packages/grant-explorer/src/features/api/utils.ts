@@ -18,7 +18,7 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
       break;
-    };
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
