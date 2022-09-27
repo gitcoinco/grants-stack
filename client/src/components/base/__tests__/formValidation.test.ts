@@ -88,7 +88,6 @@ describe("Form Validation", () => {
       );
     } catch (e) {
       const error = e as ValidationError;
-      console.log(error);
       expect(error.message).toBe("Text Question is required");
       expect(error.name).toBe("ValidationError");
     }
