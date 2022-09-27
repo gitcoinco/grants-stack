@@ -46,7 +46,7 @@ describe("Form Validation", () => {
   it("Validates application form", async () => {
     const formInputs = {
       2: "Text Area Response",
-      4: "Recipient Address Response",
+      4: "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B",
       isSafe: "No",
     };
 

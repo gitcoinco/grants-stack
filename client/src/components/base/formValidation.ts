@@ -23,7 +23,18 @@ export async function validateApplication(
   formInputs: DynamicFormInputs
 ) {
   const schema = defaultInputs.reduce((acc, input) => {
-    const { id, required } = input;
+    const { id, required, type } = input;
+    if (type === "RECIPIENT") {
+      return {
+        ...acc,
+        [id]: string()
+          .matches(/^0x[a-fA-F0-9]{40}$/g, {
+            excludeEmptyString: true,
+            message: "Recipient Address must be a valid Ethereum address",
+          })
+          .required("Recipient Address is required"),
+      };
+    }
     if (id !== undefined) {
       return {
         ...acc,
