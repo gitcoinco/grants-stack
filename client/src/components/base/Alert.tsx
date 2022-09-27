@@ -52,10 +52,10 @@ function Alert({
         <AlertDescription>{body}</AlertDescription>
       </Box>
       <CloseButton
-        alignSelf="flex-end"
+        alignSelf="inherit"
         position="relative"
-        right={-1}
-        top={-1}
+        right={-5}
+        top={-10}
         onClick={onClose}
       />
     </ChakraAlert>
