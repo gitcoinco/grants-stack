@@ -61,24 +61,20 @@ export default function Details({
       <h4 className="mb-4 mt-14">{project?.title}</h4>
       <div className="grid grid-cols-2 gap-4 pb-6 mb-6">
         <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Created: {createdAt}</span>
-          </p>
+          <a
+            target="_blank"
+            href={project?.website}
+            className="flex items-center mr-6 text-primary-background"
+            rel="noreferrer"
+          >
+            <LinkIcon color={colors["secondary-text"]} />{" "}
+            <span className="ml-1">{project?.website}</span>
+          </a>
         </div>
-        <a
-          target="_blank"
-          href={project?.website}
-          className="flex items-center mr-6 text-primary-background"
-          rel="noreferrer"
-        >
-          <LinkIcon color={colors["secondary-text"]} />{" "}
-          <span className="ml-1">{project?.website}</span>
-        </a>
         <div>
           <p className="flex text-sm">
             <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Last Edited: {updatedAt}</span>
+            <span className="ml-1">Created on: {createdAt}</span>
           </p>
         </div>
         {project?.projectTwitter && (
@@ -99,10 +95,17 @@ export default function Details({
             {project?.credentials?.twitter && <Verified />}
           </div>
         )}
+
+        <div>
+          <p className="flex text-sm">
+            <Calendar color={colors["secondary-text"]} />
+            <span className="ml-1">Last Edited: {updatedAt}</span>
+          </p>
+        </div>
         {project?.projectGithub && (
           <div className="flex justify-start items-center">
             <img
-              className="h-3 mr-2 mt-1"
+              className="h-4 mr-2 mt-1"
               src="./assets/github_logo.png"
               alt="Github Logo"
             />
@@ -120,7 +123,7 @@ export default function Details({
         {project?.projectGithub && (
           <div className="flex justify-start items-center">
             <img
-              className="h-3 mr-2 mt-1"
+              className="h-4 mr-2 mt-1"
               src="./assets/github_logo.png"
               alt="Github Logo"
             />
