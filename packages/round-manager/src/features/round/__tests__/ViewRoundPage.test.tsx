@@ -7,15 +7,13 @@ import { GrantApplication, Round } from "../../api/types";
 import {
   makeGrantApplicationData,
   makeRoundData,
-  wrapWithProgramContext,
+  wrapWithReadProgramContext,
   wrapWithRoundContext,
   wrapWithApplicationContext,
-  makeProgramData,
 } from "../../../test-utils";
 import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
-import { useWallet } from "../../common/Auth";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/round");
@@ -31,8 +29,6 @@ Object.assign(navigator, {
     writeText: () => {},
   },
 });
-
-import { faker } from "@faker-js/faker";
 
 const mockRoundData: Round = makeRoundData();
 
@@ -81,7 +77,7 @@ describe("the view round page", () => {
 
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [],
             isLoading: false,
@@ -101,7 +97,7 @@ describe("the view round page", () => {
   it("should display access denied when wallet accessing is not round operator", () => {
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [{ ...mockRoundData, operatorWallets: [] }],
             isLoading: false,
@@ -119,7 +115,7 @@ describe("the view round page", () => {
   it("should display Copy to Clipboard", () => {
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
             isLoading: false,
@@ -134,7 +130,7 @@ describe("the view round page", () => {
   it("should display copy when there are no applicants for a given round", () => {
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
             isLoading: false,
@@ -165,7 +161,7 @@ describe("the view round page", () => {
 
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [mockRoundData],
             isLoading: false,
@@ -193,7 +189,7 @@ describe("the view round page", () => {
   it("should display loading spinner when round is loading", () => {
     render(
       wrapWithApplicationContext(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [],
             isLoading: true,

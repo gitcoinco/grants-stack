@@ -121,7 +121,7 @@ export const useRoundById = (roundId?: string) => {
   useEffect(() => {
     if (roundId) {
       const existingRound = context.state.data.find(
-        (round) => round.id === id
+        (round) => round.id === roundId
       );
 
       if (!existingRound) {

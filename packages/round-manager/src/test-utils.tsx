@@ -274,21 +274,21 @@ export const wrapWithApplicationContext = (
   </ApplicationContext.Provider>
 );
 
-export const wrapWithProgramContext = (
+export const wrapWithReadProgramContext = (
   ui: JSX.Element,
-  programStateOverrides: Partial<ProgramState> = {},
+  programStateOverrides: Partial<ReadProgramState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) => (
   <MemoryRouter>
-    <ProgramContext.Provider
+    <ReadProgramContext.Provider
       value={{
-        state: { ...initialProgramState, ...programStateOverrides },
+        state: { ...initialReadProgramState, ...programStateOverrides },
         dispatch,
       }}
     >
       {ui}
-    </ProgramContext.Provider>
+    </ReadProgramContext.Provider>
   </MemoryRouter>
 );
 

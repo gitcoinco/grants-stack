@@ -6,7 +6,7 @@ import { useWallet } from "../../common/Auth";
 import {
   makeProgramData,
   makeRoundData,
-  wrapWithProgramContext,
+  wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
@@ -49,7 +49,7 @@ describe("<ViewProgram />", () => {
 
   it("should display 404 when no program is found", () => {
     render(
-      wrapWithProgramContext(
+      wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram></ViewProgram>),
         { programs: [], isLoading: false }
       )
@@ -62,7 +62,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
 
     render(
-      wrapWithProgramContext(
+      wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
           isLoading: false,
@@ -75,7 +75,7 @@ describe("<ViewProgram />", () => {
 
   it("displays the program name", async () => {
     render(
-      wrapWithProgramContext(
+      wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
           isLoading: false,
@@ -101,7 +101,7 @@ describe("<ViewProgram />", () => {
     });
 
     render(
-      wrapWithProgramContext(
+      wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
           isLoading: false,
@@ -116,7 +116,7 @@ describe("<ViewProgram />", () => {
 
   it("displays a loading spinner if loading", () => {
     render(
-      wrapWithProgramContext(
+      wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
           isLoading: false,
@@ -131,7 +131,7 @@ describe("<ViewProgram />", () => {
   describe("when there are no rounds in the program", () => {
     it("displays introductory text on the page", async () => {
       render(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [],
             isLoading: false,
@@ -156,7 +156,7 @@ describe("<ViewProgram />", () => {
       const stubRound = makeRoundData({ ownedBy: stubProgram.id });
 
       render(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
             isLoading: false,
@@ -174,7 +174,7 @@ describe("<ViewProgram />", () => {
       const stubRound = makeRoundData({ ownedBy: stubProgram.id });
 
       render(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
             isLoading: false,
@@ -194,7 +194,7 @@ describe("<ViewProgram />", () => {
     it("displays round start and end dates", async () => {
       const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       render(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
             isLoading: false,
@@ -214,7 +214,7 @@ describe("<ViewProgram />", () => {
     it("displays create round link", async () => {
       const stubRound = makeRoundData({ ownedBy: stubProgram.id });
       render(
-        wrapWithProgramContext(
+        wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
             isLoading: false,
