@@ -9,7 +9,6 @@ import { RefreshIcon } from "@heroicons/react/outline";
 
 import { Button } from "../common/styles";
 import { useWallet } from "../common/Auth";
-import { useListRoundsQuery } from "../api/services/round";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import { abbreviateAddress } from "../api/utils";
@@ -20,26 +19,24 @@ import AccessDenied from "../common/AccessDenied";
 
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
+import { useRounds } from "../../context/RoundContext";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const { id } = useParams();
+  const { id: programId } = useParams();
 
-  const { address, provider } = useWallet();
+  const { address } = useWallet();
 
-  const { program: programToRender, isLoading } = useProgramById(id);
+  const { program: programToRender, isLoading } = useProgramById(programId);
 
   const {
     data: rounds,
-    isLoading: isRoundsLoading,
-    isSuccess: isRoundsFetched,
-  } = useListRoundsQuery({
-    address,
-    signerOrProvider: provider,
-    programId: id,
-  });
+    isLoading: isRoundLoading,
+    error,
+  } = useRounds(programId);
+  const isRoundsFetched = !isRoundLoading && !error;
 
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
@@ -220,7 +217,7 @@ export default function ViewProgram() {
                         {roundItems}
                       </div>
                     )}
-                    {isRoundsLoading && (
+                    {isRoundLoading && (
                       <Spinner text="We're fetching your Rounds." />
                     )}
                   </div>

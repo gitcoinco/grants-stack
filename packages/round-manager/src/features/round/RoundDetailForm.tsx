@@ -16,15 +16,22 @@ const ValidationSchema = yup.object().shape({
     name: yup
       .string()
       .required("This field is required.")
-      .min(8, "Round name must at least 8 characters."),
+      .min(8, "Round name must be at least 8 characters."),
   }),
   applicationsStartTime: yup.date().required("This field is required."),
+  applicationsEndTime: yup
+    .date()
+    .required("This field is required.")
+    .min(
+      yup.ref("applicationsStartTime"),
+      "Applications end date must be later than applications start date"
+    ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
     .min(
       yup.ref("applicationsStartTime"),
-      "Round start date must be later than application start date"
+      "Round start date must be later than applications start date"
     ),
   roundEndTime: yup
     .date()
@@ -72,19 +79,24 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
         <div className="mt-5 md:mt-0 md:col-span-2">
           <form
+            data-testid={"roundDetailForm"}
             onSubmit={handleSubmit(next)}
             className="shadow-sm text-grey-500"
           >
             <div className="pt-7 pb-10 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
-                  <label htmlFor="name" className="block text-xs font-medium">
+                  <label
+                    htmlFor="roundMetadata.name"
+                    className="block text-xs font-medium"
+                  >
                     Round Name
                   </label>
                   <Input
                     {...register("roundMetadata.name")}
                     $hasError={errors.roundMetadata?.name}
                     type="text"
+                    id={"roundMetadata.name"}
                   />
                   {errors.roundMetadata?.name && (
                     <p className="text-xs text-pink-500">
@@ -123,6 +135,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           {...field}
                           closeOnSelect
                           inputProps={{
+                            id: "applicationsStartTime",
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
@@ -174,6 +187,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           {...field}
                           closeOnSelect
                           inputProps={{
+                            id: "applicationsEndTime",
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
@@ -228,6 +242,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           {...field}
                           closeOnSelect
                           inputProps={{
+                            id: "roundStartTime",
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
@@ -276,6 +291,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           {...field}
                           closeOnSelect
                           inputProps={{
+                            id: "roundEndTime",
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",

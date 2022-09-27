@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { useWallet } from "../common/Auth";
-import { useListRoundsQuery } from "../api/services/round";
 import Navbar from "../common/Navbar";
 import {
   CalendarIcon,
@@ -19,6 +18,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import { useRoundById } from "../../context/RoundContext";
 import { Spinner } from "../common/Spinner";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { ApplicationStatus } from "../api/types";
@@ -28,22 +28,10 @@ export default function ViewRoundPage() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const { id } = useParams();
-  const { address, provider, chain } = useWallet();
+  const { address, chain } = useWallet();
 
-  const {
-    round,
-    isLoading: isRoundsLoading,
-    isSuccess: isRoundsFetched,
-  } = useListRoundsQuery(
-    { signerOrProvider: provider, roundId: id },
-    {
-      selectFromResult: ({ data, isLoading, isSuccess }) => ({
-        round: data?.find((round) => round.id === id),
-        isLoading,
-        isSuccess,
-      }),
-    }
-  );
+  const { round, isLoading: isRoundsLoading, error } = useRoundById(id);
+  const isRoundsFetched = !isRoundsLoading && !error;
 
   const { applications } = useApplicationByRoundId(id!);
 
