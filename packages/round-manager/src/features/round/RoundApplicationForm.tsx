@@ -233,12 +233,12 @@ export function RoundApplicationForm(props: {
             <hr />
             <div className="flex my-4">
               <span className="flex-1 text-sm">Project Logo</span>
-              <span className="text-xs text-violet-400">*Required</span>
+              <span className="text-xs text-violet-400">Optional</span>
             </div>
             <hr />
             <div className="flex my-4">
               <span className="flex-1 text-sm">Project Banner</span>
-              <span className="text-xs text-violet-400">*Required</span>
+              <span className="text-xs text-violet-400">Optional</span>
             </div>
             <hr />
             <div className="flex my-4">
