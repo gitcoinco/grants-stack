@@ -295,10 +295,11 @@ export default function Form({
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-
             <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li key={o}>{o}</li>
+                <li className="text-black" key={o}>
+                  {o}
+                </li>
               ))}
             </ul>
           </div>
