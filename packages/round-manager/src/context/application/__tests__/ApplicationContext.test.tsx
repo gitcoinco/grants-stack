@@ -5,17 +5,17 @@ import {
   useApplicationByRoundId,
 } from "../ApplicationContext";
 import { render, screen, waitFor } from "@testing-library/react";
-import { makeGrantApplicationData } from "../../test-utils";
-import { GrantApplication } from "../../features/api/types";
+import { makeGrantApplicationData } from "../../../test-utils";
+import { GrantApplication } from "../../../features/api/types";
 import {
   getApplicationById,
   getApplicationsByRoundId,
-} from "../../features/api/application";
+} from "../../../features/api/application";
 
 const mockWallet = { address: "0x0", provider: {} };
 
-jest.mock("../../features/api/application");
-jest.mock("../../features/common/Auth", () => ({
+jest.mock("../../../features/api/application");
+jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));
 jest.mock("wagmi");

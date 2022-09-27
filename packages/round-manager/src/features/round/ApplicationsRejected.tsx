@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useApplicationByRoundId } from "../../context/ApplicationContext";
+import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 
 import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import {

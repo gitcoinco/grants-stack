@@ -6,13 +6,13 @@ import * as yup from "yup";
 import { FormStepper as FS } from "../common/FormStepper";
 import { useCreateRoundMutation } from "../api/services/round";
 import { useSaveToIPFSMutation } from "../api/services/ipfs";
-import { Round } from "../api/types";
+import { ProgressStatus, Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Button, Input } from "../common/styles";
 import { generateApplicationSchema } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { PencilIcon, XIcon } from "@heroicons/react/solid";
-import ProgressModal, { ProgressStatus } from "../common/ProgressModal";
+import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 
@@ -157,28 +157,30 @@ export function RoundApplicationForm(props: {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
       status: isSavedToIPFS
-        ? ProgressStatus.COMPLETE
+        ? ProgressStatus.IS_SUCCESS
         : isIPFSError
-        ? ProgressStatus.ERROR
+        ? ProgressStatus.IS_ERROR
         : isSavingToIPFS
-        ? ProgressStatus.CURRENT
-        : ProgressStatus.UPCOMING,
+        ? ProgressStatus.IN_PROGRESS
+        : ProgressStatus.NOT_STARTED,
     },
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
       status: isSuccess
-        ? ProgressStatus.COMPLETE
+        ? ProgressStatus.IS_SUCCESS
         : isRoundError
-        ? ProgressStatus.ERROR
+        ? ProgressStatus.IS_ERROR
         : isLoading
-        ? ProgressStatus.CURRENT
-        : ProgressStatus.UPCOMING,
+        ? ProgressStatus.IN_PROGRESS
+        : ProgressStatus.NOT_STARTED,
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isSuccess ? ProgressStatus.CURRENT : ProgressStatus.UPCOMING,
+      status: isSuccess
+        ? ProgressStatus.IN_PROGRESS
+        : ProgressStatus.NOT_STARTED,
     },
   ];
 

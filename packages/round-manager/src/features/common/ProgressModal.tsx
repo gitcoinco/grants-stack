@@ -1,13 +1,7 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
-
-export enum ProgressStatus {
-  COMPLETE = "complete",
-  CURRENT = "current",
-  UPCOMING = "upcoming",
-  ERROR = "error",
-}
+import { ProgressStatus } from "../api/types";
 
 export type Step = {
   name: string;
@@ -85,7 +79,7 @@ export default function ProgressModal({
                           stepIdx !== props.steps.length - 1 && "pb-10"
                         }`}
                       >
-                        {step.status === ProgressStatus.COMPLETE ? (
+                        {step.status === ProgressStatus.IS_SUCCESS ? (
                           <ModalStep
                             step={step}
                             icon={
@@ -109,7 +103,7 @@ export default function ProgressModal({
                             descriptionColor={"text-grey-500"}
                             isLastStep={stepIdx === props.steps.length - 1}
                           />
-                        ) : step.status === ProgressStatus.CURRENT ? (
+                        ) : step.status === ProgressStatus.IN_PROGRESS ? (
                           <ModalStep
                             step={step}
                             icon={
@@ -129,7 +123,7 @@ export default function ProgressModal({
                             nameColor="text-violet-500"
                             isLastStep={stepIdx === props.steps.length - 1}
                           />
-                        ) : step.status === ProgressStatus.ERROR ? (
+                        ) : step.status === ProgressStatus.IS_ERROR ? (
                           <ModalStep
                             step={step}
                             icon={
@@ -149,7 +143,7 @@ export default function ProgressModal({
                             isLastStep={stepIdx === props.steps.length - 1}
                             nameColor="text-grey-500"
                           />
-                        ) : step.status === ProgressStatus.UPCOMING ? (
+                        ) : step.status === ProgressStatus.NOT_STARTED ? (
                           <ModalStep
                             step={step}
                             icon={

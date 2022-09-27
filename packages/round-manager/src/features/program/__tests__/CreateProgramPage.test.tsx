@@ -1,13 +1,16 @@
-import { act, fireEvent, screen } from "@testing-library/react";
-import { renderWrapped } from "../../../test-utils";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import CreateProgramPage from "../CreateProgramPage";
 import { useWallet } from "../../common/Auth";
+import { ProgressStatus } from "../../api/types";
+import { saveToIPFS } from "../../api/ipfs";
+import {
+  CreateProgramContext,
+  CreateProgramState,
+  initialCreateProgramState,
+} from "../../../context/program/CreateProgramContext";
+import { MemoryRouter } from "react-router-dom";
 
-import { useSaveToIPFSMutation } from "../../api/services/ipfs";
-import { useCreateProgramMutation } from "../../api/services/program";
-
-jest.mock("../../api/services/ipfs");
-jest.mock("../../api/services/program");
+jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -19,55 +22,30 @@ jest.mock("../../../constants", () => ({
 }));
 
 describe("<CreateProgramPage />", () => {
-  let saveToIPFSStub: jest.MockedFn<any>;
-  let createProgramStub: () => any;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
-    saveToIPFSStub = jest.fn().mockImplementation(() => ({
-      unwrap: async () => Promise.resolve("asdfdsf"),
-    }));
-    (useSaveToIPFSMutation as jest.Mock).mockReturnValue([
-      saveToIPFSStub,
-      {
-        isError: true,
-        isLoading: false,
-        isSuccess: false,
-      },
-    ]);
+    (saveToIPFS as jest.Mock).mockImplementation(() => {});
 
-    createProgramStub = () => ({
-      unwrap: async () => Promise.resolve("asdfdsf"),
-    });
-    (useCreateProgramMutation as jest.Mock).mockReturnValue([
-      createProgramStub,
-      {
-        isError: false,
-        isLoading: false,
-        isSuccess: false,
-      },
-    ]);
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockClear();
   });
 
   it("shows error modal when saving application meta data fails", async () => {
-    renderWrapped(<CreateProgramPage />);
-    const save = screen.getByTestId("save");
-    const programName = screen.getByTestId("program-name");
-    await act(() => {
-      fireEvent.change(programName, { target: { value: "Program A" } });
-      fireEvent.click(save);
+    renderWithContext(<CreateProgramPage />, {
+      IPFSCurrentStatus: ProgressStatus.IS_ERROR,
     });
 
     expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
   });
 
   it("choosing done closes the error modal", async () => {
-    renderWrapped(<CreateProgramPage />);
-    const save = screen.getByTestId("save");
-    const programName = screen.getByTestId("program-name");
-    await act(() => {
-      fireEvent.change(programName, { target: { value: "Program A" } });
-      fireEvent.click(save);
+    renderWithContext(<CreateProgramPage />, {
+      IPFSCurrentStatus: ProgressStatus.IS_ERROR,
     });
 
     const done = await screen.findByTestId("done");
@@ -79,7 +57,12 @@ describe("<CreateProgramPage />", () => {
   });
 
   it("choosing try again restarts the action and closes the error modal", async () => {
-    renderWrapped(<CreateProgramPage />);
+    const saveToIPFSStub = saveToIPFS as jest.Mock;
+    saveToIPFSStub.mockRejectedValue(new Error("Save to IPFS failed :("));
+
+    renderWithContext(<CreateProgramPage />, {
+      IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+    });
     const save = screen.getByTestId("save");
     const programName = screen.getByTestId("program-name");
     await act(() => {
@@ -100,36 +83,30 @@ describe("<CreateProgramPage />", () => {
   });
 
   describe("when saving application metadata succeeds but create program transaction fails", () => {
-    beforeEach(() => {
-      (useSaveToIPFSMutation as jest.Mock).mockReturnValue([
-        saveToIPFSStub,
-        {
-          isError: false,
-          isLoading: false,
-          isSuccess: true,
-        },
-      ]);
-
-      (useCreateProgramMutation as jest.Mock).mockReturnValue([
-        createProgramStub,
-        {
-          isError: true,
-          isLoading: false,
-          isSuccess: false,
-        },
-      ]);
-    });
-
-    it("shows error modal when create program transaction fails", async () => {
-      renderWrapped(<CreateProgramPage />);
-      const save = screen.getByTestId("save");
-      const programName = screen.getByTestId("program-name");
-      await act(() => {
-        fireEvent.change(programName, { target: { value: "Program A" } });
-        fireEvent.click(save);
+    it("shows error modal when program contract deployment fails", async () => {
+      renderWithContext(<CreateProgramPage />, {
+        contractDeploymentStatus: ProgressStatus.IS_ERROR,
       });
-
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
   });
 });
+
+export const renderWithContext = (
+  ui: JSX.Element,
+  programStateOverrides: Partial<CreateProgramState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <CreateProgramContext.Provider
+        value={{
+          state: { ...initialCreateProgramState, ...programStateOverrides },
+          dispatch,
+        }}
+      >
+        {ui}
+      </CreateProgramContext.Provider>
+    </MemoryRouter>
+  );

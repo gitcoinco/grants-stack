@@ -24,8 +24,9 @@ import ViewRoundPage from "./features/round/ViewRoundPage";
 import ViewApplication from "./features/round/ViewApplicationPage";
 import NotFound from "./features/common/NotFoundPage";
 import AccessDenied from "./features/common/AccessDenied";
-import { ProgramProvider } from "./context/ProgramContext";
-import { ApplicationProvider } from "./context/ApplicationContext";
+import { ReadProgramProvider } from "./context/program/ReadProgramContext";
+import { ApplicationProvider } from "./context/application/ApplicationContext";
+import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 
 // Initialize datadog
 initDatadog();
@@ -47,9 +48,9 @@ root.render(
                 <Route
                   path="/"
                   element={
-                    <ProgramProvider>
+                    <ReadProgramProvider>
                       <Program />
-                    </ProgramProvider>
+                    </ReadProgramProvider>
                   }
                 />
 
@@ -57,9 +58,9 @@ root.render(
                 <Route
                   path="/round/create"
                   element={
-                    <ProgramProvider>
+                    <ReadProgramProvider>
                       <CreateRound />
-                    </ProgramProvider>
+                    </ReadProgramProvider>
                   }
                 />
                 <Route
@@ -80,13 +81,20 @@ root.render(
                 />
 
                 {/* Program Routes */}
-                <Route path="/program/create" element={<CreateProgram />} />
+                <Route
+                  path="/program/create"
+                  element={
+                    <CreateProgramProvider>
+                      <CreateProgram />
+                    </CreateProgramProvider>
+                  }
+                />
                 <Route
                   path="/program/:id"
                   element={
-                    <ProgramProvider>
+                    <ReadProgramProvider>
                       <ViewProgram />
-                    </ProgramProvider>
+                    </ReadProgramProvider>
                   }
                 />
 

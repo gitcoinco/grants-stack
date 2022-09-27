@@ -20,7 +20,7 @@ import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import { Spinner } from "../common/Spinner";
-import { useApplicationByRoundId } from "../../context/ApplicationContext";
+import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { ApplicationStatus } from "../api/types";
 
 export default function ViewRoundPage() {

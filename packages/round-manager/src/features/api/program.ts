@@ -1,6 +1,7 @@
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { Program } from "./types";
-import { Web3Provider } from "@ethersproject/providers";
+import { MetadataPointer, Program, Web3Instance } from "./types";
+import { programFactoryContract } from "./contracts";
+import { ethers } from "ethers";
 
 /**
  * Fetch a list of programs
@@ -10,7 +11,7 @@ import { Web3Provider } from "@ethersproject/providers";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: Web3Provider
+  signerOrProvider: Web3Instance["provider"]
 ): Promise<Program[]> {
   try {
     // fetch chain id
@@ -68,7 +69,7 @@ export async function listPrograms(
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
   programId: string,
-  signerOrProvider: any
+  signerOrProvider: Web3Instance["provider"]
 ): Promise<Program> {
   try {
     // fetch chain id
@@ -114,4 +115,66 @@ export async function getProgramById(
     console.log("error", err);
     throw Error("Unable to fetch program");
   }
+}
+
+interface DeployProgramContractProps {
+  program: {
+    store: MetadataPointer;
+    operatorWallets: string[];
+  };
+  signerOrProvider: Web3Instance["provider"];
+}
+
+export async function deployProgramContract({
+  program: { store: metadata, operatorWallets },
+  signerOrProvider,
+}: DeployProgramContractProps) {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+    const _programFactoryContract = programFactoryContract(chainId);
+    const programFactory = new ethers.Contract(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _programFactoryContract.address!,
+      _programFactoryContract.abi,
+      signerOrProvider
+    );
+
+    operatorWallets = operatorWallets.filter((e) => e !== "");
+
+    const encodedParameters = encodeInputParameters(metadata, operatorWallets);
+
+    // Deploy a new Program contract
+    const tx = await programFactory.create(encodedParameters);
+    const receipt = await tx.wait();
+    let programAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "ProgramCreated"
+      );
+      if (event && event.args) {
+        programAddress = event.args.programContractAddress; // program contract address from the event
+      }
+    }
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Program address: ", programAddress);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (err) {
+    console.log("error", err);
+    return { error: "Unable to create program" };
+  }
+}
+
+function encodeInputParameters(
+  metadata: MetadataPointer,
+  operatorWallets: string[]
+) {
+  return ethers.utils.defaultAbiCoder.encode(
+    ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
+    [metadata, operatorWallets.slice(0, 1), operatorWallets]
+  );
 }

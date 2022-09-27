@@ -5,13 +5,14 @@ import {
   MetadataPointer,
   Project,
   ProjectStatus,
+  Web3Instance,
 } from "./types";
 import { projectRegistryContract } from "./contracts";
 import { Contract } from "ethers";
 
 export const getApplicationById = async (
   id: string,
-  signerOrProvider: any
+  signerOrProvider: Web3Instance["provider"]
 ): Promise<GrantApplication> => {
   try {
     const { chainId } = await signerOrProvider.getNetwork();

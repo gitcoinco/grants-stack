@@ -20,7 +20,7 @@ import {
 import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
-import { usePrograms } from "../../context/ProgramContext";
+import { usePrograms } from "../../context/program/ReadProgramContext";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element;
