@@ -46,7 +46,7 @@ describe("Form Validation", () => {
   it("Validates application form", async () => {
     const formInputs = {
       2: "Text Area Response",
-      4: "Recipient Address Response",
+      4: "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B",
       isSafe: "No",
     };
 
@@ -88,6 +88,7 @@ describe("Form Validation", () => {
       );
     } catch (e) {
       const error = e as ValidationError;
+      console.log(error);
       expect(error.message).toBe("Text Question is required");
       expect(error.name).toBe("ValidationError");
     }
