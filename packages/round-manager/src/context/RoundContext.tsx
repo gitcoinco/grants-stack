@@ -128,7 +128,7 @@ export const useRoundById = (roundId?: string) => {
         fetchRoundById(context.dispatch, provider, roundId);
       }
     }
-  }, [address, provider, roundId, context.dispatch]);
+  }, [address, provider, roundId, context.dispatch, context.state.data]);
 
   return {
     round: context.state.data.find((round) => round.id === roundId),
