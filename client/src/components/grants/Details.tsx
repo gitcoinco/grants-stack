@@ -50,7 +50,7 @@ export default function Details({
 
   // ToDo: make the round name dynamic
   const successfullSubmissionTitle = (
-    <p className="text-green-800 text-xl">
+    <p className="text-gitcoin-teal-500 text-xl">
       Thank you for applying to Optimism Grant Round!
     </p>
   );

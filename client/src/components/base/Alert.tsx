@@ -39,7 +39,7 @@ function Alert({
 
   return isVisible ? (
     <ChakraAlert
-      className="mb-2 rounded-lg"
+      className="mb-2 bg-gitcoin-teal-100 rounded-lg"
       status={status}
       variant={variant}
       alignItems={alignItems}

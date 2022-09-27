@@ -21,6 +21,8 @@ module.exports = {
         "gitcoin-yellow": "#FFF8DB",
         "gitcoin-pink-500": "#D44D6E",
         "gitcoin-pink-100": "#FDDEE4",
+        "gitcoin-teal-100": "#E6FFF9",
+        "gitcoin-teal-500": "#11BC92",
       }
     }
   },
