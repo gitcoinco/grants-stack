@@ -48,6 +48,7 @@ export default function Form({
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
+  const [showError, setShowError] = useState(false);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -120,7 +121,13 @@ export default function Form({
 
   const handlePreviewClick = async () => {
     await validate();
-    setPreview(true);
+    if (formValidation.valid) {
+      setPreview(true);
+      setShowError(false);
+    } else {
+      setPreview(false);
+      setShowError(true);
+    }
   };
 
   const handleSubmitApplication = async () => {
@@ -277,7 +284,7 @@ export default function Form({
               );
           }
         })}
-        {!formValidation.valid && preview && (
+        {!formValidation.valid && showError && formValidation.errorCount > 0 && (
           <div
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
