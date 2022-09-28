@@ -215,7 +215,7 @@ export default function Form({
                   </div>
                   <TextInputAddress
                     key={input.id}
-                    label={input.question ?? "Payout Wallet Address"}
+                    label="Payout Wallet Address"
                     placeholder={input.info}
                     name={`${input.id}`}
                     tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
