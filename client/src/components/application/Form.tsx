@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
-import { ValidationError } from "yup";
 import { Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { ValidationError } from "yup";
+import { submitApplication } from "../../actions/roundApplication";
+import { RootState } from "../../reducers";
 import {
   ChangeHandlers,
-  RoundApplicationMetadata,
-  ProjectOption,
-  Round,
   DynamicFormInputs,
   Metadata,
+  ProjectOption,
+  Round,
+  RoundApplicationMetadata,
 } from "../../types";
+import { isValidAddress } from "../../utils/wallet";
+import Button, { ButtonVariants } from "../base/Button";
+import { validateApplication } from "../base/formValidation";
 import {
   Select,
   TextArea,
   TextInput,
   TextInputAddress,
 } from "../grants/inputs";
-import { validateApplication } from "../base/formValidation";
 import Radio from "../grants/Radio";
-import Button, { ButtonVariants } from "../base/Button";
-import { RootState } from "../../reducers";
-import { submitApplication } from "../../actions/roundApplication";
-import { isValidAddress } from "../../utils/wallet";
 import Toggle from "../grants/Toggle";
 
 const validation = {
@@ -48,6 +48,7 @@ export default function Form({
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
+  const [showError, setShowError] = useState(false);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -105,6 +106,7 @@ export default function Form({
         valid: true,
         errorCount: 0,
       });
+      setDisableSubmit(false);
     } catch (e) {
       const error = e as ValidationError;
       console.log(error);
@@ -119,7 +121,13 @@ export default function Form({
 
   const handlePreviewClick = async () => {
     await validate();
-    setPreview(true);
+    if (formValidation.valid) {
+      setPreview(true);
+      setShowError(false);
+    } else {
+      setPreview(false);
+      setShowError(true);
+    }
   };
 
   const handleSubmitApplication = async () => {
@@ -148,24 +156,30 @@ export default function Form({
             case "PROJECT":
               return (
                 <>
-                  <Select
-                    key={input.id}
-                    name={`${input.id}`}
-                    label={input.question}
-                    options={projectOptions ?? []}
-                    disabled={preview}
-                    changeHandler={handleProjectInput}
-                    required={input.required ?? true}
-                  />
-                  <Toggle
-                    projectMetadata={props.selectedProjectMetadata}
-                    showProjectDetails={showProjectDetails}
-                  />
-                  <p className="text-xs mt-4 mb-1">
-                    To complete your application to {round.roundMetadata.name},
-                    a little more info is needed:
-                  </p>
-                  <hr className="w-1/2" />
+                  <div className="mt-6 w-full sm:w-1/2 relative">
+                    <Select
+                      key={input.id}
+                      name={`${input.id}`}
+                      label={input.question}
+                      options={projectOptions ?? []}
+                      disabled={preview}
+                      changeHandler={handleProjectInput}
+                      required={input.required ?? true}
+                    />
+                  </div>
+                  <div>
+                    <Toggle
+                      projectMetadata={props.selectedProjectMetadata}
+                      showProjectDetails={showProjectDetails}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
+                      To complete your application to {round.roundMetadata.name}
+                      , a little more info is needed:
+                    </p>
+                    <hr className="w-1/2" />
+                  </div>
                 </>
               );
             case "TEXT":
@@ -270,21 +284,22 @@ export default function Form({
               );
           }
         })}
-        {!formValidation.valid && preview && (
+        {!formValidation.valid && showError && formValidation.errorCount > 0 && (
           <div
-            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm font-medium">
+            <strong className="text-sm text-gitcoin-pink-500 font-medium">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-
-            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+            <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li key={o}>{o}</li>
+                <li className="text-black" key={o}>
+                  {o}
+                </li>
               ))}
             </ul>
           </div>

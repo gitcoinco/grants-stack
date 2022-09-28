@@ -1,3 +1,4 @@
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
@@ -19,15 +20,50 @@ export const buildRound = (round: any): Round => ({
   ...round,
 });
 
+export const buildVerifiableCredential = (
+  type: string
+): VerifiableCredential => ({
+  "@context": ["https://www.w3.org/2018/credentials/v1"],
+  type: ["VerifiableCredential"],
+  credentialSubject: {
+    id: "did:pkh:eip155:1:subject",
+    provider: `ClearText${type}#twitter-username-1`,
+    hash: "v0.0.0:hash",
+    "@context": [
+      {
+        hash: "https://schema.org/Text",
+        provider: "https://schema.org/Text",
+      },
+    ],
+  },
+  issuer: "did:key:key-1",
+  issuanceDate: "2022-09-16T12:10:59.019Z",
+  proof: {
+    type: "Ed25519Signature2018",
+    proofPurpose: "assertionMethod",
+    verificationMethod: "did:key:key-1#key-1",
+    created: "2022-09-16T12:10:59.020Z",
+    jws: "test-jws",
+  },
+  expirationDate: "2022-12-15T12:10:59.019Z",
+});
+
 export const buildProjectMetadata = (metadata: any): Metadata => ({
   protocol: 1,
   pointer: "0x7878",
-  id: 1,
-  title: "title",
+  id: 2,
+  title: "title 1",
   description: "description",
-  roadmap: "roadmap",
-  challenges: "challenges",
   website: "http://example.com",
+  bannerImg: "banner-1",
+  logoImg: "logo-1",
+  userGithub: "user-github-1",
+  projectGithub: "project-github-1",
+  projectTwitter: "project-twitter-1",
+  credentials: {
+    github: buildVerifiableCredential("Github"),
+    twitter: buildVerifiableCredential("Twitter"),
+  },
   ...metadata,
 });
 

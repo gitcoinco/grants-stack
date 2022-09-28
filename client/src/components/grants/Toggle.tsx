@@ -1,11 +1,12 @@
 import {
   Accordion,
-  AccordionItem,
   AccordionButton,
-  Box,
+  AccordionIcon,
+  AccordionItem,
   AccordionPanel,
+  Box,
 } from "@chakra-ui/react";
-import { Metadata, FormInputs, Project } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 import ToggleDetails from "./ToggleDetails";
 
 export default function Toggle({
@@ -22,9 +23,10 @@ export default function Toggle({
           <AccordionItem>
             <h2>
               <AccordionButton>
-                <Box flex="1" textAlign="left">
+                <Box flex="1" textAlign="left" className="text-sm">
                   Project Details
                 </Box>
+                <AccordionIcon />
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>

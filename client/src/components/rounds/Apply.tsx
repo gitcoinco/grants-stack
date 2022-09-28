@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { roundPath } from "../../routes";
-import { Status as RoundStatus } from "../../reducers/rounds";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
+import { Status as RoundStatus } from "../../reducers/rounds";
+import { roundPath } from "../../routes";
+import colors from "../../styles/colors";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
-import colors from "../../styles/colors";
-import useLocalStorage from "../../hooks/useLocalStorage";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -122,13 +122,13 @@ function Apply() {
           <p>{props.round.roundMetadata.name}</p>
           <p className="font-semibold mt-4">Application Date</p>
           <p>
-            {formatDate(props.round.applicationsStartTime)} -{" "}
-            {formatDate(props.round.applicationsEndTime)}
+            {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
+            {formatDate(props.round.applicationsEndTime * 1000)}
           </p>
           <p className="font-semibold mt-4">Round Date</p>
           <p>
-            {formatDate(props.round.roundStartTime)} -{" "}
-            {formatDate(props.round.roundEndTime)}
+            {formatDate(props.round.roundStartTime * 1000)} -{" "}
+            {formatDate(props.round.roundEndTime * 1000)}
           </p>
         </div>
         <div className="w-full md:w-2/3">

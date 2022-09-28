@@ -34,8 +34,6 @@ describe("grantsMetaData reducer", () => {
       title: "Title",
       description: "Description",
       website: "www.grant.com",
-      roadmap: "We are making things happen",
-      challenges: "Project Challenges",
     };
     store.dispatch(
       grantMetadataFetched({
