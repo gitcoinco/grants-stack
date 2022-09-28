@@ -151,12 +151,7 @@ function ProjectsList() {
           <p className="mb-4 ">
             Congratulations on creating your project on Grant Hub! Continue to
             apply for{" "}
-            {
-              props.round // || roundInfo.round.metadata === null
-                ? "the round"
-                : props.round!.roundMetadata.name // .round.metadata?.name
-            }
-            .
+            {props.round ? props.round!.roundMetadata.name : "the round"}.
           </p>
         </>
       </CallbackModal>
