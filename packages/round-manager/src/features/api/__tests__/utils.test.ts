@@ -333,21 +333,6 @@ describe("graphql_fetch", () => {
     );
   });
 
-  it("should fetch data from the correct graphql endpoint for optimism-kovan network", async () => {
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        data: {},
-      })
-    );
-
-    await graphql_fetch(`programs { id }`, ChainId.OPTIMISM_KOVAN_CHAIN_ID);
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`,
-      expect.anything()
-    );
-  });
-
   it("should fetch data from the correct graphql endpoint for optimism network", async () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({

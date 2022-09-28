@@ -14,7 +14,6 @@ The following sections document the hosted services where the subgraph is deploy
 | Network        | GITHUB_USER/SUBGRAPH_NAME                    | Playground                                                                                | Query                                                                                 |
 |----------------|----------------------------------------------|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
 | goerli         | thelostone-mc/program-factory-v0             | https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0             | https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0              |
-| optimism-kovan | thelostone-mc/grants-round-optimism-kovan    | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-kovan    | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-kovan     |
 | optimism       | thelostone-mc/grants-round-optimism-mainnet  | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-mainnet  | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-mainnet   |
 
 ## Directory Structure
@@ -68,7 +67,6 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 | network        |
 |----------------|
 | goerli         |
-| optimism-kovan |
 | optimism       |
 
 

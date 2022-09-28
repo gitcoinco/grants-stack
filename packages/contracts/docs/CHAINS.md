@@ -26,16 +26,3 @@ This document lists all the addresses of the contracts that have been deployed o
 | ProgramFactory        | 0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E |
 | ProgramImplementation | 0xED42e0f4391Fa24E579B16191F6Eb41f934c3B1c |
 | Program               | 0x378cEB3dEb7a80ec1579bfd61EE1EFB76Fc63025 |
-
-
-## Kovan Optimism Network
-
-| Contract              | Address                                    |
-|-----------------------|--------------------------------------------|
-| BulkVotingStrategy    | 0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c |
-| RoundFactory          | 0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF |
-| RoundImplementation   | 0x5C46ae4a950E0e0280006403B9e517462FD16dAc |
-| Round                 | 0x3EE29458f2121E2C20421cd188F2CAbd99347d54 |
-| ProgramFactory        | 0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011 |
-| ProgramImplementation | 0x6D86bDA37651F486bDac067c9c20eD512E8f93B3 |
-| Program               | 0x007c9A1a6F239923E4f7C0e30C5DE4c2100B22D6 |

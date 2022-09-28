@@ -3,7 +3,6 @@ import { IPFSObject } from "./types"
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
-  OPTIMISM_KOVAN_CHAIN_ID = 69,
 }
 
 /**
@@ -18,10 +17,6 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-      break;
-    }
-    case ChainId.OPTIMISM_KOVAN_CHAIN_ID: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_KOVAN_API}`;
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
