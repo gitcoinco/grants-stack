@@ -15,7 +15,6 @@ enum ActionType {
   FINISH_LOADING = "FINISH_LOADING",
   SET_PROGRAMS = "SET_PROGRAMS",
   SET_ERROR_LIST_PROGRAMS = "SET_ERROR_LIST_PROGRAMS",
-  ADD_PROGRAM = "ADD_PROGRAM",
   SET_ERROR_GET_PROGRAM = "SET_ERROR_GET_PROGRAM",
 }
 
@@ -60,7 +59,7 @@ const fetchProgramsById = async (
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getProgramById(programId, walletProvider)
     .then((program) =>
-      dispatch({ type: ActionType.ADD_PROGRAM, payload: program })
+      dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] })
     )
     .catch((error) =>
       dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error })
@@ -82,12 +81,6 @@ const programReducer = (state: ReadProgramState, action: Action) => {
       };
     case ActionType.SET_ERROR_LIST_PROGRAMS:
       return { ...state, programs: [], listProgramsError: action.payload };
-    case ActionType.ADD_PROGRAM:
-      return {
-        ...state,
-        programs: state.programs.concat(action.payload),
-        getProgramByIdError: undefined,
-      };
     case ActionType.SET_ERROR_GET_PROGRAM:
       return { ...state, getProgramByIdError: action.payload };
   }

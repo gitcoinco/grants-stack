@@ -1,5 +1,4 @@
 import {
-  AnswerBlock,
   GrantApplication,
   Program,
   ProjectCredentials,
@@ -16,8 +15,8 @@ import history from "./history";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import {
   initialReadProgramState,
-  ReadProgramState,
   ReadProgramContext,
+  ReadProgramState,
 } from "./context/program/ReadProgramContext";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -68,57 +67,46 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   };
 };
 
-export type ApplicationAndCredentialRelatedData = {
+type ApplicationCredentialData = {
   credentialsProviderKey: string;
   credentialSubjectProviderString: string;
-  grantApplicationProviderAnswer: {
-    question: string;
-    answer: string;
-  };
 };
 
-export const makeApplicationAndCredentialRelatedDataForGithub = (
-  githubOrgName = "gitcoinco"
-): ApplicationAndCredentialRelatedData => ({
-  credentialsProviderKey: "github",
-  credentialSubjectProviderString: `ClearTextGithubOrg#${githubOrgName}#6887938`,
-  grantApplicationProviderAnswer: {
-    question: "Github Organization",
-    answer: `${githubOrgName}`,
-  },
-});
-
-export const makeApplicationAndCredentialRelatedDataForTwitter = (
-  twitterHandle = "twitter"
-): ApplicationAndCredentialRelatedData => ({
-  credentialsProviderKey: "twitter",
-  credentialSubjectProviderString: `ClearTextTwitter#${twitterHandle}`,
-  grantApplicationProviderAnswer: {
-    question: "Twitter",
-    answer: `${twitterHandle}`,
-  },
-});
-
-interface MakeGrantApplicationDataParams {
-  credentialProviderAndAnswersTestData?: ApplicationAndCredentialRelatedData[];
+export interface MakeGrantApplicationDataParams {
   ownerAddress?: string;
   applicationIdOverride?: string;
   roundIdOverride?: string;
+  projectGithubOverride?: string;
+  projectTwitterOverride?: string;
 }
 
 export const makeGrantApplicationData = (
   overrides?: MakeGrantApplicationDataParams
 ): GrantApplication => {
   const {
-    credentialProviderAndAnswersTestData,
     ownerAddress,
     applicationIdOverride,
     roundIdOverride,
+    projectGithubOverride,
+    projectTwitterOverride,
   } = {
-    credentialProviderAndAnswersTestData: [],
     ownerAddress: faker.finance.ethereumAddress(),
     ...overrides,
   };
+
+  const credentialInputData: ApplicationCredentialData[] = [];
+  if (projectGithubOverride) {
+    credentialInputData.push({
+      credentialsProviderKey: "github",
+      credentialSubjectProviderString: `ClearTextGithubOrg#${projectGithubOverride}#6887938`,
+    });
+  }
+  if (projectTwitterOverride) {
+    credentialInputData.push({
+      credentialsProviderKey: "twitter",
+      credentialSubjectProviderString: `ClearTextTwitter#${projectTwitterOverride}`,
+    });
+  }
 
   return {
     id:
@@ -144,12 +132,10 @@ export const makeGrantApplicationData = (
         protocol: randomInt(1, 10),
         pointer: faker.random.alpha({ count: 59, casing: "lower" }),
       },
-      credentials: makeProjectCredentialsFromTestData(
-        credentialProviderAndAnswersTestData,
-        ownerAddress
-      ),
+      projectGithub: projectGithubOverride ?? undefined,
+      projectTwitter: projectTwitterOverride ?? undefined,
+      credentials: makeProjectCredentials(credentialInputData, ownerAddress),
     },
-    answers: makeAnswersFromTestData(credentialProviderAndAnswersTestData),
     projectsMetaPtr: {
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),
@@ -160,15 +146,12 @@ export const makeGrantApplicationData = (
   };
 };
 
-export const makeProjectCredentialsFromTestData = (
-  credentialProviderAndAnswersTestData: ApplicationAndCredentialRelatedData[],
+export const makeProjectCredentials = (
+  credentialTypesToGenerate: ApplicationCredentialData[],
   credentialSubjectAddress: string = faker.finance.ethereumAddress()
 ): ProjectCredentials => {
-  return credentialProviderAndAnswersTestData.reduce(
-    (
-      aggregator: ProjectCredentials,
-      it: ApplicationAndCredentialRelatedData
-    ) => {
+  return credentialTypesToGenerate.reduce(
+    (aggregator: ProjectCredentials, it: ApplicationCredentialData) => {
       aggregator[it.credentialsProviderKey] = {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
         type: ["VerifiableCredential"],
@@ -194,14 +177,6 @@ export const makeProjectCredentialsFromTestData = (
     {}
   );
 };
-
-export const makeAnswersFromTestData = (
-  credentialProviderAndAnswersTestData: ApplicationAndCredentialRelatedData[]
-): AnswerBlock[] =>
-  credentialProviderAndAnswersTestData.map((it, index) => ({
-    ...it.grantApplicationProviderAnswer,
-    questionId: index,
-  }));
 
 export const renderWrapped = (ui: JSX.Element) => {
   render(
