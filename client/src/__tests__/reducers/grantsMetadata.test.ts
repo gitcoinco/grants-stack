@@ -1,4 +1,4 @@
-import { grantsMetadataReducer, Status } from "../../reducers/grantsMetadata";
+import { Status } from "../../reducers/grantsMetadata";
 import setupStore from "../../store";
 import { buildProjectMetadata } from "../../utils/test_utils";
 
@@ -31,7 +31,7 @@ describe("grantsMetadataReducer", () => {
           metadata: metadata2,
           status: Status.Loaded,
           error: undefined,
-        }
+        },
       });
 
       store.dispatch({
