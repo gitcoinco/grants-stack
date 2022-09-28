@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
-import { fetchGrantData } from "../../actions/grantsMetadata";
 import { metadataSaved, metadataImageSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
-import {
-  ChangeHandlers,
-  // FormInputs,
-  ProjectFormStatus,
-  Metadata,
-} from "../../types";
+import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import Button, { ButtonVariants } from "./Button";
 import ExitModal from "./ExitModal";
@@ -23,10 +17,8 @@ const validation = {
 };
 
 function ProjectForm({
-  projectID,
   setVerifying,
 }: {
-  projectID?: string;
   setVerifying: (verifying: ProjectFormStatus) => void;
 }) {
   const dispatch = useDispatch();
@@ -44,8 +36,8 @@ function ProjectForm({
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
 
-  const [logoImg, setLogoImg] = useState<Blob | undefined>();
-  const [bannerImg, setBannerImg] = useState<Blob | undefined>();
+  const [, setLogoImg] = useState<Blob | undefined>();
+  const [, setBannerImg] = useState<Blob | undefined>();
 
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;

@@ -32,7 +32,6 @@ export default function ImageInput({
   const fileInput = useRef<HTMLInputElement>(null);
   const [imgSrc, setImgSrc] = useState<string | undefined>();
   const [showCrop, setShowCrop] = useState(false);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | undefined>();
   const [validation, setValidation] = useState({
     error: false,
     msg: "",
@@ -113,22 +112,19 @@ export default function ImageInput({
     }
   };
 
-  const [currentImg, setCurrentImg] = useState<string | undefined>(undefined);
-
   useEffect(() => {
     if (imageData === undefined && imageHash !== undefined) {
-      const i = loadCurrentImg(imageHash);
-      setCurrentImg(i);
+      loadCurrentImg(imageHash);
     }
-  });
+  }, [imageData, imageHash]);
 
   useEffect(() => {
     if (imageData !== undefined) {
       const fr = new FileReader();
       fr.onload = () => {
         setImgSrc(fr.result as string);
-      }
-      fr.readAsDataURL(imageData)
+      };
+      fr.readAsDataURL(imageData);
     } else {
       setImgSrc(undefined);
     }
@@ -169,11 +165,13 @@ export default function ImageInput({
             </button>
           )}
           <div className="w-1/3">
-            {imgSrc && <><img
-              className={`max-h-28 ${circle && "rounded-full"}`}
-              src={imgSrc}
-              alt="Project Logo Preview"
-          /></>}
+            {imgSrc && (
+              <img
+                className={`max-h-28 ${circle && "rounded-full"}`}
+                src={imgSrc}
+                alt="Project Logo Preview"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -198,7 +196,6 @@ export default function ImageInput({
         dimensions={dimensions}
         onClose={() => setShowCrop(false)}
         saveCrop={(imgUrl) => {
-          setCanvas(imgUrl);
           imgUrl.toBlob((blob) => blob && imgHandler(blob));
         }}
       />

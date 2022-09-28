@@ -12,7 +12,7 @@ import ExitModal from "../base/ExitModal";
 import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
-import { metadataSaved, metadataImageSaved, credentialsSaved} from "../../actions/projectForm";
+import { metadataSaved, credentialsSaved } from "../../actions/projectForm";
 
 function EditProject() {
   const params = useParams();
@@ -81,7 +81,6 @@ function EditProject() {
         return (
           <ProjectForm
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
-            projectID={projectID}
           />
         );
       case ProjectFormStatus.Verification:

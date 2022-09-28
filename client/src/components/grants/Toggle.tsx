@@ -6,7 +6,7 @@ import {
   AccordionPanel,
   Box,
 } from "@chakra-ui/react";
-import { FormInputs, Metadata, Project } from "../../types";
+import { Metadata, Project } from "../../types";
 import ToggleDetails from "./ToggleDetails";
 
 export default function Toggle({
