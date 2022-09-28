@@ -1,16 +1,16 @@
 import { Dispatch } from "redux";
 // import { RootState } from "../reducers";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import RoundABI from "../contracts/abis/Round.json";
 import { global } from "../global";
-import {
-  Round,
-  MetaPtr,
-  RoundMetadata,
-  RoundApplicationMetadata,
-} from "../types";
-import PinataClient from "../services/pinata";
 import { Status } from "../reducers/rounds";
+import PinataClient from "../services/pinata";
+import {
+  MetaPtr,
+  Round,
+  RoundApplicationMetadata,
+  RoundMetadata,
+} from "../types";
 
 const projectQuestion = {
   question: "Select a project you would like to apply for funding:",
