@@ -6,7 +6,8 @@ import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { NewGrant, Status } from "../reducers/newGrant";
-import { fetchGrantData } from "./grantsMetadata";
+import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
+import { unloadProjects } from "./projects";
 import PinataClient from "../services/pinata";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
@@ -125,10 +126,14 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.TransactionInitiated, undefined));
     const txStatus = await projectTx.wait();
+
+    // unload projects before changing the status
+    // so that if the component redirects to the dashboard
+    // we are sure to reload the updated or created project
+    dispatch(unloadAllMetadata());
+    dispatch(unloadProjects());
+
     if (txStatus.status) {
       dispatch(grantStatus(Status.Completed, undefined));
-      if (grantId !== undefined) {
-        dispatch<any>(fetchGrantData(Number(grantId)));
-      }
     }
   };
