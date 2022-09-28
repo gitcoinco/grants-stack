@@ -3,7 +3,7 @@ import { getProjectImage, ImgTypes } from "../../utils/components";
 
 function Section({ title, text }: { title: string; text: string | undefined }) {
   return (
-    <div className="flex flex-col items-left justify-left m-2">
+    <div className="flex flex-col items-left justify-left mb-4">
       <label htmlFor={text} className="text-sm">
         {title}
       </label>
@@ -33,7 +33,7 @@ export default function ToggleDetails({
         text={project?.projectGithub}
       />
       <div className="w-full mt-2">
-        <div className="flex flex-col items-left justify-left m-2">
+        <div className="flex flex-col items-left justify-left mt-4 mb-1">
           <span className="text-sm">Project Banner</span>
         </div>
         <img
@@ -47,7 +47,7 @@ export default function ToggleDetails({
         />
       </div>
       <div>
-        <div className="flex flex-col items-left justify-left m-2">
+        <div className="flex flex-col items-left justify-left mt-4 mb-1">
           <span className="text-sm">Project Logo</span>
         </div>
         <div className="rounded-full h-20 w-20 bg-quaternary-text border border-tertiary-text flex justify-center items-center">

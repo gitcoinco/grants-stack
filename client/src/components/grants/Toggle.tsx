@@ -20,16 +20,16 @@ export default function Toggle({
     <div>
       {showProjectDetails && projectMetadata && (
         <Accordion className="w-1/2 mt-4" allowToggle>
-          <AccordionItem>
+          <AccordionItem className="border-none">
             <h2>
-              <AccordionButton>
+              <AccordionButton className="pl-0">
                 <Box flex="1" textAlign="left" className="text-sm">
-                  Project Details
+                  View your Project Details
                 </Box>
                 <AccordionIcon />
               </AccordionButton>
             </h2>
-            <AccordionPanel pb={4}>
+            <AccordionPanel pb={4} pl={0}>
               <ToggleDetails project={projectMetadata} />
             </AccordionPanel>
           </AccordionItem>
