@@ -84,6 +84,11 @@ export interface MetaPtr {
 
 export interface RoundMetadata {
   name: string;
+  programContractAddress: string;
+}
+
+export interface ProgramMetadata {
+  name: string;
 }
 
 export interface RoundApplicationQuestion {
@@ -124,6 +129,7 @@ export type Round = {
   roundMetadata: RoundMetadata;
   applicationMetaPtr: MetaPtr;
   applicationMetadata: RoundApplicationMetadata;
+  programName: string;
 };
 
 export type ProjectOption = {

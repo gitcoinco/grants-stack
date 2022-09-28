@@ -1,16 +1,18 @@
 import { Dispatch } from "redux";
 // import { RootState } from "../reducers";
-import { ethers, BigNumber } from "ethers";
-import RoundABI from "../contracts/abis/Round.json";
+import { BigNumber, ethers } from "ethers";
+import ProgramABI from "../contracts/abis/ProgramImplementation.json";
+import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
-import {
-  Round,
-  MetaPtr,
-  RoundMetadata,
-  RoundApplicationMetadata,
-} from "../types";
-import PinataClient from "../services/pinata";
 import { Status } from "../reducers/rounds";
+import PinataClient from "../services/pinata";
+import {
+  MetaPtr,
+  ProgramMetadata,
+  Round,
+  RoundApplicationMetadata,
+  RoundMetadata,
+} from "../types";
 
 const projectQuestion = {
   question: "Select a project you would like to apply for funding:",
@@ -251,6 +253,43 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
+  const programContract = new ethers.Contract(
+    roundMetadata.programContractAddress,
+    ProgramABI,
+    signer
+  );
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingProgramMetaPtr,
+  });
+
+  let programMetaPtr: MetaPtr;
+  try {
+    programMetaPtr = await programContract.metaPtr();
+  } catch (e) {
+    dispatch(loadingError(address, "error loading program metaPtr"));
+    console.error(e);
+    return;
+  }
+
+  dispatch({
+    type: ROUNDS_LOADING_ROUND,
+    address,
+    status: Status.LoadingProgramMetadata,
+  });
+
+  let programMetadata: ProgramMetadata;
+  try {
+    const resp = await pinataClient.fetchText(programMetaPtr.pointer);
+    programMetadata = JSON.parse(resp);
+  } catch (e) {
+    dispatch(loadingError(address, "error loading program metadata"));
+    console.error(e);
+    return;
+  }
+
   const round = {
     address,
     applicationsStartTime,
@@ -268,6 +307,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
       pointer: applicationMetaPtr.pointer,
     },
     applicationMetadata,
+    programName: programMetadata.name,
   };
 
   dispatch(roundLoaded(address, round));

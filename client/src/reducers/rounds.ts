@@ -1,9 +1,9 @@
 import {
   RoundsActions,
+  ROUNDS_LOADING_ERROR,
   ROUNDS_LOADING_ROUND,
   ROUNDS_ROUND_LOADED,
   ROUNDS_UNLOADED,
-  ROUNDS_LOADING_ERROR,
 } from "../actions/rounds";
 import { Round } from "../types";
 
@@ -18,6 +18,8 @@ export const enum Status {
   LoadingRoundMetadata,
   LoadingApplicationMetaPtr,
   LoadingApplicationMetadata,
+  LoadingProgramMetaPtr,
+  LoadingProgramMetadata,
   Loaded,
   Error,
 }
