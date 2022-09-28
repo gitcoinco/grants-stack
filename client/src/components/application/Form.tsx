@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import { submitApplication } from "../../actions/roundApplication";
-import { projectIdSelected } from "../../actions/user";
 import { RootState } from "../../reducers";
 import {
   ChangeHandlers,
@@ -76,7 +75,6 @@ export default function Form({
   const handleProjectInput = (e: ChangeHandlers) => {
     const { value } = e.target;
     setSelectedProjectID(value);
-    dispatch(projectIdSelected(Number(value)));
     handleInput(e);
   };
 

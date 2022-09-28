@@ -39,7 +39,6 @@ function Apply() {
 
     const roundError = roundState ? roundState.error : undefined;
     const round = roundState ? roundState.round : undefined;
-    const { selectedProjectId } = state.user;
 
     const applicationError = applicationState
       ? applicationState.error
@@ -53,7 +52,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
-      selectedProjectId,
+      applicationState,
     };
   }, shallowEqual);
 
@@ -94,8 +93,8 @@ function Apply() {
 
   // todo: navigating to early...
   if (props.applicationStatus === ApplicationStatus.Sent) {
-    if (props.selectedProjectId) {
-      navigate(grantPath(props.selectedProjectId!));
+    if (props.applicationState) {
+      navigate(grantPath(props.applicationState.projectsIDs[0]));
     }
   }
 
