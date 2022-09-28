@@ -199,7 +199,7 @@ describe("<List />", () => {
       });
 
       describe("when roundToApply is set", () => {
-        let roundAddress = "0x1234";
+        const roundAddress = "0x1234";
 
         beforeEach(() => {
           when(useLocalStorage as jest.Mock)
