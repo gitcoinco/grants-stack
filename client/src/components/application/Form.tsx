@@ -48,6 +48,7 @@ export default function Form({
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
+  const [showError, setShowError] = useState(false);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -120,7 +121,13 @@ export default function Form({
 
   const handlePreviewClick = async () => {
     await validate();
-    setPreview(true);
+    if (formValidation.valid) {
+      setPreview(true);
+      setShowError(false);
+    } else {
+      setPreview(false);
+      setShowError(true);
+    }
   };
 
   const handleSubmitApplication = async () => {
@@ -208,7 +215,7 @@ export default function Form({
                   </div>
                   <TextInputAddress
                     key={input.id}
-                    label={input.question ?? "Payout Wallet Address"}
+                    label="Payout Wallet Address"
                     placeholder={input.info}
                     name={`${input.id}`}
                     tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
@@ -277,21 +284,22 @@ export default function Form({
               );
           }
         })}
-        {!formValidation.valid && preview && (
+        {!formValidation.valid && showError && formValidation.errorCount > 0 && (
           <div
-            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm font-medium">
+            <strong className="text-sm text-gitcoin-pink-500 font-medium">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-
-            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+            <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li key={o}>{o}</li>
+                <li className="text-black" key={o}>
+                  {o}
+                </li>
               ))}
             </ul>
           </div>

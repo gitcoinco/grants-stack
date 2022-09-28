@@ -37,6 +37,7 @@ export default function Github({
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
+      formMetaData: state.projectForm.metadata,
     }),
     shallowEqual
   );
@@ -109,9 +110,19 @@ export default function Github({
           verificationError();
         })
         .catch((error) => {
-          verificationError(
-            "Couldn't connect to Github. Please try verifying again"
-          );
+          let errorMessage;
+          // adding a console log here to help debug
+          console.log("Error on Github verification", error);
+          // todo: this is a fix for only this specific error, we should handle this better
+          if (props.formMetaData.projectGithub) {
+            // eslint-disable-next-line max-len
+            errorMessage = `We failed to verify your GitHub account because your account is marked as private in ${props.formMetaData.projectGithub}. Please make your account public and try again.`;
+          } else {
+            errorMessage =
+              // eslint-disable-next-line max-len
+              "We failed to verify your GitHub account because your account is marked as private in the org you are verifying. Please make your account public and try again.";
+          }
+          verificationError(errorMessage);
           datadogRum.addError(error, { provider: providerId });
         });
     }

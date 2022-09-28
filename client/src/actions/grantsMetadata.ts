@@ -33,11 +33,17 @@ interface GrantMetadataFetchingError {
   error: string;
 }
 
+export const GRANT_METADATA_ALL_UNLOADED = "GRANT_METADATA_ALL_UNLOADED";
+export interface GrantMetadataAllUnloadedAction {
+  type: typeof GRANT_METADATA_ALL_UNLOADED;
+}
+
 export type GrantMetadataActions =
   | GrantMetadataLoadingURI
   | GrantMetadataLoading
   | GrantMetadataFetched
-  | GrantMetadataFetchingError;
+  | GrantMetadataFetchingError
+  | GrantMetadataAllUnloadedAction;
 
 export const grantMetadataLoadingURI = (id: number): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING_URI,
@@ -52,6 +58,10 @@ export const grantMetadataLoading = (id: number): GrantMetadataActions => ({
 export const grantMetadataFetched = (data: Metadata): GrantMetadataActions => ({
   type: GRANT_METADATA_FETCHED,
   data,
+});
+
+export const grantsMetadataAllUnloaded = (): GrantMetadataActions => ({
+  type: GRANT_METADATA_ALL_UNLOADED,
 });
 
 export const grantMetadataFetchingError = (
@@ -177,3 +187,5 @@ export const fetchGrantData =
 
     dispatch(grantMetadataFetched(item));
   };
+
+export const unloadAll = grantsMetadataAllUnloaded;

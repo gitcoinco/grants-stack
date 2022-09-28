@@ -29,11 +29,14 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+const gtcLightTheme = lightTheme();
+gtcLightTheme.shadows.connectButton = "0 0 0 0px";
+
 root.render(
   <ErrorBoundary>
     <Datadog>
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={lightTheme()} coolMode>
+        <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
           <ChakraProvider resetCSS={false}>
             <Provider store={store}>
               <ReduxRouter history={history} store={store}>

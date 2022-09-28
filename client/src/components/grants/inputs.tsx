@@ -2,10 +2,10 @@ import { Tooltip } from "@chakra-ui/react";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
-  <span className="absolute text-gray-400 inset-y-0 right-0">Optional</span>
+  <span className="text-gray-400 inset-y-0 right-0">Optional</span>
 );
 const requiredSpan = (
-  <span className="absolute text-purple-700 inset-y-0 right-0">*Required</span>
+  <span className="text-purple-700 inset-y-0 right-0">*Required</span>
 );
 
 export function TextInput({
