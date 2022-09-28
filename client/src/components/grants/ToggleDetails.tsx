@@ -1,4 +1,5 @@
 import { FormInputs, Metadata, Project } from "../../types";
+import { getProjectImage, ImgTypes } from "../../utils/components";
 
 function Section({ title, text }: { title: string; text: string | undefined }) {
   return (
@@ -20,7 +21,7 @@ function Section({ title, text }: { title: string; text: string | undefined }) {
 export default function ToggleDetails({
   project,
 }: {
-  project?: Metadata | FormInputs | Project;
+  project?: Metadata | Project;
 }) {
   return (
     <div className="w-full h-full">
@@ -37,11 +38,7 @@ export default function ToggleDetails({
         </div>
         <img
           className="w-full mb-4"
-          src={
-            project?.bannerImg instanceof Blob
-              ? URL.createObjectURL(project?.bannerImg)
-              : "./assets/default-project-banner.png"
-          }
+          src={getProjectImage(false, ImgTypes.bannerImg, project)}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = "./assets/default-project-banner.png";
@@ -56,11 +53,7 @@ export default function ToggleDetails({
         <div className="rounded-full h-20 w-20 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
           <img
             className="rounded-full"
-            src={
-              project?.logoImg instanceof Blob
-                ? URL.createObjectURL(project?.logoImg)
-                : "./assets/default-project-logo.png"
-            }
+            src={getProjectImage(false, ImgTypes.logoImg, project)}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = "./assets/default-project-logo.png";

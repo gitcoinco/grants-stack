@@ -13,7 +13,7 @@ export default function Toggle({
   projectMetadata,
   showProjectDetails,
 }: {
-  projectMetadata?: Metadata | FormInputs | Project;
+  projectMetadata?: Metadata | Project;
   showProjectDetails: boolean;
 }) {
   return (
