@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   build-and-deploy:
-    concurrency: ci-${{ github.ref }}
+    concurrency: ci-round-manager-${{ github.head_ref || github.run_id }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

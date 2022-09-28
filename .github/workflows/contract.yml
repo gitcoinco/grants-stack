@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   tests:
-    concurrency: ci-${{ github.ref }}
+    concurrency: ci-contract-${{ github.head_ref || github.run_id }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
