@@ -10,6 +10,20 @@ import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 
+function ExitCreateRound(props: { onClick: () => void }) {
+  return (
+    <Button
+      type="button"
+      $variant="outline"
+      className="inline-flex float-right py-2 px-4 text-sm text-pink-500"
+      onClick={props.onClick}
+    >
+      <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+      Exit
+    </Button>
+  );
+}
+
 export default function CreateRound() {
   datadogLogs.logger.info("====> Route: /round/create");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
@@ -29,15 +43,7 @@ export default function CreateRound() {
           <header>
             <div className="flow-root">
               <h1 className="float-left text-[32px] mb-7">Create a Round</h1>
-              <Button
-                type="button"
-                $variant="outline"
-                className="inline-flex float-right py-2 px-4 text-sm text-pink-500"
-                onClick={() => navigate("/")}
-              >
-                <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                Exit
-              </Button>
+              <ExitCreateRound onClick={() => navigate("/")} />
             </div>
           </header>
           <main>

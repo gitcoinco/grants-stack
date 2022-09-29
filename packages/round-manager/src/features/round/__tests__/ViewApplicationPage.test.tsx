@@ -17,7 +17,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { getApplicationById } from "../../api/application";
 import { faker } from "@faker-js/faker";
-import { RoundContext } from "../../../context/RoundContext";
+import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
 
 jest.mock("../../api/services/grantApplication");

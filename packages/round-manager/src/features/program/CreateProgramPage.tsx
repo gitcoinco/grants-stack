@@ -26,7 +26,6 @@ export default function CreateProgram() {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
-  // TODO - remove if all rtk stuff removed
   const { address, chain } = useWallet();
 
   const {

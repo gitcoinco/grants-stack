@@ -18,7 +18,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
-import { useRoundById } from "../../context/RoundContext";
+import { useRoundById } from "../../context/round/RoundContext";
 import { Spinner } from "../common/Spinner";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { ApplicationStatus } from "../api/types";

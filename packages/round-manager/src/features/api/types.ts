@@ -22,12 +22,16 @@ export interface Web3Instance {
   signer?: any;
 }
 
+export enum StorageProtocolID {
+  IPFS = 1,
+}
+
 export interface MetadataPointer {
   /**
    * The decentralized storage protocol
    * Read more here: https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
    */
-  protocol: number;
+  protocol: StorageProtocolID;
   /**
    * The identifier which represents the program metadata on a decentralized storage
    */

@@ -19,7 +19,7 @@ import AccessDenied from "../common/AccessDenied";
 
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
-import { useRounds } from "../../context/RoundContext";
+import { useRounds } from "../../context/round/RoundContext";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
