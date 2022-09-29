@@ -1,7 +1,5 @@
-import { useState } from "react";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
-import Alert, { AlertStatus } from "../base/Alert";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -22,7 +20,6 @@ export default function Details({
   bannerImg,
   logoImg,
   preview,
-  alert,
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
@@ -30,44 +27,9 @@ export default function Details({
   bannerImg: string | Blob;
   logoImg: string | Blob;
   preview?: boolean;
-  alert?: boolean | undefined;
 }) {
-  const [showAlert, setShowAlert] = useState(alert ?? true);
-  const discordLink = (
-    <a className="text-purple-600" href="https://discord.gg/nwYzGuuruJ">
-      Grant Hub Discord
-    </a>
-  );
-
-  const successfullSubmissionBody = (
-    <p className="text-black">
-      Your application will be reviewed by the grant round team and you will
-      receive an email if your project is approved for the grant round. If you
-      have any questions or feedback, feel free to reach us out on the{" "}
-      {discordLink}!
-    </p>
-  );
-
-  // ToDo: make the round name dynamic
-  const successfullSubmissionTitle = (
-    <p className="text-gitcoin-teal-500 text-xl">
-      Thank you for applying to Optimism Grant Round!
-    </p>
-  );
-
-  setTimeout(() => {
-    setShowAlert(false);
-  }, 15000);
-
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
-      {showAlert && (
-        <Alert
-          title={successfullSubmissionTitle}
-          status={AlertStatus.success}
-          body={successfullSubmissionBody}
-        />
-      )}
       <img
         className="w-full mb-4"
         src={
