@@ -365,7 +365,7 @@ describe("generateApplicationSchema", () => {
     expect(schema).toContainEqual({
       id: 2,
       question: "Funding Source",
-      type: "TEXT",
+      type: "text",
       required: true,
       info: "What platforms have you raised funds from?",
       choices: [],
@@ -389,7 +389,7 @@ describe("generateApplicationSchema", () => {
     expect(schema).toContainEqual({
       id: 2,
       question: "Funding Source",
-      type: "TEXT",
+      type: "text",
       required: true,
       info: "What platforms have you raised funds from?",
       choices: [],
@@ -398,7 +398,7 @@ describe("generateApplicationSchema", () => {
     expect(schema).toContainEqual({
       id: 3,
       question: "Ofac",
-      type: "TEXT",
+      type: "text",
       required: true,
       info: "Is you project OFAC compliant?",
       choices: [],

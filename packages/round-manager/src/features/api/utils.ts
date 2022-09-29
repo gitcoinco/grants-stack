@@ -140,10 +140,22 @@ const camelToTitle = (camelCase: string) =>
 export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
 
+type InputType = "email" | "number" | "text";
+
+/* Static for now, will be integrated directly into the question object itself for dynamic fields */
+const inputTypes = {
+  email: "email",
+  teamSize: "number",
+  profit2022: "number",
+  fundingSource: "text",
+} as {
+  [key: string]: InputType;
+};
+
 export interface SchemaQuestion {
   id: number;
   question: string;
-  type: "TEXT";
+  type: InputType;
   required: true;
   info: string;
   choices: [];
@@ -170,7 +182,7 @@ export const generateApplicationSchema = (
         schema.push({
           id: schema.length,
           question: camelToTitle(subKey),
-          type: "TEXT",
+          type: inputTypes[subKey],
           required: true,
           info: metadata[key][subKey],
           choices: [],
@@ -181,7 +193,7 @@ export const generateApplicationSchema = (
       schema.push({
         id: schema.length,
         question: camelToTitle(key),
-        type: "TEXT",
+        type: "text",
         required: true,
         info: metadata[key],
         choices: [],
