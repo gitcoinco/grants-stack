@@ -12,6 +12,7 @@ import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
+import { addAlert } from "../../actions/ui";
 
 export default function Preview({
   currentProjectId,
@@ -54,6 +55,9 @@ export default function Preview({
       setTimeout(() => {
         navigate(slugs.grants);
         localResetStatus();
+        dispatch(
+          addAlert("success", "Your project has been saved successfully!")
+        );
       }, 1500);
     }
   }, [props.status]);

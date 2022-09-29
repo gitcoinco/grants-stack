@@ -9,6 +9,7 @@ import Landing from "./grants/Landing";
 import Header from "./Header";
 import Globe from "./icons/Globe";
 import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
+import { AlertContainer } from "./base/Alert";
 
 interface Props {
   children: JSX.Element;
@@ -24,6 +25,7 @@ function Layout(ownProps: Props) {
       web3Initialized: state.web3.initialized,
       web3Error: state.web3.error,
       chainID: state.web3.chainID,
+      alerts: state.ui.alerts,
     }),
     shallowEqual
   );
@@ -77,6 +79,8 @@ function Layout(ownProps: Props) {
           />
         </div>
       </div>
+
+      <AlertContainer alerts={props.alerts} />
     </div>
   );
 }

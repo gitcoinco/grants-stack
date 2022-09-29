@@ -83,3 +83,25 @@
 .icon {
   display: inline-block;
 }
+
+.alerts-container {
+  @apply mb-8 pt-4;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.alert {
+  @apply flex items-center text-sm font-bold px-4 py-4 rounded relative mb-4;
+}
+
+.alert.error {
+  @apply bg-red-100 text-red-500;
+}
+
+.alert.success {
+  @apply bg-teal-100 text-teal-500;
+}
