@@ -41,7 +41,7 @@ const applicationReducer = (
     case ActionType.SET_APPLICATION:
       return {
         ...state,
-        applications: state.applications.concat(action.payload),
+        applications: [action.payload],
         getApplicationByIdError: undefined,
       };
     case ActionType.SET_ROUND_APPLICATIONS:
@@ -155,12 +155,8 @@ export const useApplicationById = (
 
   useEffect(() => {
     if (id) {
-      const existingApplication = context.state.applications.find(
-        (application) => application.id === id
-      );
-      if (!existingApplication) {
-        fetchApplicationById(context.dispatch, id, walletProvider);
-      }
+      // NB: we always refetch application by id to populate project owners for application page
+      fetchApplicationById(context.dispatch, id, walletProvider);
     }
   }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUpdateGrantApplicationMutation } from "../api/services/grantApplication";
-import { useListRoundsQuery } from "../api/services/round";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Navbar from "../common/Navbar";
 import { useWallet } from "../common/Auth";
@@ -32,6 +31,7 @@ import AccessDenied from "../common/AccessDenied";
 import { useApplicationById } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
+import { useRoundById } from "../../context/RoundContext";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -42,9 +42,6 @@ enum VerifiedCredentialState {
 }
 
 enum ApplicationQuestions {
-  GITHUB = "Github",
-  GITHUB_ORGANIZATION = "Github Organization",
-  TWITTER = "Twitter",
   EMAIL = "Email",
   FUNDING_SOURCE = "Funding Source",
   PROFIT_2022 = "Profit2022",
@@ -53,6 +50,8 @@ enum ApplicationQuestions {
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
+const verifier = new PassportVerifier();
 
 export default function ViewApplicationPage() {
   datadogLogs.logger.info("====> Route: /program/create");
@@ -73,48 +72,42 @@ export default function ViewApplicationPage() {
   const { chain, address, provider, signer } = useWallet();
 
   const navigate = useNavigate();
-  const verifier = new PassportVerifier();
 
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(id);
 
-  const credentials: ProjectCredentials =
-    application?.project!.credentials ?? {};
-
   useEffect(() => {
-    if (!credentials) {
-      return;
-    }
-    const verify = async () => {
-      const newVerifiedProviders: { [key: string]: VerifiedCredentialState } = {
-        ...verifiedProviders,
-      };
-      for (const provider of Object.keys(verifiedProviders)) {
-        const verifiableCredential = credentials[provider];
-        if (verifiableCredential) {
-          newVerifiedProviders[provider] = await isVerified(
-            verifiableCredential,
-            verifier,
-            provider,
-            application
-          );
-        }
+    const applicationHasLoadedWithProjectOwners =
+      !isLoading && application?.project?.owners;
+    if (applicationHasLoadedWithProjectOwners) {
+      const credentials: ProjectCredentials =
+        application?.project!.credentials ?? {};
+
+      if (!credentials) {
+        return;
       }
+      const verify = async () => {
+        const newVerifiedProviders: { [key: string]: VerifiedCredentialState } =
+          { ...verifiedProviders };
+        for (const provider of Object.keys(verifiedProviders)) {
+          const verifiableCredential = credentials[provider];
+          if (verifiableCredential) {
+            newVerifiedProviders[provider] = await isVerified(
+              verifiableCredential,
+              verifier,
+              provider,
+              application
+            );
+          }
+        }
 
-      setVerifiedProviders(newVerifiedProviders);
-    };
-
-    verify();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const { round } = useListRoundsQuery(
-    { signerOrProvider: provider, roundId: roundId },
-    {
-      selectFromResult: ({ data }) => ({
-        round: data?.find((round) => round.id === roundId),
-      }),
+        setVerifiedProviders(newVerifiedProviders);
+      };
+      verify();
     }
-  );
+  }, [application, application?.project?.owners, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { round } = useRoundById(roundId);
 
   const [updateGrantApplication, { isLoading: updating }] =
     useUpdateGrantApplicationMutation();
@@ -367,7 +360,7 @@ export default function ViewApplicationPage() {
                     >
                       <TwitterIcon className="h-4 w-4 mr-2" />
                       <span className="text-sm text-violet-400 mr-2">
-                        {getAnswer(ApplicationQuestions.TWITTER)}
+                        {application?.project?.projectTwitter}
                       </span>
                       {getVerifiableCredentialVerificationResultView("twitter")}
                     </span>
@@ -378,7 +371,7 @@ export default function ViewApplicationPage() {
                     >
                       <GithubIcon className="h-4 w-4 mr-2" />
                       <span className="text-sm text-violet-400 mr-2">
-                        {getAnswer(ApplicationQuestions.GITHUB)}
+                        {application?.project?.projectGithub}
                       </span>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
@@ -419,16 +412,6 @@ export default function ViewApplicationPage() {
   );
 }
 
-const getCredentialSubject = (
-  question: string,
-  application: GrantApplication | undefined
-) => {
-  return (
-    application?.answers!.find((answer) => answer.question === question)
-      ?.answer || "N/A"
-  );
-};
-
 function vcProviderMatchesProject(
   provider: string,
   verifiableCredential: VerifiableCredential,
@@ -437,15 +420,14 @@ function vcProviderMatchesProject(
   let vcProviderMatchesProject = false;
   if (provider === "twitter") {
     vcProviderMatchesProject =
-      verifiableCredential.credentialSubject.provider?.split("#")[1] ===
-      getCredentialSubject(ApplicationQuestions.TWITTER, application);
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() === application!.project!.projectTwitter?.toLowerCase();
   } else if (provider === "github") {
     vcProviderMatchesProject =
-      verifiableCredential.credentialSubject.provider?.split("#")[1] ===
-      getCredentialSubject(
-        ApplicationQuestions.GITHUB_ORGANIZATION,
-        application
-      );
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() === application!.project!.projectGithub?.toLowerCase();
   }
   return vcProviderMatchesProject;
 }

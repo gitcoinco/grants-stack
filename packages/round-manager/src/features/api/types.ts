@@ -174,6 +174,8 @@ export type Project = {
   website: string;
   bannerImg?: string;
   logoImg?: string;
+  projectGithub?: string;
+  projectTwitter?: string;
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
 };
