@@ -78,7 +78,7 @@ export default function ViewApplicationPage() {
 
   useEffect(() => {
     const applicationHasLoadedWithProjectOwners =
-      !isLoading && application && application.project?.owners;
+      !isLoading && application?.project?.owners;
     if (applicationHasLoadedWithProjectOwners) {
       const credentials: ProjectCredentials =
         application?.project!.credentials ?? {};
