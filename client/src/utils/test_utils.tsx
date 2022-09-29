@@ -10,7 +10,8 @@ import { Alert } from "../types/alert";
 export const buildAlert = (attrs = {}): Alert => ({
   id: 1,
   type: "success",
-  message: "Hello World",
+  title: "Hello World",
+  body: "this is test content",
   ...attrs,
 });
 

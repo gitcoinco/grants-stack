@@ -1,16 +1,18 @@
-export type AlertTypes = "success" | "error";
+export type AlertTypes = "success" | "error" | "info" | "warning";
 
 export type Alert = {
   id: number;
   type: AlertTypes;
-  message: string;
+  title: string;
+  body: string;
 };
 
 let nextAlertID = 0;
 
-export const newAlert = (type: AlertTypes, message: string) => ({
+export const newAlert = (type: AlertTypes, title: string, body: string) => ({
   // eslint-disable-next-line
   id: nextAlertID++,
   type,
-  message,
+  title,
+  body,
 });

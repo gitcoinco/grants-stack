@@ -15,9 +15,13 @@ export interface UIAlertRemovedAction {
 
 export type UIActions = UIAlertAddedAction | UIAlertRemovedAction;
 
-export const addAlert = (type: AlertTypes, message: string): UIActions => ({
+export const addAlert = (
+  type: AlertTypes,
+  title: string,
+  body?: string
+): UIActions => ({
   type: UI_ALERT_ADDED,
-  payload: newAlert(type, message),
+  payload: newAlert(type, title, body!),
 });
 
 export const removeAlert = (id: number): UIActions => ({

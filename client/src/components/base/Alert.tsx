@@ -28,7 +28,7 @@ export default function AlertComponent({ alert }: AlertProps) {
       >
         <Check />
       </svg>
-      <span className="block sm:inline">{alert.message}</span>
+      <span className="block sm:inline">{alert.title}</span>
     </div>
   );
 }
