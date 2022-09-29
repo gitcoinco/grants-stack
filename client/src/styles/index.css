@@ -38,15 +38,19 @@
   }
 
   p {
-    @apply text-secondary-text dark:text-primary-text font-thin
+    @apply text-secondary-text dark:text-primary-text font-thin;
+  }
+
+  div {
+    font-family: Libre Franklin;
   }
 
   textarea {
-    @apply appearance-none block border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none placeholder:text-sm
+    @apply appearance-none block border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none placeholder:text-sm;
   }
 
   input {
-    @apply flex-1 block w-full rounded border border-tertiary-text py-2 px-3 focus:outline-none  placeholder:text-sm
+    @apply flex-1 block w-full rounded border border-tertiary-text py-2 px-3 focus:outline-none  placeholder:text-sm;
   }
 
   select {
@@ -54,7 +58,7 @@
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url('../../public/icons/chevron-down.svg');
+    background-image: url("../../public/icons/chevron-down.svg");
     background-repeat: no-repeat;
     background-position-y: 50%;
     background-position-x: 98%;
@@ -62,7 +66,7 @@
   }
 
   select:disabled {
-    @apply bg-tertiary-text/30 border
+    @apply bg-tertiary-text/30 border;
   }
 
   label {
@@ -78,4 +82,26 @@
 
 .icon {
   display: inline-block;
+}
+
+.alerts-container {
+  @apply mb-8 pt-4;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.alert {
+  @apply flex items-center text-sm font-bold px-4 py-4 rounded relative mb-4;
+}
+
+.alert.error {
+  @apply bg-red-100 text-red-500;
+}
+
+.alert.success {
+  @apply bg-teal-100 text-teal-500;
 }

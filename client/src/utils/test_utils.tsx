@@ -5,6 +5,14 @@ import { render } from "@testing-library/react";
 import history from "../history";
 import setupStore from "../store";
 import { Round, Metadata } from "../types";
+import { Alert } from "../types/alert";
+
+export const buildAlert = (attrs = {}): Alert => ({
+  id: 1,
+  type: "success",
+  message: "Hello World",
+  ...attrs,
+});
 
 export const buildRound = (round: any): Round => ({
   address: "0x8888",
