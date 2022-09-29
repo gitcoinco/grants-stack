@@ -6,14 +6,14 @@ import {
   AccordionPanel,
   Box,
 } from "@chakra-ui/react";
-import { FormInputs, Metadata, Project } from "../../types";
+import { Metadata, Project } from "../../types";
 import ToggleDetails from "./ToggleDetails";
 
 export default function Toggle({
   projectMetadata,
   showProjectDetails,
 }: {
-  projectMetadata?: Metadata | FormInputs | Project;
+  projectMetadata?: Metadata | Project;
   showProjectDetails: boolean;
 }) {
   return (

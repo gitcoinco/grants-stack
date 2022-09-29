@@ -10,25 +10,28 @@ export type Dimensions = {
   height: number;
 };
 
-export default function ImageInput({
-  label,
-  dimensions,
-  existingImg,
-  circle,
-  info,
-  imgHandler,
-}: {
+type Props = {
   label: string;
   dimensions: Dimensions;
-  existingImg?: string;
+  imageHash?: string;
+  imageData?: Blob;
   circle?: Boolean;
   info?: string;
   imgHandler: (file: Blob) => void;
-}) {
+};
+
+export default function ImageInput({
+  label,
+  dimensions,
+  imageHash,
+  imageData,
+  circle,
+  info,
+  imgHandler,
+}: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [imgSrc, setImgSrc] = useState<string | undefined>();
   const [showCrop, setShowCrop] = useState(false);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | undefined>();
   const [validation, setValidation] = useState({
     error: false,
     msg: "",
@@ -90,12 +93,14 @@ export default function ImageInput({
     imgHandler(blob);
   };
 
-  const loadCurrentImg = (image?: string) => {
-    if (!image) return "";
+  const loadCurrentImg = (ipfsCID?: string) => {
+    if (ipfsCID === undefined) {
+      return "";
+    }
 
     // Fetch existing img path from Pinata for display
     const pinataClient = new PinataClient();
-    const imgUrl = pinataClient.fileURL(image);
+    const imgUrl = pinataClient.fileURL(ipfsCID);
 
     blobExistingImg(imgUrl);
     return imgUrl;
@@ -107,12 +112,23 @@ export default function ImageInput({
     }
   };
 
-  const [currentImg, setCurrentImg] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (imageData === undefined && imageHash !== undefined) {
+      loadCurrentImg(imageHash);
+    }
+  }, [imageData, imageHash]);
 
   useEffect(() => {
-    const i = loadCurrentImg(existingImg);
-    setCurrentImg(i);
-  }, [existingImg]);
+    if (imageData !== undefined) {
+      const fr = new FileReader();
+      fr.onload = () => {
+        setImgSrc(fr.result as string);
+      };
+      fr.readAsDataURL(imageData);
+    } else {
+      setImgSrc(undefined);
+    }
+  }, [imageData]);
 
   return (
     <div className="w-full">
@@ -149,22 +165,13 @@ export default function ImageInput({
             </button>
           )}
           <div className="w-1/3">
-            {canvas && (
+            {imgSrc && (
               <img
                 className={`max-h-28 ${circle && "rounded-full"}`}
-                src={canvas.toDataURL("image/jpeg", 1)}
+                src={imgSrc}
                 alt="Project Logo Preview"
               />
             )}
-            {currentImg !== undefined &&
-              currentImg !== "" &&
-              canvas === undefined && (
-                <img
-                  className={`max-h-28 ${circle && "rounded-full"}`}
-                  src={currentImg}
-                  alt="Project Logo Preview"
-                />
-              )}
           </div>
         </div>
       </div>
@@ -189,7 +196,6 @@ export default function ImageInput({
         dimensions={dimensions}
         onClose={() => setShowCrop(false)}
         saveCrop={(imgUrl) => {
-          setCanvas(imgUrl);
           imgUrl.toBlob((blob) => blob && imgHandler(blob));
         }}
       />

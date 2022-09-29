@@ -14,9 +14,9 @@ export interface Metadata {
   website: string;
   bannerImg?: string;
   logoImg?: string;
+  projectTwitter?: string;
   userGithub?: string;
   projectGithub?: string;
-  projectTwitter?: string;
   credentials?: ProjectCredentials;
 }
 
@@ -175,11 +175,13 @@ export type FormInputs = {
   title?: string;
   description?: string;
   website?: string;
+  bannerImg?: string;
+  bannerImgData?: Blob;
+  logoImg?: string;
+  logoImgData?: Blob;
   projectTwitter?: string;
   userGithub?: string;
   projectGithub?: string;
-  bannerImg?: Blob;
-  logoImg?: Blob;
   credentials?: ProjectCredentials;
 };
 
