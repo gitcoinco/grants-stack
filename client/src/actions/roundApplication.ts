@@ -108,14 +108,6 @@ export const submitApplication =
 
     const project: Project = metadataToProject(projectMetadata, 0);
 
-    // FIXME: this is temporarily until the round manager adds the encrypted field
-    roundApplicationMetadata.applicationSchema.forEach((question) => {
-      if (/email|cool/i.test(question.question.toLowerCase())) {
-        // eslint-disable-next-line
-        question.encrypted = true;
-      }
-    });
-
     const { chainID } = state.web3;
     const chainName = chains[chainID!];
     if (chainID === undefined) {
