@@ -7,30 +7,28 @@
     "node": ">=16.15.0"
   },
   "scripts": {
-    "start": "yarn rm-start",
-    "build": "yarn rm-build",
-    "compile": "yarn hh-compile",
-    "test": "yarn hh-test && yarn rm-test",
+    "start": "lerna run start --scope=round-manager",
+    "build": "lerna run build --scope=round-manager",
+    "compile": "lerna run compile --scope=contracts",
+    "test": "lerna run test --ignore=@grants-round/graph",
     "// contracts script": "====== packages/contract specific ======",
-    "hh-test": "cd packages/contracts; yarn run test",
-    "hh-compile": "cd packages/contracts; yarn compile",
+    "hh-test": "lerna run test --scope=contracts",
+    "hh-compile": "lerna run compile --scope=contracts",
     "// round manager script": "====== packages/round-manager specific ======",
-    "rm-build": "cd packages/round-manager; yarn build",
-    "rm-test": "cd packages/round-manager; yarn test",
-    "rm-start": "cd packages/round-manager; yarn start",
-    "rm-slither": "cd packages/round-manager; slither .",
+    "rm-build": "lerna run build --scope=round-manager",
+    "rm-test": "lerna run test --scope=round-manager",
+    "rm-start": "lerna run start --scope=round-manager",
+    "rm-slither": "lerna run slither --scope=round-manager",
     "// grant explorer script": "====== packages/grant-explorer specific ======",
-    "re-build": "cd packages/grant-explorer; yarn build",
-    "re-test": "cd packages/grant-explorer; yarn test",
-    "re-start": "cd packages/grant-explorer; yarn start",
-    "re-slither": "cd packages/grant-explorer; slither ."
+    "re-build": "lerna run build --scope=grant-explorer",
+    "re-test": "lerna run test --scope=grant-explorer",
+    "re-start": "lerna run start --scope=grant-explorer",
+    "re-slither": "lerna run slither --scope=grant-explorer"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.1.0",
     "@commitlint/cli": "^17.1.2",
     "husky": "^8.0.1",
     "lerna": "^5.5.4"
-  },
-  "dependencies": {
   }
 }

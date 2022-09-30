@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-project",
+  "name": "contracts",
   "license": "AGPL-3.0-only",
   "engines": {
     "npm": ">=8.5.5",

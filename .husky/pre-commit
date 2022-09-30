@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd packages/round-manager
-yarn lint-staged
+yarn lerna run --scope=round-manager lint-staged
