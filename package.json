@@ -2,28 +2,23 @@
   "name": "root",
   "private": true,
   "license": "AGPL-3.0-only",
-  "engines" : {
-    "npm" : ">=8.5.5",
-    "node" : ">=16.15.0"
+  "engines": {
+    "npm": ">=8.5.5",
+    "node": ">=16.15.0"
   },
   "scripts": {
     "start": "yarn rm-start",
     "build": "yarn rm-build",
     "compile": "yarn hh-compile",
     "test": "yarn hh-test && yarn rm-test",
-
     "// contracts script": "====== packages/contract specific ======",
     "hh-test": "cd packages/contracts; yarn run test",
     "hh-compile": "cd packages/contracts; yarn compile",
-
-
     "// round manager script": "====== packages/round-manager specific ======",
     "rm-build": "cd packages/round-manager; yarn build",
     "rm-test": "cd packages/round-manager; yarn test",
     "rm-start": "cd packages/round-manager; yarn start",
     "rm-slither": "cd packages/round-manager; slither .",
-
-
     "// grant explorer script": "====== packages/grant-explorer specific ======",
     "re-build": "cd packages/grant-explorer; yarn build",
     "re-test": "cd packages/grant-explorer; yarn test",
@@ -31,6 +26,11 @@
     "re-slither": "cd packages/grant-explorer; slither ."
   },
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "@commitlint/config-conventional": "^17.1.0",
+    "@commitlint/cli": "^17.1.2",
+    "husky": "^8.0.1",
+    "lerna": "^5.5.4"
+  },
+  "dependencies": {
   }
 }
