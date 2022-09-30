@@ -1,11 +1,8 @@
 import ViewRound from "../ViewRoundPage";
 import { screen } from "@testing-library/react";
-import {
-  makeRoundData,
-  renderWithContext,
-} from "../../../test-utils";
+import { makeRoundData, renderWithContext } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
-import { Round } from "../../api/types";
+import { ApplicationStatus, Project, Round } from "../../api/types";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -52,4 +49,20 @@ describe("<ViewRound />", () => {
 
     screen.getByTestId("loading-spinner");
   });
+
+  it("displays the project name of an approved grant application", async () => {
+    const expectedProjectName = "my project";
+    const expectedApprovedProject: Project = {
+      grantApplicationId: "grant-application-id",
+      projectRegistryId: "project-registry-id",
+      projectMetadata: {
+        title: expectedProjectName
+      },
+      status: ApplicationStatus.APPROVED
+    };
+    const roundWithProjects = makeRoundData({id: roundId, approvedProjects: [expectedApprovedProject]})
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    await screen.findByText(expectedProjectName);
+  })
 });

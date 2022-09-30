@@ -1,7 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { initialRoundState, RoundContext, RoundState } from "./context/RoundContext";
+import {
+  initialRoundState,
+  RoundContext,
+  RoundState,
+} from "./context/RoundContext";
 import { Round } from "./features/api/types";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
@@ -9,10 +13,25 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
   const roundStartTime = faker.date.future(1, applicationsEndTime);
   const roundEndTime = faker.date.soon(21, roundStartTime);
+
+  // NB: set to seconds-level granularity for easier conversion and test assertions
+  [
+    applicationsStartTime,
+    applicationsEndTime,
+    roundStartTime,
+    roundEndTime,
+  ].forEach((date: Date) => {
+    date.setMilliseconds(0);
+  });
+
   return {
     id: faker.finance.ethereumAddress(),
     roundMetadata: {
       name: faker.company.name(),
+    },
+    store: {
+      protocol: 1,
+      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
     },
     applicationsStartTime,
     applicationsEndTime,
@@ -23,6 +42,10 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     ownedBy: faker.finance.ethereumAddress(),
     ...overrides,
   };
+};
+
+export const makeApprovedProjectData = () => {
+  throw new Error("TODO: not implemented yet");
 };
 
 export const renderWithContext = (

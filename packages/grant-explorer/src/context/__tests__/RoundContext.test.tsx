@@ -100,10 +100,8 @@ describe("<ListRoundProvider />", () => {
 
 
 const TestingUseRoundByIdComponent = (props: {
-  expectedRoundId?: string;
+  expectedRoundId: string;
 }) => {
-  if (!props.expectedRoundId) return(<></>)
-
   const { round, isLoading, getRoundByIdError } = useRoundById(
     "chainID",
     props.expectedRoundId
@@ -118,11 +116,3 @@ const TestingUseRoundByIdComponent = (props: {
     </>
   );
 };
-
-function renderWithProvider() {
-  render(
-    <RoundProvider>
-      <TestingUseRoundByIdComponent />
-    </RoundProvider>
-  );
-}

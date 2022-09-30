@@ -102,4 +102,27 @@ export interface Round {
    * Contract address of the program to which the round belongs
    */
   ownedBy: string;
+  /**
+   * List of projects approved for the round
+   */
+  approvedProjects?: Project[];
+}
+
+export type Project = {
+  grantApplicationId: GrantApplicationId;
+  projectRegistryId: ProjectRegistryId;
+  projectMetadata: ProjectMetadata;
+  status: ApplicationStatus;
+};
+export type GrantApplicationId = string;
+export type ProjectRegistryId = string;
+
+export enum ApplicationStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+
+export type ProjectMetadata = {
+  title: string;
 }
