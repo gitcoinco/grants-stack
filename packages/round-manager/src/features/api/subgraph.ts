@@ -19,8 +19,6 @@ export async function getCurrentSubgraphBlockNumber(
   return res.data._meta.block.number;
 }
 
-// https://dev.to/jakubkoci/polling-with-async-await-25p4
-//   https://stackoverflow.com/a/64654157
 export async function waitForSubgraphSyncTo(
   chainId: number,
   blockNumber: number,

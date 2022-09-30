@@ -27,7 +27,8 @@ import AccessDenied from "./features/common/AccessDenied";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
 import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
-import { RoundProvider } from "./context/RoundContext";
+import { RoundProvider } from "./context/round/RoundContext";
+import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 
 // Initialize datadog
 initDatadog();
@@ -60,7 +61,9 @@ root.render(
                   path="/round/create"
                   element={
                     <ReadProgramProvider>
-                      <CreateRound />
+                      <CreateRoundProvider>
+                        <CreateRound />
+                      </CreateRoundProvider>
                     </ReadProgramProvider>
                   }
                 />

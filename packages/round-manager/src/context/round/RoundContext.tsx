@@ -1,7 +1,7 @@
-import { Round } from "../features/api/types";
+import { Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useWallet } from "../features/common/Auth";
-import { getRoundById, listRounds } from "../features/api/round";
+import { useWallet } from "../../features/common/Auth";
+import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
 
 export interface RoundState {

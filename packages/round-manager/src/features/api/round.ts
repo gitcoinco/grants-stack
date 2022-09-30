@@ -1,5 +1,7 @@
-import { Round } from "./types";
+import { Round, Web3Instance } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { roundFactoryContract } from "./contracts";
+import { ethers } from "ethers";
 
 /**
  * Fetch a round by ID
@@ -172,5 +174,84 @@ export async function listRounds(
   } catch (err) {
     console.log("error", err);
     return { data: [], error: "Unable to fetch rounds" };
+  }
+}
+
+export async function deployRoundContract(
+  round: Round,
+  signerOrProvider: Web3Instance["provider"]
+): Promise<{ transactionBlockNumber: number }> {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+
+    const _roundFactoryContract = roundFactoryContract(chainId);
+    const roundFactory = new ethers.Contract(
+      _roundFactoryContract.address!,
+      _roundFactoryContract.abi,
+      signerOrProvider
+    );
+
+    if (!round.applicationsEndTime) {
+      round.applicationsEndTime = round.roundStartTime;
+    }
+
+    round.operatorWallets = round.operatorWallets!.filter((e) => e !== "");
+
+    // encode input parameters
+    const params = [
+      round.votingStrategy,
+      new Date(round.applicationsStartTime).getTime() / 1000,
+      new Date(round.applicationsEndTime).getTime() / 1000,
+      new Date(round.roundStartTime).getTime() / 1000,
+      new Date(round.roundEndTime).getTime() / 1000,
+      round.token,
+      round.store,
+      round.applicationStore,
+      round.operatorWallets.slice(0, 1),
+      round.operatorWallets,
+    ];
+
+    const encodedParameters = ethers.utils.defaultAbiCoder.encode(
+      [
+        "address",
+        "uint256",
+        "uint256",
+        "uint256",
+        "uint256",
+        "address",
+        "tuple(uint256 protocol, string pointer)",
+        "tuple(uint256 protocol, string pointer)",
+        "address[]",
+        "address[]",
+      ],
+      params
+    );
+
+    // Deploy a new Round contract
+    const tx = await roundFactory.create(encodedParameters, round.ownedBy);
+
+    const receipt = await tx.wait(); // wait for transaction receipt
+
+    let roundAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "RoundCreated"
+      );
+      if (event && event.args) {
+        roundAddress = event.args.roundAddress;
+      }
+    }
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Round address: ", roundAddress);
+
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (err) {
+    console.log("error", err);
+    throw new Error("Unable to create round");
   }
 }

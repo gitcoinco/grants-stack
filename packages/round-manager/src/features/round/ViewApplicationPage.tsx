@@ -31,7 +31,7 @@ import AccessDenied from "../common/AccessDenied";
 import { useApplicationById } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
-import { useRoundById } from "../../context/RoundContext";
+import { useRoundById } from "../../context/round/RoundContext";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 

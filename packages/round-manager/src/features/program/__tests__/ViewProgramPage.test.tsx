@@ -1,4 +1,3 @@
-/* TODO: wrap all tests in */
 import ViewProgram from "../ViewProgramPage";
 import { render, screen } from "@testing-library/react";
 import { useListRoundsQuery } from "../../api/services/round";
@@ -59,7 +58,11 @@ describe("<ViewProgram />", () => {
   });
 
   it("should display access denied when wallet accessing is not program operator", () => {
-    (useWallet as jest.Mock).mockReturnValue({ chain: {} });
+    (useWallet as jest.Mock).mockReturnValue({
+      chain: {},
+      address: faker.finance.ethereumAddress(),
+      provider: { getNetwork: () => ({ chainId: "0x0" }) },
+    });
 
     render(
       wrapWithReadProgramContext(
@@ -98,6 +101,7 @@ describe("<ViewProgram />", () => {
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
       address: stubProgram.operatorWallets[0],
+      provider: { getNetwork: () => ({ chainId: "0x0" }) },
     });
 
     render(
@@ -145,13 +149,6 @@ describe("<ViewProgram />", () => {
   });
 
   describe("when there is a round in the program", () => {
-    beforeEach(() => {
-      (useWallet as jest.Mock).mockReturnValue({
-        chain: {},
-        address: stubProgram.operatorWallets[0],
-      });
-    });
-
     it("displays round name", async () => {
       const stubRound = makeRoundData({ ownedBy: stubProgram.id });
 
