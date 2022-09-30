@@ -28,13 +28,14 @@ export default function AlertComponent({ alert }: AlertProps) {
       >
         <Check />
       </svg>
-      <span className="block sm:inline">{alert.title}</span>
+      {alert.title}
+      {alert.body}
     </div>
   );
 }
 
 export function AlertContainer({ alerts }: AlertContainerProps) {
-  if (alerts.length === 0) {
+  if (alerts?.length === 0) {
     return null;
   }
 

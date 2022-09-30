@@ -56,7 +56,7 @@ export default function Preview({
         navigate(slugs.grants);
         localResetStatus();
         dispatch(
-          addAlert("success", "Your project has been saved successfully!")
+          addAlert("success", "Your project has been saved successfully!", "")
         );
       }, 1500);
     }

@@ -1,5 +1,9 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addAlert } from "../../actions/ui";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
+import { Status } from "../../reducers/roundApplication";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import { AlertContainer } from "../base/Alert";
@@ -31,13 +35,47 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
+  const [roundToApply] = useLocalStorage("roundToApply", null);
+  const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
+    let roundAddress;
+    if (roundToApply) {
+      // eslint-disable-next-line prefer-destructuring
+      roundAddress = roundToApply.split(":")[1];
+    }
     const { alerts } = state.ui;
+    const application = state.roundApplication[roundAddress];
+    const projectId = application?.projectsIDs[0];
 
     return {
       alerts,
+      projectId,
+      application,
     };
   });
+
+  const discordLink: JSX.Element = <a href="/">Grant Hub Discord!</a>;
+  const applicationSuccessTitle: JSX.Element = (
+    <div>Thank you for applying to </div>
+  );
+  const applicationSuccessBody: JSX.Element = (
+    <div>
+      <p className="text-black">
+        Your application will be reviewed by the grant round team and you will
+        receive an email if your project is approved for the grant round. If you
+        have any questions or feedback, feel free to reach us out on the{" "}
+        {discordLink}
+      </p>
+    </div>
+  );
+
+  useEffect(() => {
+    if (props.application?.status !== Status.Sent) {
+      dispatch(
+        addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+      );
+    }
+  }, []);
 
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
