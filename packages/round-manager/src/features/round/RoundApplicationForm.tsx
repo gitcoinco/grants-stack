@@ -124,39 +124,17 @@ export function RoundApplicationForm(props: {
 
       const round = {
         ...data,
-        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // BulkVotingStrategy contract
+        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // QuadraticundingVotingStrategy contract
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
         ownedBy: programId!,
         operatorWallets: props.initialData.program!.operatorWallets,
       };
 
       await createRound({
-<<<<<<< HEAD
-        round: {
-          ...data,
-          votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // QuadraticFundingVotingStrategy contract
-          token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
-          ownedBy: programId!,
-          store: {
-            protocol: 1, // IPFS protocol ID is 1
-            pointer: metadataPointer
-          },
-          applicationStore: {
-            protocol: 1, // IPFS protocol ID is 1
-            pointer: applicationMetadataPointer
-          },
-          operatorWallets: props.initialData.program!.operatorWallets
-        },
-        signerOrProvider: signer
-      }).unwrap()
-
-      reset()
-=======
         roundMetadataWithProgramContractAddress,
         applicationQuestions,
         round,
       });
->>>>>>> 4ceca956701c4a05b1b6c9f7b728a01cc6836490
 
       reset();
     } catch (e) {

@@ -12,7 +12,7 @@ export const roundParams: DeployParams = {
   "goerli": {
     roundFactoryContract: '0x89f01CD69087669f8e49F6FB8aD475F622Ac8791',
     roundImplementationContract: '0x2707e86cBb3Db85b1Ceb78bA9C9580e2F35736fD',
-    quadraticFundingVotingStrategyContract: '0xF9A74d7c97276f5DF38086F3A0F96fAA385619Ee',
+    quadraticFundingVotingStrategyContract: '0x48a4eEB7Df505643e1e734cbD11c128F3625F6fE',
     roundContract: '0x8140b7168d6acBf528FC68Ea94D75E9d2B5aF721'
   },
   "optimism-mainnet": {
