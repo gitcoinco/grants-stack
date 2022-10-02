@@ -47,6 +47,7 @@ describe("QuadraticFundingVotingStrategy", function () {
     });
     
     it("votes properly", async () => {
+      // TODO: Change the third paramater from random wallet to grant address
       const votes = [
         [mockERC20.address, 100, Wallet.createRandom().address],
         [mockERC20.address, 100, Wallet.createRandom().address],
