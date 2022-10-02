@@ -23,7 +23,7 @@ describe("QuadraticFundingVotingStrategy", function () {
 
       quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategy');
       quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategy>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
-
+      
       mockERC20Artifact = await artifacts.readArtifact('MockERC20');
       mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, ['18']);
       
@@ -45,15 +45,11 @@ describe("QuadraticFundingVotingStrategy", function () {
       mockERC20Artifact = await artifacts.readArtifact('MockERC20');
       mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, ['18']);
     });
-
-    it("votes properly", async () => {
-      // console.log('mockERC20', mockERC20);
-      const votes = [
-        // [Wallet.createRandom().address, 1, Wallet.createRandom().address],
-        // [Wallet.createRandom().address, 2, Wallet.createRandom().address],
-        [mockERC20.address, 100, Wallet.createRandom().address],
-        [mockERC20.address, 100, Wallet.createRandom().address],
     
+    it("votes properly", async () => {
+      const votes = [
+        [mockERC20.address, 100, Wallet.createRandom().address],
+        [mockERC20.address, 100, Wallet.createRandom().address],
       ];
 
       const encodedVotes: BytesLike[] = [];
@@ -66,14 +62,12 @@ describe("QuadraticFundingVotingStrategy", function () {
           )
         );
       }
-      console.log('ok')
       expect(quadraticFundingVotingStrategy.vote(encodedVotes, user.address)).to.not.be.reverted;
       const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
       const receipt = await txn.wait();
 
       if (receipt.events) {
         for (let i = 0; i < receipt.events.length; i++) {
-          console.log('ok')
           const event = receipt.events[i];
           if (event.event === 'Voted') {
             expect(event.args).to.deep.equal({
