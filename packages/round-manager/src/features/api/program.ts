@@ -1,17 +1,21 @@
-import { fetchFromIPFS, graphql_fetch } from "./utils"
-import { Program } from "./types"
+import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { MetadataPointer, Program, Web3Instance } from "./types";
+import { programFactoryContract } from "./contracts";
+import { ethers } from "ethers";
 
-// TODO consider always returning an array and also error state, so return type is consistent
 /**
  * Fetch a list of programs
  * @param address - a valid program operator
- * @param signerOrProvider - signer
+ * @param signerOrProvider - provider
  *
  */
-export async function listPrograms (address: string, signerOrProvider: any): Promise<Program[]> {
+export async function listPrograms(
+  address: string,
+  signerOrProvider: Web3Instance["provider"]
+): Promise<Program[]> {
   try {
     // fetch chain id
-    const { chainId } = await signerOrProvider.getNetwork()
+    const { chainId } = await signerOrProvider.getNetwork();
 
     // get the subgraph for all programs owned by the given address
     const res = await graphql_fetch(
@@ -39,24 +43,138 @@ export async function listPrograms (address: string, signerOrProvider: any): Pro
             `,
       chainId,
       { address: address.toLowerCase() }
-    )
+    );
 
-    const programs: Program[] = []
+    const programs: Program[] = [];
 
     for (const program of res.data.programs) {
-      const metadata = await fetchFromIPFS(program.metaPtr.pointer)
+      const metadata = await fetchFromIPFS(program.metaPtr.pointer);
 
       programs.push({
         id: program.id,
         metadata,
-        operatorWallets: program.roles[0].accounts.map((program: any) => program.address)
-      })
+        operatorWallets: program.roles[0].accounts.map(
+          (account: { address: string }) => account.address
+        ),
+      });
     }
 
-    return programs
-
+    return programs;
   } catch (err) {
-    console.log("error", err)
-    throw Error("Unable to fetch programs")
+    console.log("error", err);
+    throw Error("Unable to fetch programs");
   }
+}
+
+// TODO(shavinac) change params to expect chainId instead of signerOrProvider
+export async function getProgramById(
+  programId: string,
+  signerOrProvider: Web3Instance["provider"]
+): Promise<Program> {
+  try {
+    // fetch chain id
+    const { chainId } = await signerOrProvider.getNetwork();
+
+    // get the subgraph for program by $programId
+    const res = await graphql_fetch(
+      `
+              query GetPrograms($programId: String) {
+                programs(where: {
+                  id: $programId
+                }) {
+                  id
+                  metaPtr {
+                    protocol
+                    pointer
+                  }
+                  roles(where: {
+                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
+                  }) {
+                    accounts {
+                      address
+                    }
+                  }
+                }
+              }
+            `,
+      chainId,
+      { programId }
+    );
+
+    const programDataFromGraph = res.data.programs[0];
+    const metadata = await fetchFromIPFS(programDataFromGraph.metaPtr.pointer);
+
+    return {
+      id: programDataFromGraph.id,
+      metadata,
+      operatorWallets: programDataFromGraph.roles[0].accounts.map(
+        (program: any) => program.address
+      ),
+    };
+  } catch (err) {
+    console.log("error", err);
+    throw Error("Unable to fetch program");
+  }
+}
+
+interface DeployProgramContractProps {
+  program: {
+    store: MetadataPointer;
+    operatorWallets: string[];
+  };
+  signerOrProvider: Web3Instance["provider"];
+}
+
+export async function deployProgramContract({
+  program: { store: metadata, operatorWallets },
+  signerOrProvider,
+}: DeployProgramContractProps) {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+    const _programFactoryContract = programFactoryContract(chainId);
+    const programFactory = new ethers.Contract(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _programFactoryContract.address!,
+      _programFactoryContract.abi,
+      signerOrProvider
+    );
+
+    operatorWallets = operatorWallets.filter((e) => e !== "");
+
+    const encodedParameters = encodeInputParameters(metadata, operatorWallets);
+
+    // Deploy a new Program contract
+    const tx = await programFactory.create(encodedParameters);
+    const receipt = await tx.wait();
+    let programAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "ProgramCreated"
+      );
+      if (event && event.args) {
+        programAddress = event.args.programContractAddress; // program contract address from the event
+      }
+    }
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Program address: ", programAddress);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (err) {
+    console.log("error", err);
+    return { error: "Unable to create program" };
+  }
+}
+
+function encodeInputParameters(
+  metadata: MetadataPointer,
+  operatorWallets: string[]
+) {
+  return ethers.utils.defaultAbiCoder.encode(
+    ["tuple(uint256 protocol, string pointer)", "address[]", "address[]"],
+    [metadata, operatorWallets.slice(0, 1), operatorWallets]
+  );
 }

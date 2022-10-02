@@ -20,11 +20,5 @@ export const roundParams: DeployParams = {
     roundImplementationContract: '0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59',
     quadraticFundingVotingStrategyContract: '0x4a850F463D1C4842937c5Bc9540dBc803D744c9F',
     roundContract: '0x2DF6c42dd2d7a13c19Ca5f7858fB7cC05A2933ed'
-  },
-  "optimism-kovan": {
-    roundFactoryContract: '0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF',
-    roundImplementationContract: '0x5C46ae4a950E0e0280006403B9e517462FD16dAc',
-    quadraticFundingVotingStrategyContract: '0x9d55810da86A9610Ab3223f4CDF0b5d81FfA579c',
-    roundContract: '0x3EE29458f2121E2C20421cd188F2CAbd99347d54'
-  },
+  }
 };

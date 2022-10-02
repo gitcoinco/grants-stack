@@ -1,6 +1,0 @@
-{
-  "network": "optimism-kovan",
-  "startBlock": 280000,
-  "programFactoryAddress": "0xea8b324E1099Ca0f82e8f50b2C2019eA1A2BA011",
-  "roundFactoryAddress": "0x0d2d160Eff14f835B30e3f0EA83b50289A7d51aF"
-}

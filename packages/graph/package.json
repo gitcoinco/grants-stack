@@ -13,7 +13,6 @@
   "homepage": "https://github.com/gitcoinco/grants-round#readme",
   "scripts": {
     "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml",
-    "prepare:optimism-kovan": "mustache config/optimism-kovan.json subgraph.template.yaml > subgraph.yaml",
     "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",

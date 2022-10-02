@@ -1,9 +1,9 @@
 /**
  * Supported EVM networks
  */
-import {VerifiableCredential} from "@gitcoinco/passport-sdk-types";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
-export type Network = "goerli" | "optimism" | "optimism-kovan"
+export type Network = "goerli" | "optimism";
 
 export interface Web3Instance {
   /**
@@ -17,9 +17,13 @@ export interface Web3Instance {
     id: number;
     name: string;
     network: Network;
-  },
+  };
   provider: any;
   signer?: any;
+}
+
+export enum StorageProtocolID {
+  IPFS = 1,
 }
 
 export interface MetadataPointer {
@@ -27,7 +31,7 @@ export interface MetadataPointer {
    * The decentralized storage protocol
    * Read more here: https://github.com/gitcoinco/grants-round/blob/main/packages/contracts/docs/MetaPtrProtocol.md
    */
-  protocol: number;
+  protocol: StorageProtocolID;
   /**
    * The identifier which represents the program metadata on a decentralized storage
    */
@@ -45,7 +49,7 @@ export interface IPFSObject {
   metadata?: {
     name?: string;
     keyvalues?: object;
-  }
+  };
 }
 
 /** Base Contract interface */
@@ -69,7 +73,7 @@ export interface Program {
    * Metadata of the Grant Program to be stored off-chain
    */
   metadata?: {
-    name: string
+    name: string;
   };
   /**
    * Pointer to a decentralized storage e.g IPFS, Ceramic etc.
@@ -83,14 +87,10 @@ export interface Program {
 
 export interface ApplicationMetadata {
   customQuestions?: {
-    email?: string,
-    twitter?: string,
-    website?: string,
-    github?: string,
-    githubOrganization?: string,
-    fundingSource?: string,
-    profit2022?: string,
-    teamSize?: string,
+    email?: string;
+    fundingSource?: string;
+    profit2022?: string;
+    teamSize?: string;
   };
 }
 
@@ -103,7 +103,8 @@ export interface Round {
    * Metadata of the Round to be stored off-chain
    */
   roundMetadata?: {
-    name: string,
+    name: string;
+    programContractAddress: string;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -151,13 +152,37 @@ export interface Round {
   operatorWallets?: Array<string>;
 }
 
-export type ProjectStatus = "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
+export type ProjectStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "APPEAL"
+  | "FRAUD";
 
 export type ProjectCredentials = {
-  [key: string]: VerifiableCredential
-}
+  [key: string]: VerifiableCredential;
+};
 
 export type GrantApplicationId = string;
+
+interface ProjectOwner {
+  address: string;
+}
+
+export type Project = {
+  lastUpdated: number; // unix timestamp in milliseconds
+  id: string;
+  owners: ProjectOwner[];
+  title: string;
+  description: string;
+  website: string;
+  bannerImg?: string;
+  logoImg?: string;
+  projectGithub?: string;
+  projectTwitter?: string;
+  credentials: ProjectCredentials;
+  metaPtr: MetadataPointer;
+};
 
 export interface GrantApplication {
   /**
@@ -175,17 +200,7 @@ export interface GrantApplication {
   /**
    * Project information
    */
-  project?: {
-    lastUpdated: Number, // unix timestamp in milliseconds
-    id: string,
-    title: string,
-    description: string,
-    website: string,
-    bannerImg?: string,
-    logoImg: string,
-    credentials: ProjectCredentials
-    metaPtr: MetadataPointer
-  };
+  project?: Project;
   /** List of answers to questions */
   answers?: Array<AnswerBlock>;
   /**
@@ -197,11 +212,24 @@ export interface GrantApplication {
 }
 
 export type AnswerBlock = {
-  questionId: Number,
-  question: string,
-  answer?: string,
+  questionId: number;
+  question: string;
+  answer?: string;
   encryptedAnswer?: {
-    ciphertext: string,
-    encryptedSymmetricKey: string
-  }
+    ciphertext: string;
+    encryptedSymmetricKey: string;
+  };
+};
+
+export enum ProgressStatus {
+  IS_SUCCESS = "IS_SUCCESS",
+  IN_PROGRESS = "IN_PROGRESS",
+  NOT_STARTED = "NOT_STARTED",
+  IS_ERROR = "IS_ERROR",
+}
+
+export enum ApplicationStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
 }

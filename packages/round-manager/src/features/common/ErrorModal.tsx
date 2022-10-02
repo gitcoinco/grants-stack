@@ -1,29 +1,33 @@
-import React, {Fragment} from "react"
-import {Dialog, Transition} from "@headlessui/react"
-import {Button} from "./styles";
-import { InformationCircleIcon } from "@heroicons/react/outline"
+import React, { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Button } from "./styles";
+import { InformationCircleIcon } from "@heroicons/react/outline";
 
 interface ErrorModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   heading?: string;
   subheading?: string;
-  tryAgainFn?: () => void
+  tryAgainFn?: () => void;
 }
 
-export default function ErrorModal(
-  {
-    isOpen,
-    setIsOpen,
-    heading = "Error",
-    subheading = "There has been a systems error during the deployment of your Grant Program.",
-    tryAgainFn = () => {}
-  }: ErrorModalProps
-) {
-
+export default function ErrorModal({
+  isOpen,
+  setIsOpen,
+  heading = "Error",
+  subheading = "There has been a systems error during the deployment of your Grant Program.",
+  tryAgainFn = () => {
+    /**/
+  },
+}: ErrorModalProps) {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" data-testid="error-modal" className="relative z-10" onClose={() => setIsOpen(false)}>
+      <Dialog
+        as="div"
+        data-testid="error-modal"
+        className="relative z-10"
+        onClose={() => setIsOpen(false)}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -51,14 +55,21 @@ export default function ErrorModal(
                 <div className="sm:flex sm:items-start flex-col">
                   <div className="flex flex-row justify-between">
                     <div className="w-12 h-10 flex items-center justify-center bg-pink-100 rounded-full">
-                      <InformationCircleIcon className="w-5 h-5 text-pink-500"/>
+                      <InformationCircleIcon className="w-5 h-5 text-pink-500" />
                     </div>
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <Dialog.Title as="h3" className="text-base leading-6 font-semibold text-grey-500" data-testid='error-heading'>
+                      <Dialog.Title
+                        as="h3"
+                        className="text-base leading-6 font-semibold text-grey-500"
+                        data-testid="error-heading"
+                      >
                         {heading}
                       </Dialog.Title>
                       <div className="mt-2">
-                        <p className="text-sm text-grey-400" data-testid='error-message' >
+                        <p
+                          className="text-sm text-grey-400"
+                          data-testid="error-message"
+                        >
                           {subheading}
                         </p>
                       </div>
@@ -70,16 +81,20 @@ export default function ErrorModal(
                       $variant="outline"
                       data-testid="tryAgain"
                       onClick={() => {
-                        tryAgainFn()
-                        setIsOpen(false)
+                        tryAgainFn();
+                        setIsOpen(false);
                       }}
                       className="mr-4"
-                    >Try Again</Button>
+                    >
+                      Try Again
+                    </Button>
                     <Button
                       type="button"
                       onClick={() => setIsOpen(false)}
                       data-testid="done"
-                    >Done</Button>
+                    >
+                      Done
+                    </Button>
                   </div>
                 </div>
               </Dialog.Panel>
@@ -88,5 +103,5 @@ export default function ErrorModal(
         </div>
       </Dialog>
     </Transition.Root>
-  )
+  );
 }

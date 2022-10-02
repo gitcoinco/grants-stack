@@ -17,7 +17,7 @@ Build Tool              : `yarn`
 │   ├── contracts               # contracts built using hardhat
 │   ├── graph                   # graph which indexes data from contracts
 │   ├── round-manager           # react-frontend for round-manager
-│   ├── round-explorer          # react-frontend for round-explorer
+│   ├── grant-explorer          # react-frontend for grant-explorer
 ├── docs                        # useful documentation
 ├── lerna.json                  # lerna config
 ├── package.json                # root package configuration
@@ -71,7 +71,7 @@ More information can be found within the [round-manager package](packages/round-
 To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-manager/docs/DEV.md)
 
 
-### round-explorer
+### grant-explorer
 
 This package serves the app which holds all the features w.r.t to
 
@@ -79,11 +79,11 @@ This package serves the app which holds all the features w.r.t to
 - voting for a project
 
 
-More information can be found within the [round-explorer package](packages/round-explorer)
+More information can be found within the [grant-explorer package](packages/grant-explorer)
 
 ##### Development
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-explorer/docs/DEV.md)
+To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/grant-explorer/docs/DEV.md)
 
 ##### Hosting
 

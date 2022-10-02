@@ -23,7 +23,7 @@ interface IVotingStrategy {
    * - allows contributor to do cast multiple votes which could be weighted.
    * - should be invoked by RoundImplementation contract
    * - ideally IVotingStrategy implementation should emit events after a vote is cast
-   * - this would be triggered when a voter casts their vote via round explorer
+   * - this would be triggered when a voter casts their vote via grant explorer
    *
    * @param _encodedVotes encoded votes
    * @param _voterAddress voter address

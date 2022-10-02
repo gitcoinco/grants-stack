@@ -18,7 +18,7 @@ function vote(bytes[] encodedVotes, address voterAddress) external nonpayable
 
 Invoked by RoundImplementation which allows a voted to cast weighted votes to multiple grants during a round
 
-*- more voters -&gt; higher the gas - this would be triggered when a voter casts their vote via round explorer*
+*- more voters -&gt; higher the gas - this would be triggered when a voter casts their vote via grant explorer*
 
 #### Parameters
 

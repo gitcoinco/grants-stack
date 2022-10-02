@@ -1,24 +1,24 @@
 # round-manager
 
-This package serves the app which holds all the features w.r.t to 
+This package serves the app which holds all the features w.r.t to
 
 - creating a program
 - maintaining a program
 - creating a round
 - maintaining a round
 
-This package is meant to be used by the round operators 
+This package is meant to be used by the round operators
 It relies on the contracts deployed from the [contracts](../contracts) package.
 Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 
 ## Live Links
 
 | Env     | Git Branch | URL                               |
-|---------|------------|-----------------------------------|
+| ------- | ---------- | --------------------------------- |
 | STAGING | main       | https://rmgitcoin.on.fleek.co/    |
 | LIVE    | release    | https://round-manager.gitcoin.co/ |
 
-## Directory Structure 
+## Directory Structure
 
 ```
 .
@@ -28,12 +28,12 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 │   ├── features
 │       ├── auth                # components/services related to authentication/authorization
 │       ├── program             # Program related components/services
-│       ├── round               # Round related components/services 
+│       ├── round               # Round related components/services
 │   ├── api.ts                  # Empty API service (feature APIs will inject endpoints)
 │   ├── browserPatches.tsx      # Browser polyfill
 │   ├── index.tsx               # Routes
 │   ├── index.css               # Global CSS
-├── tsconfig.json               # Typescript configuration 
+├── tsconfig.json               # Typescript configuration
 ├── craco.json                  # Craco configuration
 ├── package.json                # Package configuration
 └── README.md
@@ -52,9 +52,9 @@ Observe the directory structure for Authentication feature in `features/auth`
 
 It contains the `ProtectedRoute` component and `web3Service` which extends the base API service defined in `src/api.ts` by endpoint injection.
 
-## Encrypting PII information 
+## Encrypting PII information
 
-Since all the data is decentralized stored, there might be PII (Personally identifiable information) data which we cannot store. To see how we handle those scenarios, checkout [EncryptingPII.md](docs/EncryptingPII.md) 
+Since all the data is decentralized stored, there might be PII (Personally identifiable information) data which we cannot store. To see how we handle those scenarios, checkout [EncryptingPII.md](docs/EncryptingPII.md)
 
 ### Development
 

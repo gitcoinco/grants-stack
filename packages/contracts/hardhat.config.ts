@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import { HardhatUserConfig, task } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-etherscan";
+import "@nomiclabs/hardhat-solhint";
 import "@openzeppelin/hardhat-upgrades";
 import '@primitivefi/hardhat-dodoc';
 import "@nomiclabs/hardhat-waffle";
@@ -18,7 +19,6 @@ const chainIds = {
   "mainnet"           : 1,
   "goerli"            : 5,
   "optimism-mainnet"  : 10,
-  "optimism-kovan"    : 69
 };
 
 
@@ -111,7 +111,6 @@ const config: HardhatUserConfig = {
 
     // Test Networks
     "goerli": createTestnetConfig("goerli"),
-    "optimism-kovan": createTestnetConfig("optimism-kovan", "https://kovan.optimism.io")
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -121,7 +120,6 @@ const config: HardhatUserConfig = {
     apiKey: {
       goerli: process.env.ETHERSCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
-      optimisticKovan: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
     }
   },
   abiExporter: abiExporter,

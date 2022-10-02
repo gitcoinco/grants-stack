@@ -1,19 +1,16 @@
-import { Link } from "react-router-dom"
-import { PlusSmIcon } from "@heroicons/react/solid"
+import { Link } from "react-router-dom";
+import { PlusSmIcon } from "@heroicons/react/solid";
 
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg"
-import { ReactComponent as RoundManagerLogo } from "../../assets/round-manager-logo.svg"
-import { Button } from "../common/styles"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
-
+import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg";
+import { ReactComponent as RoundManagerLogo } from "../../assets/round-manager-logo.svg";
+import { Button } from "../common/styles";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export interface NavbarProps {
   programCta?: boolean;
 }
 
-
 export default function Navbar({ programCta = true }: NavbarProps) {
-
   return (
     <nav className="bg-grey-500">
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
@@ -29,7 +26,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
-              {programCta &&
+              {programCta && (
                 <Link to="/program/create">
                   <Button
                     $variant="solid"
@@ -40,12 +37,12 @@ export default function Navbar({ programCta = true }: NavbarProps) {
                     Create Program
                   </Button>
                 </Link>
-              }
+              )}
             </div>
             <ConnectButton />
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }
