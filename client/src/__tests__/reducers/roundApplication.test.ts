@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
-import { web3ChainIDLoaded } from "../../../actions/web3";
-import { Status } from "../../../reducers/roundApplication";
-import setupStore from "../../../store";
-import { buildRound } from "../../../utils/test_utils";
+import { web3ChainIDLoaded } from "../../actions/web3";
+import { Status } from "../../reducers/roundApplication";
+import setupStore from "../../store";
+import { buildRound } from "../../utils/test_utils";
 
 describe("<Apply />", () => {
   describe("with a valid round submit an application", () => {
