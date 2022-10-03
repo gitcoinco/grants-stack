@@ -119,6 +119,7 @@ function Apply() {
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
           <p className="font-semibold">Grant Round</p>
+          <p>{props.round.programName}</p>
           <p>{props.round.roundMetadata.name}</p>
           <p className="font-semibold mt-4">Application Date</p>
           <p>

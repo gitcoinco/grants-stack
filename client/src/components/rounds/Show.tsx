@@ -5,9 +5,9 @@ import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { Status } from "../../reducers/rounds";
 import { Status as ProjectStatus } from "../../reducers/projects";
-import { roundApplicationPath, newGrantPath } from "../../routes";
+import { Status } from "../../reducers/rounds";
+import { newGrantPath, roundApplicationPath } from "../../routes";
 import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
@@ -102,6 +102,9 @@ function Round() {
   return (
     <div className="h-full w-full absolute flex flex-col justify-center items-center">
       <div className="w-full lg:w-1/3 sm:w-2/3">
+        <h2 className="text-center uppercase text-2xl">
+          {roundData?.programName}
+        </h2>
         <h2 className="text-center">{roundData?.roundMetadata.name}</h2>
         <h4 className="text-center">{roundData?.roundMetadata.description}</h4>
         <div className="p-8 flex flex-col">
