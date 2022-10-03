@@ -11,6 +11,7 @@ import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
+import StatusModal from "./StatusModal";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -21,6 +22,7 @@ function Apply() {
   const navigate = useNavigate();
 
   const [modalOpen, toggleModal] = useState(false);
+  const [statusModalOpen, toggleStatusModal] = useState(false);
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [, setToggleRoundApplicationModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -49,10 +51,10 @@ function Apply() {
       roundStatus,
       roundError,
       round,
+      applicationState,
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
-      applicationState,
     };
   }, shallowEqual);
 
@@ -66,6 +68,7 @@ function Apply() {
     }
   }, [dispatch, roundId, props.round]);
 
+  // set localstorage variables
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
@@ -85,12 +88,6 @@ function Apply() {
     return <div>something went wrong</div>;
   }
 
-  if (props.applicationStatus === ApplicationStatus.Error) {
-    return (
-      <div>Error submitting round application: {props.applicationError}</div>
-    );
-  }
-
   // todo: navigating to early...
   if (props.applicationStatus === ApplicationStatus.Sent) {
     if (props.applicationState) {
@@ -98,16 +95,24 @@ function Apply() {
     }
   }
 
-  if (props.applicationStatus !== ApplicationStatus.Undefined) {
-    return <div>sending application...</div>;
-  }
-
   return (
-    <div className="mx-4">
-      <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Grant Round Application</h3>
-        <div className="w-full mb-2 inline-block sm:hidden">
-          <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+    <>
+      <div className="mx-4">
+        <div className="flex flex-col sm:flex-row justify-between">
+          <h3 className="mb-2">Grant Round Application</h3>
+          <div className="w-full mb-2 inline-block sm:hidden">
+            <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+          </div>
+          <Button
+            variant={ButtonVariants.outlineDanger}
+            onClick={() => toggleModal(true)}
+            styles={["w-full sm:w-auto mx-w-full ml-0"]}
+          >
+            <i className="icon mt-1">
+              <Cross color={colors["danger-background"]} />
+            </i>{" "}
+            <span className="pl-2">Exit</span>
+          </Button>
         </div>
         <Button
           variant={ButtonVariants.outlineDanger}
@@ -144,13 +149,25 @@ function Apply() {
             <Form
               roundApplication={props.applicationMetadata}
               round={props.round}
+              onSubmit={() => {
+                toggleStatusModal(true);
+              }}
             />
           )}
         </div>
+
+        <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
       </div>
 
-      <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
-    </div>
+      {props.applicationState !== undefined && (
+        <StatusModal
+          open={statusModalOpen}
+          onClose={toggleStatusModal}
+          currentStatus={props.applicationState.status}
+          error={props.applicationState.error}
+        />
+      )}
+    </>
   );
 }
 
