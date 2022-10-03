@@ -55,25 +55,39 @@ export default function Details({
   });
 
   const discordLink: JSX.Element = (
-    <a href="https://discord.gg/nwYzGuuruJ">Grant Hub Discord!</a>
+    <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
+      Grant Hub Discord!
+    </a>
   );
+  // todo: add round name to tile and body
+  // FIXME: the teal is not showing up
   const applicationSuccessTitle: JSX.Element = (
-    <p>Thank you for applying to </p>
+    <p className="text-gitcoin-teal-500">Thank you for applying to </p>
+  );
+  const applicationErrorTitle: JSX.Element = (
+    <p className="text-gitcoin-pink-500">Error submitting application</p>
   );
   const applicationSuccessBody: JSX.Element = (
-    <p>
+    <p className="text-black">
       Your application will be reviewed by the grant round team and you will
       receive an email if your project is approved for the grant round. If you
       have any questions or feedback, feel free to reach us out on the{" "}
       {discordLink}
     </p>
   );
+  const applicationErrorBody: JSX.Element = (
+    <p className="text-black">
+      Please try again or reach out to us on the {discordLink}
+    </p>
+  );
 
   useEffect(() => {
-    if (props.application?.status !== Status.Sent) {
+    if (props.application?.status === Status.Sent) {
       dispatch(
         addAlert("success", applicationSuccessTitle, applicationSuccessBody)
       );
+    } else if (props.application?.status === Status.Error) {
+      dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
     }
   }, []);
 

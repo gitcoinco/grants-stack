@@ -19,19 +19,14 @@ export default function AlertComponent({ alert }: AlertProps) {
     dispatch(removeAlertDelayed(alert.id, 50000));
   }, [dispatch, alert.id]);
 
-  const alertType =
-    alert.type === "success"
-      ? "text-gitcoin-teal-500"
-      : "text-gitcoin-pink-500";
-
   return (
-    <div className={`alert ${alert.type} flex`} role="alert">
-      <div className="fill-current w-4 h-4 mr-2 mb-10">
+    <div className={`alert ${alert.type} flex text-lg`} role="alert">
+      <div className="fill-current w-8 h-8 mr-2 mb-10">
         <img src="./assets/check.svg" alt="check" />
       </div>
-      <div className="m-auto">
-        <div className={`block ${alertType}`}>{alert.title}</div>
-        <div className="block text-black">{alert.body}</div>
+      <div className="m-auto ml-4">
+        <div className="block">{alert.title}</div>
+        <div className="block">{alert.body}</div>
       </div>
     </div>
   );
