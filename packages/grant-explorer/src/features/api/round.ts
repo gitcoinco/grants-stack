@@ -177,7 +177,7 @@ async function fetchMetadataAndMapProject(
     grantApplicationId: project.id,
     projectRegistryId: project.project,
     projectMetadata: {
-      title: projectMetadataFromApplication.title,
+      ...projectMetadataFromApplication
     },
     status: ApplicationStatus.APPROVED,
   };

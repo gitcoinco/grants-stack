@@ -14,6 +14,7 @@ import {
   CardsContainer,
   CardTitle,
 } from "../common/styles";
+import { ProjectBanner } from "../common/ProjectBanner"
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -60,15 +61,11 @@ export default function ViewRound() {
   );
 }
 
-function ProjectBanner() {
-  return <div className="bg-black h-[120px] w-full object-cover rounded-t" />;
-}
-
 function ProjectCard(props: { project: Project }) {
   return (
-    <BasicCard>
+    <BasicCard data-testid="project-card">
       <CardHeader>
-        <ProjectBanner />
+        <ProjectBanner projectMetadata={props.project.projectMetadata} classNameOverride={"bg-black h-[120px] w-full object-cover rounded-t"}/>
       </CardHeader>
       <CardContent>
         <CardTitle>{props.project.projectMetadata.title}</CardTitle>

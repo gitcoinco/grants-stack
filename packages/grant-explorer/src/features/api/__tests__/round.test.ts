@@ -1,4 +1,4 @@
-import { makeRoundData } from "../../../test-utils"
+import { makeApprovedProjectData, makeRoundData } from "../../../test-utils"
 import { ApplicationStatus, Round } from "../types"
 import { fetchFromIPFS, graphql_fetch } from "../utils"
 import { getRoundById, GetRoundByIdResult } from "../round"
@@ -68,14 +68,7 @@ describe("getRoundById", () => {
   describe("when round has approved projects", () => {
     const roundProjectStatuses = "round-project-metadata-ptr";
     const approvedProjectMetadataPointer = "my-project-metadata";
-    const expectedApprovedApplication = {
-      grantApplicationId: "grant-application-id",
-      projectRegistryId: "project-registry-id",
-      projectMetadata: {
-        title: "My Cool Project"
-      },
-      status: ApplicationStatus.APPROVED
-    }
+    const expectedApprovedApplication = makeApprovedProjectData();
 
     let graphQLResultWithApprovedApplication: GetRoundByIdResult;
     let roundMetadataIpfsResult: any;

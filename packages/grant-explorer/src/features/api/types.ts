@@ -125,4 +125,5 @@ export enum ApplicationStatus {
 
 export type ProjectMetadata = {
   title: string;
+  bannerImg?: string;
 }

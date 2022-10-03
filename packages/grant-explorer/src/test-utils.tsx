@@ -6,7 +6,7 @@ import {
   RoundContext,
   RoundState,
 } from "./context/RoundContext";
-import { Round } from "./features/api/types";
+import { ApplicationStatus, Project, Round } from "./features/api/types"
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -31,7 +31,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     },
     store: {
       protocol: 1,
-      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+      pointer: generateIpfsCid(),
     },
     applicationsStartTime,
     applicationsEndTime,
@@ -44,9 +44,22 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   };
 };
 
-export const makeApprovedProjectData = () => {
-  throw new Error("TODO: not implemented yet");
+export const makeApprovedProjectData = (overrides?: Partial<Project>): Project => {
+  return {
+    grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
+    projectRegistryId: faker.datatype.number().toString(),
+    projectMetadata: {
+      title: faker.company.name(),
+      bannerImg: generateIpfsCid()
+    },
+    status: ApplicationStatus.APPROVED,
+    ...overrides
+  };
 };
+
+function generateIpfsCid() {
+  return faker.random.alpha({ count: 59, casing: "lower" });
+}
 
 export const renderWithContext = (
   ui: JSX.Element,
