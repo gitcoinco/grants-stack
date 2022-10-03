@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 import { isJestRunning } from "./utils";
+import { datadogLogs } from "@datadog/browser-logs";
 
 const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
@@ -147,6 +148,7 @@ export class Lit {
 
       return decryptedString;
     } catch (error) {
+      datadogLogs.logger.error(`error: decryptString - ${error}`);
       console.error(error);
       return "N/A";
     }
