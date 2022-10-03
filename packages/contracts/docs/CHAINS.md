@@ -19,7 +19,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract                          | Address                                    |
 |-----------------------------------|--------------------------------------------|
-| QuadraticFundingVotingStrategy    | 0x4a850F463D1C4842937c5Bc9540dBc803D744c9F |
+| QuadraticFundingVotingStrategy    |                   TODO                     |
 | RoundFactory                      | 0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C |
 | RoundImplementation               | 0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59 |
 | Round                             | 0x2DF6c42dd2d7a13c19Ca5f7858fB7cC05A2933ed |
