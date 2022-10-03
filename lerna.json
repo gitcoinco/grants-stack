@@ -2,8 +2,10 @@
   "packages": [
     "packages/contracts",
     "packages/graph",
-    "packages/round-manager"
+    "packages/round-manager",
+    "packages/grant-explorer"
   ],
   "version": "independent",
-  "npmClient": "yarn"
+  "npmClient": "yarn",
+  "useNx": true
 }
