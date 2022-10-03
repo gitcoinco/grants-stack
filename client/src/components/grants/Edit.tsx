@@ -12,7 +12,11 @@ import ExitModal from "../base/ExitModal";
 import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
-import { metadataSaved, credentialsSaved } from "../../actions/projectForm";
+import {
+  metadataSaved,
+  credentialsSaved,
+  formReset,
+} from "../../actions/projectForm";
 
 function EditProject() {
   const params = useParams();
@@ -59,6 +63,10 @@ function EditProject() {
         dispatch(credentialsSaved(props.projectMetadata.credentials));
       }
     }
+
+    return () => {
+      dispatch(formReset());
+    };
   }, [props.projectMetadata]);
 
   if (
