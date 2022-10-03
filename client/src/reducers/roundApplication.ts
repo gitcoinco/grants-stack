@@ -17,13 +17,18 @@ export const enum Status {
   Error,
 }
 
-export interface RoundApplicationState {
+export type RoundApplicationError = {
+  error: string;
+  step: Status;
+};
+
+export type RoundApplicationState = {
   [roundAddress: string]: {
     status: Status;
-    error: string | undefined;
+    error?: RoundApplicationError;
     projectsIDs: Array<number>; // projects IDs that applied to the round
   };
-}
+};
 
 const initialState = {};
 
@@ -46,6 +51,7 @@ export const roundApplicationReducer = (
         [action.roundAddress]: {
           ...application,
           status: action.status,
+          error: undefined,
         },
       };
     }
@@ -58,7 +64,10 @@ export const roundApplicationReducer = (
         [action.roundAddress]: {
           ...application,
           status: Status.Error,
-          error: action.error,
+          error: {
+            error: action.error,
+            step: action.step,
+          },
         },
       };
     }
