@@ -12,7 +12,6 @@ import {
 
 import { MetadataPointer } from "../types";
 import { checkGrantApplicationStatus } from "../application";
-import { bool } from "yup";
 
 enableFetchMocks();
 
@@ -354,7 +353,9 @@ describe("graphql_fetch", () => {
 
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
-    const metadata = {
+    const metadata: {
+      customQuestions: { [key: string]: string };
+    } = {
       customQuestions: {
         email: "What is your email?",
         fundingSource: "What is your funding source?",
@@ -364,41 +365,52 @@ describe("generateApplicationSchema", () => {
     };
 
     const schema = generateApplicationSchema(metadata);
-    const expectedSchema = createQuestions(metadata);
+
+    const expectedSchema = Object.keys(metadata.customQuestions).map(
+      (question) => ({
+        question: humanReadableLabels[question],
+        type: inputTypes[question],
+        required: true,
+        info: metadata.customQuestions[question],
+        choices: [],
+        encrypted: question === "email",
+      })
+    );
+
     expect(Array.isArray(schema)).toBe(true);
-    expect(schema).toContainEqual(expectedSchema[0]);
+    expect(schema).toMatchObject(expectedSchema);
   });
 
   it("should return valid application schema when one of the subkeys is not an object", () => {
     const metadata = {
-      customQuestions: {
-        email: "",
-        fundingSource: "What platforms have you raised funds from?",
-      },
+      customQuestions: {},
       ofac: "Is you project OFAC compliant?",
+      coolness: "Is your project really cool?",
     };
+    const expectedSchema = [
+      {
+        question: "Ofac",
+        type: "text",
+        required: true,
+        info: metadata.ofac,
+        choices: [],
+        encrypted: false,
+      },
+      {
+        question: "Coolness",
+        type: "text",
+        required: true,
+        info: metadata.coolness,
+        choices: [],
+        encrypted: false,
+      },
+    ];
 
     const schema = generateApplicationSchema(metadata);
 
     expect(Array.isArray(schema)).toBe(true);
-    expect(schema).toContainEqual({
-      id: 1,
-      question: humanReadableLabels.fundingSource,
-      type: inputTypes.fundingSource,
-      required: true,
-      info: metadata.customQuestions.fundingSource,
-      choices: [],
-      encrypted: false,
-    });
-    expect(schema).toContainEqual({
-      id: 2,
-      question: "Ofac",
-      type: "text",
-      required: true,
-      info: "Is you project OFAC compliant?",
-      choices: [],
-      encrypted: false,
-    });
+
+    expect(schema).toMatchObject(expectedSchema);
   });
 
   it("should mark email field as encrypted", () => {
@@ -420,31 +432,3 @@ describe("generateApplicationSchema", () => {
     );
   });
 });
-
-function createQuestions(
-  metadata: {
-    customQuestions: {
-      email?: string;
-      fundingSource?: string;
-      profit2022?: string;
-      teamSize?: string;
-    };
-  },
-  overrides?: { required: boolean; encrypted: boolean }
-): any {
-  const questions: any = [];
-  Object.keys(metadata.customQuestions).forEach((key) => {
-    questions.push({
-      id: Object.keys(metadata.customQuestions).indexOf(key),
-      question: humanReadableLabels[key],
-      type: inputTypes[key],
-      required: true,
-      info: metadata.customQuestions.email,
-      choices: [],
-      encrypted: key === "email",
-      ...overrides,
-    });
-  });
-
-  return questions;
-}
