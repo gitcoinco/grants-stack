@@ -54,7 +54,7 @@ export const IAM_SERVER =
 const verifier = new PassportVerifier();
 
 export default function ViewApplicationPage() {
-  datadogLogs.logger.info("====> Route: /program/create");
+  datadogLogs.logger.info("====> Route: /round/:roundId/application/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const [reviewDecision, setReviewDecision] = useState<
@@ -130,8 +130,11 @@ export default function ViewApplicationPage() {
       }).unwrap();
 
       navigate(0);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      datadogLogs.logger.error(
+        `error: handleUpdateGrantApplication - ${error}, roundId - ${roundId}`
+      );
+      console.error(error);
     }
   };
 
@@ -221,6 +224,9 @@ export default function ViewApplicationPage() {
                 answer: decryptedString,
               };
             } catch (error) {
+              datadogLogs.logger.error(`error: decryptAnswers - ${error}`);
+              console.error(error);
+
               _answerBlock = {
                 ..._answerBlock,
                 answer: "N/A",
