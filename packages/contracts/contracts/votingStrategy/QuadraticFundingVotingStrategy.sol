@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./IVotingStrategy.sol";
 
 /**
@@ -12,7 +13,9 @@ import "./IVotingStrategy.sol";
  * Emits event upon every transfer.
  */
 contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
-  
+
+  using SafeERC20 for IERC20;
+
   // --- Event ---
 
   /// @notice Emitted when a new vote is sent
@@ -44,28 +47,23 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
       /// @dev erc20 transfer to grant address
-      // slither-disable-next-line missing-zero-check,calls-loop,low-level-calls,reentrancy-events
-      (bool success, bytes memory returndata) = _token.call(abi.encodeWithSelector(
-        IERC20.transferFrom.selector,
+      // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events
+      SafeERC20.safeTransferFrom(
+        IERC20(_token),
         voterAddress,
         _grantAddress,
         _amount
-      ));
+      );
 
-      // This is a non-reverting version of safeTransferFrom()
-      // First, we assert that the address is a contract, since all message calls to EOAs are successful
-      // Then, we assert that we get a low-level message call success (this is for non-compliant ERC20s)
-      // If return data length exceeds 0, we validate it as a boolean and expect true (for compliant ERC20s)
-      if (_token.code.length > 0 && success && (returndata.length == 0 || abi.decode(returndata, (bool)))) {
-        /// @dev emit event for transfer
-        emit Voted(
-          IERC20(_token),
-          _amount,
-          voterAddress,
-          _grantAddress,
-          msg.sender
-        );
-      }
+      /// @dev emit event for transfer
+      emit Voted(
+        IERC20(_token),
+        _amount,
+        voterAddress,
+        _grantAddress,
+        msg.sender
+      );
+
     }
 
   }
