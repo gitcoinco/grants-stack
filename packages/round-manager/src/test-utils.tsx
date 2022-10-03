@@ -78,6 +78,7 @@ export interface MakeGrantApplicationDataParams {
   roundIdOverride?: string;
   projectGithubOverride?: string;
   projectTwitterOverride?: string;
+  applicationAnswers?: GrantApplication["answers"];
 }
 
 export const makeGrantApplicationData = (
@@ -89,6 +90,7 @@ export const makeGrantApplicationData = (
     roundIdOverride,
     projectGithubOverride,
     projectTwitterOverride,
+    applicationAnswers,
   } = {
     ownerAddress: faker.finance.ethereumAddress(),
     ...overrides,
@@ -136,6 +138,7 @@ export const makeGrantApplicationData = (
       projectTwitter: projectTwitterOverride ?? undefined,
       credentials: makeProjectCredentials(credentialInputData, ownerAddress),
     },
+    answers: applicationAnswers ?? [],
     projectsMetaPtr: {
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),

@@ -19,6 +19,7 @@ import { getApplicationById } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
+import { humanReadableLabels } from "../../api/utils";
 
 jest.mock("../../api/services/grantApplication");
 jest.mock("../../api/application");
@@ -421,6 +422,37 @@ describe("ViewApplicationPage", () => {
     renderWithContext(<ViewApplicationPage />, { applications: [application] });
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
     expect(screen.queryByText("404 ERROR")).not.toBeInTheDocument();
+  });
+
+  it("should display project's application answers", async () => {
+    const expectedAnswers = Object.entries(humanReadableLabels).map(
+      ([_, questionLabel], index) => ({
+        questionId: index,
+        question: questionLabel,
+        answer: `My ${questionLabel} is ${faker.random.word()}`,
+      })
+    );
+
+    const grantApplicationWithApplicationAnswers = makeGrantApplicationData({
+      applicationIdOverride,
+      applicationAnswers: expectedAnswers,
+    });
+
+    (getApplicationById as any).mockResolvedValue(
+      grantApplicationWithApplicationAnswers
+    );
+    (useUpdateGrantApplicationMutation as any).mockReturnValue([
+      jest.fn(),
+      { isLoading: false },
+    ]);
+
+    renderWithContext(<ViewApplicationPage />, {
+      applications: [grantApplicationWithApplicationAnswers],
+    });
+
+    expect(
+      await screen.findByText(expectedAnswers[0].answer)
+    ).toBeInTheDocument();
   });
 });
 
