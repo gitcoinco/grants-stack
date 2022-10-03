@@ -5,11 +5,14 @@ import {
   fetchFromIPFS,
   generateApplicationSchema,
   graphql_fetch,
+  humanReadableLabels,
+  inputTypes,
   pinToIPFS,
 } from "../utils";
 
 import { MetadataPointer } from "../types";
 import { checkGrantApplicationStatus } from "../application";
+import { bool } from "yup";
 
 enableFetchMocks();
 
@@ -353,31 +356,23 @@ describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const metadata = {
       customQuestions: {
-        email: "",
-        twitter: "",
-        fundingSource: "What platforms have you raised funds from?",
+        email: "What is your email?",
+        fundingSource: "What is your funding source?",
+        profit2022: "What is your profit for 2022?",
+        teamSize: "What is your team size",
       },
     };
 
     const schema = generateApplicationSchema(metadata);
-
+    const expectedSchema = createQuestions(metadata);
     expect(Array.isArray(schema)).toBe(true);
-    expect(schema).toContainEqual({
-      id: 2,
-      question: "Funding Source",
-      type: "text",
-      required: true,
-      info: "What platforms have you raised funds from?",
-      choices: [],
-      encrypted: false,
-    });
+    expect(schema).toContainEqual(expectedSchema[0]);
   });
 
   it("should return valid application schema when one of the subkeys is not an object", () => {
     const metadata = {
       customQuestions: {
         email: "",
-        twitter: "",
         fundingSource: "What platforms have you raised funds from?",
       },
       ofac: "Is you project OFAC compliant?",
@@ -387,16 +382,16 @@ describe("generateApplicationSchema", () => {
 
     expect(Array.isArray(schema)).toBe(true);
     expect(schema).toContainEqual({
-      id: 2,
-      question: "Funding Source",
-      type: "text",
+      id: 1,
+      question: humanReadableLabels.fundingSource,
+      type: inputTypes.fundingSource,
       required: true,
-      info: "What platforms have you raised funds from?",
+      info: metadata.customQuestions.fundingSource,
       choices: [],
       encrypted: false,
     });
     expect(schema).toContainEqual({
-      id: 3,
+      id: 2,
       question: "Ofac",
       type: "text",
       required: true,
@@ -418,10 +413,38 @@ describe("generateApplicationSchema", () => {
     expect(schema).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          question: "Email",
+          question: "Email Address",
           encrypted: true,
         }),
       ])
     );
   });
 });
+
+function createQuestions(
+  metadata: {
+    customQuestions: {
+      email?: string;
+      fundingSource?: string;
+      profit2022?: string;
+      teamSize?: string;
+    };
+  },
+  overrides?: { required: boolean; encrypted: boolean }
+): any {
+  const questions: any = [];
+  Object.keys(metadata.customQuestions).forEach((key) => {
+    questions.push({
+      id: Object.keys(metadata.customQuestions).indexOf(key),
+      question: humanReadableLabels[key],
+      type: inputTypes[key],
+      required: true,
+      info: metadata.customQuestions.email,
+      choices: [],
+      encrypted: key === "email",
+      ...overrides,
+    });
+  });
+
+  return questions;
+}
