@@ -54,19 +54,19 @@ export default function Details({
     };
   });
 
-  const discordLink: JSX.Element = <a href="/">Grant Hub Discord!</a>;
+  const discordLink: JSX.Element = (
+    <a href="https://discord.gg/nwYzGuuruJ">Grant Hub Discord!</a>
+  );
   const applicationSuccessTitle: JSX.Element = (
-    <div>Thank you for applying to </div>
+    <p>Thank you for applying to </p>
   );
   const applicationSuccessBody: JSX.Element = (
-    <div>
-      <p className="text-black">
-        Your application will be reviewed by the grant round team and you will
-        receive an email if your project is approved for the grant round. If you
-        have any questions or feedback, feel free to reach us out on the{" "}
-        {discordLink}
-      </p>
-    </div>
+    <p>
+      Your application will be reviewed by the grant round team and you will
+      receive an email if your project is approved for the grant round. If you
+      have any questions or feedback, feel free to reach us out on the{" "}
+      {discordLink}
+    </p>
   );
 
   useEffect(() => {

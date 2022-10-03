@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Check from "../icons/Check";
-import { Alert } from "../../types/alert";
 import { removeAlertDelayed } from "../../actions/ui";
+import { Alert } from "../../types/alert";
+import Check from "../icons/Check";
 
 type AlertProps = {
   alert: Alert;
@@ -19,17 +19,24 @@ export default function AlertComponent({ alert }: AlertProps) {
     dispatch(removeAlertDelayed(alert.id, 5000));
   }, [dispatch, alert.id]);
 
+  const alertType =
+    alert.type === "success"
+      ? "text-gitcoin-teal-500"
+      : "text-gitcoin-pink-500";
+
   return (
-    <div className={`alert ${alert.type}`} role="alert">
+    <div className={`alert ${alert.type} flex`} role="alert">
       <svg
-        className="fill-current w-4 h-4 mr-2"
+        className="fill-current w-4 h-4 mr-2 mb-10"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
       >
         <Check />
       </svg>
-      {alert.title}
-      {alert.body}
+      <div className="m-auto">
+        <div className={`block ${alertType}`}>{alert.title}</div>
+        <div className="block text-black">{alert.body}</div>
+      </div>
     </div>
   );
 }
