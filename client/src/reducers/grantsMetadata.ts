@@ -4,6 +4,7 @@ import {
   GRANT_METADATA_LOADING,
   GRANT_METADATA_FETCHED,
   GRANT_METADATA_FETCHING_ERROR,
+  GRANT_METADATA_ALL_UNLOADED,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
 
@@ -70,6 +71,10 @@ export const grantsMetadataReducer = (
           error: action.error,
         },
       };
+    }
+
+    case GRANT_METADATA_ALL_UNLOADED: {
+      return initialState;
     }
 
     default: {

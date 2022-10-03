@@ -35,11 +35,7 @@ function NewProject() {
           />
         );
       default:
-        return (
-          <ProjectForm
-            setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
-          />
-        );
+        return null;
     }
   };
 

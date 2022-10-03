@@ -40,5 +40,3 @@ export const metadataToProject = (
 
   return p;
 };
-
-export {};
