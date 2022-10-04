@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { loadRound, unloadRounds } from "../../actions/rounds";
 import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/roundApplication";
 import colors from "../../styles/colors";
-import { FormInputs, Metadata, Project } from "../../types";
+import { FormInputs, Metadata, Project, Round } from "../../types";
 import { AlertContainer } from "../base/Alert";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
@@ -36,43 +38,61 @@ export default function Details({
   preview?: boolean;
 }) {
   const [roundToApply] = useLocalStorage("roundToApply", null);
+  const [roundData, setRoundData] = useState<Round>();
+  const params = useParams();
+  const { id: projectId } = params;
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    let roundAddress;
+    let existingApplication;
+    let roundAddress: string | undefined;
+    let round: Round | undefined;
     if (roundToApply) {
       // eslint-disable-next-line prefer-destructuring
       roundAddress = roundToApply.split(":")[1];
+      existingApplication = state.roundApplication[roundAddress!];
+      if (existingApplication !== undefined) {
+        // console.log("State =>", props);
+      }
+      const roundState = state.rounds[roundAddress!];
+      round = roundState ? roundState.round : undefined;
     }
     const { alerts } = state.ui;
-    const application = state.roundApplication[roundAddress];
-    const projectId = application?.projectsIDs[0];
 
     return {
       alerts,
-      projectId,
-      application,
+      round,
+      roundAddress,
+      existingApplication,
     };
   });
 
+  // todo: still testing with this, remove when done.
+  console.log("State =>", props, projectId);
+
+  /*
+   * Alert elements
+   */
   const discordLink: JSX.Element = (
     <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
       Grant Hub Discord!
     </a>
   );
-  // todo: add round name to tile and body
-  // FIXME: the teal is not showing up
+  // todo: FIXME: the teal is not showing up for title
   const applicationSuccessTitle: JSX.Element = (
-    <p className="text-gitcoin-teal-500">Thank you for applying to </p>
+    <p className="text-gitcoin-teal-500">
+      Thank you for applying to {roundData?.programName}
+      {roundData?.roundMetadata.name}!
+    </p>
   );
   const applicationErrorTitle: JSX.Element = (
-    <p className="text-gitcoin-pink-500">Error submitting application</p>
+    <p className="text-gitcoin-pink-500">
+      Error submitting application to {roundData?.programName}
+    </p>
   );
   const applicationSuccessBody: JSX.Element = (
     <p className="text-black">
-      Your application will be reviewed by the grant round team and you will
-      receive an email if your project is approved for the grant round. If you
-      have any questions or feedback, feel free to reach us out on the{" "}
-      {discordLink}
+      Your application has been received, and the {roundData?.programName} team
+      will review and reach out with next steps.
     </p>
   );
   const applicationErrorBody: JSX.Element = (
@@ -81,18 +101,34 @@ export default function Details({
     </p>
   );
 
+  /*
+   * Alert handlers
+   */
   useEffect(() => {
-    if (props.application?.status === Status.Sent) {
+    if (props.roundAddress !== undefined) {
+      dispatch(unloadRounds());
+      dispatch(loadRound(props.roundAddress));
+    }
+  }, [dispatch, props.roundAddress]);
+
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
+
+  useEffect(() => {
+    if (props.existingApplication?.status === Status.Sent) {
       dispatch(
         addAlert("success", applicationSuccessTitle, applicationSuccessBody)
       );
-    } else if (props.application?.status === Status.Error) {
+    } else if (props.existingApplication?.status === Status.Error) {
       dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
     }
   }, []);
 
   return (
-    <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
+    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <AlertContainer alerts={props.alerts} />
       <img
         className="w-full mb-4"
