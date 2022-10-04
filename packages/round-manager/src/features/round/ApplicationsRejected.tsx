@@ -1,3 +1,4 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
@@ -92,8 +93,9 @@ export default function ApplicationsRejected() {
       }).unwrap();
       setBulkSelectRejected(false);
       setOpenModal(false);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
+      console.error(error);
     }
   };
 

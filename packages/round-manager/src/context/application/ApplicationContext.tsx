@@ -6,6 +6,7 @@ import {
   getApplicationsByRoundId,
 } from "../../features/api/application";
 import { Web3Provider } from "@ethersproject/providers";
+import { datadogLogs } from "@datadog/browser-logs";
 
 enum ActionType {
   SET_APPLICATION = "SET_APPLICATION",
@@ -103,14 +104,17 @@ function fetchApplicationById(
   id: string,
   walletProvider: Web3Provider
 ) {
+  datadogLogs.logger.info(`fetchApplicationById: id - ${id}`);
+
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getApplicationById(id, walletProvider)
     .then((application) => {
       dispatch({ type: ActionType.SET_APPLICATION, payload: application });
     })
-    .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_GET_APPLICATION, payload: error })
-    )
+    .catch((error) => {
+      datadogLogs.logger.error(`error: fetchApplicationById - ${error}`);
+      dispatch({ type: ActionType.SET_ERROR_GET_APPLICATION, payload: error });
+    })
     .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
 }
 
@@ -119,6 +123,8 @@ const fetchApplicationsByRoundId = async (
   roundId: string,
   walletProvider: Web3Provider
 ) => {
+  datadogLogs.logger.info(`fetchApplicationsByRoundId: roundId - ${roundId}`);
+
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getApplicationsByRoundId(roundId, walletProvider)
     .then((applications) =>
@@ -127,12 +133,15 @@ const fetchApplicationsByRoundId = async (
         payload: applications,
       })
     )
-    .catch((error) =>
+    .catch((error) => {
+      datadogLogs.logger.error(
+        `error: fetchApplicationsByRoundId - ${error} roundId - ${roundId}`
+      );
       dispatch({
         type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS,
         payload: error,
-      })
-    )
+      });
+    })
     .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
 };
 

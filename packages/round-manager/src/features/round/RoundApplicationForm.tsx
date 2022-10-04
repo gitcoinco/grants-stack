@@ -19,6 +19,7 @@ import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
+import { datadogLogs } from "@datadog/browser-logs";
 
 const ValidationSchema = yup.object().shape({
   applicationMetadata: yup.object({
@@ -137,8 +138,11 @@ export function RoundApplicationForm(props: {
       });
 
       reset();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      datadogLogs.logger.error(
+        `error: RoundApplcationForm next - ${error}, programId - ${programId}`
+      );
+      console.error(error);
     }
   };
 

@@ -20,9 +20,9 @@ type FormData = {
 };
 
 export default function CreateProgram() {
-  datadogLogs.logger.info(`====> Route: ${window.location.href}`);
-
+  datadogLogs.logger.info(`====> Route: /program/create`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 

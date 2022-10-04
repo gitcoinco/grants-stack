@@ -27,6 +27,7 @@ import {
   Select,
 } from "./BulkApplicationCommon";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export default function ApplicationsApproved() {
   const { id } = useParams();
@@ -92,8 +93,9 @@ export default function ApplicationsApproved() {
       }).unwrap();
       setBulkSelectApproved(false);
       setOpenModal(false);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
+      console.error(error);
     }
   };
 

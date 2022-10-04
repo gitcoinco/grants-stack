@@ -4,6 +4,7 @@ import React, { createContext, useContext, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { deployProgramContract } from "../../features/api/program";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export interface CreateProgramState {
   IPFSCurrentStatus: ProgressStatus;
@@ -106,8 +107,9 @@ const _createProgram = async ({
       signerOrProvider,
       transactionBlockNumber
     );
-  } catch (e) {
-    console.error("Error while creating program: ", e);
+  } catch (error) {
+    datadogLogs.logger.error(`error: _createProgram - ${error}`);
+    console.error("Error while creating program: ", error);
   }
 };
 export const useCreateProgram = () => {
@@ -139,6 +141,8 @@ async function storeDocument(
   dispatch: (action: Action) => void,
   programName: string
 ) {
+  datadogLogs.logger.info(`storeDocument: programName - ${programName}`);
+
   dispatch({
     type: ActionType.SET_STORING_STATUS,
     payload: { IPFSCurrentStatus: ProgressStatus.IN_PROGRESS },
@@ -158,12 +162,13 @@ async function storeDocument(
     });
 
     return IpfsHash;
-  } catch (e) {
+  } catch (error) {
+    datadogLogs.logger.error(`error: storeDocument - ${error}`);
     dispatch({
       type: ActionType.SET_STORING_STATUS,
       payload: { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
     });
-    throw e;
+    throw error;
   }
 }
 
@@ -190,13 +195,14 @@ async function deployContract(
     });
 
     return transactionBlockNumber;
-  } catch (e) {
+  } catch (error) {
+    datadogLogs.logger.error(`error: deployContract - ${error}`);
     dispatch({
       type: ActionType.SET_DEPLOYMENT_STATUS,
       payload: { contractDeploymentStatus: ProgressStatus.IS_ERROR },
     });
 
-    throw e;
+    throw error;
   }
 }
 
@@ -206,6 +212,10 @@ async function waitForSubgraphToUpdate(
   transactionBlockNumber: number
 ) {
   try {
+    datadogLogs.logger.error(
+      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`
+    );
+
     dispatch({
       type: ActionType.SET_INDEXING_STATUS,
       payload: { indexingStatus: ProgressStatus.IN_PROGRESS },
@@ -219,11 +229,14 @@ async function waitForSubgraphToUpdate(
       type: ActionType.SET_INDEXING_STATUS,
       payload: { indexingStatus: ProgressStatus.IS_SUCCESS },
     });
-  } catch (e) {
+  } catch (error) {
+    datadogLogs.logger.error(
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
+    );
     dispatch({
       type: ActionType.SET_INDEXING_STATUS,
       payload: { indexingStatus: ProgressStatus.IS_ERROR },
     });
-    throw e;
+    throw error;
   }
 }

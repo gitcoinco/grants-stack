@@ -10,6 +10,7 @@ import { useWallet } from "../../features/common/Auth";
 import { deployRoundContract } from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -105,6 +106,8 @@ const _createRound = async ({
     round,
   } = createRoundData;
   try {
+    datadogLogs.logger.info(`_createRound: ${round}`);
+
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
       await storeDocuments(
         dispatch,
@@ -135,8 +138,12 @@ const _createRound = async ({
       signerOrProvider,
       transactionBlockNumber
     );
-  } catch (e) {
-    console.error("Error while creating round: ", e);
+  } catch (error) {
+    datadogLogs.logger.error(
+      `error: _createRound ${error}. Data : ${createRoundData}`
+    );
+
+    console.error("Error while creating round: ", error);
   }
 };
 

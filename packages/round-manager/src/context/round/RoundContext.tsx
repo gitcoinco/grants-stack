@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { Web3Provider } from "@ethersproject/providers";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export interface RoundState {
   data: Round[];
@@ -39,11 +40,14 @@ const fetchRounds = async (
   walletProvider: Web3Provider,
   programId: string
 ) => {
+  datadogLogs.logger.info(`fetchRounds: program - ${programId}`);
+
   dispatch({ type: ActionType.START_LOADING });
 
   const res = await listRounds(address, walletProvider, programId);
 
   if (res.error) {
+    datadogLogs.logger.error(`error: fetchRounds ${res.error}`);
     dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: res.error });
   }
   dispatch({ type: ActionType.SET_ROUNDS, payload: res.data });
@@ -55,15 +59,18 @@ const fetchRoundById = (
   walletProvider: Web3Provider,
   roundId: string
 ) => {
+  datadogLogs.logger.info(`fetchRoundById: round - ${roundId}`);
+
   dispatch({ type: ActionType.START_LOADING });
 
   getRoundById(walletProvider, roundId)
     .then((round) =>
       dispatch({ type: ActionType.SET_ROUNDS, payload: [round] })
     )
-    .catch((error) =>
-      dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error })
-    )
+    .catch((error) => {
+      datadogLogs.logger.error(`error: fetchRoundById ${error}`);
+      dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
+    })
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
