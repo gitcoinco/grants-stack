@@ -32,6 +32,7 @@ export const ROUND_APPLICATION_LOADED = "ROUND_APPLICATION_LOADED";
 interface RoundApplicationLoadedAction {
   type: typeof ROUND_APPLICATION_LOADED;
   roundAddress: string;
+  projectId: number;
 }
 
 export const ROUND_APPLICATION_FOUND = "ROUND_APPLICATION_FOUND";
@@ -190,6 +191,7 @@ export const submitApplication =
       dispatch({
         type: ROUND_APPLICATION_LOADED,
         roundAddress,
+        projectId,
       });
     } catch (e) {
       console.error("error calling applyToRound:", e);

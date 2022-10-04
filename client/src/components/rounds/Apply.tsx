@@ -3,9 +3,9 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
+import { grantPath, roundPath } from "../../routes";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
-import { roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
@@ -52,6 +52,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      applicationState,
     };
   }, shallowEqual);
 
@@ -90,8 +91,11 @@ function Apply() {
     );
   }
 
+  // todo: navigating to early...
   if (props.applicationStatus === ApplicationStatus.Sent) {
-    return <div>Applied to round successfully.</div>;
+    if (props.applicationState) {
+      navigate(grantPath(props.applicationState.projectsIDs[0]));
+    }
   }
 
   if (props.applicationStatus !== ApplicationStatus.Undefined) {

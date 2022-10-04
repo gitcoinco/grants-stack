@@ -72,6 +72,7 @@ export const roundApplicationReducer = (
           ...application,
           status: Status.Sent,
           error: undefined,
+          projectsIDs: [action.projectId, ...application.projectsIDs],
         },
       };
     }
