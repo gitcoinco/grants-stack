@@ -234,7 +234,7 @@ export const submitApplication =
       dispatch({
         type: ROUND_APPLICATION_LOADED,
         roundAddress,
-        projectId,
+        projectId: Number(projectId),
       });
     } catch (e) {
       console.error("error calling applyToRound:", e);
