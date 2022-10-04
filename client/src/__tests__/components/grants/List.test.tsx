@@ -1,15 +1,20 @@
 import "@testing-library/jest-dom";
+import { screen } from "@testing-library/react";
 import { when } from "jest-when";
 import { Store } from "redux";
-import { screen } from "@testing-library/react";
-import { RootState } from "../../../reducers";
-import List from "../../../components/grants/List";
-import setupStore from "../../../store";
 import { loadProjects } from "../../../actions/projects";
 import { checkRoundApplications } from "../../../actions/roundApplication";
+import { web3ChainIDLoaded } from "../../../actions/web3";
+import List from "../../../components/grants/List";
 import useLocalStorage from "../../../hooks/useLocalStorage";
-import { ProjectEvent, Metadata } from "../../../types";
-import { renderWrapped } from "../../../utils/test_utils";
+import { RootState } from "../../../reducers";
+import setupStore from "../../../store";
+import { Metadata, ProjectEvent } from "../../../types";
+import {
+  buildProjectMetadata,
+  buildRound,
+  renderWrapped,
+} from "../../../utils/test_utils";
 
 jest.mock("../../../actions/projects");
 jest.mock("../../../actions/roundApplication");
@@ -189,20 +194,14 @@ describe("<List />", () => {
         test("should never be visible", async () => {
           renderWrapped(<List />, store);
 
-          expect(
-            screen.queryByText(
-              "Apply to Optimism Grant Round and get your project funded!"
-            )
-          ).toBeNull();
+          expect(screen.queryByText("Apply to Round")).toBeNull();
         });
       });
 
       describe("when roundToApply is set", () => {
-        let roundAddress: string;
+        const roundAddress = "0x1234";
 
         beforeEach(() => {
-          roundAddress = "0x1234";
-
           when(useLocalStorage as jest.Mock)
             .calledWith("roundToApply", null)
             .mockReturnValue([`5:${roundAddress}`]);
@@ -213,15 +212,28 @@ describe("<List />", () => {
         });
 
         test("should be visible if user didn't apply yet", async () => {
+          const round = buildRound({ address: "0x1234" });
+
+          store.dispatch(web3ChainIDLoaded(5));
+
+          store.dispatch({
+            type: "ROUNDS_ROUND_LOADED",
+            address: "0x1234",
+            round,
+          });
+
+          store.dispatch({
+            type: "GRANT_METADATA_FETCHED",
+            data: buildProjectMetadata({}),
+          });
+
+          store.dispatch({ type: "PROJECTS_LOADED", projects });
+
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
 
           renderWrapped(<List />, store);
 
-          expect(
-            screen.getByText(
-              "Apply to Optimism Grant Round and get your project funded!"
-            )
-          ).toBeInTheDocument();
+          expect(screen.getByText("Apply to Round")).toBeInTheDocument();
         });
 
         test("should not be visible if user already applied", async () => {
@@ -233,11 +245,7 @@ describe("<List />", () => {
 
           renderWrapped(<List />, store);
 
-          expect(
-            screen.queryByText(
-              "Apply to Optimism Grant Round and get your project funded!"
-            )
-          ).toBeNull();
+          expect(screen.queryByText("Apply to Round")).toBeNull();
         });
       });
     });

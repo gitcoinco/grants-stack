@@ -12,6 +12,7 @@ import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
+import { addAlert } from "../../actions/ui";
 
 export default function Preview({
   currentProjectId,
@@ -54,6 +55,9 @@ export default function Preview({
       setTimeout(() => {
         navigate(slugs.grants);
         localResetStatus();
+        dispatch(
+          addAlert("success", "Your project has been saved successfully!")
+        );
       }, 1500);
     }
   }, [props.status]);
@@ -72,9 +76,11 @@ export default function Preview({
         updatedAt={formatDate(Date.now() / 1000)}
         createdAt={formatDate(Date.now() / 1000)}
         project={project}
-        logoImg={props.metadata?.logoImg ?? "./assets/default-project-logo.png"}
+        logoImg={
+          props.metadata?.logoImgData ?? "./assets/default-project-logo.png"
+        }
         bannerImg={
-          props.metadata?.bannerImg ?? "./assets/default-project-banner.png"
+          props.metadata?.bannerImgData ?? "./assets/default-project-banner.png"
         }
       />
       <div className="flex justify-end">

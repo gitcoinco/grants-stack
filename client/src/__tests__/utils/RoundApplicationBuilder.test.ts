@@ -84,7 +84,7 @@ const formInputs = {
   4: "prof",
   5: "size",
   6: "999",
-  7: "0x000000000000000000000000000000000000beaf",
+  7: "0x000000000000000000000000000000000000bEAF",
 };
 
 const project: Project = {
@@ -116,7 +116,7 @@ describe("round application builder", () => {
       true,
       project,
       roundApplicationMetadata,
-      "0x000000000000000000000000000000000000beaf",
+      "0x000000000000000000000000000000000000bEAF",
       "testnet"
     );
     const application = await builder.build("0x1234", formInputs);
@@ -124,7 +124,7 @@ describe("round application builder", () => {
     expect(application.project).toEqual(project);
     expect(application.round).toEqual("0x1234");
     expect(application.recipient).toEqual(
-      "0x000000000000000000000000000000000000beaf"
+      "0x000000000000000000000000000000000000bEAF"
     );
 
     // PROJECT and RECIPIENT are not included in the answers

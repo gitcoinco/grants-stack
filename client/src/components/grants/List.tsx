@@ -9,12 +9,12 @@ import { Status } from "../../reducers/projects";
 import { newGrantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { ProjectEvent } from "../../types";
+import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
-import { parseRoundToApply } from "../../utils/utils";
 
 function ProjectsList() {
   const dispatch = useDispatch();
@@ -31,12 +31,16 @@ function ProjectsList() {
     let existingApplication;
 
     let alreadyApplied: undefined | boolean;
+    let round;
+
     if (roundToApply) {
       const roundAddress = roundToApply.split(":")[1];
       existingApplication = state.roundApplication[roundAddress];
       if (existingApplication !== undefined) {
         alreadyApplied = existingApplication.projectsIDs.length > 0;
       }
+      const roundState = state.rounds[roundAddress];
+      round = roundState ? roundState.round : undefined;
     }
     const showRoundModal =
       toggleModal && roundToApply && alreadyApplied === false;
@@ -50,12 +54,11 @@ function ProjectsList() {
       existingApplication,
       showRoundModal,
       showRoundAlert,
+      round,
     };
   }, shallowEqual);
 
   const navigate = useNavigate();
-
-  const roundInfo = null; // Placeholder, get from contract call or graph
 
   useEffect(() => {
     if (props.status === Status.Undefined) {
@@ -99,6 +102,7 @@ function ProjectsList() {
 
           navigate(path);
         }}
+        round={props.round}
       />
       <div className="grow">
         {props.projects.length ? (
@@ -147,12 +151,7 @@ function ProjectsList() {
           <p className="mb-4 ">
             Congratulations on creating your project on Grant Hub! Continue to
             apply for{" "}
-            {
-              roundInfo === null // || roundInfo.round.metadata === null
-                ? "the round"
-                : roundInfo // .round.metadata?.name
-            }
-            .
+            {props.round ? props.round!.roundMetadata.name : "the round"}.
           </p>
         </>
       </CallbackModal>

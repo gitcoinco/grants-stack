@@ -11,7 +11,7 @@ const validInputs = {
 };
 
 describe("Form Validation", () => {
-  it("returns originall inputs if they are valid", async () => {
+  it("returns original inputs if they are valid", async () => {
     const validation = await validateProjectForm(validInputs);
 
     expect(validation).toBe(validInputs);

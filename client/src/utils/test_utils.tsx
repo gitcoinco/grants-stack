@@ -1,10 +1,18 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
+import { Provider } from "react-redux";
 import history from "../history";
 import setupStore from "../store";
-import { Round, Metadata } from "../types";
+import { Metadata, Round } from "../types";
+import { Alert } from "../types/alert";
+
+export const buildAlert = (attrs = {}): Alert => ({
+  id: 1,
+  type: "success",
+  message: "Hello World",
+  ...attrs,
+});
 
 export const buildRound = (round: any): Round => ({
   address: "0x8888",
@@ -17,6 +25,7 @@ export const buildRound = (round: any): Round => ({
   roundMetadata: {},
   applicationMetaPtr: {},
   applicationMetadata: {},
+  programName: "test-program",
   ...round,
 });
 
