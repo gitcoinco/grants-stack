@@ -103,6 +103,7 @@ function ProjectForm({
         <WebsiteInput
           label="Project Website"
           name="website"
+          placeholder="Share your project's website"
           value={props.formMetaData.website}
           changeHandler={handleInput}
           required
@@ -134,7 +135,7 @@ function ProjectForm({
         <TextInput
           label="Project Twitter"
           name="projectTwitter"
-          placeholder="twitterusername"
+          placeholder="Share your project's Twitter handle"
           value={props.formMetaData.projectTwitter}
           changeHandler={handleInput}
           required={false}
@@ -143,7 +144,7 @@ function ProjectForm({
         <TextInput
           label="Your Github Username"
           name="userGithub"
-          placeholder="githubusername"
+          placeholder="Share the GitHub username that you use to contribute to your project"
           value={props.formMetaData.userGithub}
           changeHandler={handleInput}
           required={false}
@@ -151,7 +152,7 @@ function ProjectForm({
         <TextInput
           label="Project Github Organization"
           name="projectGithub"
-          placeholder="githuborgname"
+          placeholder="Share the GitHub organization that your project is a part of"
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
           required={false}
