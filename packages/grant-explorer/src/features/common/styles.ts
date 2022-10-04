@@ -33,3 +33,40 @@ export const TextInput = tw.input<TextInputProps>`
     p.$hasError ? "focus:outline-none focus:border-none focus:ring focus:ring-rose-600" : ""
   )}
 `
+export const CardsContainer = tw.div`
+  flex
+  flex-row
+  flex-wrap
+  w-full
+`;
+
+export const BasicCard = tw.div`
+  w-[302px]
+  h-[294px]
+  ml-0
+  mr-6
+  my-3
+  rounded
+  bg-white
+  shadow-md
+  `;
+
+export const CardHeader = tw.div`
+  w-full
+  h-36
+  rounded-t
+`;
+
+export const CardContent = tw.div`
+  p-4
+  pt-0
+`;
+
+export const CardTitle = tw.p`
+  w-full
+  my-2
+  text-sm
+  font-normal
+  text-ellipsis
+  line-clamp-2
+`;

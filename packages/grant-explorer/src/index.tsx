@@ -39,13 +39,14 @@ root.render(
             <Routes>
               {/* Protected Routes */}
               <Route element={<Auth />}>
+              </Route>
 
                 {/* Default Route */}
                 <Route path="/" element={<NotFound />} />
 
                 {/* Round Routes */}
-                <Route 
-                  path="/round/:chainId/:roundId" 
+                <Route
+                  path="/round/:chainId/:roundId"
                   element={
                     <RoundProvider>
                       <ViewRound />
@@ -58,7 +59,6 @@ root.render(
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
-              </Route>
             </Routes>
           </ReduxRouter>
 

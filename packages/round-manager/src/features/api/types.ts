@@ -228,6 +228,7 @@ export enum ProgressStatus {
   IS_ERROR = "IS_ERROR",
 }
 
+// TODO - what is the difference between ApplicationStatus and ProjectStatus (L155)
 export enum ApplicationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",

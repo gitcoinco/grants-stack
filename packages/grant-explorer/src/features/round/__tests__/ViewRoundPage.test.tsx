@@ -1,11 +1,8 @@
 import ViewRound from "../ViewRoundPage";
 import { screen } from "@testing-library/react";
-import {
-  makeRoundData,
-  renderWithContext,
-} from "../../../test-utils";
+import { makeApprovedProjectData, makeRoundData, renderWithContext } from "../../../test-utils"
 import { faker } from "@faker-js/faker";
-import { Round } from "../../api/types";
+import { Project, Round } from "../../api/types";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -52,4 +49,44 @@ describe("<ViewRound />", () => {
 
     screen.getByTestId("loading-spinner");
   });
+
+  it("displays the project name of an approved grant application", async () => {
+    const expectedApprovedProject: Project = makeApprovedProjectData();
+    const expectedProjectName = expectedApprovedProject.projectMetadata.title;
+    const roundWithProjects = makeRoundData({id: roundId, approvedProjects: [expectedApprovedProject]})
+
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    await screen.findByText(expectedProjectName);
+  })
+
+  it("displays the project banner of an approved grant application", async () => {
+    const expectedApprovedProject: Project = makeApprovedProjectData();
+    const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
+    const roundWithProjects = makeRoundData({id: roundId, approvedProjects: [expectedApprovedProject]})
+
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    const actualBanner = screen.getAllByRole("img", {
+      name: /project banner/i,
+    })[0] as HTMLImageElement;
+    expect(actualBanner.src).toContain(expectedBannerImg);
+  })
+
+  it("displays all approved projects in the round", () => {
+    const approvedProjects = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData()
+    ];
+    const roundWithProjects = makeRoundData({id: roundId, approvedProjects })
+
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    const projectCards = screen.getAllByTestId("project-card");
+    expect(projectCards.length).toEqual(approvedProjects.length);
+    approvedProjects.forEach((project) => {
+      expect(screen.getByText(project.projectMetadata.title)).toBeInTheDocument()
+    })
+  })
 });
