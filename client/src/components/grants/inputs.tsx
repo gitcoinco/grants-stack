@@ -101,6 +101,7 @@ export function WebsiteInput({
   value,
   disabled,
   info,
+  placeholder,
   changeHandler,
   required,
 }: InputProps) {
@@ -134,7 +135,7 @@ export function WebsiteInput({
           id={label}
           name={name}
           value={value ?? ""}
-          placeholder="https://gitcoin.co/"
+          placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
         />
