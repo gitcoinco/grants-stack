@@ -30,9 +30,9 @@ export async function validateApplication(
         [id]: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
             excludeEmptyString: true,
-            message: "Payout Address must be a valid Ethereum address",
+            message: "Payout Wallet Address must be a valid Ethereum address",
           })
-          .required("Payout Address is required"),
+          .required("Payout Wallet Address is required"),
       };
     }
     if (id !== undefined) {
