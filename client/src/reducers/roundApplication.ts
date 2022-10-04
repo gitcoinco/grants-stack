@@ -4,6 +4,7 @@ import {
   ROUND_APPLICATION_LOADED,
   ROUND_APPLICATION_FOUND,
   ROUND_APPLICATION_NOT_FOUND,
+  ROUND_APPLICATION_RESET,
   RoundApplicationActions,
 } from "../actions/roundApplication";
 
@@ -108,6 +109,21 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+        },
+      };
+    }
+
+    case ROUND_APPLICATION_RESET: {
+      const application = state[action.roundAddress];
+      if (application === undefined) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [action.roundAddress]: {
+          ...application,
+          status: Status.Undefined,
         },
       };
     }

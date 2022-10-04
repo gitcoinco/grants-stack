@@ -12,6 +12,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "./StatusModal";
+import { resetApplication } from "../../actions/roundApplication";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -69,12 +70,34 @@ function Apply() {
   }, [dispatch, roundId, props.round]);
 
   // set localstorage variables
+  // on unload reset round application status
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
       setToggleRoundApplicationModal(true);
     }
-  }, [roundId]);
+
+    return () => {
+      if (roundId !== undefined) {
+        dispatch(resetApplication(roundId));
+      }
+    };
+  }, [roundId, resetApplication]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (props.applicationState?.status === ApplicationStatus.Sent) {
+      timer = setTimeout(() => {
+        navigate(grantPath(props.applicationState.projectsIDs[0]));
+      }, 1500);
+    }
+
+    return () => {
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+    };
+  }, [props.applicationState]);
 
   if (props.roundStatus === RoundStatus.Error) {
     return <div>Error loading round data: {props.roundError}</div>;
@@ -86,13 +109,6 @@ function Apply() {
 
   if (props.roundState === undefined || props.round === undefined) {
     return <div>something went wrong</div>;
-  }
-
-  // todo: navigating to early...
-  if (props.applicationStatus === ApplicationStatus.Sent) {
-    if (props.applicationState) {
-      navigate(grantPath(props.applicationState.projectsIDs[0]));
-    }
   }
 
   return (

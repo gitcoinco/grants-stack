@@ -49,12 +49,19 @@ interface RoundApplicationNotFoundAction {
   roundAddress: string;
 }
 
+export const ROUND_APPLICATION_RESET = "ROUND_APPLICATION_RESET";
+interface RoundApplicationResetAction {
+  type: typeof ROUND_APPLICATION_RESET;
+  roundAddress: string;
+}
+
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
   | RoundApplicationLoadedAction
   | RoundApplicationFoundAction
-  | RoundApplicationNotFoundAction;
+  | RoundApplicationNotFoundAction
+  | RoundApplicationResetAction;
 
 const applicationError = (
   roundAddress: string,
@@ -65,6 +72,11 @@ const applicationError = (
   roundAddress,
   error,
   step,
+});
+
+export const resetApplication = (roundAddress: string) => ({
+  type: ROUND_APPLICATION_RESET,
+  roundAddress,
 });
 
 export const submitApplication =
