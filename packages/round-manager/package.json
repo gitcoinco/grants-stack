@@ -102,7 +102,7 @@
     "tailwindcss": "^3.0.24"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --cache --fix",
+    "*.{ts,tsx}": "yarn lint:fix",
     "*.{js,jsx,ts,tsx,md}": "prettier --write ."
   }
 }

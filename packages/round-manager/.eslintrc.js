@@ -20,6 +20,14 @@ module.exports = {
       rules: {
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            varsIgnorePattern: "_",
+            destructuredArrayIgnorePattern: "_",
+            argsIgnorePattern: "_",
+          },
+        ],
       },
     },
   ],
