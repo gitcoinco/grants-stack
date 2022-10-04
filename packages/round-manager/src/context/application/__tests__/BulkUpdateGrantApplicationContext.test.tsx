@@ -5,14 +5,12 @@ import {
   BulkUpdateGrantApplicationProvider,
   useBulkUpdateGrantApplications,
 } from "../BulkUpdateGrantApplicationContext";
-// import { saveToIPFS } from "../../../features/api/ipfs";
 import {
   updateRoundContract,
   updateApplicationList,
 } from "../../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 
-// jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/api/application");
 jest.mock("../../../features/api/subgraph");
 jest.mock("../../../features/common/Auth", () => ({
@@ -193,6 +191,70 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
             `indexing-status-is-${ProgressStatus.IS_ERROR}`
           )
         ).toBeInTheDocument();
+      });
+
+      it("if ipfs save fails, resets ipfs status when bulk update is retried", async () => {
+        (updateApplicationList as jest.Mock)
+          .mockRejectedValueOnce(new Error(":("))
+          .mockReturnValue(new Promise<any>(() => {}));
+
+        renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        // retry bulk update operation
+        await screen.findByTestId(
+          `storing-status-is-${ProgressStatus.IS_ERROR}`
+        );
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        expect(
+          screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+        ).not.toBeInTheDocument();
+      });
+
+      it("if contract update fails, resets contract updating status when bulk update is retried", async () => {
+        (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
+        (updateRoundContract as jest.Mock)
+          .mockRejectedValueOnce(new Error(":("))
+          .mockReturnValue(new Promise<any>(() => {}));
+
+        renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        // retry bulk update operation
+        await screen.findByTestId(
+          `contract-updating-status-is-${ProgressStatus.IS_ERROR}`
+        );
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        expect(
+          screen.queryByTestId(
+            `contract-updating-status-is-${ProgressStatus.IS_ERROR}`
+          )
+        ).not.toBeInTheDocument();
+      });
+
+      it("if indexing fails, resets indexing status when bulk update is retried", async () => {
+        (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
+        (updateRoundContract as jest.Mock).mockResolvedValue({
+          transactionBlockNumber: 100,
+        });
+        (waitForSubgraphSyncTo as jest.Mock)
+          .mockRejectedValueOnce(new Error(":("))
+          .mockReturnValue(new Promise<any>(() => {}));
+
+        renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        // retry bulk update operation
+        await screen.findByTestId(
+          `indexing-status-is-${ProgressStatus.IS_ERROR}`
+        );
+        fireEvent.click(screen.getByTestId("update-grant-application"));
+
+        expect(
+          screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+        ).not.toBeInTheDocument();
       });
     });
   });

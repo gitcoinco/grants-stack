@@ -83,7 +83,7 @@ export default function CreateProgram() {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       setOpenProgressModal(true);
-      createProgram(
+      await createProgram(
         data.name,
         data.operators.map((op) => op.wallet)
       );

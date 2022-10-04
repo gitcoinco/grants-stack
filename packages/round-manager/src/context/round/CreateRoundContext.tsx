@@ -48,6 +48,7 @@ enum ActionType {
   SET_STORING_STATUS = "SET_STORING_STATUS",
   SET_DEPLOYMENT_STATUS = "SET_DEPLOYMENT_STATUS",
   SET_INDEXING_STATUS = "SET_INDEXING_STATUS",
+  RESET_TO_INITIAL_STATE = "RESET_TO_INITIAL_STATE",
 }
 
 const createRoundReducer = (state: CreateRoundState, action: Action) => {
@@ -64,6 +65,9 @@ const createRoundReducer = (state: CreateRoundState, action: Action) => {
         ...state,
         indexingStatus: action.payload.indexingStatus,
       };
+    case ActionType.RESET_TO_INITIAL_STATE: {
+      return initialCreateRoundState;
+    }
   }
   return state;
 };
@@ -105,6 +109,9 @@ const _createRound = async ({
     applicationQuestions,
     round,
   } = createRoundData;
+  dispatch({
+    type: ActionType.RESET_TO_INITIAL_STATE,
+  });
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
@@ -156,7 +163,7 @@ export const useCreateRound = () => {
   const { signer: walletSigner } = useWallet();
 
   const createRound = (createRoundData: CreateRoundData) => {
-    _createRound({
+    return _createRound({
       dispatch: context.dispatch,
       signerOrProvider: walletSigner,
       createRoundData,

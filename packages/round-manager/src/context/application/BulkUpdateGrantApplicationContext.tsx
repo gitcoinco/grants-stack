@@ -38,6 +38,7 @@ enum ActionType {
   SET_STORING_STATUS = "SET_STORING_STATUS",
   SET_CONTRACT_UPDATING_STATUS = "SET_CONTRACT_UPDATING_STATUS",
   SET_INDEXING_STATUS = "SET_INDEXING_STATUS",
+  RESET_TO_INITIAL_STATE = "RESET_TO_INITIAL_STATE",
 }
 
 interface Action {
@@ -88,6 +89,9 @@ const bulkUpdateGrantApplicationReducer = (
         ...state,
         indexingStatus: action.payload,
       };
+    case ActionType.RESET_TO_INITIAL_STATE: {
+      return initialBulkUpdateGrantApplicationState;
+    }
   }
   return state;
 };
@@ -104,6 +108,9 @@ async function _bulkUpdateGrantApplication({
   params,
 }: _bulkUpdateGrantApplicationParams) {
   const { roundId, applications } = params;
+  dispatch({
+    type: ActionType.RESET_TO_INITIAL_STATE,
+  });
   try {
     const newProjectsMetaPtr = await storeDocument({
       dispatch,

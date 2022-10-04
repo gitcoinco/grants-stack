@@ -30,6 +30,7 @@ enum ActionType {
   SET_STORING_STATUS = "SET_STORING_STATUS",
   SET_DEPLOYMENT_STATUS = "SET_DEPLOYMENT_STATUS",
   SET_INDEXING_STATUS = "SET_INDEXING_STATUS",
+  RESET_TO_INITIAL_STATE = "RESET_TO_INITIAL_STATE",
 }
 
 export const initialCreateProgramState: CreateProgramState = {
@@ -56,6 +57,9 @@ const createProgramReducer = (state: CreateProgramState, action: Action) => {
         ...state,
         indexingStatus: action.payload.indexingStatus,
       };
+    case ActionType.RESET_TO_INITIAL_STATE: {
+      return initialCreateProgramState;
+    }
   }
   return state;
 };
@@ -88,6 +92,9 @@ const _createProgram = async ({
   operatorWallets,
   signerOrProvider,
 }: _createProgramParams) => {
+  dispatch({
+    type: ActionType.RESET_TO_INITIAL_STATE,
+  });
   try {
     const IpfsHash = await storeDocument(dispatch, programName);
 
@@ -121,7 +128,7 @@ export const useCreateProgram = () => {
   const { signer: walletSigner } = useWallet();
 
   const createProgram = (programName: string, operatorWallets: string[]) => {
-    _createProgram({
+    return _createProgram({
       dispatch: context.dispatch,
       programName: programName,
       operatorWallets,
