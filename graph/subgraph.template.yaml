@@ -1,0 +1,37 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+# fea
+features:
+  - ipfsOnEthereumContracts
+  - nonDeterministicIpfs
+dataSources:
+  # ProjectRegistry
+  - kind: ethereum/contract
+    name: ProjectRegistry
+    network: {{ network }}
+    source:
+      address: "{{ projectRegistryAddress }}"
+      abi: ProjectRegistry
+      startBlock: {{ startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Project
+        - Account
+        - AccountProject
+      abis:
+        - name: ProjectRegistry
+          file: ./abis/ProjectRegistry.json
+      eventHandlers:
+        - event: ProjectCreated(indexed uint256,indexed address)
+          handler: handleProjectCreated
+        - event: MetadataUpdated(indexed uint256,(uint256,string))
+          handler: handleMetadataUpdated
+        - event: OwnerAdded(indexed uint256,indexed address)
+          handler: handleOwnerAdded
+        - event: OwnerRemoved(indexed uint256,indexed address)
+          handler: handleOwnerRemoved
+      file: ./src/projectregistry/implementation.ts
