@@ -13,6 +13,7 @@ The following sections document the hosted services where the subgraph is deploy
 
 | Network        | GITHUB_USER/SUBGRAPH_NAME                      | Playground                                                                                  | Query                                                                                  |
 | -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| optimism       | danielesalatti/grant-hub-project-registry      | https://thegraph.com/hosted-service/subgraph/danielesalatti/grant-hub-project-registry      | https://api.thegraph.com/subgraphs/name/danielesalatti/grant-hub-project-registry      |
 | goerli         | danielesalatti/project-registry-goerli         | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-goerli         | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-goerli         |
 | optimism-kovan | danielesalatti/project-registry-optimism-kovan | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-optimism-kovan | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-optimism-kovan |
 
@@ -58,6 +59,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 
 | network        |
 | -------------- |
+| optimism       |
 | goerli         |
 | optimism-kovan |
 
