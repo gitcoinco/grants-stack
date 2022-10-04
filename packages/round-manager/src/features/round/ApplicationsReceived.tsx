@@ -16,6 +16,7 @@ import {
 import {
   ApplicationStatus,
   GrantApplication,
+  ProgressStatus,
   ProjectStatus,
 } from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -29,6 +30,7 @@ import {
 } from "./BulkApplicationCommon";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
@@ -44,8 +46,19 @@ export default function ApplicationsReceived() {
   const [openModal, setOpenModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
 
-  const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
-    useBulkUpdateGrantApplicationsMutation();
+  // const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
+  //   useBulkUpdateGrantApplicationsMutation();
+  const {
+    bulkUpdateGrantApplications,
+    IPFSCurrentStatus,
+    contractUpdatingStatus,
+    indexingStatus,
+  } = useBulkUpdateGrantApplications();
+  // TODO - consume these in stepped progress modal
+  const isBulkUpdateLoading =
+    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
+    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
+    indexingStatus == ProgressStatus.IN_PROGRESS;
 
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
@@ -83,16 +96,23 @@ export default function ApplicationsReceived() {
 
   const handleBulkReview = async () => {
     try {
+      // await bulkUpdateGrantApplications({
+      //   roundId: id!,
+      //   applications: selected.filter(
+      //     (application) => application.status !== "PENDING"
+      //   ),
+      //   signer,
+      //   provider,
+      // }).unwrap();
       await bulkUpdateGrantApplications({
         roundId: id!,
         applications: selected.filter(
           (application) => application.status !== "PENDING"
         ),
-        signer,
-        provider,
-      }).unwrap();
+      });
       setBulkSelect(false);
       setOpenModal(false);
+      // TODO add redirect
     } catch (error) {
       datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
       console.error(error);

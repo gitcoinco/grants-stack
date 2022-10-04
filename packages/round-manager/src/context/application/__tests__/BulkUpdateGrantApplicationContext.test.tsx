@@ -3,7 +3,7 @@ import { ProgressStatus } from "../../../features/api/types";
 import {
   BulkUpdateGrantApplicationParams,
   BulkUpdateGrantApplicationProvider,
-  useBulkUpdateGrantApplication,
+  useBulkUpdateGrantApplications,
 } from "../BulkUpdateGrantApplicationContext";
 // import { saveToIPFS } from "../../../features/api/ipfs";
 import {
@@ -200,17 +200,17 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 
 const TestUseBulkUpdateGrantApplicationComponent = () => {
   const {
-    bulkUpdateGrantApplication,
+    bulkUpdateGrantApplications,
     IPFSCurrentStatus,
     contractUpdatingStatus,
     indexingStatus,
-  } = useBulkUpdateGrantApplication();
+  } = useBulkUpdateGrantApplications();
 
   return (
     <div>
       <button
         onClick={() => {
-          bulkUpdateGrantApplication({} as BulkUpdateGrantApplicationParams);
+          bulkUpdateGrantApplications({} as BulkUpdateGrantApplicationParams);
         }}
         data-testid="update-grant-application"
       >

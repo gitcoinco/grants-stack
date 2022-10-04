@@ -124,7 +124,7 @@ async function _bulkUpdateGrantApplication({
   }
 }
 
-export const useBulkUpdateGrantApplication = () => {
+export const useBulkUpdateGrantApplications = () => {
   const context = useContext(BulkUpdateGrantApplicationContext);
 
   if (context === undefined) {
@@ -135,14 +135,18 @@ export const useBulkUpdateGrantApplication = () => {
 
   const { signer } = useWallet();
 
-  const bulkUpdateGrantApplication = (
+  const bulkUpdateGrantApplications = async (
     params: BulkUpdateGrantApplicationParams
   ) => {
-    _bulkUpdateGrantApplication({ dispatch: context.dispatch, signer, params });
+    return _bulkUpdateGrantApplication({
+      dispatch: context.dispatch,
+      signer,
+      params,
+    });
   };
 
   return {
-    bulkUpdateGrantApplication,
+    bulkUpdateGrantApplications,
     IPFSCurrentStatus: context.state.IPFSCurrentStatus,
     contractUpdatingStatus: context.state.contractUpdatingStatus,
     indexingStatus: context.state.indexingStatus,
