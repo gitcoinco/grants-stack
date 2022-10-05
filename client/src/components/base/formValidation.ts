@@ -30,9 +30,9 @@ export async function validateApplication(
         [id]: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
             excludeEmptyString: true,
-            message: "Recipient Address must be a valid Ethereum address",
+            message: "Payout Wallet Address must be a valid Ethereum address",
           })
-          .required("Recipient Address is required"),
+          .required("Payout Wallet Address is required"),
       };
     }
     if (id !== undefined) {
@@ -41,7 +41,9 @@ export async function validateApplication(
         [id]: required
           ? string().required(`${input.question} is required`)
           : string(),
-        isSafe: string().required("Is this project a safe is required"),
+        isSafe: string().required(
+          "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"
+        ),
       };
     }
     return acc;

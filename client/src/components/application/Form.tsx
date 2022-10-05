@@ -12,7 +12,6 @@ import {
   Round,
   RoundApplicationMetadata,
 } from "../../types";
-import { isValidAddress } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import { validateApplication } from "../base/formValidation";
 import {
@@ -75,26 +74,6 @@ export default function Form({
   const handleProjectInput = (e: ChangeHandlers) => {
     const { value } = e.target;
     setSelectedProjectID(value);
-    handleInput(e);
-  };
-
-  const handleInputAddress = async (e: ChangeHandlers) => {
-    const { value } = e.target;
-    const isValid = isValidAddress(value);
-    if (!isValid) {
-      setFormValidation({
-        messages: ["Invalid address"],
-        valid: false,
-        errorCount: validation.errorCount + 1,
-      });
-    } else {
-      setFormValidation(validation);
-    }
-
-    handleInput(e);
-  };
-
-  const handleRadioInput = async (e: ChangeHandlers) => {
     handleInput(e);
   };
 
@@ -204,7 +183,7 @@ export default function Form({
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
                         choices={["Yes", "No"]}
-                        changeHandler={handleRadioInput}
+                        changeHandler={handleInput}
                         name="isSafe"
                         value={formInputs.isSafe}
                         info=""
@@ -213,18 +192,19 @@ export default function Form({
                       />
                     </Stack>
                   </div>
+                  {/* todo: do we need this tooltip for all networks? */}
                   <TextInputAddress
                     key={input.id}
                     label="Payout Wallet Address"
                     placeholder={input.info}
                     name={`${input.id}`}
-                    tooltipValue="Please make sure the payout address you provide is a valid address that you own on the Optimism network.
-          If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig is deployed to Optimism,
-          and not simply a multisig you own on L1. Optimism will send a test transaction and require you send it back before
-          sending the balance of any full grant."
+                    tooltipValue="Please make sure the payout address you provide is a valid address that you own on the network
+                    you are applying on. If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig
+                    is deployed to network, and not simply a multisig you own on L1. Round team will send a test transaction and
+                    require you send it back before sending the balance of any full grant."
                     value={formInputs[`${input.id}`]}
                     disabled={preview}
-                    changeHandler={handleInputAddress}
+                    changeHandler={handleInput}
                     required={input.required ?? true}
                   />
                 </>
