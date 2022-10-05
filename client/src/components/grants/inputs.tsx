@@ -1,5 +1,6 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import classNames from "classnames";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
@@ -204,6 +205,9 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
+        className={classNames("w-full", {
+          "bg-transparent": !disabled,
+        })}
         onChange={(e) => changeHandler(e)}
       >
         {options.map((option) => (

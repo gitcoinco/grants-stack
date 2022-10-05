@@ -4,6 +4,7 @@ import {
   ROUND_APPLICATION_LOADED,
   ROUND_APPLICATION_FOUND,
   ROUND_APPLICATION_NOT_FOUND,
+  ROUND_APPLICATION_RESET,
   RoundApplicationActions,
 } from "../actions/roundApplication";
 
@@ -17,13 +18,18 @@ export const enum Status {
   Error,
 }
 
-export interface RoundApplicationState {
+export type RoundApplicationError = {
+  error: string;
+  step: Status;
+};
+
+export type RoundApplicationState = {
   [roundAddress: string]: {
     status: Status;
-    error: string | undefined;
+    error?: RoundApplicationError;
     projectsIDs: Array<number>; // projects IDs that applied to the round
   };
-}
+};
 
 const initialState = {};
 
@@ -46,6 +52,7 @@ export const roundApplicationReducer = (
         [action.roundAddress]: {
           ...application,
           status: action.status,
+          error: undefined,
         },
       };
     }
@@ -58,7 +65,10 @@ export const roundApplicationReducer = (
         [action.roundAddress]: {
           ...application,
           status: Status.Error,
-          error: action.error,
+          error: {
+            error: action.error,
+            step: action.step,
+          },
         },
       };
     }
@@ -99,6 +109,21 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+        },
+      };
+    }
+
+    case ROUND_APPLICATION_RESET: {
+      const application = state[action.roundAddress];
+      if (application === undefined) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [action.roundAddress]: {
+          ...application,
+          status: Status.Undefined,
         },
       };
     }

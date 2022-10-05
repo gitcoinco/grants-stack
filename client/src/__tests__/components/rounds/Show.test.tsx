@@ -92,7 +92,7 @@ describe("<Show />", () => {
 
         const button = await screen.findByText("Create Project");
         const a = button.parentElement!;
-        expect(a.getAttribute("href")).toEqual("#/grants/new");
+        expect(a.getAttribute("href")).toEqual("#/projects/new");
       });
     });
   });
