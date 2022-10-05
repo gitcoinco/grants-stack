@@ -98,7 +98,7 @@ function Project() {
       fetchTimeStamp(props.projects, props.id);
     } else {
       // If user reloads Show projects will not exist
-      dispatch(loadProjects());
+      dispatch(loadProjects(true));
     }
   }, [props.id, props.currentProject, global, dispatch]);
 
