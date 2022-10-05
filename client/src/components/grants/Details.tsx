@@ -1,8 +1,5 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
-import { AlertContainer } from "../base/Alert";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -31,16 +28,8 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
-  const props = useSelector((state: RootState) => {
-    const { alerts } = state.ui;
-    return {
-      alerts,
-    };
-  });
-
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
-      <AlertContainer alerts={props.alerts} />
       <img
         className="w-full mb-4"
         src={
