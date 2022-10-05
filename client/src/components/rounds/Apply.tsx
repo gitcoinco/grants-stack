@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { resetApplication } from "../../actions/roundApplication";
+import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { grantPath, roundPath } from "../../routes";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
+import { grantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
+import { Round } from "../../types";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
-import { addAlert } from "../../actions/ui";
-import { Round } from "../../types";
 import StatusModal from "./StatusModal";
-import { resetApplication } from "../../actions/roundApplication";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -118,7 +118,6 @@ function Apply() {
   }, [props.applicationState]);
 
   if (props.roundStatus === RoundStatus.Error) {
-    dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
     return <div>Error loading round data: {props.roundError}</div>;
   }
 
@@ -131,9 +130,8 @@ function Apply() {
   }
 
   if (props.applicationStatus === ApplicationStatus.Error) {
-    return (
-      <div>Error submitting round application: {props.applicationError}</div>
-    );
+    dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
+    return <div>Error submitting round application</div>;
   }
 
   if (props.applicationStatus === ApplicationStatus.Sent) {
