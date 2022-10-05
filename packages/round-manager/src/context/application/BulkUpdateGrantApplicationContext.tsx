@@ -8,7 +8,6 @@ import {
   updateApplicationList,
   updateRoundContract,
 } from "../../features/api/application";
-// import { saveToIPFS } from "../../features/api/ipfs";
 import { datadogLogs } from "@datadog/browser-logs";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -178,8 +177,6 @@ const storeDocument = async ({
       type: ActionType.SET_STORING_STATUS,
       payload: ProgressStatus.IN_PROGRESS,
     });
-    // TODO pass in correct data
-    // const ipfsHash = await saveToIPFS({});
     const chainId = await signer.getChainId();
     const ipfsHash = await updateApplicationList(
       applications,

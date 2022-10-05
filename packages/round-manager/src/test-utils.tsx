@@ -29,6 +29,11 @@ import {
   ApplicationState,
   initialApplicationState,
 } from "./context/application/ApplicationContext";
+import {
+  BulkUpdateGrantApplicationContext,
+  BulkUpdateGrantApplicationState,
+  initialBulkUpdateGrantApplicationState,
+} from "./context/application/BulkUpdateGrantApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -284,6 +289,25 @@ export const wrapWithRoundContext = (
   >
     {ui}
   </RoundContext.Provider>
+);
+
+export const wrapWithBulkUpdateGrantApplicationContext = (
+  ui: JSX.Element,
+  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) => (
+  <BulkUpdateGrantApplicationContext.Provider
+    value={{
+      state: {
+        ...initialBulkUpdateGrantApplicationState,
+        ...bulkUpdateOverrides,
+      },
+      dispatch,
+    }}
+  >
+    {ui}
+  </BulkUpdateGrantApplicationContext.Provider>
 );
 
 type ContextMock<T> = {
