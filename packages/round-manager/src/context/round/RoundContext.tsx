@@ -1,4 +1,4 @@
-import { Round } from "../../features/api/types";
+import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
@@ -7,15 +7,14 @@ import { datadogLogs } from "@datadog/browser-logs";
 
 export interface RoundState {
   data: Round[];
-  isLoading: boolean;
+  fetchRoundStatus: ProgressStatus;
   error?: Error;
 }
 
 enum ActionType {
-  START_LOADING = "start-loading",
-  FINISH_LOADING = "finish-loading",
   SET_ROUNDS = "set-rounds",
   SET_LIST_ROUNDS_ERROR = "set-list-rounds-error",
+  SET_FETCH_ROUNDS_STATUS = "set-fetch-rounds-status",
 }
 
 interface Action {
@@ -27,7 +26,7 @@ type Dispatch = (action: Action) => void;
 
 export const initialRoundState: RoundState = {
   data: [],
-  isLoading: false,
+  fetchRoundStatus: ProgressStatus.NOT_STARTED,
 };
 
 export const RoundContext = createContext<
@@ -42,7 +41,10 @@ const fetchRounds = async (
 ) => {
   datadogLogs.logger.info(`fetchRounds: program - ${programId}`);
 
-  dispatch({ type: ActionType.START_LOADING });
+  dispatch({
+    type: ActionType.SET_FETCH_ROUNDS_STATUS,
+    payload: ProgressStatus.IN_PROGRESS,
+  });
 
   const res = await listRounds(address, walletProvider, programId);
 
@@ -51,39 +53,56 @@ const fetchRounds = async (
     dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: res.error });
   }
   dispatch({ type: ActionType.SET_ROUNDS, payload: res.data });
-  dispatch({ type: ActionType.FINISH_LOADING });
 };
 
-const fetchRoundById = (
+const fetchRoundById = async (
   dispatch: Dispatch,
   walletProvider: Web3Provider,
   roundId: string
 ) => {
   datadogLogs.logger.info(`fetchRoundById: round - ${roundId}`);
 
-  dispatch({ type: ActionType.START_LOADING });
+  dispatch({
+    type: ActionType.SET_FETCH_ROUNDS_STATUS,
+    payload: ProgressStatus.IN_PROGRESS,
+  });
 
-  getRoundById(walletProvider, roundId)
-    .then((round) =>
-      dispatch({ type: ActionType.SET_ROUNDS, payload: [round] })
-    )
-    .catch((error) => {
-      datadogLogs.logger.error(`error: fetchRoundById ${error}`);
-      dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
-    })
-    .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
+  try {
+    const round = await getRoundById(walletProvider, roundId);
+    dispatch({ type: ActionType.SET_ROUNDS, payload: [round] });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_SUCCESS,
+    });
+  } catch (error) {
+    datadogLogs.logger.error(`error: fetchRoundById ${error}`);
+    dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_ERROR,
+    });
+  }
 };
 
 const roundReducer = (state: RoundState, action: Action) => {
   switch (action.type) {
-    case ActionType.START_LOADING:
-      return { ...state, isLoading: true };
-    case ActionType.FINISH_LOADING:
-      return { ...state, isLoading: false };
     case ActionType.SET_ROUNDS:
-      return { ...state, data: action.payload ?? [] };
+      return {
+        ...state,
+        data: action.payload ?? [],
+        fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+      };
     case ActionType.SET_LIST_ROUNDS_ERROR:
-      return { ...state, data: [], error: action.payload };
+      return {
+        ...state,
+        data: [],
+        error: action.payload,
+      };
+    case ActionType.SET_FETCH_ROUNDS_STATUS:
+      return {
+        ...state,
+        fetchRoundStatus: action.payload,
+      };
   }
 };
 
@@ -123,7 +142,7 @@ export const useRoundById = (roundId?: string) => {
   if (context === undefined) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { address, provider } = useWallet();
+  const { provider } = useWallet();
 
   useEffect(() => {
     if (roundId) {
@@ -135,11 +154,11 @@ export const useRoundById = (roundId?: string) => {
         fetchRoundById(context.dispatch, provider, roundId);
       }
     }
-  }, [address, provider, roundId, context.dispatch, context.state.data]);
+  }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     round: context.state.data.find((round) => round.id === roundId),
-    isLoading: context.state.isLoading,
+    fetchRoundStatus: context.state.fetchRoundStatus,
     error: context.state.error,
   };
 };

@@ -473,7 +473,7 @@ export const renderWithContext = (
                 operatorWallets: [mockAddress],
               }),
             ],
-            isLoading: false,
+            fetchRoundStatus: false,
           },
           dispatch,
         }}

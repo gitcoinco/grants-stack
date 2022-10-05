@@ -72,13 +72,13 @@ function ListPrograms() {
   datadogLogs.logger.info("====> Route: /");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const { programs, isLoading, listProgramsError } = usePrograms();
+  const { programs, fetchProgramsStatus, listProgramsError } = usePrograms();
 
   function hasNoPrograms() {
     return !programs || programs.length === 0;
   }
 
-  const isSuccess = !isLoading && !listProgramsError;
+  const isSuccess = !fetchProgramsStatus && !listProgramsError;
 
   const programList = programs.map((program, key) => (
     <Link to={`/program/${program.id}`} key={key}>
@@ -126,7 +126,9 @@ function ListPrograms() {
           {programList}
         </CardsContainer>
 
-        {isLoading && <Spinner text="We're fetching your Programs." />}
+        {fetchProgramsStatus && (
+          <Spinner text="We're fetching your Programs." />
+        )}
       </main>
       <Footer />
     </div>
