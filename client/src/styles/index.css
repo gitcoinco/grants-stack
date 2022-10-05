@@ -6,6 +6,12 @@
 
 @import "./Button";
 @import "./Layout";
+@import "./roundApplication";
+
+/* lit modal */
+#lcm-modal-overlay {
+  z-index: 9999;
+}
 
 @layer base {
   html {
