@@ -1,3 +1,4 @@
+import { Box, SimpleGrid } from "@chakra-ui/react";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import Calendar from "../icons/Calendar";
@@ -29,7 +30,7 @@ export default function Details({
   preview?: boolean;
 }) {
   return (
-    <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
+    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <img
         className="w-full mb-4"
         src={
@@ -59,86 +60,96 @@ export default function Details({
         </div>
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <div className="grid grid-cols-2 gap-4 pb-6 mb-6">
-        <div>
-          <a
-            target="_blank"
-            href={project?.website}
-            className="flex items-center mr-6 text-primary-background"
-            rel="noreferrer"
-          >
-            <LinkIcon color={colors["secondary-text"]} />{" "}
-            <span className="ml-1">{project?.website}</span>
-          </a>
-        </div>
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Created on: {createdAt}</span>
-          </p>
-        </div>
-        {project?.projectTwitter && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-3 mr-2 mt-1"
-              src="./assets/twitter_logo.svg"
-              alt="Twitter Logo"
-            />
+      <SimpleGrid
+        className="pb-6 mb-6"
+        templateColumns="repeat(3, 1fr)"
+        minChildWidth="200px"
+        gap={6}
+      >
+        <Box>
+          <div>
             <a
-              className="mr-2 text-primary-background"
               target="_blank"
-              href={`https://twitter.com/${project?.projectTwitter}`}
+              href={project?.website}
+              className="flex items-center mr-6 text-primary-background m-2"
               rel="noreferrer"
             >
-              {project?.projectTwitter}
-            </a>
-            {project?.credentials?.twitter && <Verified />}
-          </div>
-        )}
-
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Last Edited: {updatedAt}</span>
-          </p>
-        </div>
-        {project?.projectGithub && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-4 mr-2 mt-1"
-              src="./assets/github_logo.png"
-              alt="Github Logo"
-            />
-            <a
-              className="mr-2 text-primary-background"
-              target="_blank"
-              href={`https://github.com/${project?.projectGithub}`}
-              rel="noreferrer"
-            >
-              {project?.projectGithub}
-            </a>
-            {project?.credentials?.github && <Verified />}
-          </div>
-        )}
-        {project?.projectGithub && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-4 mr-2 mt-1"
-              src="./assets/github_logo.png"
-              alt="Github Logo"
-            />
-            <a
-              className="mr-2 text-primary-background"
-              target="_blank"
-              href={`https://github.com/${project?.userGithub}`}
-              rel="noreferrer"
-            >
-              {project?.userGithub}
+              <LinkIcon color={colors["secondary-text"]} />{" "}
+              <span className="ml-1">{project?.website}</span>
             </a>
           </div>
-        )}
-      </div>
-
+          {project?.projectTwitter && (
+            <div className="flex justify-start items-center m-2">
+              <img
+                className="h-3 mr-2 mt-1"
+                src="./assets/twitter_logo.svg"
+                alt="Twitter Logo"
+              />
+              <a
+                className="mr-2 text-primary-background"
+                target="_blank"
+                href={`https://twitter.com/${project?.projectTwitter}`}
+                rel="noreferrer"
+              >
+                {project?.projectTwitter}
+              </a>
+              {project?.credentials?.twitter && <Verified />}
+            </div>
+          )}
+          {project?.projectGithub && (
+            <div className="flex justify-start items-center m-2">
+              <img
+                className="h-4 mr-2"
+                src="./assets/github_logo.png"
+                alt="Github Logo"
+              />
+              <a
+                className="mr-2 text-primary-background"
+                target="_blank"
+                href={`https://github.com/${project?.projectGithub}`}
+                rel="noreferrer"
+              >
+                {project?.projectGithub}
+              </a>
+              {project?.credentials?.github && <Verified />}
+            </div>
+          )}
+        </Box>
+        <Box>
+          <div>
+            <p className="flex text-sm m-2">
+              <Calendar color={colors["secondary-text"]} />
+              <span className="ml-1">Created on: {createdAt}</span>
+            </p>
+          </div>
+          <div>
+            <p className="flex text-sm m-2">
+              <Calendar color={colors["secondary-text"]} />
+              <span className="ml-1">Last Edited: {updatedAt}</span>
+            </p>
+          </div>
+          {project?.projectGithub && (
+            <div className="flex items-center m-2">
+              <img
+                className="h-4 ml-0.5 mr-2 mt-1"
+                src="./assets/github_logo.png"
+                alt="Github Logo"
+              />
+              <a
+                className="text-primary-background"
+                target="_blank"
+                href={`https://github.com/${project?.userGithub}`}
+                rel="noreferrer"
+              >
+                {project?.userGithub}
+              </a>
+            </div>
+          )}
+        </Box>
+        <Box>
+          <div>Applications Card Placeholder</div>
+        </Box>
+      </SimpleGrid>
       <p className="text-primary-text mb-1 font-bold">Description</p>
       <p className="mb-12">{project?.description}</p>
     </div>
