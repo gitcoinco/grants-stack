@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { loadRound, unloadRounds } from "../../actions/rounds";
-import { addAlert } from "../../actions/ui";
+import { useSelector } from "react-redux";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/roundApplication";
@@ -38,10 +34,6 @@ export default function Details({
   preview?: boolean;
 }) {
   const [roundToApply] = useLocalStorage("roundToApply", null);
-  const [roundData, setRoundData] = useState<Round>();
-  const params = useParams();
-  const { id: projectId } = params;
-  const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     let existingApplication;
     let roundAddress;
@@ -70,65 +62,62 @@ export default function Details({
     };
   });
 
-  // todo: still testing with this, remove when done.
-  console.log("State =>", props, projectId);
-
   /*
    * Alert elements
    */
-  const discordLink: JSX.Element = (
-    <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
-      Grant Hub Discord!
-    </a>
-  );
-  const applicationSuccessTitle: JSX.Element = (
-    <p className="text-gitcoin-teal-500">
-      Thank you for applying to {roundData?.programName}{" "}
-      {roundData?.roundMetadata.name}!
-    </p>
-  );
-  const applicationErrorTitle: JSX.Element = (
-    <p className="text-gitcoin-pink-500">
-      Error submitting application to {roundData?.programName}
-    </p>
-  );
-  const applicationSuccessBody: JSX.Element = (
-    <p className="text-black">
-      Your application has been received, and the {roundData?.programName} team
-      will review and reach out with next steps.
-    </p>
-  );
-  const applicationErrorBody: JSX.Element = (
-    <p className="text-black">
-      Please try again or reach out to us on the {discordLink}
-    </p>
-  );
+  // const discordLink: JSX.Element = (
+  //   <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
+  //     Grant Hub Discord!
+  //   </a>
+  // );
+  // const applicationSuccessTitle: JSX.Element = (
+  //   <p className="text-gitcoin-teal-500">
+  //     Thank you for applying to {roundData?.programName}{" "}
+  //     {roundData?.roundMetadata.name}!
+  //   </p>
+  // );
+  // const applicationErrorTitle: JSX.Element = (
+  //   <p className="text-gitcoin-pink-500">
+  //     Error submitting application to {roundData?.programName}
+  //   </p>
+  // );
+  // const applicationSuccessBody: JSX.Element = (
+  //   <p className="text-black">
+  //     Your application has been received, and the {roundData?.programName} team
+  //     will review and reach out with next steps.
+  //   </p>
+  // );
+  // const applicationErrorBody: JSX.Element = (
+  //   <p className="text-black">
+  //     Please try again or reach out to us on the {discordLink}
+  //   </p>
+  // );
 
   /*
    * Alert handlers
    */
-  useEffect(() => {
-    if (props.roundAddress !== undefined) {
-      dispatch(unloadRounds());
-      dispatch(loadRound(props.roundAddress));
-    }
-  }, [dispatch, props.roundAddress]);
+  // useEffect(() => {
+  //   if (props.roundAddress !== undefined) {
+  //     dispatch(unloadRounds());
+  //     dispatch(loadRound(props.roundAddress));
+  //   }
+  // }, [dispatch, props.roundAddress]);
 
-  useEffect(() => {
-    if (props.round) {
-      setRoundData(props.round);
-    }
-  }, [props.round]);
+  // useEffect(() => {
+  //   if (props.round) {
+  //     setRoundData(props.round);
+  //   }
+  // }, [props.round]);
 
-  useEffect(() => {
-    if (props.applicationStatus === Status.Sent) {
-      dispatch(
-        addAlert("success", applicationSuccessTitle, applicationSuccessBody)
-      );
-    } else if (props.applicationStatus === Status.Error) {
-      dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (props.applicationStatus === Status.Undefined) {
+  //     dispatch(
+  //       addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+  //     );
+  //   } else if (props.applicationStatus === Status.Error) {
+  //     dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
+  //   }
+  // }, []);
 
   return (
     <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>

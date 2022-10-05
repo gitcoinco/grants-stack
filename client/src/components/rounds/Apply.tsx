@@ -11,6 +11,8 @@ import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
+import { addAlert } from "../../actions/ui";
+import { Round } from "../../types";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -21,6 +23,7 @@ function Apply() {
   const navigate = useNavigate();
 
   const [modalOpen, toggleModal] = useState(false);
+  const [roundData, setRoundData] = useState<Round>();
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [, setToggleRoundApplicationModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -56,6 +59,43 @@ function Apply() {
     };
   }, shallowEqual);
 
+  /*
+   * Alert elements
+   */
+  const discordLink: JSX.Element = (
+    <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
+      Grant Hub Discord!
+    </a>
+  );
+  const applicationSuccessTitle: JSX.Element = (
+    <p className="text-gitcoin-teal-500">
+      Thank you for applying to {roundData?.programName}{" "}
+      {roundData?.roundMetadata.name}!
+    </p>
+  );
+  const applicationErrorTitle: JSX.Element = (
+    <p className="text-gitcoin-pink-500">
+      Error submitting application to {roundData?.programName}
+    </p>
+  );
+  const applicationSuccessBody: JSX.Element = (
+    <p className="text-black">
+      Your application has been received, and the {roundData?.programName} team
+      will review and reach out with next steps.
+    </p>
+  );
+  const applicationErrorBody: JSX.Element = (
+    <p className="text-black">
+      Please try again or reach out to us on the {discordLink}
+    </p>
+  );
+
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
+
   useEffect(() => {
     if (
       roundId !== undefined &&
@@ -74,6 +114,7 @@ function Apply() {
   }, [roundId]);
 
   if (props.roundStatus === RoundStatus.Error) {
+    dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
     return <div>Error loading round data: {props.roundError}</div>;
   }
 
@@ -91,9 +132,11 @@ function Apply() {
     );
   }
 
-  // todo: navigating to early...
   if (props.applicationStatus === ApplicationStatus.Sent) {
     if (props.applicationState) {
+      dispatch(
+        addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+      );
       navigate(grantPath(props.applicationState.projectsIDs[0]));
     }
   }
