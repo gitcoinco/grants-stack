@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { removeAlertDelayed } from "../../actions/ui";
 import { Alert } from "../../types/alert";
-// import Check from "../icons/Check";
 
 type AlertProps = {
   alert: Alert;
@@ -17,24 +16,24 @@ export default function AlertComponent({ alert }: AlertProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(removeAlertDelayed(alert.id, 5000));
+    dispatch(removeAlertDelayed(alert.id, 500000));
   }, [dispatch, alert.id]);
 
   return (
-    <div className={`alert ${alert.type} flex text-lg`} role="alert">
+    <div className={`alert ${alert.type} flex`} role="alert">
       <div className="fill-current w-6 h-6 mr-2 mb-6">
         <CheckCircleIcon />
       </div>
       <div className="m-auto ml-4">
         <div className="block">{alert.title}</div>
-        <div className="block text-black">{alert.body}</div>
+        <div className="block text-black font-normal">{alert.body}</div>
       </div>
     </div>
   );
 }
 
 export function AlertContainer({ alerts }: AlertContainerProps) {
-  if (alerts?.length === 0) {
+  if (alerts.length === 0) {
     return null;
   }
 

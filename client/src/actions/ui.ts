@@ -17,11 +17,11 @@ export type UIActions = UIAlertAddedAction | UIAlertRemovedAction;
 
 export const addAlert = (
   type: AlertTypes,
-  title: string,
-  body: string
+  title: string | undefined,
+  body: string | undefined
 ): UIActions => ({
   type: UI_ALERT_ADDED,
-  payload: newAlert(type, title, body),
+  payload: newAlert(type, title!, body!),
 });
 
 export const removeAlert = (id: number): UIActions => ({

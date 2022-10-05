@@ -3,8 +3,8 @@ export type AlertTypes = "success" | "error" | "info" | "warning";
 export type Alert = {
   id: number;
   type: AlertTypes;
-  title: string;
-  body: string;
+  title: string | undefined;
+  body: string | undefined;
 };
 
 let nextAlertID = 0;
