@@ -23,9 +23,9 @@ module.exports = {
         "@typescript-eslint/no-unused-vars": [
           "warn",
           {
-            varsIgnorePattern: "_",
-            destructuredArrayIgnorePattern: "_",
-            argsIgnorePattern: "_",
+            varsIgnorePattern: "^_$",
+            destructuredArrayIgnorePattern: "^_$",
+            argsIgnorePattern: "^_$",
           },
         ],
       },
