@@ -21,7 +21,7 @@ describe("<AlertContainer />", () => {
 
     renderWrapped(<AlertContainer alerts={[alert1, alert2]} />, store);
 
-    expect(screen.getByText(alert1.title)).toBeInTheDocument();
-    expect(screen.getByText(alert2.title)).toBeInTheDocument();
+    expect(screen.getByText(alert1.title!)).toBeInTheDocument();
+    expect(screen.getByText(alert2.title!)).toBeInTheDocument();
   });
 });
