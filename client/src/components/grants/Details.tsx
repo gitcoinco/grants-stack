@@ -121,7 +121,7 @@ export default function Details({
   }, [props.round]);
 
   useEffect(() => {
-    if (props.applicationStatus === Status.Undefined) {
+    if (props.applicationStatus === Status.Sent) {
       dispatch(
         addAlert("success", applicationSuccessTitle, applicationSuccessBody)
       );

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { removeAlertDelayed } from "../../actions/ui";
 import { Alert } from "../../types/alert";
 // import Check from "../icons/Check";
@@ -21,8 +22,8 @@ export default function AlertComponent({ alert }: AlertProps) {
 
   return (
     <div className={`alert ${alert.type} flex text-lg`} role="alert">
-      <div className="fill-current w-8 h-8 mr-2 mb-10">
-        <img src="./assets/check.svg" alt="check" />
+      <div className="fill-current w-6 h-6 mr-2 mb-6">
+        <CheckCircleIcon />
       </div>
       <div className="m-auto ml-4">
         <div className="block">{alert.title}</div>
