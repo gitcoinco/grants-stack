@@ -43,10 +43,6 @@ export default function ViewRound() {
                 <span>Round Name: </span>
                 <span>{round?.roundMetadata!.name}</span>
               </p>
-              <p>
-                <span>Program: </span>
-                <span>{round?.ownedBy}</span>
-              </p>
               {round?.approvedProjects ? (
                 <ProjectList projects={round.approvedProjects} />
               ) : (

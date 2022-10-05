@@ -38,12 +38,6 @@ describe("<ViewRound />", () => {
     await screen.findByText(stubRound.roundMetadata!.name);
   });
 
-  it("displays program address", async () => {
-    renderWithContext(<ViewRound />, { rounds: [stubRound] });
-
-    await screen.findByText(stubRound.ownedBy);
-  });
-
   it("displays a loading spinner if loading", () => {
     renderWithContext(<ViewRound />, { isLoading: true });
 
