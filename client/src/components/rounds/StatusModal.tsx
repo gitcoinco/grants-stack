@@ -15,7 +15,7 @@ type Step = {
   status: Status;
 };
 
-const steps: Step[] = [
+export const steps: Step[] = [
   {
     name: "Gathering Data",
     description: "Preparing your application.",
@@ -50,7 +50,7 @@ type StepComponentProps = {
 };
 
 const completedIcon = (
-  <span className="flex h-9 items-center">
+  <span className="step-icon step-icon-completed flex h-9 items-center">
     <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 group-hover:bg-teal-800">
       <CheckIcon className="h-5 w-5 text-white" aria-hidden="true" />
     </span>
@@ -69,7 +69,10 @@ const currentIcon = (
 );
 
 const waitingIcon = (
-  <span className="flex h-9 items-center" aria-hidden="true">
+  <span
+    className="step-icon step-icon-waiting flex h-9 items-center"
+    aria-hidden="true"
+  >
     <span
       // eslint-disable-next-line max-len
       className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white group-hover:border-gray-400"
@@ -80,7 +83,7 @@ const waitingIcon = (
 );
 
 const errorIcon = (
-  <span className="flex h-9 items-center">
+  <span className="step-icon step-icon-error flex h-9 items-center">
     <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-600 group-hover:bg-red-800">
       <XMarkIcon className="w-5 h-5 text-white" aria-hidden="true" />
     </span>
@@ -106,7 +109,10 @@ function StepComponent({ ownStep, currentStatus, error }: StepComponentProps) {
   }
 
   return (
-    <li className={!isLastStep ? "pb-10 relative" : "relative"}>
+    <li
+      className={!isLastStep ? "pb-10 relative" : "relative"}
+      data-testid={`step-${ownStep.name}`}
+    >
       {!isLastStep ? (
         <div
           className={`absolute top-4 left-4 -ml-px mt-0.5 h-full w-0.5 ${
