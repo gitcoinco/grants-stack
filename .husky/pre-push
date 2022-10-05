@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# treat warnings as errors to prevent the build passing locally, but failing on CI
+yarn lerna run --scope=round-manager lint:fix -- -- --max-warnings=0
 yarn run test
