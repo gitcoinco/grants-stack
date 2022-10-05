@@ -27,7 +27,7 @@ export default function AlertComponent({ alert }: AlertProps) {
       </div>
       <div className="m-auto ml-4">
         <div className="block">{alert.title}</div>
-        <div className="block">{alert.body}</div>
+        <div className="block text-black">{alert.body}</div>
       </div>
     </div>
   );

@@ -62,33 +62,11 @@ function Apply() {
   /*
    * Alert elements
    */
-  const discordLink: JSX.Element = (
-    <a className="text-purple-500" href="https://discord.gg/nwYzGuuruJ">
-      Grant Hub Discord!
-    </a>
-  );
-  const applicationSuccessTitle: JSX.Element = (
-    <p className="text-gitcoin-teal-500">
-      Thank you for applying to {roundData?.programName}{" "}
-      {roundData?.roundMetadata.name}!
-    </p>
-  );
-  const applicationErrorTitle: JSX.Element = (
-    <p className="text-gitcoin-pink-500">
-      Error submitting application to {roundData?.programName}
-    </p>
-  );
-  const applicationSuccessBody: JSX.Element = (
-    <p className="text-black">
-      Your application has been received, and the {roundData?.programName} team
-      will review and reach out with next steps.
-    </p>
-  );
-  const applicationErrorBody: JSX.Element = (
-    <p className="text-black">
-      Please try again or reach out to us on the {discordLink}
-    </p>
-  );
+  const applicationSuccessTitle: string = `Thank you for applying to ${roundData?.programName} ${roundData?.roundMetadata.name}!`;
+  const applicationErrorTitle: string = `Error submitting application to ${roundData?.programName}`;
+  const applicationSuccessBody: string = `Your application has been received, and the ${roundData?.programName} team
+    will review and reach out with next steps.`;
+  const applicationErrorBody: string = "Please try again";
 
   useEffect(() => {
     if (props.round) {
