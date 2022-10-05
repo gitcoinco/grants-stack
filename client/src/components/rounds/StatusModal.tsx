@@ -17,13 +17,13 @@ type Step = {
 
 const steps: Step[] = [
   {
-    name: "BuildingApplication",
-    description: "building...",
+    name: "Gathering Data",
+    description: "Preparing your application.",
     status: Status.BuildingApplication,
   },
   {
     name: "Signing",
-    description: "signing...",
+    description: "Signing the application metadata with your wallet.",
     status: Status.SigningApplication,
   },
   {
@@ -33,7 +33,7 @@ const steps: Step[] = [
   },
   {
     name: "Applying",
-    description: "...",
+    description: "Sending your application.",
     status: Status.SendingTx,
   },
   {
@@ -58,9 +58,12 @@ const completedIcon = (
 );
 
 const currentIcon = (
-  <span className="flex h-9 items-center" aria-hidden="true">
-    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-indigo-600 bg-white">
-      <span className="h-2.5 w-2.5 rounded-full bg-indigo-600" />
+  <span
+    className="step-icon step-icon-current Status flex h-9 items-center"
+    aria-hidden="true"
+  >
+    <span className="step-icon-outer relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-indigo-600 bg-white">
+      <span className="step-icon-inner rounded-full bg-indigo-600" />
     </span>
   </span>
 );
@@ -139,12 +142,21 @@ export default function StatusModal({
       onClose={onCloseCallback}
     >
       <>
-        <div className="flex">
-          <div className="w-4/5">
+        <div>
+          <div>
             <h5 className="font-semibold mb-2">Processing...</h5>
-            <p className="mb-4">
-              Please hold while we submit your grant round application.
-            </p>
+            {error === undefined && (
+              <p className="mb-4">
+                Please hold while we submit your grant round application.
+              </p>
+            )}
+
+            {error !== undefined && (
+              <p className="mb-4 bg-red-600 text-white py-2 px-2 rounded-md">
+                There has been a systems error while applyting to this round.
+                Please close this modal and try again.
+              </p>
+            )}
           </div>
         </div>
         <div>

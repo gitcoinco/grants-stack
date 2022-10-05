@@ -130,59 +130,50 @@ function Apply() {
             <span className="pl-2">Exit</span>
           </Button>
         </div>
-        <Button
-          variant={ButtonVariants.outlineDanger}
-          onClick={() => toggleModal(true)}
-          styles={["w-full sm:w-auto mx-w-full ml-0"]}
-        >
-          <i className="icon mt-1">
-            <Cross color={colors["danger-background"]} />
-          </i>{" "}
-          <span className="pl-2">Exit</span>
-        </Button>
-      </div>
-      <div className="w-full flex">
-        <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
-          <p className="font-semibold">Grant Round</p>
-          <p>{props.round.programName}</p>
-          <p>{props.round.roundMetadata.name}</p>
-          <p className="font-semibold mt-4">Application Date</p>
-          <p>
-            {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
-            {formatDate(props.round.applicationsEndTime * 1000)}
-          </p>
-          <p className="font-semibold mt-4">Round Date</p>
-          <p>
-            {formatDate(props.round.roundStartTime * 1000)} -{" "}
-            {formatDate(props.round.roundEndTime * 1000)}
-          </p>
-        </div>
-        <div className="w-full md:w-2/3">
-          {!props.applicationMetadata === undefined && (
-            <div>loading form...</div>
-          )}
-          {props.applicationMetadata !== undefined && (
-            <Form
-              roundApplication={props.applicationMetadata}
-              round={props.round}
-              onSubmit={() => {
-                toggleStatusModal(true);
-              }}
-            />
-          )}
+        <div className="w-full flex">
+          <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
+            <p className="font-semibold">Grant Round</p>
+            <p>{props.round.programName}</p>
+            <p>{props.round.roundMetadata.name}</p>
+            <p className="font-semibold mt-4">Application Date</p>
+            <p>
+              {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
+              {formatDate(props.round.applicationsEndTime * 1000)}
+            </p>
+            <p className="font-semibold mt-4">Round Date</p>
+            <p>
+              {formatDate(props.round.roundStartTime * 1000)} -{" "}
+              {formatDate(props.round.roundEndTime * 1000)}
+            </p>
+          </div>
+          <div className="w-full md:w-2/3">
+            {!props.applicationMetadata === undefined && (
+              <div>loading form...</div>
+            )}
+            {props.applicationMetadata !== undefined && (
+              <Form
+                roundApplication={props.applicationMetadata}
+                round={props.round}
+                onSubmit={() => {
+                  toggleStatusModal(true);
+                }}
+              />
+            )}
+          </div>
         </div>
 
         <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
       </div>
 
-      {props.applicationState !== undefined && (
-        <StatusModal
-          open={statusModalOpen}
-          onClose={toggleStatusModal}
-          currentStatus={props.applicationState.status}
-          error={props.applicationState.error}
-        />
-      )}
+      {props.applicationState !== undefined &&
+        props.applicationState.status !== ApplicationStatus.Undefined && (
+          <StatusModal
+            open={statusModalOpen}
+            onClose={toggleStatusModal}
+            currentStatus={props.applicationState.status}
+            error={props.applicationState.error}
+          />
+        )}
     </>
   );
 }
