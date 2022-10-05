@@ -10,10 +10,20 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
   wrapWithApplicationContext,
+  wrapWithBulkUpdateGrantApplicationContext,
 } from "../../../test-utils";
 import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { useParams } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router-dom";
+import {
+  ApplicationContext,
+  ApplicationState,
+  initialApplicationState,
+} from "../../../context/application/ApplicationContext";
+import {
+  BulkUpdateGrantApplicationContext,
+  initialBulkUpdateGrantApplicationState,
+} from "../../../context/application/BulkUpdateGrantApplicationContext";
 
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/round");
@@ -76,18 +86,20 @@ describe("the view round page", () => {
     });
 
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [],
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [],
+              isLoading: false,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
             isLoading: false,
-          }),
-          { programs: [] }
-        ),
-        {
-          applications: [],
-          isLoading: false,
-        }
+          }
+        )
       )
     );
 
@@ -96,17 +108,19 @@ describe("the view round page", () => {
 
   it("should display access denied when wallet accessing is not round operator", () => {
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [{ ...mockRoundData, operatorWallets: [] }],
-            isLoading: false,
-          }),
-          { programs: [] }
-        ),
-        {
-          applications: [],
-        }
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [{ ...mockRoundData, operatorWallets: [] }],
+              isLoading: false,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+          }
+        )
       )
     );
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
@@ -114,13 +128,15 @@ describe("the view round page", () => {
 
   it("should display Copy to Clipboard", () => {
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [mockRoundData],
-            isLoading: false,
-          }),
-          { programs: [] }
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              isLoading: false,
+            }),
+            { programs: [] }
+          )
         )
       )
     );
@@ -129,18 +145,20 @@ describe("the view round page", () => {
 
   it("should display copy when there are no applicants for a given round", () => {
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [mockRoundData],
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              isLoading: false,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
             isLoading: false,
-          }),
-          { programs: [] }
-        ),
-        {
-          applications: [],
-          isLoading: false,
-        }
+          }
+        )
       )
     );
     expect(screen.getByText("No Applications")).toBeInTheDocument();
@@ -160,18 +178,20 @@ describe("the view round page", () => {
     mockApplicationData[3].status = "APPROVED";
 
     render(
-      wrapWithApplicationContext(
-        wrapWithReadProgramContext(
-          wrapWithRoundContext(<ViewRoundPage />, {
-            data: [mockRoundData],
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              isLoading: false,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: mockApplicationData,
             isLoading: false,
-          }),
-          { programs: [] }
-        ),
-        {
-          applications: mockApplicationData,
-          isLoading: false,
-        }
+          }
+        )
       )
     );
 
@@ -202,3 +222,32 @@ describe("the view round page", () => {
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
 });
+
+export const renderWithContext = (
+  ui: JSX.Element,
+  grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <BulkUpdateGrantApplicationContext.Provider
+        value={{
+          state: initialBulkUpdateGrantApplicationState,
+          dispatch,
+        }}
+      >
+        <ApplicationContext.Provider
+          value={{
+            state: {
+              ...initialApplicationState,
+              ...grantApplicationStateOverrides,
+            },
+            dispatch,
+          }}
+        >
+          {ui}
+        </ApplicationContext.Provider>
+      </BulkUpdateGrantApplicationContext.Provider>
+    </MemoryRouter>
+  );

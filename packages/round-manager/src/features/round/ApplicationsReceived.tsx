@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
-import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import {
@@ -16,6 +15,7 @@ import {
 import {
   ApplicationStatus,
   GrantApplication,
+  ProgressStatus,
   ProjectStatus,
 } from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -29,11 +29,12 @@ import {
 } from "./BulkApplicationCommon";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
+import ProgressModal from "../common/ProgressModal";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
-  const { provider, signer } = useWallet();
-
+  const { chain } = useWallet();
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const pendingApplications =
     applications?.filter(
@@ -42,10 +43,45 @@ export default function ApplicationsReceived() {
 
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
 
-  const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
-    useBulkUpdateGrantApplicationsMutation();
+  const {
+    bulkUpdateGrantApplications,
+    IPFSCurrentStatus,
+    contractUpdatingStatus,
+    indexingStatus,
+  } = useBulkUpdateGrantApplications();
+  const isBulkUpdateLoading =
+    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
+    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
+    indexingStatus == ProgressStatus.IN_PROGRESS;
+
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Updating",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: contractUpdatingStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   useEffect(() => {
     if (!isLoading || !bulkSelect) {
@@ -83,16 +119,17 @@ export default function ApplicationsReceived() {
 
   const handleBulkReview = async () => {
     try {
+      setOpenProgressModal(true);
+      setOpenModal(false);
       await bulkUpdateGrantApplications({
         roundId: id!,
         applications: selected.filter(
           (application) => application.status !== "PENDING"
         ),
-        signer,
-        provider,
-      }).unwrap();
+      });
       setBulkSelect(false);
-      setOpenModal(false);
+      setOpenProgressModal(false);
+      window.location.reload();
     } catch (error) {
       datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
       console.error(error);
@@ -192,6 +229,12 @@ export default function ApplicationsReceived() {
             />
           </>
         )}
+      <ProgressModal
+        isOpen={openProgressModal}
+        setIsOpen={setOpenProgressModal}
+        subheading={"Please hold while we update the grant applications."}
+        steps={progressSteps}
+      />
     </div>
   );
 }
