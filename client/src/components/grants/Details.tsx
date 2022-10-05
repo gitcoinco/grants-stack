@@ -4,6 +4,7 @@ import { FormInputs, Metadata, Project } from "../../types";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
+import ApplicationCard from "./ApplicationCard";
 
 function Verified() {
   return (
@@ -71,7 +72,7 @@ export default function Details({
             <a
               target="_blank"
               href={project?.website}
-              className="flex items-center mr-6 text-primary-background m-2"
+              className="flex items-center mr-6 text-primary-background m-2 pb-1"
               rel="noreferrer"
             >
               <LinkIcon color={colors["secondary-text"]} />{" "}
@@ -79,7 +80,7 @@ export default function Details({
             </a>
           </div>
           {project?.projectTwitter && (
-            <div className="flex justify-start items-center m-2">
+            <div className="flex justify-start items-center m-2 pb-1">
               <img
                 className="h-3 mr-2 mt-1"
                 src="./assets/twitter_logo.svg"
@@ -117,13 +118,13 @@ export default function Details({
         </Box>
         <Box>
           <div>
-            <p className="flex text-sm m-2">
+            <p className="flex text-sm m-2 pb-2">
               <Calendar color={colors["secondary-text"]} />
               <span className="ml-1">Created on: {createdAt}</span>
             </p>
           </div>
           <div>
-            <p className="flex text-sm m-2">
+            <p className="flex text-sm m-2 pb-1">
               <Calendar color={colors["secondary-text"]} />
               <span className="ml-1">Last Edited: {updatedAt}</span>
             </p>
@@ -147,7 +148,7 @@ export default function Details({
           )}
         </Box>
         <Box>
-          <div>Applications Card Placeholder</div>
+          <ApplicationCard />
         </Box>
       </SimpleGrid>
       <p className="text-primary-text mb-1 font-bold">Description</p>
