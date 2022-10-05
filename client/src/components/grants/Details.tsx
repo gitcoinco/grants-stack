@@ -44,12 +44,12 @@ export default function Details({
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     let existingApplication;
-    let roundAddress: string | undefined;
+    let roundAddress;
     let round: Round | undefined;
     if (roundToApply) {
       // eslint-disable-next-line prefer-destructuring
       roundAddress = roundToApply.split(":")[1];
-      existingApplication = state.roundApplication[roundAddress!];
+      existingApplication = state.roundApplication[roundAddress];
       if (existingApplication !== undefined) {
         // console.log("State =>", props);
       }
@@ -57,12 +57,16 @@ export default function Details({
       round = roundState ? roundState.round : undefined;
     }
     const { alerts } = state.ui;
+    const applicationStatus: Status = existingApplication
+      ? existingApplication.status
+      : Status.Undefined;
 
     return {
       alerts,
       round,
       roundAddress,
       existingApplication,
+      applicationStatus,
     };
   });
 
@@ -77,10 +81,9 @@ export default function Details({
       Grant Hub Discord!
     </a>
   );
-  // todo: FIXME: the teal is not showing up for title
   const applicationSuccessTitle: JSX.Element = (
     <p className="text-gitcoin-teal-500">
-      Thank you for applying to {roundData?.programName}
+      Thank you for applying to {roundData?.programName}{" "}
       {roundData?.roundMetadata.name}!
     </p>
   );
@@ -118,17 +121,17 @@ export default function Details({
   }, [props.round]);
 
   useEffect(() => {
-    if (props.existingApplication?.status === Status.Sent) {
+    if (props.applicationStatus === Status.Undefined) {
       dispatch(
         addAlert("success", applicationSuccessTitle, applicationSuccessBody)
       );
-    } else if (props.existingApplication?.status === Status.Error) {
+    } else if (props.applicationStatus === Status.Error) {
       dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
     }
   }, []);
 
   return (
-    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
+    <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
       <AlertContainer alerts={props.alerts} />
       <img
         className="w-full mb-4"
