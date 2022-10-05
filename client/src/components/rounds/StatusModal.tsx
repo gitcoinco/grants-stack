@@ -28,7 +28,7 @@ export const steps: Step[] = [
   },
   {
     name: "Storing",
-    description: "The metadatais being saved in a safe place.",
+    description: "The metadata is being saved in a safe place.",
     status: Status.UploadingMetadata,
   },
   {
