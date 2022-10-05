@@ -1,9 +1,7 @@
 import { useSelector } from "react-redux";
-import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { Status } from "../../reducers/roundApplication";
 import colors from "../../styles/colors";
-import { FormInputs, Metadata, Project, Round } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 import { AlertContainer } from "../base/Alert";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
@@ -33,32 +31,10 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
-  const [roundToApply] = useLocalStorage("roundToApply", null);
   const props = useSelector((state: RootState) => {
-    let existingApplication;
-    let roundAddress;
-    let round: Round | undefined;
-    if (roundToApply) {
-      // eslint-disable-next-line prefer-destructuring
-      roundAddress = roundToApply.split(":")[1];
-      existingApplication = state.roundApplication[roundAddress];
-      if (existingApplication !== undefined) {
-        // console.log("State =>", props);
-      }
-      const roundState = state.rounds[roundAddress!];
-      round = roundState ? roundState.round : undefined;
-    }
     const { alerts } = state.ui;
-    const applicationStatus: Status = existingApplication
-      ? existingApplication.status
-      : Status.Undefined;
-
     return {
       alerts,
-      round,
-      roundAddress,
-      existingApplication,
-      applicationStatus,
     };
   });
 
