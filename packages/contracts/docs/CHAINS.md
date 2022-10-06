@@ -6,7 +6,7 @@ This document lists all the addresses of the contracts that have been deployed o
 
 | Contract                          | Address                                    |
 |-----------------------------------|--------------------------------------------|
-| QuadraticFundingVotingStrategy    | 0x48a4eEB7Df505643e1e734cbD11c128F3625F6fE |
+| QuadraticFundingVotingStrategy    | 0xfc3Dd3847Fdc052001c6cB0e60A3A921C44C50F3 |
 | RoundFactory                      | 0x89f01CD69087669f8e49F6FB8aD475F622Ac8791 |
 | RoundImplementation               | 0x2707e86cBb3Db85b1Ceb78bA9C9580e2F35736fD |
 | Round                             | 0x8140b7168d6acBf528FC68Ea94D75E9d2B5aF721 |
