@@ -8,12 +8,20 @@ describe("<AlertContainer />", () => {
   test("it should show multiple alerts", async () => {
     const store = setupStore();
 
-    const alert1 = buildAlert({ id: 1, message: "First Alert" });
-    const alert2 = buildAlert({ id: 2, message: "Second Alert" });
+    const alert1 = buildAlert({
+      id: 1,
+      title: "First Alert",
+      body: "Test content",
+    });
+    const alert2 = buildAlert({
+      id: 2,
+      title: "Second Alert",
+      body: "Test content",
+    });
 
     renderWrapped(<AlertContainer alerts={[alert1, alert2]} />, store);
 
-    expect(screen.getByText(alert1.message)).toBeInTheDocument();
-    expect(screen.getByText(alert2.message)).toBeInTheDocument();
+    expect(screen.getByText(alert1.title!)).toBeInTheDocument();
+    expect(screen.getByText(alert2.title!)).toBeInTheDocument();
   });
 });
