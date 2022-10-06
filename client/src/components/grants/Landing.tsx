@@ -9,6 +9,7 @@ function Landing() {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Error: state.web3.error,
+    web3Initializing: state.web3.initializing,
   }));
   const queryString = new URLSearchParams(window?.location?.search);
 
@@ -72,6 +73,14 @@ function Landing() {
     window.close();
 
     return <div />;
+  }
+
+  if (
+    props.web3Initializing &&
+    (signer || chain || address) &&
+    !props.web3Error
+  ) {
+    return null;
   }
 
   return (
