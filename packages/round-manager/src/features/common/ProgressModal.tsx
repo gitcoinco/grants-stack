@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
 import { ProgressStatus } from "../api/types";
@@ -16,6 +16,7 @@ interface ProgressModalProps {
   heading?: string;
   subheading?: string;
   redirectUrl?: string;
+  children?: ReactNode;
 }
 
 export default function ProgressModal({
@@ -23,6 +24,7 @@ export default function ProgressModal({
   setIsOpen,
   heading = "Processing...",
   subheading = "Please hold while your operation is in progress.",
+  children,
   ...props
 }: ProgressModalProps) {
   return (
@@ -174,6 +176,7 @@ export default function ProgressModal({
         </div>
         {/* Adding invisible button as modal needs to be displayed with a button */}
         <button className="h-0 w-0 overflow-hidden" />
+        {children}
       </Dialog>
     </Transition.Root>
   );

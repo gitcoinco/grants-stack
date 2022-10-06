@@ -191,4 +191,22 @@ describe("<ProgressModal />", () => {
       }
     );
   });
+
+  it("should render children", () => {
+    const expectedTestId = `child-test-id-123`;
+    const child = <div data-testid={expectedTestId} />;
+    renderWrapped(
+      <ProgressModal
+        isOpen
+        setIsOpen={() => {
+          /**/
+        }}
+        steps={steps}
+      >
+        {child}
+      </ProgressModal>
+    );
+
+    expect(screen.getByTestId(expectedTestId)).toBeInTheDocument();
+  });
 });
