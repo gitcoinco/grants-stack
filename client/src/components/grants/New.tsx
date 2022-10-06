@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import colors from "../../styles/colors";
 import Button, { ButtonVariants } from "../base/Button";
 import ProjectForm from "../base/ProjectForm";
@@ -7,11 +8,21 @@ import ExitModal from "../base/ExitModal";
 import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
+import { formReset } from "../../actions/projectForm";
 
 function NewProject() {
+  const dispatch = useDispatch();
+
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
     ProjectFormStatus.Metadata
+  );
+
+  useEffect(
+    () => () => {
+      dispatch(formReset());
+    },
+    []
   );
 
   const currentForm = (status: ProjectFormStatus) => {
