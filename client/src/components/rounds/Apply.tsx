@@ -66,10 +66,8 @@ function Apply() {
    * Alert elements
    */
   const applicationSuccessTitle: string = `Thank you for applying to ${roundData?.programName} ${roundData?.roundMetadata.name}!`;
-  const applicationErrorTitle: string = `Error submitting application to ${roundData?.programName}`;
   const applicationSuccessBody: string = `Your application has been received, and the ${roundData?.programName} team
     will review and reach out with next steps.`;
-  const applicationErrorBody: string = "Please try again";
 
   useEffect(() => {
     if (props.round) {
@@ -106,6 +104,9 @@ function Apply() {
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (props.applicationState?.status === ApplicationStatus.Sent) {
       timer = setTimeout(() => {
+        dispatch(
+          addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+        );
         navigate(grantPath(props.applicationState.projectsIDs[0]));
       }, 1500);
     }
@@ -127,24 +128,6 @@ function Apply() {
 
   if (props.roundState === undefined || props.round === undefined) {
     return <div>something went wrong</div>;
-  }
-
-  if (props.applicationStatus === ApplicationStatus.Error) {
-    dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
-    return <div>Error submitting round application</div>;
-  }
-
-  if (props.applicationStatus === ApplicationStatus.Sent) {
-    if (props.applicationState) {
-      dispatch(
-        addAlert("success", applicationSuccessTitle, applicationSuccessBody)
-      );
-      navigate(grantPath(props.applicationState.projectsIDs[0]));
-    }
-  }
-
-  if (props.applicationStatus !== ApplicationStatus.Undefined) {
-    return <div>sending application...</div>;
   }
 
   return (
