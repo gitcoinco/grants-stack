@@ -16,7 +16,7 @@ export default function AlertComponent({ alert }: AlertProps) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(removeAlertDelayed(alert.id, 500000));
+    dispatch(removeAlertDelayed(alert.id, 5000));
   }, [dispatch, alert.id]);
 
   return (
