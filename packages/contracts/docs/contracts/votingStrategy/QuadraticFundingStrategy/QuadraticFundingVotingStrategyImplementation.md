@@ -1,4 +1,4 @@
-# QuadraticFundingVotingStrategy
+# QuadraticFundingVotingStrategyImplementation
 
 
 
@@ -9,6 +9,17 @@ Allows voters to cast multiple weighted votes to grants with one transaction Thi
 
 
 ## Methods
+
+### initialize
+
+```solidity
+function initialize() external nonpayable
+```
+
+
+
+
+
 
 ### vote
 
@@ -30,6 +41,22 @@ Invoked by RoundImplementation which allows a voted to cast weighted votes to mu
 
 
 ## Events
+
+### Initialized
+
+```solidity
+event Initialized(uint8 version)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| version  | uint8 | undefined |
 
 ### Voted
 

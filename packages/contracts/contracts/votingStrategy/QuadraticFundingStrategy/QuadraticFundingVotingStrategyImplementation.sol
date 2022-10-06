@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./IVotingStrategy.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "../IVotingStrategy.sol";
 
 /**
  * Allows voters to cast multiple weighted votes to grants with one transaction
@@ -12,9 +13,9 @@ import "./IVotingStrategy.sol";
  *
  * Emits event upon every transfer.
  */
-contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
+contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, ReentrancyGuard, Initializable {
 
-  using SafeERC20 for IERC20;
+  using SafeERC20Upgradeable for IERC20Upgradeable;
 
   // --- Event ---
 
@@ -28,6 +29,10 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
   );
 
   // --- Core methods ---
+
+  function initialize() external initializer {
+    // empty initializer
+  }
 
   /**
    * @notice Invoked by RoundImplementation which allows
@@ -49,8 +54,8 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
       /// TODO: ensure this can be called by round only
       /// @dev erc20 transfer to grant address
       // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
-      SafeERC20.safeTransferFrom(
-        IERC20(_token),
+      SafeERC20Upgradeable.safeTransferFrom(
+        IERC20Upgradeable(_token),
         voterAddress,
         _grantAddress,
         _amount
@@ -69,6 +74,3 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
 
   }
 }
-
-/// Discussion
-/// - should contract should be pausable & ownable

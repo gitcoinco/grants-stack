@@ -4,13 +4,13 @@ import { deployContract } from "ethereum-waffle";
 import { BytesLike, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
-import { MockERC20, QuadraticFundingVotingStrategy } from "../../typechain";
+import { MockERC20, QuadraticFundingVotingStrategyImplementation } from "../../typechain";
 import { Event, Wallet } from "ethers";
 
-describe("QuadraticFundingVotingStrategy", () =>  {
+describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
   let user: SignerWithAddress;
-  let quadraticFundingVotingStrategy: QuadraticFundingVotingStrategy;
+  let quadraticFundingVotingStrategy: QuadraticFundingVotingStrategyImplementation;
   let quadraticFundingVotingStrategyArtifact: Artifact;
 
   let mockERC20: MockERC20;
@@ -24,14 +24,14 @@ describe("QuadraticFundingVotingStrategy", () =>  {
 
       [user] = await ethers.getSigners();
 
-      quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategy');
-      quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategy>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+      quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
+      quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
 
       mockERC20Artifact = await artifacts.readArtifact('MockERC20');
       mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [tokensToBeMinted]);
 
       // Verify deploy
-      expect(isAddress(quadraticFundingVotingStrategy.address), 'Failed to deploy QuadraticFundingVotingStrategy').to.be.true;
+      expect(isAddress(quadraticFundingVotingStrategy.address), 'Failed to deploy QuadraticFundingVotingStrategyImplementation').to.be.true;
       expect(isAddress(mockERC20.address), 'Failed to deploy MockERC20').to.be.true;
     });
   })
@@ -56,9 +56,9 @@ describe("QuadraticFundingVotingStrategy", () =>  {
         mockERC20Artifact = await artifacts.readArtifact('MockERC20');
         mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [tokensToBeMinted]);
 
-        // Deploy QuadraticFundingVotingStrategy contract
-        quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategy');
-        quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategy>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+        // Deploy QuadraticFundingVotingStrategyImplementation contract
+        quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
+        quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
 
         encodedVotes = [];
 
