@@ -46,8 +46,9 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
+      /// TODO: ensure this can be called by round only
       /// @dev erc20 transfer to grant address
-      // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events
+      // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
       SafeERC20.safeTransferFrom(
         IERC20(_token),
         voterAddress,
