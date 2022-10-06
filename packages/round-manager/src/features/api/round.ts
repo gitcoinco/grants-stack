@@ -98,7 +98,7 @@ export async function listRounds(
   signerOrProvider: any,
   programId: string,
   roundId?: string
-): Promise<{ data: Round[]; error: string | undefined }> {
+): Promise<{ rounds: Round[] }> {
   try {
     // fetch chain id
     const { chainId } = await signerOrProvider.getNetwork();
@@ -170,10 +170,10 @@ export async function listRounds(
       });
     }
 
-    return { data: rounds, error: undefined };
+    return { rounds };
   } catch (err) {
     console.log("error", err);
-    return { data: [], error: "Unable to fetch rounds" };
+    throw new Error("Unable to fetch rounds");
   }
 }
 

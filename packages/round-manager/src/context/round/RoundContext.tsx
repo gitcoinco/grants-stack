@@ -46,13 +46,21 @@ const fetchRounds = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
 
-  const res = await listRounds(address, walletProvider, programId);
-
-  if (res.error) {
-    datadogLogs.logger.error(`error: fetchRounds ${res.error}`);
-    dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: res.error });
+  try {
+    const { rounds } = await listRounds(address, walletProvider, programId);
+    dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_SUCCESS,
+    });
+  } catch (error) {
+    datadogLogs.logger.error(`error: fetchRounds ${error}`);
+    dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_ERROR,
+    });
   }
-  dispatch({ type: ActionType.SET_ROUNDS, payload: res.data });
 };
 
 const fetchRoundById = async (
@@ -90,7 +98,7 @@ const roundReducer = (state: RoundState, action: Action) => {
       return {
         ...state,
         data: action.payload ?? [],
-        fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+        error: undefined,
       };
     case ActionType.SET_LIST_ROUNDS_ERROR:
       return {
