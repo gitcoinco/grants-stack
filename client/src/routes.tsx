@@ -1,9 +1,9 @@
 export const slugs = {
   root: `/`,
-  grants: `/grants`,
-  grant: `/grants/:id`,
-  edit: `/grants/:id/edit`,
-  newGrant: `/grants/new`,
+  grants: `/projects`,
+  grant: `/projects/:id`,
+  edit: `/projects/:id/edit`,
+  newGrant: `/projects/new`,
   round: `/chains/:chainId/rounds/:roundId`,
   roundApplication: `/chains/:chainId/rounds/:roundId/apply`,
 };
@@ -14,9 +14,9 @@ export const grantsPath = () => slugs.grants;
 
 export const newGrantPath = () => slugs.newGrant;
 
-export const grantPath = (id: string | number) => `/grants/${id}`;
+export const grantPath = (id: string | number) => `/projects/${id}`;
 
-export const editPath = (id: string | number) => `/grants/${id}/edit`;
+export const editPath = (id: string | number) => `/projects/${id}/edit`;
 
 export const roundPath = (
   chainId: string | undefined,

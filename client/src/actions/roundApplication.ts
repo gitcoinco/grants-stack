@@ -25,6 +25,7 @@ interface RoundApplicationErrorAction {
   type: typeof ROUND_APPLICATION_ERROR;
   roundAddress: string;
   error: string;
+  step: Status;
 }
 
 // FIXME: rename to ROUND_APPLICATION_APPLIED
@@ -48,20 +49,34 @@ interface RoundApplicationNotFoundAction {
   roundAddress: string;
 }
 
+export const ROUND_APPLICATION_RESET = "ROUND_APPLICATION_RESET";
+interface RoundApplicationResetAction {
+  type: typeof ROUND_APPLICATION_RESET;
+  roundAddress: string;
+}
+
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
   | RoundApplicationLoadedAction
   | RoundApplicationFoundAction
-  | RoundApplicationNotFoundAction;
+  | RoundApplicationNotFoundAction
+  | RoundApplicationResetAction;
 
 const applicationError = (
   roundAddress: string,
-  error: string
+  error: string,
+  step: Status
 ): RoundApplicationActions => ({
   type: ROUND_APPLICATION_ERROR,
   roundAddress,
   error,
+  step,
+});
+
+export const resetApplication = (roundAddress: string) => ({
+  type: ROUND_APPLICATION_RESET,
+  roundAddress,
 });
 
 export const submitApplication =
@@ -76,14 +91,24 @@ export const submitApplication =
     const state = getState();
     const roundState = state.rounds[roundAddress];
     if (roundState === undefined) {
-      dispatch(applicationError(roundAddress, "cannot load round data"));
+      dispatch(
+        applicationError(
+          roundAddress,
+          "cannot load round data",
+          Status.BuildingApplication
+        )
+      );
       return;
     }
 
     const roundApplicationMetadata = roundState.round?.applicationMetadata;
     if (roundApplicationMetadata === undefined) {
       dispatch(
-        applicationError(roundAddress, "cannot load round application metadata")
+        applicationError(
+          roundAddress,
+          "cannot load round application metadata",
+          Status.BuildingApplication
+        )
       );
       return;
     }
@@ -91,7 +116,11 @@ export const submitApplication =
     const { projectQuestionId } = roundApplicationMetadata;
     if (projectQuestionId === undefined) {
       dispatch(
-        applicationError(roundAddress, "cannot find project question id")
+        applicationError(
+          roundAddress,
+          "cannot find project question id",
+          Status.BuildingApplication
+        )
       );
       return;
     }
@@ -101,7 +130,11 @@ export const submitApplication =
       state.grantsMetadata[Number(projectId)].metadata;
     if (projectMetadata === undefined) {
       dispatch(
-        applicationError(roundAddress, "cannot find selected project metadata")
+        applicationError(
+          roundAddress,
+          "cannot find selected project metadata",
+          Status.BuildingApplication
+        )
       );
       return;
     }
@@ -111,7 +144,13 @@ export const submitApplication =
     const { chainID } = state.web3;
     const chainName = chains[chainID!];
     if (chainID === undefined) {
-      dispatch(applicationError(roundAddress, "cannot find chain name"));
+      dispatch(
+        applicationError(
+          roundAddress,
+          "cannot find chain name",
+          Status.BuildingApplication
+        )
+      );
       return;
     }
 
@@ -148,11 +187,13 @@ export const submitApplication =
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
-      dispatch({
-        type: ROUND_APPLICATION_ERROR,
-        roundAddress,
-        error: "error signing round application",
-      });
+      dispatch(
+        applicationError(
+          roundAddress,
+          "error signing round application",
+          Status.SigningApplication
+        )
+      );
       return;
     }
 
@@ -187,19 +228,23 @@ export const submitApplication =
     );
 
     try {
-      await contract.applyToRound(projectUniqueID, metaPtr);
+      const tx = await contract.applyToRound(projectUniqueID, metaPtr);
+      // FIXME: check return value of tx.wait() ??
+      await tx.wait();
       dispatch({
         type: ROUND_APPLICATION_LOADED,
         roundAddress,
-        projectId,
+        projectId: Number(projectId),
       });
     } catch (e) {
       console.error("error calling applyToRound:", e);
-      dispatch({
-        type: ROUND_APPLICATION_ERROR,
-        roundAddress,
-        error: "error calling applyToRound",
-      });
+      dispatch(
+        applicationError(
+          roundAddress,
+          "error calling applyToRound",
+          Status.SendingTx
+        )
+      );
     }
   };
 

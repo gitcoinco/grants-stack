@@ -253,41 +253,46 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     return;
   }
 
-  const programContract = new ethers.Contract(
-    roundMetadata.programContractAddress,
-    ProgramABI,
-    signer
-  );
+  let programName = "";
 
-  dispatch({
-    type: ROUNDS_LOADING_ROUND,
-    address,
-    status: Status.LoadingProgramMetaPtr,
-  });
+  if (roundMetadata.programContractAddress !== undefined) {
+    const programContract = new ethers.Contract(
+      roundMetadata.programContractAddress,
+      ProgramABI,
+      signer
+    );
 
-  let programMetaPtr: MetaPtr;
-  try {
-    programMetaPtr = await programContract.metaPtr();
-  } catch (e) {
-    dispatch(loadingError(address, "error loading program metaPtr"));
-    console.error(e);
-    return;
-  }
+    dispatch({
+      type: ROUNDS_LOADING_ROUND,
+      address,
+      status: Status.LoadingProgramMetaPtr,
+    });
 
-  dispatch({
-    type: ROUNDS_LOADING_ROUND,
-    address,
-    status: Status.LoadingProgramMetadata,
-  });
+    let programMetaPtr: MetaPtr;
+    try {
+      programMetaPtr = await programContract.metaPtr();
+    } catch (e) {
+      dispatch(loadingError(address, "error loading program metaPtr"));
+      console.error(e);
+      return;
+    }
 
-  let programMetadata: ProgramMetadata;
-  try {
-    const resp = await pinataClient.fetchText(programMetaPtr.pointer);
-    programMetadata = JSON.parse(resp);
-  } catch (e) {
-    dispatch(loadingError(address, "error loading program metadata"));
-    console.error(e);
-    return;
+    dispatch({
+      type: ROUNDS_LOADING_ROUND,
+      address,
+      status: Status.LoadingProgramMetadata,
+    });
+
+    let programMetadata: ProgramMetadata;
+    try {
+      const resp = await pinataClient.fetchText(programMetaPtr.pointer);
+      programMetadata = JSON.parse(resp);
+      programName = programMetadata.name;
+    } catch (e) {
+      dispatch(loadingError(address, "error loading program metadata"));
+      console.error(e);
+      return;
+    }
   }
 
   const round = {
@@ -307,7 +312,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
       pointer: applicationMetaPtr.pointer,
     },
     applicationMetadata,
-    programName: programMetadata.name,
+    programName,
   };
 
   dispatch(roundLoaded(address, round));
