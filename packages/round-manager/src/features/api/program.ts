@@ -169,7 +169,7 @@ export async function deployProgramContract({
   } catch (error) {
     datadogLogs.logger.error(`error: deployProgramContract - ${error}`);
     console.log("error", error);
-    return { error: "Unable to create program" };
+    throw new Error("Unable to create program");
   }
 }
 
