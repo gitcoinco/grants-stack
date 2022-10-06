@@ -1,9 +1,7 @@
 module.exports = {
   // if this is not set it will default to user's operating system preferences
-  darkMode: 'class',
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  darkMode: "class",
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -23,8 +21,11 @@ module.exports = {
         "gitcoin-pink-100": "#FDDEE4",
         "gitcoin-teal-100": "#E6FFF9",
         "gitcoin-teal-500": "#11BC92",
-      }
-    }
+      },
+    },
+    fontFamily: {
+      sans: ['"Libre Franklin"'],
+    },
   },
   important: true,
-}
+};

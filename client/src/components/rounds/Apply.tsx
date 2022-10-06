@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { resetApplication } from "../../actions/roundApplication";
+import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { grantPath, roundPath } from "../../routes";
 import { Status as ApplicationStatus } from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
+import { grantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
+import { Round } from "../../types";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "./StatusModal";
-import { resetApplication } from "../../actions/roundApplication";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -23,6 +25,7 @@ function Apply() {
   const navigate = useNavigate();
 
   const [modalOpen, toggleModal] = useState(false);
+  const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [, setToggleRoundApplicationModal] = useLocalStorage(
@@ -58,6 +61,21 @@ function Apply() {
       applicationMetadata: round?.applicationMetadata,
     };
   }, shallowEqual);
+
+  /*
+   * Alert elements
+   */
+  const applicationSuccessTitle: string = `Thank you for applying to ${roundData?.programName} ${roundData?.roundMetadata.name}!`;
+  const applicationErrorTitle: string = `Error submitting application to ${roundData?.programName}`;
+  const applicationSuccessBody: string = `Your application has been received, and the ${roundData?.programName} team
+    will review and reach out with next steps.`;
+  const applicationErrorBody: string = "Please try again";
+
+  useEffect(() => {
+    if (props.round) {
+      setRoundData(props.round);
+    }
+  }, [props.round]);
 
   useEffect(() => {
     if (
@@ -109,6 +127,24 @@ function Apply() {
 
   if (props.roundState === undefined || props.round === undefined) {
     return <div>something went wrong</div>;
+  }
+
+  if (props.applicationStatus === ApplicationStatus.Error) {
+    dispatch(addAlert("error", applicationErrorTitle, applicationErrorBody));
+    return <div>Error submitting round application</div>;
+  }
+
+  if (props.applicationStatus === ApplicationStatus.Sent) {
+    if (props.applicationState) {
+      dispatch(
+        addAlert("success", applicationSuccessTitle, applicationSuccessBody)
+      );
+      navigate(grantPath(props.applicationState.projectsIDs[0]));
+    }
+  }
+
+  if (props.applicationStatus !== ApplicationStatus.Undefined) {
+    return <div>sending application...</div>;
   }
 
   return (
