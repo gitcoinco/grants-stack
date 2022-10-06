@@ -2,6 +2,7 @@ import { Program, Web3Instance } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -40,14 +41,17 @@ const fetchProgramsByAddress = async (
   address: string,
   walletProvider: Web3Instance["provider"]
 ) => {
+  datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
+
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   listPrograms(address, walletProvider)
     .then((programs) =>
       dispatch({ type: ActionType.SET_PROGRAMS, payload: programs })
     )
-    .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error })
-    )
+    .catch((error) => {
+      datadogLogs.logger.error(`error: fetchProgramsByAddress ${error}`);
+      dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error });
+    })
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
@@ -56,14 +60,17 @@ const fetchProgramsById = async (
   programId: string,
   walletProvider: any
 ) => {
+  datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
+
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getProgramById(programId, walletProvider)
     .then((program) =>
       dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] })
     )
-    .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error })
-    )
+    .catch((error) => {
+      datadogLogs.logger.error(`error: fetchProgramsById ${error}`);
+      dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error });
+    })
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 };
 
@@ -83,8 +90,9 @@ const programReducer = (state: ReadProgramState, action: Action) => {
       return { ...state, programs: [], listProgramsError: action.payload };
     case ActionType.SET_ERROR_GET_PROGRAM:
       return { ...state, getProgramByIdError: action.payload };
+    default:
+      return state;
   }
-  return state;
 };
 
 export const ReadProgramProvider = ({

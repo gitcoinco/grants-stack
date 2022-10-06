@@ -32,6 +32,7 @@ import { useApplicationById } from "../../context/application/ApplicationContext
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
+import { humanReadableLabels as ApplicationQuestions } from "../api/utils";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -41,20 +42,13 @@ enum VerifiedCredentialState {
   PENDING,
 }
 
-enum ApplicationQuestions {
-  EMAIL = "Email",
-  FUNDING_SOURCE = "Funding Source",
-  PROFIT_2022 = "Profit2022",
-  TEAM_SIZE = "Team Size",
-}
-
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 const verifier = new PassportVerifier();
 
 export default function ViewApplicationPage() {
-  datadogLogs.logger.info("====> Route: /program/create");
+  datadogLogs.logger.info("====> Route: /round/:roundId/application/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const [reviewDecision, setReviewDecision] = useState<
@@ -130,8 +124,11 @@ export default function ViewApplicationPage() {
       }).unwrap();
 
       navigate(0);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      datadogLogs.logger.error(
+        `error: handleUpdateGrantApplication - ${error}, roundId - ${roundId}`
+      );
+      console.error(error);
     }
   };
 
@@ -221,6 +218,9 @@ export default function ViewApplicationPage() {
                 answer: decryptedString,
               };
             } catch (error) {
+              datadogLogs.logger.error(`error: decryptAnswers - ${error}`);
+              console.error(error);
+
               _answerBlock = {
                 ..._answerBlock,
                 answer: "N/A",
@@ -351,7 +351,7 @@ export default function ViewApplicationPage() {
                     <div className="text-grey-500 truncate block">
                       <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
                       <span className="text-xs text-grey-400">
-                        {getAnswer(ApplicationQuestions.EMAIL)}
+                        {getAnswer(ApplicationQuestions.email)}
                       </span>
                     </div>
                     <span
@@ -388,17 +388,17 @@ export default function ViewApplicationPage() {
 
                   <h2 className="text-xs mb-2">Funding Sources</h2>
                   <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.FUNDING_SOURCE)}
+                    {getAnswer(ApplicationQuestions.fundingSource)}
                   </p>
 
                   <h2 className="text-xs mb-2">Funding Profit</h2>
                   <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.PROFIT_2022)}
+                    {getAnswer(ApplicationQuestions.profit2022)}
                   </p>
 
                   <h2 className="text-xs mb-2">Team Size</h2>
                   <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.TEAM_SIZE)}
+                    {getAnswer(ApplicationQuestions.teamSize)}
                   </p>
                 </div>
                 <div className="sm:basis-1/4 text-center sm:ml-3"></div>

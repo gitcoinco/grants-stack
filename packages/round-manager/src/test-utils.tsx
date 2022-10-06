@@ -29,6 +29,11 @@ import {
   ApplicationState,
   initialApplicationState,
 } from "./context/application/ApplicationContext";
+import {
+  BulkUpdateGrantApplicationContext,
+  BulkUpdateGrantApplicationState,
+  initialBulkUpdateGrantApplicationState,
+} from "./context/application/BulkUpdateGrantApplicationContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -78,6 +83,7 @@ export interface MakeGrantApplicationDataParams {
   roundIdOverride?: string;
   projectGithubOverride?: string;
   projectTwitterOverride?: string;
+  applicationAnswers?: GrantApplication["answers"];
 }
 
 export const makeGrantApplicationData = (
@@ -89,6 +95,7 @@ export const makeGrantApplicationData = (
     roundIdOverride,
     projectGithubOverride,
     projectTwitterOverride,
+    applicationAnswers,
   } = {
     ownerAddress: faker.finance.ethereumAddress(),
     ...overrides,
@@ -136,6 +143,7 @@ export const makeGrantApplicationData = (
       projectTwitter: projectTwitterOverride ?? undefined,
       credentials: makeProjectCredentials(credentialInputData, ownerAddress),
     },
+    answers: applicationAnswers ?? [],
     projectsMetaPtr: {
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),
@@ -281,6 +289,25 @@ export const wrapWithRoundContext = (
   >
     {ui}
   </RoundContext.Provider>
+);
+
+export const wrapWithBulkUpdateGrantApplicationContext = (
+  ui: JSX.Element,
+  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) => (
+  <BulkUpdateGrantApplicationContext.Provider
+    value={{
+      state: {
+        ...initialBulkUpdateGrantApplicationState,
+        ...bulkUpdateOverrides,
+      },
+      dispatch,
+    }}
+  >
+    {ui}
+  </BulkUpdateGrantApplicationContext.Provider>
 );
 
 type ContextMock<T> = {

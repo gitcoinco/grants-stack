@@ -2,6 +2,7 @@ import { fetchFromIPFS, graphql_fetch } from "./utils";
 import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
+import { datadogLogs } from "@datadog/browser-logs";
 
 /**
  * Fetch a list of programs
@@ -60,8 +61,9 @@ export async function listPrograms(
     }
 
     return programs;
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    datadogLogs.logger.error(`error: listPrograms - ${error}`);
+    console.log("error", error);
     throw Error("Unable to fetch programs");
   }
 }
@@ -111,8 +113,9 @@ export async function getProgramById(
         (program: any) => program.address
       ),
     };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    datadogLogs.logger.error(`error: getProgramById - ${error}`);
+    console.log("error", error);
     throw Error("Unable to fetch program");
   }
 }
@@ -163,8 +166,9 @@ export async function deployProgramContract({
     return {
       transactionBlockNumber: blockNumber,
     };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    datadogLogs.logger.error(`error: deployProgramContract - ${error}`);
+    console.log("error", error);
     return { error: "Unable to create program" };
   }
 }

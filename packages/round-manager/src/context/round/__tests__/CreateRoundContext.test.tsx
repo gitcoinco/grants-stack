@@ -213,6 +213,69 @@ describe("<CreateRoundProvider />", () => {
         )
       ).toBeInTheDocument();
     });
+
+    it("if ipfs save fails, resets ipfs status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateRoundComponent />);
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      await screen.findByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`);
+
+      // retry create-round operation
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      expect(
+        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
+    });
+
+    it("if contract deployment fails, resets contract deployment status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
+      (deployRoundContract as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateRoundComponent />);
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      await screen.findByTestId(
+        `deploying-status-is-${ProgressStatus.IS_ERROR}`
+      );
+
+      // retry create-round operation
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      expect(
+        screen.queryByTestId(`deploying-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
+    });
+
+    it("if indexing fails, resets indexing status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
+      (deployRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber: 100,
+      });
+      (waitForSubgraphSyncTo as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateRoundComponent />);
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      await screen.findByTestId(
+        `indexing-status-is-${ProgressStatus.IS_ERROR}`
+      );
+
+      // retry create-round operation
+      fireEvent.click(screen.getByTestId("create-round"));
+
+      expect(
+        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
+    });
   });
 });
 

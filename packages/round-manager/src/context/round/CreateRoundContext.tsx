@@ -10,6 +10,7 @@ import { useWallet } from "../../features/common/Auth";
 import { deployRoundContract } from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -47,6 +48,7 @@ enum ActionType {
   SET_STORING_STATUS = "SET_STORING_STATUS",
   SET_DEPLOYMENT_STATUS = "SET_DEPLOYMENT_STATUS",
   SET_INDEXING_STATUS = "SET_INDEXING_STATUS",
+  RESET_TO_INITIAL_STATE = "RESET_TO_INITIAL_STATE",
 }
 
 const createRoundReducer = (state: CreateRoundState, action: Action) => {
@@ -63,6 +65,9 @@ const createRoundReducer = (state: CreateRoundState, action: Action) => {
         ...state,
         indexingStatus: action.payload.indexingStatus,
       };
+    case ActionType.RESET_TO_INITIAL_STATE: {
+      return initialCreateRoundState;
+    }
   }
   return state;
 };
@@ -104,7 +109,12 @@ const _createRound = async ({
     applicationQuestions,
     round,
   } = createRoundData;
+  dispatch({
+    type: ActionType.RESET_TO_INITIAL_STATE,
+  });
   try {
+    datadogLogs.logger.info(`_createRound: ${round}`);
+
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
       await storeDocuments(
         dispatch,
@@ -135,8 +145,12 @@ const _createRound = async ({
       signerOrProvider,
       transactionBlockNumber
     );
-  } catch (e) {
-    console.error("Error while creating round: ", e);
+  } catch (error) {
+    datadogLogs.logger.error(
+      `error: _createRound ${error}. Data : ${createRoundData}`
+    );
+
+    console.error("Error while creating round: ", error);
   }
 };
 
@@ -149,7 +163,7 @@ export const useCreateRound = () => {
   const { signer: walletSigner } = useWallet();
 
   const createRound = (createRoundData: CreateRoundData) => {
-    _createRound({
+    return _createRound({
       dispatch: context.dispatch,
       signerOrProvider: walletSigner,
       createRoundData,

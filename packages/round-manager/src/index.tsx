@@ -29,6 +29,7 @@ import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 import { RoundProvider } from "./context/round/RoundContext";
 import { CreateRoundProvider } from "./context/round/CreateRoundContext";
+import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
 
 // Initialize datadog
 initDatadog();
@@ -72,7 +73,9 @@ root.render(
                   element={
                     <RoundProvider>
                       <ApplicationProvider>
-                        <ViewRoundPage />
+                        <BulkUpdateGrantApplicationProvider>
+                          <ViewRoundPage />
+                        </BulkUpdateGrantApplicationProvider>
                       </ApplicationProvider>
                     </RoundProvider>
                   }

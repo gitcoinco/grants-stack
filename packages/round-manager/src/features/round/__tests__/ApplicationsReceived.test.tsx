@@ -1,22 +1,37 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any */
 import {
   fireEvent,
+  render,
   screen,
-  waitForElementToBeRemoved,
+  waitFor,
   within,
 } from "@testing-library/react";
 import ApplicationsReceived from "../ApplicationsReceived";
-import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
+import { makeGrantApplicationData } from "../../../test-utils";
 import {
-  makeGrantApplicationData,
-  renderWithApplicationContext,
-} from "../../../test-utils";
+  ApplicationContext,
+  ApplicationState,
+  initialApplicationState,
+} from "../../../context/application/ApplicationContext";
+import { MemoryRouter } from "react-router-dom";
+import {
+  BulkUpdateGrantApplicationContext,
+  initialBulkUpdateGrantApplicationState,
+} from "../../../context/application/BulkUpdateGrantApplicationContext";
+import {
+  getApplicationsByRoundId,
+  updateApplicationList,
+  updateRoundContract,
+} from "../../api/application";
+import { ApplicationStatus } from "../../api/types";
 
 jest.mock("../../api/services/grantApplication");
+jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},
     address: "0x0",
+    signer: { getChainId: () => {} },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
 }));
@@ -38,10 +53,10 @@ grantApplications.forEach((application) => {
   application.status = "PENDING";
 });
 
-let bulkUpdateGrantApplications = jest.fn();
+const bulkUpdateGrantApplications = jest.fn();
 
 function setupInBulkSelectionMode() {
-  renderWithApplicationContext(<ApplicationsReceived />, {
+  renderWithContext(<ApplicationsReceived />, {
     applications: grantApplications,
     isLoading: false,
   });
@@ -54,24 +69,13 @@ function setupInBulkSelectionMode() {
 
 describe("<ApplicationsReceived />", () => {
   beforeEach(() => {
-    bulkUpdateGrantApplications = jest.fn().mockImplementation(() => {
-      return {
-        unwrap: async () =>
-          Promise.resolve({
-            data: "hi ",
-          }),
-      };
-    });
-    (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
-      bulkUpdateGrantApplications,
-      {
-        isLoading: false,
-      },
-    ]);
+    (getApplicationsByRoundId as jest.Mock).mockResolvedValue(
+      grantApplications
+    );
   });
 
   it("should display a loading spinner if received applications are loading", () => {
-    renderWithApplicationContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsReceived />, {
       applications: [],
       isLoading: true,
     });
@@ -81,7 +85,7 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when there are no approved applications", () => {
     it("should not display the bulk select option", () => {
-      renderWithApplicationContext(<ApplicationsReceived />, {
+      renderWithContext(<ApplicationsReceived />, {
         applications: [],
         isLoading: false,
       });
@@ -101,7 +105,7 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when received applications are shown", () => {
     it("should display the bulk select option", () => {
-      renderWithApplicationContext(<ApplicationsReceived />, {
+      renderWithContext(<ApplicationsReceived />, {
         applications: grantApplications,
         isLoading: false,
       });
@@ -154,7 +158,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("renders no cards when there are no projects", () => {
-    renderWithApplicationContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsReceived />, {
       applications: [],
       isLoading: false,
     });
@@ -163,7 +167,7 @@ describe("<ApplicationsReceived />", () => {
   });
 
   it("renders a card for every project with PENDING status", () => {
-    renderWithApplicationContext(<ApplicationsReceived />, {
+    renderWithContext(<ApplicationsReceived />, {
       applications: grantApplications,
       isLoading: false,
     });
@@ -329,7 +333,9 @@ describe("<ApplicationsReceived />", () => {
         within(rejectedApplicationsCount).getByText(/1/);
       });
 
-      it("calls bulkUpdateGrantApplications when confirm is selected", async () => {
+      it("starts the bulk update process when confirm is selected", async () => {
+        (updateApplicationList as jest.Mock).mockResolvedValue("");
+        (updateRoundContract as jest.Mock).mockResolvedValue("");
         setupInBulkSelectionMode();
 
         const approveButton = screen.queryAllByTestId("approve-button")[0];
@@ -343,13 +349,36 @@ describe("<ApplicationsReceived />", () => {
         const confirmationModalConfirmButton = screen.getByRole("button", {
           name: /Confirm/i,
         });
+
         fireEvent.click(confirmationModalConfirmButton);
 
-        expect(bulkUpdateGrantApplications).toBeCalled();
+        await waitFor(() => {
+          expect(updateApplicationList).toBeCalled();
+        });
 
-        await waitForElementToBeRemoved(() =>
-          screen.queryByTestId("confirm-modal")
-        );
+        await waitFor(() => {
+          expect(updateRoundContract).toBeCalled();
+        });
+
+        const updateApplicationListFirstCall = (
+          updateApplicationList as jest.Mock
+        ).mock.calls[0];
+        const actualApplicationsUpdated = updateApplicationListFirstCall[0];
+        expect(actualApplicationsUpdated).toEqual([
+          {
+            id: grantApplications[0].id,
+            round: grantApplications[0].round,
+            recipient: grantApplications[0].recipient,
+            projectsMetaPtr: grantApplications[0].projectsMetaPtr,
+            status: ApplicationStatus.APPROVED,
+          },
+        ]);
+
+        expect(updateRoundContract).toBeCalled();
+        const updateRoundContractFirstCall = (updateRoundContract as jest.Mock)
+          .mock.calls[0];
+        const actualRoundId = updateRoundContractFirstCall[0];
+        expect(actualRoundId).toEqual(roundIdOverride);
       });
 
       it("closes confirmation when cancel is selected", async () => {
@@ -379,10 +408,39 @@ describe("<ApplicationsReceived />", () => {
 
   describe("when bulkSelect is false", () => {
     it("does not render approve and reject options on each card", () => {
-      renderWithApplicationContext(<ApplicationsReceived />);
+      renderWithContext(<ApplicationsReceived />);
       expect(
         screen.queryAllByTestId("bulk-approve-reject-buttons")
       ).toHaveLength(0);
     });
   });
 });
+
+export const renderWithContext = (
+  ui: JSX.Element,
+  grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: any = jest.fn()
+) =>
+  render(
+    <MemoryRouter>
+      <BulkUpdateGrantApplicationContext.Provider
+        value={{
+          state: initialBulkUpdateGrantApplicationState,
+          dispatch,
+        }}
+      >
+        <ApplicationContext.Provider
+          value={{
+            state: {
+              ...initialApplicationState,
+              ...grantApplicationStateOverrides,
+            },
+            dispatch,
+          }}
+        >
+          {ui}
+        </ApplicationContext.Provider>
+      </BulkUpdateGrantApplicationContext.Provider>
+    </MemoryRouter>
+  );

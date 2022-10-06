@@ -21,7 +21,7 @@ export default function Navbar() {
               </div>
             </Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <Search />
             <HeartHand />
             <ConnectButton />

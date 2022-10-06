@@ -141,15 +141,22 @@ export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
 
 type InputType = "email" | "number" | "text";
+type QuestionInputTypeMap = Record<string, InputType>;
 
 /* Static for now, will be integrated directly into the question object itself for dynamic fields */
-const inputTypes = {
+export const inputTypes: QuestionInputTypeMap = {
   email: "email",
-  teamSize: "number",
-  profit2022: "number",
   fundingSource: "text",
-} as {
-  [key: string]: InputType;
+  profit2022: "number",
+  teamSize: "number",
+};
+
+type QuestionHumanReadableLabelsMap = Record<string, string>;
+export const humanReadableLabels: QuestionHumanReadableLabelsMap = {
+  email: "Email Address",
+  fundingSource: "Funding Sources",
+  profit2022: "2022 Profit",
+  teamSize: "Team Size",
 };
 
 export interface SchemaQuestion {
@@ -173,37 +180,51 @@ export const generateApplicationSchema = (
 ): Array<SchemaQuestion> => {
   if (!metadata.customQuestions) return [];
 
-  // declare schema with default fields
   const schema: Array<SchemaQuestion> = [];
 
   for (const key of Object.keys(metadata)) {
     if (typeof metadata[key] === "object") {
-      for (const subKey of Object.keys(metadata[key])) {
-        schema.push({
-          id: schema.length,
-          question: camelToTitle(subKey),
-          type: inputTypes[subKey],
-          required: true,
-          info: metadata[key][subKey],
-          choices: [],
-          encrypted: subKey === "email",
-        });
-      }
+      generateQuestionGroup(metadata[key], schema);
     } else {
-      schema.push({
-        id: schema.length,
-        question: camelToTitle(key),
-        type: "text",
-        required: true,
-        info: metadata[key],
-        choices: [],
-        encrypted: key === "email",
-      });
+      generateQuestion(key, metadata[key], schema);
     }
   }
 
   return schema;
 };
+
+function generateQuestionGroup(
+  questionGroup: { [key: string]: string },
+  schema: Array<SchemaQuestion>
+) {
+  for (const question of Object.keys(questionGroup)) {
+    schema.push({
+      id: schema.length,
+      question: humanReadableLabels[question] || camelToTitle(question),
+      type: inputTypes[question] || "text",
+      required: true,
+      info: questionGroup[question],
+      choices: [],
+      encrypted: question === "email",
+    });
+  }
+}
+
+function generateQuestion(
+  question: string,
+  info: string,
+  schema: Array<SchemaQuestion>
+) {
+  schema.push({
+    id: schema.length,
+    question: camelToTitle(question),
+    type: "text",
+    required: true,
+    info,
+    choices: [],
+    encrypted: question === "email",
+  });
+}
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;

@@ -1,11 +1,11 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
-
-import { useBulkUpdateGrantApplicationsMutation } from "../api/services/grantApplication";
 import {
   ApplicationStatus,
   GrantApplication,
+  ProgressStatus,
   ProjectStatus,
 } from "../api/types";
 import { useWallet } from "../common/Auth";
@@ -27,10 +27,12 @@ import {
   Continue,
   Select,
 } from "./BulkApplicationCommon";
+import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
+import ProgressModal from "../common/ProgressModal";
 
 export default function ApplicationsRejected() {
   const { id } = useParams();
-  const { provider, signer } = useWallet();
+  const { chain } = useWallet();
 
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const rejectedApplications =
@@ -39,11 +41,46 @@ export default function ApplicationsRejected() {
     ) || [];
 
   const [bulkSelectRejected, setBulkSelectRejected] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
 
-  const [bulkUpdateGrantApplications, { isLoading: isBulkUpdateLoading }] =
-    useBulkUpdateGrantApplicationsMutation();
+  const {
+    bulkUpdateGrantApplications,
+    IPFSCurrentStatus,
+    contractUpdatingStatus,
+    indexingStatus,
+  } = useBulkUpdateGrantApplications();
+  const isBulkUpdateLoading =
+    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
+    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
+    indexingStatus == ProgressStatus.IN_PROGRESS;
+
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Updating",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: contractUpdatingStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   useEffect(() => {
     if (!isLoading || !bulkSelectRejected) {
@@ -82,18 +119,20 @@ export default function ApplicationsRejected() {
 
   const handleBulkReview = async () => {
     try {
+      setOpenProgressModal(true);
+      setOpenConfirmationModal(false);
       await bulkUpdateGrantApplications({
         roundId: id!,
         applications: selected.filter(
           (application) => application.status === "APPROVED"
         ),
-        signer,
-        provider,
-      }).unwrap();
+      });
       setBulkSelectRejected(false);
-      setOpenModal(false);
-    } catch (e) {
-      console.error(e);
+      setOpenProgressModal(false);
+      window.location.reload();
+    } catch (error) {
+      datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
+      console.error(error);
     }
   };
 
@@ -150,7 +189,7 @@ export default function ApplicationsRejected() {
           <Continue
             grantApplications={selected}
             status="APPROVED"
-            onClick={() => setOpenModal(true)}
+            onClick={() => setOpenConfirmationModal(true)}
           />
         )}
       <ConfirmationModal
@@ -168,8 +207,14 @@ export default function ApplicationsRejected() {
             <AdditionalGasFeesNote />
           </>
         }
-        isOpen={openModal}
-        setIsOpen={setOpenModal}
+        isOpen={openConfirmationModal}
+        setIsOpen={setOpenConfirmationModal}
+      />
+      <ProgressModal
+        isOpen={openProgressModal}
+        setIsOpen={setOpenProgressModal}
+        subheading={"Please hold while we update the grant applications."}
+        steps={progressSteps}
       />
     </>
   );

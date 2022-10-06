@@ -201,7 +201,6 @@ describe("<CreateProgramProvider />", () => {
       (deployProgramContract as jest.Mock).mockResolvedValue({
         transactionBlockNumber: 100,
       });
-
       (waitForSubgraphSyncTo as jest.Mock).mockRejectedValue(new Error(":("));
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -213,6 +212,69 @@ describe("<CreateProgramProvider />", () => {
           `indexing-status-is-${ProgressStatus.IS_ERROR}`
         )
       ).toBeInTheDocument();
+    });
+
+    it("if ipfs save fails, resets ipfs status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateProgramComponent />);
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      await screen.findByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`);
+
+      // retry create-program operation
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      expect(
+        screen.queryByTestId(`storing-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
+    });
+
+    it("if contract deployment fails, resets contract deployment status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
+      (deployProgramContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber: 100,
+      });
+      (waitForSubgraphSyncTo as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateProgramComponent />);
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      await screen.findByTestId(
+        `indexing-status-is-${ProgressStatus.IS_ERROR}`
+      );
+
+      // retry create-program operation
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      expect(
+        screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
+    });
+
+    it("if indexing fails, resets indexing status when create round is retried", async () => {
+      (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
+      (deployProgramContract as jest.Mock)
+        .mockRejectedValueOnce(new Error(":("))
+        .mockReturnValue(new Promise<any>(() => {}));
+
+      renderWithProvider(<TestUseCreateProgramComponent />);
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      await screen.findByTestId(
+        `deploying-status-is-${ProgressStatus.IS_ERROR}`
+      );
+
+      // retry create-program operation
+      fireEvent.click(screen.getByTestId("create-program"));
+
+      expect(
+        screen.queryByTestId(`deploying-status-is-${ProgressStatus.IS_ERROR}`)
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { fetchFromIPFS, graphql_fetch, pinToIPFS } from "./utils";
 import {
   GrantApplication,
   GrantApplicationId,
@@ -7,8 +7,12 @@ import {
   ProjectStatus,
   Web3Instance,
 } from "./types";
-import { projectRegistryContract } from "./contracts";
-import { Contract } from "ethers";
+import {
+  projectRegistryContract,
+  roundImplementationContract,
+} from "./contracts";
+import { Contract, ethers } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 export const getApplicationById = async (
   id: string,
@@ -263,4 +267,100 @@ const updateApplicationStatusFromContract = async (
   }
 
   return applications;
+};
+
+export const updateRoundContract = async (
+  roundId: string,
+  signer: Signer,
+  newProjectsMetaPtr: string
+): Promise<{ transactionBlockNumber: number }> => {
+  const roundImplementation = new ethers.Contract(
+    roundId,
+    roundImplementationContract.abi,
+    signer
+  );
+
+  const tx = await roundImplementation.updateProjectsMetaPtr({
+    protocol: 1,
+    pointer: newProjectsMetaPtr,
+  });
+
+  const receipt = await tx.wait();
+
+  console.log("✅ Transaction hash: ", tx.hash);
+
+  const blockNumber = receipt.blockNumber;
+  return {
+    transactionBlockNumber: blockNumber,
+  };
+};
+
+// TODO - taken from packages/round-manager/src/features/api/services/grantApplication.ts
+//  should add tests for this too
+export const updateApplicationList = async (
+  applications: GrantApplication[],
+  roundId: string,
+  chainId: number
+): Promise<string> => {
+  let reviewedApplications: any[] = [];
+  let foundEntry = false;
+
+  // fetch latest ipfs pointer to the list of application for the round
+  const res = await graphql_fetch(
+    `
+          query GetApplicationListPointer($roundId: String!) {
+            rounds(first: 1, where: {
+              id: $roundId
+            }) {
+              projectsMetaPtr {
+                pointer
+              }
+            }
+          }
+        `,
+    chainId,
+    { roundId }
+  );
+
+  const applicationListPointer = res.data.rounds[0].projectsMetaPtr?.pointer;
+
+  // read data from ipfs
+  if (applicationListPointer) {
+    reviewedApplications = await fetchFromIPFS(applicationListPointer);
+  }
+
+  for (const application of applications) {
+    // if grant application is already reviewed overwrite the entry
+    foundEntry = reviewedApplications.find((o: any, i: any) => {
+      if (o.id === application.id) {
+        reviewedApplications[i] = {
+          id: application.id,
+          status: application.status,
+          payoutAddress: application.recipient,
+        };
+        return true; // stop searching
+      }
+      return false;
+    });
+
+    // create a new reviewed application entry
+    if (!foundEntry || !applicationListPointer) {
+      reviewedApplications.push({
+        id: application.id,
+        status: application.status,
+        payoutAddress: application.recipient,
+      });
+    }
+  }
+
+  // pin new list IPFS
+  const resp = await pinToIPFS({
+    content: reviewedApplications,
+    metadata: {
+      name: "reviewed-applications",
+    },
+  });
+  console.log("✅  Saved data to IPFS:", resp.IpfsHash);
+
+  return resp.IpfsHash;
 };

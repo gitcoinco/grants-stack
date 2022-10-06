@@ -24,7 +24,7 @@ import { useApplicationByRoundId } from "../../context/application/ApplicationCo
 import { ApplicationStatus } from "../api/types";
 
 export default function ViewRoundPage() {
-  datadogLogs.logger.info("====> Route: /round/create");
+  datadogLogs.logger.info("====> Route: /round/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const { id } = useParams();
