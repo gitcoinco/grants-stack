@@ -1,9 +1,7 @@
 module.exports = {
   // if this is not set it will default to user's operating system preferences
-  darkMode: 'class',
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  darkMode: "class",
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -27,6 +25,11 @@ module.exports = {
         "gitcoin-gray-400": "#757087",
       }
     }
+      },
+    },
+    fontFamily: {
+      sans: ['"Libre Franklin"'],
+    },
   },
   important: true,
-}
+};

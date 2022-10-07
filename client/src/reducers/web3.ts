@@ -17,7 +17,7 @@ export interface Web3State {
 }
 
 const initialState: Web3State = {
-  initializing: false,
+  initializing: true,
   initialized: false,
   chainID: undefined,
   error: undefined,

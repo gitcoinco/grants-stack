@@ -122,7 +122,7 @@ export default function Form({
     const currentOptions = props.projects.map(
       (project): ProjectOption => ({
         id: project.id,
-        title: props.allProjectMetadata[project.id].metadata?.title,
+        title: props.allProjectMetadata[project.id]?.metadata?.title,
       })
     );
     currentOptions.unshift({ id: undefined, title: "" });

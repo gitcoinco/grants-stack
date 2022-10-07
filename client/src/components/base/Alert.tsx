@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Check from "../icons/Check";
-import { Alert } from "../../types/alert";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { removeAlertDelayed } from "../../actions/ui";
+import { Alert } from "../../types/alert";
 
 type AlertProps = {
   alert: Alert;
@@ -20,15 +20,14 @@ export default function AlertComponent({ alert }: AlertProps) {
   }, [dispatch, alert.id]);
 
   return (
-    <div className={`alert ${alert.type}`} role="alert">
-      <svg
-        className="fill-current w-4 h-4 mr-2"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-      >
-        <Check />
-      </svg>
-      <span className="block sm:inline">{alert.message}</span>
+    <div className={`alert ${alert.type} flex`} role="alert">
+      <div className="fill-current w-6 h-6 mr-2 mb-6">
+        <CheckCircleIcon />
+      </div>
+      <div className="m-auto ml-4">
+        <div className="block">{alert.title}</div>
+        <div className="block text-black font-normal">{alert.body}</div>
+      </div>
     </div>
   );
 }
