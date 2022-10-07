@@ -3,10 +3,10 @@ import {
   useProgramById,
   usePrograms,
 } from "../ReadProgramContext";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../../../features/api/program";
-import { Program } from "../../../features/api/types";
+import { Program, ProgressStatus } from "../../../features/api/types";
 
 const mockWallet = {
   address: "0x0",
@@ -30,15 +30,48 @@ describe("<ReadProgramProvider />", () => {
   });
 
   describe("usePrograms()", () => {
-    it("provides programs based on current wallet address", async () => {
-      (listPrograms as jest.Mock).mockResolvedValue([
-        makeProgramData(),
-        makeProgramData(),
-      ]);
+    it("sets program status to in progress when fetch is in progress", async () => {
+      const listProgramsPromise = new Promise(() => {
+        /**/
+      });
+
+      (listPrograms as jest.Mock).mockReturnValue(listProgramsPromise);
 
       renderWithProvider(<TestingUseProgramsComponent />);
 
-      expect(await screen.findAllByTestId("program")).toHaveLength(2);
+      expect(
+        await screen.findByTestId(
+          `program-fetching-status-is-${ProgressStatus.IN_PROGRESS}`
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("sets programs when fetch succeeds", async () => {
+      (listPrograms as jest.Mock).mockResolvedValue([makeProgramData()]);
+
+      renderWithProvider(<TestingUseProgramsComponent />);
+
+      expect(await screen.findAllByTestId("program")).toHaveLength(1);
+
+      expect(
+        await screen.findByTestId(
+          `program-fetching-status-is-${ProgressStatus.IS_SUCCESS}`
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("sets fetch program error state when fetch fails", async () => {
+      (listPrograms as jest.Mock).mockRejectedValue(Error("some error"));
+
+      renderWithProvider(<TestingUseProgramsComponent />);
+
+      expect(
+        await screen.findByTestId(
+          `program-fetching-status-is-${ProgressStatus.IS_ERROR}`
+        )
+      ).toBeInTheDocument();
+
+      screen.getByTestId("error-msg");
     });
 
     it("propagates error state when failing to list programs", async () => {
@@ -49,40 +82,6 @@ describe("<ReadProgramProvider />", () => {
       renderWithProvider(<TestingUseProgramsComponent />);
 
       await screen.findByTestId("error-msg");
-    });
-
-    it("sets isLoading back to false when listPrograms call succeeds", async () => {
-      (listPrograms as jest.Mock).mockResolvedValue([]);
-
-      renderWithProvider(<TestingUseProgramsComponent />);
-
-      await waitFor(() => {
-        expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
-      });
-    });
-
-    it("sets isLoading back to false and error when listPrograms call fails", async () => {
-      (listPrograms as jest.Mock).mockRejectedValue(Error("some error"));
-
-      renderWithProvider(<TestingUseProgramsComponent />);
-
-      await waitFor(() => {
-        expect(screen.queryByTestId("is-loading")).not.toBeInTheDocument();
-      });
-
-      screen.getByTestId("error-msg");
-    });
-
-    it("sets isLoading to true when listPrograms call is in progress", async () => {
-      const listProgramsPromise = new Promise(() => {
-        /**/
-      });
-
-      (listPrograms as jest.Mock).mockReturnValue(listProgramsPromise);
-
-      renderWithProvider(<TestingUseProgramsComponent />);
-
-      await screen.findByTestId("is-loading");
     });
   });
 
@@ -99,7 +98,7 @@ describe("<ReadProgramProvider />", () => {
       expect(await screen.findByText(expectedProgramId)).toBeInTheDocument();
     });
 
-    it("sets isLoading to true when getProgramById call is in progress", async () => {
+    it("sets program status to in progress when fetch is in progress", async () => {
       const expectedProgram = makeProgramData();
       const expectedProgramId: string = expectedProgram.id!;
       (getProgramById as jest.Mock).mockReturnValue(
@@ -111,11 +110,13 @@ describe("<ReadProgramProvider />", () => {
       );
 
       expect(
-        await screen.findByTestId("is-loading-program-by-id")
+        await screen.findByTestId(
+          `fetch-programs-status-is-${ProgressStatus.IN_PROGRESS}`
+        )
       ).toBeInTheDocument();
     });
 
-    it("sets isLoading back to false and when getProgramById call succeeds", async () => {
+    it("sets programs when fetch succeeds", async () => {
       const expectedProgram = makeProgramData();
       const expectedProgramId: string = expectedProgram.id!;
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
@@ -124,14 +125,16 @@ describe("<ReadProgramProvider />", () => {
         <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
       );
 
-      await waitFor(() => {
-        expect(
-          screen.queryByTestId("is-loading-program-by-id")
-        ).not.toBeInTheDocument();
-      });
+      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument();
+
+      expect(
+        await screen.findByTestId(
+          `fetch-programs-status-is-${ProgressStatus.IS_SUCCESS}`
+        )
+      ).toBeInTheDocument();
     });
 
-    it("sets isLoading back to false when getProgramById call fails", async () => {
+    it("sets fetch program error state when fetch fails", async () => {
       const expectedProgram = makeProgramData();
       const expectedProgramId: string = expectedProgram.id!;
       (getProgramById as jest.Mock).mockRejectedValue(new Error(":("));
@@ -140,19 +143,19 @@ describe("<ReadProgramProvider />", () => {
         <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
       );
 
-      await waitFor(() => {
-        expect(
-          screen.queryByTestId("is-loading-program-by-id")
-        ).not.toBeInTheDocument();
-      });
+      expect(
+        await screen.findByTestId(
+          `fetch-programs-status-is-${ProgressStatus.IS_ERROR}`
+        )
+      ).toBeInTheDocument();
 
       screen.getByTestId("program-by-id-error-msg");
     });
   });
 });
-
+//TODO: change test id to fetch-programs-status-is
 const TestingUseProgramsComponent = () => {
-  const { programs, listProgramsError, isLoading } = usePrograms();
+  const { programs, listProgramsError, fetchProgramsStatus } = usePrograms();
 
   return (
     <>
@@ -162,9 +165,11 @@ const TestingUseProgramsComponent = () => {
         ))}
       </div>
 
+      <div data-testid={`program-fetching-status-is-${fetchProgramsStatus}`} />
+
       {listProgramsError && <div data-testid="error-msg" />}
 
-      {isLoading && <div data-testid="is-loading" />}
+      {fetchProgramsStatus && <div data-testid="is-loading" />}
     </>
   );
 };
@@ -172,14 +177,19 @@ const TestingUseProgramsComponent = () => {
 const TestingUseProgramByIdComponent = (props: {
   expectedProgramId?: string;
 }) => {
-  const { program, isLoading, getProgramByIdError } = useProgramById(
+  const { program, fetchProgramsStatus, getProgramByIdError } = useProgramById(
     props.expectedProgramId
   );
   return (
     <>
       {program ? <div>{program.id}</div> : <div>No Program Found</div>}
 
-      {isLoading && <div data-testid="is-loading-program-by-id"></div>}
+      {fetchProgramsStatus && (
+        <div data-testid="is-loading-program-by-id"></div>
+      )}
+      <div
+        data-testid={`fetch-programs-status-is-${fetchProgramsStatus}`}
+      ></div>
 
       {getProgramByIdError && <div data-testid="program-by-id-error-msg" />}
     </>

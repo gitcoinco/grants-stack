@@ -9,7 +9,7 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
-import { Program } from "../../api/types";
+import { Program, ProgressStatus } from "../../api/types";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -18,6 +18,7 @@ jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("../../api/services/program");
 jest.mock("../../api/services/round");
+jest.mock("../../api/program");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -46,12 +47,12 @@ describe("<ViewProgram />", () => {
     });
   });
 
-  it("should display 404 when no program is found", () => {
+  it("should display NotFoundPage when no program is found", () => {
     render(
-      wrapWithReadProgramContext(
-        wrapWithRoundContext(<ViewProgram></ViewProgram>),
-        { programs: [], isLoading: false }
-      )
+      wrapWithReadProgramContext(wrapWithRoundContext(<ViewProgram />), {
+        programs: [],
+        fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+      })
     );
 
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
@@ -68,9 +69,12 @@ describe("<ViewProgram />", () => {
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
-          isLoading: false,
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
         }),
-        { programs: [stubProgram] }
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
       )
     );
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
@@ -81,16 +85,19 @@ describe("<ViewProgram />", () => {
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
-          isLoading: false,
+          fetchRoundStatus: ProgressStatus.IS_SUCCESS,
         }),
-        { programs: [stubProgram] }
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
       )
     );
 
     await screen.findByText(stubProgram.metadata!.name);
   });
 
-  it("displays a list of operator wallets", async () => {
+  it("displays a list of operator wallets for a program", async () => {
     const operatorWallets = [
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
@@ -108,9 +115,12 @@ describe("<ViewProgram />", () => {
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
-          isLoading: false,
+          fetchRoundStatus: ProgressStatus.NOT_STARTED,
         }),
-        { programs: [stubProgram] }
+        {
+          programs: [stubProgram],
+          fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+        }
       )
     );
 
@@ -118,14 +128,14 @@ describe("<ViewProgram />", () => {
     expect(wallets.length).toEqual(operatorWallets.length);
   });
 
-  it("displays a loading spinner if loading", () => {
+  it("displays a loading spinner if loading program", () => {
     render(
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
           data: [],
-          isLoading: false,
+          fetchRoundStatus: ProgressStatus.NOT_STARTED,
         }),
-        { isLoading: true }
+        { fetchProgramsStatus: ProgressStatus.IN_PROGRESS }
       )
     );
 
@@ -138,9 +148,12 @@ describe("<ViewProgram />", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [],
-            isLoading: false,
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
-          { programs: [stubProgram] }
+          {
+            programs: [stubProgram],
+            fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+          }
         )
       );
 
@@ -156,9 +169,12 @@ describe("<ViewProgram />", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
-            isLoading: false,
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
-          { programs: [stubProgram] }
+          {
+            programs: [stubProgram],
+            fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+          }
         )
       );
 
@@ -174,9 +190,12 @@ describe("<ViewProgram />", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
-            isLoading: false,
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
-          { programs: [stubProgram] }
+          {
+            programs: [stubProgram],
+            fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+          }
         )
       );
 
@@ -194,9 +213,12 @@ describe("<ViewProgram />", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
-            isLoading: false,
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
-          { programs: [stubProgram] }
+          {
+            programs: [stubProgram],
+            fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+          }
         )
       );
 
@@ -214,9 +236,12 @@ describe("<ViewProgram />", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {
             data: [stubRound],
-            isLoading: false,
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
-          { programs: [stubProgram] }
+          {
+            programs: [stubProgram],
+            fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
+          }
         )
       );
 

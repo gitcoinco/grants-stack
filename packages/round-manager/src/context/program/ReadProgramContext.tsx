@@ -1,4 +1,8 @@
-import { Program, Web3Instance } from "../../features/api/types";
+import {
+  Program,
+  ProgressStatus,
+  Web3Instance,
+} from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
@@ -6,13 +10,13 @@ import { datadogLogs } from "@datadog/browser-logs";
 
 export interface ReadProgramState {
   programs: Program[];
-  isLoading: boolean;
+  fetchProgramsStatus: ProgressStatus;
   listProgramsError?: Error;
   getProgramByIdError?: Error;
 }
 
 enum ActionType {
-  SET_LOADING = "SET_LOADING",
+  SET_FETCH_PROGRAM_STATUS = "SET_FETCH_PROGRAM_STATUS",
   FINISH_LOADING = "FINISH_LOADING",
   SET_PROGRAMS = "SET_PROGRAMS",
   SET_ERROR_LIST_PROGRAMS = "SET_ERROR_LIST_PROGRAMS",
@@ -32,7 +36,7 @@ export type ProgramContextType =
 
 export const initialReadProgramState: ReadProgramState = {
   programs: [],
-  isLoading: false,
+  fetchProgramsStatus: ProgressStatus.NOT_STARTED,
 };
 export const ReadProgramContext = createContext<ProgramContextType>(undefined);
 
@@ -43,16 +47,25 @@ const fetchProgramsByAddress = async (
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
 
-  dispatch({ type: ActionType.SET_LOADING, payload: true });
-  listPrograms(address, walletProvider)
-    .then((programs) =>
-      dispatch({ type: ActionType.SET_PROGRAMS, payload: programs })
-    )
-    .catch((error) => {
-      datadogLogs.logger.error(`error: fetchProgramsByAddress ${error}`);
-      dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error });
-    })
-    .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
+  dispatch({
+    type: ActionType.SET_FETCH_PROGRAM_STATUS,
+    payload: ProgressStatus.IN_PROGRESS,
+  });
+  try {
+    const programs = await listPrograms(address, walletProvider);
+    dispatch({ type: ActionType.SET_PROGRAMS, payload: programs });
+    dispatch({
+      type: ActionType.SET_FETCH_PROGRAM_STATUS,
+      payload: ProgressStatus.IS_SUCCESS,
+    });
+  } catch (error) {
+    datadogLogs.logger.error(`error: fetchProgramsByAddress ${error}`);
+    dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error });
+    dispatch({
+      type: ActionType.SET_FETCH_PROGRAM_STATUS,
+      payload: ProgressStatus.IS_ERROR,
+    });
+  }
 };
 
 const fetchProgramsById = async (
@@ -62,22 +75,31 @@ const fetchProgramsById = async (
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
 
-  dispatch({ type: ActionType.SET_LOADING, payload: true });
-  getProgramById(programId, walletProvider)
-    .then((program) =>
-      dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] })
-    )
-    .catch((error) => {
-      datadogLogs.logger.error(`error: fetchProgramsById ${error}`);
-      dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error });
-    })
-    .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
+  dispatch({
+    type: ActionType.SET_FETCH_PROGRAM_STATUS,
+    payload: ProgressStatus.IN_PROGRESS,
+  });
+  try {
+    const program = await getProgramById(programId, walletProvider);
+    dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] });
+    dispatch({
+      type: ActionType.SET_FETCH_PROGRAM_STATUS,
+      payload: ProgressStatus.IS_SUCCESS,
+    });
+  } catch (error) {
+    datadogLogs.logger.error(`error: fetchProgramsById ${error}`);
+    dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error });
+    dispatch({
+      type: ActionType.SET_FETCH_PROGRAM_STATUS,
+      payload: ProgressStatus.IS_ERROR,
+    });
+  }
 };
 
 const programReducer = (state: ReadProgramState, action: Action) => {
   switch (action.type) {
-    case ActionType.SET_LOADING:
-      return { ...state, isLoading: action.payload };
+    case ActionType.SET_FETCH_PROGRAM_STATUS:
+      return { ...state, fetchProgramsStatus: action.payload };
     case ActionType.FINISH_LOADING:
       return { ...state, isLoading: false };
     case ActionType.SET_PROGRAMS:
@@ -133,7 +155,7 @@ export const useProgramById = (
   id?: string
 ): {
   program: Program | undefined;
-  isLoading: boolean;
+  fetchProgramsStatus: ProgressStatus;
   getProgramByIdError?: Error;
 } => {
   const context = useContext(ReadProgramContext);
@@ -156,7 +178,7 @@ export const useProgramById = (
 
   return {
     program: context.state.programs.find((program) => program.id === id),
-    isLoading: context.state.isLoading,
+    fetchProgramsStatus: context.state.fetchProgramsStatus,
     getProgramByIdError: context.state.getProgramByIdError,
   };
 };

@@ -20,6 +20,7 @@ import AccessDenied from "../common/AccessDenied";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { Spinner } from "../common/Spinner";
 import { useRounds } from "../../context/round/RoundContext";
+import { ProgressStatus } from "../api/types";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -29,20 +30,18 @@ export default function ViewProgram() {
 
   const { address } = useWallet();
 
-  const { program: programToRender, isLoading } = useProgramById(programId);
+  const { program: programToRender, fetchProgramsStatus } =
+    useProgramById(programId);
+  const isProgramFetched = fetchProgramsStatus == ProgressStatus.IS_SUCCESS;
 
-  const {
-    data: rounds,
-    isLoading: isRoundLoading,
-    error,
-  } = useRounds(programId);
-  const isRoundsFetched = !isRoundLoading && !error;
+  const { data: rounds, fetchRoundStatus } = useRounds(programId);
+  const isRoundsFetched = fetchRoundStatus == ProgressStatus.IS_SUCCESS;
 
   const [programExists, setProgramExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
 
   useEffect(() => {
-    if (isRoundsFetched) {
+    if (isProgramFetched) {
       setProgramExists(!!programToRender);
 
       if (programToRender) {
@@ -53,7 +52,7 @@ export default function ViewProgram() {
         setHasAccess(true);
       }
     }
-  }, [isRoundsFetched, programToRender, address]);
+  }, [isProgramFetched, programToRender, address]);
 
   const roundItems = rounds
     ? rounds.map((round, index) => (
@@ -163,7 +162,7 @@ export default function ViewProgram() {
     </div>
   );
 
-  return isLoading ? (
+  return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
   ) : (
     <>
@@ -217,7 +216,7 @@ export default function ViewProgram() {
                         {roundItems}
                       </div>
                     )}
-                    {isRoundLoading && (
+                    {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
                       <Spinner text="We're fetching your Rounds." />
                     )}
                   </div>

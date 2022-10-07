@@ -21,7 +21,7 @@ import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import { useRoundById } from "../../context/round/RoundContext";
 import { Spinner } from "../common/Spinner";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
-import { ApplicationStatus } from "../api/types";
+import { ApplicationStatus, ProgressStatus } from "../api/types";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -30,8 +30,9 @@ export default function ViewRoundPage() {
   const { id } = useParams();
   const { address, chain } = useWallet();
 
-  const { round, isLoading: isRoundsLoading, error } = useRoundById(id);
-  const isRoundsFetched = !isRoundsLoading && !error;
+  const { round, fetchRoundStatus, error } = useRoundById(id);
+  const isRoundsFetched =
+    fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
   const { applications } = useApplicationByRoundId(id!);
 
@@ -229,7 +230,7 @@ export default function ViewRoundPage() {
               )}
 
               <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-                {isRoundsLoading && (
+                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
                   <Spinner text="We're fetching your Round." />
                 )}
               </div>

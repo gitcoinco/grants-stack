@@ -3,14 +3,14 @@
 import { render, screen } from "@testing-library/react";
 import { useListRoundsQuery } from "../../api/services/round";
 import ViewRoundPage from "../ViewRoundPage";
-import { GrantApplication, Round } from "../../api/types";
+import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import {
   makeGrantApplicationData,
   makeRoundData,
-  wrapWithReadProgramContext,
-  wrapWithRoundContext,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
 import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
@@ -91,7 +91,7 @@ describe("the view round page", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [],
-              isLoading: false,
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }
           ),
@@ -113,7 +113,7 @@ describe("the view round page", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [{ ...mockRoundData, operatorWallets: [] }],
-              isLoading: false,
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }
           ),
@@ -133,7 +133,7 @@ describe("the view round page", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [mockRoundData],
-              isLoading: false,
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }
           )
@@ -150,7 +150,7 @@ describe("the view round page", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [mockRoundData],
-              isLoading: false,
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }
           ),
@@ -183,7 +183,7 @@ describe("the view round page", () => {
           wrapWithReadProgramContext(
             wrapWithRoundContext(<ViewRoundPage />, {
               data: [mockRoundData],
-              isLoading: false,
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }
           ),
@@ -212,7 +212,7 @@ describe("the view round page", () => {
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
             data: [],
-            isLoading: true,
+            fetchRoundStatus: ProgressStatus.IN_PROGRESS,
           }),
           { programs: [] }
         )
