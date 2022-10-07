@@ -77,9 +77,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "script: deployBulkVotingStrategy",
+            "name": "script: deployQuadraticFundingVotingStrategy",
             "runtimeExecutable": "yarn",
-            "args": ["deploy-bulk-voting-strategy", "goerli"],
+            "args": ["deploy-quadratic-funding-voting-strategy", "goerli"],
             "cwd": "${workspaceRoot}",
             "console": "externalTerminal"
         },

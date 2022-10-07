@@ -99,6 +99,7 @@ const dodoc = {
   outputDir: './docs/contracts',
   exclude: [
     'contracts/dummy',
+    'contracts/utils/MockERC20.sol'
   ]
 }
 
