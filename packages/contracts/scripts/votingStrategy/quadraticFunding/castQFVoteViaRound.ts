@@ -1,4 +1,5 @@
-// yarn hardhat run scripts/votingMechanism/castQuadraticFundingVotingStrategy.ts --network goerli
+// This is a helper script to cast 3 votes to a round using QFVotingStrategy. 
+// This should be created via the frontend and this script is meant to be used for quick test
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../../utils/script-utils";
@@ -12,20 +13,23 @@ export async function main() {
   const network = hre.network;
 
   const networkParams = roundParams[network.name];
-
+  
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }
+  
+  const grantRoundContract = networkParams.roundContract;
 
+  if (!grantRoundContract) {
+    throw new Error(`error: missing roundContract`);
+  }
 
-  const grantRoundContract = '0x9dac496d2216a9092524f0c06b69d7194d9aa8b3';
-
-  const grantRoundImplementation = await ethers.getContractAt('GrantRoundImplementation', grantRoundContract);
+  const grantRoundImplementation = await ethers.getContractAt('RoundImplementation', grantRoundContract);
   
   await confirmContinue({
     "contract"                : "GrantRoundImplementation Clone",
     "grantRoundContract"      : grantRoundContract,
-    "votingStrategyContract"  : networkParams.quadraticFundingVotingStrategyContract,
+    "votingStrategyContract"  : networkParams.roundContract,
     "function"                : "vote",
     "network"                 : network.name,
     "chainId"                 : network.config.chainId

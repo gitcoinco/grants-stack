@@ -21,14 +21,18 @@
     "upgrade-program-factory": "yarn hardhat run scripts/program/upgradeProgramFactory.ts --network",
     "// round-deploy-scripts": "echo '//-- Round deploy Script --//'",
     "deploy-round-implementation": "yarn hardhat run scripts/round/deployRoundImplementation.ts --network",
-    "deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network",
+    "deploy-round-factory": "yarn hardhat run scripts/round/deyployRoundFactory.ts --network",
     "link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network",
     "create-round": "yarn hardhat run scripts/round/createRound.ts --network",
     "apply-to-round": "yarn hardhat run scripts/round/applyToRound.ts --network",
     "update-project-metaptr": "yarn hardhat run scripts/round/updateProjectMetaPtr.ts --network",
     "upgrade-round-factory": "yarn hardhat run scripts/round/upgradeRoundFactory.ts --network",
     "// vote-deploy-scripts": "echo '//-- Voting deploy Script --//'",
-    "deploy-quadratic-funding-voting-strategy": "yarn hardhat run scripts/votingStrategy/deployQuadraticFundingVotingStrategy.ts --network"
+    "deploy-qf-factory": "yarn hardhat run scripts/votingStrategy/quadraticFunding/deployQFVotingStrategyFactory.ts --network",
+    "deploy-qf-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFunding/deployQFVotingStrategyImplementation.ts --network",
+    "link-qf-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFunding/linkQFVotingStrategyImplementation.ts --network",
+    "create-qf-contract": "yarn hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
+    "cast-qf-vote": "yarn hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network"
   },
   "devDependencies": {
     "@ethersproject/constants": "^5.6.1",

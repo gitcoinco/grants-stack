@@ -13,6 +13,10 @@ This document lists all the addresses of the contracts that have been deployed o
 | ProgramFactory                    | 0x79c2394B20A809EA693a7D64323A8846FF02029c |
 | ProgramImplementation             | 0x36570Ae6e66f8dcFcEAe94D2247AF7B07119CFc3 |
 | Program                           | 0x6c0368003C44dD7f30ecb94219961Aaf252F6222 |
+| QFVotingStrategyFactory           | 0x0b27641d4dE8fb70542aA10b567238F5a3324CE0 |
+| QFVotingStrategyImplementation    | 0xAD8869Fd0481a2dbfd3dCD34F64838EeaEe74e03 |
+| QFVotingContract                  | 0x443b5AC8e5bcc7d69e194C0F78C2125708e7d464 |
+
 
 
 ## Optimism Mainnet Network
@@ -26,5 +30,7 @@ This document lists all the addresses of the contracts that have been deployed o
 | ProgramFactory                    | 0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E |
 | ProgramImplementation             | 0xED42e0f4391Fa24E579B16191F6Eb41f934c3B1c |
 | Program                           | 0x378cEB3dEb7a80ec1579bfd61EE1EFB76Fc63025 |
-
+| QFVotingStrategyFactory           |                                            |
+| QFVotingStrategyImplementation    |                                            |
+| QFVotingContract                  |                                            |
 
