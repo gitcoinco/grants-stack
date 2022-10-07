@@ -1,7 +1,5 @@
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -46,13 +44,13 @@ module.exports = {
           500: '#E1B815',
         },
         red: {
-          100: '#D44D6E'
-        }
+          100: '#D44D6E',
+        },
+        purple: {
+          100: '#15003E',
+        },
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/line-clamp')
-  ],
-}
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/line-clamp')],
+};

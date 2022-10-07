@@ -21,6 +21,7 @@ import Auth from "./features/common/Auth"
 import NotFound from "./features/common/NotFoundPage"
 import AccessDenied from "./features/common/AccessDenied"
 import ViewRound from "./features/round/ViewRoundPage"
+import ViewProjectDetails from "./features/round/ViewProjectDetails"
 
 // Initialize datadog
 initDatadog()
@@ -50,6 +51,14 @@ root.render(
                   element={
                     <RoundProvider>
                       <ViewRound />
+                    </RoundProvider>
+                  }
+                />
+                <Route
+                  path="/round/:chainId/:roundId/:applicationId"
+                  element={
+                    <RoundProvider>
+                      <ViewProjectDetails />
                     </RoundProvider>
                   }
                 />

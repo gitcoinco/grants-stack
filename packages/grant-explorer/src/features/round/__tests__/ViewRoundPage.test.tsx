@@ -1,6 +1,11 @@
 import ViewRound from "../ViewRoundPage";
 import { screen } from "@testing-library/react";
-import { makeApprovedProjectData, makeRoundData, renderWithContext } from "../../../test-utils"
+import {
+  generateIpfsCid,
+  makeApprovedProjectData,
+  makeRoundData,
+  renderWithContext,
+} from "../../../test-utils"
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 
@@ -24,7 +29,7 @@ describe("<ViewRound />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubRound = makeRoundData({id: roundId});
+    stubRound = makeRoundData({ id: roundId });
   });
 
   it("should display 404 when round is not found", () => {
@@ -47,17 +52,28 @@ describe("<ViewRound />", () => {
   it("displays the project name of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
     const expectedProjectName = expectedApprovedProject.projectMetadata.title;
-    const roundWithProjects = makeRoundData({id: roundId, approvedProjects: [expectedApprovedProject]})
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects: [expectedApprovedProject],
+    });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
     await screen.findByText(expectedProjectName);
-  })
+  });
 
-  it("displays the project banner of an approved grant application", async () => {
-    const expectedApprovedProject: Project = makeApprovedProjectData();
+  it("displays the project banner of an approved grant application if provided", async () => {
+    const expectedApprovedProject: Project = makeApprovedProjectData(
+      {},
+      {
+        bannerImg: generateIpfsCid(),
+      }
+    );
     const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
-    const roundWithProjects = makeRoundData({id: roundId, approvedProjects: [expectedApprovedProject]})
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects: [expectedApprovedProject],
+    });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
@@ -65,22 +81,48 @@ describe("<ViewRound />", () => {
       name: /project banner/i,
     })[0] as HTMLImageElement;
     expect(actualBanner.src).toContain(expectedBannerImg);
-  })
+  });
 
   it("displays all approved projects in the round", () => {
     const approvedProjects = [
       makeApprovedProjectData(),
       makeApprovedProjectData(),
-      makeApprovedProjectData()
+      makeApprovedProjectData(),
     ];
-    const roundWithProjects = makeRoundData({id: roundId, approvedProjects })
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
     const projectCards = screen.getAllByTestId("project-card");
     expect(projectCards.length).toEqual(approvedProjects.length);
     approvedProjects.forEach((project) => {
-      expect(screen.getByText(project.projectMetadata.title)).toBeInTheDocument()
-    })
-  })
+      expect(
+        screen.getByText(project.projectMetadata.title)
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("links each project card to the project detail page", () => {
+    const approvedProjects = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects });
+
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    const projectLinks = screen.getAllByTestId(
+      "project-detail-link"
+    ) as HTMLAnchorElement[];
+    expect(projectLinks.length).toEqual(approvedProjects.length);
+
+    const expectedProjectLinks = approvedProjects.map(
+      (project) => `/round/${chainId}/${roundId}/${project.grantApplicationId}`
+    );
+    projectLinks.forEach((projectLink) => {
+      const actualProjectLinkPathName = projectLink.pathname;
+      expect(expectedProjectLinks).toContain(actualProjectLinkPathName);
+    });
+  });
 });
