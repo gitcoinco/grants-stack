@@ -9,6 +9,7 @@ interface ErrorModalProps {
   heading?: string;
   subheading?: string;
   tryAgainFn?: () => void;
+  doneFn?: () => void;
 }
 
 export default function ErrorModal({
@@ -19,6 +20,7 @@ export default function ErrorModal({
   tryAgainFn = () => {
     /**/
   },
+  doneFn = () => setIsOpen(false),
 }: ErrorModalProps) {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -90,7 +92,10 @@ export default function ErrorModal({
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => {
+                        doneFn();
+                        setIsOpen(false);
+                      }}
                       data-testid="done"
                     >
                       Done

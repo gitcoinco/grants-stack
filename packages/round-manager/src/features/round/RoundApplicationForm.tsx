@@ -90,7 +90,6 @@ export function RoundApplicationForm(props: {
       contractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
-        setOpenProgressModal(false);
         setOpenErrorModal(true);
       }, errorModalDelayMs);
     }
@@ -221,13 +220,17 @@ export function RoundApplicationForm(props: {
             setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Round."}
             steps={progressSteps}
-          />
-
-          <ErrorModal
-            isOpen={openErrorModal}
-            setIsOpen={setOpenErrorModal}
-            tryAgainFn={handleSubmit(next)}
-          />
+          >
+            <ErrorModal
+              isOpen={openErrorModal}
+              setIsOpen={setOpenErrorModal}
+              tryAgainFn={handleSubmit(next)}
+              doneFn={() => {
+                setOpenErrorModal(false);
+                setOpenProgressModal(false);
+              }}
+            />
+          </ProgressModal>
         </div>
       </div>
     </div>
