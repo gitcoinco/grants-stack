@@ -148,6 +148,9 @@ export default function Details({
           )}
         </Box>
         <Box>
+          <Box p={1}>
+            <span className="text-[20px]">My Applications</span>
+          </Box>
           <ApplicationCard />
         </Box>
       </SimpleGrid>

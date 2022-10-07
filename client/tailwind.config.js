@@ -23,6 +23,8 @@ module.exports = {
         "gitcoin-pink-100": "#FDDEE4",
         "gitcoin-teal-100": "#E6FFF9",
         "gitcoin-teal-500": "#11BC92",
+        "gitcoin-gray-100": "#E2E0E7",
+        "gitcoin-gray-400": "#757087",
       }
     }
   },
