@@ -24,8 +24,6 @@ module.exports = {
         "gitcoin-gray-100": "#E2E0E7",
         "gitcoin-gray-400": "#757087",
       }
-    }
-      },
     },
     fontFamily: {
       sans: ['"Libre Franklin"'],
