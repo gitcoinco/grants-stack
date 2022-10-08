@@ -1,4 +1,5 @@
 import { Button } from "@chakra-ui/react";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { Round } from "../../types";
 
 interface RoundApplyAlertProps {
@@ -17,16 +18,17 @@ export default function RoundApplyAlert({
   }
 
   return (
-    <div className="relative h-14 bg-purple-200 p-2 rounded">
-      <p className="p-2 font-bold">
-        Apply to {round.programName} {round.roundMetadata.name} and get your
-        project funded!
-      </p>
-      <Button
-        className="absolute inset-y-0 right-10 m-2"
-        colorScheme="purple"
-        onClick={confirmHandler}
-      >
+    <div className="relative bg-gitcoin-violet-100 p-3 rounded-md flex flex-1 justify-between items-center">
+      <div className="flex flex-1 justify-start items-center">
+        <div className="text-gitcoin-violet-500 fill-current w-6 mx-4">
+          <InformationCircleIcon />
+        </div>
+        <p className="font-medium m-0 p-0 text-primary-text text-sm">
+          Apply to {round.programName} {round.roundMetadata.name} and get your
+          project funded!
+        </p>
+      </div>
+      <Button colorScheme="purple" onClick={confirmHandler}>
         Apply to Round
       </Button>
     </div>
