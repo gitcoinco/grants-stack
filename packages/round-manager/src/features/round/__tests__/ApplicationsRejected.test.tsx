@@ -252,7 +252,7 @@ describe("<ApplicationsRejected />", () => {
         ).toBeInTheDocument();
       });
 
-      it("starts the bulk update process to persist approved applications when confirm is selected ", async () => {
+      it("starts the bulk update process to persist approved applications when confirm is selected", async () => {
         (updateApplicationList as jest.Mock).mockResolvedValue("");
         (updateRoundContract as jest.Mock).mockReturnValue(
           new Promise(() => {})

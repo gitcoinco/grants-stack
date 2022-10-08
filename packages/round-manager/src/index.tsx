@@ -85,7 +85,9 @@ root.render(
                   element={
                     <RoundProvider>
                       <ApplicationProvider>
-                        <ViewApplication />
+                        <BulkUpdateGrantApplicationProvider>
+                          <ViewApplication />
+                        </BulkUpdateGrantApplicationProvider>
                       </ApplicationProvider>
                     </RoundProvider>
                   }

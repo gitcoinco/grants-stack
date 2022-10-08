@@ -7,8 +7,12 @@ import {
   XIcon,
 } from "@heroicons/react/solid";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useUpdateGrantApplicationMutation } from "../api/services/grantApplication";
+import {
+  Link,
+  NavigateFunction,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Navbar from "../common/Navbar";
 import { useWallet } from "../common/Auth";
@@ -17,10 +21,13 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
+import ProgressModal from "../common/ProgressModal";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
   AnswerBlock,
   GrantApplication,
+  ProgressStatus,
   ProjectCredentials,
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
@@ -48,13 +55,17 @@ export const IAM_SERVER =
 const verifier = new PassportVerifier();
 
 export default function ViewApplicationPage() {
+  const navigate = useNavigate();
   datadogLogs.logger.info("====> Route: /round/:roundId/application/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const [reviewDecision, setReviewDecision] = useState<
     ApplicationStatus | undefined
   >(undefined);
+
   const [openModal, setOpenModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+
   const [verifiedProviders, setVerifiedProviders] = useState<{
     [key: string]: VerifiedCredentialState;
   }>({
@@ -63,9 +74,45 @@ export default function ViewApplicationPage() {
   });
 
   const { roundId, id } = useParams() as { roundId: string; id: string };
-  const { chain, address, provider, signer } = useWallet();
+  const { chain, address } = useWallet();
 
-  const navigate = useNavigate();
+  const {
+    bulkUpdateGrantApplications,
+    IPFSCurrentStatus,
+    contractUpdatingStatus,
+    indexingStatus,
+  } = useBulkUpdateGrantApplications();
+
+  const isUpdateLoading =
+    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
+    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
+    indexingStatus == ProgressStatus.IN_PROGRESS;
+
+  const progressSteps: any = [
+    {
+      name: "Storing",
+      description: "The metadata is being saved in a safe place.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Updating",
+      description: `Connecting to the ${chain.name} blockchain.`,
+      status: contractUpdatingStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(id);
@@ -103,30 +150,28 @@ export default function ViewApplicationPage() {
 
   const { round } = useRoundById(roundId);
 
-  const [updateGrantApplication, { isLoading: updating }] =
-    useUpdateGrantApplicationMutation();
-
-  const handleUpdateGrantApplication = async () => {
+  const handleReview = async () => {
     try {
+      setOpenProgressModal(true);
       setOpenModal(false);
 
-      await updateGrantApplication({
-        roundId,
-        application: {
-          status: reviewDecision!,
-          id: application!.id,
-          round: roundId!,
-          recipient: application!.recipient,
-          projectsMetaPtr: application!.projectsMetaPtr,
-        },
-        signer,
-        provider,
-      }).unwrap();
-
-      navigate(0);
+      await bulkUpdateGrantApplications({
+        roundId: roundId!,
+        applications: [
+          {
+            status: reviewDecision!,
+            id: application!.id,
+            round: roundId!,
+            recipient: application!.recipient,
+            projectsMetaPtr: application!.projectsMetaPtr,
+          },
+        ],
+      });
+      setOpenProgressModal(false);
+      redirectToViewRoundPage(navigate, 0, roundId);
     } catch (error) {
       datadogLogs.logger.error(
-        `error: handleUpdateGrantApplication - ${error}, roundId - ${roundId}`
+        `error: handleReview - ${error}, roundId - ${roundId}`
       );
       console.error(error);
     }
@@ -135,11 +180,6 @@ export default function ViewApplicationPage() {
   const confirmReviewDecision = (status: ApplicationStatus) => {
     setReviewDecision(status);
     setOpenModal(true);
-  };
-
-  const handleCancelModal = () => {
-    setOpenModal(false);
-    setTimeout(() => setReviewDecision(undefined), 500);
   };
 
   const getVerifiableCredentialVerificationResultView = (provider: string) => {
@@ -281,7 +321,7 @@ export default function ViewApplicationPage() {
                         />
                       )}
                     </div>
-                    <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
+                    <div className="mt-16 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                       <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
                         <Button
                           type="button"
@@ -291,7 +331,7 @@ export default function ViewApplicationPage() {
                               : "outline"
                           }
                           className="inline-flex justify-center px-4 py-2 text-sm m-auto"
-                          disabled={isLoading || updating}
+                          disabled={isLoading || isUpdateLoading}
                           onClick={() => confirmReviewDecision("APPROVED")}
                         >
                           <CheckIcon
@@ -315,7 +355,7 @@ export default function ViewApplicationPage() {
                               ? ""
                               : "text-grey-500")
                           }
-                          disabled={isLoading || updating}
+                          disabled={isLoading || isUpdateLoading}
                           onClick={() => confirmReviewDecision("REJECTED")}
                         >
                           <XIcon className="h-5 w-5 mr-1" aria-hidden="true" />
@@ -329,15 +369,30 @@ export default function ViewApplicationPage() {
                 </div>
               </div>
               <ConfirmationModal
+                confirmButtonText={
+                  isUpdateLoading ? "Confirming..." : "Confirm"
+                }
                 body={
                   <p className="text-sm text-grey-400">
                     {`You have ${reviewDecision?.toLowerCase()} a Grant Application. This will carry gas fees based on the selected network`}
                   </p>
                 }
-                confirmButtonAction={handleUpdateGrantApplication}
-                cancelButtonAction={handleCancelModal}
+                confirmButtonAction={handleReview}
+                cancelButtonAction={() => {
+                  setOpenModal(false);
+                  setTimeout(() => setReviewDecision(undefined), 500);
+                }}
                 isOpen={openModal}
                 setIsOpen={setOpenModal}
+              />
+
+              <ProgressModal
+                isOpen={openProgressModal}
+                setIsOpen={setOpenProgressModal}
+                subheading={
+                  "Please hold while we update the grant application."
+                }
+                steps={progressSteps}
               />
             </header>
 
@@ -461,4 +516,14 @@ async function isVerified(
     vcIssuedToAtLeastOneProjectOwner
     ? VerifiedCredentialState.VALID
     : VerifiedCredentialState.INVALID;
+}
+
+function redirectToViewRoundPage(
+  navigate: NavigateFunction,
+  waitSeconds: number,
+  id: string
+) {
+  setTimeout(() => {
+    navigate(`/round/${id}`);
+  }, waitSeconds);
 }
