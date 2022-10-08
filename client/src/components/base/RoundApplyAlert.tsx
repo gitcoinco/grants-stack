@@ -28,7 +28,11 @@ export default function RoundApplyAlert({
           project funded!
         </p>
       </div>
-      <Button colorScheme="purple" onClick={confirmHandler}>
+      <Button
+        className="font-medium bg-gitcoin-violet-400"
+        colorScheme="purple"
+        onClick={confirmHandler}
+      >
         Apply to Round
       </Button>
     </div>
