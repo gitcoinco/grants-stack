@@ -4,6 +4,8 @@ import {
   ROUNDS_LOADING_ROUND,
   ROUNDS_ROUND_LOADED,
   ROUNDS_UNLOADED,
+  ROUND_PROJECTS_LOADED,
+  ROUND_PROJECTS_LOADING,
 } from "../actions/rounds";
 import { Round } from "../types";
 
@@ -21,6 +23,8 @@ export const enum Status {
   LoadingProgramMetaPtr,
   LoadingProgramMetadata,
   Loaded,
+  LoadingRoundProjects,
+  LoadedRoundProjects,
   Error,
 }
 
@@ -77,6 +81,30 @@ export const roundsReducer = (
           ...round,
           status: Status.Error,
           error: action.error,
+        },
+      };
+    }
+
+    case ROUND_PROJECTS_LOADING: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.LoadingRoundProjects,
+          error: undefined,
+        },
+      };
+    }
+
+    case ROUND_PROJECTS_LOADED: {
+      const round = state[action.address] || roundInitialState;
+      return {
+        ...state,
+        [action.address]: {
+          ...round,
+          status: Status.LoadedRoundProjects,
+          error: undefined,
         },
       };
     }
