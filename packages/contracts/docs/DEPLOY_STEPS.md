@@ -51,6 +51,44 @@ yarn run link-program-implementation goerli
 ```
 
 
+### VotingStrategy Setup
+
+The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the QuadraticFundingVotingStrategyImplementation contract on goerli
+
+1. Create an `.env` file and fill out
+    - `INFURA_ID`               : Infura ID for deploying contract
+    - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
+    - `ETHERSCAN_API_KEY`       : API key for etherscan verification
+
+
+2. Deploy the `QuadraticFundingVotingStrategyFactory` contract
+```shell
+yarn run deploy-qf-factory goerli
+```
+
+3. Deploy the `QuadraticFundingVotingStrategyImplementation` contract
+```shell
+yarn run deploy-qf-implementation goerli
+```
+
+4. Update `votingStrategy.config.ts` with deployed contracts based on your network
+```javascript
+export const QFVotingParams: DeployParams = {
+  "goerli": {
+    factory: 'DEPLOYED_QF_FACTORY_CONTRACT',
+    implementation: 'DEPLOYED_QF_IMPLEMENTATION_CONTRACT',
+    ...
+  },
+  ...
+};
+```
+
+5. Update `QuadraticFundingVotingStrategyFactory` to reference the `QuadraticFundingVotingStrategyImplementation` contract
+```shell
+yarn run link-qf-implementation goerli
+```
+
+
 ### Round Setup
 
 The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
@@ -87,31 +125,6 @@ export const params: DeployParams = {
 5. Update `RoundFactory` to reference the `RoundImplementation` contract
 ```shell
 yarn run link-round-implementation goerli
-```
-
-### VotingStrategy Setup
-
-The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the QuadraticFundingVotingStrategy contract on goerli
-
-1. Create an `.env` file and fill out
-    - `INFURA_ID`               : Infura ID for deploying contract
-    - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
-    - `ETHERSCAN_API_KEY`       : API key for etherscan verification
-
-2. Deploy the QuadraticFundingVotingStrategy contract.
-```shell
-yarn run deploy-quadratic-funding-voting-strategy goerli
-```
-
-3. Update `round.config.ts` with deployed contracts based on your network
-```javascript
-export const params: DeployParams = {
-  goerli: {
-    QuadraticFundingVotingStrategyContract: 'DEPLOYED_QUADRATIC_FUNDING_VOTE_CONTRACT',
-    ...
-  },
-  ...
-};
 ```
 
 ### Payout Setup

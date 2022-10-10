@@ -6,6 +6,7 @@ import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { MockERC20, QuadraticFundingVotingStrategyImplementation } from "../../typechain";
 import { Event, Wallet } from "ethers";
+import { AddressZero } from "@ethersproject/constants";
 
 describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
@@ -33,11 +34,16 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
       // Verify deploy
       expect(isAddress(quadraticFundingVotingStrategy.address), 'Failed to deploy QuadraticFundingVotingStrategyImplementation').to.be.true;
       expect(isAddress(mockERC20.address), 'Failed to deploy MockERC20').to.be.true;
+
+      // Verify default value
+      expect(await quadraticFundingVotingStrategy.roundAddress()).to.equal(AddressZero);
     });
   })
 
 
   describe('core functions', () => {
+
+    const randomAddress = Wallet.createRandom().address;
 
     const grant1 = Wallet.createRandom();
     const grant1TokenTransferAmount = 150;
@@ -47,6 +53,32 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
     let encodedVotes: BytesLike[] = [];
 
     const totalTokenTransfer = grant1TokenTransferAmount + grant2TokenTransferAmount;
+
+
+    describe('test: init',() => {
+      beforeEach(async () => {
+        [user] = await ethers.getSigners();
+
+        // Deploy MockERC20 contract
+        mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+        mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [tokensToBeMinted]);
+
+        // Deploy QuadraticFundingVotingStrategy contract
+        quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
+        quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+
+        // Invoke init
+        await quadraticFundingVotingStrategy.init();
+      });
+
+      it('invoking init once SHOULD set the round address', async () => {
+        expect(await quadraticFundingVotingStrategy.roundAddress()).to.equal(user.address);
+      });
+
+      it('invoking init more than once SHOULD rever the transaction ', () => {
+        expect(quadraticFundingVotingStrategy.init()).to.revertedWith('init: roundAddress already set')
+      });
+    });
 
     describe('test: vote', () => {
       beforeEach(async () => {
@@ -79,8 +111,26 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
       });
 
+      it("invoking vote when roundAddress is not set SHOULD rever transaction", async ()=> {
+        const txn =  quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
+        await expect(txn).to.revertedWith('vote: voting contract not linked to a round');
+      });
+
+      it("invoking vote when sender is not roundAddress SHOULD revert transaction", async ()=> {
+
+        const [_, anotherUser] = await ethers.getSigners();
+
+        // Invoke init
+        await quadraticFundingVotingStrategy.connect(anotherUser).init();
+
+        const txn =  quadraticFundingVotingStrategy.vote(encodedVotes, randomAddress);
+        await expect(txn).to.revertedWith('vote: can be invoked only by round contract');
+      });
 
       it("invoking vote without allowance SHOULD revert transaction ", async() => {
+        // Invoke init
+        await quadraticFundingVotingStrategy.init();
+
         const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, 0);
         approveTx.wait();
 
@@ -89,6 +139,10 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
       });
 
       it("invoking vote not enough allowance SHOULD revert transaction ", async() => {
+
+        // Invoke init
+        await quadraticFundingVotingStrategy.init();
+
         const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, 100);
         approveTx.wait();
 
@@ -98,6 +152,9 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
       });
 
       it("invoking vote SHOULD transfer balance from user to grant", async() => {
+
+        // Invoke init
+        await quadraticFundingVotingStrategy.init();
 
         const beforeVotingUserBalance = await mockERC20.balanceOf(user.address);
         const beforeVotingGrant1Balance = await mockERC20.balanceOf(grant1.address);
@@ -123,6 +180,8 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
       });
 
       it("invoking vote SHOULD emit 2 Vote events", async () => {
+        // Invoke init
+        await quadraticFundingVotingStrategy.init();
 
         let votedEvents: Event[] = [];
 

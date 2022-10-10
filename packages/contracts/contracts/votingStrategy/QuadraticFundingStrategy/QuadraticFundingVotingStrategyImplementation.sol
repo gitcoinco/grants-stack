@@ -41,17 +41,21 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
    * @dev
    * - more voters -> higher the gas
    * - this would be triggered when a voter casts their vote via grant explorer
+   * - can be invoked by the round
    *
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address
    */
   function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
+
+    require(roundAddress != address(0), "vote: voting contract not linked to a round");
+    require(msg.sender == roundAddress, "vote: can be invoked only by round contract");
+
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
-      /// TODO: ensure this can be called by round only
       /// @dev erc20 transfer to grant address
       // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
       SafeERC20Upgradeable.safeTransferFrom(
