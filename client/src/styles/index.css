@@ -6,6 +6,12 @@
 
 @import "./Button";
 @import "./Layout";
+@import "./roundApplication";
+
+/* lit modal */
+#lcm-modal-overlay {
+  z-index: 9999;
+}
 
 @layer base {
   html {
@@ -88,14 +94,14 @@
   @apply mb-8 pt-4;
   display: flex;
   justify-content: center;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
 }
 
 .alert {
-  @apply flex items-center text-sm font-bold px-4 py-4 rounded relative mb-4;
+  @apply flex items-center text-[14px] font-normal px-4 py-4 rounded relative mb-4;
 }
 
 .alert.error {

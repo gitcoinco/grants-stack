@@ -32,9 +32,11 @@ const validation = {
 export default function Form({
   roundApplication,
   round,
+  onSubmit,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
+  onSubmit: () => void;
 }) {
   const dispatch = useDispatch();
 
@@ -111,6 +113,7 @@ export default function Form({
 
   const handleSubmitApplication = async () => {
     if (formValidation.valid) {
+      onSubmit();
       dispatch(submitApplication(round.address, formInputs));
     }
   };
@@ -119,7 +122,7 @@ export default function Form({
     const currentOptions = props.projects.map(
       (project): ProjectOption => ({
         id: project.id,
-        title: props.allProjectMetadata[project.id].metadata?.title,
+        title: props.allProjectMetadata[project.id]?.metadata?.title,
       })
     );
     currentOptions.unshift({ id: undefined, title: "" });

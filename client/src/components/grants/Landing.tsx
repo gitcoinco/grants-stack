@@ -9,6 +9,7 @@ function Landing() {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => ({
     web3Error: state.web3.error,
+    web3Initializing: state.web3.initializing,
   }));
   const queryString = new URLSearchParams(window?.location?.search);
 
@@ -74,9 +75,17 @@ function Landing() {
     return <div />;
   }
 
+  if (
+    props.web3Initializing &&
+    (signer || chain || address) &&
+    !props.web3Error
+  ) {
+    return null;
+  }
+
   return (
-    <div className="md:flex h-full w-full">
-      <div className="flex absolute top-0 left-10">
+    <div className="flex flex-1 absolute h-full w-full">
+      <div className="flex absolute top-0 left-8 md:left-10">
         <img
           className="py-4 mr-4"
           alt="Gitcoin Logo"
@@ -84,40 +93,36 @@ function Landing() {
         />
         <img alt="Gitcoin Logo Text" src="./assets/gitcoin-logo-text.svg" />
       </div>
-      <div className="w-1/2 md:w-1/2 flex flex-col absolute h-1/2 max-w-fit md:h-full justify-center container mx-10">
-        <h3 className="mb-8 hidden sm:hidden xs:hidden md:inline-block">
-          Grant Hub
-        </h3>
-        <h6 className="mb-4 pt-20 inline-block md:hidden lg:hidden">
-          Grant Hub
-        </h6>
-        <h1 className="sm:hidden xs:hidden md:inline-block w-auto sm:w-4/5">
-          Bring your project to life
-        </h1>
-        <h4 className="md:hidden lg:hidden inline-block w-full">
-          Bring your project to life
-        </h4>
-        <p className="text-black text-xl w-3/4">
-          Build and fund your projects all in one place -- from creating a
-          project to applying for grants to creating impact with your project
-          starting today!
-        </p>
-        {!isConnected && (
-          <div className="mt-8">
-            <ConnectButton />
-            {props.web3Error !== undefined && (
-              <div>
-                <div>{props.web3Error}</div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <img
-        className="absolute w-1/2 md:inline-block right-0 xs:hidden sm:hidden"
-        src="./assets/landing-background.svg"
-        alt="Jungle Background"
-      />
+      <section className="flex flex-1 flex-col md:flex-row">
+        <div className="flex flex-1 flex-col justify-center container px-8 md:px-10">
+          <h3 className="mb-4 pt-24 md:pt-0 md:mb-8">Grant Hub</h3>
+          <h1 className="w-auto text-5xl md:text-7xl mb-8">
+            Bring your project to life
+          </h1>
+          <p className="text-black text-xl w-full md:max-w-4xl">
+            Build and fund your projects all in one place -- from creating a
+            project to applying for grants to creating impact with your project
+            starting today!
+          </p>
+          {!isConnected && (
+            <div className="mt-8 mb-8 md:mb-0">
+              <ConnectButton />
+              {props.web3Error !== undefined && (
+                <div>
+                  <div>{props.web3Error}</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-1">
+          <img
+            className="w-full object-cover"
+            src="./assets/landing-background.svg"
+            alt="Jungle Background"
+          />
+        </div>
+      </section>
     </div>
   );
 }

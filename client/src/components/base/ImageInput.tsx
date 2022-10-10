@@ -119,16 +119,24 @@ export default function ImageInput({
   }, [imageData, imageHash]);
 
   useEffect(() => {
+    let unloaded = false;
+
     if (imageData !== undefined) {
       const fr = new FileReader();
       fr.onload = () => {
-        setImgSrc(fr.result as string);
+        if (!unloaded) {
+          setImgSrc(fr.result as string);
+        }
       };
       fr.readAsDataURL(imageData);
     } else {
       setImgSrc(undefined);
     }
-  }, [imageData]);
+
+    return () => {
+      unloaded = true;
+    };
+  }, [imageData, imageHash]);
 
   return (
     <div className="w-full">
