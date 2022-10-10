@@ -1,3 +1,4 @@
+import { ApolloProvider } from "@apollo/client";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -19,6 +20,7 @@ import RoundShow from "./components/rounds/Show";
 import history from "./history";
 import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
+import { goerliClient } from "./services/graphqlClient";
 import setupStore from "./store";
 import "./styles/index.css";
 import Datadog from "./utils/datadog";
@@ -38,28 +40,30 @@ root.render(
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
           <ChakraProvider resetCSS={false}>
-            <Provider store={store}>
-              <ReduxRouter history={history} store={store}>
-                <Layout>
-                  <Routes>
-                    <Route
-                      path={slugs.root}
-                      element={<Navigate to={slugs.grants} />}
-                    />
-                    <Route path={slugs.grants} element={<ProjectsList />} />
-                    <Route path={slugs.grant} element={<Project />} />
-                    <Route path={slugs.newGrant} element={<NewProject />} />
-                    <Route path={slugs.edit} element={<EditProject />} />
-                    <Route path={slugs.round} element={<RoundShow />} />
-                    <Route
-                      path={slugs.roundApplication}
-                      element={<RoundApply />}
-                    />
-                    <Route path="*" element={<PageNotFound />} />
-                  </Routes>
-                </Layout>
-              </ReduxRouter>
-            </Provider>
+            <ApolloProvider client={goerliClient}>
+              <Provider store={store}>
+                <ReduxRouter history={history} store={store}>
+                  <Layout>
+                    <Routes>
+                      <Route
+                        path={slugs.root}
+                        element={<Navigate to={slugs.grants} />}
+                      />
+                      <Route path={slugs.grants} element={<ProjectsList />} />
+                      <Route path={slugs.grant} element={<Project />} />
+                      <Route path={slugs.newGrant} element={<NewProject />} />
+                      <Route path={slugs.edit} element={<EditProject />} />
+                      <Route path={slugs.round} element={<RoundShow />} />
+                      <Route
+                        path={slugs.roundApplication}
+                        element={<RoundApply />}
+                      />
+                      <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                  </Layout>
+                </ReduxRouter>
+              </Provider>
+            </ApolloProvider>
           </ChakraProvider>
         </RainbowKitProvider>
       </WagmiConfig>
