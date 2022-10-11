@@ -21,6 +21,7 @@ import NotFound from "./features/common/NotFoundPage";
 import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
+import { BallotProvider } from "./context/BallotContext";
 
 // Initialize datadog
 initDatadog();
@@ -35,31 +36,33 @@ root.render(
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider chains={chains}>
           <RoundProvider>
-            <ReduxRouter history={history} store={store}>
-              <Routes>
-                {/* Protected Routes */}
-                <Route element={<Auth />}></Route>
+            <BallotProvider>
+              <ReduxRouter history={history} store={store}>
+                <Routes>
+                  {/* Protected Routes */}
+                  <Route element={<Auth />}></Route>
 
-                {/* Default Route */}
-                <Route path="/" element={<NotFound />} />
+                  {/* Default Route */}
+                  <Route path="/" element={<NotFound />} />
 
-                {/* Round Routes */}
-                <Route
-                  path="/round/:chainId/:roundId"
-                  element={<ViewRound />}
-                />
-                <Route
-                  path="/round/:chainId/:roundId/:applicationId"
-                  element={<ViewProjectDetails />}
-                />
+                  {/* Round Routes */}
+                  <Route
+                    path="/round/:chainId/:roundId"
+                    element={<ViewRound />}
+                  />
+                  <Route
+                    path="/round/:chainId/:roundId/:applicationId"
+                    element={<ViewProjectDetails />}
+                  />
 
-                {/* Access Denied */}
-                <Route path="/access-denied" element={<AccessDenied />} />
+                  {/* Access Denied */}
+                  <Route path="/access-denied" element={<AccessDenied />} />
 
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </ReduxRouter>
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ReduxRouter>
+            </BallotProvider>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>

@@ -80,7 +80,9 @@ describe("<ViewProjectDetails/>", () => {
     });
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    expect(await screen.findByText(`@${expectedProjectTwitter}`)).toHaveTextContent(expectedProjectTwitter);
+    expect(
+      await screen.findByText(`@${expectedProjectTwitter}`)
+    ).toHaveTextContent(expectedProjectTwitter);
   });
 
   it("shows project banner", async () => {
@@ -125,9 +127,7 @@ describe("<ViewProjectDetails/>", () => {
 });
 
 describe("voting ballot", () => {
-  const expectedProject = makeApprovedProjectData(
-    { grantApplicationId },
-  );
+  const expectedProject = makeApprovedProjectData({ grantApplicationId });
   const roundWithProjects = makeRoundData({
     id: roundId,
     approvedProjects: [expectedProject],
@@ -146,16 +146,5 @@ describe("voting ballot", () => {
 
     expect(screen.getByTestId("remove-from-ballot")).toBeInTheDocument();
     expect(screen.queryByTestId("add-to-ballot")).not.toBeInTheDocument();
-  });
-
-  it("shows a add-to-ballot when remove-from-ballot is clicked", () => {
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-    const addToBallot = screen.getByTestId("add-to-ballot");
-    fireEvent.click(addToBallot);
-    const removeFromBallot = screen.getByTestId("remove-from-ballot");
-    fireEvent.click(removeFromBallot);
-
-    expect(screen.getByTestId("add-to-ballot")).toBeInTheDocument();
-    expect(screen.queryByTestId("remove-from-ballot")).not.toBeInTheDocument();
   });
 });
