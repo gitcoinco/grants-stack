@@ -6,7 +6,7 @@ const textToCopy = "CLICK ME!";
 
 Object.assign(navigator, {
   clipboard: {
-    writeText: () => {},
+    writeText: () => true,
     readText: () => textToCopy,
   },
 });

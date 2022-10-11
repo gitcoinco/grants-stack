@@ -36,7 +36,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 Object.assign(navigator, {
   clipboard: {
-    writeText: () => {},
+    writeText: () => true,
   },
 });
 
