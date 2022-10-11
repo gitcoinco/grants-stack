@@ -121,7 +121,7 @@ Test the queries over at https://thegraph.com/hosted-service/subgraph/thelostone
 **Fetch all projects by a round and know it's application status**
 
 You can do this by two means :
-##### Given a round id -> fetch all projects
+##### Given a round id -> fetch all its projects
 
 ```graphql
 {
@@ -143,13 +143,36 @@ You can do this by two means :
 }
 ```
 
-##### Given a project id -> fetch all the rounds it's a part of
+##### Fetch all applications belonging to a given round
 
 
 ```graphql
 {
   roundProjects(where: {
     round: "0x707F12906E028dE672424d600c9C69460dcD2295"
+  }) {
+    id
+    status
+    payoutAddress
+    metaPtr {
+      protocol
+      pointer
+    }
+    round {
+      id
+    }
+  }
+}
+```
+
+### Project queries
+
+**Fetch all applications submitted by a given project**
+
+```graphql
+{
+  roundProjects(where: {
+    project:"0x0247568f32b9ce4467f4e2931c4e620eb4d0c9595ca54e3dde2f59c225e69d2f"
   }) {
     id
     status
