@@ -1,10 +1,12 @@
 import { datadogLogs } from "@datadog/browser-logs";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ProjectMetadata } from "../api/types";
 import { ChevronLeftIcon } from "@heroicons/react/solid";
+import { Button } from "../common/styles";
 import Navbar from "../common/Navbar";
 
 export default function ViewProjectDetails() {
@@ -19,31 +21,40 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
+  const [addedToBallot, setAddedToBallot] = useState(false);
+
   return (
     <>
       <Navbar />
       <div className="container mx-auto h-screen px-4 py-7">
-        <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
-          <Link to={`/round/${chainId}/${roundId}`}>
-            <span className="font-normal text-purple-100">Back to Grants</span>
-          </Link>
-        </div>
-        {!isLoading && projectToRender && (
-          <>
-            <Header projectMetadata={projectToRender.projectMetadata} />
-            <div>
-              <ProjectTitle projectMetadata={projectToRender.projectMetadata} />
-              <SectionLine />
-              <Detail text={projectToRender.projectMetadata.website} />
-              <Detail
-                text={`@${projectToRender.projectMetadata.projectTwitter!}`}
+      <div className="flex flex-row items-center gap-3 text-sm">
+        <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
+        <Link to={`/round/${chainId}/${roundId}`}>
+          <span className="font-normal text-purple-100">Back to Grants</span>
+        </Link>
+      </div>
+      {!isLoading && projectToRender && (
+        <>
+          <Header projectMetadata={projectToRender.projectMetadata} />
+          <div>
+            <ProjectTitle projectMetadata={projectToRender.projectMetadata} />
+            <SectionLine />
+            <Detail text={projectToRender.projectMetadata.website} />
+            <Detail
+              text={`@${projectToRender.projectMetadata.projectTwitter!}`}
               />
-              <SectionLine />
-            </div>
-            <div>
-              <DescriptionTitle />
-              <Detail text={projectToRender.projectMetadata.description} />
+            <SectionLine />
+          </div>
+          <div>
+            <DescriptionTitle />
+            <Detail text={projectToRender.projectMetadata.description} />
+          </div>
+          <div>
+            <BallotSelectionToggle
+              isAddedToBallot={addedToBallot}
+              removeFromBallot={() => setAddedToBallot(false)}
+              addToBallot={() => setAddedToBallot(true)}
+            />
             </div>
           </>
         )}
@@ -122,5 +133,28 @@ export function ProjectLogo(props: {
         </div>
       </div>
     </div>
+  );
+}
+
+function BallotSelectionToggle(props: {
+  isAddedToBallot: boolean;
+  addToBallot: () => void;
+  removeFromBallot: () => void;
+}) {
+  return (
+    <>
+      {props.isAddedToBallot ? (
+        <Button
+          data-testid="remove-from-ballot"
+          onClick={props.removeFromBallot}
+        >
+          Remove from ballot
+        </Button>
+      ) : (
+        <Button data-testid="add-to-ballot" onClick={props.addToBallot}>
+          Back this project
+        </Button>
+      )}
+    </>
   );
 }
