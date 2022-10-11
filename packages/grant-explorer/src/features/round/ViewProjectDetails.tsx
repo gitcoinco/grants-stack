@@ -5,6 +5,7 @@ import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ProjectMetadata } from "../api/types";
 import { ChevronLeftIcon } from "@heroicons/react/solid";
+import Navbar from "../common/Navbar";
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
@@ -19,30 +20,35 @@ export default function ViewProjectDetails() {
   );
 
   return (
-    <div className="container mx-auto h-screen px-4 py-7">
-      <div className="flex flex-row items-center gap-3 text-sm">
-        <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
-        <Link to={`/round/${chainId}/${roundId}`}>
-          <span className="font-normal text-purple-100">Back to Grants</span>
-        </Link>
+    <>
+      <Navbar />
+      <div className="container mx-auto h-screen px-4 py-7">
+        <div className="flex flex-row items-center gap-3 text-sm">
+          <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
+          <Link to={`/round/${chainId}/${roundId}`}>
+            <span className="font-normal text-purple-100">Back to Grants</span>
+          </Link>
+        </div>
+        {!isLoading && projectToRender && (
+          <>
+            <Header projectMetadata={projectToRender.projectMetadata} />
+            <div>
+              <ProjectTitle projectMetadata={projectToRender.projectMetadata} />
+              <SectionLine />
+              <Detail text={projectToRender.projectMetadata.website} />
+              <Detail
+                text={`@${projectToRender.projectMetadata.projectTwitter!}`}
+              />
+              <SectionLine />
+            </div>
+            <div>
+              <DescriptionTitle />
+              <Detail text={projectToRender.projectMetadata.description} />
+            </div>
+          </>
+        )}
       </div>
-      {!isLoading && projectToRender && (
-        <>
-          <Header projectMetadata={projectToRender.projectMetadata} />
-          <div>
-            <ProjectTitle projectMetadata={projectToRender.projectMetadata} />
-            <SectionLine />
-            <Detail text={projectToRender.projectMetadata.website} />
-            <Detail text={`@${projectToRender.projectMetadata.projectTwitter!}`} />
-            <SectionLine />
-          </div>
-          <div>
-            <DescriptionTitle />
-            <Detail text={projectToRender.projectMetadata.description} />
-          </div>
-        </>
-      )}
-    </div>
+    </>
   );
 }
 
