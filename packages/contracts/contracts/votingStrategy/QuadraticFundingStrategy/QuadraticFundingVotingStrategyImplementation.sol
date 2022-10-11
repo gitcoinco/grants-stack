@@ -46,10 +46,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address
    */
-  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
-
-    require(roundAddress != address(0), "vote: voting contract not linked to a round");
-    require(msg.sender == roundAddress, "vote: can be invoked only by round contract");
+  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant isRoundContract {
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {

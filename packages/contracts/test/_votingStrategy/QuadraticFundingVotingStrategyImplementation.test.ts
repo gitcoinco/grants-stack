@@ -113,7 +113,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
       it("invoking vote when roundAddress is not set SHOULD rever transaction", async ()=> {
         const txn =  quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
-        await expect(txn).to.revertedWith('vote: voting contract not linked to a round');
+        await expect(txn).to.revertedWith('error: voting contract not linked to a round');
       });
 
       it("invoking vote when sender is not roundAddress SHOULD revert transaction", async ()=> {
@@ -124,7 +124,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
         await quadraticFundingVotingStrategy.connect(anotherUser).init();
 
         const txn =  quadraticFundingVotingStrategy.vote(encodedVotes, randomAddress);
-        await expect(txn).to.revertedWith('vote: can be invoked only by round contract');
+        await expect(txn).to.revertedWith('error: can be invoked only by round contract');
       });
 
       it("invoking vote without allowance SHOULD revert transaction ", async() => {
