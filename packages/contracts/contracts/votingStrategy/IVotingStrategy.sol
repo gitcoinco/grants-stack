@@ -4,16 +4,32 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
- * @notice Defines the interface for voting algorithms on grants
+ * @notice Defines the abstract contract for voting algorithms on grants
  * within a round. Any new voting algorithm would be expected to
- * implement this interface.
+ * extend this abstract contract.
  * Every IVotingStrategy implementation would ideally be deployed once per chain
  * and be invoked by the RoundImplementation contract
  *
  */
-interface IVotingStrategy {
+abstract contract IVotingStrategy {
+
+   // --- Data ---
+
+  /// @notice Round address
+  address public roundAddress;
+
 
   // --- Core methods ---
+
+  /**
+   * @notice Invoked by RoundImplementation on creation to
+   * set the round for which the voting contracts is to be used
+   *
+   */
+  function init() external {
+    require(roundAddress == address(0), "init: roundAddress already set");
+    roundAddress = msg.sender;
+  }
 
   /**
    * @notice Invoked by RoundImplementation to allow voter to case
@@ -28,5 +44,5 @@ interface IVotingStrategy {
    * @param _encodedVotes encoded votes
    * @param _voterAddress voter address
    */
-  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external;
+  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external virtual;
 }

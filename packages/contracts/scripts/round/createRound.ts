@@ -1,10 +1,12 @@
 // This is a helper script to create a round. 
 // This should be created via the frontend and this script is meant to be used for quick test
+// NOTE: this script deploys a round with a QF voting strategy
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
 import { programParams } from "../config/program.config";
+import { QFVotingParams } from "../config/votingStrategy.config";
 import { encodeRoundParameters } from "../utils";
 import * as utils from "../utils";
 
@@ -16,6 +18,7 @@ export async function main() {
 
   const networkParams = roundParams[network.name];
   const programNetworkParams = programParams[network.name];
+  const votingNetworkParams = QFVotingParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
@@ -24,6 +27,8 @@ export async function main() {
   const roundFactoryContract = networkParams.roundFactoryContract;
   const roundImplementationContract = networkParams.roundImplementationContract;
   const programContract = programNetworkParams.programContract;
+
+  const votingContract = votingNetworkParams.contract;
   
   if (!roundFactoryContract) {
     throw new Error(`error: missing roundFactoryContract`);
@@ -33,6 +38,9 @@ export async function main() {
     throw new Error(`error: missing roundImplementationContract`);
   }
 
+  if (!votingContract) {
+    throw new Error(`error: missing votingContract`);
+  }
 
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
   
@@ -41,6 +49,7 @@ export async function main() {
     "roundFactoryContract"         : roundFactoryContract,
     "roundImplementationContract"  : roundImplementationContract,
     "programContractAddress"       : programContract,
+    "votingContractAddress"        : votingContract,
     "network"                      : network.name,
     "chainId"                      : network.config.chainId
   });
@@ -51,7 +60,7 @@ export async function main() {
   const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
     
   const params = [
-    networkParams.quadraticFundingVotingStrategyContract, // _votingStrategyAddress
+    votingContract, // _votingStrategyAddress
     applicationsStartTime, // _applicationsStartTime
     applicationsEndTime, // _applicationsEndTime
     roundStartTime, // _roundStartTime

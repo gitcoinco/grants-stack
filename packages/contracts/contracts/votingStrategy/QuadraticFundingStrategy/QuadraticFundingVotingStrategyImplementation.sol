@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./IVotingStrategy.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "../IVotingStrategy.sol";
 
 /**
  * Allows voters to cast multiple weighted votes to grants with one transaction
@@ -12,9 +13,9 @@ import "./IVotingStrategy.sol";
  *
  * Emits event upon every transfer.
  */
-contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
+contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, ReentrancyGuard, Initializable {
 
-  using SafeERC20 for IERC20;
+  using SafeERC20Upgradeable for IERC20Upgradeable;
 
   // --- Event ---
 
@@ -29,6 +30,10 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
 
   // --- Core methods ---
 
+  function initialize() external initializer {
+    // empty initializer
+  }
+
   /**
    * @notice Invoked by RoundImplementation which allows
    * a voted to cast weighted votes to multiple grants during a round
@@ -36,21 +41,25 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
    * @dev
    * - more voters -> higher the gas
    * - this would be triggered when a voter casts their vote via grant explorer
+   * - can be invoked by the round
    *
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address
    */
   function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
+
+    require(roundAddress != address(0), "vote: voting contract not linked to a round");
+    require(msg.sender == roundAddress, "vote: can be invoked only by round contract");
+
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
-      /// TODO: ensure this can be called by round only
       /// @dev erc20 transfer to grant address
       // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
-      SafeERC20.safeTransferFrom(
-        IERC20(_token),
+      SafeERC20Upgradeable.safeTransferFrom(
+        IERC20Upgradeable(_token),
         voterAddress,
         _grantAddress,
         _amount
@@ -69,6 +78,3 @@ contract QuadraticFundingVotingStrategy is IVotingStrategy, ReentrancyGuard {
 
   }
 }
-
-/// Discussion
-/// - should contract should be pausable & ownable

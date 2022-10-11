@@ -4,11 +4,39 @@
 
 
 
-Defines the interface for voting algorithms on grants within a round. Any new voting algorithm would be expected to implement this interface. Every IVotingStrategy implementation would ideally be deployed once per chain and be invoked by the RoundImplementation contract
+Defines the abstract contract for voting algorithms on grants within a round. Any new voting algorithm would be expected to extend this abstract contract. Every IVotingStrategy implementation would ideally be deployed once per chain and be invoked by the RoundImplementation contract
 
 
 
 ## Methods
+
+### init
+
+```solidity
+function init() external nonpayable
+```
+
+Invoked by RoundImplementation on creation to set the round for which the voting contracts is to be used
+
+
+
+
+### roundAddress
+
+```solidity
+function roundAddress() external view returns (address)
+```
+
+Round address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined |
 
 ### vote
 
