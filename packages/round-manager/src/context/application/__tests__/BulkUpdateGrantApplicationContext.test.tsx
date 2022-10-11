@@ -19,7 +19,9 @@ jest.mock("../../../features/common/Auth", () => ({
 const mockWallet = {
   address: "0x0",
   signer: {
-    getChainId: () => {},
+    getChainId: () => {
+      /* do nothing.*/
+    },
   },
 };
 
@@ -31,7 +33,9 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
   describe("useBulkUpdateGrantApplication", () => {
     it("sets ipfs status to in progress when saving to ipfs", async () => {
       (updateApplicationList as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
 
@@ -47,7 +51,9 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
 
@@ -63,7 +69,9 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     it("sets contract update status to in progress when contract is being updated", async () => {
       (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
@@ -100,7 +108,9 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         transactionBlockNumber,
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
@@ -141,7 +151,9 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       beforeEach(() => {
         consoleErrorSpy = jest
           .spyOn(console, "error")
-          .mockImplementation(() => {});
+          .mockImplementation(() => {
+            /* do nothing.*/
+          });
       });
 
       afterEach(() => {
@@ -196,7 +208,11 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       it("if ipfs save fails, resets ipfs status when bulk update is retried", async () => {
         (updateApplicationList as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
-          .mockReturnValue(new Promise<any>(() => {}));
+          .mockReturnValue(
+            new Promise<any>(() => {
+              /* do nothing.*/
+            })
+          );
 
         renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
         fireEvent.click(screen.getByTestId("update-grant-application"));
@@ -216,7 +232,11 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
         (updateRoundContract as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
-          .mockReturnValue(new Promise<any>(() => {}));
+          .mockReturnValue(
+            new Promise<any>(() => {
+              /* do nothing.*/
+            })
+          );
 
         renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
         fireEvent.click(screen.getByTestId("update-grant-application"));
@@ -241,7 +261,11 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         });
         (waitForSubgraphSyncTo as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
-          .mockReturnValue(new Promise<any>(() => {}));
+          .mockReturnValue(
+            new Promise<any>(() => {
+              /* do nothing.*/
+            })
+          );
 
         renderWithProvider(<TestUseBulkUpdateGrantApplicationComponent />);
         fireEvent.click(screen.getByTestId("update-grant-application"));

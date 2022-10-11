@@ -53,7 +53,7 @@ export const getApplicationById = async (
 
     const _projectRegistryContract = projectRegistryContract(chainId);
     const projectRegistry = new Contract(
-      _projectRegistryContract.address!,
+      _projectRegistryContract.address,
       _projectRegistryContract.abi,
       signerOrProvider
     );

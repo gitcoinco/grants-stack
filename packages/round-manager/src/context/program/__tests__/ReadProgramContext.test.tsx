@@ -11,7 +11,9 @@ import { Program, ProgressStatus } from "../../../features/api/types";
 const mockWallet = {
   address: "0x0",
   signer: {
-    getChainId: () => {},
+    getChainId: () => {
+      /* do nothing.*/
+    },
   },
 };
 
@@ -88,7 +90,7 @@ describe("<ReadProgramProvider />", () => {
   describe("useProgramById()", () => {
     it("provides programs based on given program id", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id!;
+      const expectedProgramId: string = expectedProgram.id;
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
@@ -100,9 +102,11 @@ describe("<ReadProgramProvider />", () => {
 
     it("sets program status to in progress when fetch is in progress", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id!;
+      const expectedProgramId: string = expectedProgram.id;
       (getProgramById as jest.Mock).mockReturnValue(
-        new Promise<Program>(() => {})
+        new Promise<Program>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(
@@ -118,7 +122,7 @@ describe("<ReadProgramProvider />", () => {
 
     it("sets programs when fetch succeeds", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id!;
+      const expectedProgramId: string = expectedProgram.id;
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
@@ -136,7 +140,7 @@ describe("<ReadProgramProvider />", () => {
 
     it("sets fetch program error state when fetch fails", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id!;
+      const expectedProgramId: string = expectedProgram.id;
       (getProgramById as jest.Mock).mockRejectedValue(new Error(":("));
 
       renderWithProvider(

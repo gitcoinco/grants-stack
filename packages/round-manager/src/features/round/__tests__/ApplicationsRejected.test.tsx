@@ -40,7 +40,9 @@ jest.mock("../../common/Auth", () => ({
     chain: {},
     address: "0x0",
     signer: {
-      getChainId: () => {},
+      getChainId: () => {
+        /* do nothing */
+      },
     },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
@@ -255,7 +257,9 @@ describe("<ApplicationsRejected />", () => {
       it("starts the bulk update process to persist approved applications when confirm is selected", async () => {
         (updateApplicationList as jest.Mock).mockResolvedValue("");
         (updateRoundContract as jest.Mock).mockReturnValue(
-          new Promise(() => {})
+          new Promise(() => {
+            /* do nothing */
+          })
         );
 
         renderWithContext(

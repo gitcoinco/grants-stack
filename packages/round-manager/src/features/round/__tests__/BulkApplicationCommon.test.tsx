@@ -5,7 +5,7 @@ import { makeGrantApplicationData } from "../../../test-utils";
 describe("BulkApplicationCommon", function () {
   it("should render fallback logo if logo field is undefined on project metadata", function () {
     const applicationWithoutLogoImage = makeGrantApplicationData();
-    applicationWithoutLogoImage.project!.logoImg = undefined;
+    applicationWithoutLogoImage.project.logoImg = undefined;
 
     render(<ApplicationLogo application={applicationWithoutLogoImage} />);
     const img = screen.getByRole("img", {
@@ -17,7 +17,7 @@ describe("BulkApplicationCommon", function () {
 
   it("should render fallback banner if that field is undefined", function () {
     const applicationWithoutBannerImage = makeGrantApplicationData();
-    applicationWithoutBannerImage.project!.bannerImg = undefined;
+    applicationWithoutBannerImage.project.bannerImg = undefined;
 
     render(<ApplicationBanner application={applicationWithoutBannerImage} />);
     const img = screen.getByRole("img", {

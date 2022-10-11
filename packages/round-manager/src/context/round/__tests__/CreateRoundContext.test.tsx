@@ -12,7 +12,9 @@ import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 const mockWallet = {
   address: "0x0",
   signer: {
-    getChainId: () => {},
+    getChainId: () => {
+      /* do nothing.*/
+    },
   },
 };
 
@@ -29,7 +31,11 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 describe("<CreateRoundProvider />", () => {
   it("sets ipfs status to in progress when saving to ipfs", async () => {
-    (saveToIPFS as jest.Mock).mockReturnValue(new Promise<any>(() => {}));
+    (saveToIPFS as jest.Mock).mockReturnValue(
+      new Promise<any>(() => {
+        /* do nothing.*/
+      })
+    );
 
     renderWithProvider(<TestUseCreateRoundComponent />);
 
@@ -46,7 +52,9 @@ describe("<CreateRoundProvider />", () => {
   it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
     (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
     (deployRoundContract as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {})
+      new Promise<any>(() => {
+        /* do nothing.*/
+      })
     );
 
     renderWithProvider(<TestUseCreateRoundComponent />);
@@ -65,7 +73,9 @@ describe("<CreateRoundProvider />", () => {
     const ipfsHash = "bafabcdef";
     (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
     (deployRoundContract as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {})
+      new Promise<any>(() => {
+        /* do nothing.*/
+      })
     );
 
     renderWithProvider(<TestUseCreateRoundComponent />);
@@ -115,7 +125,9 @@ describe("<CreateRoundProvider />", () => {
       transactionBlockNumber,
     });
     (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {})
+      new Promise<any>(() => {
+        /* do nothing.*/
+      })
     );
 
     renderWithProvider(<TestUseCreateRoundComponent />);
@@ -156,9 +168,9 @@ describe("<CreateRoundProvider />", () => {
     let consoleErrorSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      consoleErrorSpy = jest
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
+        /* do nothing.*/
+      });
     });
 
     afterEach(() => {
@@ -217,7 +229,11 @@ describe("<CreateRoundProvider />", () => {
     it("if ipfs save fails, resets ipfs status when create round is retried", async () => {
       (saveToIPFS as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       fireEvent.click(screen.getByTestId("create-round"));
@@ -236,7 +252,11 @@ describe("<CreateRoundProvider />", () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
       (deployRoundContract as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       fireEvent.click(screen.getByTestId("create-round"));
@@ -260,7 +280,11 @@ describe("<CreateRoundProvider />", () => {
       });
       (waitForSubgraphSyncTo as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateRoundComponent />);
       fireEvent.click(screen.getByTestId("create-round"));

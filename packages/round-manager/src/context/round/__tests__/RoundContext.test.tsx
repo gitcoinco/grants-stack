@@ -16,7 +16,9 @@ jest.mock("../../../features/common/Auth", () => ({
 const mockWallet = {
   address: "0x0",
   signer: {
-    getChainId: () => {},
+    getChainId: () => {
+      /* do nothing.*/
+    },
   },
 };
 
@@ -51,8 +53,12 @@ describe("<RoundProvider />", () => {
 
     it("sets fetch round status to in progress when fetch is in progress", async () => {
       const expectedRound = makeRoundData();
-      const expectedProgramId: string = expectedRound.id!;
-      (listRounds as jest.Mock).mockReturnValue(new Promise<Round>(() => {}));
+      const expectedProgramId: string = expectedRound.id;
+      (listRounds as jest.Mock).mockReturnValue(
+        new Promise<Round>(() => {
+          /* do nothing.*/
+        })
+      );
 
       render(
         <RoundProvider>
@@ -94,7 +100,7 @@ describe("<RoundProvider />", () => {
         expectedRoundList.length
       );
       expectedRoundList.forEach((expectedRound) => {
-        expect(screen.getByText(expectedRound.id!)).toBeInTheDocument();
+        expect(screen.getByText(expectedRound.id)).toBeInTheDocument();
       });
     });
 
@@ -124,8 +130,12 @@ describe("<RoundProvider />", () => {
   describe("useRoundById()", () => {
     it("sets fetch round status to in progress when fetch is in progress", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id!;
-      (getRoundById as any).mockReturnValue(new Promise<Round>(() => {}));
+      const expectedRoundId: string = expectedRound.id;
+      (getRoundById as any).mockReturnValue(
+        new Promise<Round>(() => {
+          /* do nothing.*/
+        })
+      );
 
       render(
         <RoundProvider>
@@ -142,7 +152,7 @@ describe("<RoundProvider />", () => {
 
     it("sets round based on given round id when fetch succeeds", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id!;
+      const expectedRoundId: string = expectedRound.id;
       (getRoundById as any).mockResolvedValue(expectedRound);
 
       render(
@@ -162,7 +172,7 @@ describe("<RoundProvider />", () => {
 
     it("sets fetch round status to error when fetch fails", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id!;
+      const expectedRoundId: string = expectedRound.id;
       (getRoundById as any).mockRejectedValue(new Error(":("));
 
       render(

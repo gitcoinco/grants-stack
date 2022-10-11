@@ -35,7 +35,7 @@ import ProgressModal from "../common/ProgressModal";
 export default function ApplicationsReceived() {
   const { id } = useParams();
   const { chain } = useWallet();
-  const { applications, isLoading } = useApplicationByRoundId(id!);
+  const { applications, isLoading } = useApplicationByRoundId(id);
   const pendingApplications =
     applications?.filter(
       (a) => a.status == ApplicationStatus.PENDING.toString()
@@ -122,7 +122,7 @@ export default function ApplicationsReceived() {
       setOpenProgressModal(true);
       setOpenModal(false);
       await bulkUpdateGrantApplications({
-        roundId: id!,
+        roundId: id,
         applications: selected.filter(
           (application) => application.status !== "PENDING"
         ),
@@ -174,9 +174,9 @@ export default function ApplicationsReceived() {
               </CardHeader>
               <Link to={`/round/${id}/application/${application.id}`}>
                 <CardContent>
-                  <CardTitle>{application.project!.title}</CardTitle>
+                  <CardTitle>{application.project.title}</CardTitle>
                   <CardDescription>
-                    {application.project!.description}
+                    {application.project.description}
                   </CardDescription>
                 </CardContent>
               </Link>

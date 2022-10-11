@@ -114,7 +114,7 @@ export function RoundApplicationForm(props: {
 
       const roundMetadataWithProgramContractAddress = {
         ...data.roundMetadata,
-        programContractAddress: programId!,
+        programContractAddress: programId,
       };
 
       const applicationQuestions = {
@@ -126,8 +126,8 @@ export function RoundApplicationForm(props: {
         ...data,
         votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // QuadraticFundingVotingStrategy contract
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
-        ownedBy: programId!,
-        operatorWallets: props.initialData.program!.operatorWallets,
+        ownedBy: programId,
+        operatorWallets: props.initialData.program.operatorWallets,
       };
 
       await createRound({

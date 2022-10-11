@@ -28,10 +28,8 @@ export function ApplicationLogo(props: {
   application: GrantApplication;
   classNameOverride?: string;
 }) {
-  const applicationLogoImage = props.application.project!.logoImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
-        props.application.project!.logoImg
-      }`
+  const applicationLogoImage = props.application.project.logoImg
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.application.project.logoImg}`
     : DefaultLogoImage;
 
   return (
@@ -56,10 +54,8 @@ export function ApplicationBanner(props: {
   application: GrantApplication;
   classNameOverride?: string;
 }) {
-  const applicationBannerImage = props.application.project!.bannerImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
-        props.application.project!.bannerImg
-      }`
+  const applicationBannerImage = props.application.project.bannerImg
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.application.project.bannerImg}`
     : DefaultBannerImage;
 
   return (

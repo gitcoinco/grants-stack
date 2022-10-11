@@ -53,7 +53,7 @@ describe("listPrograms", () => {
 describe("getProgramById", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     const expectedProgram = makeProgramData();
-    const programId = expectedProgram.id!;
+    const programId = expectedProgram.id;
     (graphql_fetch as jest.Mock).mockResolvedValue({
       data: {
         programs: [

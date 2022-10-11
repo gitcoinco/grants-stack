@@ -94,7 +94,7 @@ describe("<ViewProgram />", () => {
       )
     );
 
-    await screen.findByText(stubProgram.metadata!.name);
+    await screen.findByText(stubProgram.metadata.name);
   });
 
   it("displays a list of operator wallets for a program", async () => {
@@ -179,7 +179,7 @@ describe("<ViewProgram />", () => {
       );
 
       expect(
-        screen.getByText(stubRound.roundMetadata!.name!)
+        screen.getByText(stubRound.roundMetadata.name)
       ).toBeInTheDocument();
     });
 

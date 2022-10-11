@@ -31,7 +31,11 @@ jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
     chain: {},
     address: "0x0",
-    signer: { getChainId: () => {} },
+    signer: {
+      getChainId: () => {
+        /* do nothing */
+      },
+    },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
 }));
