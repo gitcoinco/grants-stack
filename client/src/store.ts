@@ -8,7 +8,7 @@ import {
 } from "redux";
 import { createRouterMiddleware } from "@lagunovsky/redux-react-router";
 import thunkMiddleware from "redux-thunk";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { composeWithDevTools } from "@redux-devtools/extension";
 import { RootState, createRootReducer } from "./reducers";
 import history from "./history";
 
