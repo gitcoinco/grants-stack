@@ -1,9 +1,29 @@
 import { BaseModal } from "./BaseModal";
 
-export default function ErrorModal() {
+type ErrorModalProps = {
+  open: boolean;
+  onClose: (open: boolean) => void;
+  title?: string;
+  message?: string;
+};
+
+export default function ErrorModal({
+  open,
+  onClose,
+  title,
+  message,
+}: ErrorModalProps): JSX.Element {
   return (
-    <BaseModal isOpen hideCloseButton title="Error" onClose={() => {}}>
-      <div>Error Modal</div>
+    <BaseModal
+      isOpen={open}
+      hideCloseButton={false}
+      title={title}
+      onClose={() => onClose(false)}
+    >
+      <div>
+        <p>{title}</p>
+        <p>{message}</p>
+      </div>
     </BaseModal>
   );
 }
