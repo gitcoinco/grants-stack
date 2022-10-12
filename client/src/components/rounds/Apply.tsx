@@ -12,6 +12,7 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
+import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "./StatusModal";
@@ -193,6 +194,9 @@ function Apply() {
             error={props.applicationState.error}
           />
         )}
+      {props.applicationState?.error !== undefined &&
+        props.applicationError && <ErrorModal />}
+      <ErrorModal />
     </>
   );
 }
