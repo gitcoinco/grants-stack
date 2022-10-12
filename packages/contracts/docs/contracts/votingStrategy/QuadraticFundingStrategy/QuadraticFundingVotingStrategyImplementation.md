@@ -89,7 +89,7 @@ event Initialized(uint8 version)
 ### Voted
 
 ```solidity
-event Voted(contract IERC20 token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
+event Voted(contract IERC20Upgradeable token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
 ```
 
 Emitted when a new vote is sent
@@ -100,7 +100,7 @@ Emitted when a new vote is sent
 
 | Name | Type | Description |
 |---|---|---|
-| token  | contract IERC20 | undefined |
+| token  | contract IERC20Upgradeable | undefined |
 | amount  | uint256 | undefined |
 | voter `indexed` | address | undefined |
 | grantAddress `indexed` | address | undefined |

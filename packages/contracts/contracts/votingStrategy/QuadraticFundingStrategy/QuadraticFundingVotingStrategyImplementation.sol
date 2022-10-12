@@ -21,7 +21,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    IERC20  token,                    // voting token
+    IERC20Upgradeable  token,         // voting token
     uint256 amount,                   // voting amount
     address indexed voter,            // voter address
     address indexed grantAddress,     // grant address
@@ -64,7 +64,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
       /// @dev emit event for transfer
       emit Voted(
-        IERC20(_token),
+        IERC20Upgradeable(_token),
         _amount,
         voterAddress,
         _grantAddress,

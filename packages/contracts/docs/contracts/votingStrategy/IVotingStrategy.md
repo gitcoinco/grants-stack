@@ -4,7 +4,7 @@
 
 
 
-Defines the abstract contract for voting algorithms on grants within a round. Any new voting algorithm would be expected to extend this abstract contract. Every IVotingStrategy implementation would ideally be deployed once per chain and be invoked by the RoundImplementation contract
+Defines the abstract contract for voting algorithms on grants within a round. Any new voting algorithm would be expected to extend this abstract contract. Every IVotingStrategy contract would be unique to RoundImplementation and would be deployed before creating a round
 
 
 
