@@ -5,7 +5,10 @@ import { resetApplication } from "../../actions/roundApplication";
 import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { Status as ApplicationStatus } from "../../reducers/roundApplication";
+import {
+  ApplicationModalStatus,
+  Status as ApplicationStatus,
+} from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
@@ -30,10 +33,11 @@ function Apply() {
   const [statusModalOpen, toggleStatusModal] = useState(false);
   const [errorModalOpen, toggleErrorModal] = useState(true); // test
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
-  const [, setToggleRoundApplicationModal] = useLocalStorage(
-    "toggleRoundApplicationModal",
-    false
-  );
+  const [roundApplicationModal, setToggleRoundApplicationModal] =
+    useLocalStorage(
+      "toggleRoundApplicationModal",
+      ApplicationModalStatus.Undefined
+    );
 
   const { roundId, chainId } = params;
 
@@ -92,7 +96,10 @@ function Apply() {
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
-      setToggleRoundApplicationModal(true);
+
+      if (roundApplicationModal === ApplicationModalStatus.Undefined) {
+        setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
+      }
     }
 
     return () => {

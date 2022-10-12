@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { BaseModal } from "./BaseModal";
 import Button, { ButtonVariants } from "./Button";
 
@@ -8,6 +9,7 @@ interface CallbackModalProps {
   cancelText?: string;
   confirmText?: string;
   confirmHandler: () => void;
+  hideCloseButton?: boolean;
   children?: JSX.Element;
   headerImageUri?: string;
 }
@@ -21,31 +23,43 @@ export default function CallbackModal({
   title,
   children,
   headerImageUri,
+  hideCloseButton = false,
 }: CallbackModalProps) {
+  const handleModalClose = () => {
+    toggleModal(false);
+  };
+
   return (
     <BaseModal
       isOpen={modalOpen}
-      onClose={() => toggleModal(false)}
+      onClose={handleModalClose}
       title={title}
+      hideCloseButton={hideCloseButton}
     >
       <>
         <div className="flex">
-          <div className="mt-4">
+          <div className="text-center">
             {headerImageUri && <img src={headerImageUri} alt="header" />}
             <h5 className="font-semibold mb-2">{title}</h5>
             {children}
           </div>
         </div>
-        <div className="flex justify-center">
+        <div
+          className={classNames("w-full justify-center text-center", {
+            "grid grid-cols-2": cancelText,
+          })}
+        >
           {cancelText && (
             <Button
+              styles={["p-3", "justify-center"]}
               variant={ButtonVariants.outline}
-              onClick={() => toggleModal(false)}
+              onClick={handleModalClose}
             >
               {cancelText}
             </Button>
           )}
           <Button
+            styles={["p-3", "justify-center"]}
             onClick={() => confirmHandler()}
             variant={ButtonVariants.primary}
           >
