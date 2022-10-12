@@ -12,43 +12,43 @@ export default function ErrorModal({
   onClose,
 }: ErrorModalProps): JSX.Element {
   return (
-    <BaseModal
-      isOpen={open}
-      hideCloseButton={false}
-      onClose={() => onClose(false)}
-    >
+    <BaseModal isOpen={open} hideCloseButton onClose={() => onClose(false)}>
       <div>
         <Grid
-          h="40px"
-          templateRows="repeat(2, 1fr)"
+          h="195px"
+          templateRows="repeat(3, 1fr)"
           templateColumns="repeat(10, 1fr)"
         >
           <GridItem className="">
             <InformationCircleIcon
-              width={24}
-              height={24}
+              width={40}
+              height={40}
               className="text-gitcoin-pink-500 bg-gitcoin-pink-100 p-2 rounded-full"
             />
           </GridItem>
-          <GridItem className="ml-2 text-left text-[16px] font-[600]">
-            Error
+          <GridItem
+            colStart={2}
+            colSpan={8}
+            className="ml-4 text-left text-[16px] font-[600]"
+          >
+            <span>Error</span>
+            <p className="mt-10 text-[14px] font-[400]">
+              There has been a systems error during the deployment of your
+              project.
+            </p>
+          </GridItem>
+          <GridItem rowStart={3} colSpan={10}>
+            <div className="text-right">
+              <Button className="mr-2 px-4">Try Again</Button>
+              <Button
+                onClick={() => onClose(false)}
+                className="bg-gitcoin-violet-400 text-white ml-2 px-10"
+              >
+                Done
+              </Button>
+            </div>
           </GridItem>
         </Grid>
-        <div className="ml-12 m-2">
-          <p className="mb-10 text-[14px] font-[400]">
-            There has been a systems error while applyting to this round. Please
-            close this modal and try again.
-          </p>
-        </div>
-        <div className="m-2 text-right">
-          <Button className="mr-2 px-4">Try Again</Button>
-          <Button
-            onClick={() => onClose(false)}
-            className="bg-gitcoin-violet-400 text-white ml-2 px-10"
-          >
-            Done
-          </Button>
-        </div>
       </div>
     </BaseModal>
   );
