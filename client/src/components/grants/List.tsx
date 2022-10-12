@@ -6,6 +6,7 @@ import { checkRoundApplications } from "../../actions/roundApplication";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
+import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { newGrantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { ProjectEvent } from "../../types";
@@ -21,7 +22,7 @@ function ProjectsList() {
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
-    false
+    ApplicationModalStatus.Undefined
   );
 
   const [roundToApply] = useLocalStorage("roundToApply", null);
@@ -42,10 +43,11 @@ function ProjectsList() {
       const roundState = state.rounds[roundAddress];
       round = roundState ? roundState.round : undefined;
     }
+
     const showRoundModal =
-      toggleModal &&
       roundToApply &&
-      state.projects.projects.length === 1 &&
+      state.projects.projects.length < 10 &&
+      toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
     const showRoundAlert = alreadyApplied === false;
 
@@ -139,7 +141,7 @@ function ProjectsList() {
         confirmText="Apply to Grant Round"
         cancelText="Skip"
         confirmHandler={() => {
-          setToggleModal(false);
+          setToggleModal(ApplicationModalStatus.Closed);
           const chainId = roundToApply?.split(":")[0];
           const roundId = roundToApply?.split(":")[1];
           const path = roundPath(chainId, roundId);
@@ -147,7 +149,7 @@ function ProjectsList() {
           navigate(path);
         }}
         headerImageUri="/assets/round-apply.svg"
-        toggleModal={setToggleModal}
+        toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
         hideCloseButton
       >
         <>

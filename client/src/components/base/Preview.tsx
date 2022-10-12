@@ -13,7 +13,6 @@ import Button, { ButtonVariants } from "./Button";
 import Toast from "./Toast";
 import TXLoading from "./TXLoading";
 import { addAlert } from "../../actions/ui";
-import useLocalStorage from "../../hooks/useLocalStorage";
 
 export default function Preview({
   currentProjectId,
@@ -25,10 +24,6 @@ export default function Preview({
   const dispatch = useDispatch();
 
   const [submitted, setSubmitted] = useState(false);
-  const [, setToggleModal] = useLocalStorage(
-    "toggleRoundApplicationModal",
-    false
-  );
   const [show, showToast] = useState(false);
 
   const props = useSelector(
@@ -59,7 +54,6 @@ export default function Preview({
     if (props.status === Status.Completed) {
       setTimeout(() => {
         navigate(slugs.grants);
-        setToggleModal(true);
         localResetStatus();
         dispatch(
           addAlert(

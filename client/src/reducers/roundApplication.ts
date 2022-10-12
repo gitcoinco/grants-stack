@@ -18,6 +18,13 @@ export const enum Status {
   Error,
 }
 
+export const enum ApplicationModalStatus {
+  Undefined = 0,
+  NotApplied,
+  Applied,
+  Closed,
+}
+
 export type RoundApplicationError = {
   error: string;
   step: Status;
