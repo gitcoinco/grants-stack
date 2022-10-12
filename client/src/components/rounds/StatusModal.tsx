@@ -156,7 +156,7 @@ export default function StatusModal({
                 Please hold while we submit your grant round application.
               </p>
             )}
-
+            {/** todo: close the StatusModal and open the ErrorModal  */}
             {error !== undefined && (
               <p className="mb-4 bg-red-600 text-white py-2 px-2 rounded-md">
                 There has been a systems error while applyting to this round.

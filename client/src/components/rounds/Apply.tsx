@@ -128,6 +128,8 @@ function Apply() {
   }, [props.applicationState]);
 
   if (props.roundStatus === RoundStatus.Error) {
+    // ? not sure if this is the right way to handle this @gravityblast
+    // toggleErrorModal(true);
     return <div>Error loading round data: {props.roundError}</div>;
   }
 
