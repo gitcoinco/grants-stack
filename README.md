@@ -34,6 +34,12 @@ REACT_APP_LOCALCHAIN=true
 
 In `contracts` dir, uncomment the `GOERLI_URL` variable and replace `$ALCHEMY_KEY` with your Goerli alchemy key
 
+Start a local fork with:
+
+```
+cd contracts && yarn fork [--fork-block-number YOUR_BLOCK_NUMBER]
+```
+
 > NB: Your chainID for accessing rounds locally will become `31337` instead of `5`
 
 ## Directory Structure
