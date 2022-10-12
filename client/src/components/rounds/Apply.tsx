@@ -195,8 +195,20 @@ function Apply() {
           />
         )}
       {props.applicationState?.error !== undefined &&
-        props.applicationError && <ErrorModal />}
-      <ErrorModal />
+        props.applicationError !== undefined && (
+          <ErrorModal
+            open
+            onClose={() => {}}
+            title="An Error Occurred"
+            message={props.applicationError?.error}
+          />
+        )}
+      <ErrorModal
+        open
+        onClose={() => {}}
+        title="An Error Occurred"
+        message={props.applicationError?.error}
+      />
     </>
   );
 }
