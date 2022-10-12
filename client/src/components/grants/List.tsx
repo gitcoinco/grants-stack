@@ -43,7 +43,10 @@ function ProjectsList() {
       round = roundState ? roundState.round : undefined;
     }
     const showRoundModal =
-      toggleModal && roundToApply && alreadyApplied === false;
+      toggleModal &&
+      roundToApply &&
+      state.projects.projects.length === 1 &&
+      alreadyApplied === false;
     const showRoundAlert = alreadyApplied === false;
 
     return {
@@ -134,6 +137,7 @@ function ProjectsList() {
       <CallbackModal
         modalOpen={props.showRoundModal}
         confirmText="Apply to Grant Round"
+        cancelText="Skip"
         confirmHandler={() => {
           const chainId = roundToApply?.split(":")[0];
           const roundId = roundToApply?.split(":")[1];
@@ -141,14 +145,15 @@ function ProjectsList() {
 
           navigate(path);
         }}
-        headerImageUri="https://via.placeholder.com/300"
+        headerImageUri="/assets/round-apply.svg"
         toggleModal={setToggleModal}
+        hideCloseButton
       >
         <>
-          <h5 className="font-semibold mb-2 text-2xl">
+          <h5 className="font-medium mt-5 mb-2 text-lg">
             Time to get your project funded!
           </h5>
-          <p className="mb-4 ">
+          <p className="mb-6">
             Congratulations on creating your project on Grant Hub! Continue to
             apply for{" "}
             {props.round ? props.round!.roundMetadata.name : "the round"}.
