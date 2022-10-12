@@ -28,6 +28,7 @@ function Apply() {
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
+  const [errorModalOpen, toggleErrorModal] = useState(true); // test
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [, setToggleRoundApplicationModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -197,17 +198,13 @@ function Apply() {
       {props.applicationState?.error !== undefined &&
         props.applicationError !== undefined && (
           <ErrorModal
-            open
-            onClose={() => {}}
-            title="An Error Occurred"
-            message={props.applicationError?.error}
+            open={errorModalOpen}
+            onClose={() => toggleErrorModal(false)}
           />
         )}
       <ErrorModal
-        open
-        onClose={() => {}}
-        title="An Error Occurred"
-        message={props.applicationError?.error}
+        open={errorModalOpen}
+        onClose={() => toggleErrorModal(false)}
       />
     </>
   );
