@@ -139,6 +139,7 @@ function ProjectsList() {
         confirmText="Apply to Grant Round"
         cancelText="Skip"
         confirmHandler={() => {
+          setToggleModal(false);
           const chainId = roundToApply?.split(":")[0];
           const roundId = roundToApply?.split(":")[1];
           const path = roundPath(chainId, roundId);
