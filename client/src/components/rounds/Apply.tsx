@@ -95,8 +95,6 @@ function Apply() {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
 
-      console.log({ roundApplicationModal });
-
       if (roundApplicationModal === ApplicationModalStatus.Undefined) {
         setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
       }
