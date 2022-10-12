@@ -6,6 +6,7 @@ import { checkRoundApplications } from "../../actions/roundApplication";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
+import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { newGrantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { ProjectEvent } from "../../types";
@@ -21,7 +22,7 @@ function ProjectsList() {
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
-    false
+    ApplicationModalStatus.Undefined
   );
 
   const [roundToApply] = useLocalStorage("roundToApply", null);
@@ -42,8 +43,12 @@ function ProjectsList() {
       const roundState = state.rounds[roundAddress];
       round = roundState ? roundState.round : undefined;
     }
+
     const showRoundModal =
-      toggleModal && roundToApply && alreadyApplied === false;
+      roundToApply &&
+      state.projects.projects.length === 1 &&
+      toggleModal === ApplicationModalStatus.NotApplied &&
+      alreadyApplied === false;
     const showRoundAlert = alreadyApplied === false;
 
     return {
@@ -134,21 +139,24 @@ function ProjectsList() {
       <CallbackModal
         modalOpen={props.showRoundModal}
         confirmText="Apply to Grant Round"
+        cancelText="Skip"
         confirmHandler={() => {
+          setToggleModal(ApplicationModalStatus.Closed);
           const chainId = roundToApply?.split(":")[0];
           const roundId = roundToApply?.split(":")[1];
           const path = roundPath(chainId, roundId);
 
           navigate(path);
         }}
-        headerImageUri="https://via.placeholder.com/300"
-        toggleModal={setToggleModal}
+        headerImageUri="/assets/round-apply.svg"
+        toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
+        hideCloseButton
       >
         <>
-          <h5 className="font-semibold mb-2 text-2xl">
+          <h5 className="font-medium mt-5 mb-2 text-lg">
             Time to get your project funded!
           </h5>
-          <p className="mb-4 ">
+          <p className="mb-6">
             Congratulations on creating your project on Grant Hub! Continue to
             apply for{" "}
             {props.round ? props.round!.roundMetadata.name : "the round"}.

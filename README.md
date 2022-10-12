@@ -24,6 +24,24 @@ The Grant Hub team may optionally assign someone to review a pull request. If so
 
 When the review finishes, your pull request will be squashed and merged into the repository. If you have carefully organized your commits and believe they should be merged without squashing, please mention it in a comment.
 
+## For network forking
+
+In `client` dir, add the following to your `.env` file:
+
+```
+REACT_APP_LOCALCHAIN=true
+```
+
+In `contracts` dir, uncomment the `GOERLI_URL` variable and replace `$ALCHEMY_KEY` with your Goerli alchemy key
+
+Start a local fork with:
+
+```
+cd contracts && yarn fork [--fork-block-number YOUR_BLOCK_NUMBER]
+```
+
+> NB: Your chainID for accessing rounds locally will become `31337` instead of `5`
+
 ## Directory Structure
 
 ```
