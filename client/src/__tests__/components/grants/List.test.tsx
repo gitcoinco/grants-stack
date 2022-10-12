@@ -8,6 +8,7 @@ import { web3ChainIDLoaded } from "../../../actions/web3";
 import List from "../../../components/grants/List";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { RootState } from "../../../reducers";
+import { ApplicationModalStatus } from "../../../reducers/roundApplication";
 import setupStore from "../../../store";
 import { Metadata, ProjectEvent } from "../../../types";
 import {
@@ -187,8 +188,11 @@ describe("<List />", () => {
             .mockReturnValue([null]);
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([false]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
 
         test("should never be visible", async () => {
@@ -207,8 +211,11 @@ describe("<List />", () => {
             .mockReturnValue([`5:${roundAddress}`]);
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([false]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
 
         test("should be visible if user didn't apply yet", async () => {
@@ -280,12 +287,17 @@ describe("<List />", () => {
             .mockReturnValue([`5:${roundAddress}`]);
         });
 
-        test("should be visible with toggleRoundApplicationModal set to true and not applied yet", async () => {
+        test("should be visible with toggleRoundApplicationModal set to notApplied, with only one project created and not applied yet", async () => {
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
 
+          store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
+
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([true]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
           renderWrapped(<List />, store);
 
@@ -303,8 +315,11 @@ describe("<List />", () => {
           });
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([true]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
           renderWrapped(<List />, store);
 
