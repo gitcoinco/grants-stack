@@ -6,7 +6,7 @@ import {
   RoundContext,
   RoundState,
 } from "./context/RoundContext";
-import { ApplicationStatus, Project, Round } from "./features/api/types"
+import { ApplicationStatus, Project, ProjectMetadata, Round } from "./features/api/types"
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -44,26 +44,28 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   };
 };
 
-export const makeApprovedProjectData = (overrides?: Partial<Project>): Project => {
+export const makeApprovedProjectData = (overrides?: Partial<Project>, projectMetadataOverrides?: Partial<ProjectMetadata>): Project => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     projectRegistryId: faker.datatype.number().toString(),
     projectMetadata: {
       title: faker.company.name(),
-      bannerImg: generateIpfsCid()
+      description: faker.lorem.sentence(),
+      website: faker.internet.url(),
+      ...projectMetadataOverrides
     },
     status: ApplicationStatus.APPROVED,
     ...overrides
   };
 };
 
-function generateIpfsCid() {
+export function generateIpfsCid() {
   return faker.random.alpha({ count: 59, casing: "lower" });
 }
 
 export const renderWithContext = (
   ui: JSX.Element,
-  programStateOverrides: Partial<RoundState> = {},
+  roundStateOverrides: Partial<RoundState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
@@ -71,7 +73,7 @@ export const renderWithContext = (
     <MemoryRouter>
       <RoundContext.Provider
         value={{
-          state: { ...initialRoundState, ...programStateOverrides },
+          state: { ...initialRoundState, ...roundStateOverrides },
           dispatch,
         }}
       >
