@@ -46,7 +46,7 @@ function ProjectsList() {
 
     const showRoundModal =
       roundToApply &&
-      state.projects.projects.length < 1 &&
+      state.projects.projects.length === 1 &&
       toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
     const showRoundAlert = alreadyApplied === false;
