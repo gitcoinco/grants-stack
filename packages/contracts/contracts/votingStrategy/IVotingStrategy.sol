@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 /**
  * @notice Defines the abstract contract for voting algorithms on grants
  * within a round. Any new voting algorithm would be expected to
  * extend this abstract contract.
- * Every IVotingStrategy implementation would ideally be deployed once per chain
- * and be invoked by the RoundImplementation contract
- *
+ * Every IVotingStrategy contract would be unique to RoundImplementation
+ * and would be deployed before creating a round
  */
 abstract contract IVotingStrategy {
 
@@ -17,6 +14,16 @@ abstract contract IVotingStrategy {
 
   /// @notice Round address
   address public roundAddress;
+
+
+  // --- Modifier ---
+
+  /// @notice modifier to check if sender is round contract.
+  modifier isRoundContract() {
+    require(roundAddress != address(0), "error: voting contract not linked to a round");
+    require(msg.sender == roundAddress, "error: can be invoked only by round contract");
+    _;
+  }
 
 
   // --- Core methods ---

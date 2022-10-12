@@ -21,7 +21,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    IERC20  token,                    // voting token
+    IERC20Upgradeable  token,         // voting token
     uint256 amount,                   // voting amount
     address indexed voter,            // voter address
     address indexed grantAddress,     // grant address
@@ -46,10 +46,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address
    */
-  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant {
-
-    require(roundAddress != address(0), "vote: voting contract not linked to a round");
-    require(msg.sender == roundAddress, "vote: can be invoked only by round contract");
+  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant isRoundContract {
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
@@ -67,7 +64,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
       /// @dev emit event for transfer
       emit Voted(
-        IERC20(_token),
+        IERC20Upgradeable(_token),
         _amount,
         voterAddress,
         _grantAddress,
