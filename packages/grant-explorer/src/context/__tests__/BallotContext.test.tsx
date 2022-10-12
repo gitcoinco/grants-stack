@@ -8,6 +8,10 @@ import { initialRoundState, RoundContext } from "../RoundContext";
 jest.mock("../../features/api/LocalStorage");
 
 describe("<BallotProvider>", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("when ballot is empty", () => {
     it("should not have any projects in the shortlist", () => {
       render(
