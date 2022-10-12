@@ -280,8 +280,10 @@ describe("<List />", () => {
             .mockReturnValue([`5:${roundAddress}`]);
         });
 
-        test("should be visible with toggleRoundApplicationModal set to true and not applied yet", async () => {
+        test("should be visible with toggleRoundApplicationModal set to true, with only one project created and not applied yet", async () => {
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
+
+          store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
 
           when(useLocalStorage as jest.Mock)
             .calledWith("toggleRoundApplicationModal", false)
