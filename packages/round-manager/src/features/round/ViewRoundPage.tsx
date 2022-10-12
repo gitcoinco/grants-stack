@@ -34,7 +34,7 @@ export default function ViewRoundPage() {
   const isRoundsFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
-  const { applications } = useApplicationByRoundId(id);
+  const { applications } = useApplicationByRoundId(id ?? '');
 
   const pendingApplications =
     applications?.filter(

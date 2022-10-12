@@ -29,6 +29,7 @@ import {
   GrantApplication,
   ProgressStatus,
   ProjectCredentials,
+  MetadataPointer,
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Lit } from "../api/lit";
@@ -53,6 +54,8 @@ export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 const verifier = new PassportVerifier();
+
+const emptyMetadataPointer: MetadataPointer = {protocol: 1  , pointer: ''};
 
 export default function ViewApplicationPage() {
   const navigate = useNavigate();
@@ -122,7 +125,7 @@ export default function ViewApplicationPage() {
       !isLoading && application?.project?.owners;
     if (applicationHasLoadedWithProjectOwners) {
       const credentials: ProjectCredentials =
-        application?.project.credentials ?? {};
+        application?.project?.credentials ?? {};
 
       if (!credentials) {
         return;
@@ -160,10 +163,10 @@ export default function ViewApplicationPage() {
         applications: [
           {
             status: reviewDecision,
-            id: application.id,
+            id: application?.id ?? '',
             round: roundId,
-            recipient: application.recipient,
-            projectsMetaPtr: application.projectsMetaPtr,
+            recipient: application?.recipient ?? '',
+            projectsMetaPtr: application?.projectsMetaPtr ?? emptyMetadataPointer,
           },
         ],
       });
@@ -398,7 +401,7 @@ export default function ViewApplicationPage() {
 
             <main>
               <h1 className="text-2xl mt-6">
-                {application?.project.title || "..."}
+                {application?.project?.title || "..."}
               </h1>
               <div className="sm:flex sm:justify-between my-6">
                 <div className="sm:basis-3/4 sm:mr-3">
@@ -436,7 +439,7 @@ export default function ViewApplicationPage() {
 
                   <h2 className="text-xs mb-2">Description</h2>
                   <p className="text-base">
-                    {application?.project.description}
+                    {application?.project?.description}
                   </p>
 
                   <hr className="my-6" />
@@ -477,12 +480,12 @@ function vcProviderMatchesProject(
     vcProviderMatchesProject =
       verifiableCredential.credentialSubject.provider
         ?.split("#")[1]
-        .toLowerCase() === application.project.projectTwitter?.toLowerCase();
+        .toLowerCase() === application?.project?.projectTwitter?.toLowerCase();
   } else if (provider === "github") {
     vcProviderMatchesProject =
       verifiableCredential.credentialSubject.provider
         ?.split("#")[1]
-        .toLowerCase() === application.project.projectGithub?.toLowerCase();
+        .toLowerCase() === application?.project?.projectGithub?.toLowerCase();
   }
   return vcProviderMatchesProject;
 }

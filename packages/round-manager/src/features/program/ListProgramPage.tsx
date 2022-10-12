@@ -89,7 +89,7 @@ function ListPrograms() {
             <RefreshIcon className="h-6 w-6 text-grey-500" aria-hidden="true" />
           </div>
         }
-        title={program.metadata.name}
+        title={program.metadata?.name ?? ''}
         description={`${program.operatorWallets.length} Round Operators`}
         footerContent={
           <p className="text-violet-400" data-testid="program-card">
