@@ -8,6 +8,7 @@ import {
 } from "redux";
 import { createRouterMiddleware } from "@lagunovsky/redux-react-router";
 import thunkMiddleware from "redux-thunk";
+import { composeWithDevTools } from "redux-devtools-extension";
 import { RootState, createRootReducer } from "./reducers";
 import history from "./history";
 
@@ -22,6 +23,7 @@ const logger: Middleware =
   };
 
 const routerMiddleware = createRouterMiddleware(history);
+const composeEnhancers = composeWithDevTools({});
 
 let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
 
@@ -37,7 +39,7 @@ const setupStore = (preloadedState?: PreloadedState<RootState>) =>
   createStore(
     createRootReducer(),
     preloadedState,
-    applyMiddleware(...middlewares)
+    composeEnhancers(applyMiddleware(...middlewares))
   );
 
 export default setupStore;
