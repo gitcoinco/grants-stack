@@ -31,7 +31,7 @@ function Apply() {
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
-  const [errorModalOpen, toggleErrorModal] = useState(true); // test
+  const [errorModalOpen, toggleErrorModal] = useState(false);
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [roundApplicationModal, setToggleRoundApplicationModal] =
     useLocalStorage(
@@ -127,6 +127,16 @@ function Apply() {
     };
   }, [props.applicationState]);
 
+  useEffect(() => {
+    if (
+      props.applicationState?.status === ApplicationStatus.Error ||
+      props.applicationError
+    ) {
+      toggleErrorModal(true);
+      toggleStatusModal(false);
+    }
+  }, [props.applicationStatus, props.applicationError]);
+
   if (props.roundStatus === RoundStatus.Error) {
     // ? not sure if this is the right way to handle this @gravityblast
     // toggleErrorModal(true);
@@ -211,10 +221,6 @@ function Apply() {
             onClose={() => toggleErrorModal(false)}
           />
         )}
-      <ErrorModal
-        open={errorModalOpen}
-        onClose={() => toggleErrorModal(false)}
-      />
     </>
   );
 }
