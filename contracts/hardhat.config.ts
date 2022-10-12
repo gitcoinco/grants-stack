@@ -27,6 +27,11 @@ const config: HardhatUserConfig = {
   solidity: "0.8.4",
 
   networks: {
+    hardhat: {
+      forking: {
+        url: process.env.GOERLI_URL || "",
+      },
+    },
     goerli: {
       url: process.env.GOERLI_URL || "",
       accounts: {
