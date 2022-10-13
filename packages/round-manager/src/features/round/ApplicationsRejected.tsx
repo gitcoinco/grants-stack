@@ -34,6 +34,7 @@ export default function ApplicationsRejected() {
   const { id } = useParams();
   const { chain } = useWallet();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const rejectedApplications =
     applications?.filter(
@@ -122,6 +123,7 @@ export default function ApplicationsRejected() {
       setOpenProgressModal(true);
       setOpenConfirmationModal(false);
       await bulkUpdateGrantApplications({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         roundId: id!,
         applications: selected.filter(
           (application) => application.status === "APPROVED"
@@ -172,9 +174,9 @@ export default function ApplicationsRejected() {
                 to={`/round/${id}/application/${application.id}`}
               >
                 <CardContent>
-                  <CardTitle>{application.project!.title}</CardTitle>
+                  <CardTitle>{application.project?.title}</CardTitle>
                   <CardDescription>
-                    {application.project!.description}
+                    {application.project?.description}
                   </CardDescription>
                 </CardContent>
               </Link>

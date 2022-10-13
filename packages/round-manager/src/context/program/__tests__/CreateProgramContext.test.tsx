@@ -12,7 +12,9 @@ import { faker } from "@faker-js/faker";
 const mockWallet = {
   address: "0x0",
   signer: {
-    getChainId: () => {},
+    getChainId: () => {
+      /* do nothing.*/
+    },
   },
 };
 
@@ -34,7 +36,11 @@ describe("<CreateProgramProvider />", () => {
 
   describe("useCreateProgram()", () => {
     it("sets ipfs status to in progress when saving to ipfs", async () => {
-      (saveToIPFS as jest.Mock).mockReturnValue(new Promise<any>(() => {}));
+      (saveToIPFS as jest.Mock).mockReturnValue(
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
+      );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
 
@@ -51,7 +57,9 @@ describe("<CreateProgramProvider />", () => {
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
       (deployProgramContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -70,7 +78,9 @@ describe("<CreateProgramProvider />", () => {
       const ipfsHash = "bafabcdef";
       (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
       (deployProgramContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -114,7 +124,9 @@ describe("<CreateProgramProvider />", () => {
         transactionBlockNumber,
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {})
+        new Promise<any>(() => {
+          /* do nothing.*/
+        })
       );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
@@ -156,9 +168,9 @@ describe("<CreateProgramProvider />", () => {
     let consoleErrorSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      consoleErrorSpy = jest
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
+        /* do nothing.*/
+      });
     });
 
     afterEach(() => {
@@ -217,7 +229,11 @@ describe("<CreateProgramProvider />", () => {
     it("if ipfs save fails, resets ipfs status when create round is retried", async () => {
       (saveToIPFS as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
       fireEvent.click(screen.getByTestId("create-program"));
@@ -239,7 +255,11 @@ describe("<CreateProgramProvider />", () => {
       });
       (waitForSubgraphSyncTo as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
       fireEvent.click(screen.getByTestId("create-program"));
@@ -260,7 +280,11 @@ describe("<CreateProgramProvider />", () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
       (deployProgramContract as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
-        .mockReturnValue(new Promise<any>(() => {}));
+        .mockReturnValue(
+          new Promise<any>(() => {
+            /* do nothing.*/
+          })
+        );
 
       renderWithProvider(<TestUseCreateProgramComponent />);
       fireEvent.click(screen.getByTestId("create-program"));

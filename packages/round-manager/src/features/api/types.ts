@@ -72,7 +72,7 @@ export interface Program {
   /**
    * Metadata of the Grant Program to be stored off-chain
    */
-  metadata?: {
+  metadata: {
     name: string;
   };
   /**
@@ -102,7 +102,7 @@ export interface Round {
   /**
    * Metadata of the Round to be stored off-chain
    */
-  roundMetadata?: {
+  roundMetadata: {
     name: string;
     programContractAddress: string;
   };

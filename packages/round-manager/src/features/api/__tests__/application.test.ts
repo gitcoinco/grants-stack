@@ -84,7 +84,9 @@ describe("getApplicationById", () => {
   it("throws an error when grant application doesn't exist", async () => {
     const consoleErrorSpy = jest
       .spyOn(console, "error")
-      .mockImplementation(() => {});
+      .mockImplementation(() => {
+        /* do nothing */
+      });
     (graphql_fetch as jest.Mock).mockResolvedValue({
       data: {
         roundProjects: [],

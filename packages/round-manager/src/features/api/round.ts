@@ -186,6 +186,7 @@ export async function deployRoundContract(
 
     const _roundFactoryContract = roundFactoryContract(chainId);
     const roundFactory = new ethers.Contract(
+       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _roundFactoryContract.address!,
       _roundFactoryContract.abi,
       signerOrProvider
@@ -195,7 +196,7 @@ export async function deployRoundContract(
       round.applicationsEndTime = round.roundStartTime;
     }
 
-    round.operatorWallets = round.operatorWallets!.filter((e) => e !== "");
+    round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
     // encode input parameters
     const params = [
@@ -207,7 +208,7 @@ export async function deployRoundContract(
       round.token,
       round.store,
       round.applicationStore,
-      round.operatorWallets.slice(0, 1),
+      round.operatorWallets?.slice(0, 1),
       round.operatorWallets,
     ];
 

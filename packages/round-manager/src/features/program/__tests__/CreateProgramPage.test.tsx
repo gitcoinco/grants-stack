@@ -26,9 +26,13 @@ describe("<CreateProgramPage />", () => {
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({ chain: {} });
-    (saveToIPFS as jest.Mock).mockImplementation(() => {});
+    (saveToIPFS as jest.Mock).mockImplementation(() => {
+      /* do nothing */
+    });
 
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
+      /* do nothing */
+    });
   });
 
   afterEach(() => {

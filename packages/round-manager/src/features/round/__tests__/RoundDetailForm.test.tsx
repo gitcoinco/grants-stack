@@ -35,7 +35,7 @@ describe("<RoundDetailForm />", () => {
     await act(async () => {
       fireEvent.click(submitButton);
     });
-    const error = await input.parentElement!.querySelector("p");
+    const error = await input.parentElement.querySelector("p");
     expect(error).toBeInTheDocument();
     expect(error).toHaveTextContent("This field is required.");
   });
@@ -54,7 +54,7 @@ describe("<RoundDetailForm />", () => {
       });
       fireEvent.click(submitButton);
     });
-    const error = await input.parentElement!.querySelector("p");
+    const error = await input.parentElement.querySelector("p");
     expect(error).toBeInTheDocument();
     expect(error).toHaveTextContent(
       "Round name must be at least 8 characters."

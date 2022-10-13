@@ -31,7 +31,7 @@ describe("<ApplicationProvider />", () => {
   describe("useApplicationById()", () => {
     it("provides application based on given application id", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedApplicationId: string = expectedApplication.id!;
+      const expectedApplicationId: string = expectedApplication.id;
       (getApplicationById as any).mockResolvedValue(expectedApplication);
 
       render(
@@ -49,9 +49,11 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading to true when getApplicationById call is in progress", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedApplicationId: string = expectedApplication.id!;
+      const expectedApplicationId: string = expectedApplication.id;
       (getApplicationById as any).mockReturnValue(
-        new Promise<GrantApplication>(() => {})
+        new Promise<GrantApplication>(() => {
+          /* do nothing.*/
+        })
       );
 
       render(
@@ -69,7 +71,7 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading back to false and when getApplicationById call succeeds", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedApplicationId: string = expectedApplication.id!;
+      const expectedApplicationId: string = expectedApplication.id;
       (getApplicationById as any).mockResolvedValue(expectedApplication);
 
       render(
@@ -89,7 +91,7 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading back to false when getApplicationById call fails", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedApplicationId: string = expectedApplication.id!;
+      const expectedApplicationId: string = expectedApplication.id;
       (getApplicationById as any).mockRejectedValue(new Error(":("));
 
       render(
@@ -113,7 +115,7 @@ describe("<ApplicationProvider />", () => {
   describe("useApplicationByRoundId()", () => {
     it("provides applications based on given round id", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedRoundId: string = expectedApplication.round!;
+      const expectedRoundId: string = expectedApplication.round;
 
       (getApplicationsByRoundId as any).mockResolvedValue([
         expectedApplication,
@@ -132,10 +134,12 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading to true when getApplicationsByRoundId call is in progress", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedRoundId: string = expectedApplication.round!;
+      const expectedRoundId: string = expectedApplication.round;
 
       (getApplicationsByRoundId as any).mockReturnValue(
-        new Promise<GrantApplication>(() => {})
+        new Promise<GrantApplication>(() => {
+          /* do nothing.*/
+        })
       );
 
       render(
@@ -153,7 +157,7 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading back to false and when getApplicationsByRoundId call succeeds", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedRoundId: string = expectedApplication.round!;
+      const expectedRoundId: string = expectedApplication.round;
 
       (getApplicationsByRoundId as any).mockResolvedValue([
         expectedApplication,
@@ -176,7 +180,7 @@ describe("<ApplicationProvider />", () => {
 
     it("sets isLoading back to false when getApplicationsByRoundId call fails", async () => {
       const expectedApplication = makeGrantApplicationData();
-      const expectedRoundId: string = expectedApplication.round!;
+      const expectedRoundId: string = expectedApplication.round;
 
       (getApplicationsByRoundId as any).mockRejectedValue(new Error(":("));
 
@@ -203,7 +207,7 @@ const TestingUseApplicationByIdComponent = (props: {
   expectedApplicationId: string;
 }) => {
   const { application, isLoading, getApplicationByIdError } =
-    useApplicationById(props.expectedApplicationId!);
+    useApplicationById(props.expectedApplicationId);
 
   return (
     <>
