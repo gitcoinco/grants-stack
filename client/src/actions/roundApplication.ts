@@ -312,7 +312,7 @@ export const checkRoundApplications =
   };
 
 export const getRoundProjectsApplied =
-  (projectID: number) => async (dispatch: Dispatch) => {
+  (projectID: number, chainId: ChainId) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
     });
@@ -326,7 +326,7 @@ export const getRoundProjectsApplied =
         }
       }
       `,
-      ChainId.GOERLI_CHAIN_ID,
+      chainId,
       { id: projectID }
     );
 
