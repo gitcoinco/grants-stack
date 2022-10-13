@@ -3,7 +3,7 @@ import {
   makeRoundData,
   renderWithContext,
 } from "../../../test-utils";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
 import { faker } from "@faker-js/faker";
 
@@ -80,7 +80,9 @@ describe("<ViewProjectDetails/>", () => {
     });
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    expect(await screen.findByText(`@${expectedProjectTwitter}`)).toHaveTextContent(expectedProjectTwitter);
+    expect(
+      await screen.findByText(`@${expectedProjectTwitter}`)
+    ).toHaveTextContent(expectedProjectTwitter);
   });
 
   it("shows project banner", async () => {
@@ -121,5 +123,28 @@ describe("<ViewProjectDetails/>", () => {
     }) as HTMLImageElement;
 
     expect(logoImg.src).toContain(expectedProjectLogoImg);
+  });
+});
+
+describe("voting ballot", () => {
+  const expectedProject = makeApprovedProjectData({ grantApplicationId });
+  const roundWithProjects = makeRoundData({
+    id: roundId,
+    approvedProjects: [expectedProject],
+  });
+
+  it("shows an add-to-ballot button", () => {
+    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+
+    expect(screen.getByTestId("add-to-ballot")).toBeInTheDocument();
+  });
+
+  it("shows a remove-from-ballot button replacing add-to-ballot when add-to-ballot is clicked", () => {
+    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    const addToBallot = screen.getByTestId("add-to-ballot");
+    fireEvent.click(addToBallot);
+
+    expect(screen.getByTestId("remove-from-ballot")).toBeInTheDocument();
+    expect(screen.queryByTestId("add-to-ballot")).not.toBeInTheDocument();
   });
 });

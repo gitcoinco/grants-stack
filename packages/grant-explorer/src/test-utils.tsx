@@ -6,7 +6,13 @@ import {
   RoundContext,
   RoundState,
 } from "./context/RoundContext";
-import { ApplicationStatus, Project, ProjectMetadata, Round } from "./features/api/types"
+import {
+  ApplicationStatus,
+  Project,
+  ProjectMetadata,
+  Round,
+} from "./features/api/types";
+import { BallotProvider } from "./context/BallotContext";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -44,7 +50,10 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   };
 };
 
-export const makeApprovedProjectData = (overrides?: Partial<Project>, projectMetadataOverrides?: Partial<ProjectMetadata>): Project => {
+export const makeApprovedProjectData = (
+  overrides?: Partial<Project>,
+  projectMetadataOverrides?: Partial<ProjectMetadata>
+): Project => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     projectRegistryId: faker.datatype.number().toString(),
@@ -52,10 +61,10 @@ export const makeApprovedProjectData = (overrides?: Partial<Project>, projectMet
       title: faker.company.name(),
       description: faker.lorem.sentence(),
       website: faker.internet.url(),
-      ...projectMetadataOverrides
+      ...projectMetadataOverrides,
     },
     status: ApplicationStatus.APPROVED,
-    ...overrides
+    ...overrides,
   };
 };
 
@@ -77,7 +86,7 @@ export const renderWithContext = (
           dispatch,
         }}
       >
-        {ui}
+        <BallotProvider>{ui}</BallotProvider>
       </RoundContext.Provider>
     </MemoryRouter>
   );
