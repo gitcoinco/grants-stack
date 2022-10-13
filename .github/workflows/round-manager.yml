@@ -14,16 +14,22 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: packages/round-manager/yarn.lock
+
       - name: Install Dependencies
         run: |
           yarn install
           cd packages/round-manager
-          yarn install
+          yarn install --frozen-lockfile
 
       - name: Build Round Manager
         run: |
           yarn rm-build
-          
+
       - name: Test Round Manager
         run: |
           yarn rm-test
