@@ -9,7 +9,6 @@ import { Status } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { newGrantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
-import { ProjectEvent } from "../../types";
 import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
@@ -46,7 +45,7 @@ function ProjectsList() {
 
     const showRoundModal =
       roundToApply &&
-      state.projects.projects.length === 1 &&
+      state.projects.ids.length === 1 &&
       toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
     const showRoundAlert = alreadyApplied === false;
@@ -54,7 +53,7 @@ function ProjectsList() {
     return {
       status: state.projects.status,
       loading: state.projects.status === Status.Loading,
-      projects: state.projects.projects,
+      projectIDs: state.projects.ids,
       chainID: state.web3.chainID,
       existingApplication,
       showRoundModal,
@@ -72,9 +71,8 @@ function ProjectsList() {
   }, [dispatch, props.status]);
 
   useEffect(() => {
-    if (roundToApply && props.projects.length > 0) {
+    if (roundToApply && props.projectIDs.length > 0) {
       const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-      const ids = props.projects.map((p) => p.id);
 
       // not loaded yet
       if (
@@ -82,10 +80,16 @@ function ProjectsList() {
         chainID !== undefined &&
         roundAddress !== undefined
       ) {
-        dispatch(checkRoundApplications(Number(chainID), roundAddress, ids));
+        dispatch(
+          checkRoundApplications(
+            Number(chainID),
+            roundAddress,
+            props.projectIDs
+          )
+        );
       }
     }
-  }, [props.projects, props.existingApplication]);
+  }, [props.projectIDs, props.existingApplication]);
 
   if (props.loading) {
     return <>loading...</>;
@@ -110,10 +114,10 @@ function ProjectsList() {
         round={props.round}
       />
       <div className="grow">
-        {props.projects.length ? (
+        {props.projectIDs.length ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {props.projects.map((event: ProjectEvent) => (
-              <Card projectId={event.id} key={event.id} />
+            {props.projectIDs.map((id: number) => (
+              <Card projectId={id} key={id} />
             ))}
           </div>
         ) : (

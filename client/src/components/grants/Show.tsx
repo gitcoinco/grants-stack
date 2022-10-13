@@ -8,12 +8,18 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
-import { ProjectEvent } from "../../types";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
+
+const formattedDate = (timestamp: number | undefined) =>
+  new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
 function Project() {
   const [updatedAt, setUpdatedAt] = useState("");
@@ -38,13 +44,14 @@ function Project() {
       ImgTypes.logoImg,
       grantMetadata?.metadata
     );
+
     return {
       id: params.id,
       loading,
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
-      projects: state.projects.projects,
+      projectEvents: state.projects.events[params.id!],
     };
   }, shallowEqual);
 
@@ -58,49 +65,34 @@ function Project() {
   }, [dispatch, params.id, props.currentProject]);
 
   useEffect(() => {
-    async function fetchTimeStamp(projects: ProjectEvent[], projectId: string) {
-      if (global) {
-        const currentProject = projects.find(
-          (project) => project.id === Number(projectId)
-        );
-        if (currentProject) {
-          const updatedBlockData = await global.web3Provider?.getBlock(
-            currentProject.block
-          );
+    let unloaded = false;
 
-          const createdBlockData = await global.web3Provider?.getBlock(
-            currentProject.createdAtBlock!
-          );
-
-          const formattedUpdatedAtDate = new Date(
-            (updatedBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString("en", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-
-          const formattedCreatedAtDate = new Date(
-            (createdBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString("en", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-
-          setUpdatedAt(formattedUpdatedAtDate);
-          setCreatedAt(formattedCreatedAtDate);
-        }
+    if (props.projectEvents !== undefined) {
+      const { createdAtBlock, updatedAtBlock } = props.projectEvents;
+      if (createdAtBlock !== undefined) {
+        global.web3Provider?.getBlock(createdAtBlock).then((data) => {
+          if (!unloaded) {
+            setCreatedAt(formattedDate(data?.timestamp));
+          }
+        });
       }
-    }
 
-    if (props.currentProject !== undefined && props.id !== undefined) {
-      fetchTimeStamp(props.projects, props.id);
+      if (updatedAtBlock !== undefined) {
+        global.web3Provider?.getBlock(updatedAtBlock).then((data) => {
+          if (!unloaded) {
+            setUpdatedAt(formattedDate(data?.timestamp));
+          }
+        });
+      }
     } else {
       // If user reloads Show projects will not exist
       dispatch(loadProjects(true));
     }
-  }, [props.id, props.currentProject, global, dispatch]);
+
+    return () => {
+      unloaded = true;
+    };
+  }, [props.id, props.projectEvents, props.currentProject, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
