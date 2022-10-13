@@ -8,7 +8,7 @@ export default function AccessDenied() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`)
 
   return (
-    <>
+    <div className="mx-20 h-screen px-4 py-7">
       <Navbar />
       <main className="h-screen">
         <div className="flex pt-8">
@@ -23,6 +23,6 @@ export default function AccessDenied() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }

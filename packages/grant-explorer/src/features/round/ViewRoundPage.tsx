@@ -35,10 +35,10 @@ export default function ViewRound() {
       {!roundExists && <NotFoundPage />}
       {roundExists && (
         <>
+          <div className="mx-20 px-4 py-7 h-screen">
           <Navbar />
-          <div className="container mx-auto px-4 py-16 h-screen">
             <main>
-              <p>
+              <p className="mt-6">
                 <span>Round Name: </span>
                 <span>{round?.roundMetadata!.name}</span>
               </p>
