@@ -8,6 +8,7 @@ import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
+import { ChainId, graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { metadataToProject } from "../utils/utils";
@@ -55,13 +56,33 @@ interface RoundApplicationResetAction {
   roundAddress: string;
 }
 
+export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
+interface ProjectApplicationsLoadingAction {
+  type: typeof PROJECT_APPLICATIONS_LOADING;
+}
+
+export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
+interface ProjectApplicationsNotFoundAction {
+  type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
+}
+
+export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
+interface ProjectApplicationsLoadedAction {
+  type: typeof PROJECT_APPLICATIONS_LOADED;
+  // todo: set the right type
+  projects: any;
+}
+
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
   | RoundApplicationLoadedAction
   | RoundApplicationFoundAction
   | RoundApplicationNotFoundAction
-  | RoundApplicationResetAction;
+  | RoundApplicationResetAction
+  | ProjectApplicationsLoadingAction
+  | ProjectApplicationsNotFoundAction
+  | ProjectApplicationsLoadedAction;
 
 const applicationError = (
   roundAddress: string,
@@ -288,4 +309,29 @@ export const checkRoundApplications =
         });
       }
     }
+  };
+
+export const getRoundProjectsApplied =
+  (projectID: number) => async (dispatch: Dispatch) => {
+    dispatch({
+      type: PROJECT_APPLICATIONS_LOADING,
+    });
+
+    const projects = await graphqlFetch(
+      `query roundProjects($id: String) {
+        project
+        status
+        round {
+          id
+        }
+      }
+      `,
+      ChainId.GOERLI_CHAIN_ID,
+      { id: projectID }
+    );
+
+    dispatch({
+      type: PROJECT_APPLICATIONS_LOADED,
+      projects,
+    });
   };

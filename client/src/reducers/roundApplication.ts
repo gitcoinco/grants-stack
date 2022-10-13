@@ -5,6 +5,9 @@ import {
   ROUND_APPLICATION_FOUND,
   ROUND_APPLICATION_NOT_FOUND,
   ROUND_APPLICATION_RESET,
+  PROJECT_APPLICATIONS_LOADING,
+  PROJECT_APPLICATIONS_NOT_FOUND,
+  PROJECT_APPLICATIONS_LOADED,
   RoundApplicationActions,
 } from "../actions/roundApplication";
 
@@ -132,6 +135,27 @@ export const roundApplicationReducer = (
           ...application,
           status: Status.Undefined,
         },
+      };
+    }
+
+    case PROJECT_APPLICATIONS_LOADING: {
+      return {
+        ...state,
+        // update status...
+      };
+    }
+
+    case PROJECT_APPLICATIONS_NOT_FOUND: {
+      return {
+        ...state,
+        // update status and pass the error message...
+      };
+    }
+
+    case PROJECT_APPLICATIONS_LOADED: {
+      return {
+        ...state,
+        // projects: action.projects,
       };
     }
 
