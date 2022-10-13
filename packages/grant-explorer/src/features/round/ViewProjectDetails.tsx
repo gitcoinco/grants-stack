@@ -21,7 +21,7 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
-  const [shortlist, addProjectToShortlist] = useBallot();
+  const [shortlist, addProjectToShortlist, removeProjectFromShortlist] = useBallot();
   const isAddedToBallot = shortlist.some(
     (project) => project.grantApplicationId === applicationId
   );
@@ -55,7 +55,7 @@ export default function ViewProjectDetails() {
               <Sidebar
                 addedToBallot={isAddedToBallot}
                 removeFromBallot={() => {
-                  console.log("Not implemented yet");
+                  removeProjectFromShortlist(projectToRender);
                 }}
                 addToBallot={() => {
                   addProjectToShortlist(projectToRender);
