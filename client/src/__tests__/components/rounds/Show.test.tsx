@@ -70,6 +70,7 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
+          events: {},
         });
 
         renderWrapped(<Show />, store);
@@ -84,6 +85,7 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
+          events: {},
         });
 
         renderWrapped(<Show />, store);
