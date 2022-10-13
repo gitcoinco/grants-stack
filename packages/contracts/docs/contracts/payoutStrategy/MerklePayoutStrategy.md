@@ -4,9 +4,9 @@
 
 
 
-Merkle Payout Strategy contract which is deployed once per round and is used to upload the final match distribution. 
+Merkle Payout Strategy contract which is deployed once per round and is used to upload the final match distribution.
 
-*- TODO: add function distribute() to actually distribute the funds  *
+*- TODO: add function distribute() to actually distribute the funds*
 
 ## Methods
 
@@ -76,7 +76,7 @@ Round address
 ### updateDistribution
 
 ```solidity
-function updateDistribution(bytes _encodedDistribution) external nonpayable
+function updateDistribution(bytes encodedDistribution) external nonpayable
 ```
 
 Invoked by RoundImplementation to upload distribution to the payout strategy
@@ -87,7 +87,7 @@ Invoked by RoundImplementation to upload distribution to the payout strategy
 
 | Name | Type | Description |
 |---|---|---|
-| _encodedDistribution | bytes | encoded distribution |
+| encodedDistribution | bytes | encoded distribution |
 
 
 

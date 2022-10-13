@@ -43,7 +43,7 @@ contract MerklePayoutStrategy is IPayoutStrategy {
    *
    * @param encodedDistribution encoded distribution
    */
-  function updateDistribution(bytes calldata encodedDistribution) external override {
+  function updateDistribution(bytes calldata encodedDistribution) external override isRoundContract {
 
     (bytes32 _merkleRoot, MetaPtr memory _distributionMetaPtr) = abi.decode(
       encodedDistribution,
