@@ -23,7 +23,8 @@ export const roundApi = api.injectEndpoints({
           // load round factory contract
           const _roundFactoryContract = roundFactoryContract(chainId);
           const roundFactory = new ethers.Contract(
-            _roundFactoryContract.address ?? '',
+             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            _roundFactoryContract.address!,
             _roundFactoryContract.abi,
             signerOrProvider
           );
@@ -32,7 +33,9 @@ export const roundApi = api.injectEndpoints({
             round.applicationsEndTime = round.roundStartTime;
           }
 
-          round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
+          round.operatorWallets = round.operatorWallets?.filter(
+            (e) => e !== ""
+          );
 
           // encode input parameters
           const params = [

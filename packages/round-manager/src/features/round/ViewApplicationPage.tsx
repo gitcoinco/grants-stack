@@ -29,7 +29,6 @@ import {
   GrantApplication,
   ProgressStatus,
   ProjectCredentials,
-  MetadataPointer,
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Lit } from "../api/lit";
@@ -54,8 +53,6 @@ export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 const verifier = new PassportVerifier();
-
-const emptyMetadataPointer: MetadataPointer = {protocol: 1  , pointer: ''};
 
 export default function ViewApplicationPage() {
   const navigate = useNavigate();
@@ -155,6 +152,10 @@ export default function ViewApplicationPage() {
 
   const handleReview = async () => {
     try {
+      if (!application) {
+        throw "error: application does not exist";
+      }
+
       setOpenProgressModal(true);
       setOpenModal(false);
 
@@ -163,10 +164,10 @@ export default function ViewApplicationPage() {
         applications: [
           {
             status: reviewDecision,
-            id: application?.id ?? '',
+            id: application.id,
             round: roundId,
-            recipient: application?.recipient ?? '',
-            projectsMetaPtr: application?.projectsMetaPtr ?? emptyMetadataPointer,
+            recipient: application.recipient,
+            projectsMetaPtr: application.projectsMetaPtr,
           },
         ],
       });

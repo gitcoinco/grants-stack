@@ -34,7 +34,8 @@ export default function ApplicationsApproved() {
   const { id } = useParams();
   const { chain } = useWallet();
 
-  const { applications, isLoading } = useApplicationByRoundId(id ?? '');
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { applications, isLoading } = useApplicationByRoundId(id!);
   const approvedApplications =
     applications?.filter(
       (a: GrantApplication) =>
@@ -92,7 +93,7 @@ export default function ApplicationsApproved() {
             round: application.round,
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
-            status: application.status,
+            status: application.status
           };
         })
       );
@@ -123,7 +124,8 @@ export default function ApplicationsApproved() {
       setOpenProgressModal(true);
       setOpenConfirmationModal(false);
       await bulkUpdateGrantApplications({
-        roundId: id ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        roundId: id!,
         applications: selected.filter(
           (application) => application.status === "REJECTED"
         ),
@@ -170,9 +172,9 @@ export default function ApplicationsApproved() {
               </CardHeader>
               <Link to={`/round/${id}/application/${application.id}`}>
                 <CardContent>
-                  <CardTitle>{application.project?.title ?? ''}</CardTitle>
+                  <CardTitle>{application.project?.title}</CardTitle>
                   <CardDescription>
-                    {application.project?.description ?? ''}
+                    {application.project?.description}
                   </CardDescription>
                 </CardContent>
               </Link>

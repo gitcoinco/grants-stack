@@ -53,7 +53,8 @@ export const getApplicationById = async (
 
     const _projectRegistryContract = projectRegistryContract(chainId);
     const projectRegistry = new Contract(
-      _projectRegistryContract.address ?? '',
+       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _projectRegistryContract.address!,
       _projectRegistryContract.abi,
       signerOrProvider
     );
