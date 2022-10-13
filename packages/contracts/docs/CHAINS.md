@@ -16,7 +16,7 @@ This document lists all the addresses of the contracts that have been deployed o
 | QFVotingStrategyFactory           | 0x0b27641d4dE8fb70542aA10b567238F5a3324CE0 |
 | QFVotingStrategyImplementation    | 0xAD8869Fd0481a2dbfd3dCD34F64838EeaEe74e03 |
 | QFVotingContract                  | 0x443b5AC8e5bcc7d69e194C0F78C2125708e7d464 |
-
+| MerklePayoutContract              | 0x62b3CE47829777db4ec4dd3d9FF268168C562547 |
 
 
 ## Optimism Mainnet Network
@@ -33,4 +33,5 @@ This document lists all the addresses of the contracts that have been deployed o
 | QFVotingStrategyFactory           |                                            |
 | QFVotingStrategyImplementation    |                                            |
 | QFVotingContract                  |                                            |
+| MerklePayoutContract              |                                            |
 

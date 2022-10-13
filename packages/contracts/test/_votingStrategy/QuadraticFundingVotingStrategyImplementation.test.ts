@@ -75,7 +75,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
         expect(await quadraticFundingVotingStrategy.roundAddress()).to.equal(user.address);
       });
 
-      it('invoking init more than once SHOULD rever the transaction ', () => {
+      it('invoking init more than once SHOULD revert the transaction ', () => {
         expect(quadraticFundingVotingStrategy.init()).to.revertedWith('init: roundAddress already set')
       });
     });

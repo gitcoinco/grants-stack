@@ -5,8 +5,8 @@ dotenv.config();
 
 /**
  * Encodes the parameters for the ProgramFactory.create() function.
- * 
- * @param params 
+ *
+ * @param params
  * @returns {string}
  */
 export const encodeProgramParameters = (params: any[]): string => {
@@ -18,8 +18,8 @@ export const encodeProgramParameters = (params: any[]): string => {
 
 /**
  * Encodes the parameters for the RoundFactory.create() function.
- * 
- * @param params 
+ *
+ * @param params
  * @returns {string}
  */
 export const encodeRoundParameters = (params: any[]): string => {
@@ -39,6 +39,23 @@ export const encodeRoundParameters = (params: any[]): string => {
     params
   );
 }
+
+/**
+ * Encodes the parameters for the MerklePayoutStrategy.updateDistribution() function.
+ *
+ * @param params
+ * @returns {string}
+ */
+export const encodeMerkleUpdateDistributionParameters = (params: any[]): string => {
+  return ethers.utils.defaultAbiCoder.encode(
+    [
+      "bytes32",
+      "tuple(uint256 protocol, string pointer)"
+    ],
+    params
+  );
+}
+
 
 /**
  * Asserts that environment variables are set as expected

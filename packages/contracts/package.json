@@ -32,7 +32,9 @@
     "deploy-qf-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFunding/deployQFVotingStrategyImplementation.ts --network",
     "link-qf-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFunding/linkQFVotingStrategyImplementation.ts --network",
     "create-qf-contract": "yarn hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
-    "cast-qf-vote": "yarn hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network"
+    "cast-qf-vote": "yarn hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network",
+    "// payout-deploy-scripts": "echo '//-- Payout deploy Script --//'",
+    "deploy-merkle-contract": "yarn hardhat run scripts/payoutStrategy/deployMerklePayoutStrategy.ts --network"
   },
   "devDependencies": {
     "@ethersproject/constants": "^5.6.1",
