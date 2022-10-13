@@ -1,7 +1,12 @@
 import { useBallot } from "../context/BallotContext";
 import { Project } from "./api/types";
+import { useRoundById } from "../context/RoundContext";
+import { useParams } from "react-router-dom";
 
 export default function ViewBallot() {
+  const { chainId, roundId } = useParams();
+  useRoundById(chainId!, roundId!);
+
   const [shortlist] = useBallot();
   const shortlistNotEmpty = shortlist.length > 0;
 

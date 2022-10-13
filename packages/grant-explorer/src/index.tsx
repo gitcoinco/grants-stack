@@ -56,7 +56,10 @@ root.render(
                     element={<ViewProjectDetails />}
                   />
 
-                  <Route path="/ballot" element={<ViewBallot />} />
+                  <Route
+                    path="/round/:chainId/:roundId/ballot"
+                    element={<ViewBallot />}
+                  />
 
                   {/* Access Denied */}
                   <Route path="/access-denied" element={<AccessDenied />} />

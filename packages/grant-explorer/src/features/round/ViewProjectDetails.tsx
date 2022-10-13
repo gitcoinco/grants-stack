@@ -20,12 +20,7 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
-  console.log("chainId", chainId);
-  console.log("roundId", roundId);
-  console.log("applicationId", applicationId);
-
   const [shortlist, addProjectToShortlist, removeProjectFromShortlist] = useBallot();
-  console.log("shortlist", shortlist);
   const isAddedToBallot = shortlist.some(
     (project) => project.grantApplicationId === applicationId
   );
@@ -33,7 +28,7 @@ export default function ViewProjectDetails() {
   return (
     <>
       <div className="mx-20 h-screen px-4 py-7">
-      <Navbar />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
         <div className="flex flex-row items-center gap-3 text-sm">
           <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
           <Link to={`/round/${chainId}/${roundId}`}>

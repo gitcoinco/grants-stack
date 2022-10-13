@@ -1,15 +1,14 @@
-import Navbar from "./Navbar"
-import Footer from "./Footer"
-import { datadogLogs } from "@datadog/browser-logs"
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export default function AccessDenied() {
-
-  datadogLogs.logger.info(`====> Route: NotFound`)
-  datadogLogs.logger.info(`====> URL: ${window.location.href}`)
+  datadogLogs.logger.info(`====> Route: NotFound`);
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   return (
     <div className="mx-20 h-screen px-4 py-7">
-      <Navbar />
+      <Navbar roundUrlPath={""} />
       <main className="h-screen">
         <div className="flex pt-8">
           <div className="m-auto text-center mt-5">
@@ -24,5 +23,5 @@ export default function AccessDenied() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
