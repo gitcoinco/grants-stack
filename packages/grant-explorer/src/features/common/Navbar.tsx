@@ -22,7 +22,9 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-6">
           <Search />
-          <HeartHand />
+          <Link to={`/ballot`}>
+              <HeartHand />
+            </Link>
           <ConnectButton />
         </div>
       </div>

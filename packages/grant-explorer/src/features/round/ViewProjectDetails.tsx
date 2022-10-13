@@ -16,12 +16,16 @@ export default function ViewProjectDetails() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useParams();
   const { round, isLoading } = useRoundById(chainId!, roundId!);
-
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
 
+  console.log("chainId", chainId);
+  console.log("roundId", roundId);
+  console.log("applicationId", applicationId);
+
   const [shortlist, addProjectToShortlist, removeProjectFromShortlist] = useBallot();
+  console.log("shortlist", shortlist);
   const isAddedToBallot = shortlist.some(
     (project) => project.grantApplicationId === applicationId
   );
