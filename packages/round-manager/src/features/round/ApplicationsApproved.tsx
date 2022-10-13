@@ -93,7 +93,7 @@ export default function ApplicationsApproved() {
             round: application.round,
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
-            status: application.status
+            status: application.status,
           };
         })
       );

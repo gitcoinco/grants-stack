@@ -186,7 +186,7 @@ export async function deployRoundContract(
 
     const _roundFactoryContract = roundFactoryContract(chainId);
     const roundFactory = new ethers.Contract(
-       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _roundFactoryContract.address!,
       _roundFactoryContract.abi,
       signerOrProvider

@@ -1,6 +1,5 @@
 import ViewProgram from "../ViewProgramPage";
 import { render, screen } from "@testing-library/react";
-import { useListRoundsQuery } from "../../api/services/round";
 import { useWallet } from "../../common/Auth";
 import {
   makeProgramData,
@@ -16,8 +15,6 @@ const useParamsFn = () => ({ id: programId });
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
-jest.mock("../../api/services/program");
-jest.mock("../../api/services/round");
 jest.mock("../../api/program");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -39,11 +36,6 @@ describe("<ViewProgram />", () => {
       chain: {},
       address: stubProgram.operatorWallets[0],
       provider: { getNetwork: () => ({ chainId: "0x0" }) },
-    });
-    (useListRoundsQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: false,
-      isSuccess: true,
     });
   });
 
