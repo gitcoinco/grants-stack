@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { render, screen } from "@testing-library/react";
-import { useListRoundsQuery } from "../../api/services/round";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import {
@@ -12,7 +11,6 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useBulkUpdateGrantApplicationsMutation } from "../../api/services/grantApplication";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { MemoryRouter, useParams } from "react-router-dom";
 import {
@@ -26,8 +24,6 @@ import {
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 
 jest.mock("../../common/Auth");
-jest.mock("../../api/services/round");
-jest.mock("../../api/services/grantApplication");
 jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -64,19 +60,6 @@ describe("the view round page", () => {
         id: mockRoundData.id,
       };
     });
-
-    (useListRoundsQuery as jest.Mock).mockReturnValue({
-      round: mockRoundData,
-      isLoading: false,
-      isSuccess: true,
-    });
-
-    (useBulkUpdateGrantApplicationsMutation as jest.Mock).mockReturnValue([
-      jest.fn(),
-      {
-        isLoading: false,
-      },
-    ]);
 
     (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});

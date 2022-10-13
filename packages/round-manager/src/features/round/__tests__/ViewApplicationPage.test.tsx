@@ -34,7 +34,6 @@ import {
 } from "../../api/types";
 
 jest.mock("../../api/application");
-jest.mock("../../api/services/round");
 jest.mock("../../common/Auth");
 
 const mockAddress = "0x0";

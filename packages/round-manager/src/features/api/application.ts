@@ -53,7 +53,7 @@ export const getApplicationById = async (
 
     const _projectRegistryContract = projectRegistryContract(chainId);
     const projectRegistry = new Contract(
-       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _projectRegistryContract.address!,
       _projectRegistryContract.abi,
       signerOrProvider
@@ -296,8 +296,7 @@ export const updateRoundContract = async (
   };
 };
 
-// TODO - taken from packages/round-manager/src/features/api/services/grantApplication.ts
-//  should add tests for this too
+// TODO - should add tests for this too
 export const updateApplicationList = async (
   applications: GrantApplication[],
   roundId: string,

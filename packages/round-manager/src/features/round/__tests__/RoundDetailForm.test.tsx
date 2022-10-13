@@ -6,9 +6,6 @@ import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
 
-jest.mock("../../api/services/ipfs");
-jest.mock("../../api/services/program");
-jest.mock("../../api/services/round");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),

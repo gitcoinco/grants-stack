@@ -25,7 +25,6 @@ import {
 } from "../../api/application";
 import { ApplicationStatus } from "../../api/types";
 
-jest.mock("../../api/services/grantApplication");
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({

@@ -2,8 +2,6 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import ErrorModal from "../../common/ErrorModal";
 
-jest.mock("../../api/services/ipfs");
-jest.mock("../../api/services/program");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
