@@ -70,7 +70,6 @@ More information can be found within the [round-manager package](packages/round-
 
 To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/round-manager/docs/DEV.md)
 
-
 ### grant-explorer
 
 This package serves the app which holds all the features w.r.t to

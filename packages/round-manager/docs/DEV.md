@@ -1,6 +1,6 @@
 ## Development
 
-This section documents the basics running instructions on running / developing on the round-manager package.
+This section documents the basic instructions on running / developing the round-manager package.
 
 ### Pre Requisites
 
