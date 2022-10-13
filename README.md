@@ -41,6 +41,8 @@ To know the addresses are deployed on which network. refer [CHAINS.md](packages/
 
 ##### Development
 
+We welcome external contributions. Please make sure to familiarize yourself with the [Contribution Guide](CONTRIBUTING.md).
+
 To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/contracts/docs/DEV.md)
 
 This is built and maintained using [hardhat](https://hardhat.org)
