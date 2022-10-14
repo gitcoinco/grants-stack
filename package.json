@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start:dev": "NODE_ENV=development nodemon -e ts -x node -r dotenv-flow/config --loader ts-node/esm/transpile-only src/index.ts",
+    "start:dev": "NODE_ENV=development nodemon -e ts -x tsx -r dotenv-flow/config src/index.ts",
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
     "test:watch": "jest --watch --notify",
@@ -29,6 +29,7 @@
     "nodemon": "^2.0.16",
     "prettier": "^2.0.5",
     "ts-jest": "^28.0.3",
+    "tsx": "^3.10.1",
     "typescript": "^4.7.2"
   },
   "lint-staged": {
@@ -40,7 +41,6 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "dotenv-flow": "^3.2.0",
-    "ts-node": "^10.8.0"
+    "dotenv-flow": "^3.2.0"
   }
 }
