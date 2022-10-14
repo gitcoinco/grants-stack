@@ -5,11 +5,13 @@ import { BaseModal } from "./BaseModal";
 type ErrorModalProps = {
   open: boolean;
   onClose: (open: boolean) => void;
+  onRetry: () => void;
 };
 
 export default function ErrorModal({
   open,
   onClose,
+  onRetry,
 }: ErrorModalProps): JSX.Element {
   return (
     <BaseModal isOpen={open} hideCloseButton onClose={() => onClose(false)}>
@@ -39,9 +41,18 @@ export default function ErrorModal({
           </GridItem>
           <GridItem rowStart={3} colSpan={10}>
             <div className="text-right">
-              <Button className="mr-2 px-4">Try Again</Button>
               <Button
-                onClick={() => onClose(false)}
+                className="mr-2 px-4"
+                onClick={() => {
+                  onRetry();
+                }}
+              >
+                Try Again
+              </Button>
+              <Button
+                onClick={() => {
+                  onClose(false);
+                }}
                 className="bg-gitcoin-violet-400 text-white ml-2 px-10"
               >
                 Done

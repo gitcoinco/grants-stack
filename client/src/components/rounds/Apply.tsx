@@ -15,7 +15,6 @@ import colors from "../../styles/colors";
 import { Round } from "../../types";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
-import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "./StatusModal";
@@ -31,7 +30,6 @@ function Apply() {
   const [modalOpen, toggleModal] = useState(false);
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
-  const [errorModalOpen, toggleErrorModal] = useState(false);
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
   const [roundApplicationModal, setToggleRoundApplicationModal] =
     useLocalStorage(
@@ -55,6 +53,8 @@ function Apply() {
     const applicationError = applicationState
       ? applicationState.error
       : undefined;
+    const showErrorModal =
+      applicationError && applicationStatus === ApplicationStatus.Error;
 
     return {
       roundState,
@@ -65,6 +65,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      showErrorModal,
     };
   }, shallowEqual);
 
@@ -132,7 +133,6 @@ function Apply() {
       props.applicationState?.status === ApplicationStatus.Error ||
       props.applicationError
     ) {
-      toggleErrorModal(true);
       toggleStatusModal(false);
     }
   }, [props.applicationStatus, props.applicationError]);
@@ -191,6 +191,7 @@ function Apply() {
             {props.applicationMetadata !== undefined && (
               <Form
                 roundApplication={props.applicationMetadata}
+                showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={() => {
                   toggleStatusModal(true);
@@ -199,7 +200,6 @@ function Apply() {
             )}
           </div>
         </div>
-
         <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
       </div>
 
@@ -210,13 +210,6 @@ function Apply() {
             onClose={toggleStatusModal}
             currentStatus={props.applicationState.status}
             error={props.applicationState.error}
-          />
-        )}
-      {props.applicationState?.error !== undefined &&
-        props.applicationError !== undefined && (
-          <ErrorModal
-            open={errorModalOpen}
-            onClose={() => toggleErrorModal(false)}
           />
         )}
     </>

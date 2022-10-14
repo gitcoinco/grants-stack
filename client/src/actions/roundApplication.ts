@@ -28,6 +28,12 @@ interface RoundApplicationErrorAction {
   step: Status;
 }
 
+export const ROUND_APPLICATION_ERROR_RESET = "ROUND_APPLICATION_ERROR_RESET";
+interface RoundApplicationErrorResetAction {
+  type: typeof ROUND_APPLICATION_ERROR_RESET;
+  roundAddress: string;
+}
+
 // FIXME: rename to ROUND_APPLICATION_APPLIED
 export const ROUND_APPLICATION_LOADED = "ROUND_APPLICATION_LOADED";
 interface RoundApplicationLoadedAction {
@@ -58,6 +64,7 @@ interface RoundApplicationResetAction {
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
+  | RoundApplicationErrorResetAction
   | RoundApplicationLoadedAction
   | RoundApplicationFoundAction
   | RoundApplicationNotFoundAction
@@ -79,17 +86,27 @@ export const resetApplication = (roundAddress: string) => ({
   roundAddress,
 });
 
+export const resetApplicationError = (roundAddress: string) => ({
+  type: ROUND_APPLICATION_ERROR_RESET,
+  roundAddress,
+});
+
 export const submitApplication =
   (roundAddress: string, formInputs: { [id: number]: string }) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const roundState = state.rounds[roundAddress];
+    // const applicationState = state.roundApplication[roundAddress];
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      status: Status.BuildingApplication,
+      status:
+        // applicationState?.error?.step ||
+        // applicationState?.status ||
+        Status.BuildingApplication,
     });
 
-    const state = getState();
-    const roundState = state.rounds[roundAddress];
     if (roundState === undefined) {
       dispatch(
         applicationError(
