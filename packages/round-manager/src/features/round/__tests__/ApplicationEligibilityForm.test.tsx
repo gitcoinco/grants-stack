@@ -38,4 +38,20 @@ describe("<ApplicationEligibilityForm>", () => {
     });
     expect(nextButton).toBeInTheDocument();
   });
+
+  describe("form fields", () => {
+    it("should display an input field for round description", () => {
+      render(<ApplicationEligibilityForm stepper={FormStepper} />);
+
+      const roundDescriptionInput = screen.getByLabelText("Round Description");
+      expect(roundDescriptionInput).toBeInTheDocument();
+    });
+
+    it("should display an input field for Requirement 1", () => {
+      render(<ApplicationEligibilityForm stepper={FormStepper} />);
+
+      const requirement1Input = screen.getByLabelText("Requirement 1");
+      expect(requirement1Input).toBeInTheDocument();
+    });
+  });
 });
