@@ -63,7 +63,7 @@ export default function Details({
         <div>
           <a
             target="_blank"
-            href={project?.website}
+            href={`https://${project?.website}`}
             className="flex items-center mr-6 text-primary-background"
             rel="noreferrer"
           >

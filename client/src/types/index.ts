@@ -71,11 +71,14 @@ export type AddressInputProps = {
   required: boolean;
 };
 
-export interface ProjectEvent {
-  id: number;
-  block: number;
-  createdAtBlock?: number;
-}
+export type ProjectEvents = {
+  createdAtBlock: number | undefined;
+  updatedAtBlock: number | undefined;
+};
+
+export type ProjectEventsMap = {
+  [projectID: string]: ProjectEvents;
+};
 
 export interface MetaPtr {
   protocol: string;

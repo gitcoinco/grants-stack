@@ -10,7 +10,7 @@ import useLocalStorage from "../../../hooks/useLocalStorage";
 import { RootState } from "../../../reducers";
 import { ApplicationModalStatus } from "../../../reducers/roundApplication";
 import setupStore from "../../../store";
-import { Metadata, ProjectEvent } from "../../../types";
+import { Metadata, ProjectEventsMap } from "../../../types";
 import {
   buildProjectMetadata,
   buildRound,
@@ -21,16 +21,16 @@ jest.mock("../../../actions/projects");
 jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
-const projects: ProjectEvent[] = [
-  {
-    id: 1,
-    block: 1111,
+const projectEventsMap: ProjectEventsMap = {
+  "1": {
+    createdAtBlock: 1111,
+    updatedAtBlock: 1112,
   },
-  {
-    id: 2,
-    block: 2222,
+  "2": {
+    createdAtBlock: 2222,
+    updatedAtBlock: 2223,
   },
-];
+};
 
 const projectsMetadata: Metadata[] = [
   {
@@ -88,7 +88,15 @@ describe("<List />", () => {
         .calledWith("roundToApply", null)
         .mockReturnValue(["5:0x1234"]);
 
-      store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        events: {
+          "1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
+          },
+        },
+      });
       store.dispatch({
         type: "GRANT_METADATA_FETCHED",
         data: projectsMetadata[0],
@@ -110,7 +118,7 @@ describe("<List />", () => {
         .calledWith("roundToApply", null)
         .mockReturnValue([null]);
 
-      store.dispatch({ type: "PROJECTS_LOADED", projects: [] });
+      store.dispatch({ type: "PROJECTS_LOADED", events: {} });
 
       renderWrapped(<List />, store);
 
@@ -131,7 +139,7 @@ describe("<List />", () => {
 
       test("should show an empty list", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADED", projects: [] });
+        store.dispatch({ type: "PROJECTS_LOADED", events: {} });
 
         renderWrapped(<List />, store);
 
@@ -145,7 +153,7 @@ describe("<List />", () => {
       test("should show projects", async () => {
         const store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
           data: projectsMetadata[0],
@@ -168,7 +176,7 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -234,7 +242,7 @@ describe("<List />", () => {
             data: buildProjectMetadata({}),
           });
 
-          store.dispatch({ type: "PROJECTS_LOADED", projects });
+          store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
 
@@ -263,7 +271,7 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -289,8 +297,15 @@ describe("<List />", () => {
 
         test("should be visible with toggleRoundApplicationModal set to notApplied, with only one project created and not applied yet", async () => {
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
-
-          store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
+          store.dispatch({
+            type: "PROJECTS_LOADED",
+            events: {
+              "1": {
+                createdAtBlock: 1111,
+                updatedAtBlock: 1112,
+              },
+            },
+          });
 
           when(useLocalStorage as jest.Mock)
             .calledWith(
@@ -311,7 +326,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: projects[0].id,
+            project: "1",
           });
 
           when(useLocalStorage as jest.Mock)

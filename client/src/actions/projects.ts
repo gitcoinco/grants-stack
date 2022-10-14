@@ -4,7 +4,7 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { ProjectEvent } from "../types";
+import { ProjectEventsMap } from "../types";
 import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -15,7 +15,7 @@ interface ProjectsLoadingAction {
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
-  projects: ProjectEvent[];
+  events: ProjectEventsMap;
 }
 
 export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
@@ -32,40 +32,14 @@ const projectsLoading = () => ({
   type: PROJECTS_LOADING,
 });
 
-const projectsLoaded = (projects: ProjectEvent[]) => ({
+const projectsLoaded = (events: ProjectEventsMap) => ({
   type: PROJECTS_LOADED,
-  projects,
+  events,
 });
 
 const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
-
-export function aggregateEvents(
-  created: ProjectEvent[],
-  updated: ProjectEvent[]
-): ProjectEvent[] {
-  const result = [...created, ...updated].reduce(
-    (prev: any, cur: ProjectEvent) => {
-      const value = prev;
-      if (value[cur.id] === undefined || cur.block > value[cur.id].block) {
-        let createdAtBlock;
-        if (value[cur.id] === undefined) {
-          createdAtBlock = cur.block;
-        } else {
-          createdAtBlock =
-            value[cur.id].block > cur.block ? cur.block : value[cur.id].block;
-        }
-        value[cur.id] = cur;
-        value[cur.id].createdAtBlock = createdAtBlock;
-      }
-      return value;
-    },
-    {}
-  );
-
-  return Object.values(result);
-}
 
 export const loadProjects =
   (withMetaData?: boolean) =>
@@ -86,30 +60,42 @@ export const loadProjects =
       null,
       state.web3.account
     );
+
     const createdEvents = await contract.queryFilter(createdFilter);
-
-    const createdIds: ProjectEvent[] = createdEvents.map((event: any) => ({
-      id: BigNumber.from(event.args.projectID).toNumber(),
-      block: event.blockNumber,
-    }));
-
-    if (createdIds.length === 0) {
-      dispatch(projectsLoaded([]));
+    if (createdEvents.length === 0) {
+      dispatch(projectsLoaded({}));
       return;
     }
 
-    const ids = createdIds.map((item) => ethers.utils.hexlify(item.id));
-    const metadataFilter = contract.filters.MetadataUpdated(ids);
-    const metadataEvents = await contract.queryFilter(metadataFilter);
+    const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
+    const hexIDs = createdEvents.map((event) =>
+      event.args!.projectID!.toHexString()
+    );
 
-    const updateIds: ProjectEvent[] = metadataEvents.map((event: any) => ({
-      id: BigNumber.from(event.args[0]).toNumber(),
-      block: event.blockNumber,
-    }));
-    const events = aggregateEvents(createdIds, updateIds);
     if (withMetaData) {
-      ids.map((id) => dispatch(fetchGrantData(Number(id)) as any));
+      ids.map((id) => dispatch<any>(fetchGrantData(id)));
     }
+
+    const updatedFilter = contract.filters.MetadataUpdated(hexIDs);
+    const updatedEvents = await contract.queryFilter(updatedFilter);
+
+    const events: ProjectEventsMap = {};
+
+    createdEvents.forEach((createEvent) => {
+      const id = createEvent.args!.projectID!;
+      events[id] = {
+        createdAtBlock: createEvent.blockNumber,
+        updatedAtBlock: undefined,
+      };
+    });
+
+    updatedEvents.forEach((updateEvent) => {
+      const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+      const event = events[id];
+      if (event !== undefined) {
+        event.updatedAtBlock = updateEvent.blockNumber;
+      }
+    });
 
     dispatch(projectsLoaded(events));
   };

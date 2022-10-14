@@ -66,7 +66,7 @@ export default function Form({
     }
 
     return {
-      projects: state.projects.projects,
+      projectIDs: state.projects.ids,
       allProjectMetadata,
       selectedProjectMetadata,
     };
@@ -134,10 +134,10 @@ export default function Form({
   };
 
   useEffect(() => {
-    const currentOptions = props.projects.map(
-      (project): ProjectOption => ({
-        id: project.id,
-        title: props.allProjectMetadata[project.id]?.metadata?.title,
+    const currentOptions = props.projectIDs.map(
+      (id): ProjectOption => ({
+        id,
+        title: props.allProjectMetadata[id]?.metadata?.title,
       })
     );
     currentOptions.unshift({ id: undefined, title: "" });
