@@ -2,6 +2,7 @@ import CreateRoundPage from "../CreateRoundPage";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { RoundDetailForm } from "../RoundDetailForm";
+import ApplicationEligibilityForm from "../ApplicationEligibilityForm";
 import { RoundApplicationForm } from "../RoundApplicationForm";
 import { useWallet } from "../../common/Auth";
 import * as FormWizardImport from "../../common/FormWizard";
@@ -39,7 +40,11 @@ describe("<CreateRoundPage />", () => {
     const firstFormWizardCall = formWizardSpy.mock.calls[0];
     const firstCallArgument = firstFormWizardCall[0];
     expect(firstCallArgument).toMatchObject({
-      steps: [RoundDetailForm, RoundApplicationForm],
+      steps: [
+        RoundDetailForm,
+        ApplicationEligibilityForm,
+        RoundApplicationForm,
+      ],
       initialData: { program: programs[0] },
     });
   });
@@ -64,7 +69,11 @@ describe("<CreateRoundPage />", () => {
     const firstFormWizardCall = formWizardSpy.mock.calls[0];
     const firstCallArgument = firstFormWizardCall[0];
     expect(firstCallArgument).toMatchObject({
-      steps: [RoundDetailForm, RoundApplicationForm],
+      steps: [
+        RoundDetailForm,
+        ApplicationEligibilityForm,
+        RoundApplicationForm,
+      ],
       initialData: { program: programToChoose },
     });
   });
