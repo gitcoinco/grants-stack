@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Button } from "../common/styles";
+import { Button } from "./styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
 import { datadogLogs } from "@datadog/browser-logs";
 
@@ -10,7 +10,7 @@ export default function NotFoundPage() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   return (
-    <>
+    <div className="mx-20 h-screen px-4 py-7">
       <Navbar />
       <main>
         <div className="flex pt-8">
@@ -41,6 +41,6 @@ export default function NotFoundPage() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
