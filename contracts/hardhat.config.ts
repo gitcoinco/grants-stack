@@ -47,6 +47,12 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC,
       },
     },
+    fantomTestnet: {
+      url: process.env.FANTOM_TESTNEST_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    }
   },
 
   gasReporter: {
