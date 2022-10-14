@@ -96,15 +96,11 @@ export const submitApplication =
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
-    // const applicationState = state.roundApplication[roundAddress];
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      status:
-        // applicationState?.error?.step ||
-        // applicationState?.status ||
-        Status.BuildingApplication,
+      status: Status.BuildingApplication,
     });
 
     if (roundState === undefined) {
