@@ -147,4 +147,22 @@ describe("voting ballot", () => {
     expect(screen.getByTestId("remove-from-ballot")).toBeInTheDocument();
     expect(screen.queryByTestId("add-to-ballot")).not.toBeInTheDocument();
   });
+
+  it("shows a add-to-ballot button replacing a remove-from-ballot button when remove-from-balled is clicked", () => {
+    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+
+    // click add to ballot
+    const addToBallot = screen.getByTestId("add-to-ballot");
+    fireEvent.click(addToBallot);
+
+    expect(screen.getByTestId("remove-from-ballot")).toBeInTheDocument();
+    expect(screen.queryByTestId("add-to-ballot")).not.toBeInTheDocument();
+
+    // click remove from ballot
+    const removeFromBallot = screen.getByTestId("remove-from-ballot");
+    fireEvent.click(removeFromBallot);
+
+    expect(screen.getByTestId("add-to-ballot")).toBeInTheDocument();
+    expect(screen.queryByTestId("remove-from-ballot")).not.toBeInTheDocument();
+  })
 });

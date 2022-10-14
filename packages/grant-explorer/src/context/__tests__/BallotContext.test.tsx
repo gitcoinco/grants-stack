@@ -93,18 +93,48 @@ describe("<BallotProvider>", () => {
 
     expect(saveShortlist).toBeCalled();
   });
+
+  it("should update the shortlist when removing the project from the shortlist", () => {
+    render(
+      <BallotProvider>
+        <TestingUseBallotComponent />
+      </BallotProvider>
+    );
+    fireEvent.click(screen.getByTestId("add-project"));
+    expect(screen.getAllByTestId("project")).toHaveLength(1);
+
+    fireEvent.click(screen.getByTestId("remove-project"));
+    expect(screen.queryAllByTestId("project")).toHaveLength(0);
+  });
+
+  it("does not error when trying to remove a project not in the shortlist", () => {
+    render(
+      <BallotProvider>
+        <TestingUseBallotComponent />
+      </BallotProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("remove-project"));
+    expect(screen.queryAllByTestId("project")).toHaveLength(0);
+  });
 });
 
 const testProject: Project = makeApprovedProjectData();
+
 const TestingUseBallotComponent = () => {
-  const [shortlist, handleAddProjectToShortlist] = useBallot();
+  const [
+    shortlist,
+    handleAddProjectToShortlist,
+    handleRemoveProjectFromShortlist
+  ] = useBallot();
+
 
   return (
     <>
       {shortlist.map((project, index) => {
         return (
           <div key={index} data-testid="project">
-            {`Grant Application Id: ${project.grantApplicationId} 
+            {`Grant Application Id: ${project.grantApplicationId}
             || Project Registry Id: ${project.projectRegistryId}`}
 
             <span data-testid="project-id">{project.projectRegistryId}</span>
@@ -117,6 +147,13 @@ const TestingUseBallotComponent = () => {
         onClick={() => handleAddProjectToShortlist(testProject)}
       >
         Add Project
+      </button>
+
+      <button
+        data-testid="remove-project"
+        onClick={() => handleRemoveProjectFromShortlist(testProject)}
+      >
+        Remove Project
       </button>
     </>
   );

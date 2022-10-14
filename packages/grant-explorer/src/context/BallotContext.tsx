@@ -59,7 +59,8 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
 /* Custom Hooks */
 type UseBallot = [
   shortlist: BallotContextState["shortlist"],
-  addProjectToShortlist: (projectToAdd: Project) => void
+  addProjectToShortlist: (projectToAdd: Project) => void,
+  removeProjectFromShortlist: (projectToRemove: Project) => void
 ];
 export const useBallot = (): UseBallot => {
   const context = useContext(BallotContext);
@@ -79,5 +80,22 @@ export const useBallot = (): UseBallot => {
     setShortlist(newShortlist);
   };
 
-  return [shortlist, handleAddProjectToShortlist];
+  const handleRemoveProjectFromShortlist = (projectToRemove: Project): void => {
+    const isProjectInShortlistIndex = shortlist.findIndex(
+      (project) => project.projectRegistryId === projectToRemove.projectRegistryId
+    );
+
+    const newShortlist = [...shortlist];
+    if(isProjectInShortlistIndex !== -1) {
+      newShortlist.splice(isProjectInShortlistIndex);
+    }
+
+    setShortlist(newShortlist);
+  };
+
+  return [
+    shortlist,
+    handleAddProjectToShortlist,
+    handleRemoveProjectFromShortlist
+  ];
 };
