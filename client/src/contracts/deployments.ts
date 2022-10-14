@@ -3,7 +3,7 @@ export const chains: { [key: number]: string } = {
   5: "goerli",
   10: "optimism",
   69: "optimisticKovan",
-  402: "fantomTestnet"
+  4002: "fantomTestnet"
 };
 
 export const addresses: { [key: string]: any } = {
