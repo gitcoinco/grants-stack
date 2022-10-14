@@ -5,6 +5,7 @@ import {
   ROUND_APPLICATION_FOUND,
   ROUND_APPLICATION_NOT_FOUND,
   ROUND_APPLICATION_RESET,
+  ROUND_APPLICATION_ERROR_RESET,
   RoundApplicationActions,
 } from "../actions/roundApplication";
 
@@ -76,6 +77,20 @@ export const roundApplicationReducer = (
             error: action.error,
             step: action.step,
           },
+        },
+      };
+    }
+
+    case ROUND_APPLICATION_ERROR_RESET: {
+      const application =
+        state[action.roundAddress] || roundApplicationInitialState;
+      return {
+        ...state,
+        [action.roundAddress]: {
+          ...application,
+          // TODO : Retry step from previous application error step
+          // status: application.error?.step || 0,
+          error: undefined,
         },
       };
     }
