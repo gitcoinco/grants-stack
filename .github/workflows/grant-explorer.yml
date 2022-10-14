@@ -14,16 +14,22 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: packages/grant-explorer/yarn.lock
+
       - name: Install Dependencies
         run: |
           yarn install
           cd packages/grant-explorer
-          yarn install
+          yarn install --frozen-lockfile
 
       - name: Build Grant Explorer
         run: |
           yarn re-build
-          
+
       - name: Test Grant Explorer
         run: |
           yarn re-test
