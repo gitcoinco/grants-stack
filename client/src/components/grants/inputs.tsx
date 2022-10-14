@@ -121,10 +121,10 @@ export function WebsiteInput({
       </div>
       <legend>{info}</legend>
       <div className="flex">
-        {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
           {" "}
-          http://{" "}
-        </span> */}
+          https://{" "}
+        </span>
         <input
           type="text"
           className="rounded"
