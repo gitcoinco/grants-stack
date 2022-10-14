@@ -21,7 +21,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    IERC20Upgradeable  token,         // voting token
+    address  token,                   // voting token
     uint256 amount,                   // voting amount
     address indexed voter,            // voter address
     address indexed grantAddress,     // grant address
@@ -42,29 +42,46 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
    * - more voters -> higher the gas
    * - this would be triggered when a voter casts their vote via grant explorer
    * - can be invoked by the round
+   * - supports ERC20 and Native token transfer
    *
    * @param encodedVotes encoded list of votes
    * @param voterAddress voter address
    */
-  function vote(bytes[] calldata encodedVotes, address voterAddress) external override nonReentrant isRoundContract {
+  function vote(bytes[] calldata encodedVotes, address voterAddress) external override payable nonReentrant isRoundContract {
+
+    uint256 nativeTokenValue = msg.value;
 
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
-      /// @dev erc20 transfer to grant address
-      // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
-      SafeERC20Upgradeable.safeTransferFrom(
-        IERC20Upgradeable(_token),
-        voterAddress,
-        _grantAddress,
-        _amount
-      );
+      if (_token == address(0)) {
+
+        require (nativeTokenValue >= _amount, "vote: insufficient native token");
+        /// @dev native token transfer to grant address
+        // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
+        (bool success, ) = _grantAddress.call{value: _amount}(new bytes(0));
+
+        require(success, "vote: native token transfer failed");
+        nativeTokenValue = nativeTokenValue - _amount;
+
+      } else {
+
+        /// @dev erc20 transfer to grant address
+        // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
+        SafeERC20Upgradeable.safeTransferFrom(
+          IERC20Upgradeable(_token),
+          voterAddress,
+          _grantAddress,
+          _amount
+        );
+
+      }
 
       /// @dev emit event for transfer
       emit Voted(
-        IERC20Upgradeable(_token),
+        _token,
         _amount,
         voterAddress,
         _grantAddress,
