@@ -1,0 +1,153 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x4fE3Ce42BB2373C8fD2f59A59EdC397656EE142e",
+    "txHash": "0x707d49794c72e7ed6db4da02cda4bc6e9e89d4c3e13a4aeae6133e2585fae548"
+  },
+  "proxies": [
+    {
+      "address": "0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19",
+      "txHash": "0xa5972cb9754e92f33baf23d4c165685b3ce77ec71696d4acc70bbeefbb27ae6a",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "52f823d303e767ecefd845a6e9dc82b39d11b3f8b0ba804cfde9b846aa43439b": {
+      "address": "0x5C5ebf52f2eAC42d1640714abed069F9E573D805",
+      "txHash": "0x43ff3692fc684e68f55e672a20b48599e23e9e335b5ca92d387a53944c175af2",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "projectsCount",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:43"
+          },
+          {
+            "label": "projects",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(Project)397_storage)",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:46"
+          },
+          {
+            "label": "projectsOwners",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(OwnerList)404_storage)",
+            "contract": "ProjectRegistry",
+            "src": "contracts/ProjectRegistry.sol:49"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(OwnerList)404_storage)": {
+            "label": "mapping(uint256 => struct ProjectRegistry.OwnerList)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Project)397_storage)": {
+            "label": "mapping(uint256 => struct ProjectRegistry.Project)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(MetaPtr)846_storage": {
+            "label": "struct MetaPtr",
+            "members": [
+              {
+                "label": "protocol",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "pointer",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(OwnerList)404_storage": {
+            "label": "struct ProjectRegistry.OwnerList",
+            "members": [
+              {
+                "label": "count",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "list",
+                "type": "t_mapping(t_address,t_address)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Project)397_storage": {
+            "label": "struct ProjectRegistry.Project",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "metadata",
+                "type": "t_struct(MetaPtr)846_storage",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}

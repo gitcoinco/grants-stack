@@ -5,7 +5,7 @@ import { validateApplication, validateProjectForm } from "../formValidation";
 const validInputs = {
   title: "Project Title",
   description: "Project Description",
-  website: "https://gitcoin.co/",
+  website: "gitcoin.co/",
   challenges: "Project Challenges",
   roadmap: "Project Roadmap",
 };
@@ -29,8 +29,8 @@ describe("Form Validation", () => {
     }
   });
 
-  it("returns url error if url is not valid", async () => {
-    validInputs.website = "gitcoin.co/";
+  it("returns url error if url is prepended with https", async () => {
+    validInputs.website = "https://gitcoin.co/";
     try {
       await validateProjectForm(validInputs);
     } catch (e) {
