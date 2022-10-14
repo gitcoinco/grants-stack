@@ -11,7 +11,7 @@ export default function NotFoundPage() {
 
   return (
     <div className="mx-20 h-screen px-4 py-7">
-      <Navbar />
+      <Navbar roundUrlPath={""} />
       <main>
         <div className="flex pt-8">
           <div className="m-auto text-center mt-5">

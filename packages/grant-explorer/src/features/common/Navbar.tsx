@@ -6,10 +6,10 @@ import { ReactComponent as Search } from "../../assets/search-black.svg";
 import { ReactComponent as HeartHand } from "../../assets/hearthand.svg";
 
 export interface NavbarProps {
-  programCta?: boolean;
+  roundUrlPath: string;
 }
 
-export default function Navbar() {
+export default function Navbar(props: NavbarProps) {
   return (
     <nav className="bg-white">
       <div className="flex justify-between h-16">
@@ -22,7 +22,9 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-6">
           <Search />
-          <HeartHand />
+          <Link to={`${props.roundUrlPath}/ballot`}>
+              <HeartHand />
+            </Link>
           <ConnectButton />
         </div>
       </div>

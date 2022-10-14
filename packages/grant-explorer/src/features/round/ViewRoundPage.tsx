@@ -36,7 +36,7 @@ export default function ViewRound() {
       {roundExists && (
         <>
           <div className="mx-20 px-4 py-7 h-screen">
-          <Navbar />
+          <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
             <main>
               <p className="mt-6">
                 <span>Round Name: </span>
@@ -63,7 +63,10 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const { project, roundRoutePath } = props;
   return (
     <BasicCard data-testid="project-card">
-      <Link to={`${roundRoutePath}/${project.grantApplicationId}`} data-testid="project-detail-link">
+      <Link
+        to={`${roundRoutePath}/${project.grantApplicationId}`}
+        data-testid="project-detail-link"
+      >
         <CardHeader>
           <ProjectBanner
             projectMetadata={props.project.projectMetadata}

@@ -22,6 +22,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import { BallotProvider } from "./context/BallotContext";
+import ViewBallot from "./features/ViewBallotPage";
 
 // Initialize datadog
 initDatadog();
@@ -53,6 +54,11 @@ root.render(
                   <Route
                     path="/round/:chainId/:roundId/:applicationId"
                     element={<ViewProjectDetails />}
+                  />
+
+                  <Route
+                    path="/round/:chainId/:roundId/ballot"
+                    element={<ViewBallot />}
                   />
 
                   {/* Access Denied */}
