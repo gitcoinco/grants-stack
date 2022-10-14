@@ -3,6 +3,7 @@ import "react-datetime/css/react-datetime.css";
 import { XIcon } from "@heroicons/react/solid";
 import { FormWizard } from "../common/FormWizard";
 import { RoundDetailForm } from "./RoundDetailForm";
+import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { Button } from "../common/styles";
 import Navbar from "../common/Navbar";
@@ -48,7 +49,11 @@ export default function CreateRound() {
           </header>
           <main>
             <FormWizard
-              steps={[RoundDetailForm, RoundApplicationForm]}
+              steps={[
+                RoundDetailForm,
+                ApplicationEligibilityForm,
+                RoundApplicationForm,
+              ]}
               initialData={{ program }}
             />
           </main>
