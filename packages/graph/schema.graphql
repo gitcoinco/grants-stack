@@ -86,3 +86,31 @@ type RoundProject @entity {
   round: Round!
   payoutAddress: String
 }
+
+
+########################
+# = VotingStrategy = #
+########################
+
+# id = votingContractAddress.toHex()
+type VotingStrategy @entity {
+  id: ID!
+  strategyName: String!
+  strategyAddress: String!
+  round: Round!
+  votes: [QFVote!] @derivedFrom(field: "votingStrategy")
+}
+
+########################
+# = QFVotingStrategy = #
+########################
+
+# id = event.transaction.hash.toHex()
+type QFVote @entity {
+  id: ID!
+  votingStrategy: VotingStrategy!
+  token: String!
+  amount: Int!
+  from: String!
+  to: String!
+}

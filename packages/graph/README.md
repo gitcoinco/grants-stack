@@ -22,21 +22,25 @@ The following sections document the hosted services where the subgraph is deploy
 
 ```
 .
-├── abis                        # human-readable abis of deployed contracts
-├── docs                        # useful documentation
+├── abis                            # human-readable abis of deployed contracts
+├── docs                            # useful documentation
 ├── src
 │   ├── program
-│       ├── factory.ts          # ProgramFactory event handlers
-│       ├── implementation.ts   # ProgramImplementation event handlers
+│       ├── factory.ts              # ProgramFactory event handlers
+│       ├── implementation.ts       # ProgramImplementation event handlers
 │   ├── round
-│       ├── factory.ts          # RoundFactory event handlers
-│       ├── implementation.ts   # RoundImplementation event handlers
-│   ├── utils.ts                # useful helper functions
-├── schema.graphql              # Entity schema
-├── config                      # Chain + contract configuration
-├── subgraph.template.yaml      # Subgraph configuration
-├── tsconfig.json               # Typescript configuration
-├── package.json                # Package configuration
+│       ├── factory.ts              # RoundFactory event handlers
+│       ├── implementation.ts       # RoundImplementation event handlers
+│   ├── votingStrategy
+│       ├── QuadraticFunding
+│           ├── factory.ts          # QFFactory event handlers
+│           ├── implementation.ts   # QFImplementation event handlers
+│   ├── utils.ts                    # useful helper functions
+├── schema.graphql                  # Entity schema
+├── config                          # Chain + contract configuration
+├── subgraph.template.yaml          # Subgraph configuration
+├── tsconfig.json                   # Typescript configuration
+├── package.json                    # Package configuration
 └── .gitignore
 └── README.md
 ```
@@ -46,6 +50,7 @@ The following sections document the hosted services where the subgraph is deploy
 To know more about the queries which can be run on the playground, check out the documentation for
 - [Program](/docs/Program.md)
 - [Round](/docs/Round.md)
+- [QFVotingStrategy](/docs/QFVotingStrategy.md)
 
 To know the relationship between the different entities and the type of queries. Refer [schema.graphql](./schema.graphql)
 

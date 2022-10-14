@@ -53,7 +53,31 @@ dataSources:
         - event: RoundCreated(indexed address,indexed address,indexed address)
           handler: handleRoundCreated
       file: ./src/round/factory.ts
-    
+
+  # QuadraticFundingVotingStrategyFactory
+  - kind: ethereum/contract
+    name: QuadraticFundingVotingStrategy
+    network: {{ network }}
+    source:
+      address: '{{ QFVotingStrategyFactoryAddress }}'
+      abi: QuadraticFundingVotingStrategyFactory
+      startBlock: {{ startBlock }} 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - VotingStrategy
+      abis:
+        - name: QuadraticFundingVotingStrategyFactory
+          file: ./abis/QuadraticFundingVotingStrategyFactory.json
+        - name: QuadraticFundingVotingStrategyImplementation
+          file: ./abis/QuadraticFundingVotingStrategyImplementation.json
+      eventHandlers:
+        - event: VotingContractCreated(indexed address,indexed address)
+          handler: handleQFVotingContractCreated
+      file: ./src/votingStrategy/QuadraticFunding/factory.ts
+  
 templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
