@@ -2,13 +2,17 @@ import { FormStepper } from "../common/FormStepper";
 import { useContext } from "react";
 import { FormContext } from "../common/FormWizard";
 import {
+  FieldArrayWithId,
   FieldErrors,
   SubmitHandler,
+  useFieldArray,
   useForm,
+  UseFormRegister,
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Round } from "../api/types";
-import { Input } from "../common/styles";
+import { Button, Input } from "../common/styles";
+import { PlusSmIcon } from "@heroicons/react/solid";
 
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
@@ -19,13 +23,29 @@ export default function ApplicationEligibilityForm(
 ) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
+
+  const defaultEligibilityFormData: Round["eligibility"] =
+    formData?.eligibility ?? {
+      description: "",
+      requirements: [{ requirement: "" }], // NB: start with 1 requirement
+    };
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<Round>({
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      eligibility: defaultEligibilityFormData,
+    },
   });
+
+  const { fields, append } = useFieldArray({
+    name: "eligibility.requirements",
+    control,
+  });
+
   const FormStepper = props.stepper;
 
   const next: SubmitHandler<Round> = async (values) => {
@@ -58,16 +78,10 @@ export default function ApplicationEligibilityForm(
                     }
                   />
 
-                  <p className="text-grey-400 mb-6">
-                    What requirements do you have for applicants?
-                  </p>
-
-                  <RoundEligibilityQuestion
-                    register={register("eligibility.requirements")}
-                    errors={errors}
-                    labelText={"Requirement 1"}
-                    inputId={"eligibility.requirements"}
-                    inputPlaceholder={"Enter an eligibility requirement."}
+                  <DynamicRequirementsForm
+                    fields={fields}
+                    register={register}
+                    append={append}
                   />
                 </div>
               </div>
@@ -119,6 +133,50 @@ function RoundEligibilityQuestion(props: {
         id={props.inputId}
         placeholder={props.inputPlaceholder}
       />
+    </div>
+  );
+}
+
+function DynamicRequirementsForm(props: {
+  fields: FieldArrayWithId<Round, "eligibility.requirements">[];
+  register: UseFormRegister<Round>;
+  append: (newRequirement: any) => void;
+}) {
+  const { fields, register, append } = props;
+  return (
+    <div>
+      <p className="text-grey-400 mb-6">
+        What requirements do you have for applicants?
+      </p>
+      <ul>
+        {fields.map((item, index) => (
+          <li key={item.id} className="mb-4">
+            <label
+              htmlFor={`Requirement ${index + 1}`}
+              className="block text-sm"
+            >
+              {`Requirement ${index + 1}`}
+            </label>
+            <Input
+              {...register(`eligibility.requirements.${index}.requirement`)}
+              type="text"
+              placeholder="Enter an eligibility requirement."
+              data-testid="requirement-input"
+            />
+          </li>
+        ))}
+      </ul>
+      <Button
+        type="button"
+        $variant="outline"
+        className="inline-flex items-center px-3.5 py-2 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
+        onClick={() => {
+          append({ requirement: "" });
+        }}
+      >
+        <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+        Add A Requirement
+      </Button>
     </div>
   );
 }

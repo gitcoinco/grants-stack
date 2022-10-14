@@ -156,7 +156,7 @@ export interface Round {
    */
   eligibility?: {
     description: string;
-    requirements: string;
+    requirements: { requirement: string }[];
   };
 }
 
