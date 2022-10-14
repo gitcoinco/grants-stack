@@ -14,13 +14,9 @@ export async function validateProjectForm(inputs: FormInputs) {
       .required("Project Website is required"),
   });
 
-  const validationInput: FormInputs = { ...inputs };
+  const sanitizedInput = await schema.validate(inputs, { abortEarly: false });
 
-  validationInput.website = `https://${validationInput.website || ""}`;
-
-  await schema.validate(validationInput, { abortEarly: false });
-
-  return inputs;
+  return sanitizedInput;
 }
 
 export async function validateApplication(
