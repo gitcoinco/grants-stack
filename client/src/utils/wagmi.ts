@@ -10,14 +10,56 @@ const infuraId = process.env.INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
 
+const fantomTestnet: Chain = {
+  id: 4002,
+  name: "Fantom Testnet",
+  network: "fantom testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Fantom",
+    symbol: "FTM",
+  },
+  rpcUrls: {
+    default: "https://rpc.ankr.com/fantom_testnet/",
+  },
+  blockExplorers: {
+    default: { name: "ftmscan", url: "https://testnet.ftmscan.com" },
+  },
+  testnet: true,
+};
+
+const fantomMainnet: Chain = {
+  id: 250,
+  name: "Fantom",
+  network: "fantom mainnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Fantom",
+    symbol: "FTM",
+  },
+  rpcUrls: {
+    default: "https://rpc.ankr.com/fantom/",
+  },
+  blockExplorers: {
+    default: { name: "ftmscan", url: "https://ftmscan.com" },
+  },
+  testnet: false,
+};
+
 if (process.env.REACT_APP_LOCALCHAIN) {
   chainsAvailable.push(chain.hardhat);
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.optimism, chain.goerli, chain.optimismKovan);
+  chainsAvailable.push(
+    chain.optimism,
+    chain.goerli,
+    chain.optimismKovan,
+    fantomTestnet,
+    fantomMainnet
+  );
 } else {
-  chainsAvailable.push(chain.goerli, chain.optimismKovan);
+  chainsAvailable.push(chain.goerli, chain.optimismKovan, fantomTestnet);
 }
 
 export const { chains, provider } = configureChains(chainsAvailable, [
