@@ -150,6 +150,14 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
+
+  /**
+   * Content of Grant Explorer application page
+   */
+  eligibility?: {
+    description: string;
+    requirements: { requirement: string }[];
+  };
 }
 
 export type ProjectStatus =
