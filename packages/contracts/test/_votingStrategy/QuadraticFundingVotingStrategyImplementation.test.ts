@@ -8,7 +8,7 @@ import { MockERC20, QuadraticFundingVotingStrategyImplementation } from "../../t
 import { Event, Wallet } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 
-describe("QuadraticFundingVotingStrategyImplementation", () =>  {
+describe.only("QuadraticFundingVotingStrategyImplementation", () =>  {
 
 	let user: SignerWithAddress;
 	let quadraticFundingVotingStrategy: QuadraticFundingVotingStrategyImplementation;
@@ -254,13 +254,13 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 					}
 				})
 
-				it.only("invoking vote SHOULD rever if there are insufficent funds", async() => {
+				it("invoking vote SHOULD revert if there are insufficent funds", async() => {
 					// Invoke init
 					await quadraticFundingVotingStrategy.init();
 
 					const txn = quadraticFundingVotingStrategy.vote(encodedVotesInNativeToken, user.address, {value: '100000000000000000'});
 
-					await expect(txn).to.revertedWith("vote: insufficient native token");
+					await expect(txn).to.revertedWith("Address: insufficient balance");
 				});
 
 
