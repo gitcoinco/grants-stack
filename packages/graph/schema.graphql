@@ -110,7 +110,8 @@ type QFVote @entity {
   id: ID!
   votingStrategy: VotingStrategy!
   token: String!
-  amount: Int!
+  amount: BigInt!
   from: String!
   to: String!
+  round: Round!
 }

@@ -13,7 +13,7 @@ dataSources:
     source:
       address: '{{ programFactoryAddress }}'
       abi: ProgramFactory
-      startBlock: {{ startBlock }} 
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -29,7 +29,7 @@ dataSources:
         - event: ProgramCreated(indexed address,indexed address)
           handler: handleProgramCreated
       file: ./src/program/factory.ts
-  
+
   # RoundFactory
   - kind: ethereum/contract
     name: Round
@@ -37,7 +37,7 @@ dataSources:
     source:
       address: '{{ roundFactoryAddress }}'
       abi: RoundFactory
-      startBlock: {{ startBlock }} 
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -61,7 +61,7 @@ dataSources:
     source:
       address: '{{ QFVotingStrategyFactoryAddress }}'
       abi: QuadraticFundingVotingStrategyFactory
-      startBlock: {{ startBlock }} 
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -75,9 +75,9 @@ dataSources:
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
         - event: VotingContractCreated(indexed address,indexed address)
-          handler: handleQFVotingContractCreated
+          handler: handleContractCreated
       file: ./src/votingStrategy/QuadraticFunding/factory.ts
-  
+
 templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
@@ -126,4 +126,24 @@ templates:
         - event: ProjectsMetaPtrUpdated((uint256,string),(uint256,string))
           handler: handleProjectsMetaPtrUpdated
       file: ./src/round/implementation.ts
-    
+
+  # QuadraticFundingVotingStrategyImplementation
+  - kind: ethereum/contract
+    name: QuadraticFundingVotingStrategyImplementation
+    network: {{ network }}
+    source:
+      abi: QuadraticFundingVotingStrategyImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - QFVote
+      abis:
+        - name: QuadraticFundingVotingStrategyImplementation
+          file: ./abis/QuadraticFundingVotingStrategyImplementation.json
+      eventHandlers:
+        - event: Voted(address,uint256,indexed address,indexed address,indexed address)
+          handler: handleVote
+
+      file: ./src/votingStrategy/quadraticFunding/implementation.ts
