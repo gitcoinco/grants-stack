@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -138,23 +139,24 @@ function Round() {
           {roundData?.roundMetadata.name}
         </h2>
         <h4 className="text-center">{roundData?.roundMetadata.description}</h4>
-        {props.applicationEnded ? (
-          <>
-            <div className="flex flex-col mt-3 mb-8 text-secondary-text">
-              {/* <div className="flex flex-1 flex-col mt-12">
+
+        <div className="flex flex-col mt-3 mb-8 text-secondary-text">
+          {/* <div className="flex flex-1 flex-col mt-12">
                 <span>Matching Funds Available:</span>
                 <span>$XXX,XXX</span>
               </div> */}
-              <div className="flex flex-1 flex-col mt-8">
-                <span>Application Date:</span>
-                <span>{renderApplicationDate()}</span>
-              </div>
-              <div className="flex flex-1 flex-col mt-8">
-                <span>Round Date:</span>
-                <span>{renderRoundDate()}</span>
-              </div>
-            </div>
-            <div className="flex flex-1 flex-col mt-8">
+          <div className="flex flex-1 flex-col mt-8">
+            <span>Application Date:</span>
+            <span>{renderApplicationDate()}</span>
+          </div>
+          <div className="flex flex-1 flex-col mt-8">
+            <span>Round Date:</span>
+            <span>{renderRoundDate()}</span>
+          </div>
+        </div>
+        <div className="flex flex-1 flex-col mt-8">
+          {props.applicationEnded ? (
+            <>
               <Button
                 styles={[
                   "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100",
@@ -164,7 +166,6 @@ function Round() {
               >
                 Application Ended
               </Button>
-
               <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
                 <span>The application period for this round has ended.</span>
                 <span>
@@ -174,34 +175,35 @@ function Round() {
                   </Link>
                 </span>
               </div>
+            </>
+          ) : (
+            <div className="flex flex-1 flex-col w-full">
+              {Object.keys(props.projects).length !== 0 ? (
+                <Link to={roundApplicationPath(chainId!, roundId!)}>
+                  <Button
+                    styles={[
+                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm",
+                    ]}
+                    variant={ButtonVariants.primary}
+                  >
+                    Apply to this round
+                  </Button>
+                </Link>
+              ) : (
+                <Link to={newGrantPath()}>
+                  <Button
+                    styles={[
+                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm",
+                    ]}
+                    variant={ButtonVariants.primary}
+                  >
+                    Create Project
+                  </Button>
+                </Link>
+              )}
             </div>
-          </>
-        ) : (
-          <div className="p-8 flex flex-col">
-            <p className="mt-4 mb-12 w-full text-center">
-              Date: {renderApplicationDate()}
-            </p>
-            {Object.keys(props.projects).length !== 0 ? (
-              <Link to={roundApplicationPath(chainId!, roundId!)}>
-                <Button
-                  styles={["w-full justify-center"]}
-                  variant={ButtonVariants.primary}
-                >
-                  Apply to this round
-                </Button>
-              </Link>
-            ) : (
-              <Link to={newGrantPath()}>
-                <Button
-                  styles={["w-full justify-center"]}
-                  variant={ButtonVariants.primary}
-                >
-                  Create Project
-                </Button>
-              </Link>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
