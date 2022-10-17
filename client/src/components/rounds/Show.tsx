@@ -134,7 +134,9 @@ function Round() {
         <h2 className="text-center uppercase text-2xl">
           {roundData?.programName}
         </h2>
-        <h2 className="text-center">{roundData?.roundMetadata.name}</h2>
+        <h2 className="text-center text-2xl">
+          {roundData?.roundMetadata.name}
+        </h2>
         <h4 className="text-center">{roundData?.roundMetadata.description}</h4>
         {props.applicationEnded ? (
           <>
