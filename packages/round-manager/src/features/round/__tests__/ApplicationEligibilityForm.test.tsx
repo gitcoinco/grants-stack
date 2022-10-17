@@ -105,7 +105,7 @@ describe("form submission", () => {
   });
 
   it("should set form data with default description and requirement 1 when form is submitted", async () => {
-    const expectedEligibilityFormData: Round["eligibility"] = {
+    const expectedEligibilityFormData: Round["roundMetadata"]["eligibility"] = {
       description: "",
       requirements: [{ requirement: "" }],
     };
@@ -124,14 +124,16 @@ describe("form submission", () => {
       expect(setFormData).toBeCalled();
     });
     expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
+      roundMetadata: {
+        eligibility: expectedEligibilityFormData,
+      },
     });
   });
 
   it("should set form data with user input when form is submitted", async () => {
     const expectedDescription = faker.lorem.sentence();
     const expectedRequirement = faker.lorem.sentence();
-    const expectedEligibilityFormData: Round["eligibility"] = {
+    const expectedEligibilityFormData: Round["roundMetadata"]["eligibility"] = {
       description: expectedDescription,
       requirements: [{ requirement: expectedRequirement }],
     };
@@ -156,12 +158,14 @@ describe("form submission", () => {
       expect(setFormData).toBeCalled();
     });
     expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
+      roundMetadata: {
+        eligibility: expectedEligibilityFormData,
+      },
     });
   });
 
   it("should set form data with multiple requirements when form is submitted", async () => {
-    const expectedEligibilityFormData: Round["eligibility"] = {
+    const expectedEligibilityFormData: Round["roundMetadata"]["eligibility"] = {
       description: "",
       requirements: [
         { requirement: "" },
@@ -189,7 +193,9 @@ describe("form submission", () => {
       expect(setFormData).toBeCalled();
     });
     expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
+      roundMetadata: {
+        eligibility: expectedEligibilityFormData,
+      },
     });
   });
 });

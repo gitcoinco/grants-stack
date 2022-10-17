@@ -24,8 +24,10 @@ export default function ApplicationEligibilityForm(
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
 
-  const defaultEligibilityFormData: Round["eligibility"] =
-    formData?.eligibility ?? {
+  const initialRoundMetadata: Round["roundMetadata"] =
+    formData?.roundMetadata ?? {};
+  const defaultEligibilityFormData: Round["roundMetadata"]["eligibility"] =
+    initialRoundMetadata?.eligibility ?? {
       description: "",
       requirements: [{ requirement: "" }], // NB: start with 1 requirement
     };
@@ -37,12 +39,15 @@ export default function ApplicationEligibilityForm(
   } = useForm<Round>({
     defaultValues: {
       ...formData,
-      eligibility: defaultEligibilityFormData,
+      roundMetadata: {
+        ...initialRoundMetadata,
+        eligibility: defaultEligibilityFormData,
+      },
     },
   });
 
   const { fields, append } = useFieldArray({
-    name: "eligibility.requirements",
+    name: "roundMetadata.eligibility.requirements",
     control,
   });
 
@@ -69,7 +74,7 @@ export default function ApplicationEligibilityForm(
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
                   <RoundEligibilityQuestion
-                    register={register("eligibility.description")}
+                    register={register("roundMetadata.eligibility.description")}
                     errors={errors}
                     labelText={"Round Description"}
                     inputId={"eligibility.description"}
@@ -138,7 +143,7 @@ function RoundEligibilityQuestion(props: {
 }
 
 function DynamicRequirementsForm(props: {
-  fields: FieldArrayWithId<Round, "eligibility.requirements">[];
+  fields: FieldArrayWithId<Round, "roundMetadata.eligibility.requirements">[];
   register: UseFormRegister<Round>;
   append: (newRequirement: any) => void;
 }) {
@@ -158,7 +163,9 @@ function DynamicRequirementsForm(props: {
               {`Requirement ${index + 1}`}
             </label>
             <Input
-              {...register(`eligibility.requirements.${index}.requirement`)}
+              {...register(
+                `roundMetadata.eligibility.requirements.${index}.requirement`
+              )}
               type="text"
               placeholder="Enter an eligibility requirement."
               data-testid="requirement-input"
