@@ -62,6 +62,7 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
       } else {
 
         /// @dev erc20 transfer to grant address
+        // slither-disable-next-line arbitrary-send-erc20
         SafeERC20Upgradeable.safeTransferFrom(
           IERC20Upgradeable(_token),
           voterAddress,
