@@ -138,7 +138,7 @@ function Round() {
         <h4 className="text-center">{roundData?.roundMetadata.description}</h4>
         {props.applicationEnded ? (
           <>
-            <div className="flex flex-col my-8 text-secondary-text">
+            <div className="flex flex-col mt-3 mb-8 text-secondary-text">
               {/* <div className="text-xl flex flex-1 flex-col mt-12">
                 <span>Matching Funds Available:</span>
                 <span>$XXX,XXX</span>
@@ -152,7 +152,7 @@ function Round() {
                 <span>{renderRoundDate()}</span>
               </div>
             </div>
-            <div className="flex flex-1 flex-col mt-28">
+            <div className="flex flex-1 flex-col mt-12">
               <Button
                 styles={[
                   "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-4 shadow-gitcoin-sm opacity-100",
