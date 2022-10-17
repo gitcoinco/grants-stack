@@ -27,6 +27,11 @@ const config: HardhatUserConfig = {
   solidity: "0.8.4",
 
   networks: {
+    hardhat: {
+      forking: {
+        url: process.env.GOERLI_URL || "",
+      },
+    },
     goerli: {
       url: process.env.GOERLI_URL || "",
       accounts: {
@@ -42,6 +47,12 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC,
       },
     },
+    fantomTestnet: {
+      url: process.env.FANTOM_TESTNEST_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    }
   },
 
   gasReporter: {

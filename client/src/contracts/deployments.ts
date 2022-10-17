@@ -1,10 +1,15 @@
 export const chains: { [key: number]: string } = {
+  31337: "localhost",
   5: "goerli",
   10: "optimism",
   69: "optimisticKovan",
+  4002: "fantomTestnet",
 };
 
 export const addresses: { [key: string]: any } = {
+  localhost: {
+    projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
+  },
   optimism: {
     projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   },
@@ -13,6 +18,9 @@ export const addresses: { [key: string]: any } = {
   },
   optimisticKovan: {
     projectRegistry: "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a",
+  },
+  fantomTestnet: {
+    projectRegistry: "0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19",
   },
 };
 

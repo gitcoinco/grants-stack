@@ -6,6 +6,7 @@ import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status as ProjectStatus } from "../../reducers/projects";
+import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { newGrantPath, roundApplicationPath } from "../../routes";
 import { formatDate } from "../../utils/components";
@@ -43,15 +44,19 @@ function Round() {
   }, shallowEqual);
 
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
-  const [, setToggleRoundApplicationModal] = useLocalStorage(
-    "toggleRoundApplicationModal",
-    false
-  );
+  const [roundApplicationModal, setToggleRoundApplicationModal] =
+    useLocalStorage(
+      "toggleRoundApplicationModal",
+      ApplicationModalStatus.Undefined
+    );
 
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
-      setToggleRoundApplicationModal(true);
+
+      if (roundApplicationModal === ApplicationModalStatus.Undefined) {
+        setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
+      }
     }
   }, [roundId]);
 

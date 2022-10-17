@@ -35,18 +35,22 @@ export function BaseModal({
       isOpen={isOpen}
       onClose={onClose}
       closeOnOverlayClick={closeOnOverlayClick ?? true}
+      size="xl"
+      isCentered
     >
       <ModalOverlay />
       <ModalContent>
         <>
-          <ModalHeader px={8} pb={1} pt={6}>
-            {title}
-          </ModalHeader>
+          {title && (
+            <ModalHeader px={8} pb={1} pt={6}>
+              {title}
+            </ModalHeader>
+          )}
           {(hideCloseButton === undefined || hideCloseButton === false) && (
             <ModalCloseButton mr={2} />
           )}
           <ModalBody p={0}>
-            <div className="px-8 pb-4">
+            <div className="p-6">
               {/* RSX Element passed in to show desired stamp output */}
               {children}
             </div>

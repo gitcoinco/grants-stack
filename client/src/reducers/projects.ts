@@ -4,7 +4,7 @@ import {
   PROJECTS_LOADED,
   PROJECTS_UNLOADED,
 } from "../actions/projects";
-import { ProjectEvent } from "../types";
+import { ProjectEventsMap } from "../types";
 
 export const enum Status {
   Undefined = 0,
@@ -14,15 +14,17 @@ export const enum Status {
 }
 
 export interface ProjectsState {
-  projects: ProjectEvent[];
   status: Status;
   error: string | undefined;
+  ids: number[];
+  events: ProjectEventsMap;
 }
 
 const initialState = {
   status: Status.Undefined,
   error: undefined,
-  projects: [],
+  ids: [],
+  events: {},
 };
 
 export const projectsReducer = (
@@ -34,17 +36,19 @@ export const projectsReducer = (
       return {
         ...state,
         status: Status.Loading,
-        projects: [],
+        ids: [],
       };
     }
 
     case PROJECTS_LOADED: {
-      const { projects } = action;
+      const { events } = action;
+      const ids = Object.keys(events).map((id) => Number(id));
 
       return {
         ...state,
         status: Status.Loaded,
-        projects,
+        ids,
+        events,
       };
     }
 
@@ -52,7 +56,8 @@ export const projectsReducer = (
       return {
         ...state,
         status: Status.Undefined,
-        projects: [],
+        ids: [],
+        events: {},
       };
     }
     default: {
