@@ -393,11 +393,8 @@ export const renderWithContext = (
     <MemoryRouter>
       <BulkUpdateGrantApplicationContext.Provider
         value={{
-          state: {
-            ...initialBulkUpdateGrantApplicationState,
-            ...bulkUpdateApplicationStateOverrides,
-          },
-          dispatch,
+          ...initialBulkUpdateGrantApplicationState,
+          ...bulkUpdateApplicationStateOverrides,
         }}
       >
         <ApplicationContext.Provider

@@ -305,7 +305,6 @@ export const updateApplicationList = async (
   let reviewedApplications: any[] = [];
   let foundEntry = false;
 
-  // fetch latest ipfs pointer to the list of application for the round
   const res = await graphql_fetch(
     `
           query GetApplicationListPointer($roundId: String!) {

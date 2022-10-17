@@ -236,7 +236,8 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectTwitterOverride: expectedTwitterHandle,
     });
-    grantApplicationWithNoVc.project.credentials = {};
+
+    grantApplicationWithNoVc.project!.credentials = {};
     (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -260,7 +261,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectGithubOverride: expectedGithubOrganizationName,
     });
-    grantApplicationWithNoVc.project.credentials = {};
+    grantApplicationWithNoVc.project!.credentials = {};
     (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -311,7 +312,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectTwitterOverride: handle.toLowerCase(),
     });
-    grantApplication.project.projectTwitter = handle.toUpperCase();
+    grantApplication.project!.projectTwitter = handle.toUpperCase();
     (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -336,7 +337,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectGithubOverride: handle.toLowerCase(),
     });
-    grantApplication.project.projectGithub = handle.toUpperCase();
+    grantApplication.project!.projectGithub = handle.toUpperCase();
     (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -411,7 +412,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectGithubOverride: "whatever",
     });
-    grantApplication.project.credentials["github"].issuer = fakeIssuer;
+    grantApplication.project!.credentials["github"].issuer = fakeIssuer;
     (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -436,7 +437,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectTwitterOverride: handle,
     });
-    grantApplication.project.projectTwitter = "not some handle";
+    grantApplication.project!.projectTwitter = "not some handle";
     (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -461,7 +462,7 @@ describe("ViewApplicationPage verification badges", () => {
       applicationIdOverride,
       projectGithubOverride: handle,
     });
-    grantApplication.project.projectGithub = "not some handle";
+    grantApplication.project!.projectGithub = "not some handle";
     (getApplicationById as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
@@ -489,7 +490,7 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      grantApplicationData.project.owners.forEach((it) => {
+      grantApplicationData.project!.owners.forEach((it) => {
         it.address = "bad";
       });
       (getApplicationById as any).mockResolvedValue(grantApplicationData);
@@ -514,10 +515,7 @@ export const renderWithContext = (
   render(
     <MemoryRouter>
       <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          state: initialBulkUpdateGrantApplicationState,
-          dispatch,
-        }}
+        value={initialBulkUpdateGrantApplicationState}
       >
         <RoundContext.Provider
           value={{

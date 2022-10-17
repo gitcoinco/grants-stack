@@ -10,6 +10,7 @@ import {
   updateApplicationList,
 } from "../../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
+import { faker } from "@faker-js/faker";
 
 jest.mock("../../../features/api/application");
 jest.mock("../../../features/api/subgraph");
@@ -126,7 +127,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     });
 
     it("sets indexing status to completed when subgraph is finished indexing", async () => {
-      const transactionBlockNumber = 10;
+      const transactionBlockNumber = faker.datatype.number();
       (updateApplicationList as jest.Mock).mockResolvedValue("bafabcdef");
       (updateRoundContract as jest.Mock).mockResolvedValue({
         transactionBlockNumber,

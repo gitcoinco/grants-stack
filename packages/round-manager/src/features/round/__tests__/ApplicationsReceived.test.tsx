@@ -428,10 +428,7 @@ export const renderWithContext = (
   render(
     <MemoryRouter>
       <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          state: initialBulkUpdateGrantApplicationState,
-          dispatch,
-        }}
+        value={initialBulkUpdateGrantApplicationState}
       >
         <ApplicationContext.Provider
           value={{
