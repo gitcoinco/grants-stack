@@ -1,6 +1,7 @@
 import ListProgramPage from "../ListProgramPage";
 import { screen } from "@testing-library/react";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
+import { ProgressStatus } from "../../api/types";
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
@@ -18,7 +19,7 @@ describe("<ListProgramPage />", () => {
   it("does not render a list of programs when no programs have been created", () => {
     renderWithProgramContext(<ListProgramPage />, {
       programs: [],
-      fetchProgramsStatus: false,
+      fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
     });
 
     expect(screen.queryAllByTestId("program-card")).toHaveLength(0);
@@ -27,7 +28,7 @@ describe("<ListProgramPage />", () => {
   it("renders a list of programs when programs have been created", async () => {
     renderWithProgramContext(<ListProgramPage />, {
       programs: [makeProgramData(), makeProgramData()],
-      fetchProgramsStatus: false,
+      fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
     });
 
     expect(await screen.findAllByTestId("program-card")).toHaveLength(2);
@@ -35,7 +36,7 @@ describe("<ListProgramPage />", () => {
 
   it("shows loading while fetching list of programs", async () => {
     renderWithProgramContext(<ListProgramPage />, {
-      fetchProgramsStatus: true,
+      fetchProgramsStatus: ProgressStatus.IN_PROGRESS,
       programs: [],
     });
 
