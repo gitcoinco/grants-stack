@@ -9,11 +9,11 @@ import {
 import { Spinner } from "../common/Spinner";
 import Navbar from "../common/Navbar";
 import {
-  CardFooter,
-  CardFooterContent,
   BasicCard,
   CardContent,
   CardDescription,
+  CardFooter,
+  CardFooterContent,
   CardsContainer,
   CardTitle,
 } from "../common/styles";
@@ -21,6 +21,7 @@ import { ReactComponent as Banner } from "../../assets/programs/city-voxel.svg";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { usePrograms } from "../../context/program/ReadProgramContext";
+import { ProgressStatus } from "../api/types";
 
 interface ProgramCardProps {
   floatingIcon: JSX.Element;
@@ -78,7 +79,8 @@ function ListPrograms() {
     return !programs || programs.length === 0;
   }
 
-  const isSuccess = !fetchProgramsStatus && !listProgramsError;
+  const isSuccess =
+    fetchProgramsStatus === ProgressStatus.IS_SUCCESS && !listProgramsError;
 
   const programList = programs.map((program, key) => (
     <Link to={`/program/${program.id}`} key={key}>
@@ -126,7 +128,7 @@ function ListPrograms() {
           {programList}
         </CardsContainer>
 
-        {fetchProgramsStatus && (
+        {fetchProgramsStatus === ProgressStatus.IN_PROGRESS && (
           <Spinner text="We're fetching your Programs." />
         )}
       </main>
