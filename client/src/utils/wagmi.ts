@@ -1,5 +1,5 @@
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { Chain, chain, configureChains, createClient } from "wagmi";
+import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
@@ -14,6 +14,7 @@ const fantomTestnet: Chain = {
   id: 4002,
   name: "Fantom Testnet",
   network: "fantom testnet",
+  iconUrl: "https://fantomrock.com/img/tokens/0.png",
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
@@ -32,6 +33,8 @@ const fantomMainnet: Chain = {
   id: 250,
   name: "Fantom",
   network: "fantom mainnet",
+  iconUrl:
+    "https://ipfs.io/ipns/k51qzi5uqu5di9fpr1u08putyfwqdzwue8dbxq0047mid8hj85hfetm9bw71tv",
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
