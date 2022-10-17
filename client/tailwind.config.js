@@ -4,6 +4,9 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      boxShadow: {
+        'gitcoin-sm': '0px 1px 2px rgba(0, 0, 0, 0.05)',
+      },
       colors: {
         // Very open to better naming here :)
         'primary-background': '#6F3FF5',
@@ -16,6 +19,7 @@ module.exports = {
         'danger-text': '#D03E63',
         'green-text': '#11BC92',
         'gitcoin-gold': '#E1B815',
+        'gitcoin-grey-300': '#A7A2B6',
         'gitcoin-yellow': '#FFF8DB',
         'gitcoin-pink-500': '#D44D6E',
         'gitcoin-pink-100': '#FDDEE4',
