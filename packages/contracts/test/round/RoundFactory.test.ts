@@ -87,6 +87,7 @@ describe("RoundFactory", function () {
 
         const params = [
           Wallet.createRandom().address, // _votingStrategyAddress
+          Wallet.createRandom().address, // _payoutStrategyAddress
           applicationsStartTime, // _applicationsStartTime
           applicationsEndTime, // _applicationsEndTime
           roundStartTime, // _roundStartTime
@@ -116,6 +117,7 @@ describe("RoundFactory", function () {
 
         const params = [
           Wallet.createRandom().address, // _votingStrategyAddress
+          Wallet.createRandom().address, // _payoutStrategyAddress
           applicationsStartTime, // _applicationsStartTime
           applicationsEndTime, // _applicationsEndTime
           roundStartTime, // _roundStartTime

@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../votingStrategy/IVotingStrategy.sol";
+import "../payoutStrategy/IPayoutStrategy.sol";
 
 import "../utils/MetaPtr.sol";
 
@@ -69,6 +70,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Voting Strategy Contract Address
   IVotingStrategy public votingStrategy;
 
+  /// @notice Payout Strategy Contract Address
+  IPayoutStrategy public payoutStrategy;
+
   /// @notice Unix timestamp from when round can accept applications
   uint256 public applicationsStartTime;
 
@@ -99,6 +103,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    * @notice Instantiates a new round
    * @param encodedParameters Encoded parameters for program creation
    * @dev encodedParameters
+   *  - _votingStrategy Deployed voting strategy contract
+   *  - _payoutStrategy Deployed payout strategy contract
    *  - _applicationsStartTime Unix timestamp from when round can accept applications
    *  - _applicationsEndTime Unix timestamp from when round stops accepting applications
    *  - _roundStartTime Unix timestamp of the start of the round
@@ -115,6 +121,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     // Decode _encodedParameters
     (
       IVotingStrategy _votingStrategy,
+      IPayoutStrategy _payoutStrategy,
       uint256 _applicationsStartTime,
       uint256 _applicationsEndTime,
       uint256 _roundStartTime,
@@ -127,6 +134,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     ) = abi.decode(
       encodedParameters, (
       IVotingStrategy,
+      IPayoutStrategy,
       uint256,
       uint256,
       uint256,
@@ -149,6 +157,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
 
     votingStrategy = _votingStrategy;
+    payoutStrategy = _payoutStrategy;
     applicationsStartTime = _applicationsStartTime;
     applicationsEndTime = _applicationsEndTime;
     roundStartTime = _roundStartTime;
@@ -157,6 +166,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     // Invoke init on voting contract
     votingStrategy.init();
+
+    // Invoke init on payout contract
+    payoutStrategy.init();
 
     // Emit RoundMetaPtrUpdated event for indexing
     emit RoundMetaPtrUpdated(roundMetaPtr, _roundMetaPtr);
@@ -280,5 +292,11 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     );
 
     votingStrategy.vote(encodedVotes, msg.sender);
+  }
+
+  /// @notice Invoked by round operator to update distribution on payout contract
+  /// @param encodedDistribution encoded distribution
+  function updateDistribution(bytes memory encodedDistribution) external onlyRole(ROUND_OPERATOR_ROLE) {
+    payoutStrategy.updateDistribution(encodedDistribution);
   }
 }

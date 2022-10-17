@@ -228,13 +228,30 @@ function initialize(bytes encodedParameters) external nonpayable
 
 Instantiates a new round
 
-*encodedParameters  - _applicationsStartTime Unix timestamp from when round can accept applications  - _applicationsEndTime Unix timestamp from when round stops accepting applications  - _roundStartTime Unix timestamp of the start of the round  - _roundEndTime Unix timestamp of the end of the round  - _token Address of the ERC20 token for accepting matching pool contributions  - _roundMetaPtr MetaPtr to the round metadata  - _applicationMetaPtr MetaPtr to the application form schema  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE*
+*encodedParameters  - _votingStrategy Deployed voting strategy contract  - _payoutStrategy Deployed payout strategy contract  - _applicationsStartTime Unix timestamp from when round can accept applications  - _applicationsEndTime Unix timestamp from when round stops accepting applications  - _roundStartTime Unix timestamp of the start of the round  - _roundEndTime Unix timestamp of the end of the round  - _token Address of the ERC20 token for accepting matching pool contributions  - _roundMetaPtr MetaPtr to the round metadata  - _applicationMetaPtr MetaPtr to the application form schema  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
+
+### payoutStrategy
+
+```solidity
+function payoutStrategy() external view returns (contract IPayoutStrategy)
+```
+
+Payout Strategy Contract Address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract IPayoutStrategy | undefined |
 
 ### projectsMetaPtr
 
@@ -426,6 +443,22 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 | Name | Type | Description |
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
+
+### updateDistribution
+
+```solidity
+function updateDistribution(bytes encodedDistribution) external nonpayable
+```
+
+Invoked by round operator to update distribution on payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| encodedDistribution | bytes | encoded distribution |
 
 ### updateProjectsMetaPtr
 

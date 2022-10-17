@@ -7,6 +7,7 @@ import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
 import { programParams } from "../config/program.config";
 import { QFVotingParams } from "../config/votingStrategy.config";
+import { PayoutParams } from "../config/payoutStrategy.config";
 import { encodeRoundParameters } from "../utils";
 import * as utils from "../utils";
 
@@ -19,6 +20,7 @@ export async function main() {
   const networkParams = roundParams[network.name];
   const programNetworkParams = programParams[network.name];
   const votingNetworkParams = QFVotingParams[network.name];
+  const payoutNetworkParams = PayoutParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
@@ -29,6 +31,7 @@ export async function main() {
   const programContract = programNetworkParams.programContract;
 
   const votingContract = votingNetworkParams.contract;
+  const payoutContract = payoutNetworkParams.merklePayoutContract;
   
   if (!roundFactoryContract) {
     throw new Error(`error: missing roundFactoryContract`);
@@ -50,6 +53,7 @@ export async function main() {
     "roundImplementationContract"  : roundImplementationContract,
     "programContractAddress"       : programContract,
     "votingContractAddress"        : votingContract,
+    "payoutContractAddress"        : payoutContract,
     "network"                      : network.name,
     "chainId"                      : network.config.chainId
   });
@@ -61,6 +65,7 @@ export async function main() {
     
   const params = [
     votingContract, // _votingStrategyAddress
+    payoutContract, // _payoutStrategyAddress
     applicationsStartTime, // _applicationsStartTime
     applicationsEndTime, // _applicationsEndTime
     roundStartTime, // _roundStartTime

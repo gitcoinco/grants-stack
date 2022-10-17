@@ -26,6 +26,7 @@ export const encodeRoundParameters = (params: any[]): string => {
   return ethers.utils.defaultAbiCoder.encode(
     [
       "address",
+      "address",
       "uint256",
       "uint256",
       "uint256",

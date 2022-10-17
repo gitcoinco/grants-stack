@@ -8,7 +8,7 @@ import { MerklePayoutStrategy } from "../../typechain";
 import { AddressZero } from "@ethersproject/constants";
 import { encodeMerkleUpdateDistributionParameters } from "../../scripts/utils";
 
-describe.only("MerklePayoutStrategy", () =>  {
+describe("MerklePayoutStrategy", () =>  {
 
   let user: SignerWithAddress;
   let merklePayoutStrategy: MerklePayoutStrategy;
