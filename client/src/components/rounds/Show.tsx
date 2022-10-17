@@ -139,23 +139,23 @@ function Round() {
         {props.applicationEnded ? (
           <>
             <div className="flex flex-col mt-3 mb-8 text-secondary-text">
-              {/* <div className="text-xl flex flex-1 flex-col mt-12">
+              {/* <div className="flex flex-1 flex-col mt-12">
                 <span>Matching Funds Available:</span>
                 <span>$XXX,XXX</span>
               </div> */}
-              <div className="text-xl flex flex-1 flex-col mt-12">
+              <div className="flex flex-1 flex-col mt-8">
                 <span>Application Date:</span>
                 <span>{renderApplicationDate()}</span>
               </div>
-              <div className="text-xl flex flex-1 flex-col mt-12">
+              <div className="flex flex-1 flex-col mt-8">
                 <span>Round Date:</span>
                 <span>{renderRoundDate()}</span>
               </div>
             </div>
-            <div className="flex flex-1 flex-col mt-12">
+            <div className="flex flex-1 flex-col mt-8">
               <Button
                 styles={[
-                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-4 shadow-gitcoin-sm opacity-100",
+                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100",
                 ]}
                 variant={ButtonVariants.primary}
                 disabled
