@@ -63,12 +63,14 @@ export default function Details({
         <div>
           <a
             target="_blank"
-            href={`https://${project?.website}`}
+            href={project?.website}
             className="flex items-center mr-6 text-primary-background"
             rel="noreferrer"
           >
             <LinkIcon color={colors["secondary-text"]} />{" "}
-            <span className="ml-1">{project?.website}</span>
+            <span className="ml-1">
+              {(project?.website || "").replace(/(^\w+:|^)\/\//, "")}
+            </span>
           </a>
         </div>
         <div>

@@ -94,7 +94,7 @@ export function TextInputAddress({
 export function WebsiteInput({
   label,
   name,
-  value,
+  value = "",
   disabled,
   info,
   placeholder,
@@ -103,10 +103,13 @@ export function WebsiteInput({
 }: InputProps) {
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
-    validatedEvent.target.value = event.target.value.trim();
+    validatedEvent.target.value = `https://${event.target.value.trim()}`;
 
     changeHandler(event);
   };
+
+  const sanitizedInput = (value as string).replace(/(^\w+:|^)\/\//, "");
+
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
       <div className=" flex">
@@ -130,7 +133,7 @@ export function WebsiteInput({
           className="rounded"
           id={label}
           name={name}
-          value={value ?? ""}
+          value={sanitizedInput ?? ""}
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
