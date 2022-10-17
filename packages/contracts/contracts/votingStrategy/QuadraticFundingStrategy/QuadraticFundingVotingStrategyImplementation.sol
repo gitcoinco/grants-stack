@@ -3,7 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+
 import "../IVotingStrategy.sol";
 
 /**
@@ -49,27 +51,19 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
    */
   function vote(bytes[] calldata encodedVotes, address voterAddress) external override payable nonReentrant isRoundContract {
 
-    uint256 nativeTokenValue = msg.value;
-
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
       (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
 
       if (_token == address(0)) {
-
-        require (nativeTokenValue >= _amount, "vote: insufficient native token");
         /// @dev native token transfer to grant address
-        // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
-        (bool success, ) = _grantAddress.call{value: _amount}(new bytes(0));
-
-        require(success, "vote: native token transfer failed");
-        nativeTokenValue = nativeTokenValue - _amount;
-
+        // slither-disable-next-line reentrancy-events
+        AddressUpgradeable.sendValue(payable(_grantAddress), _amount);
       } else {
 
         /// @dev erc20 transfer to grant address
-        // slither-disable-next-line missing-zero-check,calls-loop,reentrancy-events,arbitrary-send-erc20
+        // slither-disable-next-line arbitrary-send-erc20,reentrancy-events,
         SafeERC20Upgradeable.safeTransferFrom(
           IERC20Upgradeable(_token),
           voterAddress,
