@@ -134,6 +134,7 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+          status: Status.NotFound,
         },
       };
     }

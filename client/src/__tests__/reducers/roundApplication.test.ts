@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import {
   roundApplicationReducer,
   RoundApplicationState,
-  Status,
+  Status
 } from "../../reducers/roundApplication";
 import setupStore from "../../store";
 
@@ -73,6 +73,6 @@ describe("roundApplication reducer", () => {
       type: "ROUND_APPLICATION_RESET",
       roundAddress,
     });
-    expect(newState[roundAddress].status).toBe(Status.Undefined);
+    expect(newState[roundAddress]).toBe(undefined);
   });
 });
