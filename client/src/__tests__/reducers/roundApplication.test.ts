@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import {
   roundApplicationReducer,
   RoundApplicationState,
-  Status
+  Status,
 } from "../../reducers/roundApplication";
 import setupStore from "../../store";
 
