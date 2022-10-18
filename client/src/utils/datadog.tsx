@@ -9,14 +9,10 @@ import { datadogRum } from "@datadog/browser-rum";
 const initDatadog = () => {
   // Init datadog-rum
   datadogRum.init({
-    applicationId:
-      process.env.REACT_APP_DATADOG_APPLICATION_ID ||
-      "289e5eec-900d-418b-a042-7dd9c2c53001",
-    clientToken:
-      process.env.REACT_APP_DATADOG_CLIENT_TOKEN ||
-      "pub529c558392d695eb01366afa6ca767a2",
+    applicationId: process.env.REACT_APP_DATADOG_APPLICATION_ID || "",
+    clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN || "",
     site: process.env.REACT_APP_DATADOG_SITE || "datadoghq.eu",
-    service: process.env.REACT_APP_DATADOG_SERVICE || "grant-hub-(staging)",
+    service: process.env.REACT_APP_DATADOG_SERVICE || "",
     // Specify a version number to identify the deployed version of your application in Datadog
     // version: '1.0.0',
     sampleRate: 100,
@@ -27,9 +23,7 @@ const initDatadog = () => {
 
   // Init datadog-logs
   datadogLogs.init({
-    clientToken:
-      process.env.REACT_APP_DATADOG_CLIENT_TOKEN ||
-      "pub4ddcdfbad316469e09629ebad8b56a23",
+    clientToken: process.env.REACT_APP_DATADOG_LOGGER_CLIENT_TOKEN || "",
     site: "datadoghq.eu",
     forwardErrorsToLogs: true,
     sampleRate: 100,
