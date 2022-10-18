@@ -283,7 +283,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Invoked by voter to cast votes
   /// @param encodedVotes encoded vote
-  function vote(bytes[] memory encodedVotes) external {
+  /// @dev value is to handle native token voting
+  function vote(bytes[] memory encodedVotes) external payable {
     // slither-disable-next-line timestamp
     require(
       roundStartTime <= block.timestamp &&
@@ -291,7 +292,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       "vote: round is not active"
     );
 
-    votingStrategy.vote(encodedVotes, msg.sender);
+    votingStrategy.vote{value: msg.value}(encodedVotes, msg.sender);
   }
 
   /// @notice Invoked by round operator to update distribution on payout contract

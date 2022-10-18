@@ -51,5 +51,5 @@ abstract contract IVotingStrategy {
    * @param _encodedVotes encoded votes
    * @param _voterAddress voter address
    */
-  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external virtual;
+  function vote(bytes[] calldata _encodedVotes, address _voterAddress) external virtual payable;
 }

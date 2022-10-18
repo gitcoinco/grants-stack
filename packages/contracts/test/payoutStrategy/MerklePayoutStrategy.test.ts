@@ -33,7 +33,7 @@ describe("MerklePayoutStrategy", () =>  {
 
       expect(await merklePayoutStrategy.roundAddress()).to.equal(AddressZero);
     });
-  })
+  });
 
   describe('core functions', () => {
 

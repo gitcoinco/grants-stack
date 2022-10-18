@@ -52,12 +52,12 @@ Round address
 ### vote
 
 ```solidity
-function vote(bytes[] encodedVotes, address voterAddress) external nonpayable
+function vote(bytes[] encodedVotes, address voterAddress) external payable
 ```
 
 Invoked by RoundImplementation which allows a voted to cast weighted votes to multiple grants during a round
 
-*- more voters -&gt; higher the gas - this would be triggered when a voter casts their vote via grant explorer - can be invoked by the round*
+*- more voters -&gt; higher the gas - this would be triggered when a voter casts their vote via grant explorer - can be invoked by the round - supports ERC20 and Native token transfer*
 
 #### Parameters
 
@@ -89,7 +89,7 @@ event Initialized(uint8 version)
 ### Voted
 
 ```solidity
-event Voted(contract IERC20Upgradeable token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
+event Voted(address token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
 ```
 
 Emitted when a new vote is sent
@@ -100,7 +100,7 @@ Emitted when a new vote is sent
 
 | Name | Type | Description |
 |---|---|---|
-| token  | contract IERC20Upgradeable | undefined |
+| token  | address | undefined |
 | amount  | uint256 | undefined |
 | voter `indexed` | address | undefined |
 | grantAddress `indexed` | address | undefined |

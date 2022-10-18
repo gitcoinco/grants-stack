@@ -527,12 +527,12 @@ Update roundStartTime (only by ROUND_OPERATOR_ROLE)
 ### vote
 
 ```solidity
-function vote(bytes[] encodedVotes) external nonpayable
+function vote(bytes[] encodedVotes) external payable
 ```
 
 Invoked by voter to cast votes
 
-
+*value is to handle native token voting*
 
 #### Parameters
 

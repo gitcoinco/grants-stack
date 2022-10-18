@@ -41,7 +41,7 @@ Round address
 ### vote
 
 ```solidity
-function vote(bytes[] _encodedVotes, address _voterAddress) external nonpayable
+function vote(bytes[] _encodedVotes, address _voterAddress) external payable
 ```
 
 Invoked by RoundImplementation to allow voter to case vote for grants during a round.

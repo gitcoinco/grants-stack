@@ -41,16 +41,20 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
   })
 
 
-  describe('core functions', () => {
+  describe('core functions', () => { 
 
     const randomAddress = Wallet.createRandom().address;
 
-    const grant1 = Wallet.createRandom();
+    let grant1 = Wallet.createRandom();
     const grant1TokenTransferAmount = 150;
+    const grant1NativeTokenTransferAmount = ethers.utils.parseUnits("0.1","ether");
 
-    const grant2 = Wallet.createRandom();
+    let grant2 = Wallet.createRandom();
     const grant2TokenTransferAmount = 50;
+    const grant2NativeTokenTransferAmount = ethers.utils.parseUnits("0.05","ether");
     let encodedVotes: BytesLike[] = [];
+
+    const nativeTokenAddress = AddressZero;
 
     const totalTokenTransfer = grant1TokenTransferAmount + grant2TokenTransferAmount;
 
@@ -94,7 +98,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         encodedVotes = [];
 
-        // Prepare Votes
+        // Prepare Votes - only ERC20
         const votes = [
           [mockERC20.address, grant1TokenTransferAmount, grant1.address],
           [mockERC20.address, grant2TokenTransferAmount, grant2.address],
@@ -111,7 +115,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
       });
 
-      it("invoking vote when roundAddress is not set SHOULD rever transaction", async ()=> {
+      it("invoking vote when roundAddress is not set SHOULD revert transaction", async ()=> {
         const txn =  quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
         await expect(txn).to.revertedWith('error: voting contract not linked to a round');
       });
@@ -151,70 +155,270 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
       });
 
-      it("invoking vote SHOULD transfer balance from user to grant", async() => {
+      describe('test: vote with ERC20', () => {
 
-        // Invoke init
-        await quadraticFundingVotingStrategy.init();
+        it("invoking vote SHOULD transfer balance from user to grant", async() => {
 
-        const beforeVotingUserBalance = await mockERC20.balanceOf(user.address);
-        const beforeVotingGrant1Balance = await mockERC20.balanceOf(grant1.address);
-        const beforeVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
 
-        expect(beforeVotingGrant1Balance).to.equal("0");
-        expect(beforeVotingGrant2Balance).to.equal("0");
+          const beforeVotingUserBalance = await mockERC20.balanceOf(user.address);
+          const beforeVotingGrant1Balance = await mockERC20.balanceOf(grant1.address);
+          const beforeVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
 
-        const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, totalTokenTransfer);
-        approveTx.wait();
+          expect(beforeVotingGrant1Balance).to.equal("0");
+          expect(beforeVotingGrant2Balance).to.equal("0");
 
-        const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
-        txn.wait()
+          const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, totalTokenTransfer);
+          approveTx.wait();
 
-        const afterVotingUserBalance = await mockERC20.balanceOf(user.address);
-        const afterVotingGrant1Balance = await mockERC20.balanceOf(grant1.address);
-        const afterVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
+          const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address);
+          txn.wait()
 
-        expect(afterVotingUserBalance).to.equal(Number(beforeVotingUserBalance) - totalTokenTransfer);
-        expect(afterVotingGrant1Balance).to.equal(grant1TokenTransferAmount);
-        expect(afterVotingGrant2Balance).to.equal(grant2TokenTransferAmount);
+          const afterVotingUserBalance = await mockERC20.balanceOf(user.address);
+          const afterVotingGrant1Balance = await mockERC20.balanceOf(grant1.address);
+          const afterVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
+
+          expect(afterVotingUserBalance).to.equal(Number(beforeVotingUserBalance) - totalTokenTransfer);
+          expect(afterVotingGrant1Balance).to.equal(grant1TokenTransferAmount);
+          expect(afterVotingGrant2Balance).to.equal(grant2TokenTransferAmount);
+
+        });
+
+        it("invoking vote SHOULD emit 2 Vote events", async () => {
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          let votedEvents: Event[] = [];
+
+          const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, totalTokenTransfer);
+          approveTx.wait();
+
+          const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address)
+          txn.wait();
+
+          // check if vote for first grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            mockERC20.address,
+            grant1TokenTransferAmount,
+            user.address,
+            grant1.address,
+            user.address // note: this would be the round contract
+          )
+
+          // check if vote for second grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            mockERC20.address,
+            grant2TokenTransferAmount,
+            user.address,
+            grant2.address,
+            user.address // note: this would be the round contract
+          )
+
+          const receipt = await txn.wait();
+          if (receipt.events) {
+            votedEvents = receipt.events.filter(e => e.event === 'Voted');
+          }
+
+          expect(votedEvents.length).to.equal(2);
+
+        });
+      });
+
+
+      describe('test: vote with native tokens', () => {
+
+        let encodedVotesInNativeToken: BytesLike[] = [];
+
+        // Prepare Votes - only ERC20
+        const votesInNativeToken = [
+          [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address],
+          [nativeTokenAddress, grant2NativeTokenTransferAmount, grant2.address],
+        ];
+
+        beforeEach(async () => {
+          // Deploy QuadraticFundingVotingStrategyImplementation contract
+          quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
+          quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+
+          // Encode Votes
+          encodedVotesInNativeToken = [];
+
+          for (let i = 0; i < votesInNativeToken.length; i++) {
+            encodedVotesInNativeToken.push(
+              ethers.utils.defaultAbiCoder.encode(
+                ["address", "uint256", "address"],
+                votesInNativeToken[i]
+              )
+            );
+          }
+        })
+
+        it("invoking vote SHOULD revert if there are insufficent funds", async() => {
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          const txn = quadraticFundingVotingStrategy.vote(encodedVotesInNativeToken, user.address, {value: '100000000000000000'});
+
+          await expect(txn).to.revertedWith("Address: insufficient balance");
+        });
+
+
+        it("invoking vote SHOULD transfer balance from user to grant", async() => {
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          const beforeVotingGrant1Balance = await ethers.provider.getBalance(grant1.address);
+          const beforeVotingGrant2Balance = await ethers.provider.getBalance(grant2.address);
+
+          expect(beforeVotingGrant1Balance).to.equal("0");
+          expect(beforeVotingGrant2Balance).to.equal("0");
+
+          await quadraticFundingVotingStrategy.vote(encodedVotesInNativeToken, user.address, {value: '150000000000000000'});
+
+          const afterVotingGrant1Balance = await ethers.provider.getBalance(grant1.address);
+          const afterVotingGrant2Balance = await ethers.provider.getBalance(grant2.address);
+
+          expect(afterVotingGrant1Balance).to.equal(grant1NativeTokenTransferAmount);
+          expect(afterVotingGrant2Balance).to.equal(grant2NativeTokenTransferAmount);
+        });
+
+        it("invoking vote SHOULD emit 2 Vote events", async () => {
+
+          let votedEvents: Event[] = [];
+
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          const txn = await quadraticFundingVotingStrategy.vote(encodedVotesInNativeToken, user.address, {value: '150000000000000000'});
+
+          // check if vote for first grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            nativeTokenAddress,
+            grant1NativeTokenTransferAmount,
+            user.address,
+            grant1.address,
+            user.address // note: this would be the round contract
+          )
+
+          // check if vote for second grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            nativeTokenAddress,
+            grant2NativeTokenTransferAmount,
+            user.address,
+            grant2.address,
+            user.address // note: this would be the round contract
+          )
+
+          const receipt = await txn.wait();
+          if (receipt.events) {
+            votedEvents = receipt.events.filter(e => e.event === 'Voted');
+          }
+
+          expect(votedEvents.length).to.equal(2);
+
+        });
 
       });
 
-      it("invoking vote SHOULD emit 2 Vote events", async () => {
-        // Invoke init
-        await quadraticFundingVotingStrategy.init();
+      describe('test: vote with native and ERC20 tokens', () => {
 
-        let votedEvents: Event[] = [];
+        let encodedVotes: BytesLike[] = [];
 
-        const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, totalTokenTransfer);
-        approveTx.wait();
 
-        const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address)
-        txn.wait();
+        beforeEach(async () => {
 
-        // check if vote for first grant fired
-        expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
-          mockERC20.address,
-          grant1TokenTransferAmount,
-          user.address,
-          grant1.address,
-          user.address // note: this would be the round contract
-        )
+          grant1 = Wallet.createRandom();
+          grant2 = Wallet.createRandom();
 
-        // check if vote for second grant fired
-        expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
-          mockERC20.address,
-          grant2TokenTransferAmount,
-          user.address,
-          grant2.address,
-          user.address // note: this would be the round contract
-        )
+          // Deploy QuadraticFundingVotingStrategyImplementation contract
+          quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
+          quadraticFundingVotingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
 
-        const receipt = await txn.wait();
-        if (receipt.events) {
-          votedEvents = receipt.events.filter(e => e.event === 'Voted');
-        }
+          mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+          mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [tokensToBeMinted]);
 
-        expect(votedEvents.length).to.equal(2);
+
+          // Prepare Votes - Native Token + ERC20
+          const votes = [
+            [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address],
+            [mockERC20.address, grant2TokenTransferAmount, grant2.address],
+          ];
+
+          // Encode Votes
+          encodedVotes = [];
+
+          for (let i = 0; i < votes.length; i++) {
+            encodedVotes.push(
+              ethers.utils.defaultAbiCoder.encode(
+                ["address", "uint256", "address"],
+                votes[i]
+              )
+            );
+          }
+        })
+
+        it("invoking vote SHOULD transfer balance from user to grant", async() => {
+
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, grant2TokenTransferAmount);
+          approveTx.wait();
+
+          const beforeVotingGrant1Balance = await ethers.provider.getBalance(grant1.address);
+          const beforeVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
+
+          expect(beforeVotingGrant1Balance).to.equal("0");
+          expect(beforeVotingGrant2Balance).to.equal("0");
+
+          await quadraticFundingVotingStrategy.vote(encodedVotes, user.address, {value: '100000000000000000'});
+
+          const afterVotingGrant1Balance = await ethers.provider.getBalance(grant1.address);
+          const afterVotingGrant2Balance = await mockERC20.balanceOf(grant2.address);
+
+          expect(afterVotingGrant1Balance).to.equal(grant1NativeTokenTransferAmount);
+          expect(afterVotingGrant2Balance).to.equal(grant2TokenTransferAmount);
+        });
+
+        it("invoking vote SHOULD emit 2 Vote events", async () => {
+
+          let votedEvents: Event[] = [];
+
+          // Invoke init
+          await quadraticFundingVotingStrategy.init();
+
+          const approveTx = await mockERC20.approve(quadraticFundingVotingStrategy.address, totalTokenTransfer);
+          approveTx.wait();
+
+          const txn = await quadraticFundingVotingStrategy.vote(encodedVotes, user.address, {value: '100000000000000000'});
+
+          // check if vote for first grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            nativeTokenAddress,
+            grant1NativeTokenTransferAmount,
+            user.address,
+            grant1.address,
+            user.address // note: this would be the round contract
+          )
+
+          // check if vote for second grant fired
+          expect(txn).to.emit(quadraticFundingVotingStrategy, 'Voted').withArgs(
+            mockERC20.address,
+            grant2TokenTransferAmount,
+            user.address,
+            grant2.address,
+            user.address // note: this would be the round contract
+          )
+
+          const receipt = await txn.wait();
+          if (receipt.events) {
+            votedEvents = receipt.events.filter(e => e.event === 'Voted');
+          }
+
+          expect(votedEvents.length).to.equal(2);
+
+        });
 
       });
 
