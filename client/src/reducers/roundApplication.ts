@@ -16,6 +16,8 @@ export const enum Status {
   UploadingMetadata,
   SendingTx,
   Sent,
+  Found,
+  NotFound,
   Error,
 }
 
@@ -116,6 +118,7 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+          status: Status.Found,
           projectsIDs: [...application.projectsIDs, action.projectID],
         },
       };
