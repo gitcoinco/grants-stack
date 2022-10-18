@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import ApplicationEligibilityForm from "../ApplicationEligibilityForm";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
@@ -104,34 +110,10 @@ describe("form submission", () => {
     jest.clearAllMocks();
   });
 
-  it("should set form data with default description and requirement 1 when form is submitted", async () => {
-    const expectedEligibilityFormData: Round["eligibility"] = {
-      description: "",
-      requirements: [{ requirement: "" }],
-    };
-
-    render(
-      <FormContext.Provider value={formContext}>
-        <ApplicationEligibilityForm stepper={FormStepper} />
-      </FormContext.Provider>
-    );
-    const submit = screen.getByRole("button", {
-      name: /Next/i,
-    });
-    fireEvent.click(submit);
-
-    await waitFor(() => {
-      expect(setFormData).toBeCalled();
-    });
-    expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
-    });
-  });
-
   it("should set form data with user input when form is submitted", async () => {
     const expectedDescription = faker.lorem.sentence();
     const expectedRequirement = faker.lorem.sentence();
-    const expectedEligibilityFormData: Round["eligibility"] = {
+    const expectedEligibilityFormData: Round["roundMetadata"]["eligibility"] = {
       description: expectedDescription,
       requirements: [{ requirement: expectedRequirement }],
     };
@@ -156,13 +138,16 @@ describe("form submission", () => {
       expect(setFormData).toBeCalled();
     });
     expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
+      roundMetadata: {
+        eligibility: expectedEligibilityFormData,
+      },
     });
   });
 
   it("should set form data with multiple requirements when form is submitted", async () => {
-    const expectedEligibilityFormData: Round["eligibility"] = {
-      description: "",
+    const expectedDescription = faker.lorem.sentence();
+    const expectedEligibilityFormData: Round["roundMetadata"]["eligibility"] = {
+      description: expectedDescription,
       requirements: [
         { requirement: "" },
         { requirement: "" },
@@ -175,6 +160,9 @@ describe("form submission", () => {
         <ApplicationEligibilityForm stepper={FormStepper} />
       </FormContext.Provider>
     );
+    fireEvent.input(screen.getByLabelText("Round Description"), {
+      target: { value: expectedDescription },
+    });
     const addARequirement = screen.getByRole("button", {
       name: /Add a Requirement/i,
     });
@@ -189,7 +177,26 @@ describe("form submission", () => {
       expect(setFormData).toBeCalled();
     });
     expect(setFormData).toBeCalledWith({
-      eligibility: expectedEligibilityFormData,
+      roundMetadata: {
+        eligibility: expectedEligibilityFormData,
+      },
     });
+  });
+
+  it("should show an error when no user input in required description field", async () => {
+    render(
+      <FormContext.Provider value={formContext}>
+        <ApplicationEligibilityForm stepper={FormStepper} />
+      </FormContext.Provider>
+    );
+
+    const submit = screen.getByRole("button", {
+      name: /Next/i,
+    });
+    await act(async () => {
+      fireEvent.click(submit);
+    });
+
+    expect(await screen.findByTestId("error-message")).toBeInTheDocument();
   });
 });

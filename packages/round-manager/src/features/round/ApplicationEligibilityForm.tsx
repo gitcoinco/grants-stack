@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { FormContext } from "../common/FormWizard";
 import {
   FieldArrayWithId,
-  FieldErrors,
+  FieldError,
   SubmitHandler,
   useFieldArray,
   useForm,
@@ -13,19 +13,30 @@ import {
 import { Round } from "../api/types";
 import { Button, Input } from "../common/styles";
 import { PlusSmIcon } from "@heroicons/react/solid";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
 }
+
+const ValidationSchema = yup.object().shape({
+  roundMetadata: yup.object({
+    eligibility: yup.object({
+      description: yup.string().required("This field is required."),
+    }),
+  }),
+});
 
 export default function ApplicationEligibilityForm(
   props: ApplicationEligibilityFormProps
 ) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
-
-  const defaultEligibilityFormData: Round["eligibility"] =
-    formData?.eligibility ?? {
+  const initialRoundMetadata: Round["roundMetadata"] =
+    formData?.roundMetadata ?? {};
+  const defaultEligibilityFormData: Round["roundMetadata"]["eligibility"] =
+    initialRoundMetadata?.eligibility ?? {
       description: "",
       requirements: [{ requirement: "" }], // NB: start with 1 requirement
     };
@@ -37,12 +48,16 @@ export default function ApplicationEligibilityForm(
   } = useForm<Round>({
     defaultValues: {
       ...formData,
-      eligibility: defaultEligibilityFormData,
+      roundMetadata: {
+        ...initialRoundMetadata,
+        eligibility: defaultEligibilityFormData,
+      },
     },
+    resolver: yupResolver(ValidationSchema),
   });
 
   const { fields, append } = useFieldArray({
-    name: "eligibility.requirements",
+    name: "roundMetadata.eligibility.requirements",
     control,
   });
 
@@ -68,9 +83,9 @@ export default function ApplicationEligibilityForm(
             <div className="pt-7 pb-10 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6">
-                  <RoundEligibilityQuestion
-                    register={register("eligibility.description")}
-                    errors={errors}
+                  <RoundInput
+                    register={register("roundMetadata.eligibility.description")}
+                    error={errors.roundMetadata?.eligibility?.description}
                     labelText={"Round Description"}
                     inputId={"eligibility.description"}
                     inputPlaceholder={
@@ -115,30 +130,39 @@ function LeftSidebar() {
   );
 }
 
-function RoundEligibilityQuestion(props: {
+function RoundInput(props: {
   inputId: string;
   register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
+  error?: FieldError;
   labelText: string;
   inputPlaceholder?: string;
 }) {
   return (
     <div className="mb-10">
-      <label htmlFor={props.inputId} className="block text-sm">
-        {props.labelText}
-      </label>
+      <div className="flex justify-between">
+        <label htmlFor={props.inputId} className="block text-sm">
+          {props.labelText}
+        </label>
+        <span className="text-xs text-violet-400">*Required</span>
+      </div>
       <Input
         {...props.register}
         type="text"
         id={props.inputId}
         placeholder={props.inputPlaceholder}
+        $hasError={props.error}
       />
+      {props.error && (
+        <p className="text-xs text-pink-500" data-testid="error-message">
+          {props.error.message}
+        </p>
+      )}
     </div>
   );
 }
 
 function DynamicRequirementsForm(props: {
-  fields: FieldArrayWithId<Round, "eligibility.requirements">[];
+  fields: FieldArrayWithId<Round, "roundMetadata.eligibility.requirements">[];
   register: UseFormRegister<Round>;
   append: (newRequirement: any) => void;
 }) {
@@ -151,14 +175,19 @@ function DynamicRequirementsForm(props: {
       <ul>
         {fields.map((item, index) => (
           <li key={item.id} className="mb-4">
-            <label
-              htmlFor={`Requirement ${index + 1}`}
-              className="block text-sm"
-            >
-              {`Requirement ${index + 1}`}
-            </label>
+            <div className="flex justify-between">
+              <label
+                htmlFor={`Requirement ${index + 1}`}
+                className="block text-sm"
+              >
+                {`Requirement ${index + 1}`}
+              </label>
+              <span className="text-xs text-grey-400">Optional</span>
+            </div>
             <Input
-              {...register(`eligibility.requirements.${index}.requirement`)}
+              {...register(
+                `roundMetadata.eligibility.requirements.${index}.requirement`
+              )}
               type="text"
               placeholder="Enter an eligibility requirement."
               data-testid="requirement-input"

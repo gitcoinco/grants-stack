@@ -105,6 +105,10 @@ export interface Round {
   roundMetadata: {
     name: string;
     programContractAddress: string;
+    eligibility?: {
+      description: string;
+      requirements: { requirement: string }[];
+    };
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -150,14 +154,6 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
-
-  /**
-   * Content of Grant Explorer application page
-   */
-  eligibility?: {
-    description: string;
-    requirements: { requirement: string }[];
-  };
 }
 
 export type ProjectStatus =
