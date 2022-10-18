@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import {
   roundApplicationReducer,
   RoundApplicationState,
-  Status
+  Status,
 } from "../../reducers/roundApplication";
 import setupStore from "../../store";
 
@@ -41,7 +41,7 @@ describe("roundApplication reducer", () => {
   it("ROUND_APPLICATION_ERROR updates state", async () => {
     const newState: RoundApplicationState = roundApplicationReducer(state, {
       type: "ROUND_APPLICATION_ERROR",
-      roundAddress: roundAddress,
+      roundAddress,
       error: "error",
       step: Status.BuildingApplication,
     });
