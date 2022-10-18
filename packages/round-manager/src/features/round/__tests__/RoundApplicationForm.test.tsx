@@ -9,10 +9,11 @@ import {
   CreateRoundState,
   initialCreateRoundState,
 } from "../../../context/round/CreateRoundContext";
-import { ProgressStatus } from "../../api/types";
+import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
+import { FormContext } from "../../common/FormWizard";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
@@ -153,6 +154,79 @@ describe("<RoundApplicationForm />", () => {
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
+  });
+});
+
+describe("Application Form Builder", () => {
+  beforeEach(() => {
+    (useWallet as jest.Mock).mockReturnValue({
+      chain: { name: "my blockchain" },
+      provider: {
+        getNetwork: () => ({
+          chainId: 0,
+        }),
+      },
+      signer: {
+        getChainId: () => 0,
+      },
+      address: "0x0",
+    });
+  });
+
+  it("displays the four default questions", () => {
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    expect(screen.getByText("Payout Wallet Address")).toBeInTheDocument();
+    expect(screen.getByText("Email Address")).toBeInTheDocument();
+    expect(screen.getByText("Funding Sources")).toBeInTheDocument();
+    expect(screen.getByText("Team Size")).toBeInTheDocument();
+  });
+
+  it("displays the existing questions if present in form data", () => {
+    const expectedQuestions: ApplicationMetadata["questions"] = [
+      {
+        title: "Some question",
+        required: false,
+        encrypted: false,
+        inputType: "text",
+      },
+    ];
+    const setFormData = jest.fn();
+    const formContext = {
+      currentStep: 2,
+      setCurrentStep: jest.fn(),
+      stepsCount: 3,
+      formData: {
+        applicationMetadata: {
+          questions: expectedQuestions,
+        },
+      },
+      setFormData,
+    };
+
+    renderWithContext(
+      <FormContext.Provider value={formContext}>
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      </FormContext.Provider>
+    );
+
+    expect(screen.getByText(expectedQuestions[0].title)).toBeInTheDocument();
   });
 });
 

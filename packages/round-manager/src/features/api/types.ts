@@ -86,11 +86,12 @@ export interface Program {
 }
 
 export interface ApplicationMetadata {
-  customQuestions?: {
-    email?: string;
-    fundingSource?: string;
-    teamSize?: string;
-  };
+  questions?: {
+    title: string;
+    required: boolean;
+    encrypted: boolean;
+    inputType: string;
+  }[];
 }
 
 export interface Round {
