@@ -18,7 +18,7 @@ export const buildAlert = (attrs = {}): Alert => ({
 export const buildRound = (round: any): Round => ({
   address: "0x8888",
   applicationsStartTime: 1663751953,
-  applicationsEndTime: 2,
+  applicationsEndTime: Date.now() / 1000 + 36000,
   roundStartTime: 3,
   roundEndTime: 4,
   token: "test-token",
