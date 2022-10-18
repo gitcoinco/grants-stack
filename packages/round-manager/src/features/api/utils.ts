@@ -1,4 +1,4 @@
-import { IPFSObject } from "./types";
+import { ApplicationMetadata, InputType, IPFSObject } from "./types";
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -128,27 +128,8 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-/**
- * Converts camelCaseText to Title Case Text
- */
-const camelToTitle = (camelCase: string) =>
-  camelCase
-    .replace(/([A-Z])/g, (match) => ` ${match}`)
-    .replace(/^./, (match) => match.toUpperCase())
-    .trim();
-
 export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
-
-type InputType = "email" | "number" | "text";
-type QuestionInputTypeMap = Record<string, InputType>;
-
-/* Static for now, will be integrated directly into the question object itself for dynamic fields */
-export const inputTypes: QuestionInputTypeMap = {
-  email: "email",
-  fundingSource: "text",
-  teamSize: "number",
-};
 
 type QuestionHumanReadableLabelsMap = Record<string, string>;
 export const humanReadableLabels: QuestionHumanReadableLabelsMap = {
@@ -161,7 +142,7 @@ export interface SchemaQuestion {
   id: number;
   question: string;
   type: InputType;
-  required: true;
+  required: boolean;
   info: string;
   choices: [];
   encrypted: boolean;
@@ -170,59 +151,26 @@ export interface SchemaQuestion {
 /**
  * This function generates the round application schema to be stored in a decentralized storage
  *
- * @param metadata - The metadata of a round application
+ * @param questions - The metadata of a round application
  * @returns The application schema
  */
 export const generateApplicationSchema = (
-  metadata: any
+  questions: ApplicationMetadata["questions"]
 ): Array<SchemaQuestion> => {
-  if (!metadata.customQuestions) return [];
+  if (!questions) return [];
 
-  const schema: Array<SchemaQuestion> = [];
-
-  for (const key of Object.keys(metadata)) {
-    if (typeof metadata[key] === "object") {
-      generateQuestionGroup(metadata[key], schema);
-    } else {
-      generateQuestion(key, metadata[key], schema);
-    }
-  }
-
-  return schema;
-};
-
-function generateQuestionGroup(
-  questionGroup: { [key: string]: string },
-  schema: Array<SchemaQuestion>
-) {
-  for (const question of Object.keys(questionGroup)) {
-    schema.push({
-      id: schema.length,
-      question: humanReadableLabels[question] || camelToTitle(question),
-      type: inputTypes[question] || "text",
-      required: true,
-      info: questionGroup[question],
+  return questions.map((question, index) => {
+    return {
+      id: index,
+      question: question.title,
+      type: question.inputType,
+      required: question.required,
+      info: "",
       choices: [],
-      encrypted: question === "email",
-    });
-  }
-}
-
-function generateQuestion(
-  question: string,
-  info: string,
-  schema: Array<SchemaQuestion>
-) {
-  schema.push({
-    id: schema.length,
-    question: camelToTitle(question),
-    type: "text",
-    required: true,
-    info,
-    choices: [],
-    encrypted: question === "email",
+      encrypted: question.encrypted,
+    };
   });
-}
+};
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;

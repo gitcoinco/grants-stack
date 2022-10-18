@@ -7,7 +7,12 @@ import {
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { FormStepper as FS } from "../common/FormStepper";
-import { ApplicationMetadata, ProgressStatus, Round } from "../api/types";
+import {
+  ApplicationMetadata,
+  ProgressStatus,
+  QuestionOptions,
+  Round,
+} from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -17,13 +22,7 @@ import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
 
-const initialQuestions = [
-  {
-    title: "Payout Wallet Address",
-    required: true,
-    encrypted: false,
-    inputType: "text",
-  },
+export const initialQuestions: QuestionOptions[] = [
   {
     title: "Email Address",
     required: true,
@@ -129,16 +128,18 @@ export function RoundApplicationForm(props: {
   const next: SubmitHandler<Round> = async (values) => {
     try {
       setOpenProgressModal(true);
-      const data = { ...formData, ...values };
+      const data: Partial<Round> = { ...formData, ...values };
 
-      const roundMetadataWithProgramContractAddress = {
-        ...data.roundMetadata,
+      const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
+        ...(data.roundMetadata as Round["roundMetadata"]),
         programContractAddress: programId,
       };
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
-        applicationSchema: generateApplicationSchema(data.applicationMetadata),
+        applicationSchema: generateApplicationSchema(
+          data.applicationMetadata?.questions
+        ),
       };
 
       const round = {
@@ -147,7 +148,7 @@ export function RoundApplicationForm(props: {
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
-      };
+      } as Round;
 
       await createRound({
         roundMetadataWithProgramContractAddress,
@@ -322,6 +323,11 @@ function ApplicationInformation(props: {
           Project Owners will need to fill out an application with the details
           below.
         </p>
+
+        <div>
+          <div className="my-4 text-sm">Payout Wallet Address</div>
+          <hr />
+        </div>
 
         {props.fields.map((field, index) => {
           return (

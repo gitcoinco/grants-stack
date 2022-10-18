@@ -85,13 +85,17 @@ export interface Program {
   operatorWallets: Array<string>;
 }
 
+export type InputType = "email" | "number" | "text";
+
+export type QuestionOptions = {
+  title: string;
+  required: boolean;
+  encrypted: boolean;
+  inputType: InputType;
+};
+
 export interface ApplicationMetadata {
-  questions?: {
-    title: string;
-    required: boolean;
-    encrypted: boolean;
-    inputType: string;
-  }[];
+  questions?: QuestionOptions[];
 }
 
 export interface Round {
