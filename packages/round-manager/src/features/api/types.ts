@@ -89,7 +89,6 @@ export interface ApplicationMetadata {
   customQuestions?: {
     email?: string;
     fundingSource?: string;
-    profit2022?: string;
     teamSize?: string;
   };
 }

@@ -147,7 +147,6 @@ type QuestionInputTypeMap = Record<string, InputType>;
 export const inputTypes: QuestionInputTypeMap = {
   email: "email",
   fundingSource: "text",
-  profit2022: "number",
   teamSize: "number",
 };
 
@@ -155,7 +154,6 @@ type QuestionHumanReadableLabelsMap = Record<string, string>;
 export const humanReadableLabels: QuestionHumanReadableLabelsMap = {
   email: "Email Address",
   fundingSource: "Funding Sources",
-  profit2022: "2022 Profit",
   teamSize: "Team Size",
 };
 

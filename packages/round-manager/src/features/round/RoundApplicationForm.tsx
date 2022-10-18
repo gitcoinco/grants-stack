@@ -11,10 +11,9 @@ import * as yup from "yup";
 import { FormStepper as FS } from "../common/FormStepper";
 import { ProgressStatus, Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
-import { Button, Input } from "../common/styles";
+import { Input } from "../common/styles";
 import { generateApplicationSchema } from "../api/utils";
 import { useWallet } from "../common/Auth";
-import { PencilIcon, XIcon } from "@heroicons/react/solid";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
@@ -26,7 +25,6 @@ const ValidationSchema = yup.object().shape({
     customQuestions: yup.object({
       email: yup.string(),
       fundingSource: yup.string(),
-      profit2022: yup.string(),
       teamSize: yup.string(),
     }),
   }),
@@ -198,9 +196,6 @@ export function RoundApplicationForm(props: {
               register1={register(
                 "applicationMetadata.customQuestions.fundingSource"
               )}
-              register2={register(
-                "applicationMetadata.customQuestions.profit2022"
-              )}
               register3={register(
                 "applicationMetadata.customQuestions.teamSize"
               )}
@@ -314,18 +309,12 @@ function ApplicationInformation(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   register1: UseFormRegisterReturn<string>;
-  register2: UseFormRegisterReturn<string>;
   register3: UseFormRegisterReturn<string>;
 }) {
   return (
     <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
       <div className="flex">
         <p className="flex-1 mb-2">Application Information</p>
-        {props.edit ? (
-          <ExitEditMode onClick={props.onClick} />
-        ) : (
-          <EnterEditMode onClick={props.onClick1} />
-        )}
       </div>
       <p className="text-sm text-grey-400 mb-6">
         Project Owners will need to fill out an application with the details
@@ -347,11 +336,6 @@ function ApplicationInformation(props: {
           <hr />
           <div className="flex my-4">
             <span className="flex-1 text-sm">Funding Sources</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">2022 Profit</span>
             <span className="text-xs text-violet-400">*Required</span>
           </div>
           <hr />
@@ -418,32 +402,6 @@ function ApplicationInformation(props: {
             )}
           </div>
 
-          {/* 2022 Profit */}
-          <div className="col-span-6 sm:col-span-3">
-            <label
-              htmlFor="applicationMetadata.customQuestions.profit2022"
-              className="block text-xs font-medium"
-            >
-              2022 Profit
-            </label>
-            <Input
-              {...props.register2}
-              $hasError={
-                props.errors.applicationMetadata?.customQuestions?.profit2022
-              }
-              type="text"
-              placeholder='i.e. "Please enter your profit for 2022."'
-            />
-            {props.errors.applicationMetadata?.customQuestions?.profit2022 && (
-              <p className="text-xs text-pink-500">
-                {
-                  props.errors.applicationMetadata?.customQuestions?.profit2022
-                    ?.message
-                }
-              </p>
-            )}
-          </div>
-
           {/* Team Size */}
           <div className="col-span-6 sm:col-span-3">
             <label
@@ -472,32 +430,6 @@ function ApplicationInformation(props: {
         </div>
       )}
     </div>
-  );
-}
-
-function EnterEditMode(props: { onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      $variant="outline"
-      className="border w-9 h-9 p-1.5"
-      onClick={props.onClick}
-    >
-      <PencilIcon aria-hidden="true" />
-    </Button>
-  );
-}
-
-function ExitEditMode(props: { onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      $variant="outline"
-      className="border text-pink-500 w-9 h-9 p-1.5"
-      onClick={props.onClick}
-    >
-      <XIcon aria-hidden="true" />
-    </Button>
   );
 }
 

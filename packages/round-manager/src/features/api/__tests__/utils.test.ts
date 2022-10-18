@@ -359,7 +359,6 @@ describe("generateApplicationSchema", () => {
       customQuestions: {
         email: "What is your email?",
         fundingSource: "What is your funding source?",
-        profit2022: "What is your profit for 2022?",
         teamSize: "What is your team size",
       },
     };
