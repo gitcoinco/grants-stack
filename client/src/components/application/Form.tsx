@@ -1,4 +1,5 @@
 import { Stack } from "@chakra-ui/react";
+import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
@@ -90,6 +91,7 @@ export default function Form({
       setDisableSubmit(false);
     } catch (e) {
       const error = e as ValidationError;
+      datadogRum.addError(error);
       console.log(error);
       setFormValidation({
         messages: error.inner.map((er) => (er as ValidationError).message),

@@ -1,4 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -21,7 +22,7 @@ import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
-import Datadog from "./utils/datadog";
+import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 
 const store = setupStore();
@@ -32,38 +33,40 @@ const root = ReactDOM.createRoot(
 const gtcLightTheme = lightTheme();
 gtcLightTheme.shadows.connectButton = "0 0 0 0px";
 
+initDatadog();
+
+datadogRum.addAction("Init");
+
 root.render(
   <ErrorBoundary>
-    <Datadog>
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
-          <ChakraProvider resetCSS={false}>
-            <Provider store={store}>
-              <ReduxRouter history={history} store={store}>
-                <Layout>
-                  <Routes>
-                    <Route
-                      path={slugs.root}
-                      element={<Navigate to={slugs.grants} />}
-                    />
-                    <Route path={slugs.grants} element={<ProjectsList />} />
-                    <Route path={slugs.grant} element={<Project />} />
-                    <Route path={slugs.newGrant} element={<NewProject />} />
-                    <Route path={slugs.edit} element={<EditProject />} />
-                    <Route path={slugs.round} element={<RoundShow />} />
-                    <Route
-                      path={slugs.roundApplication}
-                      element={<RoundApply />}
-                    />
-                    <Route path="*" element={<PageNotFound />} />
-                  </Routes>
-                </Layout>
-              </ReduxRouter>
-            </Provider>
-          </ChakraProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </Datadog>
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
+        <ChakraProvider resetCSS={false}>
+          <Provider store={store}>
+            <ReduxRouter history={history} store={store}>
+              <Layout>
+                <Routes>
+                  <Route
+                    path={slugs.root}
+                    element={<Navigate to={slugs.grants} />}
+                  />
+                  <Route path={slugs.grants} element={<ProjectsList />} />
+                  <Route path={slugs.grant} element={<Project />} />
+                  <Route path={slugs.newGrant} element={<NewProject />} />
+                  <Route path={slugs.edit} element={<EditProject />} />
+                  <Route path={slugs.round} element={<RoundShow />} />
+                  <Route
+                    path={slugs.roundApplication}
+                    element={<RoundApply />}
+                  />
+                  <Route path="*" element={<PageNotFound />} />
+                </Routes>
+              </Layout>
+            </ReduxRouter>
+          </Provider>
+        </ChakraProvider>
+      </RainbowKitProvider>
+    </WagmiConfig>
   </ErrorBoundary>
 );
 

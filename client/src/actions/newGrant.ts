@@ -1,14 +1,15 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { Project } from "../types/index";
-import { global } from "../global";
-import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
+import { global } from "../global";
+import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
+import PinataClient from "../services/pinata";
+import { Project } from "../types/index";
 import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
 import { unloadProjects } from "./projects";
-import PinataClient from "../services/pinata";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -107,6 +108,7 @@ export const publishGrant =
           pointer: metadataCID,
         });
       } catch (e) {
+        datadogRum.addError(e);
         dispatch(grantStatus(Status.Error, "transaction error"));
         console.error("tx error", e);
         return;
@@ -118,6 +120,7 @@ export const publishGrant =
           pointer: metadataCID,
         });
       } catch (e) {
+        datadogRum.addError(e);
         dispatch(grantStatus(Status.Error, "transaction error"));
         console.error("tx error", e);
         return;

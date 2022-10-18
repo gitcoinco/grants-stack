@@ -1,13 +1,14 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import { datadogRum } from "@datadog/browser-rum";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { datadogRum } from "@datadog/browser-rum";
 import { debounce } from "ts-debounce";
-import Button, { ButtonVariants } from "../base/Button";
 import { global } from "../../global";
-import { fetchVerifiableCredential } from "./identity/credentials";
-import { ProviderID } from "../../types";
 import { RootState } from "../../reducers";
+import { ProviderID } from "../../types";
+import Button, { ButtonVariants } from "../base/Button";
+import { fetchVerifiableCredential } from "./identity/credentials";
 
 const providerId: ProviderID = "ClearTextTwitter";
 
@@ -123,6 +124,7 @@ export default function Twitter({
           verificationError(
             "Couldn't connect to Twitter. Please try verifying again"
           );
+          datadogLogs.logger.error("Twitter verification failed", error);
           datadogRum.addError(error, { provider: providerId });
         })
         .finally(() => {});
