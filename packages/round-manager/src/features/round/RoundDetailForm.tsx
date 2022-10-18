@@ -1,6 +1,12 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Controller,
+  FieldErrors,
+  SubmitHandler,
+  useForm,
+  UseFormRegisterReturn,
+} from "react-hook-form";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,6 +16,17 @@ import { Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Input } from "../common/styles";
 import { FormStepper } from "../common/FormStepper";
+import moment from "moment";
+
+//TODO: Time defaults to next hour - Date Picker
+/*
+
+- Time in picker should start out with their current time
+- round it to next hour
+- refactor and remove moment and use luxon
+- refactor some JSX into well named small components
+
+*/
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -18,7 +35,10 @@ const ValidationSchema = yup.object().shape({
       .required("This field is required.")
       .min(8, "Round name must be at least 8 characters."),
   }),
-  applicationsStartTime: yup.date().required("This field is required."),
+  applicationsStartTime: yup
+    .date()
+    .required("This field is required.")
+    .min(new Date(), "You must enter a date and time in the future."),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
@@ -59,13 +79,29 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   });
 
   const FormStepper = props.stepper;
+  const [applicationStartDate, setApplicationStartDate] = useState(moment());
+  const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const next: SubmitHandler<Round> = async (values) => {
     const data = { ...formData, ...values };
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };
+
+  const now = moment().add(1, "hour").startOf("hour");
   const prev = () => setCurrentStep(currentStep - 1);
+  const yesterday = moment().subtract(1, "day");
+  const disablePastDate = (current: any) => {
+    return current.isAfter(yesterday);
+  };
+
+  function disableBeforeApplicationStartDate(current: any) {
+    return current.isAfter(applicationStartDate);
+  }
+
+  function disableBeforeRoundStartDate(current: any) {
+    return current.isAfter(roundStartDate);
+  }
 
   return (
     <div>
@@ -85,25 +121,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
           >
             <div className="pt-7 pb-10 sm:px-6 bg-white">
               <div className="grid grid-cols-6 gap-6">
-                <div className="col-span-6 sm:col-span-3">
-                  <label
-                    htmlFor="roundMetadata.name"
-                    className="block text-xs font-medium"
-                  >
-                    Round Name
-                  </label>
-                  <Input
-                    {...register("roundMetadata.name")}
-                    $hasError={Boolean(errors.roundMetadata?.name)}
-                    type="text"
-                    id={"roundMetadata.name"}
-                  />
-                  {errors.roundMetadata?.name && (
-                    <p className="text-xs text-pink-500">
-                      {errors.roundMetadata?.name?.message}
-                    </p>
-                  )}
-                </div>
+                <RoundName
+                  register={register("roundMetadata.name")}
+                  errors={errors}
+                />
               </div>
 
               <p className="mt-6">
@@ -134,12 +155,18 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         <Datetime
                           {...field}
                           closeOnSelect
+                          onChange={(date) => {
+                            setApplicationStartDate(moment(date));
+                            field.onChange(moment(date));
+                          }}
                           inputProps={{
                             id: "applicationsStartTime",
                             placeholder: "",
                             className:
-                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
+                              "block w-full border-0 p-0 text-gray-900 placeholder-grey-40  0 focus:ring-0 text-sm",
                           }}
+                          isValidDate={disablePastDate}
+                          initialViewDate={now}
                         />
                       )}
                     />
@@ -159,7 +186,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     </div>
                   </div>
                   {errors.applicationsStartTime && (
-                    <p className="text-xs text-pink-500">
+                    <p
+                      className="text-xs text-pink-500"
+                      data-testid="application-start-date-error"
+                    >
                       {errors.applicationsStartTime?.message}
                     </p>
                   )}
@@ -192,6 +222,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
+                          isValidDate={disableBeforeApplicationStartDate}
                         />
                       )}
                     />
@@ -211,7 +242,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     </div>
                   </div>
                   {errors.applicationsEndTime && (
-                    <p className="text-xs text-pink-500">
+                    <p
+                      className="text-xs text-pink-500"
+                      data-testid="application-end-date-error"
+                    >
                       {errors.applicationsEndTime?.message}
                     </p>
                   )}
@@ -241,12 +275,17 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         <Datetime
                           {...field}
                           closeOnSelect
+                          onChange={(date) => {
+                            setRoundStartDate(moment(date));
+                            field.onChange(moment(date));
+                          }}
                           inputProps={{
                             id: "roundStartTime",
                             placeholder: "",
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
+                          isValidDate={disableBeforeApplicationStartDate}
                         />
                       )}
                     />
@@ -266,7 +305,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     </div>
                   </div>
                   {errors.roundStartTime && (
-                    <p className="text-xs text-pink-500">
+                    <p
+                      className="text-xs text-pink-500"
+                      data-testid="round-start-date-error"
+                    >
                       {errors.roundStartTime?.message}
                     </p>
                   )}
@@ -296,6 +338,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
+                          isValidDate={disableBeforeRoundStartDate}
                         />
                       )}
                     />
@@ -315,7 +358,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                     </div>
                   </div>
                   {errors.roundEndTime && (
-                    <p className="text-xs text-pink-500">
+                    <p
+                      className="text-xs text-pink-500"
+                      data-testid="round-end-date-error"
+                    >
                       {errors.roundEndTime?.message}
                     </p>
                   )}
@@ -333,6 +379,30 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function RoundName(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+}) {
+  return (
+    <div className="col-span-6 sm:col-span-3">
+      <label htmlFor="roundMetadata.name" className="block text-xs font-medium">
+        Round Name
+      </label>
+      <Input
+        {...props.register}
+        $hasError={props.errors.roundMetadata?.name}
+        type="text"
+        id={"roundMetadata.name"}
+      />
+      {props.errors.roundMetadata?.name && (
+        <p className="text-xs text-pink-500">
+          {props.errors.roundMetadata?.name?.message}
+        </p>
+      )}
     </div>
   );
 }
