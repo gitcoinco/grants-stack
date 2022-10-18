@@ -21,12 +21,13 @@ import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import { useRoundById } from "../../context/round/RoundContext";
 import { Spinner } from "../common/Spinner";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
-import { ApplicationStatus, ProgressStatus } from "../api/types";
+import { ApplicationStatus, ProgressStatus, Round } from "../api/types";
+import { Button } from "../common/styles";
+import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-
   const { id } = useParams();
   const { address, chain } = useWallet();
 
@@ -106,30 +107,26 @@ export default function ViewRoundPage() {
                   <span>{"Round Details"}</span>
                 </Link>
               </div>
-              <h1 className="text-3xl sm:text-[32px] my-2">
-                {round?.roundMetadata?.name || "Round Details"}
-              </h1>
+              <div className="flex flex-row mb-4 mt-4 items-center">
+                <RoundName round={round} />
+                <div className="ml-6">
+                  <ViewGrantsExplorerButton
+                    iconStyle="h-4 w-4 mr-2"
+                    chainId={`${chain.id}`}
+                    roundId={id}
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-row flex-wrap">
-                <div className="flex mr-8 lg:mr-36">
-                  <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
-                  <p className="text-sm mr-1 text-grey-400">Applications:</p>
-                  <p className="text-sm">
-                    {formatDate(round?.applicationsStartTime) || "..."}
-                    <span className="mx-1">-</span>
-                    {formatDate(round?.applicationsEndTime) || "..."}
-                  </p>
-                </div>
-
-                <div className="flex">
-                  <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
-                  <p className="text-sm mr-1 text-grey-400">Round:</p>
-                  <p className="text-sm">
-                    {formatDate(round?.roundStartTime) || "..."}
-                    <span className="mx-1">-</span>
-                    {formatDate(round?.roundEndTime) || "..."}
-                  </p>
-                </div>
-
+                <ApplicationOpenDateRange
+                  startTime={formatDate(round?.applicationsStartTime)}
+                  endTime={formatDate(round?.applicationsEndTime)}
+                />
+                <RoundOpenDateRange
+                  startTime={formatDate(round?.roundStartTime)}
+                  endTime={formatDate(round?.roundEndTime)}
+                />
                 <div className="flex justify-end grow relative">
                   <div className="text-right absolute bottom-0">
                     <p className="text-xs mb-1">
@@ -241,5 +238,73 @@ export default function ViewRoundPage() {
         </>
       )}
     </>
+  );
+}
+
+type ViewGrantsExplorerButtonType = {
+  styles?: string;
+  iconStyle?: string;
+  chainId: string;
+  roundId: string | undefined;
+};
+
+function RoundName(props: { round?: Round }) {
+  return (
+    <h1 className="text-3xl sm:text-[32px] my-2">
+      {props.round?.roundMetadata?.name || "Round Details"}
+    </h1>
+  );
+}
+
+export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
+  const { chainId, roundId } = props;
+
+  return (
+    <Button
+      type="button"
+      className={`inline-flex items-center bg-white text-xs border border-grey-100 text-grey-500 py-1.5 px-2.5 w-48 h-7 drop-shadow-sm justify-center ${props.styles}`}
+      onClick={() => {
+        redirectToGrantExplorer(chainId, roundId);
+      }}
+      data-testid="round-explorer"
+    >
+      <GrantExplorerLogo className={props.iconStyle} aria-hidden="true" />
+      View on Grants Explorer
+    </Button>
+  );
+}
+
+function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
+  const url = `${process.env.REACT_APP_GRANT_EXPLORER}/#/round/${chainId}/${roundId}`;
+  setTimeout(() => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }, 1000);
+}
+
+function ApplicationOpenDateRange(props: { startTime: any; endTime: any }) {
+  return (
+    <div className="flex mr-8 lg:mr-36">
+      <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
+      <p className="text-sm mr-1 text-grey-400">Applications:</p>
+      <p className="text-sm">
+        {props.startTime || "..."}
+        <span className="mx-1">-</span>
+        {props.endTime || "..."}
+      </p>
+    </div>
+  );
+}
+
+function RoundOpenDateRange(props: { startTime: any; endTime: any }) {
+  return (
+    <div className="flex">
+      <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
+      <p className="text-sm mr-1 text-grey-400">Round:</p>
+      <p className="text-sm">
+        {props.startTime || "..."}
+        <span className="mx-1">-</span>
+        {props.endTime || "..."}
+      </p>
+    </div>
   );
 }
