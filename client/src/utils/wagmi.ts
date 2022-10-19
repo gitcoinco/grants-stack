@@ -54,10 +54,7 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(
-    chain.optimism,
-    fantomMainnet
-  );
+  chainsAvailable.push(chain.optimism, fantomMainnet);
 } else {
   chainsAvailable.push(
     chain.optimism,
@@ -74,6 +71,7 @@ export const { chains, provider } = configureChains(chainsAvailable, [
   publicProvider({ priority: 2 }),
 ]);
 
+// todo: remove rainbow wallet option
 const { connectors } = getDefaultWallets({
   appName: "Grant Hub",
   chains,
