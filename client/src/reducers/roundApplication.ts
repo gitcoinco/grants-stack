@@ -6,6 +6,7 @@ import {
   ROUND_APPLICATION_NOT_FOUND,
   ROUND_APPLICATION_RESET,
   RoundApplicationActions,
+  ROUND_APPLICATION_ERROR_RESET,
 } from "../actions/roundApplication";
 
 export const enum Status {
