@@ -53,6 +53,8 @@ function Apply() {
     const applicationError = applicationState
       ? applicationState.error
       : undefined;
+    const showErrorModal =
+      applicationError && applicationStatus === ApplicationStatus.Error;
 
     return {
       roundState,
@@ -63,6 +65,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      showErrorModal,
     };
   }, shallowEqual);
 
@@ -125,6 +128,15 @@ function Apply() {
     };
   }, [props.applicationState]);
 
+  useEffect(() => {
+    if (
+      props.applicationState?.status === ApplicationStatus.Error ||
+      props.applicationError
+    ) {
+      toggleStatusModal(false);
+    }
+  }, [props.applicationStatus, props.applicationError]);
+
   if (props.roundStatus === RoundStatus.Error) {
     return <div>Error loading round data: {props.roundError}</div>;
   }
@@ -179,6 +191,7 @@ function Apply() {
             {props.applicationMetadata !== undefined && (
               <Form
                 roundApplication={props.applicationMetadata}
+                showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={() => {
                   toggleStatusModal(true);
@@ -187,7 +200,6 @@ function Apply() {
             )}
           </div>
         </div>
-
         <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
       </div>
 
