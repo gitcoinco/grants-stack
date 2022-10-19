@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import {
+  Control,
+  Controller,
   FieldArrayWithId,
   SubmitHandler,
   useFieldArray,
@@ -24,8 +26,21 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
-import { CheckIcon, PencilIcon } from "@heroicons/react/solid";
+import {
+  CheckIcon,
+  PencilIcon,
+  XIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/solid";
+import { Switch } from "@headlessui/react";
+import ReactTooltip from "react-tooltip";
 
+const payoutQuestion: QuestionOptions = {
+  title: "Payout Wallet Address",
+  required: true,
+  encrypted: false,
+  inputType: "text",
+};
 export const initialQuestions: QuestionOptions[] = [
   {
     title: "Email Address",
@@ -223,6 +238,7 @@ export function RoundApplicationForm(props: {
               editStates={isInEditState}
               setEditStates={setIsInEditState}
               getValues={getValues}
+              control={control}
             />
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -326,17 +342,23 @@ function ProjectInformation() {
   );
 }
 
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 function ApplicationInformation(props: {
   fields: FieldArrayWithId<Round, "applicationMetadata.questions">[];
   register: UseFormRegister<Round>;
   editStates: boolean[];
   setEditStates: (a: boolean[]) => void;
   getValues: UseFormGetValues<Round>;
+  control: Control<Round>;
 }) {
-  const { fields, register, editStates, setEditStates, getValues } = props;
+  const { fields, register, editStates, setEditStates, getValues, control } =
+    props;
 
-  const normalTitle = (index: number) => (
-    <>
+  const normalTitle = (index: number, disabled?: boolean) => (
+    <div className="my-4">
       {getValues(`applicationMetadata.questions.${index}.title`)}
       <PencilIcon
         onClick={() => {
@@ -344,19 +366,23 @@ function ApplicationInformation(props: {
           newEditState[index] = true;
           setEditStates(newEditState);
         }}
-        className="inline h-4 w-4 mb-1 ml-2 text-grey-400"
+        className={classNames(
+          disabled ? "hidden" : "visible",
+          "inline h-4 w-4 mb-1 ml-2 text-grey-400"
+        )}
         data-testid={"edit-title"}
       />
-    </>
+    </div>
   );
+
   const editableTitle = (index: number) => (
-    <>
+    <div className="flex my-2">
       <input
         {...register(`applicationMetadata.questions.${index}.title`)}
         type="text"
         placeholder="Enter desired application info here."
         data-testid={"question-title-input"}
-        className="text-sm border-violet-400 rounded-md"
+        className="text-sm border-violet-400 rounded-md w-full"
       />
 
       <CheckIcon
@@ -365,11 +391,134 @@ function ApplicationInformation(props: {
           newEditState[index] = false;
           setEditStates(newEditState);
         }}
-        className="inline h-4 w-4 mb-1 ml-2 text-grey-400"
+        className="inline h-5 w-5 ml-2 my-2 text-grey-400"
         data-testid={"save-title"}
       />
-    </>
+    </div>
   );
+
+  const encryptionToggle = (index: number, disabled?: boolean) => {
+    return (
+      <Controller
+        control={control}
+        name={`applicationMetadata.questions.${index}.encrypted`}
+        render={({ field }) => (
+          <Switch.Group
+            as="div"
+            className={classNames(
+              disabled ? "opacity-60" : "opacity-100",
+              "flex items-center justify-end"
+            )}
+          >
+            <span className="flex-grow">
+              <Switch.Label
+                as="span"
+                className="text-sm font-medium text-gray-900 flex justify-end"
+                passive
+                data-testid="encrypted-toggle-label"
+              >
+                <p className="text-xs text-right my-auto">
+                  {field.value ? "Encrypted" : "Unencrypted"}
+                </p>
+
+                <InformationCircleIcon
+                  data-tip
+                  data-background-color="#0E0333"
+                  data-for="encrypted-tooltip"
+                  className="inline h-4 w-4 ml-2 mr-3"
+                  data-testid={"encrypted-tooltip"}
+                />
+
+                <ReactTooltip
+                  id="encrypted-tooltip"
+                  place="bottom"
+                  type="dark"
+                  effect="solid"
+                >
+                  <p className="text-xs">
+                    Encryption allows for greater <br />
+                    security and confidentiailty <br />
+                    for your applicants.
+                  </p>
+                </ReactTooltip>
+              </Switch.Label>
+            </span>
+            <Switch
+              {...field}
+              checked={field.value}
+              value={field.value.toString()}
+              className="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2"
+              data-testid="encrypted-toggle"
+              disabled={disabled}
+            >
+              <span
+                aria-hidden="true"
+                className={classNames(
+                  field.value
+                    ? "translate-x-5 bg-black"
+                    : "translate-x-0 bg-white",
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+                )}
+              />
+            </Switch>
+          </Switch.Group>
+        )}
+      />
+    );
+  };
+
+  const requiredToggle = (index: number, disabled?: boolean) => {
+    return (
+      <Controller
+        control={control}
+        name={`applicationMetadata.questions.${index}.required`}
+        render={({ field }) => (
+          <Switch.Group
+            as="div"
+            className={classNames(
+              disabled ? "opacity-80" : "opacity-100",
+              "flex items-center justify-end"
+            )}
+            data-testid="required-toggle-label"
+          >
+            <span className="flex-grow">
+              <Switch.Label
+                as="span"
+                className="text-sm font-medium text-gray-900"
+                passive
+              >
+                {field.value ? (
+                  <p className="text-xs mr-2 text-right text-violet-400">
+                    *Required
+                  </p>
+                ) : (
+                  <p className="text-xs mr-2 text-right">Optional</p>
+                )}
+              </Switch.Label>
+            </span>
+            <Switch
+              {...field}
+              checked={field.value}
+              value={field.value.toString()}
+              className="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              data-testid="required-toggle"
+              disabled={disabled}
+            >
+              <span
+                aria-hidden="true"
+                className={classNames(
+                  field.value
+                    ? "translate-x-5 bg-violet-400"
+                    : "translate-x-0 bg-white",
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+                )}
+              />
+            </Switch>
+          </Switch.Group>
+        )}
+      />
+    );
+  };
 
   return (
     <div className="mt-5 md:mt-0 md:col-span-2">
@@ -382,16 +531,30 @@ function ApplicationInformation(props: {
           below.
         </p>
 
-        <div>
-          <div className="my-4 text-sm">Payout Wallet Address</div>
-          <hr />
-        </div>
-
+        {disabledPayoutQuestion}
+        <hr />
         {fields.map((field, index) => {
           return (
             <div key={index}>
-              <div className="my-4 text-sm">
-                {editStates[index] ? editableTitle(index) : normalTitle(index)}
+              <div className="flex flex-row">
+                <div className="text-sm basis-2/5">
+                  {editStates[index]
+                    ? editableTitle(index)
+                    : normalTitle(index)}
+                </div>
+                <div className="basis-3/5 flex justify-around">
+                  <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
+                  <div className="my-auto w-1/3">{requiredToggle(index)}</div>
+                  <div className="my-auto">
+                    <XIcon
+                      className={classNames(
+                        "visible",
+                        "inline h-4 w-4 mb-1 ml-2 text-red-600"
+                      )}
+                      data-testid={"remove-question"}
+                    />
+                  </div>
+                </div>
               </div>
               <hr />
             </div>
@@ -411,3 +574,101 @@ function redirectToProgramDetails(
     navigate(`/program/${programId}`);
   }, waitSeconds);
 }
+
+const disabledPayoutQuestion = (
+  <div className="flex flex-row">
+    <div className="text-sm basis-2/5">
+      <div className="my-4">{payoutQuestion.title}</div>
+    </div>
+    <div className="basis-3/5 flex justify-around">
+      <div className="my-auto w-1/2">
+        <Switch.Group
+          as="div"
+          className={classNames("opacity-60", "flex items-center justify-end")}
+        >
+          <span className="flex-grow">
+            <Switch.Label
+              as="span"
+              className="text-sm font-medium text-gray-900 flex justify-end"
+              passive
+            >
+              <p className="text-xs my-auto">Unencrypted</p>
+
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="encrypted-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3"
+              />
+
+              <ReactTooltip
+                id="encrypted-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  Encryption allows for greater <br />
+                  security and confidentiailty <br />
+                  for your applicants.
+                </p>
+              </ReactTooltip>
+            </Switch.Label>
+          </span>
+          <Switch
+            checked={false}
+            className="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2"
+            disabled={true}
+          >
+            <span
+              aria-hidden="true"
+              className={classNames(
+                "translate-x-0 bg-white",
+                "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+              )}
+            />
+          </Switch>
+        </Switch.Group>
+      </div>
+      <div className="my-auto w-1/3">
+        <Switch.Group
+          as="div"
+          className={classNames("opacity-80", "flex items-center justify-end")}
+        >
+          <span className="flex-grow">
+            <Switch.Label
+              as="span"
+              className="text-sm font-medium text-gray-900"
+              passive
+            >
+              <p className="text-xs mr-2 text-violet-400 text-right">
+                *Required
+              </p>
+            </Switch.Label>
+          </span>
+          <Switch
+            checked={true}
+            className="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            disabled={true}
+          >
+            <span
+              aria-hidden="true"
+              className={classNames(
+                "translate-x-5 bg-violet-400",
+                "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+              )}
+            />
+          </Switch>
+        </Switch.Group>
+      </div>
+      <div className="my-auto">
+        <XIcon
+          className={classNames(
+            "invisible",
+            "inline h-4 w-4 mb-1 ml-2 text-red-600"
+          )}
+        />
+      </div>
+    </div>
+  </div>
+);

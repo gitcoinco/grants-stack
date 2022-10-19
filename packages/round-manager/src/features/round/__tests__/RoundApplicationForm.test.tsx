@@ -37,6 +37,10 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+const randomMetadata = {
+  name: faker.random.word()
+};
+
 describe("<RoundApplicationForm />", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({
@@ -234,79 +238,203 @@ describe("Application Form Builder", () => {
     expect(screen.getByText(expectedQuestions[0].title)).toBeInTheDocument();
   });
 
-  it("displays edit icons for each editable question", () => {
-    const editableQuestions = initialQuestions;
+  describe("Edit question title", () => {
+    it("displays edit icons for each editable question", () => {
+      const editableQuestions = initialQuestions;
 
-    renderWithContext(
-      <RoundApplicationForm
-        initialData={{
-          // @ts-expect-error Test file
-          program: {
-            operatorWallets: [],
-          },
-        }}
-        stepper={FormStepper}
-      />
-    );
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    expect(screen.getAllByTestId("edit-title")).toHaveLength(
-      editableQuestions.length
-    );
-  });
-
-  it("enters editable state showing current title for that question when edit is clicked on that question", () => {
-    const editableQuestions = initialQuestions;
-    const questionIndex = randomInt(0, editableQuestions.length);
-
-    renderWithContext(
-      <RoundApplicationForm
-        initialData={{
-          // @ts-expect-error Test file
-          program: {
-            operatorWallets: [],
-          },
-        }}
-        stepper={FormStepper}
-      />
-    );
-    const editIcons = screen.getAllByTestId("edit-title");
-    fireEvent.click(editIcons[questionIndex]);
-
-    expect(
-      screen.getByDisplayValue(editableQuestions[questionIndex].title)
-    ).toBeInTheDocument();
-  });
-
-  it("when in edit mode, saves input as question title when save is clicked on that question and reverts to default ui", () => {
-    const questionIndex = randomInt(0, initialQuestions.length);
-    const newTitle = faker.lorem.sentence();
-
-    renderWithContext(
-      <RoundApplicationForm
-        initialData={{
-          // @ts-expect-error Test file
-          program: {
-            operatorWallets: [],
-          },
-        }}
-        stepper={FormStepper}
-      />
-    );
-    // edit title and save
-    const editIcons = screen.getAllByTestId("edit-title");
-    fireEvent.click(editIcons[questionIndex]);
-    const questionTitleInput = screen.getByTestId("question-title-input");
-    fireEvent.input(questionTitleInput, {
-      target: { value: newTitle },
+      expect(screen.getAllByTestId("edit-title")).toHaveLength(
+        editableQuestions.length
+      );
     });
-    const saveIcon = screen.getByTestId("save-title");
-    fireEvent.click(saveIcon);
 
-    expect(screen.getByText(newTitle)).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("question-title-input")
-    ).not.toBeInTheDocument();
-    expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
+    it("enters editable state showing current title for that question when edit is clicked on that question", () => {
+      const editableQuestions = initialQuestions;
+      const questionIndex = randomInt(0, editableQuestions.length);
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+      const editIcons = screen.getAllByTestId("edit-title");
+      fireEvent.click(editIcons[questionIndex]);
+
+      expect(
+        screen.getByDisplayValue(editableQuestions[questionIndex].title)
+      ).toBeInTheDocument();
+    });
+
+    it("when in edit mode, saves input as question title when save is clicked on that question and reverts to default ui", async () => {
+      const questionIndex = randomInt(0, initialQuestions.length);
+      const newTitle = faker.lorem.sentence();
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+      // edit title and save
+      const editIcons = screen.getAllByTestId("edit-title");
+      fireEvent.click(editIcons[questionIndex]);
+      const questionTitleInput = await screen.findByTestId(
+        "question-title-input"
+      );
+      fireEvent.input(questionTitleInput, {
+        target: { value: newTitle },
+      });
+      const saveIcon = screen.getByTestId("save-title");
+      fireEvent.click(saveIcon);
+
+      expect(await screen.findByText(newTitle)).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("question-title-input")
+      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Encrypted toggle", () => {
+    it("displays toggle for encryption option for each editable question", () => {
+      const editableQuestions = initialQuestions;
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      expect(screen.getAllByTestId("encrypted-toggle")).toHaveLength(
+        editableQuestions.length
+      );
+    });
+
+    it("toggles each encryption option when clicked", () => {
+      const isInitiallyEncrypted = initialQuestions.map((q) => q.encrypted);
+      const encryptionTrueClass = "bg-black";
+      const encryptionFalseClass = "bg-white";
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+      const encryptionToggles = screen.getAllByTestId("encrypted-toggle");
+      encryptionToggles.forEach((toggle) => {
+        fireEvent.click(toggle);
+      });
+
+      const encryptionToggleLabels = screen.getAllByTestId(
+        "encrypted-toggle-label"
+      );
+      encryptionToggles.forEach((toggle, index) => {
+        if (isInitiallyEncrypted[index]) {
+          expect(toggle.childNodes[0]).toHaveClass(encryptionFalseClass);
+          expect(toggle).not.toBeChecked();
+          expect(encryptionToggleLabels[index]).toHaveTextContent(
+            "Unencrypted"
+          );
+        } else {
+          expect(toggle.childNodes[0]).toHaveClass(encryptionTrueClass);
+          expect(toggle).toBeChecked();
+          expect(encryptionToggleLabels[index]).toHaveTextContent("Encrypted");
+        }
+      });
+    });
+  });
+
+  describe("Required toggle", () => {
+    it("displays toggle for required option for each editable question", () => {
+      const editableQuestions = initialQuestions;
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      expect(screen.getAllByTestId("required-toggle")).toHaveLength(
+        editableQuestions.length
+      );
+    });
+
+    it("toggle each required option when clicked", () => {
+      const isInitiallyRequired = initialQuestions.map((q) => q.required);
+      const requiredTrueClass = "bg-violet-400";
+      const requiredFalseClass = "bg-white";
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      const requiredToggles = screen.getAllByTestId("required-toggle");
+      requiredToggles.forEach((toggle) => {
+        fireEvent.click(toggle);
+      });
+
+      const requiredToggleLabels = screen.getAllByTestId(
+        "required-toggle-label"
+      );
+      requiredToggles.forEach((toggle, index) => {
+        if (isInitiallyRequired[index]) {
+          expect(toggle.childNodes[0]).toHaveClass(requiredFalseClass);
+          expect(toggle).not.toBeChecked();
+          expect(requiredToggleLabels[index]).toHaveTextContent("Optional");
+        } else {
+          expect(toggle.childNodes[0]).toHaveClass(requiredTrueClass);
+          expect(toggle).toBeChecked();
+          expect(requiredToggleLabels[index]).toHaveTextContent(/Required/i);
+        }
+      });
+    });
   });
 });
 
