@@ -436,6 +436,54 @@ describe("Application Form Builder", () => {
       });
     });
   });
+
+  describe("Remove question", () => {
+    it("displays remove icon for each editable question", () => {
+      const editableQuestions = initialQuestions;
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      expect(screen.getAllByTestId("remove-question")).toHaveLength(
+        editableQuestions.length
+      );
+    });
+
+    it("removes question when remove icon is clicked", () => {
+      const editableQuestions = initialQuestions;
+
+      const indexToBeRemoved = randomInt(0, 3);
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      const removeIcons = screen.getAllByTestId("remove-question");
+      fireEvent.click(removeIcons[indexToBeRemoved]);
+
+      expect(screen.getAllByTestId("remove-question")).toHaveLength(
+        editableQuestions.length - 1
+      );
+
+      expect(
+        screen.queryByText(editableQuestions[indexToBeRemoved].title)
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 export const renderWithContext = (
