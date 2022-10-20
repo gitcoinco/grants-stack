@@ -1,52 +1,22 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { BaseModal } from "../base/BaseModal";
-import { Status, RoundApplicationError } from "../../reducers/roundApplication";
+import { Status, Step } from "../../utils/steps";
+import { RoundApplicationError } from "../../reducers/roundApplication";
+import { NewGrantError } from "../../reducers/newGrant";
 
 type StatusModalProps = {
   open: boolean;
   onClose: (open: boolean) => void;
   currentStatus: Status;
-  error?: RoundApplicationError;
+  steps: Step[];
+  error?: RoundApplicationError | NewGrantError;
 };
-
-type Step = {
-  name: string;
-  description: string;
-  status: Status;
-};
-
-export const steps: Step[] = [
-  {
-    name: "Gathering Data",
-    description: "Preparing your application.",
-    status: Status.BuildingApplication,
-  },
-  {
-    name: "Signing",
-    description: "Signing the application metadata with your wallet.",
-    status: Status.SigningApplication,
-  },
-  {
-    name: "Storing",
-    description: "The metadata is being saved in a safe place.",
-    status: Status.UploadingMetadata,
-  },
-  {
-    name: "Applying",
-    description: "Sending your application.",
-    status: Status.SendingTx,
-  },
-  {
-    name: "Redirecting",
-    description: "Just another moment while we finish things up.",
-    status: Status.Sent,
-  },
-];
 
 type StepComponentProps = {
   ownStep: Step;
   currentStatus: Status;
-  error?: RoundApplicationError;
+  steps: Step[];
+  error?: RoundApplicationError | NewGrantError;
 };
 
 const completedIcon = (
@@ -90,7 +60,12 @@ const errorIcon = (
   </span>
 );
 
-function StepComponent({ ownStep, currentStatus, error }: StepComponentProps) {
+function StepComponent({
+  ownStep,
+  currentStatus,
+  error,
+  steps,
+}: StepComponentProps) {
   let lastStepStatus = currentStatus;
 
   if (error !== undefined) {
@@ -137,16 +112,10 @@ export default function StatusModal({
   onClose,
   currentStatus,
   error,
+  steps,
 }: StatusModalProps) {
-  const working = error === undefined && currentStatus !== Status.Sent;
-  const onCloseCallback = working ? () => {} : () => onClose(false);
-
   return (
-    <BaseModal
-      isOpen={open}
-      hideCloseButton={working}
-      onClose={onCloseCallback}
-    >
+    <BaseModal isOpen={open} onClose={() => onClose(false)} hideCloseButton>
       <>
         <div>
           <div>
@@ -166,6 +135,7 @@ export default function StatusModal({
                   key={step.name}
                   error={error}
                   ownStep={step}
+                  steps={steps}
                   currentStatus={currentStatus}
                 />
               ))}
