@@ -10,6 +10,7 @@ type StatusModalProps = {
   currentStatus: Status;
   steps: Step[];
   error?: RoundApplicationError | NewGrantError;
+  title: string;
 };
 
 type StepComponentProps = {
@@ -113,6 +114,7 @@ export default function StatusModal({
   currentStatus,
   error,
   steps,
+  title,
 }: StatusModalProps) {
   return (
     <BaseModal isOpen={open} onClose={() => onClose(false)} hideCloseButton>
@@ -120,11 +122,7 @@ export default function StatusModal({
         <div>
           <div>
             <h5 className="font-semibold mb-2">Processing...</h5>
-            {error === undefined && (
-              <p className="mb-4">
-                Please hold while we submit your grant round application.
-              </p>
-            )}
+            {error === undefined && <p className="mb-4">{title}</p>}
           </div>
         </div>
         <div>
