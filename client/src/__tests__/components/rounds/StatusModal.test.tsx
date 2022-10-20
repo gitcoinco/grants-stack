@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
-import StatusModal, { steps } from "../../../components/rounds/StatusModal";
+import StatusModal from "../../../components/rounds/StatusModal";
+import { applicationSteps as steps } from "../../../utils/steps";
 import setupStore from "../../../store";
 import { renderWrapped } from "../../../utils/test_utils";
 
@@ -80,6 +81,7 @@ describe("<StatusModal />", () => {
             open
             onClose={() => {}}
             currentStatus={scenario.currentStep.status}
+            steps={steps}
             error={
               scenario.error
                 ? {
