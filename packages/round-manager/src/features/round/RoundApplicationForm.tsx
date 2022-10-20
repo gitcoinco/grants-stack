@@ -4,6 +4,7 @@ import {
   SubmitHandler,
   useFieldArray,
   useForm,
+  UseFormRegister,
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { FormStepper as FS } from "../common/FormStepper";
@@ -21,6 +22,7 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
+import { CheckIcon, PencilIcon } from "@heroicons/react/solid";
 
 export const initialQuestions: QuestionOptions[] = [
   {
@@ -62,7 +64,7 @@ export function RoundApplicationForm(props: {
   const defaultQuestions: ApplicationMetadata["questions"] =
     formData?.applicationMetadata?.questions ?? initialQuestions;
 
-  const { control, handleSubmit } = useForm<Round>({
+  const { control, handleSubmit, register, getValues } = useForm<Round>({
     defaultValues: {
       ...formData,
       applicationMetadata: {
@@ -75,6 +77,9 @@ export function RoundApplicationForm(props: {
     name: "applicationMetadata.questions",
     control,
   });
+  const [isInEditState, setIsInEditState] = useState<boolean[]>(
+    fields.map(() => false)
+  );
 
   const { chain } = useWallet();
 
@@ -207,7 +212,13 @@ export function RoundApplicationForm(props: {
         <div className="md:col-span-1"></div>
         <div className="mt-5 md:mt-0 md:col-span-2">
           <form onSubmit={handleSubmit(next)} className="text-grey-500">
-            <ApplicationInformation fields={fields} />
+            <ApplicationInformation
+              fields={fields}
+              register={register}
+              editStates={isInEditState}
+              setEditStates={setIsInEditState}
+              getValues={getValues}
+            />
 
             <div className="px-6 align-middle py-3.5 shadow-md">
               <Steps
@@ -312,7 +323,49 @@ function ProjectInformation() {
 
 function ApplicationInformation(props: {
   fields: FieldArrayWithId<Round, "applicationMetadata.questions">[];
+  register: UseFormRegister<Round>;
+  editStates: boolean[];
+  setEditStates: (a: boolean[]) => void;
+  getValues: any;
 }) {
+  const { fields, register, editStates, setEditStates, getValues } = props;
+
+  const normalTitle = (index: number) => (
+    <>
+      {getValues(`applicationMetadata.questions.${index}.title`)}
+      <PencilIcon
+        onClick={() => {
+          const newEditState = [...editStates];
+          newEditState[index] = true;
+          setEditStates(newEditState);
+        }}
+        className="inline h-4 w-4 mb-1 ml-2 text-grey-400"
+        data-testid={"edit-title"}
+      />
+    </>
+  );
+  const editableTitle = (index: number) => (
+    <>
+      <input
+        {...register(`applicationMetadata.questions.${index}.title`)}
+        type="text"
+        placeholder="Enter desired application info here."
+        data-testid={"question-title-input"}
+        className="text-sm border-violet-400 rounded-md"
+      />
+
+      <CheckIcon
+        onClick={() => {
+          const newEditState = [...editStates];
+          newEditState[index] = false;
+          setEditStates(newEditState);
+        }}
+        className="inline h-4 w-4 mb-1 ml-2 text-grey-400"
+        data-testid={"save-title"}
+      />
+    </>
+  );
+
   return (
     <div className="mt-5 md:mt-0 md:col-span-2">
       <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
@@ -329,10 +382,12 @@ function ApplicationInformation(props: {
           <hr />
         </div>
 
-        {props.fields.map((field, index) => {
+        {fields.map((field, index) => {
           return (
             <div key={index}>
-              <div className="my-4 text-sm">{field.title}</div>
+              <div className="my-4 text-sm">
+                {editStates[index] ? editableTitle(index) : normalTitle(index)}
+              </div>
               <hr />
             </div>
           );
