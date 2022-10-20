@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import { RoundApplicationForm } from "../RoundApplicationForm";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  initialQuestions,
+  RoundApplicationForm,
+} from "../RoundApplicationForm";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { MemoryRouter } from "react-router-dom";
@@ -9,10 +12,13 @@ import {
   CreateRoundState,
   initialCreateRoundState,
 } from "../../../context/round/CreateRoundContext";
-import { ProgressStatus } from "../../api/types";
+import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
 import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
+import { FormContext } from "../../common/FormWizard";
+import { randomInt } from "crypto";
+import { faker } from "@faker-js/faker";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
@@ -26,6 +32,10 @@ jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("<RoundApplicationForm />", () => {
   beforeEach(() => {
@@ -62,9 +72,7 @@ describe("<RoundApplicationForm />", () => {
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       const launch = screen.getByRole("button", { name: /Launch/i });
-      await act(() => {
-        fireEvent.click(launch);
-      });
+      fireEvent.click(launch);
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
@@ -82,14 +90,10 @@ describe("<RoundApplicationForm />", () => {
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
       const launch = screen.getByRole("button", { name: /Launch/i });
-      await act(() => {
-        fireEvent.click(launch);
-      });
+      fireEvent.click(launch);
 
       const done = await screen.findByTestId("done");
-      await act(() => {
-        fireEvent.click(done);
-      });
+      fireEvent.click(done);
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     });
@@ -108,23 +112,21 @@ describe("<RoundApplicationForm />", () => {
       );
 
       const launch = screen.getByRole("button", { name: /Launch/i });
-      await act(() => {
-        fireEvent.click(launch);
-      });
+      fireEvent.click(launch);
 
-      expect(screen.getByTestId("error-modal")).toBeInTheDocument();
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
       const saveToIpfsCalls = (saveToIPFS as jest.Mock).mock.calls.length;
       expect(saveToIpfsCalls).toEqual(2);
 
       const tryAgain = await screen.findByTestId("tryAgain");
-      await act(() => {
-        fireEvent.click(tryAgain);
-      });
+      fireEvent.click(tryAgain);
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
-      expect((saveToIPFS as jest.Mock).mock.calls.length).toEqual(
-        saveToIpfsCalls + 2
-      );
+      await waitFor(() => {
+        expect((saveToIPFS as jest.Mock).mock.calls.length).toEqual(
+          saveToIpfsCalls + 2
+        );
+      });
     });
   });
 
@@ -147,12 +149,155 @@ describe("<RoundApplicationForm />", () => {
         createRoundStateOverride
       );
       const launch = screen.getByRole("button", { name: /Launch/i });
-      await act(() => {
-        fireEvent.click(launch);
-      });
+      fireEvent.click(launch);
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
+  });
+});
+
+describe("Application Form Builder", () => {
+  beforeEach(() => {
+    (useWallet as jest.Mock).mockReturnValue({
+      chain: { name: "my blockchain" },
+      provider: {
+        getNetwork: () => ({
+          chainId: 0,
+        }),
+      },
+      signer: {
+        getChainId: () => 0,
+      },
+      address: "0x0",
+    });
+  });
+
+  it("displays the four default questions", () => {
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    expect(screen.getByText("Payout Wallet Address")).toBeInTheDocument();
+    expect(screen.getByText("Email Address")).toBeInTheDocument();
+    expect(screen.getByText("Funding Sources")).toBeInTheDocument();
+    expect(screen.getByText("Team Size")).toBeInTheDocument();
+  });
+
+  it("displays the existing questions if present in form data", () => {
+    const expectedQuestions: ApplicationMetadata["questions"] = [
+      {
+        title: "Some question",
+        required: false,
+        encrypted: false,
+        inputType: "text",
+      },
+    ];
+    const setFormData = jest.fn();
+    const formContext = {
+      currentStep: 2,
+      setCurrentStep: jest.fn(),
+      stepsCount: 3,
+      formData: {
+        applicationMetadata: {
+          questions: expectedQuestions,
+        },
+      },
+      setFormData,
+    };
+
+    renderWithContext(
+      <FormContext.Provider value={formContext}>
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      </FormContext.Provider>
+    );
+
+    expect(screen.getByText(expectedQuestions[0].title)).toBeInTheDocument();
+  });
+
+  it("displays edit icons for each editable question", () => {
+    const editableQuestions = initialQuestions;
+
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    expect(screen.getAllByTestId("edit-title")).toHaveLength(
+      editableQuestions.length
+    );
+  });
+
+  it("enters editable state showing current title for that question when edit is clicked on that question", () => {
+    const editableQuestions = initialQuestions;
+    const questionIndex = randomInt(0, editableQuestions.length);
+
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+    const editIcons = screen.getAllByTestId("edit-title");
+    fireEvent.click(editIcons[questionIndex]);
+
+    expect(
+      screen.getByDisplayValue(editableQuestions[questionIndex].title)
+    ).toBeInTheDocument();
+  });
+
+  it("when in edit mode, saves input as question title when save is clicked on that question and reverts to default ui", () => {
+    const questionIndex = randomInt(0, initialQuestions.length);
+    const newTitle = faker.lorem.sentence();
+
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+    // edit title and save
+    const editIcons = screen.getAllByTestId("edit-title");
+    fireEvent.click(editIcons[questionIndex]);
+    const questionTitleInput = screen.getByTestId("question-title-input");
+    fireEvent.input(questionTitleInput, {
+      target: { value: newTitle },
+    });
+    const saveIcon = screen.getByTestId("save-title");
+    fireEvent.click(saveIcon);
+
+    expect(screen.getByText(newTitle)).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("question-title-input")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
   });
 });
 

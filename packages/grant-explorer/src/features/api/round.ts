@@ -1,5 +1,11 @@
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { ApplicationStatus, MetadataPointer, Project, Round } from "./types";
+import {
+  ApplicationStatus,
+  Eligibility,
+  MetadataPointer,
+  Project,
+  Round,
+} from "./types";
 
 /**
  * Shape of subgraph response
@@ -41,6 +47,7 @@ interface RoundProjectResult {
  */
 type RoundMetadata = {
   name: string;
+  eligibility: Eligibility;
   programContractAddress: string;
 };
 
@@ -177,7 +184,7 @@ async function fetchMetadataAndMapProject(
     grantApplicationId: project.id,
     projectRegistryId: project.project,
     projectMetadata: {
-      ...projectMetadataFromApplication
+      ...projectMetadataFromApplication,
     },
     status: ApplicationStatus.APPROVED,
   };

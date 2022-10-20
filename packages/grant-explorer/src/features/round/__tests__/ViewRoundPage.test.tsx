@@ -23,13 +23,49 @@ jest.mock("react-router-dom", () => ({
   useParams: useParamsFn,
 }));
 
-describe("<ViewRound />", () => {
+describe("<ViewRound /> in case of before the round start date", () => {
   let stubRound: Round;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubRound = makeRoundData({ id: roundId });
+    const applicationsStartTime = faker.date.recent(); // recent past
+    const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
+    const roundStartTime = faker.date.future(1, applicationsEndTime);
+    const roundEndTime = faker.date.soon(10, roundStartTime);
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+  });
+
+  it("should display 404 when round is not found", () => {
+    renderWithContext(<ViewRound />, { rounds: [], isLoading: false });
+    expect(screen.getByText("404 ERROR")).toBeInTheDocument();
+  });
+
+  it("should show the application view page", () => {
+    // render the component
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    // expect that components / text / dates / etc. specific to  application view page
+    expect(screen.getByText(stubRound.roundMetadata!.name)).toBeInTheDocument();
+    expect(screen.getByTestId("application-period")).toBeInTheDocument();
+    expect(screen.getByTestId("round-period")).toBeInTheDocument();
+    expect(screen.getByText(stubRound.roundMetadata!.eligibility!.description)).toBeInTheDocument();
+    expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
+  });
+
+});
+
+describe("<ViewRound /> in case of after the round start date", () => {
+  let stubRound: Round;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    const applicationsStartTime = faker.date.past(1); 
+    const applicationsEndTime = faker.date.past(1, applicationsStartTime);
+    const roundStartTime = faker.date.recent();
+    const roundEndTime = faker.date.soon(10, roundStartTime);
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
   });
 
   it("should display 404 when round is not found", () => {
@@ -126,3 +162,5 @@ describe("<ViewRound />", () => {
     });
   });
 });
+
+

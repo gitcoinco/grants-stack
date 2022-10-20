@@ -293,17 +293,13 @@ export const wrapWithRoundContext = (
 
 export const wrapWithBulkUpdateGrantApplicationContext = (
   ui: JSX.Element,
-  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
+  bulkUpdateOverrides: Partial<BulkUpdateGrantApplicationState> = {}
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
 ) => (
   <BulkUpdateGrantApplicationContext.Provider
     value={{
-      state: {
-        ...initialBulkUpdateGrantApplicationState,
-        ...bulkUpdateOverrides,
-      },
-      dispatch,
+      ...initialBulkUpdateGrantApplicationState,
+      ...bulkUpdateOverrides,
     }}
   >
     {ui}

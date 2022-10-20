@@ -12,16 +12,7 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { MemoryRouter, useParams } from "react-router-dom";
-import {
-  ApplicationContext,
-  ApplicationState,
-  initialApplicationState,
-} from "../../../context/application/ApplicationContext";
-import {
-  BulkUpdateGrantApplicationContext,
-  initialBulkUpdateGrantApplicationState,
-} from "../../../context/application/BulkUpdateGrantApplicationContext";
+import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -53,7 +44,7 @@ jest.mock("../../common/Auth", () => ({
   }),
 }));
 
-describe("the view round page", () => {
+describe("View Round", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -65,7 +56,7 @@ describe("the view round page", () => {
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  it("should display 404 when there no round is found", () => {
+  it("displays a 404 when there no round is found", () => {
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
@@ -91,7 +82,7 @@ describe("the view round page", () => {
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
-  it("should display access denied when wallet accessing is not round operator", () => {
+  it("displays access denied when wallet accessing is not round operator", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -111,7 +102,7 @@ describe("the view round page", () => {
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
 
-  it("should display Copy to Clipboard", () => {
+  it("displays Copy to Clipboard", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -128,7 +119,7 @@ describe("the view round page", () => {
     expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
   });
 
-  it("should display copy when there are no applicants for a given round", () => {
+  it("displays copy when there are no applicants for a given round", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -149,7 +140,7 @@ describe("the view round page", () => {
     expect(screen.getByText("No Applications")).toBeInTheDocument();
   });
 
-  it("should indicate how many of each kind of application there are", () => {
+  it("indicates how many of each kind of application there are", () => {
     const mockApplicationData: GrantApplication[] = [
       makeGrantApplicationData(),
       makeGrantApplicationData(),
@@ -191,7 +182,7 @@ describe("the view round page", () => {
     ).toBe(1);
   });
 
-  it("should display loading spinner when round is loading", () => {
+  it("displays loading spinner when round is loading", () => {
     render(
       wrapWithApplicationContext(
         wrapWithReadProgramContext(
@@ -206,33 +197,19 @@ describe("the view round page", () => {
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
   });
-});
 
-export const renderWithContext = (
-  ui: JSX.Element,
-  grantApplicationStateOverrides: Partial<ApplicationState> = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dispatch: any = jest.fn()
-) =>
-  render(
-    <MemoryRouter>
-      <BulkUpdateGrantApplicationContext.Provider
-        value={{
-          state: initialBulkUpdateGrantApplicationState,
-          dispatch,
-        }}
-      >
-        <ApplicationContext.Provider
-          value={{
-            state: {
-              ...initialApplicationState,
-              ...grantApplicationStateOverrides,
-            },
-            dispatch,
-          }}
-        >
-          {ui}
-        </ApplicationContext.Provider>
-      </BulkUpdateGrantApplicationContext.Provider>
-    </MemoryRouter>
-  );
+  it("displays option to view round's explorer", () => {
+    render(
+      wrapWithApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+          })
+        )
+      )
+    );
+    const roundExplorer = screen.getByTestId("round-explorer");
+
+    expect(roundExplorer).toBeInTheDocument();
+  });
+});

@@ -5,13 +5,12 @@ import {
   fetchFromIPFS,
   generateApplicationSchema,
   graphql_fetch,
-  humanReadableLabels,
-  inputTypes,
   pinToIPFS,
 } from "../utils";
 
 import { MetadataPointer } from "../types";
 import { checkGrantApplicationStatus } from "../application";
+import { initialQuestions } from "../../round/RoundApplicationForm";
 
 enableFetchMocks();
 
@@ -353,82 +352,18 @@ describe("graphql_fetch", () => {
 
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
-    const metadata: {
-      customQuestions: { [key: string]: string };
-    } = {
-      customQuestions: {
-        email: "What is your email?",
-        fundingSource: "What is your funding source?",
-        profit2022: "What is your profit for 2022?",
-        teamSize: "What is your team size",
-      },
-    };
+    const expectedSchema = initialQuestions.map((question) => ({
+      question: question.title,
+      type: question.inputType,
+      required: question.required,
+      info: "", // TODO: is grant hub using this???
+      choices: [], // TODO: is grant hub using this???
+      encrypted: question.encrypted,
+    }));
 
-    const schema = generateApplicationSchema(metadata);
-
-    const expectedSchema = Object.keys(metadata.customQuestions).map(
-      (question) => ({
-        question: humanReadableLabels[question],
-        type: inputTypes[question],
-        required: true,
-        info: metadata.customQuestions[question],
-        choices: [],
-        encrypted: question === "email",
-      })
-    );
+    const schema = generateApplicationSchema(initialQuestions);
 
     expect(Array.isArray(schema)).toBe(true);
     expect(schema).toMatchObject(expectedSchema);
-  });
-
-  it("should return valid application schema when one of the subkeys is not an object", () => {
-    const metadata = {
-      customQuestions: {},
-      ofac: "Is you project OFAC compliant?",
-      coolness: "Is your project really cool?",
-    };
-    const expectedSchema = [
-      {
-        question: "Ofac",
-        type: "text",
-        required: true,
-        info: metadata.ofac,
-        choices: [],
-        encrypted: false,
-      },
-      {
-        question: "Coolness",
-        type: "text",
-        required: true,
-        info: metadata.coolness,
-        choices: [],
-        encrypted: false,
-      },
-    ];
-
-    const schema = generateApplicationSchema(metadata);
-
-    expect(Array.isArray(schema)).toBe(true);
-
-    expect(schema).toMatchObject(expectedSchema);
-  });
-
-  it("should mark email field as encrypted", () => {
-    const metadata = {
-      customQuestions: {
-        email: "",
-      },
-    };
-
-    const schema = generateApplicationSchema(metadata);
-
-    expect(schema).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          question: "Email Address",
-          encrypted: true,
-        }),
-      ])
-    );
   });
 });
