@@ -16,6 +16,7 @@ const infuraId = process.env.INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
 
+// Adding custom chain setups for Fantom Mainnet and Testnet
 const fantomTestnet: Chain = {
   id: 4002,
   name: "Fantom Testnet",
@@ -59,6 +60,7 @@ if (process.env.REACT_APP_LOCALCHAIN) {
   chainsAvailable.push(chain.hardhat);
 }
 
+// Update production only chains here
 if (process.env.REACT_APP_ENV === "production") {
   chainsAvailable.push(
     chain.optimism,
@@ -66,6 +68,7 @@ if (process.env.REACT_APP_ENV === "production") {
     chain.optimismKovan,
     fantomMainnet
   );
+  // And all other environments here
 } else {
   chainsAvailable.push(
     chain.optimism,
@@ -82,7 +85,8 @@ export const { chains, provider } = configureChains(chainsAvailable, [
   publicProvider({ priority: 2 }),
 ]);
 
-// todo: remove rainbow wallet option
+// Custom wallet connectors: more can be added by going here:
+// https://www.rainbowkit.com/docs/custom-wallet-list
 const connectors = connectorsForWallets([
   {
     groupName: "Recommended",
