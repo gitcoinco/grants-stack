@@ -13,6 +13,7 @@ import { Status as RoundStatus } from "../../reducers/rounds";
 import { grantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
+import { applicationSteps } from "../../utils/steps";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
@@ -209,6 +210,7 @@ function Apply() {
             open={statusModalOpen}
             onClose={toggleStatusModal}
             currentStatus={props.applicationState.status}
+            steps={applicationSteps}
             error={props.applicationState.error}
           />
         )}
