@@ -27,7 +27,7 @@ const fantomTestnet: Chain = {
     symbol: "FTM",
   },
   rpcUrls: {
-    default: "https://rpc.ankr.com/fantom_testnet/",
+    default: "https://rpc.testnet.fantom.network/",
   },
   blockExplorers: {
     default: { name: "ftmscan", url: "https://testnet.ftmscan.com" },
