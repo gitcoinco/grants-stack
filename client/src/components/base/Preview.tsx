@@ -52,7 +52,7 @@ export default function Preview({
   const publishProject = async () => {
     setSubmitted(true);
     showToast(true);
-    await dispatch(publishGrant(currentProjectId));
+    dispatch(publishGrant(currentProjectId));
   };
 
   const navigate = useNavigate();
