@@ -1,43 +1,53 @@
 import { useContext, useEffect, useState } from "react";
 import {
-  FieldErrors,
+  FieldArrayWithId,
   SubmitHandler,
+  useFieldArray,
   useForm,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { FormStepper as FS } from "../common/FormStepper";
-import { ProgressStatus, Round } from "../api/types";
+import {
+  ApplicationMetadata,
+  ProgressStatus,
+  QuestionOptions,
+  Round,
+} from "../api/types";
 import { FormContext } from "../common/FormWizard";
-import { Button, Input } from "../common/styles";
 import { generateApplicationSchema } from "../api/utils";
 import { useWallet } from "../common/Auth";
-import { PencilIcon, XIcon } from "@heroicons/react/solid";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
 
-const ValidationSchema = yup.object().shape({
-  applicationMetadata: yup.object({
-    customQuestions: yup.object({
-      email: yup.string(),
-      fundingSource: yup.string(),
-      profit2022: yup.string(),
-      teamSize: yup.string(),
-    }),
-  }),
-});
+export const initialQuestions: QuestionOptions[] = [
+  {
+    title: "Email Address",
+    required: true,
+    encrypted: true,
+    inputType: "text",
+  },
+  {
+    title: "Funding Sources",
+    required: true,
+    encrypted: false,
+    inputType: "text",
+  },
+  {
+    title: "Team Size",
+    required: true,
+    encrypted: false,
+    inputType: "text",
+  },
+];
 
 export function RoundApplicationForm(props: {
   initialData: any;
   stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
-  const [edit, setEdit] = useState(false);
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
   const Steps = props.stepper;
@@ -48,14 +58,22 @@ export function RoundApplicationForm(props: {
   const programId = new URLSearchParams(search).get("programId") as string;
 
   const navigate = useNavigate();
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Round>({
-    defaultValues: formData,
-    resolver: yupResolver(ValidationSchema),
+
+  const defaultQuestions: ApplicationMetadata["questions"] =
+    formData?.applicationMetadata?.questions ?? initialQuestions;
+
+  const { control, handleSubmit } = useForm<Round>({
+    defaultValues: {
+      ...formData,
+      applicationMetadata: {
+        questions: defaultQuestions,
+      },
+    },
+  });
+
+  const { fields } = useFieldArray({
+    name: "applicationMetadata.questions",
+    control,
   });
 
   const { chain } = useWallet();
@@ -110,16 +128,18 @@ export function RoundApplicationForm(props: {
   const next: SubmitHandler<Round> = async (values) => {
     try {
       setOpenProgressModal(true);
-      const data = { ...formData, ...values };
+      const data: Partial<Round> = { ...formData, ...values };
 
-      const roundMetadataWithProgramContractAddress = {
-        ...data.roundMetadata,
+      const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
+        ...(data.roundMetadata as Round["roundMetadata"]),
         programContractAddress: programId,
       };
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
-        applicationSchema: generateApplicationSchema(data.applicationMetadata),
+        applicationSchema: generateApplicationSchema(
+          data.applicationMetadata?.questions
+        ),
       };
 
       const round = {
@@ -128,15 +148,13 @@ export function RoundApplicationForm(props: {
         token: "0x21C8a148933E6CA502B47D729a485579c22E8A69", // DAI token
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
-      };
+      } as Round;
 
       await createRound({
         roundMetadataWithProgramContractAddress,
         applicationQuestions,
         round,
       });
-
-      reset();
     } catch (error) {
       datadogLogs.logger.error(
         `error: RoundApplcationForm next - ${error}, programId - ${programId}`
@@ -189,22 +207,7 @@ export function RoundApplicationForm(props: {
         <div className="md:col-span-1"></div>
         <div className="mt-5 md:mt-0 md:col-span-2">
           <form onSubmit={handleSubmit(next)} className="text-grey-500">
-            <ApplicationInformation
-              edit={edit}
-              onClick={() => setEdit(false)}
-              onClick1={() => setEdit(true)}
-              register={register("applicationMetadata.customQuestions.email")}
-              errors={errors}
-              register1={register(
-                "applicationMetadata.customQuestions.fundingSource"
-              )}
-              register2={register(
-                "applicationMetadata.customQuestions.profit2022"
-              )}
-              register3={register(
-                "applicationMetadata.customQuestions.teamSize"
-              )}
-            />
+            <ApplicationInformation fields={fields} />
 
             <div className="px-6 align-middle py-3.5 shadow-md">
               <Steps
@@ -308,196 +311,34 @@ function ProjectInformation() {
 }
 
 function ApplicationInformation(props: {
-  edit: boolean;
-  onClick: () => void;
-  onClick1: () => void;
-  register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  register1: UseFormRegisterReturn<string>;
-  register2: UseFormRegisterReturn<string>;
-  register3: UseFormRegisterReturn<string>;
+  fields: FieldArrayWithId<Round, "applicationMetadata.questions">[];
 }) {
   return (
-    <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
-      <div className="flex">
-        <p className="flex-1 mb-2">Application Information</p>
-        {props.edit ? (
-          <ExitEditMode onClick={props.onClick} />
-        ) : (
-          <EnterEditMode onClick={props.onClick1} />
-        )}
-      </div>
-      <p className="text-sm text-grey-400 mb-6">
-        Project Owners will need to fill out an application with the details
-        below.
-      </p>
-      {!props.edit && (
-        <>
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">Payout Wallet Address</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">Email Address</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">Funding Sources</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">2022 Profit</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-          <div className="flex my-4">
-            <span className="flex-1 text-sm">Team Size</span>
-            <span className="text-xs text-violet-400">*Required</span>
-          </div>
-          <hr />
-        </>
-      )}
-
-      {props.edit && (
-        <div className="grid grid-cols-6 gap-6">
-          {/* Email */}
-          <div className="col-span-6 sm:col-span-3 sm:col-start-1">
-            <label
-              htmlFor="applicationMetadata.contact.email"
-              className="block text-xs font-medium"
-            >
-              Email Address
-            </label>
-            <Input
-              {...props.register}
-              $hasError={
-                props.errors.applicationMetadata?.customQuestions?.email
-              }
-              type="text"
-              placeholder='i.e. "email@domain.com"'
-            />
-            {props.errors.applicationMetadata?.customQuestions?.email && (
-              <p className="text-xs text-pink-500">
-                {
-                  props.errors.applicationMetadata?.customQuestions?.email
-                    ?.message
-                }
-              </p>
-            )}
-          </div>
-
-          {/* Funding Sources */}
-          <div className="col-span-6 sm:col-span-3">
-            <label
-              htmlFor="applicationMetadata.customQuestions.fundingSources"
-              className="block text-xs font-medium"
-            >
-              Funding Sources
-            </label>
-            <Input
-              {...props.register1}
-              $hasError={
-                props.errors.applicationMetadata?.customQuestions?.fundingSource
-              }
-              type="text"
-              placeholder='i.e. "What sources of funding do you currently have?"'
-            />
-            {props.errors.applicationMetadata?.customQuestions
-              ?.fundingSource && (
-              <p className="text-xs text-pink-500">
-                {
-                  props.errors.applicationMetadata?.customQuestions
-                    ?.fundingSource?.message
-                }
-              </p>
-            )}
-          </div>
-
-          {/* 2022 Profit */}
-          <div className="col-span-6 sm:col-span-3">
-            <label
-              htmlFor="applicationMetadata.customQuestions.profit2022"
-              className="block text-xs font-medium"
-            >
-              2022 Profit
-            </label>
-            <Input
-              {...props.register2}
-              $hasError={
-                props.errors.applicationMetadata?.customQuestions?.profit2022
-              }
-              type="text"
-              placeholder='i.e. "Please enter your profit for 2022."'
-            />
-            {props.errors.applicationMetadata?.customQuestions?.profit2022 && (
-              <p className="text-xs text-pink-500">
-                {
-                  props.errors.applicationMetadata?.customQuestions?.profit2022
-                    ?.message
-                }
-              </p>
-            )}
-          </div>
-
-          {/* Team Size */}
-          <div className="col-span-6 sm:col-span-3">
-            <label
-              htmlFor="applicationMetadata.customQuestions.teamSize"
-              className="block text-xs font-medium"
-            >
-              Team Size
-            </label>
-            <Input
-              {...props.register3}
-              $hasError={
-                props.errors.applicationMetadata?.customQuestions?.teamSize
-              }
-              type="text"
-              placeholder='i.e. "What is the size of your team"'
-            />
-            {props.errors.applicationMetadata?.customQuestions?.teamSize && (
-              <p className="text-xs text-pink-500">
-                {
-                  props.errors.applicationMetadata?.customQuestions?.teamSize
-                    ?.message
-                }
-              </p>
-            )}
-          </div>
+    <div className="mt-5 md:mt-0 md:col-span-2">
+      <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
+        <div className="flex">
+          <p className="flex-1 mb-2">Application Information</p>
         </div>
-      )}
+        <p className="text-sm text-grey-400 mb-6">
+          Project Owners will need to fill out an application with the details
+          below.
+        </p>
+
+        <div>
+          <div className="my-4 text-sm">Payout Wallet Address</div>
+          <hr />
+        </div>
+
+        {props.fields.map((field, index) => {
+          return (
+            <div key={index}>
+              <div className="my-4 text-sm">{field.title}</div>
+              <hr />
+            </div>
+          );
+        })}
+      </div>
     </div>
-  );
-}
-
-function EnterEditMode(props: { onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      $variant="outline"
-      className="border w-9 h-9 p-1.5"
-      onClick={props.onClick}
-    >
-      <PencilIcon aria-hidden="true" />
-    </Button>
-  );
-}
-
-function ExitEditMode(props: { onClick: () => void }) {
-  return (
-    <Button
-      type="button"
-      $variant="outline"
-      className="border text-pink-500 w-9 h-9 p-1.5"
-      onClick={props.onClick}
-    >
-      <XIcon aria-hidden="true" />
-    </Button>
   );
 }
 
