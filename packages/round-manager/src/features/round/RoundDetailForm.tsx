@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 
 import {
   Controller,
   FieldErrors,
   SubmitHandler,
+  useController,
   useForm,
   UseFormRegisterReturn,
 } from "react-hook-form";
@@ -16,6 +17,10 @@ import { Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Input } from "../common/styles";
 import { FormStepper } from "../common/FormStepper";
+import { Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { getPayoutTokenOptions, PayoutToken } from "../api/utils";
+import { useWallet } from "../common/Auth";
 import moment from "moment";
 
 //TODO: Time defaults to next hour - Date Picker
@@ -58,6 +63,13 @@ const ValidationSchema = yup.object().shape({
     .min(
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
+    ),
+  token: yup
+    .string()
+    .required("You must select a payout token for your round.")
+    .notOneOf(
+      ["Choose Payout Token"],
+      "You must select a payout token for your round."
     ),
 });
 
@@ -103,6 +115,124 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     return current.isAfter(roundStartDate);
   }
 
+  const { chain } = useWallet();
+  const payoutTokenOptions: PayoutToken[] = [
+    {
+      name: "Choose Payout Token",
+      chainId: chain.id,
+      address: "",
+      default: true,
+    },
+    ...getPayoutTokenOptions(chain.id),
+  ];
+
+  const { field } = useController({
+    name: "token",
+    defaultValue: payoutTokenOptions[0].address,
+    control,
+    rules: {
+      required: true,
+    },
+  });
+
+  function payoutTokenSettings() {
+    return (
+      <>
+        <hr className="my-8" />
+        <p className="text-grey-400 mb-4">Quadratic Funding Settings</p>
+        <Listbox {...field}>
+          {({ open }) => (
+            <div>
+              <Listbox.Label className="block text-sm font-medium">
+                Payout Token
+              </Listbox.Label>
+              <div className="relative mt-1">
+                <PayoutTokenButton
+                  errors={errors}
+                  token={payoutTokenOptions.find(
+                    (t) => t.address === field.value
+                  )}
+                />
+
+                <Transition
+                  show={open}
+                  as={Fragment}
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    {payoutTokenOptions.map(
+                      (token) =>
+                        !token.default && (
+                          <Listbox.Option
+                            key={token.name}
+                            className={({ active }) =>
+                              classNames(
+                                active
+                                  ? "text-white bg-indigo-600"
+                                  : "text-gray-900",
+                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                              )
+                            }
+                            value={token.address}
+                            data-testid="payout-token-option"
+                          >
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  {token.logo ? (
+                                    <img
+                                      src={token.logo}
+                                      alt=""
+                                      className="h-6 w-6 flex-shrink-0 rounded-full"
+                                    />
+                                  ) : null}
+                                  <span
+                                    className={classNames(
+                                      selected
+                                        ? "font-semibold"
+                                        : "font-normal",
+                                      "ml-3 block truncate"
+                                    )}
+                                  >
+                                    {token.name}
+                                  </span>
+                                </div>
+
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? "text-white" : "text-indigo-600",
+                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                    )}
+                                  >
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        )
+                    )}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+              {errors.token && (
+                <p className="mt-2 text-xs text-pink-500">
+                  {errors.token?.message}
+                </p>
+              )}
+            </div>
+          )}
+        </Listbox>
+      </>
+    );
+  }
+
   return (
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-10">
@@ -126,12 +256,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   errors={errors}
                 />
               </div>
-
               <p className="mt-6">
                 What are the dates for the Applications and Round voting
                 period(s)
               </p>
-
               <p className="text-xs mt-4 mb-2">Applications</p>
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
@@ -251,7 +379,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   )}
                 </div>
               </div>
-
               <p className="text-xs mt-4 mb-2">Round</p>
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
@@ -367,6 +494,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   )}
                 </div>
               </div>
+              {payoutTokenSettings()}
             </div>
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -405,4 +533,44 @@ function RoundName(props: {
       )}
     </div>
   );
+}
+function PayoutTokenButton(props: {
+  errors: FieldErrors<Round>;
+  token?: PayoutToken;
+}) {
+  const { token } = props;
+  return (
+    <Listbox.Button
+      className={`relative w-full cursor-default rounded-md border ${
+        props.errors.token
+          ? "border-red-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+          : "border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      }`}
+      data-testid="payout-token-select"
+    >
+      <span className="flex items-center">
+        {token?.logo ? (
+          <img
+            src={token?.logo}
+            alt=""
+            className="h-6 w-6 flex-shrink-0 rounded-full"
+          />
+        ) : null}
+        {token?.default ? (
+          <span className="ml-3 block truncate text-gray-500">
+            {token?.name}
+          </span>
+        ) : (
+          <span className="ml-3 block truncate">{token?.name}</span>
+        )}
+      </span>
+      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+        <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+      </span>
+    </Listbox.Button>
+  );
+}
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
 }

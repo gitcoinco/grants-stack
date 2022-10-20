@@ -5,6 +5,54 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = 10,
 }
 
+export type PayoutToken = {
+  name: string;
+  chainId: number;
+  address: string;
+  logo?: string;
+  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+};
+
+export const TokenNamesAndLogos: Record<string, string> = {
+  FTM: "https://picsum.photos/256",
+  BUSD: "https://picsum.photos/256",
+  DAI: "https://picsum.photos/256",
+};
+
+// TODO: which tokens should be available on optimism/goerli/other chains?
+//   Also look up real addresses for tokens
+export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      return [
+        {
+          name: "BUSD",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+          logo: TokenNamesAndLogos["BUSD"],
+        },
+        {
+          name: "DAI",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
+  }
+};
+
 /**
  * Fetch subgraph network for provided web3 network
  *
