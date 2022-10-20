@@ -1,4 +1,10 @@
-import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  coinbaseWallet,
+  injectedWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
@@ -72,10 +78,17 @@ export const { chains, provider } = configureChains(chainsAvailable, [
 ]);
 
 // todo: remove rainbow wallet option
-const { connectors } = getDefaultWallets({
-  appName: "Grant Hub",
-  chains,
-});
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      injectedWallet({ chains }),
+      walletConnectWallet({ chains }),
+      coinbaseWallet({ appName: "Grant Hub", chains }),
+      metaMaskWallet({ chains }),
+    ],
+  },
+]);
 
 const wagmiClient = createClient({
   autoConnect: true,
