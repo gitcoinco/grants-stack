@@ -1,6 +1,8 @@
 import {
   NewGrantActions,
+  GrantError,
   NEW_GRANT_CREATED,
+  NEW_GRANT_ERROR,
   NEW_GRANT_STATUS,
   RESET_STATUS,
 } from "../actions/newGrant";
@@ -21,9 +23,14 @@ export const enum Status {
   Error,
 }
 
+export type NewGrantError = {
+  error: string;
+  step: Status;
+};
+
 export interface NewGrantState {
   status: Status;
-  error: string | undefined;
+  error: NewGrantError | undefined;
 }
 
 export const initialState: NewGrantState = {
@@ -33,7 +40,7 @@ export const initialState: NewGrantState = {
 
 export const newGrantReducer = (
   state: NewGrantState = initialState,
-  action: NewGrantActions
+  action: NewGrantActions | GrantError
 ): NewGrantState => {
   switch (action.type) {
     case NEW_GRANT_CREATED: {
@@ -46,7 +53,18 @@ export const newGrantReducer = (
       return {
         ...state,
         status: action.status,
-        error: action.error,
+        error: undefined,
+      };
+    }
+
+    case NEW_GRANT_ERROR: {
+      return {
+        ...state,
+        status: Status.Error,
+        error: {
+          error: action.error,
+          step: action.step,
+        },
       };
     }
 
