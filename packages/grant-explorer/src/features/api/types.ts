@@ -1,4 +1,4 @@
-export type Network = "goerli" | "optimism"
+export type Network = "goerli" | "optimism";
 
 export interface Web3Instance {
   /**
@@ -12,7 +12,7 @@ export interface Web3Instance {
     id: number;
     name: string;
     network: Network;
-  },
+  };
   provider: any;
   signer?: any;
 }
@@ -40,7 +40,7 @@ export interface IPFSObject {
   metadata?: {
     name?: string;
     keyvalues?: object;
-  }
+  };
 }
 
 /** Base Contract interface */
@@ -55,6 +55,17 @@ export interface Contract {
   abi: Array<string>;
 }
 
+// TODO: Document this
+export interface Requirement {
+  requirement?: string;
+}
+
+// TODO: Document this
+export interface Eligibility {
+  description: string;
+  requirements?: Requirement[];
+}
+
 export interface Round {
   /**
    * The on-chain unique round ID
@@ -65,6 +76,8 @@ export interface Round {
    */
   roundMetadata?: {
     name: string;
+    eligibility: Eligibility;
+    programContractAddress: string;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -130,4 +143,4 @@ export type ProjectMetadata = {
   bannerImg?: string;
   logoImg?: string;
   projectTwitter?: string;
-}
+};
