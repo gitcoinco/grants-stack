@@ -8,15 +8,18 @@ export enum ChainId {
   FANTOM_TESTNET_CHAIN_ID = 0xfa2,
 }
 
+export type GraphEndpoint = {
+  uri: string | undefined;
+  error: string | undefined;
+};
+
 /**
  * Fetch subgraph uri for a given chain id
  *
  * @param chainId
- * @returns { uri: string | undefined, error: string | undefined }
+ * @returns GraphEndpoint
  */
-const getGraphQLEndpoint = async (
-  chainId: ChainId
-): Promise<{ uri: string | undefined; error: string | undefined }> => {
+const getGraphQLEndpoint = async (chainId: ChainId): Promise<GraphEndpoint> => {
   switch (chainId) {
     case ChainId.GOERLI_CHAIN_ID:
       return {
@@ -51,7 +54,7 @@ export const graphqlFetch = async (
   chainId: ChainId,
   variables: object = {}
 ) => {
-  const endpoint = await getGraphQLEndpoint(chainId);
+  const endpoint: GraphEndpoint = await getGraphQLEndpoint(chainId);
   if (!endpoint.error && endpoint.uri) {
     return fetch(endpoint.uri, {
       method: "POST",
