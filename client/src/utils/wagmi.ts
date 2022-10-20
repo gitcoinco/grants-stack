@@ -60,7 +60,12 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.optimism, fantomMainnet);
+  chainsAvailable.push(
+    chain.optimism,
+    chain.goerli,
+    chain.optimismKovan,
+    fantomMainnet
+  );
 } else {
   chainsAvailable.push(
     chain.optimism,
