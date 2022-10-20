@@ -14,7 +14,6 @@ export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
   type: typeof NEW_GRANT_STATUS;
   status: Status;
-  error: string | undefined;
 }
 
 export const NEW_GRANT_CREATED = "NEW_GRANT_CREATED";
@@ -23,6 +22,13 @@ export interface GrantCreated {
   id: number;
   metaData: string;
   owner?: string;
+}
+
+export const NEW_GRANT_ERROR = "NEW_GRANT_ERROR";
+export interface GrantError {
+  type: typeof NEW_GRANT_ERROR;
+  step: Status;
+  error: string;
 }
 
 export const RESET_STATUS = "RESET_STATUS";
@@ -36,13 +42,15 @@ export const resetStatus = (): NewGrantActions => ({
   type: RESET_STATUS,
 });
 
-export const grantStatus = (
-  status: Status,
-  error: string | undefined
-): NewGrantActions => ({
+export const grantStatus = (status: Status): NewGrantActions => ({
   type: NEW_GRANT_STATUS,
   status,
+});
+
+export const grantError = (error: string, step: Status): GrantError => ({
+  type: NEW_GRANT_ERROR,
   error,
+  step,
 });
 
 export const grantCreated = ({
@@ -71,7 +79,7 @@ export const publishGrant =
     } as Project;
 
     const pinataClient = new PinataClient();
-    dispatch(grantStatus(Status.UploadingImages, undefined));
+    dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
       const resp = await pinataClient.pinFile(formMetaData.bannerImgData);
       application.bannerImg = resp.IpfsHash;
@@ -84,7 +92,7 @@ export const publishGrant =
 
     application.credentials = formCredentials;
 
-    dispatch(grantStatus(Status.UploadingJSON, undefined));
+    dispatch(grantStatus(Status.UploadingJSON));
     const resp = await pinataClient.pinJSON(application);
     const metadataCID = resp.IpfsHash;
 
@@ -97,34 +105,28 @@ export const publishGrant =
       signer
     );
 
-    dispatch(grantStatus(Status.WaitingForSignature, undefined));
+    dispatch(grantStatus(Status.WaitingForSignature));
     let projectTx;
 
-    if (grantId !== undefined) {
-      try {
+    try {
+      if (grantId !== undefined) {
         projectTx = await projectRegistry.updateProjectMetadata(grantId, {
           protocol: 1,
           pointer: metadataCID,
         });
-      } catch (e) {
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
-      }
-    } else {
-      try {
+      } else {
         projectTx = await projectRegistry.createProject({
           protocol: 1,
           pointer: metadataCID,
         });
-      } catch (e) {
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
       }
+    } catch (e) {
+      dispatch(grantError("transaction error", Status.WaitingForSignature));
+      console.error("tx error", e);
+      return;
     }
 
-    dispatch(grantStatus(Status.TransactionInitiated, undefined));
+    dispatch(grantStatus(Status.TransactionInitiated));
     const txStatus = await projectTx.wait();
 
     // unload projects before changing the status
@@ -134,6 +136,6 @@ export const publishGrant =
     dispatch(unloadProjects());
 
     if (txStatus.status) {
-      dispatch(grantStatus(Status.Completed, undefined));
+      dispatch(grantStatus(Status.Completed));
     }
   };
