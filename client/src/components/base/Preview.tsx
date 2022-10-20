@@ -10,9 +10,10 @@ import { ProjectFormStatus } from "../../types";
 import { formatDate } from "../../utils/components";
 import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
-import Toast from "./Toast";
-import TXLoading from "./TXLoading";
 import { addAlert } from "../../actions/ui";
+import { grantSteps } from "../../utils/steps";
+import StatusModal from "../rounds/StatusModal";
+import ErrorModal from "./ErrorModal";
 
 export default function Preview({
   currentProjectId,
@@ -32,6 +33,7 @@ export default function Preview({
       credentials: state.projectForm.credentials,
       status: state.newGrant.status,
       error: state.newGrant.error,
+      openErrorModal: state.newGrant.error !== undefined,
     }),
     shallowEqual
   );
@@ -42,10 +44,15 @@ export default function Preview({
     dispatch(formReset());
   };
 
+  const resetSubmit = () => {
+    setSubmitted(false);
+    dispatch(resetStatus());
+  };
+
   const publishProject = async () => {
     setSubmitted(true);
     showToast(true);
-    await dispatch(publishGrant(currentProjectId));
+    dispatch(publishGrant(currentProjectId));
   };
 
   const navigate = useNavigate();
@@ -102,14 +109,19 @@ export default function Preview({
           Save and Publish
         </Button>
       </div>
-      <Toast
-        show={show}
-        fadeOut={props.status === Status.Completed}
+      <StatusModal
+        open={show && !props.openErrorModal}
         onClose={() => showToast(false)}
-        error={props.status === Status.Error}
-      >
-        <TXLoading status={props.status} error={props.error} />
-      </Toast>
+        currentStatus={props.status}
+        steps={grantSteps}
+        error={props.error}
+        title="Please hold on while we create your project."
+      />
+      <ErrorModal
+        open={props.openErrorModal}
+        onClose={resetSubmit}
+        onRetry={publishProject}
+      />
     </div>
   );
 }
