@@ -11,13 +11,13 @@ describe("newGrant reducer", () => {
   it("marks tx status", () => {
     const initiated = Status.Undefined;
     const complete = Status.Completed;
-    store.dispatch(grantStatus(initiated, undefined));
+    store.dispatch(grantStatus(initiated));
     expect(store.getState().newGrant).toEqual({
       ...initialState,
       status: initiated,
     });
 
-    store.dispatch(grantStatus(complete, undefined));
+    store.dispatch(grantStatus(complete));
     expect(store.getState().newGrant).toEqual({
       ...initialState,
       status: complete,
