@@ -53,30 +53,11 @@ interface RoundsLoadingErrorAction {
   error: string;
 }
 
-export const ROUND_PROJECTS_LOADING = "ROUND_PROJECTS_LOADING";
-interface RoundProjectsLoadingAction {
-  type: typeof ROUND_PROJECTS_LOADING;
-  address: string;
-  error: string;
-  status: Status;
-}
-
-export const ROUND_PROJECTS_LOADED = "ROUND_PROJECTS_LOADED";
-interface RoundProjectsLoadedAction {
-  type: typeof ROUND_PROJECTS_LOADED;
-  projects: []; // todo: set type
-  address: string;
-  status: Status;
-  error: string;
-}
-
 export type RoundsActions =
   | RoundsLoadingRoundAction
   | RoundsRoundLoadedAction
   | RoundsUnloadedAction
-  | RoundsLoadingErrorAction
-  | RoundProjectsLoadingAction
-  | RoundProjectsLoadedAction;
+  | RoundsLoadingErrorAction;
 
 export const roundLoaded = (address: string, round: Round): RoundsActions => ({
   type: ROUNDS_ROUND_LOADED,
@@ -94,31 +75,7 @@ const loadingError = (address: string, error: string): RoundsActions => ({
   error,
 });
 
-const roundProjectsLoading = (address: string): RoundsActions => ({
-  type: ROUND_PROJECTS_LOADING,
-  address,
-  error: "",
-  status: Status.LoadingRoundProjects,
-});
-
-const roundProjectsLoaded = (address: string, projects: []): RoundsActions => ({
-  type: ROUND_PROJECTS_LOADED,
-  projects,
-  address,
-  error: "",
-  status: Status.LoadedRoundProjects,
-});
-
 export const unloadRounds = () => roundsUnloaded();
-
-export const loadRoundProjects =
-  (address: string) => async (dispatch: Dispatch) => {
-    dispatch(roundProjectsLoading(address));
-    console.log("loadRoundProjects", address);
-
-    // todo: load projects from graph query
-    dispatch(roundProjectsLoaded(address, []));
-  };
 
 export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   try {

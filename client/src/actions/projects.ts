@@ -136,30 +136,39 @@ export const loadProjects =
   };
 
 export const getRoundProjectsApplied =
-  (projectID: number, chainId: ChainId) => async (dispatch: Dispatch) => {
+  (projectID: string, chainId: ChainId) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
 
-    const applicationsFound: any = await graphqlFetch(
-      `query roundProjects($id: String) {
-        project
-        status
-        round {
-          id
+    try {
+      const applicationsFound: any = await graphqlFetch(
+        `query roundProjects($id: String) {
+          project
+          status
+          round {
+            id
+          }
         }
-      }
-      `,
-      chainId,
-      { id: projectID }
-    );
+        `,
+        chainId,
+        { id: projectID }
+      );
+      console.log("applicationsFound", applicationsFound);
 
-    dispatch({
-      type: PROJECT_APPLICATIONS_LOADED,
-      projectID,
-      applications: applicationsFound,
-    });
+      dispatch({
+        type: PROJECT_APPLICATIONS_LOADED,
+        projectID,
+        applications: applicationsFound,
+      });
+    } catch (error: any) {
+      dispatch({
+        type: PROJECT_APPLICATIONS_ERROR,
+        projectID,
+        error,
+      });
+    }
   };
 
 export const unloadProjects = () => projectsUnload();
