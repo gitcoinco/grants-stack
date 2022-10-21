@@ -78,7 +78,7 @@ export const fetchFromIPFS = (cid: string) => {
  * @returns the unique content identifier that points to the data
  */
 export const pinToIPFS = (obj: IPFSObject) => {
-  const params: any = {
+  const params = {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.REACT_APP_PINATA_JWT}`,

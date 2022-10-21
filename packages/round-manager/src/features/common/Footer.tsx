@@ -1,10 +1,11 @@
 import { ReactComponent as GitcoinCommunityLogo } from "../../assets/gitcoincommunity-logo.svg";
+import { SVGProps } from "react";
 
 const navigation = [
   {
     name: "GitHub",
     href: "https://github.com/gitcoinco/grants-round",
-    icon: (props: any) => (
+    icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="21"
         height="20"
@@ -41,7 +42,7 @@ const navigation = [
   {
     name: "GitBook",
     href: "https://gitcoin-2.gitbook.io/round/",
-    icon: (props: any) => (
+    icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="24"
         height="18"

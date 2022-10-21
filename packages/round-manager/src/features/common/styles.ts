@@ -22,8 +22,8 @@ export const Button = tw.button`
 `;
 
 type InputProps = {
-  $hasError?: any;
-  $disabled?: any;
+  $hasError?: boolean;
+  $disabled?: boolean;
 };
 
 export const Input = tw.input<InputProps>`

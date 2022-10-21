@@ -4,12 +4,14 @@ import {
   SubmitHandler,
   useFieldArray,
   useForm,
+  UseFormGetValues,
   UseFormRegister,
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { FormStepper as FS } from "../common/FormStepper";
 import {
   ApplicationMetadata,
+  Program,
   ProgressStatus,
   QuestionOptions,
   Round,
@@ -46,7 +48,9 @@ export const initialQuestions: QuestionOptions[] = [
 ];
 
 export function RoundApplicationForm(props: {
-  initialData: any;
+  initialData: {
+    program: Program;
+  };
   stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -62,6 +66,7 @@ export function RoundApplicationForm(props: {
   const navigate = useNavigate();
 
   const defaultQuestions: ApplicationMetadata["questions"] =
+    // @ts-expect-error TODO: either fix this or refactor the whole formstepper
     formData?.applicationMetadata?.questions ?? initialQuestions;
 
   const { control, handleSubmit, register, getValues } = useForm<Round>({
@@ -326,7 +331,7 @@ function ApplicationInformation(props: {
   register: UseFormRegister<Round>;
   editStates: boolean[];
   setEditStates: (a: boolean[]) => void;
-  getValues: any;
+  getValues: UseFormGetValues<Round>;
 }) {
   const { fields, register, editStates, setEditStates, getValues } = props;
 

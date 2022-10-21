@@ -2,6 +2,7 @@ import { FormStepper } from "../common/FormStepper";
 import { useContext } from "react";
 import { FormContext } from "../common/FormWizard";
 import {
+  FieldArrayMethodProps,
   FieldArrayWithId,
   FieldError,
   SubmitHandler,
@@ -34,6 +35,7 @@ export default function ApplicationEligibilityForm(
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
   const initialRoundMetadata: Round["roundMetadata"] =
+    // @ts-expect-error Needs refactoring/typing as a whole
     formData?.roundMetadata ?? {};
   const defaultEligibilityFormData: Round["roundMetadata"]["eligibility"] =
     initialRoundMetadata?.eligibility ?? {
@@ -150,7 +152,7 @@ function RoundInput(props: {
         type="text"
         id={props.inputId}
         placeholder={props.inputPlaceholder}
-        $hasError={props.error}
+        $hasError={Boolean(props.error)}
       />
       {props.error && (
         <p className="text-xs text-pink-500" data-testid="error-message">
@@ -164,7 +166,10 @@ function RoundInput(props: {
 function DynamicRequirementsForm(props: {
   fields: FieldArrayWithId<Round, "roundMetadata.eligibility.requirements">[];
   register: UseFormRegister<Round>;
-  append: (newRequirement: any) => void;
+  append: (
+    newRequirement: { requirement: string },
+    options?: FieldArrayMethodProps
+  ) => void;
 }) {
   const { fields, register, append } = props;
   return (

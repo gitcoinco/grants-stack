@@ -2,7 +2,6 @@ import {
   ProgressStatus,
   Round,
   StorageProtocolID,
-  Web3Instance,
 } from "../../features/api/types";
 import React, { createContext, useContext, useReducer } from "react";
 import { saveToIPFS } from "../../features/api/ipfs";
@@ -11,6 +10,7 @@ import { deployRoundContract } from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { Signer } from "@ethersproject/abstract-signer";
 
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -41,6 +41,7 @@ type Dispatch = (action: Action) => void;
 
 interface Action {
   type: ActionType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: any;
 }
 
@@ -96,9 +97,10 @@ export const CreateRoundProvider = ({
 
 interface _createRoundParams {
   dispatch: Dispatch;
-  signerOrProvider: Web3Instance["provider"];
+  signerOrProvider: Signer;
   createRoundData: CreateRoundData;
 }
+
 const _createRound = async ({
   dispatch,
   signerOrProvider,
@@ -165,7 +167,7 @@ export const useCreateRound = () => {
   const createRound = (createRoundData: CreateRoundData) => {
     return _createRound({
       dispatch: context.dispatch,
-      signerOrProvider: walletSigner,
+      signerOrProvider: walletSigner as Signer,
       createRoundData,
     });
   };
@@ -226,7 +228,7 @@ async function storeDocuments(
 async function deployContract(
   dispatch: (action: Action) => void,
   round: Round,
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Signer
 ): Promise<number> {
   try {
     dispatch({
@@ -256,7 +258,7 @@ async function deployContract(
 
 async function waitForSubgraphToUpdate(
   dispatch: (action: Action) => void,
-  signerOrProvider: Web3Instance["provider"],
+  signerOrProvider: Signer,
   transactionBlockNumber: number
 ) {
   try {

@@ -13,6 +13,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
+  ProgressStep,
   ProjectStatus,
 } from "../api/types";
 import { useEffect, useState } from "react";
@@ -58,7 +59,7 @@ export default function ApplicationsApproved() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  const progressSteps: any = [
+  const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",

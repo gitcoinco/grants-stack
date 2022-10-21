@@ -34,6 +34,7 @@ import {
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "./context/application/BulkUpdateGrantApplicationContext";
+import React from "react";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -307,6 +308,7 @@ export const wrapWithBulkUpdateGrantApplicationContext = (
 );
 
 type ContextMock<T> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: React.Context<any>;
   value: T;
 };

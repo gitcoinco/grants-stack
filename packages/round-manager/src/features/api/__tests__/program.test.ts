@@ -1,8 +1,7 @@
 import { getProgramById, listPrograms } from "../program";
-import { Network, Program } from "../types";
+import { Program } from "../types";
 import { makeProgramData } from "../../../test-utils";
 import { graphql_fetch, fetchFromIPFS } from "../utils";
-import { Chain } from "wagmi";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),

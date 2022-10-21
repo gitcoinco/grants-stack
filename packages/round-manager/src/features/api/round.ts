@@ -1,7 +1,9 @@
-import { Round, Web3Instance } from "./types";
+import { Round } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import { roundFactoryContract } from "./contracts";
 import { ethers } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * Fetch a round by ID
@@ -9,7 +11,7 @@ import { ethers } from "ethers";
  * @param roundId - the ID of a specific round for detail
  */
 export async function getRoundById(
-  signerOrProvider: any,
+  signerOrProvider: Web3Provider,
   roundId: string
 ): Promise<Round> {
   try {
@@ -95,7 +97,7 @@ export async function getRoundById(
  */
 export async function listRounds(
   address: string,
-  signerOrProvider: any,
+  signerOrProvider: Web3Provider,
   programId: string,
   roundId?: string
 ): Promise<{ rounds: Round[] }> {
@@ -179,7 +181,7 @@ export async function listRounds(
 
 export async function deployRoundContract(
   round: Round,
-  signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Signer
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();

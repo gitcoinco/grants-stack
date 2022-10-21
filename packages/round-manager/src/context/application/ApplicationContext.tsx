@@ -16,10 +16,37 @@ enum ActionType {
   SET_ERROR_GET_ROUND_APPLICATIONS = "SET_ERROR_GET_ROUND_APPLICATIONS",
 }
 
-interface Action {
-  type: ActionType;
-  payload?: any;
-}
+type Action =
+  | SET_APPLICATION_ACTION
+  | SET_ROUND_APPLICATIONS_ACTION
+  | SET_LOADING_ACTION
+  | SET_ERROR_GET_APPLICATION_ACTION
+  | SET_ERROR_GET_ROUND_APPLICATIONS_ACTION;
+
+type SET_APPLICATION_ACTION = {
+  type: ActionType.SET_APPLICATION;
+  payload: GrantApplication;
+};
+
+type SET_ROUND_APPLICATIONS_ACTION = {
+  type: ActionType.SET_ROUND_APPLICATIONS;
+  payload: GrantApplication[];
+};
+
+type SET_LOADING_ACTION = {
+  type: ActionType.SET_LOADING;
+  payload: boolean;
+};
+
+type SET_ERROR_GET_APPLICATION_ACTION = {
+  type: ActionType.SET_ERROR_GET_APPLICATION;
+  payload: Error;
+};
+
+type SET_ERROR_GET_ROUND_APPLICATIONS_ACTION = {
+  type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS;
+  payload: Error;
+};
 
 type Dispatch = (action: Action) => void;
 

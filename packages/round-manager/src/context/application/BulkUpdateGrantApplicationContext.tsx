@@ -1,8 +1,4 @@
-import {
-  GrantApplication,
-  ProgressStatus,
-  Web3Instance,
-} from "../../features/api/types";
+import { GrantApplication, ProgressStatus } from "../../features/api/types";
 import React, {
   createContext,
   ReactNode,
@@ -110,12 +106,12 @@ export const BulkUpdateGrantApplicationProvider = ({
 
 interface bulkUpdateGrantApplicationParams {
   signer: Signer;
-  context: any;
+  context: BulkUpdateGrantApplicationState;
   roundId: string;
   applications: GrantApplication[];
 }
 
-function resetToInitialState(context: any) {
+function resetToInitialState(context: BulkUpdateGrantApplicationState) {
   const { setIPFSCurrentStatus, setContractUpdatingStatus, setIndexingStatus } =
     context;
 
@@ -158,7 +154,9 @@ async function _bulkUpdateGrantApplication({
 }
 
 export const useBulkUpdateGrantApplications = () => {
-  const context = useContext(BulkUpdateGrantApplicationContext);
+  const context = useContext<BulkUpdateGrantApplicationState>(
+    BulkUpdateGrantApplicationContext
+  );
   if (context === undefined) {
     throw new Error(
       "useBulkUpdateGrantApplication must be used within a BulkUpdateGrantApplicationProvider"
@@ -172,7 +170,7 @@ export const useBulkUpdateGrantApplications = () => {
   ) => {
     return _bulkUpdateGrantApplication({
       ...params,
-      signer,
+      signer: signer as Signer,
       context,
     });
   };
@@ -189,7 +187,7 @@ interface StoreDocumentParams {
   signer: Signer;
   roundId: string;
   applications: GrantApplication[];
-  context: any;
+  context: BulkUpdateGrantApplicationState;
 }
 
 const storeDocument = async ({
@@ -223,7 +221,7 @@ interface UpdateContractParams {
   signer: Signer;
   roundId: string;
   newProjectsMetaPtr: string;
-  context: any;
+  context: BulkUpdateGrantApplicationState;
 }
 
 const updateContract = async ({
@@ -254,9 +252,9 @@ const updateContract = async ({
 };
 
 async function waitForSubgraphToUpdate(
-  signerOrProvider: Web3Instance["provider"],
+  signerOrProvider: Signer,
   transactionBlockNumber: number,
-  context: any
+  context: BulkUpdateGrantApplicationState
 ) {
   const { setIndexingStatus } = context;
 

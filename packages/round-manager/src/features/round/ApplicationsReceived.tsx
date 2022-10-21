@@ -16,6 +16,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
+  ProgressStep,
   ProjectStatus,
 } from "../api/types";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -58,7 +59,7 @@ export default function ApplicationsReceived() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  const progressSteps: any = [
+  const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
@@ -281,7 +282,7 @@ function Continue(props: { onClick: () => void }) {
 
 function NumberOfApplicationsSelectedMessage(props: {
   grantApplications: GrantApplication[];
-  predicate: (obj: any) => boolean;
+  predicate: (obj: GrantApplication) => boolean;
 }) {
   return (
     <span className="text-grey-400 text-sm mr-6">

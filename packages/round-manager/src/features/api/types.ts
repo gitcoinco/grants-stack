@@ -2,6 +2,8 @@
  * Supported EVM networks
  */
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider } from "@ethersproject/providers";
 
 export type Network = "goerli" | "optimism";
 
@@ -18,8 +20,8 @@ export interface Web3Instance {
     name: string;
     network: Network;
   };
-  provider: any;
-  signer?: any;
+  provider: Web3Provider;
+  signer?: Signer;
 }
 
 export enum StorageProtocolID {
@@ -192,6 +194,12 @@ export type Project = {
   metaPtr: MetadataPointer;
 };
 
+export type RoundProject = {
+  id: string;
+  status: ApplicationStatus;
+  payoutAddress: string;
+};
+
 export interface GrantApplication {
   /**
    * The on-chain unique grant application ID
@@ -242,3 +250,9 @@ export enum ApplicationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
 }
+
+export type ProgressStep = {
+  name: string;
+  description: string;
+  status: ProgressStatus;
+};
