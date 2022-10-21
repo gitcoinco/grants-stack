@@ -5,6 +5,7 @@ import {
   FieldArrayWithId,
   SubmitHandler,
   useFieldArray,
+  UseFieldArrayAppend,
   UseFieldArrayRemove,
   useForm,
   UseFormGetValues,
@@ -32,9 +33,11 @@ import {
   PencilIcon,
   XIcon,
   InformationCircleIcon,
+  PlusSmIcon,
 } from "@heroicons/react/solid";
 import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
+import { Button } from "../common/styles";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -94,7 +97,7 @@ export function RoundApplicationForm(props: {
     },
   });
 
-  const { fields, remove } = useFieldArray({
+  const { fields, remove, append } = useFieldArray({
     name: "applicationMetadata.questions",
     control,
   });
@@ -241,6 +244,7 @@ export function RoundApplicationForm(props: {
               getValues={getValues}
               control={control}
               remove={remove}
+              append={append}
             />
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -383,6 +387,7 @@ function ApplicationInformation(props: {
   getValues: UseFormGetValues<Round>;
   control: Control<Round>;
   remove: UseFieldArrayRemove;
+  append: UseFieldArrayAppend<Round, "applicationMetadata.questions">;
 }) {
   const {
     fields,
@@ -392,6 +397,7 @@ function ApplicationInformation(props: {
     getValues,
     control,
     remove,
+    append
   } = props;
 
   const normalTitle = (index: number, disabled?: boolean) => (
@@ -541,10 +547,16 @@ function ApplicationInformation(props: {
   const Question = (props: { index: number }) => {
     const { index } = props;
     return (
-      <div>
+      <div data-testid={"application-question"}>
         <div className="flex flex-row">
           <div className="text-sm basis-2/5">
-            {editStates[index] ? editableTitle(index) : normalTitle(index)}
+            {
+              (
+                editStates[index] ||
+                getValues(`applicationMetadata.questions.${index}.title`).length == 0
+              ) ?
+              editableTitle(index) : normalTitle(index)
+            }
           </div>
           <div className="basis-3/5 flex justify-around">
             <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
@@ -575,6 +587,15 @@ function ApplicationInformation(props: {
         {fields.map((field, index) => (
           <Question key={index} index={index} />
         ))}
+
+        <AddQuestion onClick={() =>
+          append({
+            title: "",
+            required: false,
+            encrypted: false,
+            inputType: "text",
+          })
+        }/>
       </div>
     </div>
   );
@@ -696,4 +717,18 @@ function DeleteQuestion(props: { onClick: () => void }) {
       onClick={props.onClick}
     />
   );
+}
+
+function AddQuestion(props: { onClick: () => void }) {
+  return (
+    <Button
+      type="button"
+      $variant="outline"
+      className="inline-flex items-center px-3.5 py-2 mt-5 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
+      onClick={props.onClick}
+    >
+      <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+      Add A Question
+    </Button>
+  )
 }

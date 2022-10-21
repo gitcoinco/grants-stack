@@ -445,6 +445,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
+              metadata: randomMetadata
             },
           }}
           stepper={FormStepper}
@@ -466,6 +467,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
+              metadata: randomMetadata
             },
           }}
           stepper={FormStepper}
@@ -482,6 +484,58 @@ describe("Application Form Builder", () => {
       expect(
         screen.queryByText(editableQuestions[indexToBeRemoved].title)
       ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Add question", () => {
+    it("displays add a question on RoundApplicationForm", () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+       expect(
+        screen.getByRole("button", {
+          name: /Add a Question/i,
+        })
+      ).toBeInTheDocument();
+    });
+
+    it("adds a new question on clicking add a new question button", async () => {
+      const editableQuestions = initialQuestions;
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+
+      expect(screen.getAllByTestId("application-question")).toHaveLength(
+        editableQuestions.length
+      );
+
+      const addAQuestion = screen.getByRole("button", {
+        name: /Add a Question/i,
+      });
+      fireEvent.click(addAQuestion);
+
+      expect(screen.getAllByTestId("application-question")).toHaveLength(
+        editableQuestions.length + 1
+      );
     });
   });
 });
