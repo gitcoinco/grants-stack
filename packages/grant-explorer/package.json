@@ -53,7 +53,10 @@
     "build": "craco build",
     "test": "craco test --watchAll=false",
     "test:coverage": "craco test --watchAll=false --coverage",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src --cache",
+    "lint:fix": "eslint ./src --fix --cache",
+    "lint-staged": "lint-staged"
   },
   "eslintConfig": {
     "extends": [

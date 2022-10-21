@@ -1,5 +1,4 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import Footer from "../common/Footer";
@@ -8,6 +7,7 @@ import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
 import {
+  Button,
   BasicCard,
   CardContent,
   CardHeader,
@@ -23,43 +23,26 @@ export default function ViewRound() {
 
   const { round, isLoading } = useRoundById(chainId!, roundId!);
 
-  const [roundExists, setRoundExists] = useState(true);
+  const currentTime = new Date();
 
-  const [applicationsOpen, setApplicationsOpen] = useState(false);
+  const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
 
-  const [roundOpen, setRoundOpen] = useState(false);
-
-  useEffect(() => {
-    const currentTime = new Date();
-    setRoundExists(!!round);
-    if (round) {
-      if (
-        round.applicationsStartTime <= currentTime &&
-        round.applicationsEndTime >= currentTime
-      ) {
-        setApplicationsOpen(true);
-      }
-      if (
-        round.roundStartTime <= currentTime &&
-        round.roundEndTime >= currentTime
-      ) {
-        setRoundOpen(true);
-      }
-    }
-  }, [round]);
+  const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
 
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (
     <>
-      {!roundExists && <NotFoundPage />}
-      {roundExists && applicationsOpen && !roundOpen && (
+      {!round && <NotFoundPage />}
+      {isBeforeRoundStartDate && (
         <>
           <div className="mx-20 px-4 py-7 h-screen">
             <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
             <main>
               <PreRoundPage
                 round={round}
+                chainId={chainId}
+                roundId={roundId}
                 element={(req: Requirement, index) => (
                   <li key={index}>{req.requirement}</li>
                 )}
@@ -69,7 +52,7 @@ export default function ViewRound() {
           <Footer />
         </>
       )}
-      {roundExists && !applicationsOpen && (
+      {isAfterRoundStartDate && (
         <>
           <div className="mx-20 px-4 py-7 h-screen">
             <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
@@ -141,8 +124,16 @@ const ProjectList = (props: {
 
 function PreRoundPage(props: {
   round?: Round;
+  chainId?: string;
+  roundId?: string;
   element: (req: Requirement, index: number) => JSX.Element;
 }) {
+  const applicationURL = 'https://granthub.gitcoin.co/#/chains/'+ props.chainId + '/rounds/' + props.roundId;
+  const currentTime = new Date();
+  const isBeforeApplicationStartDate = props.round && props.round.applicationsStartTime >= currentTime;
+  const isDuringApplicationPeriod = props.round && props.round.applicationsStartTime <= currentTime && props.round.applicationsEndTime >= currentTime;
+  const isAfterApplicationEndDateAndBeforeRoundStartDate = props.round && props.round.applicationsEndTime <= currentTime && props.round.roundStartTime >= currentTime;
+
   return (
     <div className="container mx-auto flex flex-row bg-white">
       <div className="basis-1/2 mt-20 ">
@@ -182,8 +173,51 @@ function PreRoundPage(props: {
             props.element
           )}
         </ul>
+        <div className="container mx-auto flex">
+          {isBeforeApplicationStartDate && (
+            <InactiveButton 
+              label="Applications Open"
+              testid="applications-open-button"
+             />
+          )}
+          {isDuringApplicationPeriod && (
+           <ApplyButton 
+            applicationURL={applicationURL}
+           />
+            )}
+          {isAfterApplicationEndDateAndBeforeRoundStartDate  && (
+            <InactiveButton
+              label="Applications Closed"
+              testid="applications-closed-button"
+             />
+          )}
+        </div>
       </div>
       <div className="basis-1/2 right-0"></div>
     </div>
   );
 }
+
+const ApplyButton = (props: {applicationURL: string}) => {
+  return (
+    <Button
+      type="button"
+      onClick={() => window.open(props.applicationURL, '_blank')}
+      className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 md:h-12 hover:bg-violet-200"
+      data-testid="apply-button"
+    >
+    Apply to Grant Round
+    </Button>
+)};
+
+const InactiveButton = (props: {label: string; testid: string}) => {
+  return (
+    <Button
+      type="button"
+      className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 md:h-12"
+      data-testid={props.testid}
+      disabled={true}
+    >
+    {props.label}
+    </Button>
+)};

@@ -10,10 +10,10 @@ export const Button = tw.button`
   my-6
   text-2xl
   hover:bg-gray-200
-  disabled:bg-slate-50
-  disabled:text-slate-500
-  disabled:border-slate-200
-  disabled:shadow-none
+  disabled:bg-gray-300
+  disabled:text-white
+  disabled:border-gray-300
+  disabled:shadow-sm
 `
 
 type TextInputProps = {

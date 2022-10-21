@@ -1,5 +1,5 @@
 import ViewRound from "../ViewRoundPage";
-import { screen } from "@testing-library/react";
+import {fireEvent, screen } from "@testing-library/react";
 import {
   generateIpfsCid,
   makeApprovedProjectData,
@@ -23,14 +23,39 @@ jest.mock("react-router-dom", () => ({
   useParams: useParamsFn,
 }));
 
-describe("<ViewRound /> in case of before the round start date", () => {
+describe("<ViewRound /> in case of before the application start date", () => {
   let stubRound: Round;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
+    const applicationsStartTime = faker.date.soon(); 
+    const applicationsEndTime = faker.date.future(1, applicationsStartTime);
+    const roundStartTime = faker.date.soon(1, applicationsEndTime);
+    const roundEndTime = faker.date.future(1, roundStartTime);
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+  });
+
+  it("Should show grayed out Applications Open buttom", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    const AppSubmissionButton = screen.getByTestId("applications-open-button");
+    expect(AppSubmissionButton).toBeInTheDocument();
+    expect(AppSubmissionButton).toBeDisabled();
+
+  });
+
+});
+
+describe("<ViewRound /> in case of during the application period", () => {
+  let stubRound: Round;
+  window.open = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
     const applicationsStartTime = faker.date.recent(); // recent past
-    const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
+    const applicationsEndTime = faker.date.soon();
     const roundStartTime = faker.date.future(1, applicationsEndTime);
     const roundEndTime = faker.date.soon(10, roundStartTime);
     stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
@@ -53,18 +78,52 @@ describe("<ViewRound /> in case of before the round start date", () => {
     expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
   });
 
+  it("Should show apply to round button", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+    const appURL = 'https://granthub.gitcoin.co/#/chains/'+ chainId + '/rounds/' + roundId
+
+    const AppSubmissionButton = await screen.findByText("Apply to Grant Round");
+    expect(AppSubmissionButton).toBeInTheDocument();
+    fireEvent.click(AppSubmissionButton);
+    expect(window.open).toBeCalled();
+    expect(window.open).toHaveBeenCalledWith(appURL,'_blank');
+  });
+
 });
 
-describe("<ViewRound /> in case of after the round start date", () => {
+describe("<ViewRound /> in case of post application end date & before round start date", () => {
   let stubRound: Round;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const applicationsStartTime = faker.date.past(1); 
-    const applicationsEndTime = faker.date.past(1, applicationsStartTime);
-    const roundStartTime = faker.date.recent();
-    const roundEndTime = faker.date.soon(10, roundStartTime);
+    const applicationsEndTime = faker.date.recent();
+    const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+    const roundStartTime = faker.date.soon();
+    const roundEndTime = faker.date.future(1, roundStartTime);
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+  });
+
+  it("Should show Applications Closed button", async () => {
+    renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
+
+    const AppSubmissionButton = screen.getByTestId("applications-closed-button");
+    expect(AppSubmissionButton).toBeInTheDocument();
+    expect(AppSubmissionButton).toBeDisabled();
+
+  });
+
+});
+
+describe("<ViewRound /> in case of after the round start date", () => {
+  let stubRound: Round;
+  const roundStartTime = faker.date.recent();
+  const applicationsEndTime = faker.date.past(1, roundStartTime);
+  const applicationsStartTime = faker.date.past(1, applicationsEndTime); 
+  const roundEndTime = faker.date.soon();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
     stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
   });
 
@@ -91,6 +150,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
+      applicationsStartTime, 
+      applicationsEndTime, 
+      roundStartTime, 
+      roundEndTime,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -109,6 +172,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
+      applicationsStartTime, 
+      applicationsEndTime, 
+      roundStartTime, 
+      roundEndTime,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -125,7 +192,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects });
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
@@ -144,7 +211,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects });
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
