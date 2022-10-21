@@ -63,6 +63,7 @@ describe("<RoundApplicationForm />", () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
+            // @ts-expect-error Test file
             program: {
               operatorWallets: [],
             },
@@ -81,6 +82,7 @@ describe("<RoundApplicationForm />", () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
+            // @ts-expect-error Test file
             program: {
               operatorWallets: [],
             },
@@ -102,6 +104,7 @@ describe("<RoundApplicationForm />", () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
+            // @ts-expect-error Test file
             program: {
               operatorWallets: [],
             },
@@ -140,6 +143,7 @@ describe("<RoundApplicationForm />", () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
+            // @ts-expect-error Test file
             program: {
               operatorWallets: [],
             },
@@ -176,6 +180,7 @@ describe("Application Form Builder", () => {
     renderWithContext(
       <RoundApplicationForm
         initialData={{
+          // @ts-expect-error Test file
           program: {
             operatorWallets: [],
           },
@@ -216,6 +221,7 @@ describe("Application Form Builder", () => {
       <FormContext.Provider value={formContext}>
         <RoundApplicationForm
           initialData={{
+            // @ts-expect-error Test file
             program: {
               operatorWallets: [],
             },
@@ -234,6 +240,7 @@ describe("Application Form Builder", () => {
     renderWithContext(
       <RoundApplicationForm
         initialData={{
+          // @ts-expect-error Test file
           program: {
             operatorWallets: [],
           },
@@ -254,6 +261,7 @@ describe("Application Form Builder", () => {
     renderWithContext(
       <RoundApplicationForm
         initialData={{
+          // @ts-expect-error Test file
           program: {
             operatorWallets: [],
           },
@@ -276,6 +284,7 @@ describe("Application Form Builder", () => {
     renderWithContext(
       <RoundApplicationForm
         initialData={{
+          // @ts-expect-error Test file
           program: {
             operatorWallets: [],
           },

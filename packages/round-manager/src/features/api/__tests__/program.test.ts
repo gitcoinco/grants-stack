@@ -1,7 +1,8 @@
 import { getProgramById, listPrograms } from "../program";
-import { Program } from "../types";
+import { Network, Program } from "../types";
 import { makeProgramData } from "../../../test-utils";
 import { graphql_fetch, fetchFromIPFS } from "../utils";
+import { Chain } from "wagmi";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -43,6 +44,7 @@ describe("listPrograms", () => {
     });
 
     const actualPrograms = await listPrograms("0x0", {
+      // @ts-expect-error Test file
       getNetwork: async () => Promise.resolve({ chainId: "ahjdfaskjlfja" }),
     });
 
@@ -81,7 +83,8 @@ describe("getProgramById", () => {
       name: expectedProgram.metadata?.name,
     });
 
-    const actualProgram = await getProgramById(programId, {
+    const actualProgram = await getProgramById(programId as string, {
+      // @ts-expect-error Test file
       getNetwork: async () => Promise.resolve({ chainId: "myChainId" }),
     });
 
