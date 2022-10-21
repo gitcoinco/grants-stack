@@ -6,6 +6,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
+  ProgressStep,
   ProjectStatus,
 } from "../api/types";
 import { useWallet } from "../common/Auth";
@@ -57,7 +58,7 @@ export default function ApplicationsRejected() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  const progressSteps: any = [
+  const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",

@@ -5,10 +5,22 @@ import { FormStepper } from "./FormStepper";
 export interface FormWizardProps {
   initialCurrentStep?: number;
   initialData?: object;
-  steps: Array<(props: any) => JSX.Element>;
+  steps: Array<
+    (props: { stepper: typeof FormStepper; initialData: object }) => JSX.Element
+  >;
 }
 
-export const FormContext = createContext({} as any);
+export type FormContextType = {
+  currentStep: number;
+  setCurrentStep: (value: number) => void;
+  stepsCount: number;
+  formData: object;
+  setFormData: (value: object) => void;
+};
+
+export const FormContext = createContext<FormContextType>(
+  {} as unknown as FormContextType
+);
 
 export function FormWizard({
   initialCurrentStep = 1,

@@ -52,6 +52,7 @@ export default function CreateRound() {
               steps={[
                 RoundDetailForm,
                 ApplicationEligibilityForm,
+                // @ts-expect-error Needs refactoring/typing as a whole
                 RoundApplicationForm,
               ]}
               initialData={{ program }}

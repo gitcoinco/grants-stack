@@ -1,7 +1,8 @@
 import { pinToIPFS } from "./utils";
+import { IPFSObject } from "./types";
 
 type IpfsHash = string;
-export const saveToIPFS = async (object: any): Promise<IpfsHash> => {
+export const saveToIPFS = async (object: IPFSObject): Promise<IpfsHash> => {
   const resp = await pinToIPFS(object);
 
   console.log("Added file to IPFS:", resp.IpfsHash);

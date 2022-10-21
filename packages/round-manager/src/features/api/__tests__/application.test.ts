@@ -3,6 +3,7 @@ import { getApplicationById, getApplicationsByRoundId } from "../application";
 import { fetchFromIPFS, graphql_fetch } from "../utils";
 import { GrantApplication } from "../types";
 import { Contract } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -14,7 +15,7 @@ jest.mock("ethers");
 
 const signerOrProviderStub = {
   getNetwork: async () => Promise.resolve({ chainId: "chain" }),
-};
+} as unknown as Web3Provider;
 
 describe("getApplicationById", () => {
   let expectedApplication: GrantApplication;
@@ -25,6 +26,7 @@ describe("getApplicationById", () => {
       (it) => it.address
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Contract as any).mockImplementation(() => {
       return {
         getProjectOwners: () => projectOwners,

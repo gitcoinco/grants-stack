@@ -43,6 +43,7 @@ describe("listPrograms", () => {
     });
 
     const actualPrograms = await listPrograms("0x0", {
+      // @ts-expect-error Test file
       getNetwork: async () => Promise.resolve({ chainId: "ahjdfaskjlfja" }),
     });
 
@@ -81,7 +82,8 @@ describe("getProgramById", () => {
       name: expectedProgram.metadata?.name,
     });
 
-    const actualProgram = await getProgramById(programId, {
+    const actualProgram = await getProgramById(programId as string, {
+      // @ts-expect-error Test file
       getNetwork: async () => Promise.resolve({ chainId: "myChainId" }),
     });
 

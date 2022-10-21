@@ -11,7 +11,7 @@ import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
-import { ProgressStatus } from "../api/types";
+import { ProgressStatus, ProgressStep } from "../api/types";
 import { useCreateProgram } from "../../context/program/CreateProgramContext";
 
 type FormData = {
@@ -92,7 +92,7 @@ export default function CreateProgram() {
     }
   };
 
-  const progressSteps: any = [
+  const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",
@@ -160,7 +160,7 @@ export default function CreateProgram() {
                     </label>
                     <Input
                       {...register("name", { required: true })}
-                      $hasError={errors.name}
+                      $hasError={Boolean(errors.name)}
                       type="text"
                       disabled={createProgramInProgress}
                       placeholder="Enter the name of the Grant Program."

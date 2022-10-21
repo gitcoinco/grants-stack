@@ -32,7 +32,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 describe("<CreateRoundProvider />", () => {
   it("sets ipfs status to in progress when saving to ipfs", async () => {
     (saveToIPFS as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {
+      new Promise(() => {
         /* do nothing.*/
       })
     );
@@ -52,7 +52,7 @@ describe("<CreateRoundProvider />", () => {
   it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
     (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
     (deployRoundContract as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {
+      new Promise(() => {
         /* do nothing.*/
       })
     );
@@ -73,7 +73,7 @@ describe("<CreateRoundProvider />", () => {
     const ipfsHash = "bafabcdef";
     (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
     (deployRoundContract as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {
+      new Promise(() => {
         /* do nothing.*/
       })
     );
@@ -125,7 +125,7 @@ describe("<CreateRoundProvider />", () => {
       transactionBlockNumber,
     });
     (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-      new Promise<any>(() => {
+      new Promise(() => {
         /* do nothing.*/
       })
     );
@@ -230,7 +230,7 @@ describe("<CreateRoundProvider />", () => {
       (saveToIPFS as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );
@@ -253,7 +253,7 @@ describe("<CreateRoundProvider />", () => {
       (deployRoundContract as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );
@@ -281,7 +281,7 @@ describe("<CreateRoundProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );

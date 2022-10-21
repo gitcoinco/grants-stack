@@ -51,7 +51,9 @@ export default function ViewRoundPage() {
       (a) => a.status === ApplicationStatus.REJECTED.toString()
     ) || [];
 
-  const formatDate = (date: Date | undefined) => date?.toLocaleDateString();
+  const formatDate: (date: Date | undefined) => string | undefined = (
+    date: Date | undefined
+  ) => date?.toLocaleDateString();
 
   const TabApplicationCounter = tw.div`
       rounded-md
@@ -281,7 +283,10 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange(props: { startTime: any; endTime: any }) {
+function ApplicationOpenDateRange(props: {
+  startTime?: string;
+  endTime?: string;
+}) {
   return (
     <div className="flex mr-8 lg:mr-36">
       <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
@@ -295,7 +300,7 @@ function ApplicationOpenDateRange(props: { startTime: any; endTime: any }) {
   );
 }
 
-function RoundOpenDateRange(props: { startTime: any; endTime: any }) {
+function RoundOpenDateRange(props: { startTime?: string; endTime?: string }) {
   return (
     <div className="flex">
       <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />

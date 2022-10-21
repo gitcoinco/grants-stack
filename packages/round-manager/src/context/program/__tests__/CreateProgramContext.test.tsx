@@ -37,7 +37,7 @@ describe("<CreateProgramProvider />", () => {
   describe("useCreateProgram()", () => {
     it("sets ipfs status to in progress when saving to ipfs", async () => {
       (saveToIPFS as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -57,7 +57,7 @@ describe("<CreateProgramProvider />", () => {
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
       (deployProgramContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -78,7 +78,7 @@ describe("<CreateProgramProvider />", () => {
       const ipfsHash = "bafabcdef";
       (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
       (deployProgramContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -124,7 +124,7 @@ describe("<CreateProgramProvider />", () => {
         transactionBlockNumber,
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -230,7 +230,7 @@ describe("<CreateProgramProvider />", () => {
       (saveToIPFS as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );
@@ -256,7 +256,7 @@ describe("<CreateProgramProvider />", () => {
       (waitForSubgraphSyncTo as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );
@@ -281,7 +281,7 @@ describe("<CreateProgramProvider />", () => {
       (deployProgramContract as jest.Mock)
         .mockRejectedValueOnce(new Error(":("))
         .mockReturnValue(
-          new Promise<any>(() => {
+          new Promise(() => {
             /* do nothing.*/
           })
         );

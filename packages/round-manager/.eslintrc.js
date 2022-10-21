@@ -11,7 +11,6 @@ module.exports = {
   root: true,
   rules: {
     "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
-    "@typescript-eslint/no-explicit-any": "off",
   },
   overrides: [
     {

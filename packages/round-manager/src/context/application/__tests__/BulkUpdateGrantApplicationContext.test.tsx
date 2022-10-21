@@ -34,7 +34,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
   describe("useBulkUpdateGrantApplication", () => {
     it("sets ipfs status to in progress when saving to ipfs", async () => {
       (updateApplicationList as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -52,7 +52,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -70,7 +70,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     it("sets contract update status to in progress when contract is being updated", async () => {
       (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -109,7 +109,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         transactionBlockNumber,
       });
       (waitForSubgraphSyncTo as jest.Mock).mockReturnValue(
-        new Promise<any>(() => {
+        new Promise(() => {
           /* do nothing.*/
         })
       );
@@ -210,7 +210,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         (updateApplicationList as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
-            new Promise<any>(() => {
+            new Promise(() => {
               /* do nothing.*/
             })
           );
@@ -234,7 +234,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         (updateRoundContract as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
-            new Promise<any>(() => {
+            new Promise(() => {
               /* do nothing.*/
             })
           );
@@ -263,7 +263,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
         (waitForSubgraphSyncTo as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
-            new Promise<any>(() => {
+            new Promise(() => {
               /* do nothing.*/
             })
           );

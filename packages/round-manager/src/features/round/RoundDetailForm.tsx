@@ -94,7 +94,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   </label>
                   <Input
                     {...register("roundMetadata.name")}
-                    $hasError={errors.roundMetadata?.name}
+                    $hasError={Boolean(errors.roundMetadata?.name)}
                     type="text"
                     id={"roundMetadata.name"}
                   />

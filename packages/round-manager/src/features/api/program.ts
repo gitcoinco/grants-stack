@@ -3,6 +3,7 @@ import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
+import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * Fetch a list of programs
@@ -110,7 +111,7 @@ export async function getProgramById(
       id: programDataFromGraph.id,
       metadata,
       operatorWallets: programDataFromGraph.roles[0].accounts.map(
-        (program: any) => program.address
+        (account: { address: string }) => account.address
       ),
     };
   } catch (error) {
@@ -125,7 +126,7 @@ interface DeployProgramContractProps {
     store: MetadataPointer;
     operatorWallets: string[];
   };
-  signerOrProvider: Web3Instance["provider"];
+  signerOrProvider: Signer;
 }
 
 export async function deployProgramContract({

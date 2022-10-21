@@ -28,6 +28,7 @@ import {
   AnswerBlock,
   GrantApplication,
   ProgressStatus,
+  ProgressStep,
   ProjectCredentials,
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
@@ -88,7 +89,7 @@ export default function ViewApplicationPage() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  const progressSteps: any = [
+  const progressSteps: ProgressStep[] = [
     {
       name: "Storing",
       description: "The metadata is being saved in a safe place.",

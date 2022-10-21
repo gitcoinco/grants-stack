@@ -44,14 +44,16 @@ type RoundMetadata = {
   programContractAddress: string;
 };
 
-/**
- * Shape of IPFS content of Round ProjectsMetaPtr
- */
-type RoundProjects = Array<{
+export type RoundProject = {
   id: string;
   status: ApplicationStatus;
   payoutAddress: string;
-}>;
+};
+
+/**
+ * Shape of IPFS content of Round ProjectsMetaPtr
+ */
+type RoundProjects = Array<RoundProject>;
 
 export async function getRoundById(
   roundId: string,
@@ -177,7 +179,7 @@ async function fetchMetadataAndMapProject(
     grantApplicationId: project.id,
     projectRegistryId: project.project,
     projectMetadata: {
-      ...projectMetadataFromApplication
+      ...projectMetadataFromApplication,
     },
     status: ApplicationStatus.APPROVED,
   };

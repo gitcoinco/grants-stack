@@ -19,10 +19,36 @@ interface _createProgramParams {
   signerOrProvider: Web3Instance["provider"];
 }
 
-interface Action {
-  type: ActionType;
-  payload?: any;
-}
+type Action =
+  | SET_DEPLOYMENT_STATUS_ACTION
+  | SET_STORING_STATUS_ACTION
+  | SET_INDEXING_STATUS_ACTION
+  | RESET_TO_INITIAL_STATE_ACTION;
+
+type SET_STORING_STATUS_ACTION = {
+  type: ActionType.SET_STORING_STATUS;
+  payload: {
+    IPFSCurrentStatus: ProgressStatus;
+  };
+};
+
+type SET_INDEXING_STATUS_ACTION = {
+  type: ActionType.SET_INDEXING_STATUS;
+  payload: {
+    indexingStatus: ProgressStatus;
+  };
+};
+
+type SET_DEPLOYMENT_STATUS_ACTION = {
+  type: ActionType.SET_DEPLOYMENT_STATUS;
+  payload: {
+    contractDeploymentStatus: ProgressStatus;
+  };
+};
+
+type RESET_TO_INITIAL_STATE_ACTION = {
+  type: ActionType.RESET_TO_INITIAL_STATE;
+};
 
 type Dispatch = (action: Action) => void;
 
@@ -132,6 +158,7 @@ export const useCreateProgram = () => {
       dispatch: context.dispatch,
       programName: programName,
       operatorWallets,
+      // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: walletSigner,
     });
   };
@@ -193,6 +220,7 @@ async function deployContract(
 
     const { transactionBlockNumber } = await deployProgramContract({
       program: { store: metadata, operatorWallets },
+      // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: signerOrProvider,
     });
 
@@ -228,6 +256,7 @@ async function waitForSubgraphToUpdate(
       payload: { indexingStatus: ProgressStatus.IN_PROGRESS },
     });
 
+    // @ts-expect-error TODO: resolve this situation around signers and providers
     const chainId = await signerOrProvider.getChainId();
 
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);

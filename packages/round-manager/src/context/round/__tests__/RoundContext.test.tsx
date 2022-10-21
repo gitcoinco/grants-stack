@@ -53,7 +53,7 @@ describe("<RoundProvider />", () => {
 
     it("sets fetch round status to in progress when fetch is in progress", async () => {
       const expectedRound = makeRoundData();
-      const expectedProgramId: string = expectedRound.id;
+      const expectedProgramId = expectedRound.id;
       (listRounds as jest.Mock).mockReturnValue(
         new Promise<Round>(() => {
           /* do nothing.*/
@@ -62,6 +62,7 @@ describe("<RoundProvider />", () => {
 
       render(
         <RoundProvider>
+          {/*// @ts-expect-error test file*/}
           <TestingUseRoundsComponent expectedProgramId={expectedProgramId} />
         </RoundProvider>
       );
@@ -100,7 +101,7 @@ describe("<RoundProvider />", () => {
         expectedRoundList.length
       );
       expectedRoundList.forEach((expectedRound) => {
-        expect(screen.getByText(expectedRound.id)).toBeInTheDocument();
+        expect(screen.getByText(expectedRound.id!)).toBeInTheDocument();
       });
     });
 
@@ -130,7 +131,7 @@ describe("<RoundProvider />", () => {
   describe("useRoundById()", () => {
     it("sets fetch round status to in progress when fetch is in progress", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId = expectedRound.id;
       (getRoundById as any).mockReturnValue(
         new Promise<Round>(() => {
           /* do nothing.*/
@@ -139,6 +140,7 @@ describe("<RoundProvider />", () => {
 
       render(
         <RoundProvider>
+          {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
@@ -152,11 +154,12 @@ describe("<RoundProvider />", () => {
 
     it("sets round based on given round id when fetch succeeds", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId = expectedRound.id;
       (getRoundById as any).mockResolvedValue(expectedRound);
 
       render(
         <RoundProvider>
+          {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
@@ -167,16 +170,17 @@ describe("<RoundProvider />", () => {
         )
       ).toBeInTheDocument();
 
-      expect(await screen.findByText(expectedRoundId)).toBeInTheDocument();
+      expect(await screen.findByText(expectedRoundId!)).toBeInTheDocument();
     });
 
     it("sets fetch round status to error when fetch fails", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId = expectedRound.id;
       (getRoundById as any).mockRejectedValue(new Error(":("));
 
       render(
         <RoundProvider>
+          {/*// @ts-expect-error test file*/}
           <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );

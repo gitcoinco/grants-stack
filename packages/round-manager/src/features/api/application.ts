@@ -13,6 +13,28 @@ import {
 } from "./contracts";
 import { Contract, ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider } from "@ethersproject/providers";
+
+type RoundProject = {
+  id: string;
+  metaPtr: {
+    protocol: number;
+    pointer: string;
+  };
+  status: string;
+  round: {
+    projectsMetaPtr: {
+      protocol: number;
+      pointer: string;
+    };
+  };
+};
+
+type Res = {
+  data: {
+    roundProjects: RoundProject[];
+  };
+};
 
 export const getApplicationById = async (
   id: string,
@@ -21,7 +43,7 @@ export const getApplicationById = async (
   try {
     const { chainId } = await signerOrProvider.getNetwork();
 
-    const res = await graphql_fetch(
+    const res: Res = await graphql_fetch(
       `
         query GetGrantApplications($id: String) {
           roundProjects(where: {
@@ -80,7 +102,7 @@ export const getApplicationById = async (
 
 export const getApplicationsByRoundId = async (
   roundId: string,
-  signerOrProvider: any
+  signerOrProvider: Web3Provider
 ): Promise<GrantApplication[]> => {
   try {
     // fetch chain id
@@ -160,59 +182,57 @@ export const checkGrantApplicationStatus = async (
   id: GrantApplicationId,
   projectsMetaPtr: MetadataPointer
 ): Promise<ProjectStatus> => {
-  let reviewedApplications: any = [];
+  let reviewedApplications: GrantApplication[] = [];
 
   if (projectsMetaPtr) {
     reviewedApplications = await fetchFromIPFS(projectsMetaPtr.pointer);
   }
 
-  const obj = reviewedApplications.find((o: any) => o.id === id);
+  const obj = reviewedApplications.find((o) => o.id === id);
 
-  return obj ? obj.status : "PENDING";
+  return obj ? (obj.status as ProjectStatus) : "PENDING";
 };
 
 const fetchApplicationData = async (
-  res: any,
+  res: Res,
   id: string,
   projectRegistry: Contract
 ): Promise<GrantApplication[]> =>
   Promise.all(
-    res.data.roundProjects.map(
-      async (project: any): Promise<GrantApplication> => {
-        const metadata = await fetchFromIPFS(project.metaPtr.pointer);
+    res.data.roundProjects.map(async (project): Promise<GrantApplication> => {
+      const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
-        const application = metadata.application
-          ? metadata.application
-          : metadata;
+      const application = metadata.application
+        ? metadata.application
+        : metadata;
 
-        let status = project.status;
+      let status = project.status;
 
-        if (id) {
-          status = await checkGrantApplicationStatus(
-            project.id,
-            project.round.projectsMetaPtr
-          );
-        }
-
-        const projectMetadata = application.project;
-        const projectRegistryId = projectMetadata.id;
-        const projectOwners = await projectRegistry.getProjectOwners(
-          projectRegistryId
+      if (id) {
+        status = await checkGrantApplicationStatus(
+          project.id,
+          project.round.projectsMetaPtr
         );
-        const grantApplicationProjectMetadata: Project = {
-          ...projectMetadata,
-          owners: projectOwners.map((address: string) => ({ address })),
-        };
-
-        return {
-          ...application,
-          status,
-          id: project.id,
-          project: grantApplicationProjectMetadata,
-          projectsMetaPtr: project.round.projectsMetaPtr,
-        } as GrantApplication;
       }
-    )
+
+      const projectMetadata = application.project;
+      const projectRegistryId = projectMetadata.id;
+      const projectOwners = await projectRegistry.getProjectOwners(
+        projectRegistryId
+      );
+      const grantApplicationProjectMetadata: Project = {
+        ...projectMetadata,
+        owners: projectOwners.map((address: string) => ({ address })),
+      };
+
+      return {
+        ...application,
+        status,
+        id: project.id,
+        project: grantApplicationProjectMetadata,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+      } as GrantApplication;
+    })
   );
 
 /**
@@ -249,7 +269,7 @@ const updateApplicationStatusFromContract = async (
     try {
       // fetch matching application index from contract
       const index = applicationsFromContract.findIndex(
-        (applicationFromContract: any) =>
+        (applicationFromContract: GrantApplication) =>
           application.id === applicationFromContract.id
       );
       // update status of application from contract / default to pending
@@ -302,10 +322,18 @@ export const updateApplicationList = async (
   roundId: string,
   chainId: number
 ): Promise<string> => {
-  let reviewedApplications: any[] = [];
+  let reviewedApplications = [];
   let foundEntry = false;
 
-  const res = await graphql_fetch(
+  const res: {
+    data: {
+      rounds: {
+        projectsMetaPtr: {
+          pointer: string;
+        };
+      }[];
+    };
+  } = await graphql_fetch(
     `
           query GetApplicationListPointer($roundId: String!) {
             rounds(first: 1, where: {
@@ -330,7 +358,7 @@ export const updateApplicationList = async (
 
   for (const application of applications) {
     // if grant application is already reviewed overwrite the entry
-    foundEntry = reviewedApplications.find((o: any, i: any) => {
+    foundEntry = reviewedApplications.find((o: GrantApplication, i: number) => {
       if (o.id === application.id) {
         reviewedApplications[i] = {
           id: application.id,

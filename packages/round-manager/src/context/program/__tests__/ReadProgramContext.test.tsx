@@ -90,19 +90,19 @@ describe("<ReadProgramProvider />", () => {
   describe("useProgramById()", () => {
     it("provides programs based on given program id", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id;
+      const expectedProgramId = expectedProgram.id;
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
         <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
       );
 
-      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument();
+      expect(await screen.findByText(expectedProgramId!)).toBeInTheDocument();
     });
 
     it("sets program status to in progress when fetch is in progress", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id;
+      const expectedProgramId = expectedProgram.id;
       (getProgramById as jest.Mock).mockReturnValue(
         new Promise<Program>(() => {
           /* do nothing.*/
@@ -122,14 +122,14 @@ describe("<ReadProgramProvider />", () => {
 
     it("sets programs when fetch succeeds", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id;
+      const expectedProgramId = expectedProgram.id;
       (getProgramById as jest.Mock).mockResolvedValue(expectedProgram);
 
       renderWithProvider(
         <TestingUseProgramByIdComponent expectedProgramId={expectedProgramId} />
       );
 
-      expect(await screen.findByText(expectedProgramId)).toBeInTheDocument();
+      expect(await screen.findByText(expectedProgramId!)).toBeInTheDocument();
 
       expect(
         await screen.findByTestId(
@@ -140,7 +140,7 @@ describe("<ReadProgramProvider />", () => {
 
     it("sets fetch program error state when fetch fails", async () => {
       const expectedProgram = makeProgramData();
-      const expectedProgramId: string = expectedProgram.id;
+      const expectedProgramId = expectedProgram.id;
       (getProgramById as jest.Mock).mockRejectedValue(new Error(":("));
 
       renderWithProvider(

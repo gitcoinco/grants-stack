@@ -7,6 +7,7 @@ import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
+import { Web3Provider } from "@ethersproject/providers";
 
 export interface ReadProgramState {
   programs: Program[];
@@ -25,6 +26,7 @@ enum ActionType {
 
 interface Action {
   type: ActionType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: any;
 }
 
@@ -71,7 +73,7 @@ const fetchProgramsByAddress = async (
 const fetchProgramsById = async (
   dispatch: Dispatch,
   programId: string,
-  walletProvider: any
+  walletProvider: Web3Provider
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
 
