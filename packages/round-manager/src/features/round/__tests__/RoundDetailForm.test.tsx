@@ -92,7 +92,7 @@ describe("<RoundDetailForm />", () => {
         target: { value: "testinground" },
       });
 
-      /* Applicactions start date*/
+      /* Applicactions start date */
       expect(startDateInputs[0].id).toBe("applicationsStartTime");
       fireEvent.change(startDateInputs[0], {
         target: { value: "08/25/2022 12:00 AM" },
