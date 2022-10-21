@@ -1,3 +1,4 @@
+import { FieldError } from "react-hook-form";
 import tw from "tailwind-styled-components";
 
 type ButtonProps = {
@@ -22,7 +23,7 @@ export const Button = tw.button`
 `;
 
 type InputProps = {
-  $hasError?: boolean;
+  $hasError?: boolean|FieldError;
   $disabled?: boolean;
 };
 

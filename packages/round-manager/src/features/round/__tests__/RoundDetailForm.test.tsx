@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 
 import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
+import { faker } from "@faker-js/faker";
+import moment from "moment";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -90,7 +92,7 @@ describe("<RoundDetailForm />", () => {
         target: { value: "testinground" },
       });
 
-      /* Applicactions start date*/
+      /* Applicactions start date */
       expect(startDateInputs[0].id).toBe("applicationsStartTime");
       fireEvent.change(startDateInputs[0], {
         target: { value: "08/25/2022 12:00 AM" },
@@ -179,6 +181,10 @@ describe("<RoundDetailForm />", () => {
   });
 
   it("goes to next page when passing validation", async () => {
+    const applicationsStartTime = faker.date.soon();
+    const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
+    const roundStartTime = faker.date.future(1, applicationsEndTime);
+    const roundEndTime = faker.date.soon(21, roundStartTime);
     const setCurrentStep = jest.fn();
     const setFormData = jest.fn();
     renderWrapped(
@@ -206,31 +212,52 @@ describe("<RoundDetailForm />", () => {
       /* Applications start date */
       expect(startDateInputs[0].id).toBe("applicationsStartTime");
       fireEvent.change(startDateInputs[0], {
-        target: { value: "08/20/2022 12:00 AM" },
+        target: {
+          value: moment(applicationsStartTime).format("MM/DD/YYYY h:mm A"),
+        },
       });
 
       /* Applications end date */
       expect(endDateInputs[0].id).toBe("applicationsEndTime");
       fireEvent.change(endDateInputs[0], {
-        target: { value: "08/21/2022 12:00 AM" },
+        target: {
+          value: moment(applicationsEndTime).format("MM/DD/YYYY h:mm A"),
+        },
       });
 
       /* Round start date */
       expect(startDateInputs[1].id).toBe("roundStartTime");
       fireEvent.change(startDateInputs[1], {
-        target: { value: "08/22/2022 12:00 AM" },
+        target: { value: moment(roundStartTime).format("MM/DD/YYYY h:mm A") },
       });
 
       /* Round end date */
       expect(endDateInputs[1].id).toBe("roundEndTime");
       fireEvent.change(endDateInputs[1], {
-        target: { value: "08/23/2022 12:00 AM" },
+        target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
       });
 
       /* Trigger validation */
       fireEvent.click(screen.getByText("Next"));
     });
 
+    expect(
+      screen.queryByTestId("application-start-date-error")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("application-end-date-error")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("round-start-date-error")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("round-end-date-error")
+    ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(setCurrentStep).toHaveBeenCalled();
+      expect(setFormData).toHaveBeenCalled();
+    });
     expect(setCurrentStep).toHaveBeenCalledWith(1);
     expect(setFormData).toHaveBeenCalledTimes(1);
   });
