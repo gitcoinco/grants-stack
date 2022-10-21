@@ -34,6 +34,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     id: faker.finance.ethereumAddress(),
     roundMetadata: {
       name: faker.company.name(),
+      eligibility: { description: "name", requirements: [] },
+      programContractAddress: faker.finance.ethereumAddress(),
     },
     store: {
       protocol: 1,
