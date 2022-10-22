@@ -1,3 +1,6 @@
+import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider } from "@ethersproject/providers";
+
 export type Network = "goerli" | "optimism";
 
 export interface Web3Instance {
@@ -13,8 +16,8 @@ export interface Web3Instance {
     name: string;
     network: Network;
   };
-  provider: any;
-  signer?: any;
+  provider: Web3Provider;
+  signer?: Signer;
 }
 
 export interface MetadataPointer {

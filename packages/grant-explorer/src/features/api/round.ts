@@ -64,6 +64,7 @@ type RoundProjects = Array<RoundProject>;
 
 export async function getRoundById(
   roundId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Round> {
   try {

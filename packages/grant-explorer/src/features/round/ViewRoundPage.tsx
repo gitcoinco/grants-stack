@@ -19,8 +19,10 @@ import { ProjectBanner } from "../common/ProjectBanner";
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
   const { chainId, roundId } = useParams();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round, isLoading } = useRoundById(chainId!, roundId!);
 
   const currentTime = new Date();
@@ -33,52 +35,84 @@ export default function ViewRound() {
     <Spinner text="We're fetching the Round." />
   ) : (
     <>
-      {!round && <NotFoundPage />}
-      {isBeforeRoundStartDate && (
-        <>
-          <div className="mx-20 px-4 py-7 h-screen">
-            <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-            <main>
-              <PreRoundPage
+      {round && chainId && roundId ?
+          <>
+            {isBeforeRoundStartDate &&
+              <BeforeRoundStart
                 round={round}
                 chainId={chainId}
                 roundId={roundId}
-                element={(req: Requirement, index) => (
-                  <li key={index}>{req.requirement}</li>
-                )}
               />
-            </main>
-          </div>
-          <Footer />
-        </>
-      )}
-      {isAfterRoundStartDate && (
-        <>
-          <div className="mx-20 px-4 py-7 h-screen">
-            <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-            <main>
-              <p className="mt-6">
-                <span>Round Name: </span>
-                <span>{round?.roundMetadata!.name}</span>
-              </p>
-              {round?.approvedProjects ? (
-                <ProjectList
-                  projects={round.approvedProjects}
-                  roundRoutePath={`/round/${chainId}/${roundId}`}
-                />
-              ) : (
-                <></>
-              )}
-            </main>
-          </div>
-          <Footer />
-        </>
-      )}
+            }
+
+            {isAfterRoundStartDate &&
+              <AfterRoundStart
+                round={round}
+                chainId={chainId}
+                roundId={roundId}
+              />
+            }
+          </>
+        :
+          <NotFoundPage />
+      }
+
     </>
   );
 }
 
+function BeforeRoundStart(props: {round: Round, chainId: string, roundId: string}) {
+
+  const { round, chainId, roundId } = props;
+
+  return (
+    <>
+      <div className="mx-20 px-4 py-7 h-screen">
+        <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+        <main>
+          <PreRoundPage
+            round={round}
+            chainId={chainId}
+            roundId={roundId}
+            element={(req: Requirement, index) => (
+              <li key={index}>{req.requirement}</li>
+            )}
+          />
+        </main>
+      </div>
+      <Footer />
+    </>
+  );
+}
+
+function AfterRoundStart(props: { round: Round, chainId: string, roundId: string }) {
+
+  const { round, chainId, roundId } = props;
+
+  return(
+    <>
+      <div className="mx-20 px-4 py-7 h-screen">
+        <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+        <main>
+          <p className="mt-6">
+            <span>Round Name: </span>
+            <span>{round.roundMetadata?.name}</span>
+          </p>
+          {round.approvedProjects &&
+            <ProjectList
+              projects={round.approvedProjects}
+              roundRoutePath={`/round/${chainId}/${roundId}`}
+            />
+          }
+        </main>
+      </div>
+      <Footer />
+    </>
+  )
+}
+
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
+
   const { project, roundRoutePath } = props;
   return (
     <BasicCard data-testid="project-card">
@@ -88,14 +122,14 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
       >
         <CardHeader>
           <ProjectBanner
-            projectMetadata={props.project.projectMetadata}
-            classNameOverride={
+            projectMetadata={project.projectMetadata}
+            classNameOverride= {
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
           />
         </CardHeader>
         <CardContent>
-          <CardTitle>{props.project.projectMetadata.title}</CardTitle>
+          <CardTitle>{project.projectMetadata.title}</CardTitle>
         </CardContent>
       </Link>
     </BasicCard>
@@ -106,7 +140,9 @@ const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
 }): JSX.Element => {
-  const { projects } = props;
+
+  const { projects, roundRoutePath } = props;
+
   return (
     <CardsContainer>
       {projects.map((project, index) => {
@@ -114,7 +150,7 @@ const ProjectList = (props: {
           <ProjectCard
             key={index}
             project={project}
-            roundRoutePath={props.roundRoutePath}
+            roundRoutePath={roundRoutePath}
           />
         );
       })}
@@ -123,32 +159,36 @@ const ProjectList = (props: {
 };
 
 function PreRoundPage(props: {
-  round?: Round;
-  chainId?: string;
-  roundId?: string;
+  round: Round;
+  chainId: string;
+  roundId: string;
   element: (req: Requirement, index: number) => JSX.Element;
 }) {
-  const applicationURL = 'https://granthub.gitcoin.co/#/chains/'+ props.chainId + '/rounds/' + props.roundId;
+
+  const { round, chainId, roundId, element } = props;
+
+  const applicationURL = `https://granthub.gitcoin.co/#/chains/${chainId}/rounds/${roundId}`;
   const currentTime = new Date();
-  const isBeforeApplicationStartDate = props.round && props.round.applicationsStartTime >= currentTime;
-  const isDuringApplicationPeriod = props.round && props.round.applicationsStartTime <= currentTime && props.round.applicationsEndTime >= currentTime;
-  const isAfterApplicationEndDateAndBeforeRoundStartDate = props.round && props.round.applicationsEndTime <= currentTime && props.round.roundStartTime >= currentTime;
+
+  const isBeforeApplicationStartDate = round && round.applicationsStartTime >= currentTime;
+  const isDuringApplicationPeriod = round && round.applicationsStartTime <= currentTime && round.applicationsEndTime >= currentTime;
+  const isAfterApplicationEndDateAndBeforeRoundStartDate = round && round.applicationsEndTime <= currentTime && round.roundStartTime >= currentTime;
 
   return (
     <div className="container mx-auto flex flex-row bg-white">
       <div className="basis-1/2 mt-20 ">
         <div className="lg:inline-block md:inline-block"></div>
-        <p className="mb-2 text-xl text-black font-bold">{props.round?.roundMetadata?.name!}</p>
+        <p className="mb-2 text-xl text-black font-bold">{round.roundMetadata?.name}</p>
         <p className="text-lg my-2 text-black font-normal" data-testid="application-period">
           Application Period:
           <span>
             {" "}
             &nbsp;
-            {props.round?.applicationsStartTime.toLocaleDateString()}
+            {round.applicationsStartTime.toLocaleDateString()}
             &nbsp;
             <span>-</span>
             &nbsp;
-            {props.round?.applicationsEndTime.toLocaleDateString()}
+            {round.applicationsEndTime.toLocaleDateString()}
           </span>
         </p>
         <p className="text-lg my-2 text-black font-normal" data-testid="round-period">
@@ -156,41 +196,47 @@ function PreRoundPage(props: {
           <span>
             {" "}
             &nbsp;
-            {props.round?.roundStartTime.toLocaleDateString()}
+            {round.roundStartTime.toLocaleDateString()}
             &nbsp;
             <span>-</span>
             &nbsp;
-            {props.round?.roundEndTime.toLocaleDateString()}
+            {round.roundEndTime.toLocaleDateString()}
           </span>
         </p>
-        <p className="text-lg my-2 text-black font-normal">Matching Funds Available: $$$</p>
-        <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
-          <span>{props.round?.roundMetadata?.eligibility?.description}</span>
+        <p className="text-lg my-2 text-black font-normal">
+          Matching Funds Available: $$$
         </p>
-        <p className="mb-2 text-lg text-black font-bold" data-testid="round-eligibility">Round Eligibility</p>
+        <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
+          <span>{round.roundMetadata?.eligibility.description}</span>
+        </p>
+        <p className="mb-2 text-lg text-black font-bold" data-testid="round-eligibility">
+          Round Eligibility
+        </p>
         <ul className="list-disc list-inside text-lg text-black font-normal">
-          {props.round?.roundMetadata?.eligibility.requirements?.map(
-            props.element
+          {round.roundMetadata?.eligibility.requirements?.map(
+            element
           )}
         </ul>
         <div className="container mx-auto flex">
-          {isBeforeApplicationStartDate && (
-            <InactiveButton 
+          {isBeforeApplicationStartDate &&
+            <InactiveButton
               label="Applications Open"
               testid="applications-open-button"
              />
-          )}
-          {isDuringApplicationPeriod && (
-           <ApplyButton 
+          }
+
+          {isDuringApplicationPeriod &&
+           <ApplyButton
             applicationURL={applicationURL}
            />
-            )}
-          {isAfterApplicationEndDateAndBeforeRoundStartDate  && (
+          }
+
+          {isAfterApplicationEndDateAndBeforeRoundStartDate &&
             <InactiveButton
               label="Applications Closed"
               testid="applications-closed-button"
              />
-          )}
+          }
         </div>
       </div>
       <div className="basis-1/2 right-0"></div>
@@ -198,26 +244,33 @@ function PreRoundPage(props: {
   );
 }
 
-const ApplyButton = (props: {applicationURL: string}) => {
+const ApplyButton = (props: { applicationURL: string }) => {
+
+  const { applicationURL } = props;
+
   return (
     <Button
       type="button"
-      onClick={() => window.open(props.applicationURL, '_blank')}
+      onClick={() => window.open(applicationURL, '_blank')}
       className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 md:h-12 hover:bg-violet-200"
       data-testid="apply-button"
     >
-    Apply to Grant Round
+      Apply to Grant Round
     </Button>
-)};
+  )
+};
 
-const InactiveButton = (props: {label: string; testid: string}) => {
+const InactiveButton = (props: { label: string; testid: string }) => {
+
+  const { label, testid} = props;
+
   return (
     <Button
       type="button"
       className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 md:h-12"
-      data-testid={props.testid}
+      data-testid={testid}
       disabled={true}
     >
-    {props.label}
+      {label}
     </Button>
 )};

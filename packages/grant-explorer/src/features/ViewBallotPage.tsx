@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
 
   const [shortlist] = useBallot();
