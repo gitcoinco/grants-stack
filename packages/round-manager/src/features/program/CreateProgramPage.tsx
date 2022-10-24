@@ -240,7 +240,6 @@ export default function CreateProgram() {
           </div>
           <ProgressModal
             isOpen={openProgressModal}
-            setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Program."}
             steps={progressSteps}
           />

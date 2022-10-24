@@ -213,7 +213,6 @@ export default function ApplicationsApproved() {
       />
       <ProgressModal
         isOpen={openProgressModal}
-        setIsOpen={setOpenProgressModal}
         subheading={"Please hold while we update the grant applications."}
         steps={progressSteps}
       />

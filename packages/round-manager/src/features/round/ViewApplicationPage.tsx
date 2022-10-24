@@ -393,7 +393,6 @@ export default function ViewApplicationPage() {
 
               <ProgressModal
                 isOpen={openProgressModal}
-                setIsOpen={setOpenProgressModal}
                 subheading={
                   "Please hold while we update the grant application."
                 }

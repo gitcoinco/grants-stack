@@ -258,7 +258,6 @@ export function RoundApplicationForm(props: {
           </form>
           <ProgressModal
             isOpen={openProgressModal}
-            setIsOpen={setOpenProgressModal}
             subheading={"Please hold while we create your Grant Round."}
             steps={progressSteps}
           >

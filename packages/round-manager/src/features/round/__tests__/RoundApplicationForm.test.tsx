@@ -38,7 +38,7 @@ beforeEach(() => {
 });
 
 const randomMetadata = {
-  name: faker.random.word()
+  name: faker.random.word(),
 };
 
 describe("<RoundApplicationForm />", () => {
@@ -247,7 +247,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -268,7 +268,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -291,7 +291,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -326,7 +326,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -348,7 +348,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -386,7 +386,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -408,7 +408,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
