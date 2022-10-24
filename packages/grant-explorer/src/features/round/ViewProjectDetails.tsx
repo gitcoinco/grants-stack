@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
-import { ProjectMetadata } from "../api/types";
+import { Project, ProjectMetadata } from "../api/types";
 import { ChevronLeftIcon } from "@heroicons/react/solid";
 import { Button } from "../common/styles";
 import { useBallot } from "../../context/BallotContext";
@@ -15,7 +15,10 @@ export default function ViewProjectDetails() {
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const { chainId, roundId, applicationId } = useParams();
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round, isLoading } = useRoundById(chainId!, roundId!);
+
   const projectToRender = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
@@ -99,13 +102,14 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
   );
 }
 
-function AboutProject(props: { projectToRender: any }) {
+function AboutProject(props: { projectToRender: Project }) {
+
+  const { projectToRender } = props;
+
   return (
     <div className="border-b-2 pt-2 pb-6">
-      <Detail text={props.projectToRender.projectMetadata.website} />
-      <Detail
-        text={`@${props.projectToRender.projectMetadata.projectTwitter!}`}
-      />
+      <Detail text={projectToRender.projectMetadata.website} />
+      <Detail text={`@${projectToRender.projectMetadata.projectTwitter}`} />
     </div>
   );
 }
@@ -128,8 +132,11 @@ export function ProjectLogo(props: {
   projectMetadata: ProjectMetadata;
   classNameOverride?: string;
 }) {
-  const applicationLogoImage = props.projectMetadata!.logoImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.logoImg}`
+
+  const { projectMetadata, classNameOverride } = props;
+
+  const applicationLogoImage = projectMetadata.logoImg
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${projectMetadata.logoImg}`
     : DefaultLogoImage;
 
   return (
@@ -138,7 +145,7 @@ export function ProjectLogo(props: {
         <div className="flex">
           <img
             className={
-              props.classNameOverride ??
+              classNameOverride ??
               "h-12 w-12 rounded-full ring-4 ring-white bg-white"
             }
             src={applicationLogoImage}

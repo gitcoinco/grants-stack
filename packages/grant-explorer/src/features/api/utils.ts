@@ -84,7 +84,7 @@ export const graphql_fetch = async (
  */
  export const pinToIPFS = (obj: IPFSObject) => {
 
-  let params: any = {
+  const params = {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`

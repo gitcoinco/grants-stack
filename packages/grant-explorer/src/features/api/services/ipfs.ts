@@ -7,7 +7,7 @@ export const ipfsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     saveToIPFS: builder.mutation<string, IPFSObject>({
       queryFn: async (object) => {
-        let result = { data: "" }
+        const result = { data: "" }
 
         try {
           const resp = await pinToIPFS(object)
