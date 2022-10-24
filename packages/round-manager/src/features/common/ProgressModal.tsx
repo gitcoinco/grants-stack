@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
 import { ProgressStatus } from "../api/types";
@@ -11,7 +11,6 @@ export type Step = {
 
 interface ProgressModalProps {
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   steps: Step[];
   heading?: string;
   subheading?: string;
@@ -21,7 +20,6 @@ interface ProgressModalProps {
 
 export default function ProgressModal({
   isOpen,
-  setIsOpen,
   heading = "Processing...",
   subheading = "Please hold while your operation is in progress.",
   children,
@@ -33,7 +31,9 @@ export default function ProgressModal({
         as="div"
         data-testid="progress-modal"
         className="relative z-10"
-        onClose={setIsOpen}
+        onClose={() => {
+          /* Don't close the dialog when clicking the backdrop */
+        }}
       >
         <Transition.Child
           as={Fragment}

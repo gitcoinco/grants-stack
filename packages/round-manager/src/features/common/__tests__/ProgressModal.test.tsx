@@ -29,15 +29,7 @@ const steps = [completedStep, currentStep, errorStep, upcomingStep];
 describe("<ProgressModal />", () => {
   describe("error status styling", () => {
     it('shows "error" style for the step when the step status is error', () => {
-      renderWrapped(
-        <ProgressModal
-          isOpen
-          setIsOpen={() => {
-            /**/
-          }}
-          steps={steps}
-        />
-      );
+      renderWrapped(<ProgressModal isOpen steps={steps} />);
 
       screen.getByTestId(`${errorStep.name}-error-icon`);
     });
@@ -45,15 +37,7 @@ describe("<ProgressModal />", () => {
     it.each([completedStep, currentStep, upcomingStep])(
       'does not show "error" icon for a step with status $status',
       (nonMatchingStep: Step) => {
-        renderWrapped(
-          <ProgressModal
-            isOpen
-            setIsOpen={() => {
-              /**/
-            }}
-            steps={steps}
-          />
-        );
+        renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
           screen.queryByTestId(`${nonMatchingStep.name}-error-icon`)
@@ -64,15 +48,7 @@ describe("<ProgressModal />", () => {
 
   describe("current status styling", () => {
     it('shows the "current" style for the step when the step status is current', () => {
-      renderWrapped(
-        <ProgressModal
-          isOpen
-          setIsOpen={() => {
-            /**/
-          }}
-          steps={steps}
-        />
-      );
+      renderWrapped(<ProgressModal isOpen steps={steps} />);
 
       const name = screen.getByText(currentStep.name);
       expect(name.className.includes("violet")).toBe(true);
@@ -87,17 +63,7 @@ describe("<ProgressModal />", () => {
     it.each([completedStep, errorStep, upcomingStep])(
       'does not show "current" icon for a step with status $status',
       (nonMatchingStep: Step) => {
-        renderWrapped(
-          <ProgressModal
-            isOpen
-            setIsOpen={() => {
-              {
-                /**/
-              }
-            }}
-            steps={steps}
-          />
-        );
+        renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
           screen.queryByTestId(`${nonMatchingStep.name}-current-icon`)
@@ -108,17 +74,7 @@ describe("<ProgressModal />", () => {
 
   describe("upcoming status styling", () => {
     it('shows the "upcoming" style when the state is upcoming', () => {
-      renderWrapped(
-        <ProgressModal
-          isOpen
-          setIsOpen={() => {
-            {
-              /**/
-            }
-          }}
-          steps={steps}
-        />
-      );
+      renderWrapped(<ProgressModal isOpen steps={steps} />);
 
       const name = screen.getByText(upcomingStep.name);
       expect(name.className.includes("grey-400")).toBe(true);
@@ -133,15 +89,7 @@ describe("<ProgressModal />", () => {
     it.each([currentStep, errorStep, completedStep])(
       'does not show "upcoming" icon for a step with status $status',
       (nonMatchingStep: Step) => {
-        renderWrapped(
-          <ProgressModal
-            isOpen
-            setIsOpen={() => {
-              /**/
-            }}
-            steps={steps}
-          />
-        );
+        renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
           screen.queryByTestId(`${nonMatchingStep.name}-upcoming-icon`)
@@ -152,15 +100,7 @@ describe("<ProgressModal />", () => {
 
   describe("complete status styling", () => {
     it('shows the "complete" style for the step when the step status is complete', () => {
-      renderWrapped(
-        <ProgressModal
-          isOpen
-          setIsOpen={() => {
-            /**/
-          }}
-          steps={steps}
-        />
-      );
+      renderWrapped(<ProgressModal isOpen steps={steps} />);
 
       const name = screen.getByText(completedStep.name);
       expect(name.className.includes("grey-500")).toBe(true);
@@ -175,15 +115,7 @@ describe("<ProgressModal />", () => {
     it.each([currentStep, errorStep, upcomingStep])(
       'does not show "complete" icon for a step with status $status',
       (nonMatchingStep: Step) => {
-        renderWrapped(
-          <ProgressModal
-            isOpen
-            setIsOpen={() => {
-              /**/
-            }}
-            steps={steps}
-          />
-        );
+        renderWrapped(<ProgressModal isOpen steps={steps} />);
 
         expect(
           screen.queryByTestId(`${nonMatchingStep.name}-complete-icon`)
@@ -196,13 +128,7 @@ describe("<ProgressModal />", () => {
     const expectedTestId = `child-test-id-123`;
     const child = <div data-testid={expectedTestId} />;
     renderWrapped(
-      <ProgressModal
-        isOpen
-        setIsOpen={() => {
-          /**/
-        }}
-        steps={steps}
-      >
+      <ProgressModal isOpen steps={steps}>
         {child}
       </ProgressModal>
     );

@@ -23,7 +23,7 @@ export const Button = tw.button`
 `;
 
 type InputProps = {
-  $hasError?: boolean|FieldError;
+  $hasError?: boolean | FieldError;
   $disabled?: boolean;
 };
 
