@@ -220,7 +220,7 @@ function PreRoundPage(props: {
         <div className="container mx-auto flex">
           {isBeforeApplicationStartDate &&
             <InactiveButton
-              label="Applications Open"
+              label={`Applications Open ${round.applicationsStartTime.toLocaleDateString()}`}
               testid="applications-open-button"
              />
           }
