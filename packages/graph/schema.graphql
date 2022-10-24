@@ -92,6 +92,7 @@ type RoundProject @entity {
 #########################
 
 type Vote @entity {
+  id: ID!
   tokenAddress: String!,
   amount: Int!,
   voterAddress: String!,

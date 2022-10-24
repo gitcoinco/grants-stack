@@ -2,5 +2,6 @@
   "network": "goerli",
   "startBlock": 7507642,
   "programFactoryAddress": "0x79c2394B20A809EA693a7D64323A8846FF02029c",
-  "roundFactoryAddress": "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791"
+  "roundFactoryAddress": "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791",
+  "qfVotingFactoryAddress": "0x0b27641d4dE8fb70542aA10b567238F5a3324CE0"
 }

@@ -74,7 +74,7 @@ dataSources:
         - name: QuadraticFundingVotingStrategyImplementation
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
-        - event: VotingContractCreated(address indexed votingContractAddress, address indexed votingImplementation)
+        - event: VotingContractCreated(indexed address,indexed address)
           handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFundingStrategy/factory.ts
 templates:
@@ -129,7 +129,7 @@ templates:
     # QF Voting
   - kind: ethereum/contract
     name: QuadraticFundingVotingStrategyImplementation
-    network: { { network } }
+    network: {{ network }}
     source:
       abi: QuadraticFundingVotingStrategyImplementation
     mapping:
@@ -142,6 +142,6 @@ templates:
         - name: QuadraticFundingVotingStrategyImplementation
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
-        - event: Voted(address token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
-          handler: handleQFVote # TODO: need to implement handler
+        - event: Voted(address,uint256,indexed address,indexed address,indexed address)
+          handler: handleQFVote
       file: ./src/votingStrategy/QuadraticFundingStrategy/implementation.ts
