@@ -44,7 +44,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x4E15361FD6b4BB609Fa63C81A2be19d873717870",
+          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
           logo: TokenNamesAndLogos["FTM"],
         },
         {
