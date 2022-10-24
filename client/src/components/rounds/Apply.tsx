@@ -212,6 +212,7 @@ function Apply() {
             currentStatus={props.applicationState.status}
             steps={applicationSteps}
             error={props.applicationState.error}
+            title="Please hold while we submit your grant round application."
           />
         )}
     </>

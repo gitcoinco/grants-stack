@@ -52,7 +52,7 @@ export default function Preview({
   const publishProject = async () => {
     setSubmitted(true);
     showToast(true);
-    await dispatch(publishGrant(currentProjectId));
+    dispatch(publishGrant(currentProjectId));
   };
 
   const navigate = useNavigate();
@@ -115,6 +115,7 @@ export default function Preview({
         currentStatus={props.status}
         steps={grantSteps}
         error={props.error}
+        title="Please hold on while we create your project."
       />
       <ErrorModal
         open={props.openErrorModal}

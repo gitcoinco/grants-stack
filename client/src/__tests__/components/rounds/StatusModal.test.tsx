@@ -82,6 +82,7 @@ describe("<StatusModal />", () => {
             onClose={() => {}}
             currentStatus={scenario.currentStep.status}
             steps={steps}
+            title="Test Modal Use case."
             error={
               scenario.error
                 ? {

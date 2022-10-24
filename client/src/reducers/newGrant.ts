@@ -72,6 +72,7 @@ export const newGrantReducer = (
       return {
         ...state,
         status: Status.Undefined,
+        error: undefined,
       };
     }
 
