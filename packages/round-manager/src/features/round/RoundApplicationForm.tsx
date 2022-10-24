@@ -5,6 +5,8 @@ import {
   FieldArrayWithId,
   SubmitHandler,
   useFieldArray,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove,
   useForm,
   UseFormGetValues,
   UseFormRegister,
@@ -31,9 +33,11 @@ import {
   PencilIcon,
   XIcon,
   InformationCircleIcon,
+  PlusSmIcon,
 } from "@heroicons/react/solid";
 import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
+import { Button } from "../common/styles";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -93,7 +97,7 @@ export function RoundApplicationForm(props: {
     },
   });
 
-  const { fields } = useFieldArray({
+  const { fields, remove, append } = useFieldArray({
     name: "applicationMetadata.questions",
     control,
   });
@@ -239,6 +243,8 @@ export function RoundApplicationForm(props: {
               setEditStates={setIsInEditState}
               getValues={getValues}
               control={control}
+              remove={remove}
+              append={append}
             />
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -346,6 +352,33 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+function EncryptedInformation() {
+  return (
+    <>
+      <InformationCircleIcon
+        data-tip
+        data-background-color="#0E0333"
+        data-for="encrypted-tooltip"
+        className="inline h-4 w-4 ml-2 mr-3"
+        data-testid={"encrypted-tooltip"}
+      />
+
+      <ReactTooltip
+        id="encrypted-tooltip"
+        place="bottom"
+        type="dark"
+        effect="solid"
+      >
+        <p className="text-xs">
+          Encryption allows for greater <br />
+          security and confidentiailty <br />
+          for your applicants.
+        </p>
+      </ReactTooltip>
+    </>
+  );
+}
+
 function ApplicationInformation(props: {
   fields: FieldArrayWithId<Round, "applicationMetadata.questions">[];
   register: UseFormRegister<Round>;
@@ -353,9 +386,19 @@ function ApplicationInformation(props: {
   setEditStates: (a: boolean[]) => void;
   getValues: UseFormGetValues<Round>;
   control: Control<Round>;
+  remove: UseFieldArrayRemove;
+  append: UseFieldArrayAppend<Round, "applicationMetadata.questions">;
 }) {
-  const { fields, register, editStates, setEditStates, getValues, control } =
-    props;
+  const {
+    fields,
+    register,
+    editStates,
+    setEditStates,
+    getValues,
+    control,
+    remove,
+    append
+  } = props;
 
   const normalTitle = (index: number, disabled?: boolean) => (
     <div className="my-4">
@@ -421,26 +464,7 @@ function ApplicationInformation(props: {
                   {field.value ? "Encrypted" : "Unencrypted"}
                 </p>
 
-                <InformationCircleIcon
-                  data-tip
-                  data-background-color="#0E0333"
-                  data-for="encrypted-tooltip"
-                  className="inline h-4 w-4 ml-2 mr-3"
-                  data-testid={"encrypted-tooltip"}
-                />
-
-                <ReactTooltip
-                  id="encrypted-tooltip"
-                  place="bottom"
-                  type="dark"
-                  effect="solid"
-                >
-                  <p className="text-xs">
-                    Encryption allows for greater <br />
-                    security and confidentiailty <br />
-                    for your applicants.
-                  </p>
-                </ReactTooltip>
+                <EncryptedInformation />
               </Switch.Label>
             </span>
             <Switch
@@ -520,6 +544,33 @@ function ApplicationInformation(props: {
     );
   };
 
+  const Question = (props: { index: number }) => {
+    const { index } = props;
+    return (
+      <div data-testid={"application-question"}>
+        <div className="flex flex-row">
+          <div className="text-sm basis-2/5">
+            {
+              (
+                editStates[index] ||
+                getValues(`applicationMetadata.questions.${index}.title`).length == 0
+              ) ?
+              editableTitle(index) : normalTitle(index)
+            }
+          </div>
+          <div className="basis-3/5 flex justify-around">
+            <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
+            <div className="my-auto w-1/3">{requiredToggle(index)}</div>
+            <div className="my-auto">
+              <DeleteQuestion onClick={() => remove(index)} />
+            </div>
+          </div>
+        </div>
+        <hr />
+      </div>
+    );
+  };
+
   return (
     <div className="mt-5 md:mt-0 md:col-span-2">
       <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
@@ -533,33 +584,18 @@ function ApplicationInformation(props: {
 
         {disabledPayoutQuestion}
         <hr />
-        {fields.map((field, index) => {
-          return (
-            <div key={index}>
-              <div className="flex flex-row">
-                <div className="text-sm basis-2/5">
-                  {editStates[index]
-                    ? editableTitle(index)
-                    : normalTitle(index)}
-                </div>
-                <div className="basis-3/5 flex justify-around">
-                  <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
-                  <div className="my-auto w-1/3">{requiredToggle(index)}</div>
-                  <div className="my-auto">
-                    <XIcon
-                      className={classNames(
-                        "visible",
-                        "inline h-4 w-4 mb-1 ml-2 text-red-600"
-                      )}
-                      data-testid={"remove-question"}
-                    />
-                  </div>
-                </div>
-              </div>
-              <hr />
-            </div>
-          );
-        })}
+        {fields.map((field, index) => (
+          <Question key={index} index={index} />
+        ))}
+
+        <AddQuestion onClick={() =>
+          append({
+            title: "",
+            required: false,
+            encrypted: false,
+            inputType: "text",
+          })
+        }/>
       </div>
     </div>
   );
@@ -672,3 +708,27 @@ const disabledPayoutQuestion = (
     </div>
   </div>
 );
+
+function DeleteQuestion(props: { onClick: () => void }) {
+  return (
+    <XIcon
+      className={classNames("visible", "inline h-4 w-4 mb-1 ml-2 text-red-600")}
+      data-testid={"remove-question"}
+      onClick={props.onClick}
+    />
+  );
+}
+
+function AddQuestion(props: { onClick: () => void }) {
+  return (
+    <Button
+      type="button"
+      $variant="outline"
+      className="inline-flex items-center px-3.5 py-2 mt-5 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
+      onClick={props.onClick}
+    >
+      <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+      Add A Question
+    </Button>
+  )
+}
