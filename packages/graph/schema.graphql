@@ -86,3 +86,15 @@ type RoundProject @entity {
   round: Round!
   payoutAddress: String
 }
+
+#########################
+# ===== QF Voting ===== #
+#########################
+
+type Vote @entity {
+  tokenAddress: String!,
+  amount: Int!,
+  voterAddress: String!,
+  grantAddress: String!,
+  roundAddress: String!
+}

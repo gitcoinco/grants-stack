@@ -53,7 +53,30 @@ dataSources:
         - event: RoundCreated(indexed address,indexed address,indexed address)
           handler: handleRoundCreated
       file: ./src/round/factory.ts
-    
+
+  # QF Voting Factory
+  - kind: ethereum/contract
+    name: QFVoting # TODO is this the right name?
+    network: {{ network }}
+    source:
+      address: '{{ qfVotingFactoryAddress }}'
+      abi: QuadraticFundingVotingStrategyFactory
+      startBlock: {{ startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Vote
+      abis:
+        - name: QuadraticFundingVotingStrategyFactory
+          file: ./abis/QuadraticFundingVotingStrategyFactory.json
+        - name: QuadraticFundingVotingStrategyImplementation
+          file: ./abis/QuadraticFundingVotingStrategyImplementation.json
+      eventHandlers:
+        - event: VotingContractCreated(address indexed votingContractAddress, address indexed votingImplementation)
+          handler: handleVotingContractCreated
+      file: ./src/votingStrategy/QuadraticFundingStrategy/factory.ts
 templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
@@ -102,4 +125,23 @@ templates:
         - event: ProjectsMetaPtrUpdated((uint256,string),(uint256,string))
           handler: handleProjectsMetaPtrUpdated
       file: ./src/round/implementation.ts
-    
+
+    # QF Voting
+  - kind: ethereum/contract
+    name: QuadraticFundingVotingStrategyImplementation
+    network: { { network } }
+    source:
+      abi: QuadraticFundingVotingStrategyImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Vote
+      abis:
+        - name: QuadraticFundingVotingStrategyImplementation
+          file: ./abis/QuadraticFundingVotingStrategyImplementation.json
+      eventHandlers:
+        - event: Voted(address token, uint256 amount, address indexed voter, address indexed grantAddress, address indexed roundAddress)
+          handler: handleQFVote # TODO: need to implement handler
+      file: ./src/votingStrategy/QuadraticFundingStrategy/implementation.ts
