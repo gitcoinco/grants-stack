@@ -3,7 +3,89 @@ import { ApplicationMetadata, InputType, IPFSObject } from "./types";
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
+  FANTOM_MAINNET_CHAIN_ID = 250,
 }
+
+export type PayoutToken = {
+  name: string;
+  chainId: number;
+  address: string;
+  logo?: string;
+  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+};
+
+export const TokenNamesAndLogos: Record<string, string> = {
+  FTM: "https://picsum.photos/256",
+  BUSD: "https://picsum.photos/256",
+  DAI: "https://picsum.photos/256",
+  ETH: "https://picsum.photos/256",
+};
+
+export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+          address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "FTM",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          logo: TokenNamesAndLogos["FTM"],
+        },
+        {
+          name: "BUSD",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+          logo: TokenNamesAndLogos["BUSD"],
+        },
+        {
+          name: "DAI",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      return [
+        {
+          name: "BUSD",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+          logo: TokenNamesAndLogos["BUSD"],
+        },
+        {
+          name: "DAI",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
+  }
+};
 
 /**
  * Fetch subgraph network for provided web3 network

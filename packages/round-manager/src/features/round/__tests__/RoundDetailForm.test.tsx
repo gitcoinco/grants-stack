@@ -5,6 +5,8 @@ import { renderWrapped } from "../../../test-utils";
 import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
+import { ChainId, getPayoutTokenOptions } from "../../api/utils";
+import { useWallet } from "../../common/Auth";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
 
@@ -18,6 +20,12 @@ jest.mock("../../../constants", () => ({
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
+beforeEach(() => {
+  (useWallet as jest.Mock).mockReturnValue({
+    chain: { id: ChainId.GOERLI_CHAIN_ID },
+  });
+});
+
 describe("<RoundDetailForm />", () => {
   it("renders round name input", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
@@ -27,7 +35,9 @@ describe("<RoundDetailForm />", () => {
 
   it("requires round name input to not be empty", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button");
+    const submitButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
     const input = await screen.getByRole("textbox", {
       name: /round name/i,
     });
@@ -41,7 +51,9 @@ describe("<RoundDetailForm />", () => {
 
   it("requires round name to be longer than 8 characters", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button");
+    const submitButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
     const input = await screen.getByRole("textbox", {
       name: /round name/i,
     });
@@ -62,7 +74,9 @@ describe("<RoundDetailForm />", () => {
 
   it("renders submit button", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const nextButton = await screen.getByRole("button");
+    const nextButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
     expect(nextButton).toBeInTheDocument();
     expect(nextButton).toHaveTextContent("Launch");
   });
@@ -203,42 +217,51 @@ describe("<RoundDetailForm />", () => {
     const startDateInputs = await screen.getAllByLabelText("Start Date");
     const endDateInputs = await screen.getAllByLabelText("End Date");
 
-    await act(async () => {
-      /* Prefill round name to ignore errors from it */
-      fireEvent.input(screen.getByLabelText("Round Name"), {
-        target: { value: "testinground" },
-      });
+    /* Round Name */
+    fireEvent.input(screen.getByLabelText("Round Name"), {
+      target: { value: "testinground" },
+    });
 
-      /* Applications start date */
-      expect(startDateInputs[0].id).toBe("applicationsStartTime");
-      fireEvent.change(startDateInputs[0], {
-        target: {
-          value: moment(applicationsStartTime).format("MM/DD/YYYY h:mm A"),
-        },
-      });
+    /* Applications start date */
+    expect(startDateInputs[0].id).toBe("applicationsStartTime");
+    fireEvent.change(startDateInputs[0], {
+      target: {
+        value: moment(applicationsStartTime).format("MM/DD/YYYY h:mm A"),
+      },
+    });
 
-      /* Applications end date */
-      expect(endDateInputs[0].id).toBe("applicationsEndTime");
-      fireEvent.change(endDateInputs[0], {
-        target: {
-          value: moment(applicationsEndTime).format("MM/DD/YYYY h:mm A"),
-        },
-      });
+    /* Applications end date */
+    expect(endDateInputs[0].id).toBe("applicationsEndTime");
+    fireEvent.change(endDateInputs[0], {
+      target: {
+        value: moment(applicationsEndTime).format("MM/DD/YYYY h:mm A"),
+      },
+    });
 
-      /* Round start date */
-      expect(startDateInputs[1].id).toBe("roundStartTime");
-      fireEvent.change(startDateInputs[1], {
-        target: { value: moment(roundStartTime).format("MM/DD/YYYY h:mm A") },
-      });
+    /* Round start date */
+    expect(startDateInputs[1].id).toBe("roundStartTime");
+    fireEvent.change(startDateInputs[1], {
+      target: { value: moment(roundStartTime).format("MM/DD/YYYY h:mm A") },
+    });
 
-      /* Round end date */
-      expect(endDateInputs[1].id).toBe("roundEndTime");
-      fireEvent.change(endDateInputs[1], {
-        target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
-      });
+    /* Round end date */
+    expect(endDateInputs[1].id).toBe("roundEndTime");
+    fireEvent.change(endDateInputs[1], {
+      target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
+    });
 
-      /* Trigger validation */
-      fireEvent.click(screen.getByText("Next"));
+    /* Payout Token */
+    const payoutTokenSelection = screen.getByTestId("payout-token-select");
+    fireEvent.click(payoutTokenSelection);
+    const firstTokenOption = screen.getAllByTestId("payout-token-option")[0];
+    fireEvent.click(firstTokenOption);
+
+    /* Trigger validation */
+    fireEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(setCurrentStep).toBeCalled();
+      expect(setFormData).toBeCalled();
     });
 
     expect(
@@ -260,5 +283,39 @@ describe("<RoundDetailForm />", () => {
     });
     expect(setCurrentStep).toHaveBeenCalledWith(1);
     expect(setFormData).toHaveBeenCalledTimes(1);
+  });
+
+  describe("Quadratic Funding Settings", () => {
+    it("renders the quadratic funding settings section", () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+
+      expect(
+        screen.getByText(/Quadratic Funding Settings/i)
+      ).toBeInTheDocument();
+    });
+
+    it("renders a dropdown list of tokens when payout token input is clicked", async () => {
+      const options = getPayoutTokenOptions(ChainId.GOERLI_CHAIN_ID);
+
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      const payoutTokenSelection = screen.getByTestId("payout-token-select");
+      fireEvent.click(payoutTokenSelection);
+
+      const selectOptions = await screen.findAllByTestId("payout-token-option");
+      expect(selectOptions).toHaveLength(options.length);
+    });
+
+    it("validates that the payout token is selected", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      const payoutTokenSelection = screen.getByTestId("payout-token-select");
+      fireEvent.click(payoutTokenSelection);
+
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "You must select a payout token for your round."
+      );
+      expect(errors).toBeInTheDocument();
+    });
   });
 });
