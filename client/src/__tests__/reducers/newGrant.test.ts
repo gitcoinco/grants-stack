@@ -1,35 +1,40 @@
-import { Store } from "redux";
-import { grantError, grantStatus, resetStatus } from "../../actions/newGrant";
-import { initialState, Status } from "../../reducers/newGrant";
-import setupStore from "../../store";
+import {
+  NEW_GRANT_STATUS,
+  NEW_GRANT_ERROR,
+  RESET_STATUS,
+} from "../../actions/newGrant";
+import {
+  newGrantReducer,
+  NewGrantState,
+  initialState,
+  Status,
+} from "../../reducers/newGrant";
 
 describe("newGrant reducer", () => {
-  let store: Store;
+  let state: NewGrantState;
   beforeEach(() => {
-    store = setupStore();
+    state = initialState;
   });
 
   it("NEW_GRANT_STATUS should initialize a new grant", () => {
-    store.dispatch(grantStatus(Status.Undefined));
-
-    expect(store.getState().newGrant).toEqual({
-      ...initialState,
+    const newState: NewGrantState = newGrantReducer(state, {
+      type: NEW_GRANT_STATUS,
       status: Status.Undefined,
     });
 
-    store.dispatch(grantStatus(Status.Completed));
-    expect(store.getState().newGrant).toEqual({
-      ...initialState,
-      status: Status.Completed,
-    });
+    expect(newState.status).toEqual(Status.Undefined);
   });
 
   it("NEW_GRANT_ERROR should update state and preserve last status", () => {
     const errorMessage = "Error occurred while processing grant";
 
-    store.dispatch(grantError(errorMessage, Status.UploadingJSON));
+    const newState: NewGrantState = newGrantReducer(state, {
+      type: NEW_GRANT_ERROR,
+      error: errorMessage,
+      step: Status.UploadingJSON,
+    });
 
-    expect(store.getState().newGrant).toEqual({
+    expect(newState).toEqual({
       ...initialState,
       status: Status.Error,
       error: {
@@ -40,12 +45,10 @@ describe("newGrant reducer", () => {
   });
 
   it("RESET_STATUS should reset grant state to default", () => {
-    store.dispatch(resetStatus());
-
-    expect(store.getState().newGrant).toEqual({
-      ...initialState,
-      status: Status.Undefined,
-      error: undefined,
+    const newState: NewGrantState = newGrantReducer(state, {
+      type: RESET_STATUS,
     });
+
+    expect(newState).toEqual(initialState);
   });
 });
