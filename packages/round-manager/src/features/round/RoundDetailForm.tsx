@@ -583,13 +583,10 @@ function ProgramChain(props: { program: Program }) {
                 {program.chain?.logo && (
                   <img
                     src={program.chain.logo}
-                    alt=""
+                    alt="chain logo"
                     data-testid="chain-logo"
                     className="h-5 w-5 flex-shrink-0 rounded-full"
                   />
-                  // <div data-testid="chain-logo" className="h-5 w-5 flex-shrink-0 rounded-full">
-                  //   {program.chain.logo}
-                  // </div>
                 )}
                 {
                   <span className="ml-3 block truncate">

@@ -10,17 +10,17 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
-    logo: "https://picsum.photos/256",
+    logo: "./logos/ethereum-eth-logo.svg",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    name: "Optimism Mainnet",
-    logo: "https://picsum.photos/256",
+    name: "Optimism",
+    logo: "./logos/optimism-logo.svg",
   },
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
     name: "Fantom",
-    logo: "https://picsum.photos/256",
+    logo: "./logos/fantom-logo.svg",
   },
 };
 
@@ -33,10 +33,10 @@ export type PayoutToken = {
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
-  FTM: "https://picsum.photos/256",
-  BUSD: "https://picsum.photos/256",
-  DAI: "https://picsum.photos/256",
-  ETH: "https://picsum.photos/256",
+  FTM: "./logos/fantom-logo.svg",
+  BUSD: "./logos/busd-logo.svg",
+  DAI: "./logos/dai-logo.svg",
+  ETH: "./logos/ethereum-eth-logo.svg",
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
