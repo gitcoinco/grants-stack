@@ -41,12 +41,12 @@ export const grantSteps: Step[] = [
   {
     name: "Storing",
     description: "The metadata is being saved in a safe place.",
-    status: GrantStatus.UploadingJSON,
+    status: GrantStatus.UploadingImages,
   },
   {
     name: "Deploying",
     description: "Connecting to the Mainnet blockchain.",
-    status: GrantStatus.WaitingForSignature,
+    status: GrantStatus.TransactionInitiated,
   },
   {
     name: "Redirecting",
