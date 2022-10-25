@@ -28,15 +28,15 @@ export interface ProjectsUnloadedAction {
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
-  // projectID: string;
-  // roundID: string;
+  projectID: string;
+  roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
 interface ProjectApplicationsNotFoundAction {
   type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
-  // projectID: string;
-  // roundID: string;
+  projectID: string;
+  roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
@@ -49,8 +49,8 @@ interface ProjectApplicationsLoadedAction {
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
 interface ProjectApplicationsErrorAction {
   type: typeof PROJECT_APPLICATIONS_ERROR;
-  // projectID: string;
-  // roundID: string;
+  projectID: string;
+  roundID: string;
   error: string;
 }
 
