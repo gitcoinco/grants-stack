@@ -25,7 +25,7 @@ export default function Preview({
   const dispatch = useDispatch();
 
   const [submitted, setSubmitted] = useState(false);
-  const [show, showToast] = useState(false);
+  const [show, showModal] = useState(false);
 
   const props = useSelector(
     (state: RootState) => ({
@@ -46,12 +46,13 @@ export default function Preview({
 
   const resetSubmit = () => {
     setSubmitted(false);
+    showModal(false);
     dispatch(resetStatus());
   };
 
   const publishProject = async () => {
     setSubmitted(true);
-    showToast(true);
+    showModal(true);
     dispatch(publishGrant(currentProjectId));
   };
 
@@ -111,7 +112,7 @@ export default function Preview({
       </div>
       <StatusModal
         open={show && !props.openErrorModal}
-        onClose={() => showToast(false)}
+        onClose={() => showModal(false)}
         currentStatus={props.status}
         steps={grantSteps}
         error={props.error}
