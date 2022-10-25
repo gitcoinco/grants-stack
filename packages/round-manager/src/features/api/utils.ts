@@ -5,6 +5,24 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
 }
+// NB: number keys are coerced into strings for JS object keys
+export const CHAINS: Record<number, any> = {
+  [ChainId.GOERLI_CHAIN_ID]: {
+    id: ChainId.GOERLI_CHAIN_ID,
+    name: "Goerli", // TODO get canonical network names
+    logo: ""
+  },
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
+    id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    name: "Optimism Mainnet",
+    logo: ""
+  },
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
+    id: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    name: "Fantom Mainnet",
+    logo: ""
+  },
+};
 
 export type PayoutToken = {
   name: string;

@@ -22,6 +22,8 @@ import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { getPayoutTokenOptions, PayoutToken } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import moment from "moment";
+import {useProgramById} from "../../context/program/ReadProgramContext";
+import {useSearchParams} from "react-router-dom";
 
 //TODO: Time defaults to next hour - Date Picker
 /*
@@ -75,9 +77,15 @@ const ValidationSchema = yup.object().shape({
 
 interface RoundDetailFormProps {
   stepper: typeof FormStepper;
+  initialData?: any;
 }
 
 export function RoundDetailForm(props: RoundDetailFormProps) {
+
+  const [searchParams] = useSearchParams();
+  const programId = searchParams.get("programId");
+  const { program } = useProgramById(programId ?? undefined);
+
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
   const {
@@ -255,6 +263,13 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   register={register("roundMetadata.name")}
                   errors={errors}
                 />
+                {program && (<div>
+                  <label>
+                    Program Chain
+                  </label>
+                  <img src={program.chain?.logo} data-testid="chain-logo"/>
+                  <Input id={"chain"} type="text" defaultValue={program.chain?.name} disabled/>
+                </div>)}
               </div>
               <p className="mt-6">
                 What are the dates for the Applications and Round voting

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { renderWrapped } from "../../../test-utils";
+import {makeProgramData, renderWrapped} from "../../../test-utils";
 
 import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
-import { ChainId, getPayoutTokenOptions } from "../../api/utils";
+import {ChainId, CHAINS, getPayoutTokenOptions} from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
@@ -283,6 +283,17 @@ describe("<RoundDetailForm />", () => {
     });
     expect(setCurrentStep).toHaveBeenCalledWith(1);
     expect(setFormData).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders program chain name", async () => {
+    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID]
+    const program = makeProgramData({chain: {id: chain.id, name: chain.name}});
+
+    // TODO wrap this compoonent in ProgramProvider instead of passing program into initial data
+    renderWrapped(<RoundDetailForm stepper={FormStepper} initialData={{program}}/>);
+
+    expect(screen.getByDisplayValue(chain.name)).toBeInTheDocument();
+    expect(screen.getByTestId("chain-logo")).toBeInTheDocument();
   });
 
   describe("Quadratic Funding Settings", () => {
