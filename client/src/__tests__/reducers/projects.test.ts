@@ -39,7 +39,7 @@ describe("projects reducer", () => {
             id: "12345",
             status: AppStatus.Accepted,
             round: {
-              id: "0x1234"
+              id: "0x1234",
             },
           },
         ],
