@@ -90,9 +90,9 @@ export interface Program {
    */
   chain?: {
     id: number;
-    name: string;
+    name?: string;
     logo?: string;
-  }
+  };
 }
 
 export type InputType = "email" | "number" | "text";

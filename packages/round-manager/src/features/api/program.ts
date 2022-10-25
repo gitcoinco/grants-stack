@@ -1,4 +1,4 @@
-import {CHAINS, fetchFromIPFS, graphql_fetch} from "./utils";
+import { CHAINS, fetchFromIPFS, graphql_fetch } from "./utils";
 import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
@@ -59,8 +59,10 @@ export async function listPrograms(
           (account: { address: string }) => account.address
         ),
         chain: {
-          id: chainId, name: CHAINS[chainId].name, logo: CHAINS[chainId].logo,
-        }
+          id: chainId,
+          name: CHAINS[chainId]?.name,
+          logo: CHAINS[chainId]?.logo,
+        },
       });
     }
 
@@ -117,8 +119,10 @@ export async function getProgramById(
         (account: { address: string }) => account.address
       ),
       chain: {
-        id: chainId, name: CHAINS[chainId].name, logo: CHAINS[chainId].logo,
-      }
+        id: chainId,
+        name: CHAINS[chainId]?.name,
+        logo: CHAINS[chainId]?.logo,
+      },
     };
   } catch (error) {
     datadogLogs.logger.error(`error: getProgramById - ${error}`);

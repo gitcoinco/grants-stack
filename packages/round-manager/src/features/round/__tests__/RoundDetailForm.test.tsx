@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import {makeProgramData, renderWrapped} from "../../../test-utils";
+import { makeProgramData, renderWrapped } from "../../../test-utils";
 
 import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
-import {ChainId, CHAINS, getPayoutTokenOptions} from "../../api/utils";
+import { ChainId, CHAINS, getPayoutTokenOptions } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
@@ -286,13 +286,16 @@ describe("<RoundDetailForm />", () => {
   });
 
   it("renders program chain name", async () => {
-    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID]
-    const program = makeProgramData({chain: {id: chain.id, name: chain.name}});
+    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID];
+    const program = makeProgramData({
+      chain: { id: chain.id, name: chain.name, logo: chain.logo },
+    });
 
-    // TODO wrap this compoonent in ProgramProvider instead of passing program into initial data
-    renderWrapped(<RoundDetailForm stepper={FormStepper} initialData={{program}}/>);
+    renderWrapped(
+      <RoundDetailForm stepper={FormStepper} initialData={{ program }} />
+    );
 
-    expect(screen.getByDisplayValue(chain.name)).toBeInTheDocument();
+    expect(screen.getByText(chain.name)).toBeInTheDocument();
     expect(screen.getByTestId("chain-logo")).toBeInTheDocument();
   });
 

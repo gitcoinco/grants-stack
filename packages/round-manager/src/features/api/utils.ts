@@ -1,4 +1,4 @@
-import { ApplicationMetadata, InputType, IPFSObject } from "./types";
+import { ApplicationMetadata, InputType, IPFSObject, Program } from "./types";
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
@@ -6,21 +6,21 @@ export enum ChainId {
   FANTOM_MAINNET_CHAIN_ID = 250,
 }
 // NB: number keys are coerced into strings for JS object keys
-export const CHAINS: Record<number, any> = {
+export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
-    logo: ""
+    logo: "https://picsum.photos/256",
   },
   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
     id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
     name: "Optimism Mainnet",
-    logo: ""
+    logo: "https://picsum.photos/256",
   },
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    name: "Fantom Mainnet",
-    logo: ""
+    name: "Fantom",
+    logo: "https://picsum.photos/256",
   },
 };
 
