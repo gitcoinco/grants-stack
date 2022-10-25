@@ -41,7 +41,7 @@ export const grantSteps: Step[] = [
   {
     name: "Storing",
     description: "The metadata is being saved in a safe place.",
-    status: GrantStatus.UploadingJSON,
+    status: GrantStatus.UploadingImages,
   },
   {
     name: "Deploying",
