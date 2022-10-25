@@ -16,70 +16,62 @@ describe("projects reducer", () => {
       ids: [],
       events: {},
       applications: {
-        error: undefined,
+        projects: [],
+        status: Status.Undefined,
       },
     };
   });
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADING",
-      projectID: 12345,
-      roundID: "0x1234",
     });
 
-    expect(newState.applications[12345].status).toBe(Status.Loading);
-    expect(newState.applications[12345].applicationStatus[0].roundID).toBe(
-      "0x1234"
-    );
-    expect(newState.applications[12345].applicationStatus[0].status).toBe(
-      AppStatus.Pending
-    );
+    expect(newState.applications.status).toBe(Status.Loading);
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADED",
-      projectID: 12345,
+      projectID: "12345",
       applications: {
+        projects: [
+          {
+            id: "12345",
+            status: AppStatus.Accepted,
+            round: {
+              id: "0x1234"
+            },
+          },
+        ],
         roundID: "0x1234",
-        status: AppStatus.Pending,
+        status: Status.Loaded,
       },
     });
 
-    expect(newState.applications[12345].status).toBe(Status.Loaded);
-    expect(newState.applications[12345].applicationStatus[0].roundID).toBe(
-      "0x1234"
-    );
+    console.log("New State", newState.applications.projects);
+
+    expect(newState.applications.status).toBe(Status.Loaded);
   });
 
   it("PROJECT_APPLICATIONS_NOT_FOUND updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_NOT_FOUND",
-      projectID: 12345,
-      roundID: "0x1234",
+      // projectID: "12345",
+      // roundID: "0x1234",
     });
 
-    expect(newState.applications[12345].status).toBe(Status.Loaded);
-    expect(newState.applications[12345].applicationStatus[0].roundID).toBe(
-      "0x1234"
-    );
-    expect(newState.applications[12345].applicationStatus[0].status).toBe(
-      AppStatus.NotFound
-    );
+    expect(newState.applications.status).toBe(Status.Loaded);
   });
 
   it("PROJECT_APPLICATIONS_ERROR updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_ERROR",
-      projectID: 12345,
-      roundID: "0x1234",
+      // projectID: 12345,
+      // roundID: "0x1234",
       error: "error",
     });
 
-    expect(newState.applications[12345].status).toBe(Status.Error);
-    expect(newState.applications[12345].applicationStatus[0].status).toBe(
-      AppStatus.Unknown
-    );
-    expect(newState.applications.error).toBe("error");
+    expect(newState.applications.status).toBe(Status.Error);
+    expect(newState.error).toBe("error");
   });
 });

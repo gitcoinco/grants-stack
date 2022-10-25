@@ -4,7 +4,7 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { ApplicationStatus } from "../reducers/projects";
+// import { RoundProject } from "../reducers/projects";
 import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
@@ -28,29 +28,29 @@ export interface ProjectsUnloadedAction {
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
-  projectID: number;
-  roundID: string;
+  // projectID: string;
+  // roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
 interface ProjectApplicationsNotFoundAction {
   type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
-  projectID: number;
-  roundID: string;
+  // projectID: string;
+  // roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
-  projectID: number;
-  applications: ApplicationStatus;
+  projectID: string;
+  applications: any;
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
 interface ProjectApplicationsErrorAction {
   type: typeof PROJECT_APPLICATIONS_ERROR;
-  projectID: number;
-  roundID: string;
+  // projectID: string;
+  // roundID: string;
   error: string;
 }
 

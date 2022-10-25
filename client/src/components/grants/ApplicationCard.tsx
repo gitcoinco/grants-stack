@@ -12,17 +12,17 @@ export default function ApplicationCard() {
   const props = useSelector((state: RootState) => {
     const projects = state.projects ?? [];
     const chainId = state.web3.chainID;
-    const applicationStatus = projects.applications[3]?.status;
+    const { applications } = projects;
 
     return {
       projects,
       chainId,
-      applicationStatus,
+      applications,
     };
   });
 
   console.log("props", props);
-  console.log("project status", props.applicationStatus);
+  console.log("project status", props.applications);
 
   useEffect(() => {
     dispatch(
