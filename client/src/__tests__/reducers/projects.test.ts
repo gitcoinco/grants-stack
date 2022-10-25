@@ -15,15 +15,23 @@ describe("projects reducer", () => {
       error: undefined,
       ids: [],
       events: {},
-      applications: {},
+      applications: [
+        {
+          projectId: "",
+          round: {
+            id: "",
+          },
+          status: AppStatus.Unknown,
+        },
+      ],
     };
   });
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADING",
-      projectID: "12345",
-      roundID: "0x1234",
+      // projectID: "12345",
+      // roundID: "0x1234",
     });
 
     expect(newState.status).toBe(Status.Loading);
@@ -62,7 +70,6 @@ describe("projects reducer", () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_ERROR",
       projectID: "12345",
-      roundID: "0x1234",
       error: "error",
     });
 

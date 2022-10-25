@@ -30,14 +30,15 @@ export interface ProjectsState {
   error: string | undefined;
   ids: number[];
   events: ProjectEventsMap;
-  applications: {
-    [projetID: string]: {
+  applications: [
+    {
+      projectId: string;
       round: {
         id: string;
       };
       status: AppStatus;
-    };
-  };
+    }
+  ];
 }
 
 const initialState: ProjectsState = {
@@ -45,14 +46,15 @@ const initialState: ProjectsState = {
   error: undefined,
   ids: [],
   events: {},
-  applications: {
-    "": {
+  applications: [
+    {
+      projectId: "",
       round: {
         id: "",
       },
       status: AppStatus.Unknown,
     },
-  },
+  ],
 };
 
 export const projectsReducer = (
@@ -90,17 +92,10 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATIONS_LOADING: {
-      const { projectID, roundID } = action;
+      // const { projectID, roundID } = action;
       return {
         ...state,
-        applications: {
-          [projectID]: {
-            round: {
-              id: roundID,
-            },
-            status: AppStatus.Unknown,
-          },
-        },
+        applications: state.applications,
         error: undefined,
         status: Status.Loading,
       };
@@ -110,14 +105,15 @@ export const projectsReducer = (
       const { projectID, roundID } = action;
       return {
         ...state,
-        applications: {
-          [projectID]: {
+        applications: [
+          {
+            projectId: projectID,
             round: {
               id: roundID,
             },
             status: AppStatus.NotFound,
           },
-        },
+        ],
         error: undefined,
         status: Status.Loaded,
       };
@@ -134,31 +130,17 @@ export const projectsReducer = (
       console.log("applications", projectID, applications);
       return {
         ...state,
-        applications: {
-          [projectID]: {
-            status: applications[projectID].status,
-            round: {
-              id: applications[projectID].round.id,
-            },
-          },
-        },
+        applications,
         error: undefined,
         status: Status.Loaded,
       };
     }
 
     case PROJECT_APPLICATIONS_ERROR: {
-      const { projectID, roundID, error } = action;
+      const { error } = action;
       return {
         ...state,
-        applications: {
-          [projectID]: {
-            status: AppStatus.Unknown,
-            round: {
-              id: roundID,
-            },
-          },
-        },
+        applications: state.applications,
         error,
         status: Status.Error,
       };
