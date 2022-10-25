@@ -143,12 +143,15 @@ export const getRoundProjectsApplied =
     });
 
     try {
+      console.log("fetching graphql project data");
       const applicationsFound: any = await graphqlFetch(
-        `query roundProjects($id: String) {
-          project
-          status
-          round {
-            id
+        `query roundProjects($projectID: String) {
+          roundProjects(where: { project: $projectID }) {
+            project
+            status
+            round {
+              id
+            }
           }
         }
         `,
@@ -160,7 +163,7 @@ export const getRoundProjectsApplied =
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
-        applications: applicationsFound,
+        applications: applicationsFound.data.roundProjects,
       });
     } catch (error: any) {
       dispatch({

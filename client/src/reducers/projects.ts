@@ -124,15 +124,16 @@ export const projectsReducer = (
 
     case PROJECT_APPLICATIONS_LOADED: {
       const { projectID, applications } = action;
+      console.warn("applications", projectID, applications);
       return {
         ...state,
-        applications: {
-          [projectID]: {
-            status: Status.Loaded,
-            applicationStatus: [applications],
-          },
-          error: undefined,
-        },
+        // applications: {
+        //   [projectID]: {
+        //     status: Status.Loaded,
+        //     applicationStatus: [applications],
+        //   },
+        //   error: undefined,
+        // },
         status: Status.Loaded,
       };
     }

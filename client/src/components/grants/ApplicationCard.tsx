@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoundProjectsApplied } from "../../actions/projects";
 import { RootState } from "../../reducers";
-// import { ChainId } from "../../utils/graphql";
 
 // todo: get user projects
 // todo: get user applications for the projects
@@ -11,18 +10,19 @@ import { RootState } from "../../reducers";
 export default function ApplicationCard() {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const roundProjects = state.roundApplication ? state.projects : [];
+    const projects = state.projects ?? [];
     const chainId = state.web3.chainID;
-    const projectStatus = state.projects.status;
+    const applicationStatus = projects.applications[3]?.status;
 
     return {
-      roundProjects,
+      projects,
       chainId,
-      projectStatus,
+      applicationStatus,
     };
   });
 
   console.log("props", props);
+  console.log("project status", props.applicationStatus);
 
   useEffect(() => {
     dispatch(
