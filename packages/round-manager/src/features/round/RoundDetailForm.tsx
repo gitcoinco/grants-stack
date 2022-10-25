@@ -569,14 +569,13 @@ function ProgramChain(props: { program: Program }) {
   const { program } = props;
   return (
     <div className="col-span-6 sm:col-span-3 opacity-50">
-      <Listbox>
+      <Listbox disabled>
         <div>
           <Listbox.Label className="block text-xs font-medium">
             Program Chain
           </Listbox.Label>
           <div className="relative mt-1">
             <Listbox.Button
-              disabled
               className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm`}
             >
               <span className="flex items-center">
