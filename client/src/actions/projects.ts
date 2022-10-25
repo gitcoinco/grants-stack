@@ -156,7 +156,7 @@ export const getRoundProjectsApplied =
         }
         `,
         chainId,
-        { id: projectID }
+        { projectID }
       );
       console.log("applicationsFound", applicationsFound);
 
