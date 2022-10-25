@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/solid";
 
 import { useWallet } from "../common/Auth";
-import { Button, Input } from "../common/styles";
+import { Button, Input } from "common/src/styles";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import ProgressModal from "../common/ProgressModal";

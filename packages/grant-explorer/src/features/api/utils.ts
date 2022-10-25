@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
-import { IPFSObject, PayoutToken } from "./types"
+import { IPFSObject, PayoutToken } from "./types";
 
 export enum ChainId {
-  MAINNET = '1',
-  GOERLI_CHAIN_ID = '5',
-  OPTIMISM_MAINNET_CHAIN_ID = '10',
-  FANTOM_MAINNET_CHAIN_ID = '250',
-  FANTOM_TESTNET_CHAIN_ID = '4002',
+  MAINNET = "1",
+  GOERLI_CHAIN_ID = "5",
+  OPTIMISM_MAINNET_CHAIN_ID = "10",
+  FANTOM_MAINNET_CHAIN_ID = "250",
+  FANTOM_TESTNET_CHAIN_ID = "4002",
 }
 
 export const TokenNamesAndLogos: Record<string, string> = {
@@ -233,7 +233,7 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param chainId - The chain ID of the blockchain2
  * @returns the subgraph endpoint
  */
- export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
+export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return `https://optimistic.etherscan.io/tx/${txHash}`;
@@ -248,7 +248,7 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
       return `https://etherscan.io/tx/${txHash}`;
 
     default:
-       return `https://goerli.etherscan.io/tx/${txHash}`
+      return `https://goerli.etherscan.io/tx/${txHash}`;
   }
 };
 
@@ -270,7 +270,7 @@ export const graphql_fetch = async (
   let endpoint = await getGraphQLEndpoint(chainId);
 
   if (fromProjectRegistry) {
-    endpoint = endpoint.replace("grants-round", "grants-hub")
+    endpoint = endpoint.replace("grants-round", "grants-hub");
   }
 
   return fetch(endpoint, {
@@ -288,22 +288,23 @@ export const graphql_fetch = async (
   });
 };
 
-
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
  *
  * @param cid - the unique content identifier that points to the data
  */
- export const fetchFromIPFS = (cid: string) => {
-  return fetch(`https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
+export const fetchFromIPFS = (cid: string) => {
+  return fetch(
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+  ).then((resp) => {
     if (resp.ok) {
-      return resp.json()
+      return resp.json();
     }
 
-    return Promise.reject(resp)
-  })
-}
+    return Promise.reject(resp);
+  });
+};
 
 /**
  * Pin data to IPFS
@@ -312,83 +313,85 @@ export const graphql_fetch = async (
  * @param obj - the data to be pinned on IPFS
  * @returns the unique content identifier that points to the data
  */
- export const pinToIPFS = (obj: IPFSObject) => {
-
+export const pinToIPFS = (obj: IPFSObject) => {
   const params = {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${process.env.REACT_APP_PINATA_JWT}`
+      Authorization: `Bearer ${process.env.REACT_APP_PINATA_JWT}`,
     },
     body: {
       pinataMetadata: obj.metadata,
       pinataOptions: {
-        cidVersion: 1
-      }
-    }
-  }
+        cidVersion: 1,
+      },
+    },
+  };
 
   /* typeof Blob === 'object', so we need to check against instanceof */
   if (obj.content instanceof Blob) {
     // content is a blob
     const fd = new FormData();
-    fd.append("file", obj.content as Blob)
-    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions))
-    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata))
+    fd.append("file", obj.content as Blob);
+    fd.append("pinataOptions", JSON.stringify(params.body.pinataOptions));
+    fd.append("pinataMetadata", JSON.stringify(params.body.pinataMetadata));
 
-    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {...params, body: fd}
-    ).then(resp => {
+    return fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+      ...params,
+      body: fd,
+    }).then((resp) => {
       if (resp.ok) {
         return resp.json();
       }
 
-      return Promise.reject(resp)
-    })
+      return Promise.reject(resp);
+    });
   } else {
     // content is a JSON object
     return fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
       ...params,
       headers: {
         ...params.headers,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({...params.body, pinataContent: obj.content})
-    }).then(resp => {
+      body: JSON.stringify({ ...params.body, pinataContent: obj.content }),
+    }).then((resp) => {
       if (resp.ok) {
-        return resp.json()
+        return resp.json();
       }
 
-      return Promise.reject(resp)
-    })
+      return Promise.reject(resp);
+    });
   }
-}
+};
 
-
-export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...${address.slice(-4)}`
+export const abbreviateAddress = (address: string) =>
+  `${address.slice(0, 8)}...${address.slice(-4)}`;
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
 
 export const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
-}
+};
 
-export const prefixZero = (i: number): string => (i < 10) ? ("0" + i) : i.toString();
+export const prefixZero = (i: number): string =>
+  i < 10 ? "0" + i : i.toString();
 
 export const getUTCDate = (date: Date): string => {
   const utcDate = [
     prefixZero(date.getUTCDate()),
     prefixZero(date.getUTCMonth() + 1),
-    prefixZero(date.getUTCFullYear())
+    prefixZero(date.getUTCFullYear()),
   ];
 
-  return utcDate.join('/');
-}
+  return utcDate.join("/");
+};
 
 export const getUTCTime = (date: Date): string => {
   const utcTime = [
     prefixZero(date.getUTCHours()),
-    prefixZero(date.getUTCMinutes())
+    prefixZero(date.getUTCMinutes()),
   ];
 
-  return utcTime.join(':') + " UTC";
-}
+  return utcTime.join(":") + " UTC";
+};

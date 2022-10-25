@@ -1,0 +1,49 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "build"
+      ]
+    },
+    "api#build": {
+      "env": [
+        "PORT",
+        "POSTGRES_USER",
+        "POSTGRES_DB",
+        "POSTGRES_HOST",
+        "POSTGRES_PASSWORD",
+        "POSTGRES_PORT",
+        "DATABASE_URL",
+        "SUBGRAPH_MAINNET_API",
+        "SUBGRAPH_GOERLI_API",
+        "SUBGRAPH_OPTIMISM_MAINNET_API",
+        "SENTRY_DSN",
+        "OPTIMISM_ETHERSCAN_API"
+      ],
+      "outputs": [
+        "bin"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ]
+    },
+    "lint:ci": {},
+    "lint-staged": {},
+    "typecheck": {
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts"
+      ]
+    }
+  }
+}

@@ -33,7 +33,7 @@ interface RoundResult {
   roundEndTime: string;
   token: string;
   votingStrategy: {
-    id: string
+    id: string;
   };
   projectsMetaPtr?: MetadataPointer | null;
   projects: RoundProjectResult[];

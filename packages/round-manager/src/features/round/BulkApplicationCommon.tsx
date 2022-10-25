@@ -1,5 +1,5 @@
 import { GrantApplication, ProjectStatus } from "../api/types";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
 import DefaultBannerImage from "../../assets/default_banner.png";
 import DefaultLogoImage from "../../assets/default_logo.png";

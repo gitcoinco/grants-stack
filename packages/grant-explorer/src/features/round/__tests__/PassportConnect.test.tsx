@@ -43,7 +43,7 @@ const mockJsonPromise = Promise.resolve({
 
 const mockPassportPromise = {
   ok: true,
-  json: () => mockJsonPromise
+  json: () => mockJsonPromise,
 } as unknown as Response;
 
 jest.mock("wagmi", () => ({
@@ -53,78 +53,82 @@ jest.mock("wagmi", () => ({
   useNetwork: () => mockNetwork,
 }));
 
-process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = '12';
+process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 
 describe("<PassportConnect/>", () => {
-
   describe("Navigation Buttons", () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     it("shows Home and Connect to Passport breadcrumb", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("breadcrumb")).toBeInTheDocument();
         expect(screen.getByText("Home")).toBeInTheDocument();
         expect(screen.getByText("Connect to Passport")).toBeInTheDocument();
-      })
+      });
     });
 
     it("shows back to browsing button on page load", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
-        expect(screen.getByTestId("back-to-browsing-button")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("back-to-browsing-button")
+        ).toBeInTheDocument();
       });
     });
 
     it("shows create a passport button on page load", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
-        expect(screen.getByTestId("create-passport-button")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("create-passport-button")
+        ).toBeInTheDocument();
       });
     });
 
-    it("shows need help link on page load", async() => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+    it("shows need help link on page load", async () => {
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("need-help-link")).toBeInTheDocument();
       });
     });
 
-    it("shows what is passport link on page load", async() => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+    it("shows what is passport link on page load", async () => {
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByTestId("what-is-passport-link")).toBeInTheDocument();
-      })
+      });
     });
-
   });
 
   describe("Passport Connect", () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
     it("Should show the Create Passport button", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
-        expect(screen.getByTestId("create-passport-button")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("create-passport-button")
+        ).toBeInTheDocument();
       });
     });
 
     it("Should show the Recalculate Score button", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
       await waitFor(() => {
-        expect(screen.getByTestId("recalculate-score-button")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("recalculate-score-button")
+        ).toBeInTheDocument();
       });
     });
 
@@ -132,7 +136,7 @@ describe("<PassportConnect/>", () => {
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
       (submitPassport as jest.Mock).mockResolvedValueOnce(jest.fn());
 
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(async () => {
         fireEvent.click(await screen.findByTestId("recalculate-score-button"));
@@ -141,14 +145,11 @@ describe("<PassportConnect/>", () => {
         expect(fetchPassport).toHaveBeenCalled();
       });
     });
-
   });
 });
 
 describe("<PassportConnect/>", () => {
-
   describe("PassportConnect Passport State", () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -166,15 +167,17 @@ describe("<PassportConnect/>", () => {
 
       const mockPassportPromise = {
         ok: true,
-        json: () => mockJsonPromise
+        json: () => mockJsonPromise,
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
-        expect(screen.getByText("Error In fetching passport")).toBeInTheDocument();
+        expect(
+          screen.getByText("Error In fetching passport")
+        ).toBeInTheDocument();
         expect(screen.getByText("Please try again later.")).toBeInTheDocument();
       });
     });
@@ -192,27 +195,33 @@ describe("<PassportConnect/>", () => {
 
       const mockPassportPromise = {
         ok: true,
-        json: () => mockJsonPromise
+        json: () => mockJsonPromise,
       } as unknown as Response;
 
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();
-        expect(screen.getByText("Current score. Reach 0 to have your donation matched.")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Current score. Reach 0 to have your donation matched."
+          )
+        ).toBeInTheDocument();
       });
     });
 
     it("IF passport state is match eligible THEN it shows eligible for matching", async () => {
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
 
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByText("Eligible for matching")).toBeInTheDocument();
-        expect(screen.getByText("You are eligible for matching. Happy donating!")).toBeInTheDocument();
+        expect(
+          screen.getByText("You are eligible for matching. Happy donating!")
+        ).toBeInTheDocument();
         expect(screen.getByTestId("passport-score")).toBeInTheDocument();
         expect(screen.getByTestId("threshold")).toBeInTheDocument();
       });
@@ -222,11 +231,15 @@ describe("<PassportConnect/>", () => {
       (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
       mockAccount.isConnected = false;
 
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      render(<PassportConnect />, { wrapper: BrowserRouter });
 
       await waitFor(() => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();
-        expect(screen.getByText("Please create a Gitcoin Passport in order to continue.")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Please create a Gitcoin Passport in order to continue."
+          )
+        ).toBeInTheDocument();
       });
     });
   });

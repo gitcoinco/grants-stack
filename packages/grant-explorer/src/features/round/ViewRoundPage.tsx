@@ -7,7 +7,6 @@ import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
 import { ChainId, getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
 import {
-  Button,
   BasicCard,
   CardContent,
   CardHeader,
@@ -15,7 +14,6 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-  Input,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
@@ -25,6 +23,7 @@ import Footer from "../common/Footer";
 import { useRoundSummary } from "../api/api";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
+import { Button, Input } from "common/src/styles";
 import markdown from "../../app/markdown";
 
 export default function ViewRound() {
@@ -353,7 +352,7 @@ function BallotSelectionToggle(props: {
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
 }) {
-  const [shortlist, finalBallot, , , , ,] = useBallot();
+  const [shortlist, finalBallot, , , ,] = useBallot();
 
   const isAddedToShortlist = shortlist.some(
     (shortlistedProject) =>

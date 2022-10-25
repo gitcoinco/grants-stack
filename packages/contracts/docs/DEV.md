@@ -5,7 +5,7 @@
 Before running any command, make sure to install dependencies:
 
 ```sh
-$ yarn install
+$ pnpm install
 ```
 
 Create environment files, and replace environment variables with your own values
@@ -18,8 +18,8 @@ cp ../.env.example ../.env
 Compile the smart contracts and generate TypeChain artifacts:
 
 ```sh
-$ yarn clean
-$ yarn compile
+$ pnpm clean
+$ pnpm compile
 ```
 
 ### Lint Solidity
@@ -27,7 +27,7 @@ $ yarn compile
 Lint the Solidity code:
 
 ```sh
-$ yarn lint:sol
+$ pnpm lint:sol
 ```
 
 ### Test
@@ -35,7 +35,7 @@ $ yarn lint:sol
 Run the tests:
 
 ```sh
-$ yarn test
+$ pnpm test
 ```
 
 ### Coverage
@@ -43,7 +43,7 @@ $ yarn test
 Generate the code coverage report:
 
 ```sh
-$ yarn coverage
+$ pnpm coverage
 ```
 
 ### Generate ABI
@@ -53,8 +53,8 @@ The generated ABI can be found within `abis/` folder
 We generate both human readable ABI
 
 ```sh
-yarn run clear-abi
-yarn run export-abi
+pnpm run clear-abi
+pnpm run export-abi
 ```
 
 ### Report Gas
@@ -62,7 +62,7 @@ yarn run export-abi
 See the gas usage per unit test and average gas per method call:
 
 ```sh
-$ REPORT_GAS=true yarn test
+$ REPORT_GAS=true pnpm test
 ```
 
 ### Clean
@@ -70,7 +70,7 @@ $ REPORT_GAS=true yarn test
 Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 
 ```sh
-$ yarn clean
+$ pnpm clean
 ```
 
 ### Scripts

@@ -1,9 +1,9 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fakeBaseQuery<string>(),
-  tagTypes: [ "IPFS"],
+  tagTypes: ["IPFS"],
   endpoints: () => ({}),
-})
+});

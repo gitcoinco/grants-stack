@@ -14,7 +14,7 @@ import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { useRoundMatchData } from "../api/api";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
 import React, { useEffect, useState } from "react";

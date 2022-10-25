@@ -29,7 +29,7 @@ import {
   ProgressStatus,
   Round,
 } from "../api/types";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import ViewFundingAdmin from "./ViewFundingAdmin";
 import ViewRoundStats from "./ViewRoundStats";

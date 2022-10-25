@@ -62,7 +62,7 @@ The `docker-compose.yml` contains everything you need to run your own local grap
 
 1. Install Docker with Docker Compose
 2. `docker compose up` - start all the services
-3. `yarn deploy-local` -  deploy your subgraph to your local graph-node instance
+3. `pnpm deploy-local` -  deploy your subgraph to your local graph-node instance
 3. Deploy your contracts as described in `contracts/docs/DEPLOY_STEPS.md`
 4. Interact with the contracts to create some data
 5. Interact with the subgraph on localhost as outlined in the `graph-node` container logs
@@ -79,7 +79,7 @@ rm -rf generated && rm -rf build
 - Generate the `subgraph.yaml` for the network against which you'd like to deploy the subgraph
 
 ```shell
-yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
+pnpm prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 ```
 
 **Supported Networks**
@@ -124,7 +124,7 @@ Use this example where we deploy the subgraph on goerli
 
 ```shell
 rm -rf generated && rm -rf build &&
-    yarn prepare:goerli &&
+    pnpm prepare:goerli &&
     graph codegen &&
     graph auth --product hosted-service <YOUR_API_KEY> &&
     graph deploy --product hosted-service <GITHUB_USER>/<SUBGRAPH_NAME>
@@ -133,7 +133,7 @@ rm -rf generated && rm -rf build &&
 ### Running tests locally
 
 ```shell
-yarn run test
+pnpm run test
 ```
 Note: If you are using an M1, you would have issues running tests.
 
@@ -154,6 +154,6 @@ The subgraph fetches the `metaPtr` from the contracts and index them making it e
 1. Ensure all the contracts are deployed on network
 2. Create config file within `config/<network-name>.json` and wire in the contract addresses
 3. Add new script in `package.json` to generate subgraph `prepare:<network-name>`
-3. Generate the `subgraph.yaml` file using `yarn prepare:<network-name>`
+3. Generate the `subgraph.yaml` file using `pnpm prepare:<network-name>`
 4. Run `graph codegen`
 5. Deploy the subgraph
