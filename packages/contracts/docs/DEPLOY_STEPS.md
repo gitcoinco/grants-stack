@@ -163,3 +163,33 @@ yarn run link-round-implementation goerli
 yarn hardhat clean
 yarn hardhat verify --network goerli <CONTRACT_ADDRESS>
 ```
+
+##### Helper Deploy Script
+
+```shell
+
+# Program
+yarn run deploy-program-factory goerli
+yarn run deploy-program-implementation goerli
+yarn run link-program-implementation goerli
+
+# QF
+yarn run deploy-qf-factory goerli
+yarn run deploy-qf-implementation goerli
+yarn run link-qf-implementation goerli
+
+# Payout
+yarn run deploy-merkle-contract goerli
+
+# Round
+yarn run deploy-round-factory goerli
+yarn run deploy-round-implementation goerli
+yarn run link-round-implementation goerli
+yarn run create-round goerli
+
+# These scripts would be used tp create a test round
+yarn run create-program goerli
+yarn run create-qf-contract goerli
+yarn run deploy-merkle-contract goerli
+yarn run create-round goerli
+```

@@ -1,6 +1,6 @@
 {
   "network": "optimism",
   "startBlock": 21463380,
-  "programFactoryAddress": "0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E",
-  "roundFactoryAddress": "0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C"
+  "programFactoryAddress": "",
+  "roundFactoryAddress": ""
 }

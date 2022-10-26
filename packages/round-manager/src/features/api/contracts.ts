@@ -14,12 +14,12 @@ export const programFactoryContract = (
 
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x79c2394B20A809EA693a7D64323A8846FF02029c";
+      address = "0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9";
     }
   }
 
@@ -42,12 +42,12 @@ export const roundFactoryContract = (
 
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791";
+      address = "0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48";
     }
   }
 
@@ -69,12 +69,12 @@ export const projectRegistryContract = (
 
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5";
+      address = "0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A";
     }
   }
 
