@@ -17,7 +17,7 @@ export const applicationSteps: Step[] = [
   },
   {
     name: "Encrypting",
-    description: "Sign in to Lit Protocol.",
+    description: "Encrypting your personal data.",
     status: RoundApplicationStatus.LitAuthentication,
   },
   {
