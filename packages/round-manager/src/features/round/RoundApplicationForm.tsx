@@ -239,6 +239,35 @@ export function RoundApplicationForm(props: {
     indexingStatus === ProgressStatus.IS_SUCCESS ||
     !props.initialData.program;
 
+  const formSubmitModals = () => (
+    <InfoModal
+      title={"Heads up!"}
+      body={<InfoModalBody />}
+      isOpen={openHeadsUpModal}
+      setIsOpen={setOpenHeadsUpModal}
+      continueButtonAction={() => {
+        handleSubmit(next)();
+      }}
+    >
+      <ProgressModal
+        isOpen={openProgressModal}
+        subheading={"Please hold while we create your Grant Round."}
+        steps={progressSteps}
+      >
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmit(next)}
+          doneFn={() => {
+            setOpenErrorModal(false);
+            setOpenProgressModal(false);
+            setOpenHeadsUpModal(false);
+          }}
+        />
+      </ProgressModal>
+    </InfoModal>
+  );
+
   return (
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -270,33 +299,7 @@ export function RoundApplicationForm(props: {
               />
             </div>
           </form>
-          <InfoModal
-            title={"Heads up!"}
-            body={<InfoModalBody />}
-            isOpen={openHeadsUpModal}
-            setIsOpen={setOpenHeadsUpModal}
-            continueButtonAction={() => {
-              handleSubmit(next)();
-              // setOpenHeadsUpModal(false);
-            }}
-          >
-            <ProgressModal
-              isOpen={openProgressModal}
-              subheading={"Please hold while we create your Grant Round."}
-              steps={progressSteps}
-            >
-              <ErrorModal
-                isOpen={openErrorModal}
-                setIsOpen={setOpenErrorModal}
-                tryAgainFn={handleSubmit(next)}
-                doneFn={() => {
-                  setOpenErrorModal(false);
-                  setOpenProgressModal(false);
-                  setOpenHeadsUpModal(false);
-                }}
-              />
-            </ProgressModal>
-          </InfoModal>
+          {formSubmitModals()}
         </div>
       </div>
     </div>
