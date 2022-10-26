@@ -82,6 +82,7 @@ export async function getRoundById(
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
       token: res.data.rounds[0].token,
       votingStrategy: res.data.rounds[0].votingStrategy,
+      payoutStrategy: res.data.rounds[0].payoutStrategy,
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
     };
@@ -170,6 +171,7 @@ export async function listRounds(
         roundEndTime: new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
+        payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
       });
@@ -206,7 +208,7 @@ export async function deployRoundContract(
     // encode input parameters
     const params = [
       round.votingStrategy,
-      "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real payout contract when implemented
+      round.payoutStrategy,
       new Date(round.applicationsStartTime).getTime() / 1000,
       new Date(round.applicationsEndTime).getTime() / 1000,
       new Date(round.roundStartTime).getTime() / 1000,
@@ -267,7 +269,7 @@ export async function deployRoundContract(
 // Consider moving this into its own file
 export const deployQFVotingContract = async (
   signerOrProvider: Signer
-): Promise<void> => {
+): Promise<{ votingContractAddress: string }> => {
   try {
     const chainId = await signerOrProvider.getChainId();
 
@@ -284,23 +286,23 @@ export const deployQFVotingContract = async (
 
     const receipt = await tx.wait(); // wait for transaction receipt
 
-    let votingStrategyAddress;
+    let votingContractAddress;
 
     if (receipt.events) {
       const event = receipt.events.find(
         (e: { event: string }) => e.event === "VotingContractCreated"
       );
       if (event && event.args) {
-        votingStrategyAddress = event.args.votingContractAddress;
+        votingContractAddress = event.args.votingContractAddress;
       }
     } else {
       throw new Error("No VotingContractCreated event");
     }
 
     console.log("✅ Transaction hash: ", tx.hash);
-    console.log("✅ Round address: ", votingStrategyAddress);
+    console.log("✅ Round address: ", votingContractAddress);
 
-    return votingStrategyAddress;
+    return { votingContractAddress };
   } catch (err) {
     console.log("error", err);
     throw new Error("Unable to create qf voting contract");

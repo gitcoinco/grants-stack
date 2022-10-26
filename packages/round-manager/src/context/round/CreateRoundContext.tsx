@@ -132,9 +132,15 @@ const _createRound = async ({
 
     // TODO - deploy QF voting contract, add voting contract address to round deploy params
     // TODO - use hardcoded dummy contract 0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A as the payout contract address
+    const roundContractInputsWithContracts = {
+      ...roundContractInputsWithPointers,
+      votingStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real voting contract
+      payoutStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real payout contract when implemented
+    };
+
     const transactionBlockNumber = await deployContract(
       setContractDeploymentStatus,
-      roundContractInputsWithPointers,
+      roundContractInputsWithContracts,
       signerOrProvider
     );
 
