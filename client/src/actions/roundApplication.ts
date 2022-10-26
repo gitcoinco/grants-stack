@@ -168,21 +168,36 @@ export const submitApplication =
       return;
     }
 
-    const builder = new RoundApplicationBuilder(
-      true,
-      project,
-      roundApplicationMetadata,
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      chainName
-    );
-    const application: RoundApplication = await builder.build(
-      roundAddress,
-      formInputs
-    );
+      status: Status.LitAuthentication,
+    });
 
-    const deterministicApplication = objectToDeterministicJSON(
-      application as any
-    );
+    let application: RoundApplication;
+    let deterministicApplication: string;
+
+    try {
+      const builder = new RoundApplicationBuilder(
+        true,
+        project,
+        roundApplicationMetadata,
+        roundAddress,
+        chainName
+      );
+      application = await builder.build(roundAddress, formInputs);
+
+      deterministicApplication = objectToDeterministicJSON(application as any);
+    } catch (error) {
+      dispatch(
+        applicationError(
+          roundAddress,
+          "cannot authenticate user",
+          Status.LitAuthentication
+        )
+      );
+      return;
+    }
 
     const { signer } = global;
 
