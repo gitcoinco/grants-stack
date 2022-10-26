@@ -1,3 +1,5 @@
+/** GrantHub's projectRegistry contract ABI in Human Readable ABI Format  */
+
 const projectRegistry = [
   "event Initialized(uint8 version)",
   "event MetadataUpdated(uint256 indexed projectID, tuple(uint256 protocol, string pointer) metaPtr)",
