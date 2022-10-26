@@ -81,6 +81,11 @@ export interface Round {
     name: string;
     eligibility: Eligibility;
     programContractAddress: string;
+    matchingFunds?: {
+      matchingFundsAvailable: number;
+      matchingCap: boolean;
+      matchingCapAmount?: number;
+    };
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -114,6 +119,7 @@ export interface Round {
    * Contract address of the token used to payout match amounts at the end of a round
    */
   token: string;
+
   /**
    * Contract address of the program to which the round belongs
    */

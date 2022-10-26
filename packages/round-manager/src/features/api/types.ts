@@ -127,6 +127,11 @@ export interface Round {
       description: string;
       requirements: { requirement: string }[];
     };
+    matchingFunds?: {
+      matchingFundsAvailable: number;
+      matchingCap: boolean;
+      matchingCapAmount?: number;
+    };
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.

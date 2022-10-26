@@ -1,6 +1,7 @@
 import { Fragment, useContext, useState } from "react";
 
 import {
+  Control,
   Controller,
   FieldErrors,
   SubmitHandler,
@@ -17,11 +18,16 @@ import { Program, Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Input } from "../common/styles";
 import { FormStepper } from "../common/FormStepper";
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { Listbox, RadioGroup, Transition } from "@headlessui/react";
+import {
+  CheckIcon,
+  SelectorIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/solid";
 import { getPayoutTokenOptions, PayoutToken } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import moment from "moment";
+import ReactTooltip from "react-tooltip";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -29,6 +35,25 @@ const ValidationSchema = yup.object().shape({
       .string()
       .required("This field is required.")
       .min(8, "Round name must be at least 8 characters."),
+    matchingFunds: yup.object({
+      matchingFundsAvailable: yup
+        .number()
+        .typeError("Matching funds available must be valid number.")
+        .moreThan(0, "Matching funds available must be more than zero."),
+      matchingCap: yup
+        .boolean()
+        .required("You must select if you want a matching cap for projects."),
+      matchingCapAmount: yup
+        .number()
+        .transform((value) => (isNaN(value) ? 0 : value))
+        .when("matchingCap", {
+          is: true,
+          then: yup
+            .number()
+            .required("You must provide an amount for the matching cap.")
+            .moreThan(0, "Matching cap amount must be more than zero."),
+        }),
+    }),
   }),
   applicationsStartTime: yup
     .date()
@@ -72,15 +97,36 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const program = props.initialData?.program;
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
+  const defaultRoundMetadata = {
+    matchingFunds: {
+      matchingCap: false,
+    },
+    ...((formData as Partial<Round>)?.roundMetadata ?? {}),
+  };
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<Round>({
-    defaultValues: formData,
+    defaultValues: {
+      ...formData,
+      roundMetadata: defaultRoundMetadata,
+    },
     resolver: yupResolver(ValidationSchema),
   });
+
+  const { chain } = useWallet();
+  const payoutTokenOptions: PayoutToken[] = [
+    {
+      name: "Choose Payout Token",
+      chainId: chain.id,
+      address: "",
+      default: true,
+    },
+    ...getPayoutTokenOptions(chain.id),
+  ];
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
@@ -107,120 +153,40 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     return current.isAfter(roundStartDate);
   }
 
-  const { chain } = useWallet();
-  const payoutTokenOptions: PayoutToken[] = [
-    {
-      name: "Choose Payout Token",
-      chainId: chain.id,
-      address: "",
-      default: true,
-    },
-    ...getPayoutTokenOptions(chain.id),
-  ];
-
-  const { field } = useController({
-    name: "token",
-    defaultValue: payoutTokenOptions[0].address,
-    control,
-    rules: {
-      required: true,
-    },
-  });
-
-  function payoutTokenSettings() {
+  function quadraticFundingSettings() {
     return (
       <>
         <hr className="my-8" />
         <p className="text-grey-400 mb-4">Quadratic Funding Settings</p>
-        <Listbox {...field}>
-          {({ open }) => (
-            <div>
-              <Listbox.Label className="block text-sm font-medium">
-                Payout Token
-              </Listbox.Label>
-              <div className="relative mt-1">
-                <PayoutTokenButton
-                  errors={errors}
-                  token={payoutTokenOptions.find(
-                    (t) => t.address === field.value
-                  )}
-                />
-
-                <Transition
-                  show={open}
-                  as={Fragment}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    {payoutTokenOptions.map(
-                      (token) =>
-                        !token.default && (
-                          <Listbox.Option
-                            key={token.name}
-                            className={({ active }) =>
-                              classNames(
-                                active
-                                  ? "text-white bg-indigo-600"
-                                  : "text-gray-900",
-                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                              )
-                            }
-                            value={token.address}
-                            data-testid="payout-token-option"
-                          >
-                            {({ selected, active }) => (
-                              <>
-                                <div className="flex items-center">
-                                  {token.logo ? (
-                                    <img
-                                      src={token.logo}
-                                      alt=""
-                                      className="h-6 w-6 flex-shrink-0 rounded-full"
-                                    />
-                                  ) : null}
-                                  <span
-                                    className={classNames(
-                                      selected
-                                        ? "font-semibold"
-                                        : "font-normal",
-                                      "ml-3 block truncate"
-                                    )}
-                                  >
-                                    {token.name}
-                                  </span>
-                                </div>
-
-                                {selected ? (
-                                  <span
-                                    className={classNames(
-                                      active ? "text-white" : "text-indigo-600",
-                                      "absolute inset-y-0 right-0 flex items-center pr-4"
-                                    )}
-                                  >
-                                    <CheckIcon
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        )
-                    )}
-                  </Listbox.Options>
-                </Transition>
-              </div>
-              {errors.token && (
-                <p className="mt-2 text-xs text-pink-500">
-                  {errors.token?.message}
-                </p>
-              )}
-            </div>
-          )}
-        </Listbox>
+        <div className="grid grid-cols-6 gap-6">
+          <PayoutTokenDropdown
+            errors={errors}
+            register={register("token")}
+            control={control}
+            payoutTokenOptions={payoutTokenOptions}
+          />
+          <MatchingFundsAvailable
+            errors={errors}
+            register={register(
+              "roundMetadata.matchingFunds.matchingFundsAvailable",
+              {
+                valueAsNumber: true,
+              }
+            )}
+            token={watch("token")}
+            payoutTokenOptions={payoutTokenOptions}
+          />
+          <MatchingCap
+            errors={errors}
+            registerMatchingCapAmount={register(
+              "roundMetadata.matchingFunds.matchingCapAmount",
+              {
+                valueAsNumber: true,
+              }
+            )}
+            control={control}
+          />
+        </div>
       </>
     );
   }
@@ -487,7 +453,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   )}
                 </div>
               </div>
-              {payoutTokenSettings()}
+              {quadraticFundingSettings()}
             </div>
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -598,6 +564,332 @@ function ProgramChain(props: { program: Program }) {
         </div>
       </Listbox>
     </div>
+  );
+}
+
+function PayoutTokenInformation() {
+  return (
+    <>
+      <InformationCircleIcon
+        data-tip
+        data-background-color="#0E0333"
+        data-for="payout-token-tooltip"
+        className="inline h-4 w-4 ml-2 mr-3"
+        data-testid={"payout-token-tooltip"}
+      />
+      <ReactTooltip
+        id="payout-token-tooltip"
+        place="bottom"
+        type="dark"
+        effect="solid"
+      >
+        <p className="text-xs">
+          The payout token is the token <br />
+          that you will use to distribute <br />
+          matching funds to your grantees.
+        </p>
+      </ReactTooltip>
+    </>
+  );
+}
+
+function PayoutTokenDropdown(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
+  payoutTokenOptions: PayoutToken[];
+}) {
+  const { field } = useController({
+    name: "token",
+    defaultValue: props.payoutTokenOptions[0].address,
+    control: props.control,
+    rules: {
+      required: true,
+    },
+  });
+  return (
+    <div className="col-span-6 sm:col-span-3">
+      <Listbox {...field}>
+        {({ open }) => (
+          <div>
+            <Listbox.Label className="block text-sm font-medium">
+              Payout Token
+              <PayoutTokenInformation />
+            </Listbox.Label>
+            <div className="relative mt-1">
+              <PayoutTokenButton
+                errors={props.errors}
+                token={props.payoutTokenOptions.find(
+                  (t) => t.address === field.value
+                )}
+              />
+              <Transition
+                show={open}
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {props.payoutTokenOptions.map(
+                    (token) =>
+                      !token.default && (
+                        <Listbox.Option
+                          key={token.name}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "text-white bg-indigo-600"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={token.address}
+                          data-testid="payout-token-option"
+                        >
+                          {({ selected, active }) => (
+                            <>
+                              <div className="flex items-center">
+                                {token.logo ? (
+                                  <img
+                                    src={token.logo}
+                                    alt=""
+                                    className="h-6 w-6 flex-shrink-0 rounded-full"
+                                  />
+                                ) : null}
+                                <span
+                                  className={classNames(
+                                    selected ? "font-semibold" : "font-normal",
+                                    "ml-3 block truncate"
+                                  )}
+                                >
+                                  {token.name}
+                                </span>
+                              </div>
+
+                              {selected ? (
+                                <span
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      )
+                  )}
+                </Listbox.Options>
+              </Transition>
+            </div>
+            {props.errors.token && (
+              <p className="mt-2 text-xs text-pink-500">
+                {props.errors.token?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </Listbox>
+    </div>
+  );
+}
+
+function MatchingFundsAvailable(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  token: string;
+  payoutTokenOptions: PayoutToken[];
+}) {
+  // not sure why UseFormRegisterReturn only takes strings for react-hook-form
+  return (
+    <div className="col-span-6 sm:col-span-3">
+      <label
+        htmlFor="matchingFundsAvailable"
+        className="block text-sm font-medium"
+      >
+        Matching Funds Available
+      </label>
+      <div className="relative mt-1 rounded-md shadow-sm">
+        <Input
+          {...props.register}
+          type="number"
+          id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
+          $hasError={
+            props.errors?.roundMetadata?.matchingFunds?.matchingFundsAvailable
+          }
+          placeholder="Enter the amount denominated in your payout token."
+          data-testid="matching-funds-available"
+          aria-describedby="price-currency"
+          step="any"
+        />
+        <div className="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-3">
+          <span className="text-gray-500 sm:text-sm" id="price-currency">
+            {
+              props.payoutTokenOptions.find(
+                (token) => token.address === props.token
+              )?.name
+            }
+          </span>
+        </div>
+      </div>
+      {props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable && (
+        <p className="text-xs text-pink-500">
+          {
+            props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable
+              .message
+          }
+        </p>
+      )}
+    </div>
+  );
+}
+
+// TODO - maybe clear matching cap amount when isMatchingCap switches to "No" ?
+function MatchingCap(props: {
+  registerMatchingCapAmount: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control?: Control<Round>;
+}) {
+  const { field: matchingCapField } = useController({
+    name: "roundMetadata.matchingFunds.matchingCap",
+    defaultValue: false,
+    control: props.control,
+    rules: {
+      required: true,
+    },
+  });
+  const { value: isMatchingCap } = matchingCapField;
+
+  return (
+    <>
+      {" "}
+      <div className="col-span-6 sm:col-span-3">
+        <RadioGroup {...matchingCapField} data-testid="matching-cap-selection">
+          <RadioGroup.Label className="block text-sm font-medium">
+            Do you want a matching cap for projects?
+            <InformationCircleIcon
+              data-tip
+              data-background-color="#0E0333"
+              data-for="matching-cap-tooltip"
+              className="inline h-4 w-4 ml-2 mr-3"
+              data-testid={"matching-cap-tooltip"}
+            />
+            <ReactTooltip
+              id="matching-cap-tooltip"
+              place="bottom"
+              type="dark"
+              effect="solid"
+            >
+              <p className="text-xs">
+                This will cap the percentage <br />
+                of your overall matching pool <br />
+                that a single grantee can receive.
+              </p>
+            </ReactTooltip>
+          </RadioGroup.Label>
+          <div className="flex flex-row gap-4 mt-2">
+            <RadioGroup.Option value={true}>
+              {({ checked, active }) => (
+                <span className="flex items-center text-sm">
+                  <span
+                    className={classNames(
+                      checked
+                        ? "bg-indigo-600 border-transparent"
+                        : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
+                  <RadioGroup.Label
+                    as="span"
+                    className="ml-3 block text-md font-medium text-gray-700"
+                    data-testid="matching-cap-true"
+                  >
+                    Yes
+                  </RadioGroup.Label>
+                </span>
+              )}
+            </RadioGroup.Option>
+            <RadioGroup.Option value={false}>
+              {({ checked, active }) => (
+                <span className="flex items-center text-sm">
+                  <span
+                    className={classNames(
+                      checked
+                        ? "bg-indigo-600 border-transparent"
+                        : "bg-white border-gray-300",
+                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                      "h-4 w-4 rounded-full border flex items-center justify-center"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  </span>
+                  <RadioGroup.Label
+                    as="span"
+                    className="ml-3 block text-md font-medium text-gray-700"
+                    data-testid="matching-cap-false"
+                  >
+                    No
+                  </RadioGroup.Label>
+                </span>
+              )}
+            </RadioGroup.Option>
+          </div>
+        </RadioGroup>
+      </div>
+      <div className="col-span-6 sm:col-span-3">
+        <label
+          htmlFor="matchingCapAmount"
+          className="block text-sm font-medium"
+        >
+          If so, how much?
+        </label>
+        <div className="relative mt-1 rounded-md shadow-sm">
+          <Input
+            className={
+              "disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
+            }
+            {...props.registerMatchingCapAmount}
+            $hasError={
+              isMatchingCap &&
+              props.errors?.roundMetadata?.matchingFunds?.matchingCapAmount
+            }
+            type="number"
+            id={"matchingCapAmount"}
+            disabled={!isMatchingCap}
+            placeholder="Enter matching cap in form of percentage."
+            data-testid="matching-cap-percent"
+            aria-describedby="percentage-symbol"
+            max="100"
+            step="any"
+          />
+          <div className="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-3">
+            <span className="text-gray-500 sm:text-sm" id="percentage-symbol">
+              %
+            </span>
+          </div>
+        </div>
+        {isMatchingCap &&
+          props.errors?.roundMetadata?.matchingFunds?.matchingCapAmount && (
+            <p className="text-xs text-pink-500">
+              {
+                props.errors.roundMetadata?.matchingFunds?.matchingCapAmount
+                  ?.message
+              }
+            </p>
+          )}
+      </div>
+    </>
   );
 }
 

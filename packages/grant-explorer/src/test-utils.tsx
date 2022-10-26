@@ -36,6 +36,11 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       name: faker.company.name(),
       eligibility: { description: "name", requirements: [] },
       programContractAddress: faker.finance.ethereumAddress(),
+      matchingFunds: {
+        matchingFundsAvailable: 1000,
+        matchingCap: true,
+        matchingCapAmount: 100
+      },
     },
     store: {
       protocol: 1,

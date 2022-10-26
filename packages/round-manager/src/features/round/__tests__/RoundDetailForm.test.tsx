@@ -256,6 +256,10 @@ describe("<RoundDetailForm />", () => {
     const firstTokenOption = screen.getAllByTestId("payout-token-option")[0];
     fireEvent.click(firstTokenOption);
 
+    fireEvent.change(screen.getByTestId("matching-funds-available"), {
+      target: { value: 1 },
+    });
+
     /* Trigger validation */
     fireEvent.click(screen.getByText("Next"));
 
@@ -286,7 +290,7 @@ describe("<RoundDetailForm />", () => {
   });
 
   it("renders program chain name", async () => {
-    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID];
+    const chain = CHAINS[ChainId.OPTIMISM_MAINNET_CHAIN_ID]!;
     const program = makeProgramData({
       chain: { id: chain.id, name: chain.name, logo: chain.logo },
     });
@@ -319,7 +323,7 @@ describe("<RoundDetailForm />", () => {
       expect(selectOptions).toHaveLength(options.length);
     });
 
-    it("validates that the payout token is selected", async () => {
+    it("shows validation error message when the payout token is not selected", async () => {
       renderWrapped(<RoundDetailForm stepper={FormStepper} />);
       const payoutTokenSelection = screen.getByTestId("payout-token-select");
       fireEvent.click(payoutTokenSelection);
@@ -328,6 +332,78 @@ describe("<RoundDetailForm />", () => {
 
       const errors = await screen.findByText(
         "You must select a payout token for your round."
+      );
+      expect(errors).toBeInTheDocument();
+    });
+
+    it("renders matching funds available & matching cap input fields", () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+
+      expect(
+        screen.getByTestId("matching-funds-available")
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("matching-cap-selection")).toBeInTheDocument();
+      expect(screen.getByTestId("matching-cap-true")).toBeInTheDocument();
+      expect(screen.getByTestId("matching-cap-false")).toBeInTheDocument();
+      expect(screen.getByTestId("matching-cap-percent")).toBeInTheDocument();
+    });
+
+    it("enables matching cap when matching cap is selected to 'Yes'", () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      fireEvent.click(screen.getByTestId("matching-cap-true"));
+
+      expect(screen.getByTestId("matching-cap-percent")).toBeEnabled();
+    });
+
+    it("defaults matching cap to be disabled", () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      expect(screen.getByTestId("matching-cap-percent")).toBeDisabled();
+    });
+
+    it("shows validation error message when matching funds amount is not provided", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "Matching funds available must be valid number."
+      );
+      expect(errors).toBeInTheDocument();
+    });
+
+    it("shows validation error message when matching funds amount is <= zero", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      fireEvent.change(screen.getByTestId("matching-funds-available"), {
+        target: { value: 0 },
+      });
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "Matching funds available must be more than zero."
+      );
+      expect(errors).toBeInTheDocument();
+    });
+
+    it("shows validation error message if matching cap percentage is not provided", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      fireEvent.click(screen.getByTestId("matching-cap-true"));
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "You must provide an amount for the matching cap."
+      );
+      expect(errors).toBeInTheDocument();
+    });
+
+    it("shows validation error message if matching cap percentage is <= zero", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      fireEvent.click(screen.getByTestId("matching-cap-true"));
+      fireEvent.change(screen.getByTestId("matching-cap-percent"), {
+        target: { value: 0 },
+      });
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "Matching cap amount must be more than zero."
       );
       expect(errors).toBeInTheDocument();
     });
