@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getRoundProjectsApplied } from "../../actions/projects";
 import { RootState } from "../../reducers";
+import { AppStatus } from "../../reducers/projects";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import generateUniqueRoundApplicationID from "../../utils/roundApplication";
@@ -45,7 +46,9 @@ export default function Details({
       Number(params.id)
     );
     const { applications } = state.projects;
-    // todo: get the round id and sort the projects by round id
+    // todo: get all active rounds applied to and if active round
+    // todo: check each one for status
+    // todo: get the round data for display for each one applied to
     // const roundState = state.rounds[roundId!];
     // const round = roundState ? roundState.round : undefined;
 
@@ -56,9 +59,14 @@ export default function Details({
     };
   });
 
-  props.applications.map((application) =>
-    console.log("application", application)
-  );
+  props.applications.map((application) => {
+    console.log("application", application);
+    if (application.status === AppStatus.Approved) {
+      console.log("APPLICATION APPROVED");
+    }
+
+    return null;
+  });
 
   useEffect(() => {
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
@@ -187,7 +195,16 @@ export default function Details({
           <Box p={1}>
             <span className="text-[20px]">My Applications</span>
           </Box>
-          <ApplicationCard props={props} />
+          <Box>
+            {props.applications.map((application) => {
+              const cardData = { props, application };
+              return (
+                <Box m={2}>
+                  <ApplicationCard props={cardData} />
+                </Box>
+              );
+            })}
+          </Box>
         </Box>
       </SimpleGrid>
       <p className="text-primary-text mb-1 font-bold">Description</p>

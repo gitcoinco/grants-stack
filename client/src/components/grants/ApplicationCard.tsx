@@ -7,6 +7,7 @@ import { Badge, Box, SimpleGrid } from "@chakra-ui/react";
 // };
 
 export default function ApplicationCard({ props }: { props: any }) {
+  // todo: get the round data for each round applied with current active status
   console.log("AppCard props", props);
 
   return (
@@ -20,7 +21,7 @@ export default function ApplicationCard({ props }: { props: any }) {
         </Box>
         <Box className="pl-2 text-right text-gitcoin-gray-400">
           <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-            Applied
+            {props.application.status}
           </Badge>
         </Box>
       </SimpleGrid>

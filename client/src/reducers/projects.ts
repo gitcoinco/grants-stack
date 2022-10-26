@@ -18,11 +18,11 @@ export enum Status {
 }
 
 export enum AppStatus {
-  Accepted,
-  Rejected,
-  Pending,
-  NotFound,
-  Unknown,
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+  Pending = "PENDING",
+  NotFound = "NOT_FOUND",
+  Unknown = "UNKNOWN",
 }
 
 export interface ProjectsState {
