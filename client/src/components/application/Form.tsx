@@ -3,7 +3,10 @@ import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
-import { submitApplication } from "../../actions/roundApplication";
+import {
+  submitApplication,
+  resetApplicationError,
+} from "../../actions/roundApplication";
 import { RootState } from "../../reducers";
 import {
   ChangeHandlers,
@@ -14,6 +17,7 @@ import {
   RoundApplicationMetadata,
 } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
+import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
 import {
   Select,
@@ -34,10 +38,12 @@ export default function Form({
   roundApplication,
   round,
   onSubmit,
+  showErrorModal,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
   onSubmit: () => void;
+  showErrorModal: boolean;
 }) {
   const dispatch = useDispatch();
 
@@ -118,6 +124,15 @@ export default function Form({
       onSubmit();
       dispatch(submitApplication(round.address, formInputs));
     }
+  };
+
+  const closeErrorModal = async () => {
+    dispatch(resetApplicationError(round.address));
+  };
+
+  const handleSubmitApplicationRetry = async () => {
+    closeErrorModal();
+    handleSubmitApplication();
   };
 
   useEffect(() => {
@@ -316,6 +331,11 @@ export default function Form({
           )}
         </div>
       </form>
+      <ErrorModal
+        open={showErrorModal}
+        onClose={closeErrorModal}
+        onRetry={handleSubmitApplicationRetry}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import StatusModal from "../../../components/rounds/StatusModal";
-import { applicationSteps as steps } from "../../../utils/steps";
+import { grantSteps as steps } from "../../../utils/steps";
 import setupStore from "../../../store";
 import { renderWrapped } from "../../../utils/test_utils";
 
@@ -22,16 +22,6 @@ describe("<StatusModal />", () => {
       currentStep: steps[2],
       icons: ["completed", "completed", "current", "waiting", "waiting"],
     },
-    {
-      error: false,
-      currentStep: steps[3],
-      icons: ["completed", "completed", "completed", "current", "waiting"],
-    },
-    {
-      error: false,
-      currentStep: steps[4],
-      icons: ["completed", "completed", "completed", "completed", "current"],
-    },
 
     // with errors
 
@@ -49,16 +39,6 @@ describe("<StatusModal />", () => {
       error: true,
       currentStep: steps[2],
       icons: ["completed", "completed", "error", "waiting", "waiting"],
-    },
-    {
-      error: true,
-      currentStep: steps[3],
-      icons: ["completed", "completed", "completed", "error", "waiting"],
-    },
-    {
-      error: true,
-      currentStep: steps[4],
-      icons: ["completed", "completed", "completed", "completed", "error"],
     },
   ];
 

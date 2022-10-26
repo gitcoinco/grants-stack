@@ -4,7 +4,9 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
+import { ApplicationStatus } from "../reducers/projects";
 import { ProjectEventsMap } from "../types";
+import { ChainId, graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -23,10 +25,43 @@ export interface ProjectsUnloadedAction {
   type: typeof PROJECTS_UNLOADED;
 }
 
+export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
+interface ProjectApplicationsLoadingAction {
+  type: typeof PROJECT_APPLICATIONS_LOADING;
+  projectID: number;
+  roundID: string;
+}
+
+export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
+interface ProjectApplicationsNotFoundAction {
+  type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
+  projectID: number;
+  roundID: string;
+}
+
+export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
+interface ProjectApplicationsLoadedAction {
+  type: typeof PROJECT_APPLICATIONS_LOADED;
+  projectID: number;
+  applications: ApplicationStatus;
+}
+
+export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
+interface ProjectApplicationsErrorAction {
+  type: typeof PROJECT_APPLICATIONS_ERROR;
+  projectID: number;
+  roundID: string;
+  error: string;
+}
+
 export type ProjectsActions =
   | ProjectsLoadingAction
   | ProjectsLoadedAction
-  | ProjectsUnloadedAction;
+  | ProjectsUnloadedAction
+  | ProjectApplicationsLoadingAction
+  | ProjectApplicationsNotFoundAction
+  | ProjectApplicationsLoadedAction
+  | ProjectApplicationsErrorAction;
 
 const projectsLoading = () => ({
   type: PROJECTS_LOADING,
@@ -98,6 +133,33 @@ export const loadProjects =
     });
 
     dispatch(projectsLoaded(events));
+  };
+
+export const getRoundProjectsApplied =
+  (projectID: number, chainId: ChainId) => async (dispatch: Dispatch) => {
+    dispatch({
+      type: PROJECT_APPLICATIONS_LOADING,
+      projectID,
+    });
+
+    const applicationsFound: any = await graphqlFetch(
+      `query roundProjects($id: String) {
+        project
+        status
+        round {
+          id
+        }
+      }
+      `,
+      chainId,
+      { id: projectID }
+    );
+
+    dispatch({
+      type: PROJECT_APPLICATIONS_LOADED,
+      projectID,
+      applications: applicationsFound,
+    });
   };
 
 export const unloadProjects = () => projectsUnload();

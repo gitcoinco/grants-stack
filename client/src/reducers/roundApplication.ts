@@ -6,6 +6,7 @@ import {
   ROUND_APPLICATION_NOT_FOUND,
   ROUND_APPLICATION_RESET,
   RoundApplicationActions,
+  ROUND_APPLICATION_ERROR_RESET,
 } from "../actions/roundApplication";
 
 export const enum Status {
@@ -15,6 +16,8 @@ export const enum Status {
   UploadingMetadata,
   SendingTx,
   Sent,
+  Found,
+  NotFound,
   Error,
 }
 
@@ -80,6 +83,20 @@ export const roundApplicationReducer = (
       };
     }
 
+    case ROUND_APPLICATION_ERROR_RESET: {
+      const application =
+        state[action.roundAddress] || roundApplicationInitialState;
+      return {
+        ...state,
+        [action.roundAddress]: {
+          ...application,
+          // TODO : Retry step from previous application error step
+          // status: application.error?.step || 0,
+          error: undefined,
+        },
+      };
+    }
+
     case ROUND_APPLICATION_LOADED: {
       const application =
         state[action.roundAddress] || roundApplicationInitialState;
@@ -101,6 +118,7 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+          status: Status.Found,
           projectsIDs: [...application.projectsIDs, action.projectID],
         },
       };
@@ -116,6 +134,7 @@ export const roundApplicationReducer = (
         ...state,
         [action.roundAddress]: {
           ...application,
+          status: Status.NotFound,
         },
       };
     }
