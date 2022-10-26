@@ -41,16 +41,7 @@ describe("projects reducer", () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADED",
       projectID: "12345",
-      applications: {
-        "12345": {
-          status: AppStatus.Accepted,
-          round: {
-            id: "0x1234",
-          },
-        },
-        roundID: "0x1234",
-        status: Status.Loaded,
-      },
+      applications: [],
     });
 
     expect(newState.status).toBe(Status.Loaded);
