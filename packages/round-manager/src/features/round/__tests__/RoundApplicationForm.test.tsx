@@ -171,7 +171,7 @@ describe("<RoundApplicationForm />", () => {
   describe("when saving round application metadata succeeds but create round transaction fails", () => {
     const createRoundStateOverride = {
       IPFSCurrentStatus: ProgressStatus.IS_SUCCESS,
-      contractDeploymentStatus: ProgressStatus.IS_ERROR,
+      roundContractDeploymentStatus: ProgressStatus.IS_ERROR,
     };
 
     const startProgressModal = async () => {

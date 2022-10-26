@@ -69,7 +69,7 @@ describe("<CreateRoundProvider />", () => {
     );
   });
 
-  it("sets contract deployment status to in progress when contract is being deployed", async () => {
+  it("sets round contract deployment status to in progress when round contract is being deployed", async () => {
     const ipfsHash = "bafabcdef";
     (saveToIPFS as jest.Mock).mockResolvedValue(ipfsHash);
     (deployRoundContract as jest.Mock).mockReturnValue(
@@ -85,7 +85,7 @@ describe("<CreateRoundProvider />", () => {
 
     expect(
       await screen.findByTestId(
-        `deploying-status-is-${ProgressStatus.IN_PROGRESS}`
+        `round-deploying-status-is-${ProgressStatus.IN_PROGRESS}`
       )
     );
     const firstCall = (deployRoundContract as jest.Mock).mock.calls[0];
@@ -102,7 +102,7 @@ describe("<CreateRoundProvider />", () => {
     });
   });
 
-  it("sets contract deployment status to success when contract has been deployed", async () => {
+  it("sets round contract deployment status to success when round contract has been deployed", async () => {
     (saveToIPFS as jest.Mock).mockResolvedValue("bafabcdef");
     (deployRoundContract as jest.Mock).mockResolvedValue({});
 
@@ -113,7 +113,7 @@ describe("<CreateRoundProvider />", () => {
 
     expect(
       await screen.findByTestId(
-        `deploying-status-is-${ProgressStatus.IS_SUCCESS}`
+        `round-deploying-status-is-${ProgressStatus.IS_SUCCESS}`
       )
     );
   });
@@ -191,7 +191,7 @@ describe("<CreateRoundProvider />", () => {
       ).toBeInTheDocument();
     });
 
-    it("sets contract deployment status to error when deployment fails", async () => {
+    it("sets round contract deployment status to error when round deployment fails", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
       (deployRoundContract as jest.Mock).mockRejectedValue(
         new Error("Failed to deploy :(")
@@ -203,7 +203,7 @@ describe("<CreateRoundProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `deploying-status-is-${ProgressStatus.IS_ERROR}`
+          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
         )
       ).toBeInTheDocument();
     });
@@ -262,14 +262,16 @@ describe("<CreateRoundProvider />", () => {
       fireEvent.click(screen.getByTestId("create-round"));
 
       await screen.findByTestId(
-        `deploying-status-is-${ProgressStatus.IS_ERROR}`
+        `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
       );
 
       // retry create-round operation
       fireEvent.click(screen.getByTestId("create-round"));
 
       expect(
-        screen.queryByTestId(`deploying-status-is-${ProgressStatus.IS_ERROR}`)
+        screen.queryByTestId(
+          `round-deploying-status-is-${ProgressStatus.IS_ERROR}`
+        )
       ).not.toBeInTheDocument();
     });
 
@@ -307,7 +309,7 @@ const TestUseCreateRoundComponent = () => {
   const {
     createRound,
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
   } = useCreateRound();
 
@@ -322,7 +324,9 @@ const TestUseCreateRoundComponent = () => {
 
       <div data-testid={`storing-status-is-${IPFSCurrentStatus}`} />
 
-      <div data-testid={`deploying-status-is-${contractDeploymentStatus}`} />
+      <div
+        data-testid={`round-deploying-status-is-${roundContractDeploymentStatus}`}
+      />
 
       <div data-testid={`indexing-status-is-${indexingStatus}`} />
     </div>

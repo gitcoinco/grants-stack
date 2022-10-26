@@ -22,8 +22,8 @@ type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
   setIPFSCurrentStatus: SetStatusFn;
-  contractDeploymentStatus: ProgressStatus;
-  setContractDeploymentStatus: SetStatusFn;
+  roundContractDeploymentStatus: ProgressStatus;
+  setRoundContractDeploymentStatus: SetStatusFn;
   indexingStatus: ProgressStatus;
   setIndexingStatus: SetStatusFn;
 }
@@ -42,8 +42,8 @@ export const initialCreateRoundState: CreateRoundState = {
   setIPFSCurrentStatus: () => {
     /* provided in CreateRoundProvider */
   },
-  contractDeploymentStatus: ProgressStatus.NOT_STARTED,
-  setContractDeploymentStatus: () => {
+  roundContractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  setRoundContractDeploymentStatus: () => {
     /* provided in CreateRoundProvider */
   },
   indexingStatus: ProgressStatus.NOT_STARTED,
@@ -64,9 +64,8 @@ export const CreateRoundProvider = ({
   const [IPFSCurrentStatus, setIPFSCurrentStatus] = useState(
     initialCreateRoundState.IPFSCurrentStatus
   );
-  const [contractDeploymentStatus, setContractDeploymentStatus] = useState(
-    initialCreateRoundState.contractDeploymentStatus
-  );
+  const [roundContractDeploymentStatus, setRoundContractDeploymentStatus] =
+    useState(initialCreateRoundState.roundContractDeploymentStatus);
   const [indexingStatus, setIndexingStatus] = useState(
     initialCreateRoundState.indexingStatus
   );
@@ -74,8 +73,8 @@ export const CreateRoundProvider = ({
   const providerProps: CreateRoundState = {
     IPFSCurrentStatus,
     setIPFSCurrentStatus,
-    contractDeploymentStatus,
-    setContractDeploymentStatus,
+    roundContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
     indexingStatus,
     setIndexingStatus,
   };
@@ -100,7 +99,7 @@ const _createRound = async ({
 }: _createRoundParams) => {
   const {
     setIPFSCurrentStatus,
-    setContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
     setIndexingStatus,
   } = context;
   const {
@@ -139,7 +138,7 @@ const _createRound = async ({
     };
 
     const transactionBlockNumber = await deployContract(
-      setContractDeploymentStatus,
+      setRoundContractDeploymentStatus,
       roundContractInputsWithContracts,
       signerOrProvider
     );
@@ -166,7 +165,7 @@ export const useCreateRound = () => {
 
   const {
     setIPFSCurrentStatus,
-    setContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
     setIndexingStatus,
   } = context;
   const { signer: walletSigner } = useWallet();
@@ -174,7 +173,7 @@ export const useCreateRound = () => {
   const createRound = (createRoundData: CreateRoundData) => {
     resetToInitialState(
       setIPFSCurrentStatus,
-      setContractDeploymentStatus,
+      setRoundContractDeploymentStatus,
       setIndexingStatus
     );
 
@@ -188,7 +187,7 @@ export const useCreateRound = () => {
   return {
     createRound,
     IPFSCurrentStatus: context.IPFSCurrentStatus,
-    contractDeploymentStatus: context.contractDeploymentStatus,
+    roundContractDeploymentStatus: context.roundContractDeploymentStatus,
     indexingStatus: context.indexingStatus,
   };
 };
@@ -199,7 +198,7 @@ function resetToInitialState(
   setIndexingStatus: SetStatusFn
 ): void {
   setStoringStatus(initialCreateRoundState.IPFSCurrentStatus);
-  setDeployingStatus(initialCreateRoundState.contractDeploymentStatus);
+  setDeployingStatus(initialCreateRoundState.roundContractDeploymentStatus);
   setIndexingStatus(initialCreateRoundState.indexingStatus);
 }
 

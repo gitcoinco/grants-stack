@@ -113,14 +113,14 @@ export function RoundApplicationForm(props: {
   const {
     createRound,
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
   } = useCreateRound();
 
   useEffect(() => {
     const isSuccess =
       IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
-      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      roundContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       indexingStatus === ProgressStatus.IS_SUCCESS;
 
     if (isSuccess) {
@@ -128,7 +128,7 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
     programId,
     navigate,
@@ -137,7 +137,7 @@ export function RoundApplicationForm(props: {
   useEffect(() => {
     if (
       IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractDeploymentStatus === ProgressStatus.IS_ERROR
+      roundContractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
         setOpenErrorModal(true);
@@ -149,7 +149,7 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
     navigate,
     programId,
@@ -208,7 +208,7 @@ export function RoundApplicationForm(props: {
     {
       name: "Deploying",
       description: `Connecting to the ${chain.name} blockchain.`,
-      status: contractDeploymentStatus,
+      status: roundContractDeploymentStatus,
     },
     {
       name: "Indexing",
@@ -227,7 +227,7 @@ export function RoundApplicationForm(props: {
 
   const disableNext: boolean =
     IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
-    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    roundContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IS_SUCCESS ||
     !props.initialData.program;
