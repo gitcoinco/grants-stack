@@ -14,7 +14,7 @@ import {
 } from "../../../context/round/CreateRoundContext";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
-import { deployRoundContract } from "../../api/round";
+import { deployQFVotingContract, deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { FormContext } from "../../common/FormWizard";
 import { randomInt } from "crypto";
@@ -56,6 +56,9 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
+    (deployQFVotingContract as jest.Mock).mockResolvedValue({
+      votingContractAddress: "0xVotingContract",
+    });
     (deployRoundContract as jest.Mock).mockResolvedValue({
       transactionBlockNumber: 0,
     });

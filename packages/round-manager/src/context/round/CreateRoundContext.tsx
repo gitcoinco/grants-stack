@@ -11,7 +11,10 @@ import React, {
 } from "react";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { useWallet } from "../../features/common/Auth";
-import { deployRoundContract } from "../../features/api/round";
+import {
+  deployQFVotingContract,
+  deployRoundContract,
+} from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -22,6 +25,8 @@ type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
   setIPFSCurrentStatus: SetStatusFn;
+  votingContractDeploymentStatus: ProgressStatus;
+  setVotingContractDeploymentStatus: SetStatusFn;
   roundContractDeploymentStatus: ProgressStatus;
   setRoundContractDeploymentStatus: SetStatusFn;
   indexingStatus: ProgressStatus;
@@ -40,6 +45,10 @@ export type CreateRoundData = {
 export const initialCreateRoundState: CreateRoundState = {
   IPFSCurrentStatus: ProgressStatus.NOT_STARTED,
   setIPFSCurrentStatus: () => {
+    /* provided in CreateRoundProvider */
+  },
+  votingContractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  setVotingContractDeploymentStatus: () => {
     /* provided in CreateRoundProvider */
   },
   roundContractDeploymentStatus: ProgressStatus.NOT_STARTED,
@@ -64,6 +73,8 @@ export const CreateRoundProvider = ({
   const [IPFSCurrentStatus, setIPFSCurrentStatus] = useState(
     initialCreateRoundState.IPFSCurrentStatus
   );
+  const [votingContractDeploymentStatus, setVotingContractDeploymentStatus] =
+    useState(initialCreateRoundState.votingContractDeploymentStatus);
   const [roundContractDeploymentStatus, setRoundContractDeploymentStatus] =
     useState(initialCreateRoundState.roundContractDeploymentStatus);
   const [indexingStatus, setIndexingStatus] = useState(
@@ -73,6 +84,8 @@ export const CreateRoundProvider = ({
   const providerProps: CreateRoundState = {
     IPFSCurrentStatus,
     setIPFSCurrentStatus,
+    votingContractDeploymentStatus,
+    setVotingContractDeploymentStatus,
     roundContractDeploymentStatus,
     setRoundContractDeploymentStatus,
     indexingStatus,
@@ -99,6 +112,7 @@ const _createRound = async ({
 }: _createRoundParams) => {
   const {
     setIPFSCurrentStatus,
+    setVotingContractDeploymentStatus,
     setRoundContractDeploymentStatus,
     setIndexingStatus,
   } = context;
@@ -129,15 +143,18 @@ const _createRound = async ({
       },
     };
 
-    // TODO - deploy QF voting contract, add voting contract address to round deploy params
-    // TODO - use hardcoded dummy contract 0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A as the payout contract address
+    const votingContractAddress = await handleDeployVotingContract(
+      setVotingContractDeploymentStatus,
+      signerOrProvider
+    );
+
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
-      votingStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real voting contract
-      payoutStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real payout contract when implemented
+      votingStrategy: votingContractAddress,
+      payoutStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace dummy with real payout contract when implemented
     };
 
-    const transactionBlockNumber = await deployContract(
+    const transactionBlockNumber = await handleDeployRoundContract(
       setRoundContractDeploymentStatus,
       roundContractInputsWithContracts,
       signerOrProvider
@@ -165,6 +182,7 @@ export const useCreateRound = () => {
 
   const {
     setIPFSCurrentStatus,
+    setVotingContractDeploymentStatus,
     setRoundContractDeploymentStatus,
     setIndexingStatus,
   } = context;
@@ -173,6 +191,7 @@ export const useCreateRound = () => {
   const createRound = (createRoundData: CreateRoundData) => {
     resetToInitialState(
       setIPFSCurrentStatus,
+      setVotingContractDeploymentStatus,
       setRoundContractDeploymentStatus,
       setIndexingStatus
     );
@@ -187,6 +206,7 @@ export const useCreateRound = () => {
   return {
     createRound,
     IPFSCurrentStatus: context.IPFSCurrentStatus,
+    votingContractDeploymentStatus: context.votingContractDeploymentStatus,
     roundContractDeploymentStatus: context.roundContractDeploymentStatus,
     indexingStatus: context.indexingStatus,
   };
@@ -194,10 +214,14 @@ export const useCreateRound = () => {
 
 function resetToInitialState(
   setStoringStatus: SetStatusFn,
+  setVotingDeployingStatus: SetStatusFn,
   setDeployingStatus: SetStatusFn,
   setIndexingStatus: SetStatusFn
 ): void {
   setStoringStatus(initialCreateRoundState.IPFSCurrentStatus);
+  setVotingDeployingStatus(
+    initialCreateRoundState.votingContractDeploymentStatus
+  );
   setDeployingStatus(initialCreateRoundState.roundContractDeploymentStatus);
   setIndexingStatus(initialCreateRoundState.indexingStatus);
 }
@@ -238,7 +262,25 @@ async function storeDocuments(
   }
 }
 
-async function deployContract(
+async function handleDeployVotingContract(
+  setDeploymentStatus: SetStatusFn,
+  signerOrProvider: Signer
+): Promise<string> {
+  try {
+    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
+    const { votingContractAddress } = await deployQFVotingContract(
+      signerOrProvider
+    );
+
+    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
+    return votingContractAddress;
+  } catch (e) {
+    setDeploymentStatus(ProgressStatus.IS_ERROR);
+    throw e;
+  }
+}
+
+async function handleDeployRoundContract(
   setDeploymentStatus: SetStatusFn,
   round: Round,
   signerOrProvider: Signer
