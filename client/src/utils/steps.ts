@@ -16,12 +16,12 @@ export const applicationSteps: Step[] = [
     status: RoundApplicationStatus.BuildingApplication,
   },
   {
-    name: "Authenticating",
+    name: "Encrypting",
     description: "Sign in to Lit Protocol.",
     status: RoundApplicationStatus.LitAuthentication,
   },
   {
-    name: "Encrypting",
+    name: "Signing",
     description: "Signing the application metadata with your wallet.",
     status: RoundApplicationStatus.SigningApplication,
   },
