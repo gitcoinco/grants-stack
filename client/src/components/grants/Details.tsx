@@ -1,4 +1,4 @@
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { Box, Grid } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -88,12 +88,7 @@ export default function Details({
         </div>
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <SimpleGrid
-        className="pb-6 mb-6"
-        templateColumns="repeat(3, 1fr)"
-        minChildWidth="200px"
-        gap={6}
-      >
+      <Grid templateColumns="repeat(3, 1fr)" gap={6}>
         <Box>
           <div>
             <a
@@ -191,7 +186,7 @@ export default function Details({
               })}
           </Box>
         </Box>
-      </SimpleGrid>
+      </Grid>
       <p className="text-primary-text mb-1 font-bold">Description</p>
       <p className="mb-12">{project?.description}</p>
     </div>

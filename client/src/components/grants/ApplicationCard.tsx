@@ -1,4 +1,4 @@
-import { Badge, Box, SimpleGrid } from "@chakra-ui/react";
+import { Badge, Box, SimpleGrid, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadRound, unloadRounds } from "../../actions/rounds";
@@ -68,7 +68,7 @@ export default function ApplicationCard({
         </Box>
       </SimpleGrid>
       <Box className="pl-2 text-gitcoin-gray-400">
-        <span>{renderApplicationDate()}</span>
+        {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
       </Box>
       <Box p={2} className="mt-4 mb-6">
         <p>
