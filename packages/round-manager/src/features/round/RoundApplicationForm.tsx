@@ -38,6 +38,7 @@ import {
 import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import { Button } from "../common/styles";
+import InfoModal from "../common/InfoModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -73,6 +74,8 @@ export function RoundApplicationForm(props: {
   stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openHeadsUpModal, setOpenHeadsUpModal] = useState(false);
+
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
   const Steps = props.stepper;
@@ -155,6 +158,12 @@ export function RoundApplicationForm(props: {
   const prev = () => setCurrentStep(currentStep - 1);
 
   const next: SubmitHandler<Round> = async (values) => {
+
+    if (!openHeadsUpModal) {
+      setOpenHeadsUpModal(true);
+      return;
+    }
+
     try {
       setOpenProgressModal(true);
       const data: Partial<Round> = { ...formData, ...values };
@@ -255,6 +264,31 @@ export function RoundApplicationForm(props: {
               />
             </div>
           </form>
+          <InfoModal
+            title={"Heads up!"}
+            body={
+              <div className="text-sm text-grey-400 gap-16">
+                <p className="text-sm">
+                  Each grant round on the protocol requires three smart contracts.
+                </p>
+                <p className="text-sm my-2">
+                  You'll have to sign a transaction to deploy each of the following:
+                </p>
+                <ul className="list-disc list-inside pl-3">
+                  <li>Quadratic Funding contract</li>
+                  <li>Payout contract</li>
+                  <li>Round core contract</li>
+                </ul>
+              </div>
+            }
+            isOpen={openHeadsUpModal}
+            setIsOpen={setOpenHeadsUpModal}
+            continueButtonAction={() => {
+              handleSubmit(next)();
+              setOpenHeadsUpModal(false);
+            }}
+          />
+
           <ProgressModal
             isOpen={openProgressModal}
             subheading={"Please hold while we create your Grant Round."}

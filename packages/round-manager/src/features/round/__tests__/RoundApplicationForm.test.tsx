@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   initialQuestions,
   RoundApplicationForm,
@@ -62,8 +62,28 @@ describe("<RoundApplicationForm />", () => {
     (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 
+  describe("when submitting form", () => {
+    it("shows headsup modal when submitted form to create a round",async () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />,
+      );
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      expect(await screen.findByTestId("info-modal")).toBeInTheDocument();
+    });
+  });
+
   describe("when saving metadata fails", () => {
-    it("shows error modal when saving round application metadata fails", async () => {
+    it.only("shows error modal when saving round application metadata fails", async () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
