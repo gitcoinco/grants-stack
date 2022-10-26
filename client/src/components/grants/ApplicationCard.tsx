@@ -5,12 +5,6 @@ import { loadRound, unloadRounds } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { formatDate } from "../../utils/components";
 
-// type ApplicationCardProps = {
-//   projectID: string;
-//   chainId: number;
-//   applications: any;
-// };
-
 export default function ApplicationCard({
   applicationData,
 }: {
@@ -27,6 +21,8 @@ export default function ApplicationCard({
     };
   });
 
+  // todo: what date do we want to show here?
+  // todo: show round date or application date or both? @michellema1208
   // const renderRoundDate = () => (
   //   <>
   //     {formatDate(roundData?.roundStartTime)} -{" "}
@@ -53,8 +49,6 @@ export default function ApplicationCard({
       setRoundData(props.round);
     }
   }, [props.round]);
-
-  console.log("AppCard props", applicationData, props, roundData);
 
   return (
     <Box p={2} className="border-gray-300" borderWidth="1px" borderRadius="md">

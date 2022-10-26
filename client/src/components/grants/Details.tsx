@@ -57,8 +57,6 @@ export default function Details({
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
   }, [dispatch, props.projectID, props.chainId]);
 
-  console.log("Props from details => ", props);
-
   return (
     <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <img
@@ -184,9 +182,9 @@ export default function Details({
             {props.applications &&
               props.applications.map((application) => {
                 const roundID = application?.round?.id;
-                const cardData = { props, application, roundID };
+                const cardData = { application, roundID };
                 return (
-                  <Box key={application?.round?.id} m={2}>
+                  <Box key={roundID} m={2}>
                     <ApplicationCard applicationData={cardData} />
                   </Box>
                 );
