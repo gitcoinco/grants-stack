@@ -129,4 +129,21 @@ describe("<InfoModal />", () => {
 
     expect(screen.getByTestId(testId)).toBeInTheDocument();
   });
+
+  it("should render children", () => {
+    const expectedTestId = `child-test-id-123`;
+    const child = <div data-testid={expectedTestId} />;
+    renderWrapped(
+      <InfoModal
+        isOpen
+        setIsOpen={jest.fn()}
+        continueButtonAction={jest.fn()}
+        body={<div />}
+      >
+        {child}
+      </InfoModal>
+    );
+
+    expect(screen.getByTestId(expectedTestId)).toBeInTheDocument();
+  });
 });

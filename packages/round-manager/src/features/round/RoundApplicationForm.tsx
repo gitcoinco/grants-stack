@@ -272,46 +272,31 @@ export function RoundApplicationForm(props: {
           </form>
           <InfoModal
             title={"Heads up!"}
-            body={
-              <div className="text-sm text-grey-400 gap-16">
-                <p className="text-sm">
-                  Each grant round on the protocol requires three smart
-                  contracts.
-                </p>
-                <p className="text-sm my-2">
-                  You'll have to sign a transaction to deploy each of the
-                  following:
-                </p>
-                <ul className="list-disc list-inside pl-3">
-                  <li>Quadratic Funding contract</li>
-                  <li>Payout contract</li>
-                  <li>Round core contract</li>
-                </ul>
-              </div>
-            }
+            body={<InfoModalBody />}
             isOpen={openHeadsUpModal}
             setIsOpen={setOpenHeadsUpModal}
             continueButtonAction={() => {
               handleSubmit(next)();
-              setOpenHeadsUpModal(false);
+              // setOpenHeadsUpModal(false);
             }}
-          />
-
-          <ProgressModal
-            isOpen={openProgressModal}
-            subheading={"Please hold while we create your Grant Round."}
-            steps={progressSteps}
           >
-            <ErrorModal
-              isOpen={openErrorModal}
-              setIsOpen={setOpenErrorModal}
-              tryAgainFn={handleSubmit(next)}
-              doneFn={() => {
-                setOpenErrorModal(false);
-                setOpenProgressModal(false);
-              }}
-            />
-          </ProgressModal>
+            <ProgressModal
+              isOpen={openProgressModal}
+              subheading={"Please hold while we create your Grant Round."}
+              steps={progressSteps}
+            >
+              <ErrorModal
+                isOpen={openErrorModal}
+                setIsOpen={setOpenErrorModal}
+                tryAgainFn={handleSubmit(next)}
+                doneFn={() => {
+                  setOpenErrorModal(false);
+                  setOpenProgressModal(false);
+                  setOpenHeadsUpModal(false);
+                }}
+              />
+            </ProgressModal>
+          </InfoModal>
         </div>
       </div>
     </div>
@@ -770,5 +755,23 @@ function AddQuestion(props: { onClick: () => void }) {
       <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
       Add A Question
     </Button>
+  );
+}
+
+function InfoModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        Each grant round on the protocol requires three smart contracts.
+      </p>
+      <p className="text-sm my-2">
+        You'll have to sign a transaction to deploy each of the following:
+      </p>
+      <ul className="list-disc list-inside pl-3">
+        <li>Quadratic Funding contract</li>
+        <li>Payout contract</li>
+        <li>Round core contract</li>
+      </ul>
+    </div>
   );
 }

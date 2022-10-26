@@ -28,7 +28,9 @@ export default function ErrorModal({
         as="div"
         data-testid="error-modal"
         className="relative z-10"
-        onClose={() => setIsOpen(false)}
+        onClose={() => {
+          /* Don't close the dialog when clicking the backdrop */
+        }}
       >
         <Transition.Child
           as={Fragment}

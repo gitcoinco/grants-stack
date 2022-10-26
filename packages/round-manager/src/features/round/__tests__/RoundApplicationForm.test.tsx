@@ -157,11 +157,6 @@ describe("<RoundApplicationForm />", () => {
       const errorModalTryAgain = await screen.findByTestId("tryAgain");
       fireEvent.click(errorModalTryAgain);
 
-      const headsUpContinueButton = await screen.findByRole("button", {
-        name: /Continue/i,
-      });
-      fireEvent.click(headsUpContinueButton);
-
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
       await waitFor(() => {
         expect((saveToIPFS as jest.Mock).mock.calls.length).toEqual(

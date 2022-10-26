@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from "react";
+import React, { Fragment, ReactNode, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "./styles";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
@@ -11,6 +11,7 @@ interface InfoModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   continueButtonAction: () => void;
   cancelButtonAction?: () => void;
+  children?: ReactNode;
 }
 
 export default function InfoModal({
@@ -24,6 +25,7 @@ export default function InfoModal({
   },
   continueButtonText = "Continue",
   cancelButtonAction = () => setIsOpen(false),
+  children,
   ...props
 }: InfoModalProps) {
   const cancelButtonRef = useRef(null);
@@ -101,6 +103,7 @@ export default function InfoModal({
             </Transition.Child>
           </div>
         </div>
+        {children}
       </Dialog>
     </Transition.Root>
   );
