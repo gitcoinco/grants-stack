@@ -1,10 +1,10 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-// import { RoundProject } from "../reducers/projects";
 import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
@@ -154,7 +154,6 @@ export const getRoundProjectsApplied =
         chainId,
         { projectID }
       );
-      console.log("applicationsFound", applicationsFound);
 
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
@@ -162,6 +161,7 @@ export const getRoundProjectsApplied =
         applications: applicationsFound.data.roundProjects,
       });
     } catch (error: any) {
+      datadogRum.addError(error, { projectID });
       dispatch({
         type: PROJECT_APPLICATIONS_ERROR,
         projectID,
