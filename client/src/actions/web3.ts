@@ -101,6 +101,7 @@ export const initializeWeb3 =
     global.signer = signer;
     global.web3Provider = provider;
     global.chainID = chain?.id;
+    global.address = address;
 
     let t: Web3Type;
     if (window.ethereum) {

@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 // This just disables default export as this utils file will be intended to return multiple utils
+import { datadogRum } from "@datadog/browser-rum";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
 import { chains } from "../contracts/deployments";
@@ -11,6 +12,7 @@ export function shortAddress(address: string): string {
       38
     )}`;
   } catch (e) {
+    datadogRum.addError(e);
     console.log(e, "There was an error processing your address");
     return "Invalid Address";
   }

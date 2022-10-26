@@ -1,3 +1,4 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -167,21 +168,36 @@ export const submitApplication =
       return;
     }
 
-    const builder = new RoundApplicationBuilder(
-      true,
-      project,
-      roundApplicationMetadata,
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      chainName
-    );
-    const application: RoundApplication = await builder.build(
-      roundAddress,
-      formInputs
-    );
+      status: Status.LitAuthentication,
+    });
 
-    const deterministicApplication = objectToDeterministicJSON(
-      application as any
-    );
+    let application: RoundApplication;
+    let deterministicApplication: string;
+
+    try {
+      const builder = new RoundApplicationBuilder(
+        true,
+        project,
+        roundApplicationMetadata,
+        roundAddress,
+        chainName
+      );
+      application = await builder.build(roundAddress, formInputs);
+
+      deterministicApplication = objectToDeterministicJSON(application as any);
+    } catch (error) {
+      dispatch(
+        applicationError(
+          roundAddress,
+          "cannot authenticate user",
+          Status.LitAuthentication
+        )
+      );
+      return;
+    }
 
     const { signer } = global;
 
@@ -200,6 +216,7 @@ export const submitApplication =
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
+      datadogRum.addError(e);
       dispatch(
         applicationError(
           roundAddress,
@@ -250,6 +267,7 @@ export const submitApplication =
         projectId: Number(projectId),
       });
     } catch (e) {
+      datadogRum.addError(e);
       console.error("error calling applyToRound:", e);
       dispatch(
         applicationError(
@@ -292,6 +310,7 @@ export const checkRoundApplications =
       });
     } catch (e) {
       // FIXME: dispatch an error?
+      datadogRum.addError(e);
       console.error("error getting round applications");
     } finally {
       if (applicationEvents.length === 0) {

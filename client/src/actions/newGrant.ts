@@ -1,14 +1,15 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { Project } from "../types/index";
-import { global } from "../global";
-import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
+import { global } from "../global";
+import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
+import PinataClient from "../services/pinata";
+import { Project } from "../types/index";
 import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
 import { unloadProjects } from "./projects";
-import PinataClient from "../services/pinata";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -107,21 +108,35 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.WaitingForSignature));
     let projectTx;
-
     try {
       if (grantId !== undefined) {
-        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
-          protocol: 1,
-          pointer: metadataCID,
-        });
+        try {
+          projectTx = await projectRegistry.updateProjectMetadata(grantId, {
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
       } else {
-        projectTx = await projectRegistry.createProject({
-          protocol: 1,
-          pointer: metadataCID,
-        });
+        try {
+          projectTx = await projectRegistry.createProject({
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
       }
     } catch (e) {
-      dispatch(grantError("transaction error", Status.WaitingForSignature));
+      datadogRum.addError(e);
+      dispatch(grantError("transaction error", Status.Error));
       console.error("tx error", e);
       return;
     }

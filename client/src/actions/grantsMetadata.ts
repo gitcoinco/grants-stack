@@ -1,12 +1,13 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { RootState } from "../reducers";
-import { Metadata, ProjectRegistryMetadata } from "../types";
-import { global } from "../global";
-import { addressesByChainID } from "../contracts/deployments";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { LocalStorage } from "../services/Storage";
+import { addressesByChainID } from "../contracts/deployments";
+import { global } from "../global";
+import { RootState } from "../reducers";
 import PinataClient from "../services/pinata";
+import { LocalStorage } from "../services/Storage";
+import { Metadata, ProjectRegistryMetadata } from "../types";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -115,6 +116,7 @@ const getMetadata = async (
         return ret;
       } catch (e) {
         // FIXME: dispatch error
+        datadogRum.addError(e);
         console.log("error parsing cached project metadata", e);
       }
     }
@@ -128,6 +130,7 @@ const getMetadata = async (
     content = await pinataClient.fetchText(project.metadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"
+    datadogRum.addError(e);
     console.error(e);
     return null;
   }
@@ -136,6 +139,7 @@ const getMetadata = async (
     metadata = JSON.parse(content);
   } catch (e) {
     // FIXME: dispatch JSON error
+    datadogRum.addError(e);
     console.error(e);
     return null;
   }
@@ -163,6 +167,7 @@ export const fetchGrantData =
     try {
       project = await getProjectById(id, addresses, signer!);
     } catch (e) {
+      datadogRum.addError(e);
       console.error("error fetching project by id", e);
       dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
       return;
