@@ -206,6 +206,7 @@ export async function deployRoundContract(
     // encode input parameters
     const params = [
       round.votingStrategy,
+      "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace with real payout contract when implemented
       new Date(round.applicationsStartTime).getTime() / 1000,
       new Date(round.applicationsEndTime).getTime() / 1000,
       new Date(round.roundStartTime).getTime() / 1000,
@@ -219,6 +220,7 @@ export async function deployRoundContract(
 
     const encodedParameters = ethers.utils.defaultAbiCoder.encode(
       [
+        "address",
         "address",
         "uint256",
         "uint256",
@@ -289,14 +291,16 @@ export const deployQFVotingContract = async (
         (e: { event: string }) => e.event === "VotingContractCreated"
       );
       if (event && event.args) {
-        votingStrategyAddress = event.args.roundAddress;
+        votingStrategyAddress = event.args.votingContractAddress;
       }
+    } else {
+      throw new Error("No VotingContractCreated event");
     }
 
     console.log("✅ Transaction hash: ", tx.hash);
     console.log("✅ Round address: ", votingStrategyAddress);
 
-    return;
+    return votingStrategyAddress;
   } catch (err) {
     console.log("error", err);
     throw new Error("Unable to create qf voting contract");

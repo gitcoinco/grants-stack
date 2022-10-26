@@ -132,6 +132,7 @@ export interface Round {
    * Voting contract address
    */
   votingStrategy: string;
+  // TODO add payoutstrategy prop
   /**
    * Unix timestamp of the start of the round
    */
