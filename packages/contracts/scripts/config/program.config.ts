@@ -9,9 +9,9 @@ type DeployParams = Record<string, ProgramParams>;
 
 export const programParams: DeployParams = {
   "goerli": {
-    programFactoryContract: '0x79c2394B20A809EA693a7D64323A8846FF02029c',
-    programImplementationContract: '0x36570Ae6e66f8dcFcEAe94D2247AF7B07119CFc3',
-    programContract: '0x6c0368003C44dD7f30ecb94219961Aaf252F6222'
+    programFactoryContract: '0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9',
+    programImplementationContract: '0x8568133fF3Ef0BD108868278Cb2a516Eaa3B8ABf',
+    programContract: '0x86DceaCc03A52b7914b72eB4E10290f72BD99e68'
   },
   "optimism-mainnet": {
     programFactoryContract: '0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E',

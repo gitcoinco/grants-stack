@@ -542,6 +542,19 @@
   },
   {
     "inputs": [],
+    "name": "payoutStrategy",
+    "outputs": [
+      {
+        "internalType": "contract IPayoutStrategy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "projectsMetaPtr",
     "outputs": [
       {
@@ -724,6 +737,19 @@
   {
     "inputs": [
       {
+        "internalType": "bytes",
+        "name": "encodedDistribution",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateDistribution",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -807,7 +833,7 @@
     ],
     "name": "vote",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
