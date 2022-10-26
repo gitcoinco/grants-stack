@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@anders-t/ethers-ledger": "^1.0.4",
     "@ethersproject/hardware-wallets": "^5.6.1",
     "@ledgerhq/hw-app-eth": "^6.29.3",
     "hardhat": "^2.9.3"
