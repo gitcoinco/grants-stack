@@ -1,6 +1,9 @@
 import { Round } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { roundFactoryContract } from "./contracts";
+import {
+  qfVotingStrategyFactoryContract,
+  roundFactoryContract,
+} from "./contracts";
 import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -258,3 +261,43 @@ export async function deployRoundContract(
     throw new Error("Unable to create round");
   }
 }
+
+export const deployQFVotingContract = async (
+  signerOrProvider: Signer
+): Promise<void> => {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+
+    const _QFVotingStrategyFactory = qfVotingStrategyFactoryContract(chainId); //roundFactoryContract(chainId);
+    const qfVotingStrategyFactory = new ethers.Contract(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _QFVotingStrategyFactory.address!,
+      _QFVotingStrategyFactory.abi,
+      signerOrProvider
+    );
+
+    // Deploy a new QF Voting Strategy contract
+    const tx = await qfVotingStrategyFactory.create();
+
+    const receipt = await tx.wait(); // wait for transaction receipt
+
+    let votingStrategyAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "VotingContractCreated"
+      );
+      if (event && event.args) {
+        votingStrategyAddress = event.args.roundAddress;
+      }
+    }
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Round address: ", votingStrategyAddress);
+
+    return;
+  } catch (err) {
+    console.log("error", err);
+    throw new Error("Unable to create qf voting contract");
+  }
+};

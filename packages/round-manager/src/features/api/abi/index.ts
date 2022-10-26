@@ -3,6 +3,7 @@ import programImplementation from "./programImplementation";
 import projectRegistry from "./projectRegistry";
 import roundFactory from "./roundFactory";
 import roundImplementation from "./roundImplementation";
+import qfVotingStrategyFactory from "./qfVotingStrategyFactory";
 
 const abi = {
   programFactory,
@@ -10,6 +11,7 @@ const abi = {
   roundFactory,
   roundImplementation,
   projectRegistry,
+  qfVotingStrategyFactory,
 };
 
 export default abi;
