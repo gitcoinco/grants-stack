@@ -30,15 +30,16 @@ export interface ProjectsState {
   error: string | undefined;
   ids: number[];
   events: ProjectEventsMap;
-  applications: [
-    {
-      projectId: string;
-      round: {
-        id: string;
-      };
-      status: AppStatus;
-    }
-  ];
+  applications:
+    | [
+        {
+          round: {
+            id: string;
+          };
+          status: AppStatus;
+        }
+      ]
+    | [];
 }
 
 const initialState: ProjectsState = {
@@ -46,15 +47,7 @@ const initialState: ProjectsState = {
   error: undefined,
   ids: [],
   events: {},
-  applications: [
-    {
-      projectId: "",
-      round: {
-        id: "",
-      },
-      status: AppStatus.Unknown,
-    },
-  ],
+  applications: [],
 };
 
 export const projectsReducer = (
@@ -102,12 +95,11 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATIONS_NOT_FOUND: {
-      const { projectID, roundID } = action;
+      const { roundID } = action;
       return {
         ...state,
         applications: [
           {
-            projectId: projectID,
             round: {
               id: roundID,
             },

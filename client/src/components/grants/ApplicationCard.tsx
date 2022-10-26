@@ -27,10 +27,17 @@ export default function ApplicationCard({
     };
   });
 
-  const renderRoundDate = () => (
+  // const renderRoundDate = () => (
+  //   <>
+  //     {formatDate(roundData?.roundStartTime)} -{" "}
+  //     {formatDate(roundData?.roundEndTime)}
+  //   </>
+  // );
+
+  const renderApplicationDate = () => (
     <>
-      {formatDate(roundData?.roundStartTime)} -{" "}
-      {formatDate(roundData?.roundEndTime)}
+      {formatDate(roundData?.applicationsStartTime)} -{" "}
+      {formatDate(roundData?.applicationsEndTime)}
     </>
   );
 
@@ -67,7 +74,7 @@ export default function ApplicationCard({
         </Box>
       </SimpleGrid>
       <Box className="pl-2 text-gitcoin-gray-400">
-        <span>{renderRoundDate()}</span>
+        <span>{renderApplicationDate()}</span>
       </Box>
       <Box p={2} className="mt-4 mb-6">
         <p>

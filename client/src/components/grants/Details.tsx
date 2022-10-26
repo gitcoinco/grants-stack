@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getRoundProjectsApplied } from "../../actions/projects";
 import { RootState } from "../../reducers";
-import { AppStatus } from "../../reducers/projects";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import generateUniqueRoundApplicationID from "../../utils/roundApplication";
@@ -52,15 +51,6 @@ export default function Details({
       projectID,
       applications,
     };
-  });
-
-  props.applications.map((application) => {
-    console.log("application", application);
-    if (application.status === AppStatus.Approved) {
-      console.log("APPLICATION APPROVED");
-    }
-
-    return null;
   });
 
   useEffect(() => {
@@ -191,12 +181,12 @@ export default function Details({
             <span className="text-[20px]">My Applications</span>
           </Box>
           <Box>
-            {props.applications.length > 0 &&
+            {props.applications &&
               props.applications.map((application) => {
-                const roundID = application.round.id;
+                const roundID = application?.round?.id;
                 const cardData = { props, application, roundID };
                 return (
-                  <Box key={application.round.id} m={2}>
+                  <Box key={application?.round?.id} m={2}>
                     <ApplicationCard applicationData={cardData} />
                   </Box>
                 );

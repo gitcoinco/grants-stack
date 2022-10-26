@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import {
-  AppStatus,
   projectsReducer,
   ProjectsState,
   Status,
@@ -15,15 +14,7 @@ describe("projects reducer", () => {
       error: undefined,
       ids: [],
       events: {},
-      applications: [
-        {
-          projectId: "",
-          round: {
-            id: "",
-          },
-          status: AppStatus.Unknown,
-        },
-      ],
+      applications: [],
     };
   });
 
