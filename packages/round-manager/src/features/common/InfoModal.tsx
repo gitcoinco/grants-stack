@@ -74,9 +74,7 @@ export default function InfoModal({
                       >
                         {title}
                       </Dialog.Title>
-                      <div className="mt-2">
-                        {props.body}
-                      </div>
+                      <div className="mt-2">{props.body}</div>
                     </div>
                   </div>
                   <div className="self-end mt-8">

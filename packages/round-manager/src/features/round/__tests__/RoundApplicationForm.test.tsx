@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   initialQuestions,
   RoundApplicationForm,
@@ -63,7 +63,7 @@ describe("<RoundApplicationForm />", () => {
   });
 
   describe("when submitting form", () => {
-    it("shows headsup modal when submitted form to create a round",async () => {
+    it("shows headsup modal when form is submitted to create a round", async () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -73,7 +73,7 @@ describe("<RoundApplicationForm />", () => {
             },
           }}
           stepper={FormStepper}
-        />,
+        />
       );
       const launch = screen.getByRole("button", { name: /Launch/i });
       fireEvent.click(launch);
@@ -83,7 +83,17 @@ describe("<RoundApplicationForm />", () => {
   });
 
   describe("when saving metadata fails", () => {
-    it.only("shows error modal when saving round application metadata fails", async () => {
+    const startProgressModal = async () => {
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      const continueButton = await screen.findByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
+    };
+
+    it("shows error modal when saving round application metadata fails", async () => {
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -96,8 +106,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
@@ -115,8 +124,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       const done = await screen.findByTestId("done");
       fireEvent.click(done);
@@ -137,16 +145,19 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
       const saveToIpfsCalls = (saveToIPFS as jest.Mock).mock.calls.length;
       expect(saveToIpfsCalls).toEqual(2);
 
-      const tryAgain = await screen.findByTestId("tryAgain");
-      fireEvent.click(tryAgain);
+      const errorModalTryAgain = await screen.findByTestId("tryAgain");
+      fireEvent.click(errorModalTryAgain);
+
+      const headsUpContinueButton = await screen.findByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(headsUpContinueButton);
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
       await waitFor(() => {
@@ -163,6 +174,16 @@ describe("<RoundApplicationForm />", () => {
       contractDeploymentStatus: ProgressStatus.IS_ERROR,
     };
 
+    const startProgressModal = async () => {
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      const continueButton = await screen.findByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
+    };
+
     it("shows error modal when create round transaction fails", async () => {
       renderWithContext(
         <RoundApplicationForm
@@ -176,8 +197,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         createRoundStateOverride
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
@@ -465,7 +485,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -487,7 +507,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -514,14 +534,14 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
         />
       );
 
-       expect(
+      expect(
         screen.getByRole("button", {
           name: /Add a Question/i,
         })
@@ -536,13 +556,12 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
         />
       );
-
 
       expect(screen.getAllByTestId("application-question")).toHaveLength(
         editableQuestions.length

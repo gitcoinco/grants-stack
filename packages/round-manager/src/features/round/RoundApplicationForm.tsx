@@ -158,7 +158,6 @@ export function RoundApplicationForm(props: {
   const prev = () => setCurrentStep(currentStep - 1);
 
   const next: SubmitHandler<Round> = async (values) => {
-
     if (!openHeadsUpModal) {
       setOpenHeadsUpModal(true);
       return;
@@ -269,10 +268,12 @@ export function RoundApplicationForm(props: {
             body={
               <div className="text-sm text-grey-400 gap-16">
                 <p className="text-sm">
-                  Each grant round on the protocol requires three smart contracts.
+                  Each grant round on the protocol requires three smart
+                  contracts.
                 </p>
                 <p className="text-sm my-2">
-                  You'll have to sign a transaction to deploy each of the following:
+                  You'll have to sign a transaction to deploy each of the
+                  following:
                 </p>
                 <ul className="list-disc list-inside pl-3">
                   <li>Quadratic Funding contract</li>
@@ -429,7 +430,7 @@ function ApplicationInformation(props: {
     getValues,
     control,
     remove,
-    append
+    append,
   } = props;
 
   const normalTitle = (index: number, disabled?: boolean) => (
@@ -582,13 +583,11 @@ function ApplicationInformation(props: {
       <div data-testid={"application-question"}>
         <div className="flex flex-row">
           <div className="text-sm basis-2/5">
-            {
-              (
-                editStates[index] ||
-                getValues(`applicationMetadata.questions.${index}.title`).length == 0
-              ) ?
-              editableTitle(index) : normalTitle(index)
-            }
+            {editStates[index] ||
+            getValues(`applicationMetadata.questions.${index}.title`).length ==
+              0
+              ? editableTitle(index)
+              : normalTitle(index)}
           </div>
           <div className="basis-3/5 flex justify-around">
             <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
@@ -620,14 +619,16 @@ function ApplicationInformation(props: {
           <Question key={index} index={index} />
         ))}
 
-        <AddQuestion onClick={() =>
-          append({
-            title: "",
-            required: false,
-            encrypted: false,
-            inputType: "text",
-          })
-        }/>
+        <AddQuestion
+          onClick={() =>
+            append({
+              title: "",
+              required: false,
+              encrypted: false,
+              inputType: "text",
+            })
+          }
+        />
       </div>
     </div>
   );
@@ -762,5 +763,5 @@ function AddQuestion(props: { onClick: () => void }) {
       <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
       Add A Question
     </Button>
-  )
+  );
 }
