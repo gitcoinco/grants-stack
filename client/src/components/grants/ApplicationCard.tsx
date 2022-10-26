@@ -1,39 +1,13 @@
 import { Badge, Box, SimpleGrid } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoundProjectsApplied } from "../../actions/projects";
-import { RootState } from "../../reducers";
 
-// todo: get user projects
-// todo: get user applications for the projects
+// type ApplicationCardProps = {
+//   projectID: string;
+//   chainId: number;
+//   applications: any;
+// };
 
-export default function ApplicationCard() {
-  const dispatch = useDispatch();
-  const props = useSelector((state: RootState) => {
-    const projects = state.projects ?? [];
-    const chainId = state.web3.chainID;
-    const { applications } = projects;
-
-    return {
-      projects,
-      chainId,
-      applications,
-    };
-  });
-
-  console.log("props", props);
-  console.log("project status", props.applications);
-
-  useEffect(() => {
-    dispatch(
-      getRoundProjectsApplied(
-        "0x560dcddb7c9058f5626686d2bcd0cba45c9808ff02c6845477fdafd68db1a2f4",
-        5
-      )
-    );
-  }, []);
-
-  console.log("Props => ", props);
+export default function ApplicationCard({ props }: { props: any }) {
+  console.log("AppCard props", props);
 
   return (
     <Box p={2} className="border-gray-300" borderWidth="1px" borderRadius="md">

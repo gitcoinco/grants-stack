@@ -1,6 +1,12 @@
 import { Box, SimpleGrid } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getRoundProjectsApplied } from "../../actions/projects";
+import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
+import generateUniqueRoundApplicationID from "../../utils/roundApplication";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -30,6 +36,36 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const props = useSelector((state: RootState) => {
+    const chainId = state.web3.chainID;
+    const projectID = generateUniqueRoundApplicationID(
+      chainId!,
+      Number(params.id)
+    );
+    const { applications } = state.projects;
+    // todo: get the round id and sort the projects by round id
+    // const roundState = state.rounds[roundId!];
+    // const round = roundState ? roundState.round : undefined;
+
+    return {
+      chainId,
+      projectID,
+      applications,
+    };
+  });
+
+  props.applications.map((application) =>
+    console.log("application", application)
+  );
+
+  useEffect(() => {
+    dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
+  }, [dispatch, props.projectID, props.chainId]);
+
+  console.log("Props from details => ", props);
+
   return (
     <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <img
@@ -151,7 +187,7 @@ export default function Details({
           <Box p={1}>
             <span className="text-[20px]">My Applications</span>
           </Box>
-          <ApplicationCard />
+          <ApplicationCard props={props} />
         </Box>
       </SimpleGrid>
       <p className="text-primary-text mb-1 font-bold">Description</p>
