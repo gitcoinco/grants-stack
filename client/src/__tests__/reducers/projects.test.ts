@@ -21,8 +21,6 @@ describe("projects reducer", () => {
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADING",
-      // projectID: "12345",
-      // roundID: "0x1234",
     });
 
     expect(newState.status).toBe(Status.Loading);

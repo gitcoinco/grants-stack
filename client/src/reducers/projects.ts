@@ -25,21 +25,19 @@ export enum AppStatus {
   Unknown = "UNKNOWN",
 }
 
+export type Application = {
+  round: {
+    id: string;
+  };
+  status: AppStatus;
+};
+
 export interface ProjectsState {
   status: Status;
   error: string | undefined;
   ids: number[];
   events: ProjectEventsMap;
-  applications:
-    | [
-        {
-          round: {
-            id: string;
-          };
-          status: AppStatus;
-        }
-      ]
-    | [];
+  applications: Application[];
 }
 
 const initialState: ProjectsState = {
@@ -85,10 +83,9 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATIONS_LOADING: {
-      // const { projectID, roundID } = action;
       return {
         ...state,
-        applications: state.applications,
+        applications: [],
         error: undefined,
         status: Status.Loading,
       };
@@ -113,13 +110,10 @@ export const projectsReducer = (
 
     case PROJECT_APPLICATIONS_LOADED: {
       const {
-        projectID,
         applications,
       }: {
-        projectID: string;
-        applications: any;
+        applications: Application[];
       } = action;
-      console.log("applications", projectID, applications);
       return {
         ...state,
         applications,

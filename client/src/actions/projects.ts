@@ -28,8 +28,6 @@ export interface ProjectsUnloadedAction {
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
-  // projectID: string;
-  // roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
@@ -146,7 +144,6 @@ export const getRoundProjectsApplied =
       const applicationsFound: any = await graphqlFetch(
         `query roundProjects($projectID: String) {
           roundProjects(where: { project: $projectID }) {
-            project
             status
             round {
               id
