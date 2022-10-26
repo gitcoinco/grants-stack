@@ -108,33 +108,35 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.WaitingForSignature));
     let projectTx;
-
     try {
       if (grantId !== undefined) {
-        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
-          protocol: 1,
-          pointer: metadataCID,
-        });
-      } catch (e) {
-        datadogRum.addError(e);
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
-      }
-    } else {
-      try {
-        projectTx = await projectRegistry.createProject({
-          protocol: 1,
-          pointer: metadataCID,
-        });
-      } catch (e) {
-        datadogRum.addError(e);
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
+        try {
+          projectTx = await projectRegistry.updateProjectMetadata(grantId, {
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
+      } else {
+        try {
+          projectTx = await projectRegistry.createProject({
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
       }
     } catch (e) {
-      dispatch(grantError("transaction error", Status.WaitingForSignature));
+      datadogRum.addError(e);
+      dispatch(grantError("transaction error", Status.Error));
       console.error("tx error", e);
       return;
     }
