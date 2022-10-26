@@ -581,16 +581,12 @@ describe("Application Form Builder", () => {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  createRoundStateOverrides: Partial<CreateRoundState> = {},
-  dispatch: any = jest.fn()
+  createRoundStateOverrides: Partial<CreateRoundState> = {}
 ) =>
   render(
     <MemoryRouter>
       <CreateRoundContext.Provider
-        value={{
-          state: { ...initialCreateRoundState, ...createRoundStateOverrides },
-          dispatch,
-        }}
+        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
       >
         {ui}
       </CreateRoundContext.Provider>
