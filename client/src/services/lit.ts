@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
+import { Provider } from "@wagmi/core";
 import { isJestRunning } from "../utils/utils";
+import { global } from "../global";
 
 const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
@@ -16,6 +18,11 @@ type LitInit = {
   chain: string;
   contract: string;
 };
+
+interface LitProvider extends Provider {
+  listAccounts?: () => string[];
+  getSigner?: () => any;
+}
 
 export default class Lit {
   litNodeClient: any;
@@ -83,9 +90,15 @@ export default class Lit {
       await this.connect();
     }
 
+    const litProvider: LitProvider = global.web3Provider as Provider;
+
+    litProvider.getSigner = () => global.signer;
+    litProvider.listAccounts = () => [global.address as string];
+
     // Obtain Auth Signature to verify signer is wallet owner
     const authSig = await LitJsSdk.checkAndSignAuthMessage({
       chain: this.chain,
+      customProvider: litProvider,
     });
 
     // Encrypting Content and generating symmetric key
