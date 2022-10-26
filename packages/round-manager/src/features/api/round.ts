@@ -253,7 +253,7 @@ export async function deployRoundContract(
       }
     }
 
-    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Round Contract Transaction hash: ", tx.hash);
     console.log("✅ Round address: ", roundAddress);
 
     const blockNumber = receipt.blockNumber;
@@ -299,12 +299,12 @@ export const deployQFVotingContract = async (
       throw new Error("No VotingContractCreated event");
     }
 
-    console.log("✅ Transaction hash: ", tx.hash);
-    console.log("✅ Round address: ", votingContractAddress);
+    console.log("✅ Voting Contract Transaction hash: ", tx.hash);
+    console.log("✅ Voting Contract address: ", votingContractAddress);
 
     return { votingContractAddress };
   } catch (err) {
     console.log("error", err);
-    throw new Error("Unable to create qf voting contract");
+    throw new Error("Unable to create QF voting contract");
   }
 };

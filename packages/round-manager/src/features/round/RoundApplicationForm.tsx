@@ -22,7 +22,6 @@ import {
 } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
-import { useWallet } from "../common/Auth";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
@@ -30,10 +29,10 @@ import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import {
   CheckIcon,
-  PencilIcon,
-  XIcon,
   InformationCircleIcon,
+  PencilIcon,
   PlusSmIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
@@ -108,11 +107,10 @@ export function RoundApplicationForm(props: {
     fields.map(() => false)
   );
 
-  const { chain } = useWallet();
-
   const {
     createRound,
     IPFSCurrentStatus,
+    votingContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
   } = useCreateRound();
@@ -120,6 +118,7 @@ export function RoundApplicationForm(props: {
   useEffect(() => {
     const isSuccess =
       IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
+      votingContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       roundContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       indexingStatus === ProgressStatus.IS_SUCCESS;
 
@@ -128,6 +127,7 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
+    votingContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
     programId,
@@ -137,6 +137,7 @@ export function RoundApplicationForm(props: {
   useEffect(() => {
     if (
       IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      votingContractDeploymentStatus === ProgressStatus.IS_ERROR ||
       roundContractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
@@ -149,6 +150,7 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
+    votingContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
     navigate,
@@ -181,7 +183,6 @@ export function RoundApplicationForm(props: {
 
       const round = {
         ...data,
-        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // QuadraticFundingVotingStrategy contract
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
       } as Round;
@@ -207,7 +208,12 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Deploying",
-      description: `Connecting to the ${chain.name} blockchain.`,
+      description: "The quadratic funding contract is being deployed.",
+      status: votingContractDeploymentStatus,
+    },
+    {
+      name: "Deploying",
+      description: "The round contract is being deployed.",
       status: roundContractDeploymentStatus,
     },
     {
@@ -227,6 +233,7 @@ export function RoundApplicationForm(props: {
 
   const disableNext: boolean =
     IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
+    votingContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     roundContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IS_SUCCESS ||
