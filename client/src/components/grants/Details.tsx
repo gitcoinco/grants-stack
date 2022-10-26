@@ -46,11 +46,6 @@ export default function Details({
       Number(params.id)
     );
     const { applications } = state.projects;
-    // todo: get all active rounds applied to and if active round
-    // todo: check each one for status
-    // todo: get the round data for display for each one applied to
-    // const roundState = state.rounds[roundId!];
-    // const round = roundState ? roundState.round : undefined;
 
     return {
       chainId,
@@ -196,14 +191,16 @@ export default function Details({
             <span className="text-[20px]">My Applications</span>
           </Box>
           <Box>
-            {props.applications.map((application) => {
-              const cardData = { props, application };
-              return (
-                <Box m={2}>
-                  <ApplicationCard props={cardData} />
-                </Box>
-              );
-            })}
+            {props.applications.length > 0 &&
+              props.applications.map((application) => {
+                const roundID = application.round.id;
+                const cardData = { props, application, roundID };
+                return (
+                  <Box key={application.round.id} m={2}>
+                    <ApplicationCard applicationData={cardData} />
+                  </Box>
+                );
+              })}
           </Box>
         </Box>
       </SimpleGrid>
