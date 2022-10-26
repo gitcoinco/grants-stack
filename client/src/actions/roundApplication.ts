@@ -1,3 +1,4 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -215,6 +216,7 @@ export const submitApplication =
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
+      datadogRum.addError(e);
       dispatch(
         applicationError(
           roundAddress,
@@ -265,6 +267,7 @@ export const submitApplication =
         projectId: Number(projectId),
       });
     } catch (e) {
+      datadogRum.addError(e);
       console.error("error calling applyToRound:", e);
       dispatch(
         applicationError(
@@ -307,6 +310,7 @@ export const checkRoundApplications =
       });
     } catch (e) {
       // FIXME: dispatch an error?
+      datadogRum.addError(e);
       console.error("error getting round applications");
     } finally {
       if (applicationEvents.length === 0) {

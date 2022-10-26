@@ -2036,6 +2036,18 @@
   resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.16.0.tgz#41d3d58f4c1327a5580f7b3589424a26b92de777"
   integrity sha512-uNc7lJ3h8xgXLM4g2J96nb8ntxZ/+nMC+vkBsRPqq8ZhuMNJDLgURy2UMB457OPzoksBewHo9nqOUmP6v0chLw==
 
+"@datadog/browser-core@4.21.2":
+  version "4.21.2"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.21.2.tgz#d6f42a28f6d35e8066ace16d99651965ba877458"
+  integrity sha512-o3UvCPBF0OdCInCbiC9j79K0F7/wThARZFq8+wnAOitZu64VT5XNpHFQqFP+9c+zzcxmwlTIINHmWLdkpKEECg==
+
+"@datadog/browser-logs@^4.21.2":
+  version "4.21.2"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-4.21.2.tgz#c9485b52c5da372fdf874f924044b39f800b1c33"
+  integrity sha512-E6Nmm4qfawlEls57uLyenG2+lLYK1sL9rSFmTALwAmZwsYeEuEZOcXkoncKYPfDxBXI5/UoaE9Rnq4AOjBBK4g==
+  dependencies:
+    "@datadog/browser-core" "4.21.2"
+
 "@datadog/browser-rum-core@4.16.0":
   version "4.16.0"
   resolved "https://registry.yarnpkg.com/@datadog/browser-rum-core/-/browser-rum-core-4.16.0.tgz#0589dfab0277d98c3e7a57f5b356bdc0ff8b6040"
@@ -12002,11 +12014,6 @@ react-clientside-effect@^1.2.6:
   integrity sha512-XGGGRQAKY+q25Lz9a/4EPqom7WRjz3z9R2k4jhVKA/puQFH/5Nt27vFZYql4m4NVNdUvX8PS3O7r/Zzm7cjUlg==
   dependencies:
     "@babel/runtime" "^7.12.13"
-
-react-datadog@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-datadog/-/react-datadog-1.1.0.tgz#43eeea83f72915b3d44cfbd917cbac85c20a398b"
-  integrity sha512-hZJwaf6b6zwI+CBPXX3o1QteaytR4sSWtS5p8teA+r+u4ZegCuwy8+i7JjA4sCk6KzCYSGVJowqTBq9OdGnnJA==
 
 react-dev-utils@^12.0.1:
   version "12.0.1"

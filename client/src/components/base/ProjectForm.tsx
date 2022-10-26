@@ -1,7 +1,8 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
-import { metadataSaved, metadataImageSaved } from "../../actions/projectForm";
+import { metadataImageSaved, metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
@@ -69,6 +70,7 @@ function ProjectForm({
       });
     } catch (e) {
       const error = e as ValidationError;
+      datadogRum.addError(error);
       setFormValidation({
         messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,

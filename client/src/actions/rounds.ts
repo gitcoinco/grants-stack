@@ -1,5 +1,6 @@
 import { Dispatch } from "redux";
 // import { RootState } from "../reducers";
+import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -82,6 +83,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     // address validation
     ethers.utils.getAddress(address);
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "invalid address or address checksum"));
     console.error(e);
     return;
@@ -102,6 +104,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const ast: BigNumber = await contract.applicationsStartTime();
     applicationsStartTime = ast.toNumber();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading application start time"));
     console.error(e);
     return;
@@ -118,6 +121,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const aet: BigNumber = await contract.applicationsEndTime();
     applicationsEndTime = aet.toNumber();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading application end time"));
     console.error(e);
     return;
@@ -134,6 +138,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const rst: BigNumber = await contract.roundStartTime();
     roundStartTime = rst.toNumber();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading round start time"));
     console.error(e);
     return;
@@ -150,6 +155,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const ret: BigNumber = await contract.roundEndTime();
     roundEndTime = ret.toNumber();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading round end time"));
     console.error(e);
     return;
@@ -165,6 +171,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   try {
     token = await contract.token();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading round token"));
     console.error(e);
     return;
@@ -180,6 +187,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   try {
     roundMetaPtr = await contract.roundMetaPtr();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading round metaPtr"));
     console.error(e);
     return;
@@ -196,6 +204,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     const resp = await pinataClient.fetchText(roundMetaPtr.pointer);
     roundMetadata = JSON.parse(resp);
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading round metadata"));
     console.error(e);
     return;
@@ -211,6 +220,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
   try {
     applicationMetaPtr = await contract.applicationMetaPtr();
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading application metaPtr"));
     console.error(e);
     return;
@@ -248,6 +258,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     });
     applicationMetadata.projectQuestionId = projectQuestionId;
   } catch (e) {
+    datadogRum.addError(e);
     dispatch(loadingError(address, "error loading application metadata"));
     console.error(e);
     return;
@@ -272,6 +283,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
     try {
       programMetaPtr = await programContract.metaPtr();
     } catch (e) {
+      datadogRum.addError(e);
       dispatch(loadingError(address, "error loading program metaPtr"));
       console.error(e);
       return;
@@ -289,6 +301,7 @@ export const loadRound = (address: string) => async (dispatch: Dispatch) => {
       programMetadata = JSON.parse(resp);
       programName = programMetadata.name;
     } catch (e) {
+      datadogRum.addError(e);
       dispatch(loadingError(address, "error loading program metadata"));
       console.error(e);
       return;
