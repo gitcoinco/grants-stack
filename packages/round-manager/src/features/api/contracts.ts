@@ -83,3 +83,25 @@ export const projectRegistryContract = (
     abi: abi.projectRegistry,
   };
 };
+
+export const qfVotingStrategyFactoryContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab";
+    }
+  }
+
+  return {
+    address: address,
+    abi: abi.qfVotingStrategyFactory,
+  };
+};

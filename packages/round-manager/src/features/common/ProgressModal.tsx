@@ -76,7 +76,7 @@ export default function ProgressModal({
                   <ol className="overflow-hidden">
                     {props.steps.map((step, stepIdx) => (
                       <li
-                        key={step.name}
+                        key={stepIdx}
                         className={`relative ${
                           stepIdx !== props.steps.length - 1 && "pb-10"
                         }`}
