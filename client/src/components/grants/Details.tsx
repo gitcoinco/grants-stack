@@ -1,4 +1,4 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box, Grid, GridItem } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -88,8 +88,12 @@ export default function Details({
         </div>
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-        <Box>
+      <Grid
+        templateColumns="repeat(3, 1fr)"
+        templateRows="repeat(2, 1fr)"
+        gap={6}
+      >
+        <GridItem colSpan="auto">
           <div>
             <a
               target="_blank"
@@ -137,8 +141,8 @@ export default function Details({
               {project?.credentials?.github && <Verified />}
             </div>
           )}
-        </Box>
-        <Box>
+        </GridItem>
+        <GridItem colSpan="auto">
           <div>
             <p className="flex text-sm m-2 pb-2">
               <Calendar color={colors["secondary-text"]} />
@@ -168,8 +172,8 @@ export default function Details({
               </a>
             </div>
           )}
-        </Box>
-        <Box>
+        </GridItem>
+        <GridItem colSpan={1} rowSpan="auto">
           {props.applications.length !== 0 && (
             <Box p={1}>
               <span className="text-[20px]">My Applications</span>
@@ -187,10 +191,14 @@ export default function Details({
                 );
               })}
           </Box>
-        </Box>
+        </GridItem>
+        <GridItem colSpan={2}>
+          <p className="text-primary-text xl:mt-2 lg:mt-2 font-bold">
+            Description
+          </p>
+          <p className="mb-12">{project?.description}</p>
+        </GridItem>
       </Grid>
-      <p className="text-primary-text mb-1 font-bold">Description</p>
-      <p className="mb-12">{project?.description}</p>
     </div>
   );
 }
