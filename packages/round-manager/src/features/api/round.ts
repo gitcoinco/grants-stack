@@ -1,9 +1,6 @@
 import { Round } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import {
-  qfVotingStrategyFactoryContract,
-  roundFactoryContract,
-} from "./contracts";
+import { roundFactoryContract } from "./contracts";
 import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -184,6 +181,13 @@ export async function listRounds(
   }
 }
 
+/**
+ * Deploys a round by invoking the create funciton on RoundFactory
+ *
+ * @param round
+ * @param signerOrProvider
+ * @returns
+ */
 export async function deployRoundContract(
   round: Round,
   signerOrProvider: Signer
@@ -265,46 +269,3 @@ export async function deployRoundContract(
     throw new Error("Unable to create round");
   }
 }
-
-// Consider moving this into its own file
-export const deployQFVotingContract = async (
-  signerOrProvider: Signer
-): Promise<{ votingContractAddress: string }> => {
-  try {
-    const chainId = await signerOrProvider.getChainId();
-
-    const _QFVotingStrategyFactory = qfVotingStrategyFactoryContract(chainId); //roundFactoryContract(chainId);
-    const qfVotingStrategyFactory = new ethers.Contract(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _QFVotingStrategyFactory.address!,
-      _QFVotingStrategyFactory.abi,
-      signerOrProvider
-    );
-
-    // Deploy a new QF Voting Strategy contract
-    const tx = await qfVotingStrategyFactory.create();
-
-    const receipt = await tx.wait(); // wait for transaction receipt
-
-    let votingContractAddress;
-
-    if (receipt.events) {
-      const event = receipt.events.find(
-        (e: { event: string }) => e.event === "VotingContractCreated"
-      );
-      if (event && event.args) {
-        votingContractAddress = event.args.votingContractAddress;
-      }
-    } else {
-      throw new Error("No VotingContractCreated event");
-    }
-
-    console.log("✅ Voting Contract Transaction hash: ", tx.hash);
-    console.log("✅ Voting Contract address: ", votingContractAddress);
-
-    return { votingContractAddress };
-  } catch (err) {
-    console.log("error", err);
-    throw new Error("Unable to create QF voting contract");
-  }
-};
