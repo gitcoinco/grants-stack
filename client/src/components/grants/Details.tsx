@@ -170,11 +170,13 @@ export default function Details({
           )}
         </Box>
         <Box>
-          <Box p={1}>
-            <span className="text-[20px]">My Applications</span>
-          </Box>
+          {props.applications.length !== 0 && (
+            <Box p={1}>
+              <span className="text-[20px]">My Applications</span>
+            </Box>
+          )}
           <Box>
-            {props.applications &&
+            {props.applications.length !== 0 &&
               props.applications.map((application) => {
                 const roundID = application?.round?.id;
                 const cardData = { application, roundID };
