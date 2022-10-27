@@ -3,6 +3,7 @@ import { Button } from "../common/styles";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
 import DefaultBannerImage from "../../assets/default_banner.png";
 import DefaultLogoImage from "../../assets/default_logo.png";
+import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
 
 export function NumberOfStatus(props: {
   grantApplications: GrantApplication[];
@@ -197,8 +198,7 @@ export function Select(props: { onClick: () => void }) {
 }
 
 export function Continue(props: {
-  grantApplications: GrantApplication[];
-  status: ProjectStatus;
+  grantApplicationLength: number;
   onClick: () => void;
 }) {
   return (
@@ -206,13 +206,7 @@ export function Continue(props: {
       <hr />
       <div className="flex justify-end items-center py-5 pr-20">
         <span className="text-grey-400 text-sm mr-6">
-          You have selected{" "}
-          {
-            props.grantApplications?.filter(
-              (application) => application.status === props.status
-            ).length
-          }{" "}
-          Grant Applications
+          You have selected {props.grantApplicationLength} Grant Applications
         </span>
         <Button
           type="button"
@@ -261,6 +255,31 @@ export function ApprovedApplicationsCount(props: {
         grantApplications={props.grantApplications}
         status={"APPROVED"}
       />
+    </div>
+  );
+}
+
+function NoApplicationsMessage() {
+  return (
+    <>
+      <h2 className="mt-8 text-2xl antialiased">No Applications</h2>
+      <div className="mt-2 text-sm">
+        Applications have not been submitted yet.
+      </div>
+      <div className="text-sm">
+        Try promoting your Grant Program to get more traction!
+      </div>
+    </>
+  );
+}
+
+export function NoApplicationsContent() {
+  return (
+    <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
+      <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
+        <NoApplicationsForRoundIcon className="w-6 h-6" />
+      </div>
+      <NoApplicationsMessage />
     </div>
   );
 }
