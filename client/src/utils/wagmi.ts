@@ -82,9 +82,9 @@ if (process.env.REACT_APP_ENV === "production") {
 }
 
 export const { chains, provider } = configureChains(chainsAvailable, [
-  infuraProvider({ apiKey: infuraId }),
-  alchemyProvider({ apiKey: alchemyId }),
-  publicProvider(),
+  infuraProvider({ apiKey: infuraId, priority: 0 }),
+  alchemyProvider({ apiKey: alchemyId, priority: 1 }),
+  publicProvider({ priority: 2 }),
 ]);
 
 // Custom wallet connectors: more can be added by going here:
