@@ -1,10 +1,28 @@
-import { ApplicationMetadata, InputType, IPFSObject } from "./types";
+import { ApplicationMetadata, InputType, IPFSObject, Program } from "./types";
 
 export enum ChainId {
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
 }
+// NB: number keys are coerced into strings for JS object keys
+export const CHAINS: Record<number, Program["chain"]> = {
+  [ChainId.GOERLI_CHAIN_ID]: {
+    id: ChainId.GOERLI_CHAIN_ID,
+    name: "Goerli", // TODO get canonical network names
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
+    id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    name: "Optimism",
+    logo: "./logos/optimism-logo.svg",
+  },
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
+    id: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    name: "Fantom",
+    logo: "./logos/fantom-logo.svg",
+  },
+};
 
 export type PayoutToken = {
   name: string;
@@ -15,10 +33,10 @@ export type PayoutToken = {
 };
 
 export const TokenNamesAndLogos: Record<string, string> = {
-  FTM: "https://picsum.photos/256",
-  BUSD: "https://picsum.photos/256",
-  DAI: "https://picsum.photos/256",
-  ETH: "https://picsum.photos/256",
+  FTM: "./logos/fantom-logo.svg",
+  BUSD: "./logos/busd-logo.svg",
+  DAI: "./logos/dai-logo.svg",
+  ETH: "./logos/ethereum-eth-logo.svg",
 };
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {

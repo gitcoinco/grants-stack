@@ -85,6 +85,14 @@ export interface Program {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets: Array<string>;
+  /**
+   * Network Chain Information
+   */
+  chain?: {
+    id: number;
+    name?: string;
+    logo?: string;
+  };
 }
 
 export type InputType = "email" | "number" | "text";

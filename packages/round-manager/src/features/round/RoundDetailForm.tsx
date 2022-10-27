@@ -13,7 +13,7 @@ import "react-datetime/css/react-datetime.css";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Round } from "../api/types";
+import { Program, Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { Input } from "../common/styles";
 import { FormStepper } from "../common/FormStepper";
@@ -22,16 +22,6 @@ import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { getPayoutTokenOptions, PayoutToken } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import moment from "moment";
-
-//TODO: Time defaults to next hour - Date Picker
-/*
-
-- Time in picker should start out with their current time
-- round it to next hour
-- refactor and remove moment and use luxon
-- refactor some JSX into well named small components
-
-*/
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -75,9 +65,11 @@ const ValidationSchema = yup.object().shape({
 
 interface RoundDetailFormProps {
   stepper: typeof FormStepper;
+  initialData?: { program?: Program };
 }
 
 export function RoundDetailForm(props: RoundDetailFormProps) {
+  const program = props.initialData?.program;
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
   const {
@@ -255,6 +247,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   register={register("roundMetadata.name")}
                   errors={errors}
                 />
+                {program && <ProgramChain program={program} />}
               </div>
               <p className="mt-6">
                 What are the dates for the Applications and Round voting
@@ -534,6 +527,7 @@ function RoundName(props: {
     </div>
   );
 }
+
 function PayoutTokenButton(props: {
   errors: FieldErrors<Round>;
   token?: PayoutToken;
@@ -568,6 +562,42 @@ function PayoutTokenButton(props: {
         <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
       </span>
     </Listbox.Button>
+  );
+}
+
+function ProgramChain(props: { program: Program }) {
+  const { program } = props;
+  return (
+    <div className="col-span-6 sm:col-span-3 opacity-50">
+      <Listbox disabled>
+        <div>
+          <Listbox.Label className="block text-xs font-medium">
+            Program Chain
+          </Listbox.Label>
+          <div className="relative mt-1">
+            <Listbox.Button
+              className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm`}
+            >
+              <span className="flex items-center">
+                {program.chain?.logo && (
+                  <img
+                    src={program.chain.logo}
+                    alt="chain logo"
+                    data-testid="chain-logo"
+                    className="h-5 w-5 flex-shrink-0 rounded-full"
+                  />
+                )}
+                {
+                  <span className="ml-3 block truncate">
+                    {program.chain?.name}
+                  </span>
+                }
+              </span>
+            </Listbox.Button>
+          </div>
+        </div>
+      </Listbox>
+    </div>
   );
 }
 

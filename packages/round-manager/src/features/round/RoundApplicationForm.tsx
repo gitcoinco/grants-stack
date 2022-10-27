@@ -395,7 +395,7 @@ function ApplicationInformation(props: {
     getValues,
     control,
     remove,
-    append
+    append,
   } = props;
 
   const normalTitle = (index: number, disabled?: boolean) => (
@@ -548,13 +548,11 @@ function ApplicationInformation(props: {
       <div data-testid={"application-question"}>
         <div className="flex flex-row">
           <div className="text-sm basis-2/5">
-            {
-              (
-                editStates[index] ||
-                getValues(`applicationMetadata.questions.${index}.title`).length == 0
-              ) ?
-              editableTitle(index) : normalTitle(index)
-            }
+            {editStates[index] ||
+            getValues(`applicationMetadata.questions.${index}.title`).length ==
+              0
+              ? editableTitle(index)
+              : normalTitle(index)}
           </div>
           <div className="basis-3/5 flex justify-around">
             <div className="my-auto w-1/2">{encryptionToggle(index)}</div>
@@ -586,14 +584,16 @@ function ApplicationInformation(props: {
           <Question key={index} index={index} />
         ))}
 
-        <AddQuestion onClick={() =>
-          append({
-            title: "",
-            required: false,
-            encrypted: false,
-            inputType: "text",
-          })
-        }/>
+        <AddQuestion
+          onClick={() =>
+            append({
+              title: "",
+              required: false,
+              encrypted: false,
+              inputType: "text",
+            })
+          }
+        />
       </div>
     </div>
   );
@@ -728,5 +728,5 @@ function AddQuestion(props: { onClick: () => void }) {
       <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
       Add A Question
     </Button>
-  )
+  );
 }
