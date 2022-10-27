@@ -34,6 +34,11 @@ const validation = {
   errorCount: 0,
 };
 
+enum ValidationStatus {
+  Invalid,
+  Valid,
+}
+
 export default function Form({
   roundApplication,
   round,
@@ -95,6 +100,7 @@ export default function Form({
         errorCount: 0,
       });
       setDisableSubmit(false);
+      return ValidationStatus.Valid;
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -105,12 +111,13 @@ export default function Form({
         errorCount: error.inner.length,
       });
       setDisableSubmit(true);
+      return ValidationStatus.Invalid;
     }
   };
 
   const handlePreviewClick = async () => {
-    await validate();
-    if (formValidation.valid) {
+    const valid = await validate();
+    if (valid === ValidationStatus.Valid) {
       setPreview(true);
       setShowError(false);
     } else {
