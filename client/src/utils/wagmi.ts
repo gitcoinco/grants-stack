@@ -9,6 +9,7 @@ import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
+// import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 // RPC keys
 const alchemyId = process.env.ALCHEMY_ID;
@@ -21,7 +22,8 @@ const fantomTestnet: Chain = {
   id: 4002,
   name: "Fantom Testnet",
   network: "fantom testnet",
-  iconUrl: "https://fantomrock.com/img/tokens/0.png",
+  iconUrl:
+    "https://ipfs.io/ipfs/Qmf3a8sPpk8TM4x2aFCyb14SAmn2RZehiDFP7HhFMD1oLK?filename=ftm-testnet.png",
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
@@ -41,7 +43,7 @@ const fantomMainnet: Chain = {
   name: "Fantom",
   network: "fantom mainnet",
   iconUrl:
-    "https://ipfs.io/ipns/k51qzi5uqu5di9fpr1u08putyfwqdzwue8dbxq0047mid8hj85hfetm9bw71tv",
+    "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9?filename=fantom-ftm-logo.png",
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
@@ -56,6 +58,7 @@ const fantomMainnet: Chain = {
   testnet: false,
 };
 
+// todo: fix for rpc issue is with hardhat local chain calling rpc
 if (process.env.REACT_APP_LOCALCHAIN) {
   chainsAvailable.push(chain.hardhat);
 }
@@ -80,9 +83,21 @@ if (process.env.REACT_APP_ENV === "production") {
 }
 
 export const { chains, provider } = configureChains(chainsAvailable, [
-  infuraProvider({ apiKey: infuraId, priority: 0 }),
-  alchemyProvider({ apiKey: alchemyId, priority: 1 }),
-  publicProvider({ priority: 2 }),
+  infuraProvider({ apiKey: infuraId }),
+  alchemyProvider({ apiKey: alchemyId }),
+  // jsonRpcProvider({
+  //   rpc: (chainId) => {
+  //     if (chainId.id === fantomMainnet.id) {
+  //       return { http: chainId.rpcUrls.default };
+  //     }
+  //     if (chainId.id === fantomTestnet.id) {
+  //       return { http: chainId.rpcUrls.default };
+  //     }
+
+  //     return null;
+  //   },
+  // }),
+  publicProvider(),
 ]);
 
 // Custom wallet connectors: more can be added by going here:
