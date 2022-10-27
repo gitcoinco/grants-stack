@@ -14,7 +14,7 @@ import {
 } from "../../../context/round/CreateRoundContext";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
-import { deployRoundContract } from "../../api/round";
+import { deployQFVotingContract, deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { FormContext } from "../../common/FormWizard";
 import { randomInt } from "crypto";
@@ -56,13 +56,46 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
+    (deployQFVotingContract as jest.Mock).mockResolvedValue({
+      votingContractAddress: "0xVotingContract",
+    });
     (deployRoundContract as jest.Mock).mockResolvedValue({
       transactionBlockNumber: 0,
     });
     (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 
+  describe("when submitting form", () => {
+    it("shows headsup modal when form is submitted to create a round", async () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      expect(await screen.findByTestId("info-modal")).toBeInTheDocument();
+    });
+  });
+
   describe("when saving metadata fails", () => {
+    const startProgressModal = async () => {
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      const continueButton = await screen.findByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
+    };
+
     it("shows error modal when saving round application metadata fails", async () => {
       renderWithContext(
         <RoundApplicationForm
@@ -76,8 +109,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
@@ -95,8 +127,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       const done = await screen.findByTestId("done");
       fireEvent.click(done);
@@ -117,16 +148,14 @@ describe("<RoundApplicationForm />", () => {
         />,
         { IPFSCurrentStatus: ProgressStatus.IS_ERROR }
       );
-
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
       const saveToIpfsCalls = (saveToIPFS as jest.Mock).mock.calls.length;
       expect(saveToIpfsCalls).toEqual(2);
 
-      const tryAgain = await screen.findByTestId("tryAgain");
-      fireEvent.click(tryAgain);
+      const errorModalTryAgain = await screen.findByTestId("tryAgain");
+      fireEvent.click(errorModalTryAgain);
 
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
       await waitFor(() => {
@@ -140,7 +169,17 @@ describe("<RoundApplicationForm />", () => {
   describe("when saving round application metadata succeeds but create round transaction fails", () => {
     const createRoundStateOverride = {
       IPFSCurrentStatus: ProgressStatus.IS_SUCCESS,
-      contractDeploymentStatus: ProgressStatus.IS_ERROR,
+      roundContractDeploymentStatus: ProgressStatus.IS_ERROR,
+    };
+
+    const startProgressModal = async () => {
+      const launch = screen.getByRole("button", { name: /Launch/i });
+      fireEvent.click(launch);
+
+      const continueButton = await screen.findByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
     };
 
     it("shows error modal when create round transaction fails", async () => {
@@ -156,8 +195,7 @@ describe("<RoundApplicationForm />", () => {
         />,
         createRoundStateOverride
       );
-      const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await startProgressModal();
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
     });
@@ -541,16 +579,12 @@ describe("Application Form Builder", () => {
 
 export const renderWithContext = (
   ui: JSX.Element,
-  createRoundStateOverrides: Partial<CreateRoundState> = {},
-  dispatch: any = jest.fn()
+  createRoundStateOverrides: Partial<CreateRoundState> = {}
 ) =>
   render(
     <MemoryRouter>
       <CreateRoundContext.Provider
-        value={{
-          state: { ...initialCreateRoundState, ...createRoundStateOverrides },
-          dispatch,
-        }}
+        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
       >
         {ui}
       </CreateRoundContext.Provider>

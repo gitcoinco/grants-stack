@@ -1,6 +1,9 @@
 import { Round } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { roundFactoryContract } from "./contracts";
+import {
+  qfVotingStrategyFactoryContract,
+  roundFactoryContract,
+} from "./contracts";
 import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -79,6 +82,7 @@ export async function getRoundById(
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
       token: res.data.rounds[0].token,
       votingStrategy: res.data.rounds[0].votingStrategy,
+      payoutStrategy: res.data.rounds[0].payoutStrategy,
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
     };
@@ -167,6 +171,7 @@ export async function listRounds(
         roundEndTime: new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
+        payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
       });
@@ -203,6 +208,7 @@ export async function deployRoundContract(
     // encode input parameters
     const params = [
       round.votingStrategy,
+      round.payoutStrategy,
       new Date(round.applicationsStartTime).getTime() / 1000,
       new Date(round.applicationsEndTime).getTime() / 1000,
       new Date(round.roundStartTime).getTime() / 1000,
@@ -216,6 +222,7 @@ export async function deployRoundContract(
 
     const encodedParameters = ethers.utils.defaultAbiCoder.encode(
       [
+        "address",
         "address",
         "uint256",
         "uint256",
@@ -246,7 +253,7 @@ export async function deployRoundContract(
       }
     }
 
-    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Round Contract Transaction hash: ", tx.hash);
     console.log("✅ Round address: ", roundAddress);
 
     const blockNumber = receipt.blockNumber;
@@ -258,3 +265,46 @@ export async function deployRoundContract(
     throw new Error("Unable to create round");
   }
 }
+
+// Consider moving this into its own file
+export const deployQFVotingContract = async (
+  signerOrProvider: Signer
+): Promise<{ votingContractAddress: string }> => {
+  try {
+    const chainId = await signerOrProvider.getChainId();
+
+    const _QFVotingStrategyFactory = qfVotingStrategyFactoryContract(chainId); //roundFactoryContract(chainId);
+    const qfVotingStrategyFactory = new ethers.Contract(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      _QFVotingStrategyFactory.address!,
+      _QFVotingStrategyFactory.abi,
+      signerOrProvider
+    );
+
+    // Deploy a new QF Voting Strategy contract
+    const tx = await qfVotingStrategyFactory.create();
+
+    const receipt = await tx.wait(); // wait for transaction receipt
+
+    let votingContractAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "VotingContractCreated"
+      );
+      if (event && event.args) {
+        votingContractAddress = event.args.votingContractAddress;
+      }
+    } else {
+      throw new Error("No VotingContractCreated event");
+    }
+
+    console.log("✅ Voting Contract Transaction hash: ", tx.hash);
+    console.log("✅ Voting Contract address: ", votingContractAddress);
+
+    return { votingContractAddress };
+  } catch (err) {
+    console.log("error", err);
+    throw new Error("Unable to create QF voting contract");
+  }
+};

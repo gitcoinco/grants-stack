@@ -3,19 +3,34 @@ import {
   Round,
   StorageProtocolID,
 } from "../../features/api/types";
-import React, { createContext, useContext, useReducer } from "react";
+import React, {
+  createContext,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { useWallet } from "../../features/common/Auth";
-import { deployRoundContract } from "../../features/api/round";
+import {
+  deployQFVotingContract,
+  deployRoundContract,
+} from "../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 
+type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
+
 export interface CreateRoundState {
   IPFSCurrentStatus: ProgressStatus;
-  contractDeploymentStatus: ProgressStatus;
+  setIPFSCurrentStatus: SetStatusFn;
+  votingContractDeploymentStatus: ProgressStatus;
+  setVotingContractDeploymentStatus: SetStatusFn;
+  roundContractDeploymentStatus: ProgressStatus;
+  setRoundContractDeploymentStatus: SetStatusFn;
   indexingStatus: ProgressStatus;
+  setIndexingStatus: SetStatusFn;
 }
 
 export type CreateRoundData = {
@@ -29,63 +44,52 @@ export type CreateRoundData = {
 
 export const initialCreateRoundState: CreateRoundState = {
   IPFSCurrentStatus: ProgressStatus.NOT_STARTED,
-  contractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  setIPFSCurrentStatus: () => {
+    /* provided in CreateRoundProvider */
+  },
+  votingContractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  setVotingContractDeploymentStatus: () => {
+    /* provided in CreateRoundProvider */
+  },
+  roundContractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  setRoundContractDeploymentStatus: () => {
+    /* provided in CreateRoundProvider */
+  },
   indexingStatus: ProgressStatus.NOT_STARTED,
+  setIndexingStatus: () => {
+    /* provided in CreateRoundProvider */
+  },
 };
 
-export const CreateRoundContext = createContext<
-  { state: CreateRoundState; dispatch: Dispatch } | undefined
->(undefined);
-
-type Dispatch = (action: Action) => void;
-
-interface Action {
-  type: ActionType;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload?: any;
-}
-
-enum ActionType {
-  SET_STORING_STATUS = "SET_STORING_STATUS",
-  SET_DEPLOYMENT_STATUS = "SET_DEPLOYMENT_STATUS",
-  SET_INDEXING_STATUS = "SET_INDEXING_STATUS",
-  RESET_TO_INITIAL_STATE = "RESET_TO_INITIAL_STATE",
-}
-
-const createRoundReducer = (state: CreateRoundState, action: Action) => {
-  switch (action.type) {
-    case ActionType.SET_STORING_STATUS:
-      return { ...state, IPFSCurrentStatus: action.payload.IPFSCurrentStatus };
-    case ActionType.SET_DEPLOYMENT_STATUS:
-      return {
-        ...state,
-        contractDeploymentStatus: action.payload.contractDeploymentStatus,
-      };
-    case ActionType.SET_INDEXING_STATUS:
-      return {
-        ...state,
-        indexingStatus: action.payload.indexingStatus,
-      };
-    case ActionType.RESET_TO_INITIAL_STATE: {
-      return initialCreateRoundState;
-    }
-  }
-  return state;
-};
+export const CreateRoundContext = createContext<CreateRoundState>(
+  initialCreateRoundState
+);
 
 export const CreateRoundProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(
-    createRoundReducer,
-    initialCreateRoundState
+  const [IPFSCurrentStatus, setIPFSCurrentStatus] = useState(
+    initialCreateRoundState.IPFSCurrentStatus
+  );
+  const [votingContractDeploymentStatus, setVotingContractDeploymentStatus] =
+    useState(initialCreateRoundState.votingContractDeploymentStatus);
+  const [roundContractDeploymentStatus, setRoundContractDeploymentStatus] =
+    useState(initialCreateRoundState.roundContractDeploymentStatus);
+  const [indexingStatus, setIndexingStatus] = useState(
+    initialCreateRoundState.indexingStatus
   );
 
-  const providerProps = {
-    state,
-    dispatch,
+  const providerProps: CreateRoundState = {
+    IPFSCurrentStatus,
+    setIPFSCurrentStatus,
+    votingContractDeploymentStatus,
+    setVotingContractDeploymentStatus,
+    roundContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
+    indexingStatus,
+    setIndexingStatus,
   };
 
   return (
@@ -96,30 +100,33 @@ export const CreateRoundProvider = ({
 };
 
 interface _createRoundParams {
-  dispatch: Dispatch;
+  context: CreateRoundState;
   signerOrProvider: Signer;
   createRoundData: CreateRoundData;
 }
 
 const _createRound = async ({
-  dispatch,
+  context,
   signerOrProvider,
   createRoundData,
 }: _createRoundParams) => {
+  const {
+    setIPFSCurrentStatus,
+    setVotingContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
+    setIndexingStatus,
+  } = context;
   const {
     roundMetadataWithProgramContractAddress,
     applicationQuestions,
     round,
   } = createRoundData;
-  dispatch({
-    type: ActionType.RESET_TO_INITIAL_STATE,
-  });
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
 
     const { roundMetadataIpfsHash, applicationSchemaIpfsHash } =
       await storeDocuments(
-        dispatch,
+        setIPFSCurrentStatus,
         roundMetadataWithProgramContractAddress,
         applicationQuestions
       );
@@ -136,14 +143,25 @@ const _createRound = async ({
       },
     };
 
-    const transactionBlockNumber = await deployContract(
-      dispatch,
-      roundContractInputsWithPointers,
+    const votingContractAddress = await handleDeployVotingContract(
+      setVotingContractDeploymentStatus,
+      signerOrProvider
+    );
+
+    const roundContractInputsWithContracts = {
+      ...roundContractInputsWithPointers,
+      votingStrategy: votingContractAddress,
+      payoutStrategy: "0xAD8E33940a0275651FC4a3a5Ab26a53067e5E50A", // TODO replace dummy with real payout contract when implemented
+    };
+
+    const transactionBlockNumber = await handleDeployRoundContract(
+      setRoundContractDeploymentStatus,
+      roundContractInputsWithContracts,
       signerOrProvider
     );
 
     await waitForSubgraphToUpdate(
-      dispatch,
+      setIndexingStatus,
       signerOrProvider,
       transactionBlockNumber
     );
@@ -162,11 +180,24 @@ export const useCreateRound = () => {
     throw new Error("useCreateRound must be used within a CreateRoundProvider");
   }
 
+  const {
+    setIPFSCurrentStatus,
+    setVotingContractDeploymentStatus,
+    setRoundContractDeploymentStatus,
+    setIndexingStatus,
+  } = context;
   const { signer: walletSigner } = useWallet();
 
   const createRound = (createRoundData: CreateRoundData) => {
+    resetToInitialState(
+      setIPFSCurrentStatus,
+      setVotingContractDeploymentStatus,
+      setRoundContractDeploymentStatus,
+      setIndexingStatus
+    );
+
     return _createRound({
-      dispatch: context.dispatch,
+      context,
       signerOrProvider: walletSigner as Signer,
       createRoundData,
     });
@@ -174,22 +205,34 @@ export const useCreateRound = () => {
 
   return {
     createRound,
-    IPFSCurrentStatus: context.state.IPFSCurrentStatus,
-    contractDeploymentStatus: context.state.contractDeploymentStatus,
-    indexingStatus: context.state.indexingStatus,
+    IPFSCurrentStatus: context.IPFSCurrentStatus,
+    votingContractDeploymentStatus: context.votingContractDeploymentStatus,
+    roundContractDeploymentStatus: context.roundContractDeploymentStatus,
+    indexingStatus: context.indexingStatus,
   };
 };
 
+function resetToInitialState(
+  setStoringStatus: SetStatusFn,
+  setVotingDeployingStatus: SetStatusFn,
+  setDeployingStatus: SetStatusFn,
+  setIndexingStatus: SetStatusFn
+): void {
+  setStoringStatus(initialCreateRoundState.IPFSCurrentStatus);
+  setVotingDeployingStatus(
+    initialCreateRoundState.votingContractDeploymentStatus
+  );
+  setDeployingStatus(initialCreateRoundState.roundContractDeploymentStatus);
+  setIndexingStatus(initialCreateRoundState.indexingStatus);
+}
+
 async function storeDocuments(
-  dispatch: (action: Action) => void,
+  setStoringStatus: SetStatusFn,
   roundMetadataWithProgramContractAddress: CreateRoundData["roundMetadataWithProgramContractAddress"],
   applicationQuestions: CreateRoundData["applicationQuestions"]
 ) {
   try {
-    dispatch({
-      type: ActionType.SET_STORING_STATUS,
-      payload: { IPFSCurrentStatus: ProgressStatus.IN_PROGRESS },
-    });
+    setStoringStatus(ProgressStatus.IN_PROGRESS);
 
     const [roundMetadataIpfsHash, applicationSchemaIpfsHash] =
       await Promise.all([
@@ -207,78 +250,72 @@ async function storeDocuments(
         }),
       ]);
 
-    dispatch({
-      type: ActionType.SET_STORING_STATUS,
-      payload: { IPFSCurrentStatus: ProgressStatus.IS_SUCCESS },
-    });
+    setStoringStatus(ProgressStatus.IS_SUCCESS);
 
     return {
       roundMetadataIpfsHash,
       applicationSchemaIpfsHash,
     };
   } catch (e) {
-    dispatch({
-      type: ActionType.SET_STORING_STATUS,
-      payload: { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
-    });
+    setStoringStatus(ProgressStatus.IS_ERROR);
     throw e;
   }
 }
 
-async function deployContract(
-  dispatch: (action: Action) => void,
+async function handleDeployVotingContract(
+  setDeploymentStatus: SetStatusFn,
+  signerOrProvider: Signer
+): Promise<string> {
+  try {
+    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
+    const { votingContractAddress } = await deployQFVotingContract(
+      signerOrProvider
+    );
+
+    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
+    return votingContractAddress;
+  } catch (e) {
+    setDeploymentStatus(ProgressStatus.IS_ERROR);
+    throw e;
+  }
+}
+
+async function handleDeployRoundContract(
+  setDeploymentStatus: SetStatusFn,
   round: Round,
   signerOrProvider: Signer
 ): Promise<number> {
   try {
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IN_PROGRESS },
-    });
+    setDeploymentStatus(ProgressStatus.IN_PROGRESS);
     const { transactionBlockNumber } = await deployRoundContract(
       round,
       signerOrProvider
     );
 
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IS_SUCCESS },
-    });
+    setDeploymentStatus(ProgressStatus.IS_SUCCESS);
 
     return transactionBlockNumber;
   } catch (e) {
-    dispatch({
-      type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IS_ERROR },
-    });
+    setDeploymentStatus(ProgressStatus.IS_ERROR);
 
     throw e;
   }
 }
 
 async function waitForSubgraphToUpdate(
-  dispatch: (action: Action) => void,
+  setIndexingStatus: SetStatusFn,
   signerOrProvider: Signer,
   transactionBlockNumber: number
 ) {
   try {
-    dispatch({
-      type: ActionType.SET_INDEXING_STATUS,
-      payload: { indexingStatus: ProgressStatus.IN_PROGRESS },
-    });
+    setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
     const chainId = await signerOrProvider.getChainId();
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
 
-    dispatch({
-      type: ActionType.SET_INDEXING_STATUS,
-      payload: { indexingStatus: ProgressStatus.IS_SUCCESS },
-    });
+    setIndexingStatus(ProgressStatus.IS_SUCCESS);
   } catch (e) {
-    dispatch({
-      type: ActionType.SET_INDEXING_STATUS,
-      payload: { indexingStatus: ProgressStatus.IS_ERROR },
-    });
+    setIndexingStatus(ProgressStatus.IS_ERROR);
     throw e;
   }
 }

@@ -141,6 +141,10 @@ export interface Round {
    */
   votingStrategy: string;
   /**
+   * Payout contract address
+   */
+  payoutStrategy: string;
+  /**
    * Unix timestamp of the start of the round
    */
   roundStartTime: Date;
