@@ -57,6 +57,7 @@ export type InputProps = {
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
+  encrypted?: boolean;
 };
 
 export type AddressInputProps = {
@@ -69,6 +70,7 @@ export type AddressInputProps = {
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
+  encrypted?: boolean;
 };
 
 export type ProjectEvents = {
