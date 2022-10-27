@@ -6,7 +6,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import ApplicationsReceived from "../ApplicationsReceived";
+import ApplicationsReceived from "../ApplicationsReceived.tsx.old";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
   ApplicationContext,

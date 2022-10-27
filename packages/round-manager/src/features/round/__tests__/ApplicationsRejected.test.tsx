@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ApplicationsRejected from "../ApplicationsRejected";
+import ApplicationsRejected from "../ApplicationsRejected.tsx.old";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
   fireEvent,
