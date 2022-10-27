@@ -54,12 +54,12 @@ export default function ApplicationCard({
     <Box p={2} className="border-gray-300" borderWidth="1px" borderRadius="md">
       <Box p={2} mb={4}>
         <span className="text-[16px] text-gitcoin-gray-400">
-          {props.round?.roundMetadata.name}
+          {props.round?.programName}
         </span>
       </Box>
       <SimpleGrid columns={2} spacing={2}>
         <Box className="pl-2 text-gitcoin-gray-400">
-          <span>{props.round?.programName}</span>
+          <span>{props.round?.roundMetadata.name}</span>
         </Box>
         <Box className="pl-2 text-right text-gitcoin-gray-400">
           <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
