@@ -18,12 +18,12 @@ export const projectRegistryContract = (
 
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A";
+      address = "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5";
     }
   }
 
