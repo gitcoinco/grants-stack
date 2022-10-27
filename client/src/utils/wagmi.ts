@@ -9,7 +9,6 @@ import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-// import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 // RPC keys
 const alchemyId = process.env.ALCHEMY_ID;
@@ -85,18 +84,6 @@ if (process.env.REACT_APP_ENV === "production") {
 export const { chains, provider } = configureChains(chainsAvailable, [
   infuraProvider({ apiKey: infuraId }),
   alchemyProvider({ apiKey: alchemyId }),
-  // jsonRpcProvider({
-  //   rpc: (chainId) => {
-  //     if (chainId.id === fantomMainnet.id) {
-  //       return { http: chainId.rpcUrls.default };
-  //     }
-  //     if (chainId.id === fantomTestnet.id) {
-  //       return { http: chainId.rpcUrls.default };
-  //     }
-
-  //     return null;
-  //   },
-  // }),
   publicProvider(),
 ]);
 
