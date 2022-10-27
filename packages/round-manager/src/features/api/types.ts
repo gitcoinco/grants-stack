@@ -64,6 +64,10 @@ export interface Contract {
    * Contract ABI in Human Readable ABI format
    */
   abi: Array<string>;
+  /**
+   * Contract ABI in binary format
+   */
+  bytecode?: string;
 }
 
 export interface Program {
@@ -140,6 +144,10 @@ export interface Round {
    * Voting contract address
    */
   votingStrategy: string;
+  /**
+   * Payout contract address
+   */
+  payoutStrategy: string;
   /**
    * Unix timestamp of the start of the round
    */

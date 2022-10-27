@@ -4,34 +4,25 @@ This document lists all the addresses of the contracts that have been deployed o
 
 ## Goerli Network
 
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| QuadraticFundingVotingStrategy    | 0xfc3Dd3847Fdc052001c6cB0e60A3A921C44C50F3 |
-| RoundFactory                      | 0x89f01CD69087669f8e49F6FB8aD475F622Ac8791 |
-| RoundImplementation               | 0x2707e86cBb3Db85b1Ceb78bA9C9580e2F35736fD |
-| Round                             | 0x8140b7168d6acBf528FC68Ea94D75E9d2B5aF721 |
-| ProgramFactory                    | 0x79c2394B20A809EA693a7D64323A8846FF02029c |
-| ProgramImplementation             | 0x36570Ae6e66f8dcFcEAe94D2247AF7B07119CFc3 |
-| Program                           | 0x6c0368003C44dD7f30ecb94219961Aaf252F6222 |
-| QFVotingStrategyFactory           | 0x0b27641d4dE8fb70542aA10b567238F5a3324CE0 |
-| QFVotingStrategyImplementation    | 0xAD8869Fd0481a2dbfd3dCD34F64838EeaEe74e03 |
-| QFVotingContract                  | 0x443b5AC8e5bcc7d69e194C0F78C2125708e7d464 |
-| MerklePayoutContract              | 0x62b3CE47829777db4ec4dd3d9FF268168C562547 |
+These are contracts are created/deployed once for goerli
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| ProgramFactory                        | 0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9 |
+| ProgramImplementation                 | 0x8568133fF3Ef0BD108868278Cb2a516Eaa3B8ABf |
+| QuadraticFundingVotingStrategyFactory | 0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab |
+| QFVotingStrategyImplementation        | 0xfdEAf531f04fd7C6de3938e2069beE83aBadFe08 |
+| RoundFactory                          | 0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48 |
+| RoundImplementation                   | 0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A |
 
 
-## Optimism Mainnet Network
+**Sample contracts unique to a round **
 
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| QuadraticFundingVotingStrategy    |                   TODO                     |
-| RoundFactory                      | 0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C |
-| RoundImplementation               | 0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59 |
-| Round                             | 0x2DF6c42dd2d7a13c19Ca5f7858fB7cC05A2933ed |
-| ProgramFactory                    | 0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E |
-| ProgramImplementation             | 0xED42e0f4391Fa24E579B16191F6Eb41f934c3B1c |
-| Program                           | 0x378cEB3dEb7a80ec1579bfd61EE1EFB76Fc63025 |
-| QFVotingStrategyFactory           |                                            |
-| QFVotingStrategyImplementation    |                                            |
-| QFVotingContract                  |                                            |
-| MerklePayoutContract              |                                            |
+These are contracts are created/deployed for every round created on goerli
 
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| Program                               | 0x86DceaCc03A52b7914b72eB4E10290f72BD99e68 |
+| QFVotingContract                      | 0xeBd0f5D44d2c5517ED7dC8c2F1C18dCf97BA02Ac |
+| MerklePayoutContract                  | 0x4A68275B53165d9209Ec3f535a331A3f0160d6FF |
+| Round                                 | 0xB9c53D1280A0ce344803741EE04f3607cf7F85Ca |

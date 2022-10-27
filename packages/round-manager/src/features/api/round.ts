@@ -79,6 +79,7 @@ export async function getRoundById(
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
       token: res.data.rounds[0].token,
       votingStrategy: res.data.rounds[0].votingStrategy,
+      payoutStrategy: res.data.rounds[0].payoutStrategy,
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
     };
@@ -167,6 +168,7 @@ export async function listRounds(
         roundEndTime: new Date(round.roundEndTime * 1000),
         token: round.token,
         votingStrategy: round.votingStrategy,
+        payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
       });
@@ -179,6 +181,13 @@ export async function listRounds(
   }
 }
 
+/**
+ * Deploys a round by invoking the create funciton on RoundFactory
+ *
+ * @param round
+ * @param signerOrProvider
+ * @returns
+ */
 export async function deployRoundContract(
   round: Round,
   signerOrProvider: Signer
@@ -203,6 +212,7 @@ export async function deployRoundContract(
     // encode input parameters
     const params = [
       round.votingStrategy,
+      round.payoutStrategy,
       new Date(round.applicationsStartTime).getTime() / 1000,
       new Date(round.applicationsEndTime).getTime() / 1000,
       new Date(round.roundStartTime).getTime() / 1000,
@@ -216,6 +226,7 @@ export async function deployRoundContract(
 
     const encodedParameters = ethers.utils.defaultAbiCoder.encode(
       [
+        "address",
         "address",
         "uint256",
         "uint256",
@@ -246,7 +257,7 @@ export async function deployRoundContract(
       }
     }
 
-    console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Round Contract Transaction hash: ", tx.hash);
     console.log("✅ Round address: ", roundAddress);
 
     const blockNumber = receipt.blockNumber;

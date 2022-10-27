@@ -25,6 +25,7 @@ const roundImplementation = [
   "function grantRole(bytes32 role, address account)",
   "function hasRole(bytes32 role, address account) view returns (bool)",
   "function initialize(bytes encodedParameters)",
+  "function payoutStrategy() view returns (address)",
   "function projectsMetaPtr() view returns (uint256 protocol, string pointer)",
   "function renounceRole(bytes32 role, address account)",
   "function revokeRole(bytes32 role, address account)",
@@ -36,11 +37,12 @@ const roundImplementation = [
   "function updateApplicationMetaPtr(tuple(uint256 protocol, string pointer) newApplicationMetaPtr)",
   "function updateApplicationsEndTime(uint256 newApplicationsEndTime)",
   "function updateApplicationsStartTime(uint256 newApplicationsStartTime)",
+  "function updateDistribution(bytes encodedDistribution)",
   "function updateProjectsMetaPtr(tuple(uint256 protocol, string pointer) newProjectsMetaPtr)",
   "function updateRoundEndTime(uint256 newRoundEndTime)",
   "function updateRoundMetaPtr(tuple(uint256 protocol, string pointer) newRoundMetaPtr)",
   "function updateRoundStartTime(uint256 newRoundStartTime)",
-  "function vote(bytes[] encodedVotes)",
+  "function vote(bytes[] encodedVotes) payable",
   "function votingStrategy() view returns (address)",
 ];
 

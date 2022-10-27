@@ -9,13 +9,13 @@ type DeployParams = Record<string, RoundParams>;
 
 export const roundParams: DeployParams = {
   "goerli": {
-    roundFactoryContract: '0x89f01CD69087669f8e49F6FB8aD475F622Ac8791',
-    roundImplementationContract: '0x2707e86cBb3Db85b1Ceb78bA9C9580e2F35736fD',
-    roundContract: '0x8140b7168d6acBf528FC68Ea94D75E9d2B5aF721'
+    roundFactoryContract: '0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48',
+    roundImplementationContract: '0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A',
+    roundContract: '0xB9c53D1280A0ce344803741EE04f3607cf7F85Ca'
   },
   "optimism-mainnet": {
-    roundFactoryContract: '0x64ab6F2E11dF8B3Be5c8838eDe3951AC928daE9C',
-    roundImplementationContract: '0xdf25423c9ec15347197Aa5D3a41c2ebE27587D59',
-    roundContract: '0x2DF6c42dd2d7a13c19Ca5f7858fB7cC05A2933ed'
+    roundFactoryContract: '',
+    roundImplementationContract: '',
+    roundContract: ''
   }
 };

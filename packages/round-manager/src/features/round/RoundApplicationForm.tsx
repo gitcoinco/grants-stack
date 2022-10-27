@@ -22,7 +22,6 @@ import {
 } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
-import { useWallet } from "../common/Auth";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
@@ -30,14 +29,15 @@ import { useCreateRound } from "../../context/round/CreateRoundContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import {
   CheckIcon,
-  PencilIcon,
-  XIcon,
   InformationCircleIcon,
+  PencilIcon,
   PlusSmIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import { Button } from "../common/styles";
+import InfoModal from "../common/InfoModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -73,6 +73,8 @@ export function RoundApplicationForm(props: {
   stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openHeadsUpModal, setOpenHeadsUpModal] = useState(false);
+
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
   const Steps = props.stepper;
@@ -105,19 +107,21 @@ export function RoundApplicationForm(props: {
     fields.map(() => false)
   );
 
-  const { chain } = useWallet();
-
   const {
     createRound,
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
   } = useCreateRound();
 
   useEffect(() => {
     const isSuccess =
       IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
-      contractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      votingContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      payoutContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      roundContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       indexingStatus === ProgressStatus.IS_SUCCESS;
 
     if (isSuccess) {
@@ -125,7 +129,9 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
     programId,
     navigate,
@@ -134,7 +140,9 @@ export function RoundApplicationForm(props: {
   useEffect(() => {
     if (
       IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractDeploymentStatus === ProgressStatus.IS_ERROR
+      votingContractDeploymentStatus === ProgressStatus.IS_ERROR ||
+      payoutContractDeploymentStatus === ProgressStatus.IS_ERROR ||
+      roundContractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
         setOpenErrorModal(true);
@@ -146,7 +154,9 @@ export function RoundApplicationForm(props: {
     }
   }, [
     IPFSCurrentStatus,
-    contractDeploymentStatus,
+    votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
+    roundContractDeploymentStatus,
     indexingStatus,
     navigate,
     programId,
@@ -155,6 +165,11 @@ export function RoundApplicationForm(props: {
   const prev = () => setCurrentStep(currentStep - 1);
 
   const next: SubmitHandler<Round> = async (values) => {
+    if (!openHeadsUpModal) {
+      setOpenHeadsUpModal(true);
+      return;
+    }
+
     try {
       setOpenProgressModal(true);
       const data: Partial<Round> = { ...formData, ...values };
@@ -173,7 +188,6 @@ export function RoundApplicationForm(props: {
 
       const round = {
         ...data,
-        votingStrategy: "0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6", // QuadraticFundingVotingStrategy contract
         ownedBy: programId,
         operatorWallets: props.initialData.program.operatorWallets,
       } as Round;
@@ -199,8 +213,18 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Deploying",
-      description: `Connecting to the ${chain.name} blockchain.`,
-      status: contractDeploymentStatus,
+      description: "The quadratic funding contract is being deployed.",
+      status: votingContractDeploymentStatus,
+    },
+    {
+      name: "Deploying",
+      description: "The payout contract is being deployed.",
+      status: payoutContractDeploymentStatus,
+    },
+    {
+      name: "Deploying",
+      description: "The round contract is being deployed.",
+      status: roundContractDeploymentStatus,
     },
     {
       name: "Indexing",
@@ -219,10 +243,41 @@ export function RoundApplicationForm(props: {
 
   const disableNext: boolean =
     IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
-    contractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    votingContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    payoutContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    roundContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IS_SUCCESS ||
     !props.initialData.program;
+
+  const formSubmitModals = () => (
+    <InfoModal
+      title={"Heads up!"}
+      body={<InfoModalBody />}
+      isOpen={openHeadsUpModal}
+      setIsOpen={setOpenHeadsUpModal}
+      continueButtonAction={() => {
+        handleSubmit(next)();
+      }}
+    >
+      <ProgressModal
+        isOpen={openProgressModal}
+        subheading={"Please hold while we create your Grant Round."}
+        steps={progressSteps}
+      >
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmit(next)}
+          doneFn={() => {
+            setOpenErrorModal(false);
+            setOpenProgressModal(false);
+            setOpenHeadsUpModal(false);
+          }}
+        />
+      </ProgressModal>
+    </InfoModal>
+  );
 
   return (
     <div>
@@ -255,21 +310,7 @@ export function RoundApplicationForm(props: {
               />
             </div>
           </form>
-          <ProgressModal
-            isOpen={openProgressModal}
-            subheading={"Please hold while we create your Grant Round."}
-            steps={progressSteps}
-          >
-            <ErrorModal
-              isOpen={openErrorModal}
-              setIsOpen={setOpenErrorModal}
-              tryAgainFn={handleSubmit(next)}
-              doneFn={() => {
-                setOpenErrorModal(false);
-                setOpenProgressModal(false);
-              }}
-            />
-          </ProgressModal>
+          {formSubmitModals()}
         </div>
       </div>
     </div>
@@ -728,5 +769,23 @@ function AddQuestion(props: { onClick: () => void }) {
       <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
       Add A Question
     </Button>
+  );
+}
+
+function InfoModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        Each grant round on the protocol requires three smart contracts.
+      </p>
+      <p className="text-sm my-2">
+        You'll have to sign a transaction to deploy each of the following:
+      </p>
+      <ul className="list-disc list-inside pl-3">
+        <li>Quadratic Funding contract</li>
+        <li>Payout contract</li>
+        <li>Round core contract</li>
+      </ul>
+    </div>
   );
 }
