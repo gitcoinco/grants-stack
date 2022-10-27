@@ -9,9 +9,6 @@ import {
   ClockIcon,
 } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
-import ApplicationsReceived from "./ApplicationsReceived";
-import ApplicationsApproved from "./ApplicationsApproved";
-import ApplicationsRejected from "./ApplicationsRejected";
 import Footer from "../common/Footer";
 import tw from "tailwind-styled-components";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -24,6 +21,7 @@ import { useApplicationByRoundId } from "../../context/application/ApplicationCo
 import { ApplicationStatus, ProgressStatus, Round } from "../api/types";
 import { Button } from "../common/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
+import ApplicationsOverview from "./ApplicationsOverview";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -36,7 +34,7 @@ export default function ViewRoundPage() {
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { applications } = useApplicationByRoundId(id!);
+  const { applications, isLoading } = useApplicationByRoundId(id!);
 
   const pendingApplications =
     applications?.filter(
@@ -215,13 +213,28 @@ export default function ViewRoundPage() {
                       </Tab.List>
                       <Tab.Panels>
                         <Tab.Panel>
-                          <ApplicationsReceived />
+                          <ApplicationsOverview
+                            id={id}
+                            applications={applications}
+                            isLoading={isLoading}
+                            applicationStatus={ApplicationStatus.PENDING}
+                          />
                         </Tab.Panel>
                         <Tab.Panel>
-                          <ApplicationsApproved />
+                          <ApplicationsOverview
+                            id={id}
+                            applications={applications}
+                            isLoading={isLoading}
+                            applicationStatus={ApplicationStatus.APPROVED}
+                          />
                         </Tab.Panel>
                         <Tab.Panel>
-                          <ApplicationsRejected />
+                          <ApplicationsOverview
+                            id={id}
+                            applications={applications}
+                            isLoading={isLoading}
+                            applicationStatus={ApplicationStatus.REJECTED}
+                          />
                         </Tab.Panel>
                       </Tab.Panels>
                     </Tab.Group>

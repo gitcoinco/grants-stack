@@ -445,7 +445,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -467,7 +467,7 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
@@ -494,14 +494,14 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
         />
       );
 
-       expect(
+      expect(
         screen.getByRole("button", {
           name: /Add a Question/i,
         })
@@ -516,13 +516,12 @@ describe("Application Form Builder", () => {
           initialData={{
             program: {
               operatorWallets: [],
-              metadata: randomMetadata
+              metadata: randomMetadata,
             },
           }}
           stepper={FormStepper}
         />
       );
-
 
       expect(screen.getAllByTestId("application-question")).toHaveLength(
         editableQuestions.length
