@@ -14,16 +14,20 @@ import {
 } from "../../../context/round/CreateRoundContext";
 import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { saveToIPFS } from "../../api/ipfs";
-import { deployQFVotingContract, deployRoundContract } from "../../api/round";
+import { deployRoundContract } from "../../api/round";
 import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import { FormContext } from "../../common/FormWizard";
 import { randomInt } from "crypto";
 import { faker } from "@faker-js/faker";
+import { deployMerklePayoutStrategyContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { deployQFVotingContract } from "../../api/votingStrategy/qfVotingStrategy";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
+jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
+jest.mock("../../api/votingStrategy/qfVotingStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -58,6 +62,9 @@ describe("<RoundApplicationForm />", () => {
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
     (deployQFVotingContract as jest.Mock).mockResolvedValue({
       votingContractAddress: "0xVotingContract",
+    });
+    (deployMerklePayoutStrategyContract as jest.Mock).mockResolvedValue({
+      contractAddress: "0xPayoutContract",
     });
     (deployRoundContract as jest.Mock).mockResolvedValue({
       transactionBlockNumber: 0,

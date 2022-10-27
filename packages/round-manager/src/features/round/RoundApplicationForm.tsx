@@ -111,6 +111,7 @@ export function RoundApplicationForm(props: {
     createRound,
     IPFSCurrentStatus,
     votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
   } = useCreateRound();
@@ -119,6 +120,7 @@ export function RoundApplicationForm(props: {
     const isSuccess =
       IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
       votingContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
+      payoutContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       roundContractDeploymentStatus === ProgressStatus.IS_SUCCESS &&
       indexingStatus === ProgressStatus.IS_SUCCESS;
 
@@ -128,6 +130,7 @@ export function RoundApplicationForm(props: {
   }, [
     IPFSCurrentStatus,
     votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
     programId,
@@ -138,6 +141,7 @@ export function RoundApplicationForm(props: {
     if (
       IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
       votingContractDeploymentStatus === ProgressStatus.IS_ERROR ||
+      payoutContractDeploymentStatus === ProgressStatus.IS_ERROR ||
       roundContractDeploymentStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
@@ -151,6 +155,7 @@ export function RoundApplicationForm(props: {
   }, [
     IPFSCurrentStatus,
     votingContractDeploymentStatus,
+    payoutContractDeploymentStatus,
     roundContractDeploymentStatus,
     indexingStatus,
     navigate,
@@ -213,6 +218,11 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Deploying",
+      description: "The payout contract is being deployed.",
+      status: payoutContractDeploymentStatus,
+    },
+    {
+      name: "Deploying",
       description: "The round contract is being deployed.",
       status: roundContractDeploymentStatus,
     },
@@ -234,6 +244,7 @@ export function RoundApplicationForm(props: {
   const disableNext: boolean =
     IPFSCurrentStatus === ProgressStatus.IN_PROGRESS ||
     votingContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
+    payoutContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     roundContractDeploymentStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IN_PROGRESS ||
     indexingStatus === ProgressStatus.IS_SUCCESS ||
