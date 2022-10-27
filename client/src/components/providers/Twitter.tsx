@@ -157,7 +157,8 @@ export default function Twitter({
   return (
     <div>
       <Button
-        styles={["ml-8 w-auto"]}
+        disabled={handle?.length === 0}
+        styles={["ml-8 w-auto mt-20"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchTwitterOAuth()}
       >

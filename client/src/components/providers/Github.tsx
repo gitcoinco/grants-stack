@@ -30,10 +30,12 @@ export default function Github({
   org,
   verificationComplete,
   verificationError,
+  canVerify,
 }: {
   org: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
+  canVerify: boolean;
 }) {
   const props = useSelector(
     (state: RootState) => ({
@@ -153,10 +155,10 @@ export default function Github({
     );
   }
   return (
-    <div>
+    <div hidden={!canVerify}>
       <Button
         disabled={org?.length === 0}
-        styles={["ml-8 w-auto"]}
+        styles={["ml-8 w-auto mt-20"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchGithubOAuth()}
       >
