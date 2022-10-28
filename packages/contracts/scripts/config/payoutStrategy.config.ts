@@ -11,5 +11,8 @@ export const PayoutParams: DeployParams = {
   },
   "optimism-mainnet": {
     merklePayoutContract: ''
+  },
+  "fantom-testnet": {
+    merklePayoutContract: '0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a'
   }
 };

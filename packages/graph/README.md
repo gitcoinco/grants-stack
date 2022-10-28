@@ -13,8 +13,9 @@ The following sections document the hosted services where the subgraph is deploy
 
 | Network        | GITHUB_USER/SUBGRAPH_NAME                    | Playground                                                                                | Query                                                                                 |
 |----------------|----------------------------------------------|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| goerli         | thelostone-mc/program-factory-v0             | https://thegraph.com/hosted-service/subgraph/thelostone-mc/program-factory-v0             | https://api.thegraph.com/subgraphs/name/thelostone-mc/program-factory-v0              |
-| optimism       | thelostone-mc/grants-round-optimism-mainnet  | https://thegraph.com/hosted-service/subgraph/thelostone-mc/grants-round-optimism-mainnet  | https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-mainnet   |
+| goerli         | gitcoinco/grants-round-goerli-testnet        | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-goerli-testnet        | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet         |
+| fantom-testnet | gitcoinco/grants-round-fantom-testnet        | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-fantom-testnet        | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet         |
+| optimism       | gitcoinco/grants-round-optimism-mainnet      | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-optimism-mainnet      | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet       |
 
 ## Directory Structure
 
@@ -68,6 +69,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 |----------------|
 | goerli         |
 | optimism       |
+| fantom-testnet |
 
 
 - Run codegen
@@ -101,3 +103,13 @@ rm -rf generated && rm -rf build &&
 ## How do we fetch off-chain storage
 
 The subgraph fetches the `metaPtr` from the contracts and index them making it easy to fetch additional information from of a given entity. To know more on what is the structure of a `metaPtr` and how you can retrieve information refer [MetaPtrProtocol](../contracts/docs/MetaPtrProtocol.md)
+
+
+## Deploying subgraph to a new network
+
+1. Ensure all the contracts are deployed on network
+2. Create config file within `config/<network-name>.json` and wire in the contract addresses
+3. Add new script in `package.json` to generate subgraph `prepare:<network-name>`
+3. Generate the `subgraph.yaml` file using `yarn prepare:<network-name>`
+4. Run `graph codegen`
+5. Deploy the subgraph

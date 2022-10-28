@@ -14,8 +14,13 @@ export const programParams: DeployParams = {
     programContract: '0x86DceaCc03A52b7914b72eB4E10290f72BD99e68'
   },
   "optimism-mainnet": {
-    programFactoryContract: '0xB3Ee4800c93cBec7eD2a31050161240e4663Ff5E',
-    programImplementationContract: '0xED42e0f4391Fa24E579B16191F6Eb41f934c3B1c',
-    programContract: '0x378cEB3dEb7a80ec1579bfd61EE1EFB76Fc63025'
+    programFactoryContract: '',
+    programImplementationContract: '',
+    programContract: ''
+  },
+  "fantom-testnet": {
+    programFactoryContract: '0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92',
+    programImplementationContract: '0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6',
+    programContract: '0x3Cd6edA7fDF9ab6b6AF6E226Ce184569C5DF8Ae5'
   }
 };
