@@ -39,6 +39,12 @@ export default function VerificationForm({
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
     */
+    if (e.target.name === "projectGithub" || e.target.name === "userGithub") {
+      setGHVerification(undefined);
+    }
+    if (e.target.name === "projectTwitter") {
+      setTwitterVerification(undefined);
+    }
     const { value } = e.target;
     dispatch(
       metadataSaved({
@@ -62,7 +68,7 @@ export default function VerificationForm({
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text px-4">
       <div className="flex items-center mb-6">
         <img
-          className="h-12 mr-12"
+          className="h-12 mr-12 mt-6"
           src="./assets/github_logo.png"
           alt="Github Logo"
         />
@@ -75,14 +81,8 @@ export default function VerificationForm({
           required={false}
         />
       </div>
-      <hr className="my-4" />
       <div className="flex items-center mb-6">
-        <img
-          className="h-12 mr-12"
-          src="./assets/github_logo.png"
-          alt="Github Logo"
-        />
-
+        <div className="h-12 mr-12 w-12" />
         <TextInput
           label="Github Oganization"
           info="Connect your project’s GitHub account to verify (Optional)"
@@ -99,6 +99,7 @@ export default function VerificationForm({
             !!props.formMetaData.userGithub
           }
           verificationComplete={setGHVerification}
+          verificationStatus={ghVerification}
           verificationError={(providerError) => setError(providerError)}
         />
       </div>
@@ -122,6 +123,7 @@ export default function VerificationForm({
         <Twitter
           handle={props.formMetaData.projectTwitter ?? ""}
           verificationComplete={setTwitterVerification}
+          verificationStatus={twitterVerification}
           verificationError={(providerError) => setError(providerError)}
         />
       </div>

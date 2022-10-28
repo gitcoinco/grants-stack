@@ -30,11 +30,13 @@ export default function Github({
   org,
   verificationComplete,
   verificationError,
+  verificationStatus,
   canVerify,
 }: {
   org: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
+  verificationStatus?: VerifiableCredential;
   canVerify: boolean;
 }) {
   const props = useSelector(
@@ -47,6 +49,12 @@ export default function Github({
   const { signer } = global;
   const [GHID, setGHID] = useState("");
   const [complete, setComplete] = useState(false);
+
+  useEffect(() => {
+    if (verificationStatus === undefined) {
+      setComplete(false);
+    }
+  }, [verificationStatus]);
 
   // Open Github authUrl in centered window
   function openGithubOAuthUrl(url: string): void {

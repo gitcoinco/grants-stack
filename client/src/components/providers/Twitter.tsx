@@ -19,10 +19,12 @@ export default function Twitter({
   handle,
   verificationComplete,
   verificationError,
+  verificationStatus,
 }: {
   handle: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
+  verificationStatus?: VerifiableCredential;
 }) {
   const [complete, setComplete] = useState(false);
   const props = useSelector(
@@ -31,6 +33,12 @@ export default function Twitter({
     }),
     shallowEqual
   );
+
+  useEffect(() => {
+    if (verificationStatus === undefined) {
+      setComplete(false);
+    }
+  }, [verificationStatus]);
 
   const { signer } = global;
   // Open Twitter authUrl in centered window
