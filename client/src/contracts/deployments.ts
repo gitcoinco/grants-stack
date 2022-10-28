@@ -4,6 +4,7 @@ export const chains: { [key: number]: string } = {
   10: "optimism",
   69: "optimisticKovan",
   4002: "fantomTestnet",
+  250: "fantomMainnet",
 };
 
 export const addresses: { [key: string]: any } = {
@@ -21,6 +22,9 @@ export const addresses: { [key: string]: any } = {
   },
   fantomTestnet: {
     projectRegistry: "0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19",
+  },
+  fantomMainnet: {
+    projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",
   },
 };
 

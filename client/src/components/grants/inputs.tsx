@@ -10,6 +10,20 @@ const requiredSpan = (
   <span className="text-purple-700 inset-y-0 right-0">*Required</span>
 );
 
+const encryptionTooltipLabel =
+  "Your personal data will be encrypted when you submit your application, and will only be decrypted by the team reviewing your application.";
+
+const encryptionTooltip = (
+  <Tooltip
+    className="shrink ml-2"
+    bg="purple.900"
+    hasArrow
+    label={encryptionTooltipLabel}
+  >
+    <InformationCircleIcon className="w-6 h-6" color="gray" />
+  </Tooltip>
+);
+
 export function TextInput({
   label,
   info,
@@ -19,6 +33,7 @@ export function TextInput({
   disabled,
   changeHandler,
   required,
+  encrypted,
 }: InputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -28,9 +43,10 @@ export function TextInput({
             {label}
           </label>
         </div>
-        <div className="shrink ml-2">
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
           {required ? requiredSpan : optionalSpan}
         </div>
+        {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
       <input
@@ -56,6 +72,7 @@ export function TextInputAddress({
   disabled,
   changeHandler,
   required,
+  encrypted,
 }: AddressInputProps) {
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -72,7 +89,9 @@ export function TextInputAddress({
           className="shrink ml-2"
           bg="purple.900"
           hasArrow
-          label={tooltipValue}
+          label={`${
+            encrypted ? `${encryptionTooltipLabel} \n` : ""
+          } ${tooltipValue}`}
         >
           <InformationCircleIcon className="w-6 h-6" color="gray" />
         </Tooltip>
@@ -100,6 +119,7 @@ export function WebsiteInput({
   placeholder,
   changeHandler,
   required,
+  encrypted,
 }: InputProps) {
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -118,9 +138,10 @@ export function WebsiteInput({
             {label}
           </label>
         </div>
-        <div className="shrink ml-2">
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
           {required ? requiredSpan : optionalSpan}
         </div>
+        {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
       <div className="flex">
@@ -152,6 +173,7 @@ export function TextArea({
   disabled,
   changeHandler,
   required,
+  encrypted,
 }: InputProps) {
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
@@ -161,9 +183,10 @@ export function TextArea({
             {label}
           </label>
         </div>
-        <div className="shrink ml-2">
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
           {required ? requiredSpan : optionalSpan}
         </div>
+        {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
       <textarea
@@ -190,6 +213,7 @@ export function Select({
   disabled,
   changeHandler,
   required,
+  encrypted,
 }: SelectInputProps) {
   return (
     <div className="relative">
@@ -199,9 +223,10 @@ export function Select({
             {label}
           </label>
         </div>
-        <div className="shrink ml-2">
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
           {required ? requiredSpan : optionalSpan}
         </div>
+        {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
       <select
