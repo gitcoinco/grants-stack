@@ -56,9 +56,9 @@ const fantomMainnet: Chain = {
   testnet: false,
 };
 
-if (process.env.REACT_APP_LOCALCHAIN) {
-  chainsAvailable.push(chain.hardhat);
-}
+// if (process.env.REACT_APP_LOCALCHAIN) {
+//   chainsAvailable.push(chain.hardhat);
+// }
 
 // Update production only chains here
 if (process.env.REACT_APP_ENV === "production") {
