@@ -274,7 +274,6 @@ export default function ViewApplicationPage() {
           _answerBlocks.push(_answerBlock);
         }
       }
-      console.log(_answerBlocks);
       setAnswerBlocks(_answerBlocks);
     };
 
