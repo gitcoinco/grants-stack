@@ -22,7 +22,6 @@ import {
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
-import { humanReadableLabels } from "../../api/utils";
 import {
   BulkUpdateGrantApplicationContext,
   initialBulkUpdateGrantApplicationState,
