@@ -75,7 +75,7 @@ dataSources:
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
         - event: VotingContractCreated(indexed address,indexed address)
-          handler: handleContractCreated
+          handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFunding/factory.ts
 
 templates:
@@ -145,5 +145,6 @@ templates:
       eventHandlers:
         - event: Voted(address,uint256,indexed address,indexed address,indexed address)
           handler: handleVote
+          receipt: true
 
       file: ./src/votingStrategy/quadraticFunding/implementation.ts

@@ -50,7 +50,8 @@ type Round @entity {
   roles: [RoundRole!]! @derivedFrom(field: "round") 
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
-  votingStrategy: String!
+  votingStrategy: VotingStrategy!
+  payoutStrategy: String!
   applicationsStartTime: String!
   applicationsEndTime: String!
   roundStartTime: String!
@@ -97,7 +98,7 @@ type VotingStrategy @entity {
   id: ID!
   strategyName: String!
   strategyAddress: String!
-  round: Round!
+  round: Round
   votes: [QFVote!] @derivedFrom(field: "votingStrategy")
 }
 
@@ -105,7 +106,7 @@ type VotingStrategy @entity {
 # = QFVotingStrategy = #
 ########################
 
-# id = event.transaction.hash.toHex()
+# id = event.receipt.transactionHash.toHex()
 type QFVote @entity {
   id: ID!
   votingStrategy: VotingStrategy!

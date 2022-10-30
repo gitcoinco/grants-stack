@@ -1,35 +1,93 @@
-import { clearStore, test, assert, newMockEvent } from "matchstick-as/assembly/index";
-import { Address, ethereum } from "@graphprotocol/graph-ts";
-import { Program } from "../../generated/schema";
+import { test, assert, newMockEvent , createMockedFunction, describe, beforeEach, clearStore, afterEach, logStore } from "matchstick-as/assembly/index";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { handleProgramCreated } from "../../src/program/factory";
 import { ProgramCreated  as ProgramCreatedEvent } from "../../generated/Program/ProgramFactory";
+import { MetaPtr, Program } from "../../generated/schema";
 
-let PROGRAM_ENTITY_TYPE = "Program"
+let programContractAddress: Address;
+let programImplementation: Address;
+let newProgramEvent: ProgramCreatedEvent;
 
+let protocol: BigInt;
+let pointer: string;
 
-function createNewProgramCreatedEvent(programContractAddress: Address) {
-  let addressParam = new ethereum.EventParam("programContractAddress", ethereum.Value.fromAddress(programContractAddress));
+function createNewProgramCreatedEvent(programContractAddress: Address, programImplementation: Address): ProgramCreatedEvent {
+  const newProgramEvent = changetype<ProgramCreatedEvent>(newMockEvent());
 
-  let event = <ProgramCreatedEvent>(newMockEvent())
-  event.parameters.push(addressParam)
-  return event;
+  const programContractAddressParam = new ethereum.EventParam("programContractAddress", ethereum.Value.fromAddress(programContractAddress));
+  const programImplementationParam = new ethereum.EventParam("programImplementation", ethereum.Value.fromAddress(programImplementation));
+
+  newProgramEvent.parameters.push(programContractAddressParam);
+  newProgramEvent.parameters.push(programImplementationParam);
+
+  return newProgramEvent;
 }
 
-export function runTests(): void {
-  test("Create Program", () => {
+describe("handleProgramCreated", () => {
 
-    let addressString = "0xA16081F360e3847006dB660bae1c6d1b2e17eC2A"
-    let address = Address.fromString(addressString)
+  beforeEach(() => {
 
-    assert.assertNull(Program.load(address.toHexString()))
+    programContractAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2A");
+    programImplementation = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
+    protocol = new BigInt(1);
+    pointer = "randomIPFSHash";
 
-    let event = createNewProgramCreatedEvent(address);
+    createMockedFunction(
+      programContractAddress,
+      "metaPtr",
+      "metaPtr():(uint256,string)"
+    ).returns([
+      ethereum.Value.fromUnsignedBigInt(protocol),
+      ethereum.Value.fromString(pointer)
+    ]);
 
-    handleProgramCreated(event);
+    newProgramEvent = createNewProgramCreatedEvent(
+      programContractAddress,
+      programImplementation
+    );
 
-    let program = Program.load(address.toHexString())
-    assert.assertNotNull(program)
+  })
 
+  afterEach(() => {
     clearStore();
+  })
+
+  test("program entity is created when handleProgramCreated is called", () => {
+
+    handleProgramCreated(newProgramEvent);
+
+    const program = Program.load(programContractAddress.toHex())
+    assert.assertNotNull(program);
+
+    assert.entityCount("Program", 1);
+    assert.fieldEquals("Program", programContractAddress.toHex(), "id", programContractAddress.toHex());
   });
-}
+
+  test("MetaPtr entity is created when handleProgramCreated is called ", () => {
+    handleProgramCreated(newProgramEvent);
+
+    const metaPtrId = `metaPtr-${programContractAddress.toHex()}`
+
+    const metaPtr = MetaPtr.load(metaPtrId);
+    assert.assertNotNull(metaPtr);
+
+    assert.stringEquals(metaPtr!.protocol.toString(), protocol.toString());
+    assert.stringEquals(metaPtr!.pointer!, pointer);
+  });
+
+
+  test("MetaPtr entity is linked to Program entity when handleProgramCreated is called", () => {
+    handleProgramCreated(newProgramEvent);
+
+    const program = Program.load(programContractAddress.toHex())
+    const metaPtr = MetaPtr.load(program!.metaPtr);
+
+    assert.assertNotNull(program);
+    assert.assertNotNull(metaPtr);
+
+    assert.entityCount("MetaPtr", 1);
+    assert.stringEquals(metaPtr!.protocol.toString(), protocol.toString());
+    assert.stringEquals(metaPtr!.pointer!, pointer);
+  });
+
+});

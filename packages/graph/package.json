@@ -26,7 +26,6 @@
     "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.30.4",
     "@graphprotocol/graph-ts": "0.27.0",
     "@openzeppelin/subgraphs": "^0.1.8"
   },

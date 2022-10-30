@@ -1,6 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
 import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
-import { QFVote, VotingStrategy } from "../../../generated/schema";
+import { Round, QFVote, VotingStrategy } from "../../../generated/schema";
+
 /**
  * @dev Handles indexing on Voted event.
  * @param event VotedEvent
@@ -11,28 +12,31 @@ export function handleVote(event: VotedEvent): void {
     return;
   }
 
-  if (event.receipt.logs.length == 0) {
-    log.warning("--> handleVote {} : event.receipt.logs is empty", ["QF"]);
+  // load voting strategy contract
+  const votingStrategyAddress = event.address;
+  let votingStrategy = VotingStrategy.load(votingStrategyAddress.toHex());
+  if (!votingStrategy) {
+    log.warning("--> handleVotingContractCreated {} : votingStrategy is null", [
+      "QF",
+    ]);
     return;
   }
 
-  // load voting strategy contract
-  const votingStrategyAddress = event.receipt.logs[0].address;
-  let votingStrategy = VotingStrategy.load(votingStrategyAddress.toHex());
-  if (!votingStrategy) {
-    log.warning("--> handleContractCreated {} : votingStrategy is null", [
+  // load Round contract
+  let round = Round.load(votingStrategy.round!);
+  if (!round) {
+    log.warning("--> handleVotingContractCreated {} : round is null", [
       "QF",
     ]);
     return;
   }
 
   // create QFVote entity
-  const voteID = event.receipt.transactionHash.toHex();
-  let vote = QFVote.load(voteID);
-  vote = vote == null ? new QFVote(voteID) : vote;
+  const voteID = event.transaction.hash.toHex();
+  const vote = new QFVote(voteID);
 
   vote.votingStrategy = votingStrategy.id;
-  vote.votingStrategy = votingStrategy.round;
+  vote.round = round.id;
   vote.token = event.params.token.toHex();
   vote.amount = event.params.amount;
   vote.from = event.params.voter.toHex();
