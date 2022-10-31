@@ -72,7 +72,7 @@ function Layout(ownProps: Props) {
           </div>
         </>
       </Toast>
-      <div className="h-1/8 items-center">
+      <div className="h-1/8 items-center mb-4">
         <div className="flex justify-center py-4">
           <img
             alt="Built by the Gitcoin Community"

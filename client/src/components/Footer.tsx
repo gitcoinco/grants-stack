@@ -8,7 +8,7 @@ import Support from "./icons/Support";
 export default function Footer() {
   return (
     <div className="flex justify-end mr-12">
-      <ul className="flex items-center">
+      <ul className="inline-flex">
         <Tooltip
           bg="purple.800"
           label="Contact Support"
