@@ -716,8 +716,20 @@ function MatchingFundsAvailable(props: {
         Matching Funds Available
       </label>
       <div className="relative mt-1 rounded-md shadow-sm">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <span className="text-gray-500 sm:text-sm">
+            {
+              props.payoutTokenOptions.find(
+                (token) => token.address === props.token
+              )?.name
+            }
+          </span>
+        </div>
         <Input
           {...props.register}
+          className={
+            "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm"
+          }
           type="number"
           id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
           $hasError={
@@ -728,15 +740,6 @@ function MatchingFundsAvailable(props: {
           aria-describedby="price-currency"
           step="any"
         />
-        <div className="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-3">
-          <span className="text-gray-500 sm:text-sm" id="price-currency">
-            {
-              props.payoutTokenOptions.find(
-                (token) => token.address === props.token
-              )?.name
-            }
-          </span>
-        </div>
       </div>
       {props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable && (
         <p className="text-xs text-pink-500">
@@ -855,9 +858,12 @@ function MatchingCap(props: {
           If so, how much?
         </label>
         <div className="relative mt-1 rounded-md shadow-sm">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span className="text-gray-500 sm:text-sm">%</span>
+          </div>
           <Input
             className={
-              "disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
+              "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
             }
             {...props.registerMatchingCapAmount}
             $hasError={
@@ -873,11 +879,6 @@ function MatchingCap(props: {
             max="100"
             step="any"
           />
-          <div className="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-3">
-            <span className="text-gray-500 sm:text-sm" id="percentage-symbol">
-              %
-            </span>
-          </div>
         </div>
         {isMatchingCap &&
           props.errors?.roundMetadata?.matchingFunds?.matchingCapAmount && (
