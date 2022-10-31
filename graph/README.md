@@ -16,6 +16,7 @@ The following sections document the hosted services where the subgraph is deploy
 | optimism       | danielesalatti/grant-hub-project-registry      | https://thegraph.com/hosted-service/subgraph/danielesalatti/grant-hub-project-registry      | https://api.thegraph.com/subgraphs/name/danielesalatti/grant-hub-project-registry      |
 | goerli         | danielesalatti/project-registry-goerli         | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-goerli         | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-goerli         |
 | optimism-kovan | danielesalatti/project-registry-optimism-kovan | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-optimism-kovan | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-optimism-kovan |
+| fantom         | danielesalatti/grantshub-project-registry-ftm  | https://thegraph.com/hosted-service/subgraph/danielesalatti/grantshub-project-registry-ftm  | https://api.thegraph.com/subgraphs/name/danielesalatti/grantshub-project-registry-ftm  |
 
 ## Directory Structure
 
@@ -62,6 +63,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 | optimism       |
 | goerli         |
 | optimism-kovan |
+| fantom         |
 
 - Run codegen
 
