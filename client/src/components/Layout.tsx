@@ -1,16 +1,16 @@
+import { useChainModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { useAccount } from "wagmi";
-import { useChainModal } from "@rainbow-me/rainbowkit";
+import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 import { RootState } from "../reducers";
 import colors from "../styles/colors";
+import { AlertContainer } from "./base/Alert";
 import Toast from "./base/Toast";
+import Footer from "./Footer";
 import Landing from "./grants/Landing";
 import Header from "./Header";
 import Globe from "./icons/Globe";
-import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
-import { AlertContainer } from "./base/Alert";
-import Footer from "./Footer";
 
 interface Props {
   children: JSX.Element;
@@ -72,13 +72,7 @@ function Layout(ownProps: Props) {
           </div>
         </>
       </Toast>
-      <div className="h-1/8 flex flex-row items-center mb-4">
-        <div className="flex flex-1 justify-center py-4">
-          <img
-            alt="Built by the Gitcoin Community"
-            src="./assets/footer-img.svg"
-          />
-        </div>
+      <div className="h-1/8 w-full mb-4">
         <Footer />
       </div>
       <AlertContainer alerts={props.alerts} />
