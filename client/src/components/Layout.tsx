@@ -10,6 +10,7 @@ import Header from "./Header";
 import Globe from "./icons/Globe";
 import { WEB3_BAD_CHAIN_ERROR } from "../actions/web3";
 import { AlertContainer } from "./base/Alert";
+import Footer from "./Footer";
 
 interface Props {
   children: JSX.Element;
@@ -71,15 +72,15 @@ function Layout(ownProps: Props) {
           </div>
         </>
       </Toast>
-      <div className="h-1/8">
-        <div className="w-full flex justify-center py-4">
+      <div className="h-1/8 items-center">
+        <div className="flex justify-center py-4">
           <img
             alt="Built by the Gitcoin Community"
             src="./assets/footer-img.svg"
           />
         </div>
+        <Footer />
       </div>
-
       <AlertContainer alerts={props.alerts} />
     </div>
   );
