@@ -1,7 +1,6 @@
 import hre, { ethers, upgrades } from "hardhat";
 import { prompt, prettyNum } from "../../lib/utils";
-// import HardwareSigner from "../../lib/HardwareSigner";
-const { HardwareSigner } = require("../../lib/HardwareSigner");
+import { LedgerSigner } from "@anders-t/ethers-ledger";
 
 async function main() {
   const network = await ethers.provider.getNetwork();
@@ -12,7 +11,7 @@ async function main() {
   // const accountAddress = account.address;
 
   // with hardware wallet
-  const account = new HardwareSigner(ethers.provider, null, "m/44'/60'/0'/0/0");
+  const account = new LedgerSigner(ethers.provider);
   const accountAddress = await account.getAddress();
 
   const balance = await ethers.provider.getBalance(accountAddress);
