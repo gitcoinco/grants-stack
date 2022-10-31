@@ -481,6 +481,7 @@ function RoundName(props: {
       </label>
       <Input
         {...props.register}
+        className={"h-10"}
         $hasError={props.errors.roundMetadata?.name}
         type="text"
         id={"roundMetadata.name"}
@@ -501,7 +502,7 @@ function PayoutTokenButton(props: {
   const { token } = props;
   return (
     <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border ${
+      className={`relative w-full cursor-default rounded-md border h-10 ${
         props.errors.token
           ? "border-red-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
           : "border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
@@ -542,7 +543,7 @@ function ProgramChain(props: { program: Program }) {
           </Listbox.Label>
           <div className="relative mt-1">
             <Listbox.Button
-              className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm`}
+              className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm h-10`}
             >
               <span className="flex items-center">
                 {program.chain?.logo && (
@@ -616,7 +617,7 @@ function PayoutTokenDropdown(props: {
               Payout Token
               <PayoutTokenInformation />
             </Listbox.Label>
-            <div className="relative mt-1">
+            <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <PayoutTokenButton
                 errors={props.errors}
                 token={props.payoutTokenOptions.find(
@@ -728,7 +729,7 @@ function MatchingFundsAvailable(props: {
         <Input
           {...props.register}
           className={
-            "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm"
+            "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm h-10"
           }
           type="number"
           id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
@@ -863,7 +864,7 @@ function MatchingCap(props: {
           </div>
           <Input
             className={
-              "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
+              "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 h-10"
             }
             {...props.registerMatchingCapAmount}
             $hasError={
