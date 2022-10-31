@@ -20,6 +20,7 @@ module.exports = {
         'green-text': '#11BC92',
         'gitcoin-gold': '#E1B815',
         'gitcoin-grey-300': '#A7A2B6',
+        'gitcoin-grey-400': '#757087',
         'gitcoin-yellow': '#FFF8DB',
         'gitcoin-pink-500': '#D44D6E',
         'gitcoin-pink-100': '#FDDEE4',
@@ -29,6 +30,9 @@ module.exports = {
         'gitcoin-violet-400': '#6F3FF5',
         'gitcoin-violet-500': '#5932C4',
       },
+      width: {
+        'dropdown-menu': "17.5rem",
+      }
     },
     fontFamily: {
       sans: ['"Libre Franklin"'],
