@@ -8,7 +8,6 @@ module.exports = {
         'gitcoin-sm': '0px 1px 2px rgba(0, 0, 0, 0.05)',
       },
       colors: {
-        // Very open to better naming here :)
         'primary-background': '#6F3FF5',
         'secondary-background': '#0E0333',
         'danger-background': '#D03E63',

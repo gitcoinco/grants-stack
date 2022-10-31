@@ -21,6 +21,8 @@ export const enum Status {
   LoadingProgramMetaPtr,
   LoadingProgramMetadata,
   Loaded,
+  LoadingRoundProjects,
+  LoadedRoundProjects,
   Error,
 }
 

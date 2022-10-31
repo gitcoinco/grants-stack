@@ -69,7 +69,6 @@ export const graphqlFetch = async (
       if (resp.ok) {
         return resp.json();
       }
-
       return Promise.reject(resp);
     });
   }
