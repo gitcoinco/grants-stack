@@ -225,10 +225,8 @@ export default function Form({
                     label="Payout Wallet Address"
                     placeholder={input.info}
                     name={`${input.id}`}
-                    tooltipValue="Please make sure the payout address you provide is a valid address that you own on the network
-                    you are applying on. If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig
-                    is deployed to network, and not simply a multisig you own on L1. Round team will send a test transaction and
-                    require you send it back before sending the balance of any full grant."
+                    // eslint-disable-next-line max-len
+                    tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
                     value={formInputs[`${input.id}`]}
                     disabled={preview}
                     changeHandler={handleInput}
@@ -287,6 +285,7 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  encrypted={input.encrypted}
                 />
               );
           }

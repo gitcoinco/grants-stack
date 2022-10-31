@@ -39,6 +39,7 @@ export default function Radio({
                 <input
                   value={choice}
                   name={name}
+                  id={choiceId}
                   checked={choice === value}
                   onChange={changeHandler}
                   type="radio"
