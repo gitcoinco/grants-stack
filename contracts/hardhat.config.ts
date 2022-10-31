@@ -52,6 +52,12 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic: process.env.MNEMONIC,
       },
+    },
+    fantom: {
+      url: process.env.FANTOM_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
     }
   },
 
@@ -62,10 +68,10 @@ const config: HardhatUserConfig = {
 
   etherscan: {
     apiKey: {
-      goerli: process.env.ETHERSCAN_API_KEY,
-      mainnet: process.env.ETHERSCAN_API_KEY,
-      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
-      optimisticKovan: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+      goerli: process.env.ETHERSCAN_API_KEY!,
+      mainnet: process.env.ETHERSCAN_API_KEY!,
+      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY!,
+      opera: process.env.FANTOM_SCAN_KEY!,
     },
   },
 };
