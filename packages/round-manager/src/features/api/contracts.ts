@@ -21,9 +21,14 @@ export const projectRegistryContract = (
       address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
       break;
     }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5";
+      break;
     }
   }
 
@@ -48,9 +53,14 @@ export const programFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9";
+      break;
     }
   }
 
@@ -80,9 +90,14 @@ export const roundFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "0x00F51ba2Cd201F4bFac0090F450de0992a838762";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48";
+      break;
     }
   }
 
@@ -112,9 +127,14 @@ export const qfVotingStrategyFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2";
+      break;
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       address = "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab";
+      break;
     }
   }
 

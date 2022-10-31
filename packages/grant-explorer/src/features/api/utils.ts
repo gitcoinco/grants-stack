@@ -1,8 +1,10 @@
 import { IPFSObject } from "./types"
 
 export enum ChainId {
-  GOERLI_CHAIN_ID = 5,
-  OPTIMISM_MAINNET_CHAIN_ID = 10,
+  GOERLI_CHAIN_ID = '5',
+  OPTIMISM_MAINNET_CHAIN_ID = '10',
+  FANTOM_MAINNET_CHAIN_ID = '250',
+  FANTOM_TESTNET_CHAIN_ID = '4002',
 }
 
 /**
@@ -12,20 +14,20 @@ export enum ChainId {
  * @returns the subgraph endpoint
  */
 const getGraphQLEndpoint = async (chainId: ChainId) => {
-  let endpoint;
-
   switch (chainId) {
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-      break;
-    }
-    case ChainId.GOERLI_CHAIN_ID:
-    default: {
-      endpoint = `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
-    }
-  }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
 
-  return endpoint;
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
+
+    case ChainId.GOERLI_CHAIN_ID:
+    default:
+      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+  }
 };
 
 /**
