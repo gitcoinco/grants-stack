@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@chakra-ui/react";
 import {
   QuestionMarkCircleIcon,
@@ -32,26 +32,60 @@ export const menuItems: Menu[] = [
     Icon: ClipboardDocumentListIcon,
     title: "Give Feedback",
     subTitle: "Help us improve the product",
-    link: "",
+    link: "https://forms.gle/XxqRtP1WbaL3cLNA8",
   },
   {
     Icon: CodeBracketIcon,
     title: "Developer Docs",
     subTitle: "Build on top of Grants Hub",
-    link: "",
+    link: "https://app.gitbook.com/o/Aqbtj6s4OkLaygileCka/home",
   },
 ];
 
+function listenForOutsideClicks({
+  listening,
+  setListening,
+  menuRef,
+  setOpen,
+}: {
+  listening: boolean;
+  setListening: React.Dispatch<React.SetStateAction<boolean>>;
+  menuRef: React.MutableRefObject<HTMLDivElement | null>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return () => {
+    if (listening) return;
+    if (!menuRef.current) return;
+    setListening(true);
+    [`click`, `touchstart`].forEach((type) => {
+      document.addEventListener(type, (evt) => {
+        if (menuRef.current && menuRef.current.contains(evt.target as Node)) {
+          return;
+        }
+        setOpen(false);
+      });
+    });
+  };
+}
+
 function CustomerSupport() {
+  const menuRef = useRef(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [listening, setListening] = useState<boolean>(false);
+
+  const toggleMenu = () => setOpen(!open);
+
+  useEffect(
+    listenForOutsideClicks({ listening, setListening, menuRef, setOpen })
+  );
 
   return (
-    <div className="relative" data-testid="customer-support">
+    <div className="relative" data-testid="customer-support" ref={menuRef}>
       <Button
         colorScheme="black"
         variant="ghost"
         className="flex items-center justify-center flex-row mt-2 ml-2 mb-2 border shadow-[0px_0px_2px_0px_rgba(0,0,0,0.1)] cs-button"
-        onClick={() => setOpen(!open)}
+        onClick={toggleMenu}
       >
         <div className="fill-current w-6 h-6 mr-2">
           <QuestionMarkCircleIcon />
