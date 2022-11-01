@@ -1,8 +1,16 @@
+import { Box, Grid } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getRoundProjectsApplied } from "../../actions/projects";
+import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
+import generateUniqueRoundApplicationID from "../../utils/roundApplication";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
+import ApplicationCard from "./ApplicationCard";
 
 function Verified() {
   return (
@@ -28,8 +36,29 @@ export default function Details({
   logoImg: string | Blob;
   preview?: boolean;
 }) {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const props = useSelector((state: RootState) => {
+    const chainId = state.web3.chainID;
+    const projectID = generateUniqueRoundApplicationID(
+      chainId!,
+      Number(params.id)
+    );
+    const { applications } = state.projects;
+
+    return {
+      chainId,
+      projectID,
+      applications,
+    };
+  });
+
+  useEffect(() => {
+    dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
+  }, [dispatch, props.projectID, props.chainId]);
+
   return (
-    <div className={`w-full ${!preview && "md:w-2/3"} mb-40`}>
+    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <img
         className="w-full mb-4"
         src={
@@ -59,90 +88,117 @@ export default function Details({
         </div>
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <div className="grid grid-cols-2 gap-4 pb-6 mb-6">
-        <div>
-          <a
-            target="_blank"
-            href={project?.website}
-            className="flex items-center mr-6 text-primary-background"
-            rel="noreferrer"
-          >
-            <LinkIcon color={colors["secondary-text"]} />{" "}
-            <span className="ml-1">
-              {(project?.website || "").replace(/(^\w+:|^)\/\//, "")}
-            </span>
-          </a>
-        </div>
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Created on: {createdAt}</span>
-          </p>
-        </div>
-        {project?.projectTwitter && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-3 mr-2 mt-1"
-              src="./assets/twitter_logo.svg"
-              alt="Twitter Logo"
-            />
-            <a
-              className="mr-2 text-primary-background"
-              target="_blank"
-              href={`https://twitter.com/${project?.projectTwitter}`}
-              rel="noreferrer"
-            >
-              {project?.projectTwitter}
-            </a>
-            {project?.credentials?.twitter && <Verified />}
+      <div className="flex flex-1 flex-row">
+        <div className="flex flex-1 flex-col w-full">
+          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+            <div>
+              <div>
+                <a
+                  target="_blank"
+                  href={project?.website}
+                  className="flex items-center mr-6 text-primary-background m-2 pb-1"
+                  rel="noreferrer"
+                >
+                  <LinkIcon color={colors["secondary-text"]} />{" "}
+                  <span className="ml-1">{project?.website}</span>
+                </a>
+              </div>
+              {project?.projectTwitter && (
+                <div className="flex justify-start items-center m-2 pb-1">
+                  <img
+                    className="h-3 mr-2 mt-1"
+                    src="./assets/twitter_logo.svg"
+                    alt="Twitter Logo"
+                  />
+                  <a
+                    className="mr-2 text-primary-background"
+                    target="_blank"
+                    href={`https://twitter.com/${project?.projectTwitter}`}
+                    rel="noreferrer"
+                  >
+                    {project?.projectTwitter}
+                  </a>
+                  {project?.credentials?.twitter && <Verified />}
+                </div>
+              )}
+              {project?.projectGithub && (
+                <div className="flex justify-start items-center m-2">
+                  <img
+                    className="h-4 mr-2"
+                    src="./assets/github_logo.png"
+                    alt="Github Logo"
+                  />
+                  <a
+                    className="mr-2 text-primary-background"
+                    target="_blank"
+                    href={`https://github.com/${project?.projectGithub}`}
+                    rel="noreferrer"
+                  >
+                    {project?.projectGithub}
+                  </a>
+                  {project?.credentials?.github && <Verified />}
+                </div>
+              )}
+            </div>
+            <div>
+              <div>
+                <p className="flex text-sm m-2 pb-2">
+                  <Calendar color={colors["secondary-text"]} />
+                  <span className="ml-1">Created on: {createdAt}</span>
+                </p>
+              </div>
+              <div>
+                <p className="flex text-sm m-2 pb-1">
+                  <Calendar color={colors["secondary-text"]} />
+                  <span className="ml-1">Last Edited: {updatedAt}</span>
+                </p>
+              </div>
+              {project?.projectGithub && (
+                <div className="flex items-center m-2">
+                  <img
+                    className="h-4 ml-0.5 mr-2 mt-1"
+                    src="./assets/github_logo.png"
+                    alt="Github Logo"
+                  />
+                  <a
+                    className="text-primary-background"
+                    target="_blank"
+                    href={`https://github.com/${project?.userGithub}`}
+                    rel="noreferrer"
+                  >
+                    {project?.userGithub}
+                  </a>
+                </div>
+              )}
+            </div>
+          </Grid>
+          <div className="mt-4">
+            <p className="text-primary-text xl:mt-2 lg:mt-2 font-bold">
+              Description
+            </p>
+            <p className="mb-12">{project?.description}</p>
           </div>
-        )}
-
-        <div>
-          <p className="flex text-sm">
-            <Calendar color={colors["secondary-text"]} />
-            <span className="ml-1">Last Edited: {updatedAt}</span>
-          </p>
         </div>
-        {project?.projectGithub && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-4 mr-2 mt-1"
-              src="./assets/github_logo.png"
-              alt="Github Logo"
-            />
-            <a
-              className="mr-2 text-primary-background"
-              target="_blank"
-              href={`https://github.com/${project?.projectGithub}`}
-              rel="noreferrer"
-            >
-              {project?.projectGithub}
-            </a>
-            {project?.credentials?.github && <Verified />}
-          </div>
-        )}
-        {project?.projectGithub && (
-          <div className="flex justify-start items-center">
-            <img
-              className="h-4 mr-2 mt-1"
-              src="./assets/github_logo.png"
-              alt="Github Logo"
-            />
-            <a
-              className="mr-2 text-primary-background"
-              target="_blank"
-              href={`https://github.com/${project?.userGithub}`}
-              rel="noreferrer"
-            >
-              {project?.userGithub}
-            </a>
-          </div>
-        )}
+        <div className="max-w-md">
+          {props.applications.length !== 0 && (
+            <Box p={1}>
+              <span className="text-[20px]">My Applications</span>
+            </Box>
+          )}
+          <Box>
+            {props.applications.length !== 0 &&
+              props.applications.map((application) => {
+                const roundID = application?.round?.id;
+                const cardData = { application, roundID };
+                return (
+                  <Box key={roundID} m={2}>
+                    <ApplicationCard applicationData={cardData} />
+                  </Box>
+                );
+              })}
+          </Box>
+        </div>
       </div>
-
-      <p className="text-primary-text mb-1 font-bold">Description</p>
-      <p className="mb-12">{project?.description}</p>
     </div>
   );
 }
