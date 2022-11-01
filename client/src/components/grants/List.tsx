@@ -127,10 +127,19 @@ function ProjectsList() {
                 <Globe color={colors["primary-background"]} />
               </div>
               <h4 className="mt-6">No projects</h4>
-              <p className="text-xs mt-6">
+              <p className="text-sm mt-6">
                 It looks like you haven&apos;t created any projects yet.
               </p>
-              <p className="text-xs">Learn More</p>
+              <p className="text-sm">
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-gitcoin-violet-400"
+                  href="https://support.gitcoin.co/gitcoin-grants-protocol"
+                >
+                  Learn More.
+                </a>
+              </p>
               <Link to={newGrantPath()} className="mt-6">
                 <Button variant={ButtonVariants.outline}>
                   Create a Project

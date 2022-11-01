@@ -131,6 +131,17 @@ function EditProject() {
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
           <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+          <p className="mt-4">
+            Need Help? Check out the{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-gitcoin-violet-400"
+              href="https://support.gitcoin.co/gitcoin-grants-protocol"
+            >
+              Grants Hub Guide.
+            </a>
+          </p>
         </div>
 
         <div className="w-full md:w-2/3">{currentForm(formStatus)}</div>

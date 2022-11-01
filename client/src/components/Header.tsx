@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
+import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
@@ -50,6 +51,7 @@ export default function Header() {
               </Button>
             </Link>
             <ConnectButton />
+            <CustomerSupport />
           </div>
         </div>
       </div>
