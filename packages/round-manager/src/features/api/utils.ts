@@ -38,6 +38,12 @@ export type PayoutToken = {
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
 };
 
+export type SupportType = {
+  name: string;
+  regex: string;
+  default: boolean;
+};
+
 export const TokenNamesAndLogos: Record<string, string> = {
   FTM: "./logos/fantom-logo.svg",
   BUSD: "./logos/busd-logo.svg",
