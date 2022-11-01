@@ -109,7 +109,7 @@ export default function Details({
           </div>
         </div>
       </div>
-      <h4 className="mb-4 mt-14">{project?.title}</h4>
+      <h4 className="mb-4 ml-1 mt-14">{project?.title}</h4>
       <div className="flex flex-1 flex-col md:flex-row">
         <div className="flex flex-1 flex-col w-full">
           <div className="grid grid-cols-1 md:grid-cols-2">
@@ -198,10 +198,10 @@ export default function Details({
             {renderApplications()}
           </div>
           <div className="mt-4">
-            <p className="text-primary-text xl:mt-2 lg:mt-2 font-bold">
+            <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
               Description
             </p>
-            <p className="mb-12">{project?.description}</p>
+            <p className="mb-12 ml-2">{project?.description}</p>
           </div>
         </div>
         <div className="max-w-md hidden md:flex flex-col">
