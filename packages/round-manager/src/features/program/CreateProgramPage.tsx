@@ -1,7 +1,7 @@
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { PlusSmIcon, XIcon } from "@heroicons/react/solid";
+import { InformationCircleIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
 
 import { useWallet } from "../common/Auth";
 import { Button, Input } from "../common/styles";
@@ -13,6 +13,8 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { ProgressStatus, ProgressStep } from "../api/types";
 import { useCreateProgram } from "../../context/program/CreateProgramContext";
+import ReactTooltip from "react-tooltip";
+import { CHAINS } from "../api/utils";
 
 type FormData = {
   name: string;
@@ -20,6 +22,7 @@ type FormData = {
 };
 
 export default function CreateProgram() {
+
   datadogLogs.logger.info(`====> Route: /program/create`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
@@ -117,6 +120,38 @@ export default function CreateProgram() {
           : ProgressStatus.NOT_STARTED,
     },
   ];
+
+  function ProgramChain() {
+    return (
+      <>
+        <InformationCircleIcon
+          data-tip
+          data-background-color="#0E0333"
+          data-for="program-chain-tooltip"
+          className="inline h-3 w-3 ml-1 mb-1"
+          data-testid={"program-chain-tooltip"}
+        />
+
+        <ReactTooltip
+          id="program-chain-tooltip"
+          place="bottom"
+          type="dark"
+          effect="solid"
+        >
+          <p className="text-xs">
+            All associated grant rounds will need to <br />
+            run on the chain to which you deploy your <br />
+            program. If you want to use a different <br />
+            chain after deployment you will need to <br />
+            create a new program. To change the <br />
+            chain for your program, use the network <br />
+            selection tool in your nav bar.
+          </p>
+        </ReactTooltip>
+      </>
+    );
+  }
+
   return (
     <div className="bg-[#F3F3F5]">
       <Navbar />
@@ -153,8 +188,8 @@ export default function CreateProgram() {
               onSubmit={handleSubmit(onSubmit)}
             >
               <div className="grid grid-cols-1 gap-4 sm:items-start pt-7 pb-3.5 sm:px-6 bg-white">
-                <div className="sm:flex sm:flex-rows">
-                  <div className="sm:basis-2/3">
+                <div className="sm:flex sm:flex-rows gap-4">
+                  <div className="sm:basis-1/2">
                     <label htmlFor="name" className="block text-xs">
                       Program Name
                     </label>
@@ -172,6 +207,20 @@ export default function CreateProgram() {
                         {errors.name?.message}
                       </p>
                     )}
+                  </div>
+
+                  <div className="sm:basis-1/2">
+                    <label htmlFor="program-chain" className="block text-xs">
+                      <span className="opacity-50">
+                        Program Chain
+                      </span>
+                      <ProgramChain />
+                    </label>
+
+                    <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
+                      <img src={CHAINS[chain.id]?.logo} alt="program-chain-logo" className="h-4 w-4 ml-1 mr-2 mt-1"/>
+                      <p>{chain.name}</p>
+                    </div>
                   </div>
                 </div>
 

@@ -39,6 +39,12 @@ describe("<CreateProgramPage />", () => {
     consoleErrorSpy.mockClear();
   });
 
+  it("shows program chain tooltip", async () => {
+    renderWithContext(<CreateProgramPage />);
+
+    expect(await screen.findByTestId("program-chain-tooltip")).toBeInTheDocument();
+  });
+
   it("shows error modal when saving application meta data fails", async () => {
     renderWithContext(<CreateProgramPage />, {
       IPFSCurrentStatus: ProgressStatus.IS_ERROR,
