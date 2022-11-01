@@ -184,6 +184,17 @@ function Apply() {
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
               {formatDate(props.round.roundEndTime * 1000)}
             </p>
+            <p className="mt-4">
+              Need Help? Check out the{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                className="text-gitcoin-violet-400"
+                href="https://support.gitcoin.co/gitcoin-grants-protocol"
+              >
+                Grants Hub Guide.
+              </a>
+            </p>
           </div>
           <div className="w-full md:w-2/3">
             {!props.applicationMetadata === undefined && (
