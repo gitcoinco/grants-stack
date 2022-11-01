@@ -35,10 +35,6 @@ export default function VerificationForm({
   const [error, setError] = useState<string | undefined>();
 
   const handleInput = (e: ChangeHandlers) => {
-    /*
-    const { value } = e.target;
-    setFormInputs({ ...formInputs, [e.target.name]: value });
-    */
     if (e.target.name === "projectGithub" || e.target.name === "userGithub") {
       setGHVerification(undefined);
     }
@@ -57,8 +53,8 @@ export default function VerificationForm({
   const saveAndPreview = () => {
     dispatch(
       credentialsSaved({
-        github: ghVerification,
-        twitter: twitterVerification,
+        github: ghVerification!,
+        twitter: twitterVerification!,
       })
     );
     setVerifying(ProjectFormStatus.Preview);
@@ -99,7 +95,6 @@ export default function VerificationForm({
             !!props.formMetaData.userGithub
           }
           verificationComplete={setGHVerification}
-          verificationStatus={ghVerification}
           verificationError={(providerError) => setError(providerError)}
         />
       </div>
@@ -123,7 +118,6 @@ export default function VerificationForm({
         <Twitter
           handle={props.formMetaData.projectTwitter ?? ""}
           verificationComplete={setTwitterVerification}
-          verificationStatus={twitterVerification}
           verificationError={(providerError) => setError(providerError)}
         />
       </div>
