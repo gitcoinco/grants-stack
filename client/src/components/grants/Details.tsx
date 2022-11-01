@@ -1,4 +1,4 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -57,6 +57,28 @@ export default function Details({
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
   }, [dispatch, props.projectID, props.chainId]);
 
+  const renderApplications = () => (
+    <>
+      {props.applications.length !== 0 && (
+        <Box p={1}>
+          <span className="text-[20px]">My Applications</span>
+        </Box>
+      )}
+      <Box>
+        {props.applications.length !== 0 &&
+          props.applications.map((application) => {
+            const roundID = application?.round?.id;
+            const cardData = { application, roundID };
+            return (
+              <Box key={roundID} m={2}>
+                <ApplicationCard applicationData={cardData} />
+              </Box>
+            );
+          })}
+      </Box>
+    </>
+  );
+
   return (
     <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
       <img
@@ -88,9 +110,9 @@ export default function Details({
         </div>
       </div>
       <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <div className="flex flex-1 flex-row">
+      <div className="flex flex-1 flex-col md:flex-row">
         <div className="flex flex-1 flex-col w-full">
-          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          <div className="grid grid-cols-1 md:grid-cols-2">
             <div>
               <div>
                 <a
@@ -171,7 +193,10 @@ export default function Details({
                 </div>
               )}
             </div>
-          </Grid>
+          </div>
+          <div className="flex flex-1 md:hidden flex-col">
+            {renderApplications()}
+          </div>
           <div className="mt-4">
             <p className="text-primary-text xl:mt-2 lg:mt-2 font-bold">
               Description
@@ -179,24 +204,8 @@ export default function Details({
             <p className="mb-12">{project?.description}</p>
           </div>
         </div>
-        <div className="max-w-md">
-          {props.applications.length !== 0 && (
-            <Box p={1}>
-              <span className="text-[20px]">My Applications</span>
-            </Box>
-          )}
-          <Box>
-            {props.applications.length !== 0 &&
-              props.applications.map((application) => {
-                const roundID = application?.round?.id;
-                const cardData = { application, roundID };
-                return (
-                  <Box key={roundID} m={2}>
-                    <ApplicationCard applicationData={cardData} />
-                  </Box>
-                );
-              })}
-          </Box>
+        <div className="max-w-md hidden md:flex flex-col">
+          {renderApplications()}
         </div>
       </div>
     </div>
