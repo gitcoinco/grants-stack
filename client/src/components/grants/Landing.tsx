@@ -4,6 +4,7 @@ import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
+import Footer from "../Footer";
 
 function Landing() {
   const dispatch = useDispatch();
@@ -84,7 +85,7 @@ function Landing() {
   }
 
   return (
-    <div className="flex flex-1 absolute h-full w-full">
+    <div className="flex flex-col absolute h-full w-full">
       <div className="flex absolute top-0 left-8 md:left-10">
         <img
           className="py-4 mr-4"
@@ -123,6 +124,9 @@ function Landing() {
           />
         </div>
       </section>
+      <div className="w-full mb-2">
+        <Footer />
+      </div>
     </div>
   );
 }
