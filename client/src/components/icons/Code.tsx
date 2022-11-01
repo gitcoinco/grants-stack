@@ -6,7 +6,7 @@ function Code({ color }: { color: string }) {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="w-6 h-6"
+      className="w-[21px] h-[16.5px]"
     >
       <path
         strokeLinecap="round"

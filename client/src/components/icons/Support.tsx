@@ -6,7 +6,7 @@ function Support({ color }: { color: string }) {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="w-8 h-8 cursor-pointer"
+      className="w-[18px] h-[18px]"
     >
       <path
         strokeLinecap="round"

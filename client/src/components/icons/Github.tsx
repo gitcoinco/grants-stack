@@ -6,7 +6,7 @@ function Github({ color }: { color: string }) {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="cursor-pointer"
+      className="w-[20.62px] h-[20px] mt-1"
     >
       <path
         fillRule="evenodd"

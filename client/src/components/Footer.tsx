@@ -1,5 +1,4 @@
 import { Tooltip } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
 import Code from "./icons/Code";
 import Discord from "./icons/Discord";
 import Github from "./icons/Github";
@@ -13,7 +12,7 @@ export default function Footer() {
       <img alt="Built by the Gitcoin Community" src="./assets/footer-img.svg" />
 
       <div className="flex -mx-2 float-right w-72">
-        <ul className="inline-flex justify-end">
+        <ul className="inline-flex justify-end items-center">
           <Tooltip
             bg="purple.800"
             label="Contact Support"
@@ -21,9 +20,9 @@ export default function Footer() {
             hasArrow
           >
             <li className="p-4 cursor-pointer hover:text-gitcoin-violet-400">
-              <Link to="https://support.gitcoin.co/">
+              <a href="https://support.gitcoin.co/">
                 <Support color="none" />
-              </Link>
+              </a>
             </li>
           </Tooltip>
           <Tooltip bg="purple.800" label="Discord" placement="top" hasArrow>

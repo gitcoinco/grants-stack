@@ -6,7 +6,7 @@ function Discord({ color }: { color: string }) {
       viewBox="0 0 21 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-8 w-8 cursor-pointer"
+      className="h-[21px] w-[24px]"
     >
       <g clipPath="url(#clip0_2557_17977)">
         <path
