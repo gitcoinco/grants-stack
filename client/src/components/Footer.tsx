@@ -12,7 +12,7 @@ export default function Footer() {
     >
       <div className="w-72" />
       <img alt="Built by the Gitcoin Community" src="./assets/footer-img.svg" />
-      <div className="flex -mx-2 float-right w-72">
+      <div className="flex flex-col -mx-2 items-center md:float-right w-72">
         <ul className="inline-flex justify-end items-center">
           <Tooltip
             bg="purple.800"
