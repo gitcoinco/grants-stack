@@ -20,21 +20,21 @@ export default function Footer() {
             placement="top"
             hasArrow
           >
-            <li className="p-4 cursor-pointer hover:text-gitcoin-violet-400">
+            <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
               <a href="https://support.gitcoin.co/">
                 <Support color="none" />
               </a>
             </li>
           </Tooltip>
           <Tooltip bg="purple.800" label="Discord" placement="top" hasArrow>
-            <li className="p-4 cursor-pointer hover:text-gitcoin-violet-400">
+            <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
               <a href="https://discord.gg/gitcoin">
                 <Discord color="black" />
               </a>
             </li>
           </Tooltip>
           <Tooltip bg="purple.800" label="GitHub" placement="top" hasArrow>
-            <li className="p-4 cursor-pointer hover:text-gitcoin-violet-400">
+            <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
               <a href="https://github.com/gitcoinco">
                 <Github color="black" />
               </a>
@@ -46,7 +46,7 @@ export default function Footer() {
             placement="top"
             hasArrow
           >
-            <li className="p-4 cursor-pointer hover:text-gitcoin-violet-400">
+            <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
               <a href="https://app.gitbook.com/o/Aqbtj6s4OkLaygileCka/home">
                 <Code color="none" />
               </a>
