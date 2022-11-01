@@ -72,7 +72,7 @@ function Layout(ownProps: Props) {
           </div>
         </>
       </Toast>
-      <div className="h-1/8 w-full mb-4">
+      <div className="h-1/8 w-full mb-2">
         <Footer />
       </div>
       <AlertContainer alerts={props.alerts} />
