@@ -7,21 +7,24 @@ import * as utils from "../../utils";
 utils.assertEnvironment();
 
 export async function main() {
-
   // Wait 10 blocks for re-org protection
-  const blocksToWait = 10;
-  
+  const blocksToWait = hre.network.name === "localhost" ? 0 : 10;
+
   await confirmContinue({
-    "contract"  : "QuadraticFundingVotingStrategyImplementation",
-    "network"   : hre.network.name,
-    "chainId"   : hre.network.config.chainId
+    contract: "QuadraticFundingVotingStrategyImplementation",
+    network: hre.network.name,
+    chainId: hre.network.config.chainId,
   });
 
-  // Deploy RoundImplementation 
-  const contractFactory = await ethers.getContractFactory("QuadraticFundingVotingStrategyImplementation");
+  // Deploy RoundImplementation
+  const contractFactory = await ethers.getContractFactory(
+    "QuadraticFundingVotingStrategyImplementation"
+  );
   const contract = await contractFactory.deploy();
 
-  console.log(`Deploying QuadraticFundingVotingStrategyImplementation to ${contract.address}`);
+  console.log(
+    `Deploying QuadraticFundingVotingStrategyImplementation to ${contract.address}`
+  );
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
 

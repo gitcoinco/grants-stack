@@ -1,29 +1,28 @@
 // This script deals with deploying the ProgramFactory on a given network
-import { ethers, upgrades } from "hardhat";
-import hre from "hardhat";
+import hre, { ethers, upgrades } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import * as utils from "../utils";
 
 utils.assertEnvironment();
 
 export async function main() {
-
   // Wait 10 blocks for re-org protection
-  const blocksToWait = 10;
-  
+  const blocksToWait = hre.network.name === "localhost" ? 0 : 10;
+
   await confirmContinue({
-    "contract"  : "ProgramFactory",
-    "network"   : hre.network.name,
-    "chainId"   : hre.network.config.chainId
+    contract: "ProgramFactory",
+    network: hre.network.name,
+    chainId: hre.network.config.chainId,
   });
 
-  // Deploy ProgramFactory 
+  // Deploy ProgramFactory
   const contractFactory = await ethers.getContractFactory("ProgramFactory");
   const contract = await upgrades.deployProxy(contractFactory);
 
   console.log(`Deploying Upgradable ProgramFactory to ${contract.address}`);
 
   await contract.deployTransaction.wait(blocksToWait);
+
   console.log("✅ Deployed.");
 
   return contract.address;
