@@ -4,6 +4,7 @@ export enum ChainId {
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
+  FANTOM_TESTNET_CHAIN_ID = 4002,
 }
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
@@ -20,6 +21,11 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
     id: ChainId.FANTOM_MAINNET_CHAIN_ID,
     name: "Fantom",
+    logo: "./logos/fantom-logo.svg",
+  },
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
+    id: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    name: "Fantom Testnet",
     logo: "./logos/fantom-logo.svg",
   },
 };
@@ -79,6 +85,16 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         },
       ];
     }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+          address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [
@@ -115,6 +131,12 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
+
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
 
     case ChainId.GOERLI_CHAIN_ID:
     default:

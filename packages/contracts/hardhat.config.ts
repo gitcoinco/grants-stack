@@ -15,10 +15,15 @@ import "hardhat-abi-exporter";
 dotenv.config();
 
 const chainIds = {
+  // local
   "hardhat"           : 31337,
-  "mainnet"           : 1,
+  // testnet
   "goerli"            : 5,
-  "optimism-mainnet"  : 10,
+  "fantom-testnet"    : 4002,
+  
+  // mainnet
+  "mainnet"           : 1,
+  "optimism-mainnet"  : 10
 };
 
 
@@ -112,6 +117,7 @@ const config: HardhatUserConfig = {
 
     // Test Networks
     "goerli": createTestnetConfig("goerli"),
+    "fantom-testnet": createTestnetConfig( "fantom-testnet", "https://rpc.testnet.fantom.network/"),
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

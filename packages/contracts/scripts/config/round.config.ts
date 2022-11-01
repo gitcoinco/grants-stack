@@ -17,5 +17,11 @@ export const roundParams: DeployParams = {
     roundFactoryContract: '',
     roundImplementationContract: '',
     roundContract: ''
+  },
+    "fantom-testnet": {
+    roundFactoryContract: '0x00F51ba2Cd201F4bFac0090F450de0992a838762',
+    roundImplementationContract: '0x635E69237C0428861EC8c5D8083e9616022c89Ea',
+    roundContract: '0xd3E45c78050a6472e28b9E02AA8596F7868e63d6'
   }
+
 };
