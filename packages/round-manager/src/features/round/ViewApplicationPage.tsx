@@ -39,6 +39,8 @@ import { useApplicationById } from "../../context/application/ApplicationContext
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
+import ErrorModal from "../common/ErrorModal";
+import { errorModalDelayMs } from "../../constants";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -64,6 +66,7 @@ export default function ViewApplicationPage() {
 
   const [openModal, setOpenModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [verifiedProviders, setVerifiedProviders] = useState<{
     [key: string]: VerifiedCredentialState;
@@ -112,6 +115,25 @@ export default function ViewApplicationPage() {
           : ProgressStatus.NOT_STARTED,
     },
   ];
+
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      contractUpdatingStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      redirectToViewApplicationPage(navigate, 5000, roundId, id);
+    } else if (indexingStatus == ProgressStatus.IS_SUCCESS) {
+      redirectToViewRoundPage(navigate, 0, roundId);
+    }
+  }, [navigate, IPFSCurrentStatus, contractUpdatingStatus, indexingStatus, id, roundId]);
+
 
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(id);
@@ -170,9 +192,9 @@ export default function ViewApplicationPage() {
           },
         ],
       });
-      setOpenProgressModal(false);
-      redirectToViewRoundPage(navigate, 0, roundId);
+
     } catch (error) {
+
       datadogLogs.logger.error(
         `error: handleReview - ${error}, roundId - ${roundId}`
       );
@@ -389,6 +411,12 @@ export default function ViewApplicationPage() {
                 }
                 steps={progressSteps}
               />
+
+              <ErrorModal
+                isOpen={openErrorModal}
+                setIsOpen={setOpenErrorModal}
+                tryAgainFn={handleReview}
+              />
             </header>
 
             <main>
@@ -507,5 +535,17 @@ function redirectToViewRoundPage(
 ) {
   setTimeout(() => {
     navigate(`/round/${id}`);
+  }, waitSeconds);
+}
+
+
+function redirectToViewApplicationPage(
+  navigate: NavigateFunction,
+  waitSeconds: number,
+  id: string,
+  applicationId: string
+) {
+  setTimeout(() => {
+    navigate(`/round/${id}/application/${applicationId}`);
   }, waitSeconds);
 }
