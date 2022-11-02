@@ -5,7 +5,7 @@ import {
   makeRoundData,
 } from "../../../test-utils";
 import ViewApplicationPage from "../ViewApplicationPage";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
@@ -24,7 +24,9 @@ import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
 import {
   BulkUpdateGrantApplicationContext,
+  BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
+  useBulkUpdateGrantApplications,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
   ApplicationStatus,
@@ -34,6 +36,11 @@ import {
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");
+
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+}));
 
 const mockAddress = "0x0";
 const mockWallet = {
@@ -226,6 +233,92 @@ describe("ViewApplicationPage", () => {
       await waitFor(() => {
         expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
       });
+    });
+
+    it("shows error modal when reviewing application fails", async () => {
+      const transactionBlockNumber = 10;
+      (updateRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber,
+      });
+
+      renderWithContext(
+        <ViewApplicationPage />,
+        {
+          applications: [application]
+        },
+        {
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+        }
+      );
+
+      fireEvent.click(screen.getByText(/Approve/));
+
+      await screen.findByTestId("confirm-modal");
+      fireEvent.click(screen.getByText("Confirm"));
+
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+
+    });
+
+    it("choosing done closes the error modal", async () => {
+      const transactionBlockNumber = 10;
+      (updateRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber,
+      });
+
+      renderWithContext(
+        <ViewApplicationPage />,
+        {
+          applications: [application]
+        },
+        {
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+        }
+      );
+
+      fireEvent.click(screen.getByText(/Approve/));
+
+      await screen.findByTestId("confirm-modal");
+      fireEvent.click(screen.getByText("Confirm"));
+
+      await screen.findByTestId("error-modal")
+
+      const done = await screen.findByTestId("done");
+      await act(() => {
+        fireEvent.click(done);
+      });
+
+      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
+
+    it("choosing try again restarts the action and closes the error modal", async () => {
+      const transactionBlockNumber = 10;
+      (updateRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber,
+      });
+
+      renderWithContext(
+        <ViewApplicationPage />,
+        {
+          applications: [application]
+        },
+        {
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+        }
+      );
+
+      fireEvent.click(screen.getByText(/Approve/));
+
+      await screen.findByTestId("confirm-modal");
+      fireEvent.click(screen.getByText("Confirm"));
+
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+
+      const tryAgain = await screen.findByTestId("tryAgain");
+      await act(() => {
+        fireEvent.click(tryAgain);
+      });
+      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     });
   });
 });
@@ -519,12 +612,16 @@ describe("ViewApplicationPage verification badges", () => {
 export const renderWithContext = (
   ui: JSX.Element,
   applicationStateOverrides: Partial<ApplicationState> = {},
+  bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   dispatch: any = jest.fn()
 ) =>
   render(
     <MemoryRouter>
       <BulkUpdateGrantApplicationContext.Provider
-        value={initialBulkUpdateGrantApplicationState}
+        value={{
+          ...initialBulkUpdateGrantApplicationState,
+          ...bulkUpdateGrantApplicationStateOverrides
+        }}
       >
         <RoundContext.Provider
           value={{
