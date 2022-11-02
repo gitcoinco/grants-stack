@@ -84,7 +84,6 @@ export default function Preview({
     <div>
       {/* TODO: fetch proper "created at" date */}
       <Details
-        preview
         updatedAt={formatDate(Date.now() / 1000)}
         createdAt={formatDate(Date.now() / 1000)}
         project={project}
