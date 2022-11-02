@@ -1,4 +1,5 @@
 build/
 generated/
 subgraph.yaml
+/data/
 data
