@@ -145,7 +145,7 @@ export default function CreateProgram() {
             chain after deployment you will need to <br />
             create a new program. To change the <br />
             chain for your program, use the network <br />
-            selection tool in your nav bar.
+            selection tool in your navigation bar.
           </p>
         </ReactTooltip>
       </>
