@@ -4,6 +4,7 @@ node_modules
 coverage
 coverage.json
 typechain
+/.eslintcache
 
 # Hardhat files
 cache

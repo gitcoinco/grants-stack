@@ -253,13 +253,6 @@ export const pinToIPFS = (obj: IPFSObject) => {
 export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
 
-type QuestionHumanReadableLabelsMap = Record<string, string>;
-export const humanReadableLabels: QuestionHumanReadableLabelsMap = {
-  email: "Email Address",
-  fundingSource: "Funding Sources",
-  teamSize: "Team Size",
-};
-
 export interface SchemaQuestion {
   id: number;
   question: string;

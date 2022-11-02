@@ -19,7 +19,7 @@ Compile the smart contracts and generate TypeChain artifacts:
 
 ```sh
 $ yarn clean
-$ yarn build
+$ yarn compile
 ```
 
 ### Lint Solidity
@@ -28,14 +28,6 @@ Lint the Solidity code:
 
 ```sh
 $ yarn lint:sol
-```
-
-### Lint TypeScript
-
-Lint the TypeScript code:
-
-```sh
-$ yarn lint:ts
 ```
 
 ### Test

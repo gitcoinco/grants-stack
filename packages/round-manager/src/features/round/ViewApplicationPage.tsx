@@ -1,7 +1,6 @@
 import {
   ArrowNarrowLeftIcon,
   CheckIcon,
-  MailIcon,
   ShieldCheckIcon,
   XCircleIcon,
   XIcon,
@@ -40,7 +39,6 @@ import { useApplicationById } from "../../context/application/ApplicationContext
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
-import { humanReadableLabels as ApplicationQuestions } from "../api/utils";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -285,13 +283,6 @@ export default function ViewApplicationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application, hasAccess, isLoading]);
 
-  const getAnswer = (question: string) => {
-    const answerBlock = answerBlocks?.find(
-      (answerBlock: AnswerBlock) => answerBlock.question === question
-    );
-    return answerBlock ? answerBlock.answer : "N/A";
-  };
-
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
   ) : (
@@ -407,12 +398,6 @@ export default function ViewApplicationPage() {
               <div className="sm:flex sm:justify-between my-6">
                 <div className="sm:basis-3/4 sm:mr-3">
                   <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
-                    <div className="text-grey-500 truncate block">
-                      <MailIcon className="inline-flex h-4 w-4 text-grey-500 mr-1" />
-                      <span className="text-xs text-grey-400">
-                        {getAnswer(ApplicationQuestions.email)}
-                      </span>
-                    </div>
                     <span
                       className="text-grey-500 flex flex-row justify-start items-center"
                       data-testid="twitter-info"
@@ -445,20 +430,13 @@ export default function ViewApplicationPage() {
 
                   <hr className="my-6" />
 
-                  <h2 className="text-xs mb-2">Funding Sources</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.fundingSource)}
-                  </p>
-
-                  <h2 className="text-xs mb-2">Funding Profit</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.profit2022)}
-                  </p>
-
-                  <h2 className="text-xs mb-2">Team Size</h2>
-                  <p className="text-base mb-6">
-                    {getAnswer(ApplicationQuestions.teamSize)}
-                  </p>
+                  {answerBlocks &&
+                    answerBlocks?.map((block: AnswerBlock) => (
+                      <>
+                        <h2 className="text-xs mb-2">{block.question}</h2>
+                        <p className="text-base mb-6">{block.answer}</p>
+                      </>
+                    ))}
                 </div>
                 <div className="sm:basis-1/4 text-center sm:ml-3"></div>
               </div>

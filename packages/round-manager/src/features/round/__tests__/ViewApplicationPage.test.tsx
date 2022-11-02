@@ -22,7 +22,6 @@ import {
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
 import { useWallet } from "../../common/Auth";
-import { humanReadableLabels } from "../../api/utils";
 import {
   BulkUpdateGrantApplicationContext,
   initialBulkUpdateGrantApplicationState,
@@ -106,13 +105,23 @@ describe("ViewApplicationPage", () => {
   });
 
   it("should display project's application answers", async () => {
-    const expectedAnswers = Object.entries(humanReadableLabels).map(
-      ([_, questionLabel], index) => ({
-        questionId: index,
-        question: questionLabel,
-        answer: `My ${questionLabel} is ${faker.random.word()}`,
-      })
-    );
+    const expectedAnswers = [
+      {
+        questionId: 0,
+        question: "Email Address",
+        answer: "johndoe@example.com",
+      },
+      {
+        questionId: 1,
+        question: "Funding Sources",
+        answer: "Founder capital",
+      },
+      {
+        questionId: 2,
+        question: "Team Size",
+        answer: "10",
+      },
+    ];
 
     const grantApplicationWithApplicationAnswers = makeGrantApplicationData({
       applicationIdOverride,

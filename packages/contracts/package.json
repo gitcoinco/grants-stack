@@ -12,7 +12,7 @@
     "coverage": "yarn hardhat coverage",
     "export-abi": "yarn run hardhat export-abi",
     "clear-abi": "yarn run hardhat clear-abi",
-    "lint": "npx hardhat check",
+    "lint:sol": "npx hardhat check",
     "// progam-deploy-scripts": "echo '//-- Program deploy Script --//'",
     "deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network",
     "deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network",
