@@ -42,7 +42,7 @@ export default function Details({
     const chainId = state.web3.chainID;
     const projectID = generateUniqueRoundApplicationID(
       chainId!,
-      Number(params.id)
+      Number(params.id || "0")
     );
     const { applications } = state.projects;
 
