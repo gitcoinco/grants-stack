@@ -9,6 +9,7 @@ import {
   initialCreateProgramState,
 } from "../../../context/program/CreateProgramContext";
 import { MemoryRouter } from "react-router-dom";
+import { ChainId, CHAINS } from "../../api/utils";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
@@ -44,6 +45,14 @@ describe("<CreateProgramPage />", () => {
 
     expect(await screen.findByTestId("program-chain-tooltip")).toBeInTheDocument();
   });
+
+  it("displays wrong network when connected to unsupported network", async () => {
+
+    renderWithContext(<CreateProgramPage />);
+
+    expect(await screen.findByText("Wrong Network")).toBeInTheDocument();
+  });
+
 
   it("shows error modal when saving application meta data fails", async () => {
     renderWithContext(<CreateProgramPage />, {

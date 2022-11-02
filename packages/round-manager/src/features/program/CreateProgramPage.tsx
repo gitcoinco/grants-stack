@@ -218,8 +218,16 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      <img src={CHAINS[chain.id]?.logo} alt="program-chain-logo" className="h-4 w-4 ml-1 mr-2 mt-1"/>
-                      <p>{chain.name}</p>
+                      { CHAINS[chain.id] ?
+                        <>
+                          <img src={CHAINS[chain.id]?.logo} alt="program-chain-logo" className="h-4 w-4 ml-1 mr-2 mt-1"/>
+                          <p>{chain.name}</p>
+                        </>
+                        :
+                        <>
+                          <p>Wrong Network</p>
+                        </>
+                      }
                     </div>
                   </div>
                 </div>
