@@ -222,6 +222,12 @@ describe("<RoundDetailForm />", () => {
       target: { value: "testinground" },
     });
 
+    /* Support Selection */
+    const supportSelection = screen.getByTestId("support-type-select");
+    fireEvent.click(supportSelection);
+    const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
+    fireEvent.click(firstSupportOption);
+
     /* Applications start date */
     expect(startDateInputs[0].id).toBe("applicationsStartTime");
     fireEvent.change(startDateInputs[0], {
