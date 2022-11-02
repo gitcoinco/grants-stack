@@ -109,7 +109,7 @@ const dodoc = {
 }
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: "0.8.15",
   networks: {
     // Main Networks
     "mainnet": createMainnetConfig("mainnet"),
