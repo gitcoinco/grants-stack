@@ -27,14 +27,12 @@ export default function Details({
   updatedAt,
   bannerImg,
   logoImg,
-  preview,
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
   createdAt: string;
   bannerImg: string | Blob;
   logoImg: string | Blob;
-  preview?: boolean;
 }) {
   const params = useParams();
   const dispatch = useDispatch();
@@ -42,7 +40,7 @@ export default function Details({
     const chainId = state.web3.chainID;
     const projectID = generateUniqueRoundApplicationID(
       chainId!,
-      Number(params.id)
+      Number(params.id || "0")
     );
     const { applications } = state.projects;
 
@@ -80,7 +78,7 @@ export default function Details({
   );
 
   return (
-    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
+    <div className="w-full mb-40">
       <img
         className="w-full mb-4"
         src={
