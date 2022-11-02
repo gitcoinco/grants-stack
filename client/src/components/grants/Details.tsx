@@ -199,7 +199,14 @@ export default function Details({
             <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
               Description
             </p>
-            <p className="mb-12 ml-2">{project?.description}</p>
+            <div className="mb-12 ml-2">
+              {project?.description?.split(/\r?\n/).map((i, x) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <p className="mb-5" key={`i-${x}`}>
+                  {i}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
         <div className="max-w-md hidden md:flex flex-col">
