@@ -1,0 +1,6 @@
+{
+  "network": "fantom",
+  "startBlock": 50429700,
+  "programFactoryAddress": "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB",
+  "roundFactoryAddress": "0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E"
+}

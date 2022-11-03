@@ -2,6 +2,31 @@
 
 This document lists all the addresses of the contracts that have been deployed on a given network
 
+## Fantom Mainnet
+
+These are contracts are created/deployed once for fantom testnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| ProgramFactory                        | 0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB |
+| ProgramImplementation                 | 0x21B0be8253DEdA0d2d8f010d06ED86093d52359b |
+| QuadraticFundingVotingStrategyFactory | 0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38 |
+| QFVotingStrategyImplementation        | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |
+| RoundFactory                          | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
+| RoundImplementation                   | 0xC2B0d8dAdB88100d8509534BB8B5778d1901037d |
+
+
+**Sample contracts unique to a round **
+
+These are contracts are created/deployed for every round created on fantom testnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| Program                               | 0x4fde273e009F58Aa0e5e09289242D5336FD18ad1 |
+| QFVotingContract                      | 0x818A3C8F82667bd222faF84a954F35d2b0Eb6a78 |
+| MerklePayoutContract                  | 0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5 | 
+| Round                                 | 0x866485759ABC95c36FA77B216A5AdbA4275a14aB |
+
 ## Goerli Network
 
 These are contracts are created/deployed once for goerli

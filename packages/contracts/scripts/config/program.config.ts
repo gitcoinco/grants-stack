@@ -18,6 +18,11 @@ export const programParams: DeployParams = {
     programImplementationContract: '',
     programContract: ''
   },
+  "fantom-mainnet": {
+    programFactoryContract: '0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB',
+    programImplementationContract: '0x21B0be8253DEdA0d2d8f010d06ED86093d52359b',
+    programContract: '0x4fde273e009F58Aa0e5e09289242D5336FD18ad1'
+  },
   "fantom-testnet": {
     programFactoryContract: '0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92',
     programImplementationContract: '0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6',

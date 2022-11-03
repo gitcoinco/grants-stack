@@ -18,10 +18,14 @@ export const roundParams: DeployParams = {
     roundImplementationContract: '',
     roundContract: ''
   },
-    "fantom-testnet": {
+  "fantom-mainnet": {
+    roundFactoryContract: '0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E',
+    roundImplementationContract: '0xC2B0d8dAdB88100d8509534BB8B5778d1901037d',
+    roundContract: '0x866485759ABC95c36FA77B216A5AdbA4275a14aB'
+  },
+  "fantom-testnet": {
     roundFactoryContract: '0x00F51ba2Cd201F4bFac0090F450de0992a838762',
     roundImplementationContract: '0x635E69237C0428861EC8c5D8083e9616022c89Ea',
     roundContract: '0xd3E45c78050a6472e28b9E02AA8596F7868e63d6'
   }
-
 };

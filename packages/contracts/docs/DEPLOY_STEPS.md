@@ -7,6 +7,7 @@ All the deploy scripts will expect network param to know which network the contr
 |--------------------|
 | `goerli`           |
 | `optimism-mainnet` |
+| 'fantom-mainnet'   |
 | `fantom-testnet`   |
 
 ### Program Setup
