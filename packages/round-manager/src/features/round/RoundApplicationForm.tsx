@@ -458,7 +458,7 @@ function ApplicationInformation(props: {
   );
 
   const editableTitle = (index: number) => (
-    <div className="flex my-2">
+    <div className="flex my-2 gap-2 items-center">
       <input
         {...register(`applicationMetadata.questions.${index}.title`)}
         type="text"
@@ -467,15 +467,20 @@ function ApplicationInformation(props: {
         className="text-sm border-violet-400 rounded-md w-full"
       />
 
-      <CheckIcon
+      <button
+        className={
+          "border shadow-sm border-grey-100 rounded flex items-center gap-1 px-2 pr-3"
+        }
         onClick={() => {
           const newEditState = [...editStates];
           newEditState[index] = false;
           setEditStates(newEditState);
         }}
-        className="inline h-5 w-5 ml-2 my-2 text-grey-400"
         data-testid={"save-title"}
-      />
+      >
+        <CheckIcon className="inline h-5 w-5 my-1 mx-1 text-teal-500" />
+        Save
+      </button>
     </div>
   );
 
