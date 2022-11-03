@@ -2,6 +2,7 @@
 import ApplicationsRejected from "../ApplicationsRejected";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -46,6 +47,10 @@ jest.mock("../../common/Auth", () => ({
     },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
+}));
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
 const grantApplications = [
@@ -341,6 +346,73 @@ describe("<ApplicationsRejected />", () => {
         expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
       });
     });
+
+    describe("when processing bulk action fails", () => {
+      beforeEach(() => {
+        const transactionBlockNumber = 10;
+        (updateRoundContract as jest.Mock).mockResolvedValue({
+          transactionBlockNumber,
+        });
+
+        renderWithContext(
+          <ApplicationsRejected />,
+          {
+            applications: grantApplications,
+          },
+          {
+            IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          }
+        );
+
+        // select button
+        const selectButton = screen.getByRole("button", { name: /Select/i });
+        fireEvent.click(selectButton);
+
+        // select approve on 1 application
+        const approveButton = screen.queryAllByTestId("approve-button")[0];
+        fireEvent.click(approveButton);
+
+        // click continue
+        const continueButton = screen.getByRole("button", {
+          name: /Continue/i,
+        });
+        fireEvent.click(continueButton);
+
+        // click confirm
+        const confirmationModalConfirmButton = screen.getByRole("button", {
+          name: /Confirm/i,
+        });
+        fireEvent.click(confirmationModalConfirmButton);
+      });
+
+      it("shows error modal when reviewing applications fail", async () => {
+        expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+      });
+
+      it("choosing done closes the error modal", async () => {
+        await screen.findByTestId("error-modal");
+
+        const done = await screen.findByTestId("done");
+        await act(() => {
+          fireEvent.click(done);
+        });
+
+        expect(
+          await screen.queryByTestId("error-modal")
+        ).not.toBeInTheDocument();
+      });
+
+      it("choosing try again restarts the action and closes the error modal", async () => {
+        expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+
+        const tryAgain = await screen.findByTestId("tryAgain");
+        await act(() => {
+          fireEvent.click(tryAgain);
+        });
+
+        expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe("when bulk select is inactive", () => {
@@ -360,6 +432,7 @@ export const renderWithContext = (
   ui: JSX.Element,
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
   render(

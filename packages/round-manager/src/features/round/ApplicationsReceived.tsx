@@ -32,6 +32,8 @@ import { useApplicationByRoundId } from "../../context/application/ApplicationCo
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
+import { errorModalDelayMs } from "../../constants";
+import ErrorModal from "../common/ErrorModal";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
@@ -46,6 +48,7 @@ export default function ApplicationsReceived() {
   const [bulkSelect, setBulkSelect] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
 
   const {
@@ -101,6 +104,26 @@ export default function ApplicationsReceived() {
     }
   }, [applications, isLoading, bulkSelect]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      contractUpdatingStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_SUCCESS) {
+      window.location.reload();
+    }
+  }, [IPFSCurrentStatus, contractUpdatingStatus, indexingStatus]);
+
+  const handleDone = () => {
+    window.location.reload();
+  };
+
   const toggleSelection = (id: string, status: ProjectStatus) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
       if (grantApp.id === id) {
@@ -132,7 +155,6 @@ export default function ApplicationsReceived() {
       });
       setBulkSelect(false);
       setOpenProgressModal(false);
-      window.location.reload();
     } catch (error) {
       datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
       console.error(error);
@@ -236,6 +258,12 @@ export default function ApplicationsReceived() {
         isOpen={openProgressModal}
         subheading={"Please hold while we update the grant applications."}
         steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={openErrorModal}
+        setIsOpen={setOpenErrorModal}
+        tryAgainFn={handleBulkReview}
+        doneFn={handleDone}
       />
     </div>
   );

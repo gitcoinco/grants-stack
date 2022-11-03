@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-explicit-any */
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -16,6 +17,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import {
   BulkUpdateGrantApplicationContext,
+  BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
@@ -23,7 +25,7 @@ import {
   updateApplicationList,
   updateRoundContract,
 } from "../../api/application";
-import { ApplicationStatus } from "../../api/types";
+import { ApplicationStatus, ProgressStatus } from "../../api/types";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -37,6 +39,10 @@ jest.mock("../../common/Auth", () => ({
     },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
+}));
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -417,18 +423,87 @@ describe("<ApplicationsReceived />", () => {
       ).toHaveLength(0);
     });
   });
+
+  describe("when processing bulk action fails", () => {
+    beforeEach(() => {
+      const transactionBlockNumber = 10;
+      (updateRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber,
+      });
+
+      renderWithContext(
+        <ApplicationsReceived />,
+        {
+          applications: grantApplications,
+        },
+        {
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+        }
+      );
+
+      // select button
+      const selectButton = screen.getByRole("button", { name: /Select/i });
+      fireEvent.click(selectButton);
+
+      // select approve on 1 application
+      const approveButton = screen.queryAllByTestId("approve-button")[0];
+      fireEvent.click(approveButton);
+
+      // click continue
+      const continueButton = screen.getByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
+
+      // click confirm
+      const confirmationModalConfirmButton = screen.getByRole("button", {
+        name: /Confirm/i,
+      });
+      fireEvent.click(confirmationModalConfirmButton);
+    });
+
+    it("shows error modal when reviewing applications fail", async () => {
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+    });
+
+    it("choosing done closes the error modal", async () => {
+      await screen.findByTestId("error-modal");
+
+      const done = await screen.findByTestId("done");
+      await act(() => {
+        fireEvent.click(done);
+      });
+
+      expect(await screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
+
+    it("choosing try again restarts the action and closes the error modal", async () => {
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+
+      const tryAgain = await screen.findByTestId("tryAgain");
+      await act(() => {
+        fireEvent.click(tryAgain);
+      });
+
+      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
+  });
 });
 
 export const renderWithContext = (
   ui: JSX.Element,
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
+  bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
   render(
     <MemoryRouter>
       <BulkUpdateGrantApplicationContext.Provider
-        value={initialBulkUpdateGrantApplicationState}
+        value={{
+          ...initialBulkUpdateGrantApplicationState,
+          ...bulkUpdateGrantApplicationStateOverrides,
+        }}
       >
         <ApplicationContext.Provider
           value={{

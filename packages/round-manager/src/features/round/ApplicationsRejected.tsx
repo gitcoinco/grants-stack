@@ -30,6 +30,8 @@ import {
 } from "./BulkApplicationCommon";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
+import ErrorModal from "../common/ErrorModal";
+import { errorModalDelayMs } from "../../constants";
 
 export default function ApplicationsRejected() {
   const { id } = useParams();
@@ -45,6 +47,7 @@ export default function ApplicationsRejected() {
   const [bulkSelectRejected, setBulkSelectRejected] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
 
   const {
@@ -100,6 +103,26 @@ export default function ApplicationsRejected() {
     }
   }, [applications, isLoading, bulkSelectRejected]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      contractUpdatingStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_SUCCESS) {
+      window.location.reload();
+    }
+  }, [IPFSCurrentStatus, contractUpdatingStatus, indexingStatus]);
+
+  const handleDone = () => {
+    window.location.reload();
+  };
+
   const toggleApproval = (id: string) => {
     const newState = selected?.map((grantApp: GrantApplication) => {
       if (grantApp.id === id) {
@@ -132,7 +155,6 @@ export default function ApplicationsRejected() {
       });
       setBulkSelectRejected(false);
       setOpenProgressModal(false);
-      window.location.reload();
     } catch (error) {
       datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
       console.error(error);
@@ -217,6 +239,12 @@ export default function ApplicationsRejected() {
         isOpen={openProgressModal}
         subheading={"Please hold while we update the grant applications."}
         steps={progressSteps}
+      />
+      <ErrorModal
+        isOpen={openErrorModal}
+        setIsOpen={setOpenErrorModal}
+        tryAgainFn={handleBulkReview}
+        doneFn={handleDone}
       />
     </>
   );
