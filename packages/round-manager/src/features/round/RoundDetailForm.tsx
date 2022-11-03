@@ -623,7 +623,7 @@ function PayoutTokenDropdown(props: {
     },
   });
   return (
-    <div className="col-span-6 sm:col-span-3">
+    <div className="relative col-span-6 sm:col-span-3">
       <Listbox {...field}>
         {({ open }) => (
           <div>
@@ -743,14 +743,14 @@ function MatchingFundsAvailable(props: {
         <Input
           {...props.register}
           className={
-            "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm h-10"
+            "block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10"
           }
           type="number"
           id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
           $hasError={
             props.errors?.roundMetadata?.matchingFunds?.matchingFundsAvailable
           }
-          placeholder="Enter the amount denominated in your payout token."
+          placeholder="Enter the amount denominated in the payout token."
           data-testid="matching-funds-available"
           aria-describedby="price-currency"
           step="any"
@@ -878,7 +878,7 @@ function MatchingCap(props: {
           </div>
           <Input
             className={
-              "block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:pl-14 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 h-10"
+              "block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 h-10"
             }
             {...props.registerMatchingCapAmount}
             $hasError={
@@ -916,10 +916,10 @@ function SupportTypeButton(props: {
   const { supportType } = props;
   return (
     <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border h-10 ${
+      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
         props.errors.roundMetadata?.support?.type
-          ? "border-red-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-          : "border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+          : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
       }`}
       data-testid="support-type-select"
       id={"roundMetadata.support.type"}
@@ -964,7 +964,7 @@ function SupportTypeDropdown(props: {
                 <Listbox.Label className="text-xs mt-4 mb-2">
                   Support Input
                 </Listbox.Label>
-                <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <div className="relative mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                   <SupportTypeButton
                     errors={props.errors}
                     supportType={props.supportTypes.find(
