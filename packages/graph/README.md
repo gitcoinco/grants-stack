@@ -50,7 +50,19 @@ To know more about the queries which can be run on the playground, check out the
 To know the relationship between the different entities and the type of queries. Refer [schema.graphql](./schema.graphql)
 
 
-## Deploy Subgraph
+## Deploy subgraph locally
+
+The `docker-compose.yml` contains everything you need to run your own local graph-node, including a hardhat node.
+
+1. Install Docker with Docker Compose
+2. `docker compose up` - start all the services
+3. `yarn deploy-local` -  deploy your subgraph to your local graph-node instance
+3. Deploy your contracts as described in `contracts/docs/DEPLOY_STEPS.md`
+4. Interact with the contracts to create some data
+5. Interact with the subgraph on localhost as outlined in the `graph-node` container logs
+
+
+## Deploy Subgraph on a hosted service
 Generate your hosted-service API key on the graph
 
 - Remove redundant files
@@ -72,6 +84,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 | optimism       |
 | fantom         |
 | fantom-testnet |
+| localhost      |
 
 
 - Run codegen
