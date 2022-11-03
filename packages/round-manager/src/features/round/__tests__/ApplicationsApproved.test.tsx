@@ -2,6 +2,7 @@
 import ApplicationsApproved from "../ApplicationsApproved";
 import { makeGrantApplicationData } from "../../../test-utils";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -47,6 +48,10 @@ jest.mock("../../common/Auth", () => ({
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
 }));
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+}));
 
 const grantApplications = [
   makeGrantApplicationData({ roundIdOverride }),
@@ -57,6 +62,19 @@ const grantApplications = [
 grantApplications.forEach((application) => {
   application.status = "APPROVED";
 });
+
+const bulkUpdateGrantApplications = jest.fn();
+
+const setupInBulkSelectionMode = () => {
+  renderWithContext(<ApplicationsApproved />, {
+    applications: grantApplications,
+    isLoading: false,
+  });
+  const selectButton = screen.getByRole("button", {
+    name: /Select/i,
+  });
+  fireEvent.click(selectButton);
+};
 
 describe("<ApplicationsApproved />", () => {
   beforeEach(() => {
@@ -370,23 +388,99 @@ describe("<ApplicationsApproved />", () => {
       expect(screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
     });
   });
-});
 
-const setupInBulkSelectionMode = () => {
-  renderWithContext(<ApplicationsApproved />, {
-    applications: grantApplications,
-    isLoading: false,
+  describe("when processing bulk action fails", () => {
+    beforeEach(() => {
+      const transactionBlockNumber = 10;
+      (updateRoundContract as jest.Mock).mockResolvedValue({
+        transactionBlockNumber,
+      });
+
+      renderWithContext(
+        <ApplicationsApproved />,
+        {
+          applications: grantApplications,
+        },
+        {
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+        }
+      );
+
+      // select button
+      const selectButton = screen.getByRole("button", { name: /Select/i });
+      fireEvent.click(selectButton);
+
+      // select reject button on 1 application
+      const rejectButton = screen.queryAllByTestId("reject-button")[0];
+      fireEvent.click(rejectButton);
+
+      // click continue
+      const continueButton = screen.getByRole("button", {
+        name: /Continue/i,
+      });
+      fireEvent.click(continueButton);
+    });
+
+    it("shows error modal when reviewing applications fail", async () => {
+      // click confirm
+      const confirmationModalConfirmButton = screen.getByRole("button", {
+        name: /Confirm/i,
+      });
+
+      await act(() => {
+        fireEvent.click(confirmationModalConfirmButton);
+      });
+
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+    });
+
+    it("choosing done closes the error modal", async () => {
+      // click confirm
+      const confirmationModalConfirmButton = screen.getByRole("button", {
+        name: /Confirm/i,
+      });
+
+      await act(() => {
+        fireEvent.click(confirmationModalConfirmButton);
+      });
+
+      await screen.findByTestId("error-modal");
+
+      const done = await screen.findByTestId("done");
+      await act(() => {
+        fireEvent.click(done);
+      });
+
+      expect(await screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
+
+    it("choosing try again restarts the action and closes the error modal", async () => {
+      // click confirm
+      const confirmationModalConfirmButton = screen.getByRole("button", {
+        name: /Confirm/i,
+      });
+
+      await act(() => {
+        fireEvent.click(confirmationModalConfirmButton);
+      });
+
+      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
+
+      const tryAgain = await screen.findByTestId("tryAgain");
+      await act(() => {
+        fireEvent.click(tryAgain);
+      });
+
+      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+    });
   });
-  const selectButton = screen.getByRole("button", {
-    name: /Select/i,
-  });
-  fireEvent.click(selectButton);
-};
+});
 
 export const renderWithContext = (
   ui: JSX.Element,
   grantApplicationStateOverrides: Partial<ApplicationState> = {},
   bulkUpdateApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) =>
   render(

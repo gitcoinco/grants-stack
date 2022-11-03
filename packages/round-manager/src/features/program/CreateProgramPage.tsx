@@ -1,7 +1,11 @@
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { InformationCircleIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
+import {
+  InformationCircleIcon,
+  PlusSmIcon,
+  XIcon,
+} from "@heroicons/react/solid";
 
 import { useWallet } from "../common/Auth";
 import { Button, Input } from "../common/styles";
@@ -22,7 +26,6 @@ type FormData = {
 };
 
 export default function CreateProgram() {
-
   datadogLogs.logger.info(`====> Route: /program/create`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
@@ -211,23 +214,25 @@ export default function CreateProgram() {
 
                   <div className="sm:basis-1/2">
                     <label htmlFor="program-chain" className="block text-xs">
-                      <span className="opacity-50">
-                        Program Chain
-                      </span>
+                      <span className="opacity-50">Program Chain</span>
                       <ProgramChain />
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      { CHAINS[chain.id] ?
+                      {CHAINS[chain.id] ? (
                         <>
-                          <img src={CHAINS[chain.id]?.logo} alt="program-chain-logo" className="h-4 w-4 ml-1 mr-2 mt-1"/>
+                          <img
+                            src={CHAINS[chain.id]?.logo}
+                            alt="program-chain-logo"
+                            className="h-4 w-4 ml-1 mr-2 mt-1"
+                          />
                           <p>{chain.name}</p>
                         </>
-                        :
+                      ) : (
                         <>
                           <p>Wrong Network</p>
                         </>
-                      }
+                      )}
                     </div>
                   </div>
                 </div>

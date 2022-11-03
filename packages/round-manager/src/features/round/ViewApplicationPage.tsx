@@ -132,8 +132,14 @@ export default function ViewApplicationPage() {
     } else if (indexingStatus == ProgressStatus.IS_SUCCESS) {
       redirectToViewRoundPage(navigate, 0, roundId);
     }
-  }, [navigate, IPFSCurrentStatus, contractUpdatingStatus, indexingStatus, id, roundId]);
-
+  }, [
+    navigate,
+    IPFSCurrentStatus,
+    contractUpdatingStatus,
+    indexingStatus,
+    id,
+    roundId,
+  ]);
 
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(id);
@@ -192,9 +198,7 @@ export default function ViewApplicationPage() {
           },
         ],
       });
-
     } catch (error) {
-
       datadogLogs.logger.error(
         `error: handleReview - ${error}, roundId - ${roundId}`
       );
@@ -537,7 +541,6 @@ function redirectToViewRoundPage(
     navigate(`/round/${id}`);
   }, waitSeconds);
 }
-
 
 function redirectToViewApplicationPage(
   navigate: NavigateFunction,

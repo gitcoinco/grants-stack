@@ -219,6 +219,7 @@ export function Continue(props: {
           $variant="solid"
           className="text-sm px-5"
           onClick={props.onClick}
+          data-testid="continue-button"
         >
           Continue
         </Button>
