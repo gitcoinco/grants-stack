@@ -14,6 +14,7 @@ The following sections document the hosted services where the subgraph is deploy
 | Network        | GITHUB_USER/SUBGRAPH_NAME                    | Playground                                                                                | Query                                                                                 |
 |----------------|----------------------------------------------|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
 | goerli         | gitcoinco/grants-round-goerli-testnet        | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-goerli-testnet        | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet         |
+| fantom         | gitcoinco/grants-round-fantom-mainnet        | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-fantom-mainnet        | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet         |
 | fantom-testnet | gitcoinco/grants-round-fantom-testnet        | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-fantom-testnet        | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet         |
 | optimism       | gitcoinco/grants-round-optimism-mainnet      | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-round-optimism-mainnet      | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet       |
 
@@ -69,6 +70,7 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 |----------------|
 | goerli         |
 | optimism       |
+| fantom         |
 | fantom-testnet |
 
 

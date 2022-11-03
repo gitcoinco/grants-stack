@@ -23,7 +23,8 @@ const chainIds = {
   
   // mainnet
   "mainnet"           : 1,
-  "optimism-mainnet"  : 10
+  "optimism-mainnet"  : 10,
+  "fantom-mainnet"    : 250
 };
 
 
@@ -72,12 +73,16 @@ function createTestnetConfig(
 /**
  * Generates hardhat network configuration the mainnet networks.
  * @param network
+ * @param url (optional)
  * @returns {NetworkUserConfig}
  */
 function createMainnetConfig(
-  network: keyof typeof chainIds
+  network: keyof typeof chainIds,
+  url?: string
 ): NetworkUserConfig {
-  const url: string = `https://${network}.infura.io/v3/${infuraIdKey}`;
+  if(!url) {
+    url = `https://${network}.infura.io/v3/${infuraIdKey}`;
+  }
   return {
     accounts: [deployPrivateKey],
     chainId: chainIds[network],
@@ -109,11 +114,12 @@ const dodoc = {
 }
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: "0.8.17",
   networks: {
     // Main Networks
     "mainnet": createMainnetConfig("mainnet"),
     "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
+    "fantom-mainnet": createMainnetConfig("fantom-mainnet", "https://rpc.ftm.tools"),
 
     // Test Networks
     "goerli": createTestnetConfig("goerli"),
@@ -127,6 +133,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       goerli: process.env.ETHERSCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+      opera: process.env.FTMSCAN_API_KEY,
     }
   },
   abiExporter: abiExporter,

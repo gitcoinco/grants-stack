@@ -21,6 +21,10 @@ export const projectRegistryContract = (
       address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
       break;
     }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       address = "";
       break;
@@ -51,6 +55,10 @@ export const programFactoryContract = (
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
@@ -90,6 +98,10 @@ export const roundFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E";
+      break;
+    }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       address = "0x00F51ba2Cd201F4bFac0090F450de0992a838762";
       break;
@@ -125,6 +137,10 @@ export const qfVotingStrategyFactoryContract = (
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {

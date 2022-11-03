@@ -18,6 +18,11 @@ export const QFVotingParams: DeployParams = {
     implementation: '',
     contract: ''
   },
+  "fantom-mainnet": {
+    factory: '0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38',
+    implementation: '0x114885035DAF6f8E09BE55Ed2169d41A512dad45',
+    contract: '0x818A3C8F82667bd222faF84a954F35d2b0Eb6a78'
+  },
   "fantom-testnet": {
     factory: '0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2',
     implementation: '0x4ba9Ed9C90d955FD92687d9aB49deFcCa3C3a959',
