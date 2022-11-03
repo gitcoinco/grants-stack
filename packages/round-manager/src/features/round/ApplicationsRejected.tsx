@@ -109,8 +109,8 @@ export default function ApplicationsRejected() {
       contractUpdatingStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
-        setOpenProgressModal(false);
         setOpenErrorModal(true);
+        setOpenProgressModal(false);
       }, errorModalDelayMs);
     }
 
