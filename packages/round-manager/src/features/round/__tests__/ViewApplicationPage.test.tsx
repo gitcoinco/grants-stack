@@ -5,7 +5,13 @@ import {
   makeRoundData,
 } from "../../../test-utils";
 import ViewApplicationPage from "../ViewApplicationPage";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
@@ -26,7 +32,6 @@ import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
-  useBulkUpdateGrantApplications,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
   ApplicationStatus,
@@ -244,10 +249,10 @@ describe("ViewApplicationPage", () => {
       renderWithContext(
         <ViewApplicationPage />,
         {
-          applications: [application]
+          applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -257,7 +262,6 @@ describe("ViewApplicationPage", () => {
       fireEvent.click(screen.getByText("Confirm"));
 
       expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
-
     });
 
     it("choosing done closes the error modal", async () => {
@@ -269,10 +273,10 @@ describe("ViewApplicationPage", () => {
       renderWithContext(
         <ViewApplicationPage />,
         {
-          applications: [application]
+          applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -281,7 +285,7 @@ describe("ViewApplicationPage", () => {
       await screen.findByTestId("confirm-modal");
       fireEvent.click(screen.getByText("Confirm"));
 
-      await screen.findByTestId("error-modal")
+      await screen.findByTestId("error-modal");
 
       const done = await screen.findByTestId("done");
       await act(() => {
@@ -300,10 +304,10 @@ describe("ViewApplicationPage", () => {
       renderWithContext(
         <ViewApplicationPage />,
         {
-          applications: [application]
+          applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR
+          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -620,7 +624,7 @@ export const renderWithContext = (
       <BulkUpdateGrantApplicationContext.Provider
         value={{
           ...initialBulkUpdateGrantApplicationState,
-          ...bulkUpdateGrantApplicationStateOverrides
+          ...bulkUpdateGrantApplicationStateOverrides,
         }}
       >
         <RoundContext.Provider
