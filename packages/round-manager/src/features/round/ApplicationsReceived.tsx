@@ -110,8 +110,8 @@ export default function ApplicationsReceived() {
       contractUpdatingStatus === ProgressStatus.IS_ERROR
     ) {
       setTimeout(() => {
-        setOpenProgressModal(false);
         setOpenErrorModal(true);
+        setOpenProgressModal(false);
       }, errorModalDelayMs);
     }
 
