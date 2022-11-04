@@ -8,12 +8,7 @@ import { TextInput } from "../grants/inputs";
 import Github from "../providers/Github";
 import Twitter from "../providers/Twitter";
 import Button, { ButtonVariants } from "./Button";
-/*
-const initialFormValues = {
-  github: "",
-  twitter: "",
-};
-*/
+
 export default function VerificationForm({
   setVerifying,
 }: {
@@ -28,7 +23,6 @@ export default function VerificationForm({
     shallowEqual
   );
 
-  // const [formInputs, setFormInputs] = useState(initialFormValues);
   const [ghVerification, setGHVerification] = useState<VerifiableCredential>();
   const [twitterVerification, setTwitterVerification] =
     useState<VerifiableCredential>();
