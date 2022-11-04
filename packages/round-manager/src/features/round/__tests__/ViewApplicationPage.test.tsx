@@ -32,7 +32,6 @@ import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
-  useBulkUpdateGrantApplications,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
   ApplicationStatus,
