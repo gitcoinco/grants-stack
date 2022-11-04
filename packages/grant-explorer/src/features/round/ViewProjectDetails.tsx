@@ -30,8 +30,8 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <div className="mx-20 h-screen px-4 py-7">
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <div className="mx-20 h-screen px-4 py-7">
         <div className="flex flex-row items-center gap-3 text-sm">
           <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
           <Link to={`/round/${chainId}/${roundId}`}>

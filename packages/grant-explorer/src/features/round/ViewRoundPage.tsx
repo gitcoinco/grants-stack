@@ -67,8 +67,8 @@ function BeforeRoundStart(props: {round: Round, chainId: string, roundId: string
 
   return (
     <>
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 px-4 py-7 h-screen">
-        <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
         <main>
           <PreRoundPage
             round={round}
