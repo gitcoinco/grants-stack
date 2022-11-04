@@ -134,7 +134,7 @@ export interface Round {
     };
     support?: {
       type: string;
-      url: string;
+      info: string;
     };
   };
   /**
