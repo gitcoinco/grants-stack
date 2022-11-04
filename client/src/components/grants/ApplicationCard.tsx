@@ -1,4 +1,4 @@
-import { Badge, Box, SimpleGrid, Spinner } from "@chakra-ui/react";
+import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadRound, unloadRounds } from "../../actions/rounds";
@@ -57,19 +57,17 @@ export default function ApplicationCard({
           {props.round?.programName}
         </span>
       </Box>
-      <SimpleGrid columns={2} spacing={2}>
+      <div className="flex flex-1 flex-col md:flex-row justify-between">
         <Box className="pl-2 text-gitcoin-gray-400">
-          <span>{props.round?.roundMetadata.name}</span>
+          <div>{props.round?.roundMetadata.name}</div>
+          {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
-        <Box className="pl-2 text-right text-gitcoin-gray-400">
+        <Box className="pl-2 mt-2 md:mt-0 text-gitcoin-gray-400">
           <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
             {applicationData.application.status}
           </Badge>
         </Box>
-      </SimpleGrid>
-      <Box className="pl-2 text-gitcoin-gray-400">
-        {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
-      </Box>
+      </div>
       <Box p={2} className="mt-4 mb-6">
         <p>
           Have any questions about your grant round application? Contact{" "}

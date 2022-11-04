@@ -62,15 +62,8 @@ if (process.env.REACT_APP_LOCALCHAIN) {
   chainsAvailable.push(chain.hardhat);
 }
 
-// Update production only chains here
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(
-    chain.optimism,
-    chain.goerli,
-    chain.optimismKovan,
-    fantomMainnet
-  );
-  // And all other environments here
+  chainsAvailable.push(fantomMainnet);
 } else {
   chainsAvailable.push(
     chain.optimism,

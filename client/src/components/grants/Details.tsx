@@ -1,4 +1,4 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -27,14 +27,12 @@ export default function Details({
   updatedAt,
   bannerImg,
   logoImg,
-  preview,
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
   createdAt: string;
   bannerImg: string | Blob;
   logoImg: string | Blob;
-  preview?: boolean;
 }) {
   const params = useParams();
   const dispatch = useDispatch();
@@ -42,7 +40,7 @@ export default function Details({
     const chainId = state.web3.chainID;
     const projectID = generateUniqueRoundApplicationID(
       chainId!,
-      Number(params.id)
+      Number(params.id || "0")
     );
     const { applications } = state.projects;
 
@@ -57,8 +55,30 @@ export default function Details({
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
   }, [dispatch, props.projectID, props.chainId]);
 
+  const renderApplications = () => (
+    <>
+      {props.applications.length !== 0 && (
+        <Box p={1}>
+          <span className="text-[20px]">My Applications</span>
+        </Box>
+      )}
+      <Box>
+        {props.applications.length !== 0 &&
+          props.applications.map((application) => {
+            const roundID = application?.round?.id;
+            const cardData = { application, roundID };
+            return (
+              <Box key={roundID} m={2}>
+                <ApplicationCard applicationData={cardData} />
+              </Box>
+            );
+          })}
+      </Box>
+    </>
+  );
+
   return (
-    <div className={`w-full ${preview && "md:w-2/3"} mb-40`}>
+    <div className="w-full mb-40">
       <img
         className="w-full mb-4"
         src={
@@ -87,10 +107,10 @@ export default function Details({
           </div>
         </div>
       </div>
-      <h4 className="mb-4 mt-14">{project?.title}</h4>
-      <div className="flex flex-1 flex-row">
+      <h4 className="mb-4 ml-1 mt-14">{project?.title}</h4>
+      <div className="flex flex-1 flex-col md:flex-row">
         <div className="flex flex-1 flex-col w-full">
-          <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          <div className="grid grid-cols-1 md:grid-cols-2">
             <div>
               <div>
                 <a
@@ -171,32 +191,26 @@ export default function Details({
                 </div>
               )}
             </div>
-          </Grid>
+          </div>
+          <div className="flex flex-1 md:hidden flex-col">
+            {renderApplications()}
+          </div>
           <div className="mt-4">
-            <p className="text-primary-text xl:mt-2 lg:mt-2 font-bold">
+            <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
               Description
             </p>
-            <p className="mb-12">{project?.description}</p>
+            <div className="mb-12 ml-2">
+              {project?.description?.split(/\r?\n/).map((i, x) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <p className="mb-5" key={`i-${x}`}>
+                  {i}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="max-w-md">
-          {props.applications.length !== 0 && (
-            <Box p={1}>
-              <span className="text-[20px]">My Applications</span>
-            </Box>
-          )}
-          <Box>
-            {props.applications.length !== 0 &&
-              props.applications.map((application) => {
-                const roundID = application?.round?.id;
-                const cardData = { application, roundID };
-                return (
-                  <Box key={roundID} m={2}>
-                    <ApplicationCard applicationData={cardData} />
-                  </Box>
-                );
-              })}
-          </Box>
+        <div className="max-w-md hidden md:flex flex-col">
+          {renderApplications()}
         </div>
       </div>
     </div>
