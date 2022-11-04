@@ -76,7 +76,7 @@ function Header(props: { projectMetadata: ProjectMetadata }) {
     <div>
       <ProjectBanner
         projectMetadata={props.projectMetadata}
-        classNameOverride="h-32 w-full object-cover lg:h-80 rounded"
+        classNameOverride="h-80 w-full object-cover lg:h-80 rounded"
       />
       <div className="pl-4 sm:pl-6 lg:pl-8">
         <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">

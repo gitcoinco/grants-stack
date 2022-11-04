@@ -15,7 +15,7 @@ export function ProjectBanner(props: {
     <div>
       <img
         className={
-          props.classNameOverride ?? "h-[120px] w-full object-cover rounded-t"
+          props.classNameOverride ?? "h-[320px] w-full object-cover rounded-t"
         }
         src={projectBannerImage}
         alt="Project Banner"
