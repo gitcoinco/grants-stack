@@ -138,6 +138,7 @@ function Project() {
             updatedAt={updatedAt}
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
+            showApplications
           />
         </>
       )}
