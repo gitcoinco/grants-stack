@@ -2,8 +2,8 @@ import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
-  walletConnectWallet,
   metaMaskWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -68,7 +68,6 @@ if (process.env.REACT_APP_ENV === "production") {
   chainsAvailable.push(
     chain.optimism,
     chain.goerli,
-    chain.optimismKovan,
     fantomTestnet,
     fantomMainnet
   );
