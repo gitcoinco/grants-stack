@@ -134,31 +134,6 @@ function ProjectForm({
           imgHandler={(buffer: Blob) => bannerChangedHandler(buffer)}
         />
 
-        <TextInput
-          label="Project Twitter"
-          name="projectTwitter"
-          placeholder="Your project's Twitter handle"
-          value={props.formMetaData.projectTwitter}
-          changeHandler={handleInput}
-          required={false}
-        />
-
-        <TextInput
-          label="Your Github Username"
-          name="userGithub"
-          placeholder="GitHub username you use to contribute to the project"
-          value={props.formMetaData.userGithub}
-          changeHandler={handleInput}
-          required={false}
-        />
-        <TextInput
-          label="Project Github Organization"
-          name="projectGithub"
-          placeholder="GitHub org name your project is a part of"
-          value={props.formMetaData.projectGithub}
-          changeHandler={handleInput}
-          required={false}
-        />
         <TextArea
           label="Project Description"
           name="description"

@@ -28,9 +28,14 @@ export default function Twitter({
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
+      formMetaData: state.projectForm.metadata,
     }),
     shallowEqual
   );
+
+  useEffect(() => {
+    setComplete(false);
+  }, [props.formMetaData.projectTwitter]);
 
   const { signer } = global;
   // Open Twitter authUrl in centered window
@@ -157,7 +162,8 @@ export default function Twitter({
   return (
     <div>
       <Button
-        styles={["ml-8 w-auto"]}
+        disabled={handle?.length === 0}
+        styles={["ml-8 w-auto mt-20"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchTwitterOAuth()}
       >

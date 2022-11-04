@@ -1,19 +1,19 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { credentialsSaved } from "../../actions/projectForm";
+import { credentialsSaved, metadataSaved } from "../../actions/projectForm";
+import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
-import Button, { ButtonVariants } from "./Button";
 import { TextInput } from "../grants/inputs";
 import Github from "../providers/Github";
 import Twitter from "../providers/Twitter";
-import { RootState } from "../../reducers";
-
+import Button, { ButtonVariants } from "./Button";
+/*
 const initialFormValues = {
   github: "",
   twitter: "",
 };
-
+*/
 export default function VerificationForm({
   setVerifying,
 }: {
@@ -28,21 +28,33 @@ export default function VerificationForm({
     shallowEqual
   );
 
-  const [formInputs, setFormInputs] = useState(initialFormValues);
+  // const [formInputs, setFormInputs] = useState(initialFormValues);
   const [ghVerification, setGHVerification] = useState<VerifiableCredential>();
   const [twitterVerification, setTwitterVerification] =
     useState<VerifiableCredential>();
   const [error, setError] = useState<string | undefined>();
+
   const handleInput = (e: ChangeHandlers) => {
+    if (e.target.name === "projectGithub" || e.target.name === "userGithub") {
+      setGHVerification(undefined);
+    }
+    if (e.target.name === "projectTwitter") {
+      setTwitterVerification(undefined);
+    }
     const { value } = e.target;
-    setFormInputs({ ...formInputs, [e.target.name]: value });
+    dispatch(
+      metadataSaved({
+        ...props.formMetaData,
+        [e.target.name]: value,
+      })
+    );
   };
 
   const saveAndPreview = () => {
     dispatch(
       credentialsSaved({
-        github: ghVerification,
-        twitter: twitterVerification,
+        github: ghVerification!,
+        twitter: twitterVerification!,
       })
     );
     setVerifying(ProjectFormStatus.Preview);
@@ -52,15 +64,25 @@ export default function VerificationForm({
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text px-4">
       <div className="flex items-center mb-6">
         <img
-          className="h-12 mr-12"
+          className="h-12 mr-12 mt-6"
           src="./assets/github_logo.png"
           alt="Github Logo"
         />
         <TextInput
-          disabled
-          label="Github"
+          label="Your Github Username"
+          name="userGithub"
+          placeholder="GitHub username you use to contribute to the project"
+          value={props.formMetaData.userGithub}
+          changeHandler={handleInput}
+          required={false}
+        />
+      </div>
+      <div className="flex items-center mb-6">
+        <div className="h-12 mr-12 w-12" />
+        <TextInput
+          label="Github Oganization"
           info="Connect your project’s GitHub account to verify (Optional)"
-          name="github"
+          name="projectGithub"
           placeholder="What's the project name?"
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
@@ -68,6 +90,10 @@ export default function VerificationForm({
         />
         <Github
           org={props.formMetaData.projectGithub ?? ""}
+          canVerify={
+            !!props.formMetaData.projectGithub &&
+            !!props.formMetaData.userGithub
+          }
           verificationComplete={setGHVerification}
           verificationError={(providerError) => setError(providerError)}
         />
@@ -80,10 +106,10 @@ export default function VerificationForm({
           alt="Twitter Logo"
         />
         <TextInput
-          disabled
+          disabled={twitterVerification !== undefined}
           label="Twitter"
           info="Connect your project’s Twitter account to verify (Optional)"
-          name="twitter"
+          name="projectTwitter"
           placeholder="What's the project name?"
           value={props.formMetaData.projectTwitter}
           changeHandler={handleInput}
@@ -114,7 +140,11 @@ export default function VerificationForm({
           Back
         </Button>
         <Button variant={ButtonVariants.primary} onClick={saveAndPreview}>
-          Next
+          {!props.formMetaData.userGithub &&
+          !props.formMetaData.projectGithub &&
+          !props.formMetaData.projectTwitter
+            ? "Skip"
+            : "Next"}
         </Button>
       </div>
     </div>
