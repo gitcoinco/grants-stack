@@ -38,7 +38,10 @@ const testnetChains = () => {
     testnet: true,
   };
 
-  return [chain.goerli, fantomTestnet];
+  return [
+    chain.goerli,
+    fantomTestnet
+  ];
 };
 
 const mainnetChains = () => {
@@ -67,7 +70,10 @@ const mainnetChains = () => {
     testnet: false,
   };
 
-  return [chain.optimism, fantomMainnet];
+  return [
+    // chain.optimism,
+    fantomMainnet
+  ];
 };
 
 const allChains: Chain[] =
