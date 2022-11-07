@@ -4,20 +4,19 @@ import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import * as utils from "../utils";
 
-utils.assertEnvironment();  
+utils.assertEnvironment();
 
 export async function main() {
-
   // Wait 10 blocks for re-org protection
-  const blocksToWait = 10;
-  
+  const blocksToWait = hre.network.name === "localhost" ? 0 : 10;
+
   await confirmContinue({
-    "contract"  : "RoundFactory",
-    "network"   : hre.network.name,
-    "chainId"   : hre.network.config.chainId
+    contract: "RoundFactory",
+    network: hre.network.name,
+    chainId: hre.network.config.chainId,
   });
 
-  // Deploy RoundImplementation 
+  // Deploy RoundImplementation
   const contractFactory = await ethers.getContractFactory("RoundFactory");
   const contract = await upgrades.deployProxy(contractFactory);
 
