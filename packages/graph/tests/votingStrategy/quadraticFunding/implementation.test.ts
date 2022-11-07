@@ -3,6 +3,7 @@ import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { handleVote } from "../../../src/votingStrategy/quadraticFunding/implementation";
 import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
 import { QFVote, Round, VotingStrategy } from "../../../generated/schema";
+import { generateID } from "../../../src/utils";
 
 
 let token: Address;
@@ -98,7 +99,11 @@ describe("handleVote", () => {
 
     handleVote(newVoteEvent);
 
-    const id = newVoteEvent.transaction.hash.toHex();
+    const id = generateID([
+      newVoteEvent.transaction.hash.toHex(),
+      grantAddress.toHex()
+    ]);
+    newVoteEvent.transaction.hash.toHex();
     const qfVote = QFVote.load(id);
     assert.assertNotNull(qfVote);
 
@@ -110,7 +115,10 @@ describe("handleVote", () => {
 
     handleVote(newVoteEvent);
 
-    const id = newVoteEvent.transaction.hash.toHex();
+    const id = generateID([
+      newVoteEvent.transaction.hash.toHex(),
+      grantAddress.toHex()
+    ]);
     const qfVote = QFVote.load(id);
 
     assert.stringEquals(qfVote!.votingStrategy, votingStrategyAddress.toHex());
@@ -118,28 +126,20 @@ describe("handleVote", () => {
     assert.bigIntEquals(qfVote!.amount, amount);
     assert.stringEquals(qfVote!.from, voter.toHex());
     assert.stringEquals(qfVote!.to, grantAddress.toHex());
-    assert.stringEquals(qfVote!.round, roundAddress.toHex());
   });
 
   test("QF vote is linked to VotingStrategy when handledVote is called", () => {
 
     handleVote(newVoteEvent);
 
-    const id = newVoteEvent.transaction.hash.toHex();
+    const id = generateID([
+      newVoteEvent.transaction.hash.toHex(),
+      grantAddress.toHex()
+    ]);
     const qfVote = QFVote.load(id);
     const votingStrategy = VotingStrategy.load(qfVote!.votingStrategy);
 
     assert.assertNotNull(votingStrategy);
-  });
-
-  test("QF vote is linked to Round when handledVote is called", () => {
-    handleVote(newVoteEvent);
-
-    const id = newVoteEvent.transaction.hash.toHex();
-    const qfVote = QFVote.load(id);
-    const round = Round.load(qfVote!.round);
-
-    assert.assertNotNull(round);
   });
 
   test("created 2 QF votes when 2 when handledVote is called twice", () => {
@@ -159,10 +159,16 @@ describe("handleVote", () => {
     handleVote(newVoteEvent);
     handleVote(anotherVoteEvent);
 
-    const id = newVoteEvent.transaction.hash.toHex();
+    const id = generateID([
+      newVoteEvent.transaction.hash.toHex(),
+      grantAddress.toHex()
+    ]);
     assert.assertNotNull(QFVote.load(id));
 
-    const anotherId = anotherVoteEvent.transaction.hash.toHex();
+    const anotherId = generateID([
+      newVoteEvent.transaction.hash.toHex(),
+      grantAddress.toHex()
+    ]);
     assert.assertNotNull(QFVote.load(anotherId));
   });
 

@@ -98,7 +98,7 @@ type VotingStrategy @entity {
   id: ID!
   strategyName: String!
   strategyAddress: String!
-  round: Round
+  round: Round @derivedFrom(field: "votingStrategy")
   votes: [QFVote!] @derivedFrom(field: "votingStrategy")
 }
 
@@ -106,7 +106,7 @@ type VotingStrategy @entity {
 # = QFVotingStrategy = #
 ########################
 
-# id = event.receipt.transactionHash.toHex()
+# id = keccak256(event.receipt.transactionHash.toHex(), QFVote.to)
 type QFVote @entity {
   id: ID!
   votingStrategy: VotingStrategy!
@@ -114,5 +114,5 @@ type QFVote @entity {
   amount: BigInt!
   from: String!
   to: String!
-  round: Round!
+  # round: Round!
 }
