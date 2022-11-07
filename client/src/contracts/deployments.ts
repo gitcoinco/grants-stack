@@ -21,7 +21,7 @@ export const addresses: { [key: string]: any } = {
     projectRegistry: "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a",
   },
   fantomTestnet: {
-    projectRegistry: "0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19",
+    projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",
   },
   fantomMainnet: {
     projectRegistry: "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174",

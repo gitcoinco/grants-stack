@@ -1,7 +1,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
-import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+// import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -73,48 +73,114 @@ const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
 
+const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
+  const addresses = addressesByChainID(chainID!);
+  // FIXME: use contract filters when fantom bug is fixed
+  // const contract = new ethers.Contract(
+  //   addresses.projectRegistry,
+  //   ProjectRegistryABI,
+  //   global.web3Provider!
+  // );
+
+  // FIXME: use this line when the fantom RPC bug has been fixed
+  // const createdFilter = contract.filters.ProjectCreated(null, account) as any;
+  const createdEventSig = ethers.utils.id("ProjectCreated(uint256,address)");
+  const createdFilter = {
+    address: addresses.projectRegistry,
+    fromBlock: "0x00",
+    toBlock: "latest",
+    topics: [createdEventSig, null, ethers.utils.hexZeroPad(account, 32)],
+  };
+
+  // FIXME: remove when the fantom RPC bug has been fixed
+  if (chainID === 250 || chainID === 4002) {
+    createdFilter.address = undefined;
+  }
+
+  // FIXME: use queryFilter when the fantom RPC bug has been fixed
+  // const createdEvents = await contract.queryFilter(createdFilter);
+  let createdEvents = await global.web3Provider!.getLogs(createdFilter);
+
+  // FIXME: remove when the fantom RPC bug has been fixed
+  createdEvents = createdEvents.filter(
+    (e) => e.address === addresses.projectRegistry
+  );
+
+  if (createdEvents.length === 0) {
+    return {
+      createdEvents: [],
+      updatedEvents: [],
+      ids: [],
+    };
+  }
+
+  // FIXME: use this line when the fantom RPC bug has been fixed
+  // const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
+  const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
+
+  // FIXME: use this line when the fantom RPC bug has been fixed
+  // const hexIDs = createdEvents.map((event) =>
+  //   event.args!.projectID!.toHexString()
+  // );
+  const hexIDs = createdEvents.map((event) => event.topics[1]);
+
+  // FIXME: use this after fantom bug is fixed
+  // const updatedFilter = contract.filters.MetadataUpdated(hexIDs);
+  // const updatedEvents = await contract.queryFilter(updatedFilter);
+
+  // FIXME: remove when fantom bug is fixed
+  const updatedEventSig = ethers.utils.id(
+    "MetadataUpdated(uint256,(uint256,string))"
+  );
+  const updatedFilter = {
+    address: addresses.projectRegistry,
+    fromBlock: "0x00",
+    toBlock: "latest",
+    topics: [updatedEventSig, hexIDs, []],
+  };
+
+  // FIXME: remove when the fantom RPC bug has been fixed
+  if (chainID === 250 || chainID === 4002) {
+    updatedFilter.address = undefined;
+  }
+
+  let updatedEvents = await global.web3Provider!.getLogs(updatedFilter);
+  console.log(updatedEventSig);
+  console.log(updatedFilter);
+  // FIXME: remove when the fantom RPC bug has been fixed
+  updatedEvents = updatedEvents.filter(
+    (e) => e.address === addresses.projectRegistry
+  );
+
+  return {
+    createdEvents,
+    updatedEvents,
+    ids,
+  };
+};
+
 export const loadProjects =
   (withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(projectsLoading());
 
     const state = getState();
-    const { chainID } = state.web3;
+    const { chainID, account } = state.web3;
 
-    const addresses = addressesByChainID(chainID!);
-    const contract = new ethers.Contract(
-      addresses.projectRegistry,
-      ProjectRegistryABI,
-      global.web3Provider!
-    );
+    const { createdEvents, updatedEvents, ids } =
+      await fetchProjectCreatedEvents(chainID!, account!);
 
-    const createdFilter = contract.filters.ProjectCreated(
-      null,
-      state.web3.account
-    );
-
-    const createdEvents = await contract.queryFilter(createdFilter);
     if (createdEvents.length === 0) {
       dispatch(projectsLoaded({}));
       return;
     }
 
-    const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
-    const hexIDs = createdEvents.map((event) =>
-      event.args!.projectID!.toHexString()
-    );
-
-    if (withMetaData) {
-      ids.map((id) => dispatch<any>(fetchGrantData(id)));
-    }
-
-    const updatedFilter = contract.filters.MetadataUpdated(hexIDs);
-    const updatedEvents = await contract.queryFilter(updatedFilter);
-
     const events: ProjectEventsMap = {};
 
     createdEvents.forEach((createEvent) => {
-      const id = createEvent.args!.projectID!;
+      // FIXME: use this line when the fantom RPC bug has been fixed
+      // const id = createEvent.args!.projectID!;
+      const id = parseInt(createEvent.topics[1], 16);
       events[id] = {
         createdAtBlock: createEvent.blockNumber,
         updatedAtBlock: undefined,
@@ -122,12 +188,18 @@ export const loadProjects =
     });
 
     updatedEvents.forEach((updateEvent) => {
-      const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+      // FIXME: use this line when the fantom RPC bug has been fixed
+      // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+      const id = BigNumber.from(updateEvent.topics[1]).toNumber();
       const event = events[id];
       if (event !== undefined) {
         event.updatedAtBlock = updateEvent.blockNumber;
       }
     });
+
+    if (withMetaData) {
+      ids.map((id) => dispatch<any>(fetchGrantData(id)));
+    }
 
     dispatch(projectsLoaded(events));
   };
