@@ -26,14 +26,14 @@ jobs:
           cd packages/graph
           yarn install 
 
-      - name: Setup
-        run: |
-          cd packages/graph
-          yarn add @graphprotocol/graph-cli
-          yarn prepare:goerli
-          yarn codegen
+      # - name: Setup
+      #   run: |
+      #     cd packages/graph
+      #     yarn add @graphprotocol/graph-cli
+      #     # yarn prepare:goerli
+      #     # yarn codegen
           
-      - name: Test
-        run: |
-          cd packages/graph
-          yarn test
+      # - name: Test
+      #   run: |
+      #     cd packages/graph
+      #     yarn test
