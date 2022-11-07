@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -13,12 +13,14 @@ import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
 import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
+import ErrorModal from "../base/ErrorModal";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
 
   const params = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { roundId, chainId } = params;
 
@@ -115,7 +117,31 @@ function Round() {
   }
 
   if (props.status === Status.Error) {
-    return <p>Error: {props.error}</p>;
+    return (
+      <div>
+        <ErrorModal
+          open
+          secondaryBtnText="Close"
+          primaryBtnText="Refresh Page"
+          onRetry={() => navigate(grantsPath())}
+          onClose={() => navigate(0)}
+        >
+          <>
+            There has been an error loading the grant round data. Please try
+            refreshing the page. If the issue persists, please reach out to us
+            on{" "}
+            <a
+              target="_blank"
+              className="text-gitcoin-violet-400 outline-none"
+              href="https://discord.com/invite/gitcoin"
+              rel="noreferrer"
+            >
+              Discord.
+            </a>
+          </>
+        </ErrorModal>
+      </div>
+    );
   }
 
   if (
@@ -126,7 +152,31 @@ function Round() {
   }
 
   if (props.roundState === undefined || props.round === undefined) {
-    return <p>something went wrong</p>;
+    return (
+      <div>
+        <ErrorModal
+          open
+          secondaryBtnText="Close"
+          primaryBtnText="Refresh Page"
+          onRetry={() => navigate(grantsPath())}
+          onClose={() => navigate(0)}
+        >
+          <>
+            There has been an error loading the grant round data. Please try
+            refreshing the page. If the issue persists, please reach out to us
+            on{" "}
+            <a
+              target="_blank"
+              className="text-gitcoin-violet-400 outline-none"
+              href="https://discord.com/invite/gitcoin"
+              rel="noreferrer"
+            >
+              Discord.
+            </a>
+          </>
+        </ErrorModal>
+      </div>
+    );
   }
 
   return (
