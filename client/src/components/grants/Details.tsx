@@ -27,12 +27,14 @@ export default function Details({
   updatedAt,
   bannerImg,
   logoImg,
+  showApplications,
 }: {
   project?: Metadata | FormInputs | Project;
   updatedAt: string;
   createdAt: string;
   bannerImg: string | Blob;
   logoImg: string | Blob;
+  showApplications: boolean;
 }) {
   const params = useParams();
   const dispatch = useDispatch();
@@ -57,13 +59,14 @@ export default function Details({
 
   const renderApplications = () => (
     <>
-      {props.applications.length !== 0 && (
+      {props.applications.length !== 0 && showApplications && (
         <Box p={1}>
           <span className="text-[20px]">My Applications</span>
         </Box>
       )}
       <Box>
         {props.applications.length !== 0 &&
+          showApplications &&
           props.applications.map((application) => {
             const roundID = application?.round?.id;
             const cardData = { application, roundID };
