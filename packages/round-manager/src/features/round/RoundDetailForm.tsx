@@ -65,7 +65,18 @@ const ValidationSchema = yup.object().shape({
       info: yup
         .string()
         .required("This field is required.")
-        .min(8, "Contact information must be at least 8 characters."),
+        .when("type", {
+          is: "Email",
+          then: yup
+            .string()
+            .email()
+            .required("You must provide a valid email address."),
+        })
+        .when("type", {
+          is: (val: string) =>
+            val != "Email" && val != "Select what type of input.",
+          then: yup.string().url().required("You must provide a valid URL."),
+        }),
     }),
   }),
   applicationsStartTime: yup
@@ -946,6 +957,7 @@ function ContactInformation(props: {
         className={"h-10"}
         $hasError={props.errors.roundMetadata?.support?.info}
         type="text"
+        placeholder="Enter desired form of contact here. Ex: website, email..."
         id={"roundMetadata.support.info"}
       />
       {props.errors.roundMetadata?.support?.info && (
