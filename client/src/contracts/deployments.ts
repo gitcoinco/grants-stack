@@ -17,9 +17,6 @@ export const addresses: { [key: string]: any } = {
   goerli: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
-  optimisticKovan: {
-    projectRegistry: "0x95936606EDDB0ccDdD46d05AAB38F210FEEb5A8a",
-  },
   fantomTestnet: {
     projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",
   },
