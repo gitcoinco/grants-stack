@@ -93,6 +93,7 @@ export default function Preview({
         bannerImg={
           props.metadata?.bannerImgData ?? "./assets/default-project-banner.png"
         }
+        showApplications={false}
       />
       <div className="flex justify-end">
         <Button
