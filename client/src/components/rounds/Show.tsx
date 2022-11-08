@@ -196,11 +196,11 @@ function Round() {
                 <span>$XXX,XXX</span>
               </div> */}
           <div className="flex flex-1 flex-col mt-8">
-            <span>Application Date:</span>
+            <span>Application Period:</span>
             <span>{renderApplicationDate()}</span>
           </div>
           <div className="flex flex-1 flex-col mt-8">
-            <span>Round Date:</span>
+            <span>Round Dates:</span>
             <span>{renderRoundDate()}</span>
           </div>
         </div>
@@ -236,7 +236,7 @@ function Round() {
                     ]}
                     variant={ButtonVariants.primary}
                   >
-                    Apply to this round
+                    Apply
                   </Button>
                 </Link>
               ) : (

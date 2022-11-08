@@ -99,9 +99,7 @@ function ProjectsList() {
     <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
       <div className="flex flex-col mt-4 mb-4">
         <h3>My Projects</h3>
-        <p className="text-base">
-          Manage projects across multiple grants programs.
-        </p>
+        <p className="text-base">Bring your project to life.</p>
       </div>
       <RoundApplyAlert
         show={props.showRoundAlert}
@@ -170,7 +168,7 @@ function ProjectsList() {
             Time to get your project funded!
           </h5>
           <p className="mb-6">
-            Congratulations on creating your project on Grant Hub! Continue to
+            Congratulations on creating your project on Grants Hub! Continue to
             apply for{" "}
             {props.round ? props.round!.roundMetadata.name : "the round"}.
           </p>

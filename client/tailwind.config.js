@@ -28,6 +28,7 @@ module.exports = {
         'gitcoin-violet-100': '#F0EBFF',
         'gitcoin-violet-400': '#6F3FF5',
         'gitcoin-violet-500': '#5932C4',
+        'gitcoin-separator': '#757087',
         'modal-button': '#664AEC',
       },
       width: {

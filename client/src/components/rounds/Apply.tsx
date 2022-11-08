@@ -220,12 +220,12 @@ function Apply() {
             <p className="font-semibold">Grant Round</p>
             <p>{props.round.programName}</p>
             <p>{props.round.roundMetadata.name}</p>
-            <p className="font-semibold mt-4">Application Date</p>
+            <p className="font-semibold mt-4">Application Period:</p>
             <p>
               {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
               {formatDate(props.round.applicationsEndTime * 1000)}
             </p>
-            <p className="font-semibold mt-4">Round Date</p>
+            <p className="font-semibold mt-4">Rounds Date:</p>
             <p>
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
               {formatDate(props.round.roundEndTime * 1000)}

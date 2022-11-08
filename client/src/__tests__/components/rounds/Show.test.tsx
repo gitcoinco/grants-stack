@@ -75,7 +75,7 @@ describe("<Show />", () => {
 
         renderWrapped(<Show />, store);
 
-        expect(screen.getByText("Apply to this round")).toBeInTheDocument();
+        expect(screen.getByText("Apply")).toBeInTheDocument();
       });
 
       test("should send you to project creation page", async () => {

@@ -1,4 +1,4 @@
-# Grant Hub UI
+# Grants Hub UI
 
 This serves as the UI for publishing products to the project registry contracts
 
