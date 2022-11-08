@@ -58,6 +58,29 @@ export default function VerificationForm({
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text px-4">
       <div className="flex items-center mb-6">
         <img
+          className="h-12 mr-9"
+          src="./assets/twitter_logo.svg"
+          alt="Twitter Logo"
+        />
+        <TextInput
+          disabled={twitterVerification !== undefined}
+          label="Twitter"
+          name="projectTwitter"
+          placeholder="Your project's Twitter handle"
+          value={props.formMetaData.projectTwitter}
+          changeHandler={handleInput}
+          required={false}
+        />
+        <Twitter
+          handle={props.formMetaData.projectTwitter ?? ""}
+          verificationComplete={setTwitterVerification}
+          verificationError={(providerError) => setError(providerError)}
+          canVerify={!!props.formMetaData.projectTwitter}
+        />
+      </div>
+      <hr className="my-4" />
+      <div className="flex items-center mb-6">
+        <img
           className="h-12 mr-12 mt-6"
           src="./assets/github_logo.png"
           alt="Github Logo"
@@ -75,9 +98,8 @@ export default function VerificationForm({
         <div className="h-12 mr-12 w-12" />
         <TextInput
           label="Github Oganization"
-          info="Connect your project’s GitHub account to verify (Optional)"
           name="projectGithub"
-          placeholder="What's the project name?"
+          placeholder="GitHub org name your project is part of"
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
           required={false}
@@ -89,29 +111,6 @@ export default function VerificationForm({
             !!props.formMetaData.userGithub
           }
           verificationComplete={setGHVerification}
-          verificationError={(providerError) => setError(providerError)}
-        />
-      </div>
-      <hr className="my-4" />
-      <div className="flex items-center mb-6">
-        <img
-          className="h-12 mr-9"
-          src="./assets/twitter_logo.svg"
-          alt="Twitter Logo"
-        />
-        <TextInput
-          disabled={twitterVerification !== undefined}
-          label="Twitter"
-          info="Connect your project’s Twitter account to verify (Optional)"
-          name="projectTwitter"
-          placeholder="What's the project name?"
-          value={props.formMetaData.projectTwitter}
-          changeHandler={handleInput}
-          required={false}
-        />
-        <Twitter
-          handle={props.formMetaData.projectTwitter ?? ""}
-          verificationComplete={setTwitterVerification}
           verificationError={(providerError) => setError(providerError)}
         />
       </div>

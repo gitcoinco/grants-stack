@@ -1,6 +1,8 @@
+import { Tooltip } from "@chakra-ui/react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { debounce } from "ts-debounce";
@@ -19,10 +21,12 @@ export default function Twitter({
   handle,
   verificationComplete,
   verificationError,
+  canVerify,
 }: {
   handle: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
+  canVerify: boolean;
 }) {
   const [complete, setComplete] = useState(false);
   const props = useSelector(
@@ -160,7 +164,7 @@ export default function Twitter({
   }
 
   return (
-    <div>
+    <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
         disabled={handle?.length === 0}
         styles={["ml-8 w-auto mt-20"]}
@@ -169,6 +173,15 @@ export default function Twitter({
       >
         Verify
       </Button>
+      <Tooltip
+        className="shrink ml-8"
+        bg="purple.900"
+        hasArrow
+        label="Optional: Verify your project so that our grant program partners know your project is trustworthy.
+        You can also verify your project later, but doing so will incur additional gas fees."
+      >
+        <QuestionMarkCircleIcon className="w-6 h-6  mt-20" color="gray" />
+      </Tooltip>
     </div>
   );
 }
