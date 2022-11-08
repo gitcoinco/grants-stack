@@ -87,9 +87,15 @@ export interface MetaPtr {
   pointer: string;
 }
 
+export interface RoundSupport {
+  type: string;
+  info: string;
+}
+
 export interface RoundMetadata {
   name: string;
   programContractAddress: string;
+  support?: RoundSupport;
 }
 
 export interface ProgramMetadata {
