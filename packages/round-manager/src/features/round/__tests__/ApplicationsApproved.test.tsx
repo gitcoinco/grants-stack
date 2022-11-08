@@ -63,8 +63,6 @@ grantApplications.forEach((application) => {
   application.status = "APPROVED";
 });
 
-const bulkUpdateGrantApplications = jest.fn();
-
 const setupInBulkSelectionMode = () => {
   renderWithContext(<ApplicationsApproved />, {
     applications: grantApplications,

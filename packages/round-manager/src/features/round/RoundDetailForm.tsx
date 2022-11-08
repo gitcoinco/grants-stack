@@ -73,8 +73,7 @@ const ValidationSchema = yup.object().shape({
             .required("You must provide a valid email address."),
         })
         .when("type", {
-          is: (val: string) =>
-            val != "Email" && val != "Select what type of input.",
+          is: (val: string) => val && val != "Email",
           then: yup.string().url().required("You must provide a valid URL."),
         }),
     }),
