@@ -96,6 +96,84 @@ describe("<RoundDetailForm />", () => {
     expect(endDateInputs[1].id).toBe("roundEndTime");
   });
 
+  it("renders contact information input", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const contactInfoInput = await screen.getByLabelText("Contact Information");
+    expect(contactInfoInput).toBeInTheDocument();
+  });
+
+  it("requires contact information input to not be empty", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const submitButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
+    const input = await screen.getByRole("textbox", {
+      name: /contact information/i,
+    });
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+    const error = input.parentElement?.querySelector("p");
+    expect(error).toBeInTheDocument();
+    expect(error).toHaveTextContent("This field is required.");
+  });
+
+  it("requires contact information to be of type email when support type is email", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const submitButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
+    const supportSelection = screen.getByTestId("support-type-select");
+    fireEvent.click(supportSelection);
+    const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
+    fireEvent.click(firstSupportOption);
+    const infoInput = await screen.getByRole("textbox", {
+      name: /contact information/i,
+    });
+    await act(async () => {
+      fireEvent.click(firstSupportOption);
+      fireEvent.input(infoInput, {
+        target: {
+          value: "shrtnm",
+        },
+      });
+      fireEvent.click(submitButton);
+    });
+    const error = infoInput.parentElement?.querySelector("p");
+    expect(error).toBeInTheDocument();
+    expect(error).toHaveTextContent(
+      "roundMetadata.support.info must be a valid email"
+    );
+  });
+
+  it("requires contact information to be of type URL when support type is NOT email", async () => {
+    renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const submitButton = await screen.getByRole("button", {
+      name: /next|launch/i,
+    });
+    const supportSelection = screen.getByTestId("support-type-select");
+    fireEvent.click(supportSelection);
+    const firstSupportOption = screen.getAllByTestId("support-type-option")[1];
+    fireEvent.click(firstSupportOption);
+    const infoInput = await screen.getByRole("textbox", {
+      name: /contact information/i,
+    });
+    await act(async () => {
+      fireEvent.click(firstSupportOption);
+      fireEvent.input(infoInput, {
+        target: {
+          value: "shrtnm",
+        },
+      });
+      fireEvent.click(submitButton);
+    });
+    const error = infoInput.parentElement?.querySelector("p");
+    expect(error).toBeInTheDocument();
+    expect(error).toHaveTextContent(
+      "roundMetadata.support.info must be a valid URL"
+    );
+  });
+
   it("validates round start time is after application start time", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
     const startDateInputs = await screen.getAllByLabelText("Start Date");
@@ -227,6 +305,11 @@ describe("<RoundDetailForm />", () => {
     fireEvent.click(supportSelection);
     const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
     fireEvent.click(firstSupportOption);
+
+    /* Contact Information */
+    fireEvent.input(screen.getByLabelText("Contact Information"), {
+      target: { value: "johndoe@example.com" },
+    });
 
     /* Applications start date */
     expect(startDateInputs[0].id).toBe("applicationsStartTime");

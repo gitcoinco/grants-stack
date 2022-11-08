@@ -62,6 +62,20 @@ const ValidationSchema = yup.object().shape({
           ["Select what type of input."],
           "You must select a support type."
         ),
+      info: yup
+        .string()
+        .required("This field is required.")
+        .when("type", {
+          is: "Email",
+          then: yup
+            .string()
+            .email()
+            .required("You must provide a valid email address."),
+        })
+        .when("type", {
+          is: (val: string) => val && val != "Email",
+          then: yup.string().url().required("You must provide a valid URL."),
+        }),
     }),
   }),
   applicationsStartTime: yup
@@ -224,11 +238,27 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 />
                 {program && <ProgramChain program={program} />}
               </div>
-              <Support
-                register={register("roundMetadata.support.type")}
-                errors={errors}
-                control={control}
-              />
+
+              <p className="mt-6 mb-2">
+                Where can applicants reach you and/or your team if support is
+                needed?
+              </p>
+              <div className="grid grid-cols-6 gap-6 mb-1">
+                <div className="col-span-6 sm:col-span-3">
+                  <Support
+                    register={register("roundMetadata.support.type")}
+                    errors={errors}
+                    control={control}
+                  />
+                </div>
+                <div className="col-span-6 sm:col-span-3">
+                  <ContactInformation
+                    register={register("roundMetadata.support.info")}
+                    errors={errors}
+                  />
+                </div>
+              </div>
+
               <p className="mt-6">
                 What are the dates for the Applications and Round voting
                 period(s)
@@ -909,6 +939,35 @@ function MatchingCap(props: {
   );
 }
 
+function ContactInformation(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+}) {
+  return (
+    <div className="mt-2 mb-2">
+      <label
+        htmlFor="roundMetadata.support.info"
+        className="block text-xs font-medium"
+      >
+        Contact Information
+      </label>
+      <Input
+        {...props.register}
+        className={"h-10"}
+        $hasError={props.errors.roundMetadata?.support?.info}
+        type="text"
+        placeholder="Enter desired form of contact here. Ex: website, email..."
+        id={"roundMetadata.support.info"}
+      />
+      {props.errors.roundMetadata?.support?.info && (
+        <p className="text-xs text-pink-500">
+          {props.errors.roundMetadata?.support.info?.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function SupportTypeButton(props: {
   errors: FieldErrors<Round>;
   supportType?: SupportType;
@@ -956,96 +1015,88 @@ function SupportTypeDropdown(props: {
   });
   return (
     <>
-      <div className="grid grid-cols-6 gap-6 mb-1 pt-4">
-        <div className="col-span-6 sm:col-span-3">
-          <Listbox {...field}>
-            {({ open }) => (
-              <div>
-                <Listbox.Label className="text-xs mt-4 mb-2">
-                  Support Input
-                </Listbox.Label>
-                <div className="relative mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                  <SupportTypeButton
-                    errors={props.errors}
-                    supportType={props.supportTypes.find(
-                      (supportType) => supportType.name === field.value
-                    )}
-                  />
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {props.supportTypes.map(
-                        (type) =>
-                          !type.default && (
-                            <Listbox.Option
-                              key={type.name}
-                              className={({ active }) =>
-                                classNames(
-                                  active
-                                    ? "text-white bg-indigo-600"
-                                    : "text-gray-900",
-                                  "relative cursor-default select-none py-2 pl-3 pr-9"
-                                )
-                              }
-                              value={type.name}
-                              data-testid="support-type-option"
-                            >
-                              {({ selected, active }) => (
-                                <>
-                                  <div className="flex items-center">
-                                    <span
-                                      className={classNames(
-                                        selected
-                                          ? "font-semibold"
-                                          : "font-normal",
-                                        "ml-3 block truncate"
-                                      )}
-                                    >
-                                      {type.name}
-                                    </span>
-                                  </div>
-
-                                  {selected ? (
-                                    <span
-                                      className={classNames(
-                                        active
-                                          ? "text-white"
-                                          : "text-indigo-600",
-                                        "absolute inset-y-0 right-0 flex items-center pr-4"
-                                      )}
-                                    >
-                                      <CheckIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                  ) : null}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          )
-                      )}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-                {props.errors.roundMetadata?.support?.type && (
-                  <p className="mt-2 text-xs text-pink-500">
-                    {
-                      "You must select a support type."
-                      // TODO: Use YUP for error message
-                    }
-                  </p>
+      <Listbox {...field}>
+        {({ open }) => (
+          <div>
+            <Listbox.Label className="text-xs mt-4 mb-2">
+              Support Input
+            </Listbox.Label>
+            <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+              <SupportTypeButton
+                errors={props.errors}
+                supportType={props.supportTypes.find(
+                  (supportType) => supportType.name === field.value
                 )}
-              </div>
+              />
+              <Transition
+                show={open}
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {props.supportTypes.map(
+                    (type) =>
+                      !type.default && (
+                        <Listbox.Option
+                          key={type.name}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "text-white bg-indigo-600"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={type.name}
+                          data-testid="support-type-option"
+                        >
+                          {({ selected, active }) => (
+                            <>
+                              <div className="flex items-center">
+                                <span
+                                  className={classNames(
+                                    selected ? "font-semibold" : "font-normal",
+                                    "ml-3 block truncate"
+                                  )}
+                                >
+                                  {type.name}
+                                </span>
+                              </div>
+
+                              {selected ? (
+                                <span
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      )
+                  )}
+                </Listbox.Options>
+              </Transition>
+            </div>
+            {props.errors.roundMetadata?.support?.type && (
+              <p className="mt-2 text-xs text-pink-500">
+                {
+                  "You must select a support type."
+                  // TODO: Use YUP for error message
+                }
+              </p>
             )}
-          </Listbox>
-        </div>
-      </div>
+          </div>
+        )}
+      </Listbox>
     </>
   );
 }
@@ -1088,24 +1139,19 @@ function Support(props: {
       default: false,
     },
     {
-      name: "Other",
+      name: "Other (please provide a link)",
       regex: "https://www.google.com",
       default: false,
     },
   ];
 
   return (
-    <>
-      <p className="mt-6">
-        Where can applicants reach you and/or your team if support is needed?
-      </p>
-      <SupportTypeDropdown
-        register={props.register}
-        errors={props.errors}
-        control={props.control}
-        supportTypes={supportTypes}
-      />
-    </>
+    <SupportTypeDropdown
+      register={props.register}
+      errors={props.errors}
+      control={props.control}
+      supportTypes={supportTypes}
+    />
   );
 }
 
