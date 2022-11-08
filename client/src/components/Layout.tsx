@@ -68,7 +68,7 @@ function Layout(ownProps: Props) {
             <p className="font-semibold text-quaternary-text">
               Wallet Connected!
             </p>
-            <p className="text-quaternary-text">Welcome to your Grant Hub.</p>
+            <p className="text-quaternary-text">Welcome to your Grants Hub.</p>
           </div>
         </>
       </Toast>

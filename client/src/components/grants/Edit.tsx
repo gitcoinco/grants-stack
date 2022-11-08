@@ -83,6 +83,39 @@ function EditProject() {
     return <>Couldn&apos;t load project data.</>;
   }
 
+  const currentSubText = (status: ProjectFormStatus) => {
+    let data: { title: string; description: string } | undefined;
+    switch (status) {
+      case ProjectFormStatus.Metadata:
+        data = {
+          title: "Project Details",
+          description: "Tell us more about what you’re working on.",
+        };
+        break;
+      case ProjectFormStatus.Verification:
+        data = {
+          title: "Project Socials",
+          description: "Share where we can learn more about your project.",
+        };
+        break;
+      case ProjectFormStatus.Preview:
+        data = {
+          title: "Project Preview",
+          description: "Preview your project's page.",
+        };
+        break;
+      default:
+        return null;
+    }
+
+    return data ? (
+      <>
+        <h5 className="mb-2">{data.title}</h5>
+        <p className="mb-2">{data.description}</p>
+      </>
+    ) : null;
+  };
+
   const currentForm = (status: ProjectFormStatus) => {
     switch (status) {
       case ProjectFormStatus.Metadata:
@@ -112,9 +145,9 @@ function EditProject() {
   return (
     <div className="mx-4">
       <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Edit Project</h3>
+        <h3 className="mb-2">Edit Your Project</h3>
         <div className="w-full mb-2 inline-block sm:hidden">
-          <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+          {currentSubText(formStatus)}
         </div>
         <Button
           variant={ButtonVariants.outlineDanger}
@@ -130,7 +163,7 @@ function EditProject() {
 
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
-          <p>Make sure to Save &amp; Exit, so your changes are saved.</p>
+          {currentSubText(formStatus)}
           <p className="mt-4">
             Need Help? Check out the{" "}
             <a

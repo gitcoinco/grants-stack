@@ -33,7 +33,7 @@ export default function RoundApplyAlert({
         colorScheme="purple"
         onClick={confirmHandler}
       >
-        Apply to Round
+        Apply
       </Button>
     </div>
   );
