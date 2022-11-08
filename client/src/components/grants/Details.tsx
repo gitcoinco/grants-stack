@@ -41,7 +41,7 @@ export default function Details({
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const chainId = state.web3.chainID;
-    const { status } = state.projects;
+    const { applicationsStatus } = state.projects;
     const projectID = generateUniqueRoundApplicationID(
       chainId!,
       Number(params.id || "0")
@@ -52,7 +52,7 @@ export default function Details({
       chainId,
       projectID,
       applications,
-      status,
+      status: applicationsStatus,
     };
   });
 
