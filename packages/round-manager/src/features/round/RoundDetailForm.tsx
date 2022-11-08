@@ -1139,7 +1139,7 @@ function Support(props: {
       default: false,
     },
     {
-      name: "Other",
+      name: "Other (please provide a link)",
       regex: "https://www.google.com",
       default: false,
     },
