@@ -206,7 +206,7 @@ describe("<List />", () => {
         test("should never be visible", async () => {
           renderWrapped(<List />, store);
 
-          expect(screen.queryByText("Apply to Round")).toBeNull();
+          expect(screen.queryByText("Apply")).toBeNull();
         });
       });
 
@@ -248,7 +248,7 @@ describe("<List />", () => {
 
           renderWrapped(<List />, store);
 
-          expect(screen.getByText("Apply to Round")).toBeInTheDocument();
+          expect(screen.getByText("Apply")).toBeInTheDocument();
         });
 
         test("should not be visible if user already applied", async () => {
@@ -260,7 +260,7 @@ describe("<List />", () => {
 
           renderWrapped(<List />, store);
 
-          expect(screen.queryByText("Apply to Round")).toBeNull();
+          expect(screen.queryByText("Apply")).toBeNull();
         });
       });
     });
