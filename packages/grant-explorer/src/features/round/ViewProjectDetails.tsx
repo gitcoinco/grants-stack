@@ -33,9 +33,9 @@ export default function ViewProjectDetails() {
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 h-screen px-4 py-7">
         <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-6 w-6 mt-6 mb-6" />
+          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
           <Link to={`/round/${chainId}/${roundId}`}>
-            <span className="font-normal text-purple-100">Back to Grants</span>
+            <span className="font-normal">Back to Grants</span>
           </Link>
         </div>
         {!isLoading && projectToRender && (

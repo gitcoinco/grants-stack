@@ -1,38 +1,43 @@
-import tw from "tailwind-styled-components"
+import { FieldError } from "react-hook-form";
+import tw from "tailwind-styled-components";
+
+type ButtonProps = {
+  $variant?: "solid" | "outline";
+};
 
 export const Button = tw.button`
-  md:w-64
-  md:h-14
-  w-full
-  rounded-2xl
-  border-4
-  border-black
-  my-6
-  text-2xl
-  hover:bg-gray-200
-  disabled:bg-gray-300
-  disabled:text-white
-  disabled:border-gray-300
-  disabled:shadow-sm
-`
+  bg-violet-400 text-white
+  py-2.5 px-10
+  rounded
+  transition-colors
+  focus:shadow-outline
+  hover:brightness-125
+  disabled:bg-slate-100
+  disabled:text-slate-500
+  disabled:border-slate-200
+  disabled:shadow-none
+  ${(p: ButtonProps) =>
+    p.$variant === "outline"
+      ? "bg-white text-grey-500 border border-grey-100"
+      : "bg-violet-400 text-white"}
+`;
 
-type TextInputProps = {
-  $hasError: boolean
-}
+type InputProps = {
+  $hasError?: boolean | FieldError;
+  $disabled?: boolean;
+};
 
-export const TextInput = tw.input<TextInputProps>`
-  md:w-96
-  md:h-14
-  w-full
-  border-4
-  border-black
-  px-2
-  my-4
-  text-2xl
-  ${(p: TextInputProps) => (
-    p.$hasError ? "focus:outline-none focus:border-none focus:ring focus:ring-rose-600" : ""
-  )}
-`
+export const Input = tw.input<InputProps>`
+  block
+  mt-1 mb-2 w-full sm:text-sm border-grey-100
+  shadow-sm rounded-md
+  ${(p: InputProps) =>
+    p.$hasError
+      ? "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
+      : "focus:ring-violet-400 focus:border-violet-400"}
+  ${(p: InputProps) => (p.$disabled ? "bg-[#F1F1F1]" : "")}
+`;
+
 export const CardsContainer = tw.div`
   flex
   flex-row
@@ -70,3 +75,28 @@ export const CardTitle = tw.p`
   text-ellipsis
   line-clamp-2
 `;
+
+export const CardDescription = tw.p`
+  text-xs
+  text-ellipsis
+  line-clamp-2
+  text-grey-400
+  leading-relaxed
+`;
+
+export const CardFooter = tw.div`
+  absolute
+  bottom-0
+  inset-x-0
+  bg-zinc-50
+  h-16
+  w-full
+`;
+
+export const CardFooterContent = tw.div`
+  flex
+  flex-row
+  items-center
+  h-full
+  w-full
+  `;
