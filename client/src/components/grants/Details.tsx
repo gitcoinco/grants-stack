@@ -57,7 +57,7 @@ export default function Details({
   });
 
   useEffect(() => {
-    if (props.status === Status.Undefined) return;
+    if (props.status !== Status.Undefined) return;
 
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
   }, [dispatch, props.projectID, props.chainId]);
