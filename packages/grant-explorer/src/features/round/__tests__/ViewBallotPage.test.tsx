@@ -1,5 +1,5 @@
 import ViewBallot from "../../ViewBallotPage";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
 import { makeApprovedProjectData } from "../../../test-utils";
@@ -14,7 +14,6 @@ const useParamsFn = () => ({
   roundId,
 });
 
-
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -26,7 +25,6 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("View Ballot Page", () => {
-
   describe("Shortlist", () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -43,8 +41,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: shortlist, setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: shortlist,
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -56,8 +56,12 @@ describe("View Ballot Page", () => {
       const projects = screen.getAllByTestId("project");
       expect(projects.length).toEqual(shortlist.length);
       projects.forEach((project, i) => {
-        expect(project.textContent).toContain(shortlist[i].projectMetadata.title);
-        expect(project.textContent).toContain(shortlist[i].projectMetadata.description);
+        expect(project.textContent).toContain(
+          shortlist[i].projectMetadata.title
+        );
+        expect(project.textContent).toContain(
+          shortlist[i].projectMetadata.description
+        );
       });
     });
 
@@ -67,8 +71,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -76,8 +82,73 @@ describe("View Ballot Page", () => {
           </RoundProvider>
         </MemoryRouter>
       );
-      screen.getByText(/Projects that you add to the Shortlist will appear here./i);
+      screen.getByText(
+        /Projects that you add to the Shortlist will appear here./i
+      );
     });
+
+    it("shows trash button to remove project", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const trashButton = screen.getByTestId("remove-from-shortlist");
+      expect(trashButton).toBeInTheDocument();
+    });
+
+    it("calls setShortlist action when trash button is clicked", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const removeFromShortlist = screen.getAllByTestId(
+        "remove-from-shortlist"
+      )[0];
+      fireEvent.click(removeFromShortlist);
+
+      expect(setShortlist).toHaveBeenCalled();
+    });
+
+    // it("shows a remove-from-ballot button replacing add-to-ballot when add-to-ballot is clicked", () => {
+    //   renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    //   const addToBallot = screen.getByTestId("add-to-ballot");
+    //   fireEvent.click(addToBallot);
+
+    //   expect(screen.getByTestId("remove-from-ballot")).toBeInTheDocument();
+    //   expect(screen.queryByTestId("add-to-ballot")).not.toBeInTheDocument();
+    // });
   });
 
   describe("Final Ballot", () => {
@@ -96,8 +167,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: finalBallot, setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: finalBallot,
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -109,7 +182,9 @@ describe("View Ballot Page", () => {
       const projects = screen.getAllByTestId("project");
       expect(projects.length).toEqual(finalBallot.length);
       projects.forEach((project, i) => {
-        expect(project.textContent).toContain(finalBallot[i].projectMetadata.title);
+        expect(project.textContent).toContain(
+          finalBallot[i].projectMetadata.title
+        );
       });
     });
 
@@ -119,8 +194,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -143,8 +220,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />

@@ -14,7 +14,7 @@ export default function ViewBallot() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
 
-  const [shortlist, , ,finalBallot] = useBallot();
+  const [shortlist, , , finalBallot] = useBallot();
 
   const shortlistNotEmpty = shortlist.length > 0;
   const finalBallotNotEmpty = finalBallot.length > 0;
@@ -24,20 +24,19 @@ export default function ViewBallot() {
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
 
       <div className="mx-20 h-screen px-4 py-7">
-
-        { Header(chainId, roundId) }
+        {Header(chainId, roundId)}
 
         <div className="grid grid-cols-2 gap-4">
-          { shortlistNotEmpty && ProjectShortList(shortlist) }
-          { !shortlistNotEmpty && EmptyProjectShortList(chainId, roundId) }
+          {shortlistNotEmpty && ProjectShortList(shortlist)}
+          {!shortlistNotEmpty && EmptyProjectShortList(chainId, roundId)}
 
-          { finalBallotNotEmpty && ProjectFinalBallot(finalBallot) }
-          { !finalBallotNotEmpty && EmptyProjecFinalBallot() }
+          {finalBallotNotEmpty && ProjectFinalBallot(finalBallot)}
+          {!finalBallotNotEmpty && EmptyProjecFinalBallot()}
         </div>
         <div className="grid grid-cols-2  gap-4">
           <div></div>
           <div>
-            { Summary() }
+            {Summary()}
 
             <Button
               $variant="solid"
@@ -54,14 +53,14 @@ export default function ViewBallot() {
 }
 
 function Header(chainId?: string, roundId?: string) {
- return(
-  <div>
-    <div className="flex flex-row items-center gap-3 text-sm">
-      <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
-      <Link to={`/round/${chainId}/${roundId}`}>
-        <span className="font-normal">Back</span>
-      </Link>
-    </div>
+  return (
+    <div>
+      <div className="flex flex-row items-center gap-3 text-sm">
+        <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
+        <Link to={`/round/${chainId}/${roundId}`}>
+          <span className="font-normal">Back</span>
+        </Link>
+      </div>
 
     <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">
       Donation Builder
@@ -75,23 +74,28 @@ function Header(chainId?: string, roundId?: string) {
 }
 
 function ProjectShortList(shortlist: Project[]) {
+  const [, , removeProjectFromShortlist] = useBallot();
+
   return (
     <div className="block p-6 rounded-lg shadow-lg bg-white border">
-      <h2 className="text-xl border-b-2 pb-2">
-        Shortlist
-      </h2>
+      <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
 
       <div className="my-4">
         {shortlist.map((project: Project, key: number) => {
           return (
-            <div key={key} data-testid="project" className="border-b-2 border-grey-100 mb-2 flex justify-between px-2 pt-2 pb-6">
-
+            <div
+              key={key}
+              data-testid="project"
+              className="border-b-2 border-grey-100 mb-2 flex justify-between px-2 pt-2 pb-6"
+            >
               <div className="flex">
-
-                <img className="h-[64px]" src={
-                  project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${project.projectMetadata.logoImg}`
-                  : DefaultLogoImage}
+                <img
+                  className="h-[64px]"
+                  src={
+                    project.projectMetadata.logoImg
+                      ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${project.projectMetadata.logoImg}`
+                      : DefaultLogoImage
+                  }
                 />
 
                 <div className="pl-4 mt-1">
@@ -104,8 +108,12 @@ function ProjectShortList(shortlist: Project[]) {
                 </div>
               </div>
 
-              <div className="mt-4">
-                <TrashIcon className="w-6 h-6"/>
+              <div className="mt-4 mr-2">
+                <TrashIcon
+                  data-testid="remove-from-shortlist"
+                  onClick={() => removeProjectFromShortlist(project)}
+                  className="w-6 h-6"
+                />
               </div>
             </div>
           );
@@ -115,14 +123,11 @@ function ProjectShortList(shortlist: Project[]) {
   );
 }
 
-
 function EmptyProjectShortList(chainId?: string, roundId?: string) {
   return (
     <>
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
-        <h2 className="text-xl border-b-2 pb-2">
-          Shortlist
-        </h2>
+        <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
 
         <div className="my-4">
           <p className="text-grey-500 font-light">
@@ -143,7 +148,7 @@ function EmptyProjectShortList(chainId?: string, roundId?: string) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 function ProjectFinalBallot(finalBallot: Project[]) {
@@ -175,16 +180,14 @@ function EmptyProjecFinalBallot() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 function Summary() {
   return (
     <>
       <div className="my-5 block p-6 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
-        <h2 className="text-xl border-b-2 pb-2">
-          Summary
-        </h2>
+        <h2 className="text-xl border-b-2 pb-2">Summary</h2>
 
         <div className="flex justify-between mt-4">
           <p>Your Contribution</p>
@@ -192,5 +195,5 @@ function Summary() {
         </div>
       </div>
     </>
-  )
+  );
 }

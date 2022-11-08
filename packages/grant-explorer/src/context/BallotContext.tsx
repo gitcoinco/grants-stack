@@ -25,7 +25,7 @@ export const initialBallotState: BallotContextState = {
   finalBallot: [],
   setFinalBallot: () => {
     /**/
-  }
+  },
 };
 
 export const BallotContext =
@@ -35,7 +35,9 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
   const roundContext = useContext(RoundContext);
   const currentRoundId = roundContext?.state?.currentRoundId;
   const [shortlist, setShortlist] = useState(initialBallotState.shortlist);
-  const [finalBallot, setFinalBallot] = useState(initialBallotState.finalBallot);
+  const [finalBallot, setFinalBallot] = useState(
+    initialBallotState.finalBallot
+  );
 
   useEffect((): void => {
     if (currentRoundId) {
@@ -60,7 +62,7 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
     shortlist,
     setShortlist,
     finalBallot,
-    setFinalBallot
+    setFinalBallot,
   };
 
   return (
@@ -77,7 +79,7 @@ type UseBallot = [
   removeProjectFromShortlist: (projectToRemove: Project) => void,
   finalBallot: BallotContextState["finalBallot"],
   handleAddtoFinalBallot: (projectToAdd: Project) => void,
-  handleRemoveFromFinalBallot : (projectToRemove: Project) => void
+  handleRemoveFromFinalBallot: (projectToRemove: Project) => void
 ];
 export const useBallot = (): UseBallot => {
   const context = useContext(BallotContext);
@@ -88,7 +90,6 @@ export const useBallot = (): UseBallot => {
   const { shortlist, setShortlist } = context;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { finalBallot, setFinalBallot } = context;
-
 
   const handleAddProjectToShortlist = (projectToAdd: Project): void => {
     const isProjectAlreadyPresent = shortlist.find(
@@ -102,11 +103,12 @@ export const useBallot = (): UseBallot => {
 
   const handleRemoveProjectFromShortlist = (projectToRemove: Project): void => {
     const isProjectInShortlistIndex = shortlist.findIndex(
-      (project) => project.projectRegistryId === projectToRemove.projectRegistryId
+      (project) =>
+        project.projectRegistryId === projectToRemove.projectRegistryId
     );
 
     const newShortlist = [...shortlist];
-    if(isProjectInShortlistIndex !== -1) {
+    if (isProjectInShortlistIndex !== -1) {
       newShortlist.splice(isProjectInShortlistIndex);
     }
 
@@ -150,6 +152,6 @@ export const useBallot = (): UseBallot => {
     handleRemoveProjectFromShortlist,
     finalBallot,
     handleAddtoFinalBallot,
-    handleRemoveFromFinalBallot
+    handleRemoveFromFinalBallot,
   ];
 };
