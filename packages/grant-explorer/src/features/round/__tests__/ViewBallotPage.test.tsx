@@ -4,6 +4,23 @@ import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
 import { makeApprovedProjectData } from "../../../test-utils";
 import { RoundProvider } from "../../../context/RoundContext";
+import { faker } from "@faker-js/faker";
+
+const chainId = faker.datatype.number();
+const roundId = faker.finance.ethereumAddress();
+const useParamsFn = () => ({
+  chainId,
+  roundId,
+});
+jest.mock("../../common/Navbar");
+jest.mock("../../common/Auth");
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}));
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: useParamsFn,
+}));
 
 describe("View Ballot Page", () => {
   it("shows list of projects with project name", () => {
@@ -15,7 +32,10 @@ describe("View Ballot Page", () => {
     render(
       <RoundProvider>
         <BallotContext.Provider
-          value={{ shortlist: shortlist, setShortlist: () => {} }}
+          value={{
+            shortlist: shortlist, setShortlist: () => {},
+            finalBallot: [], setFinalBallot: () => {}
+          }}
         >
           <ViewBallot />
         </BallotContext.Provider>
@@ -33,7 +53,10 @@ describe("View Ballot Page", () => {
     render(
       <RoundProvider>
         <BallotContext.Provider
-          value={{ shortlist: [], setShortlist: () => {} }}
+          value={{
+            shortlist: [], setShortlist: () => {},
+            finalBallot: [], setFinalBallot: () => {}
+          }}
         >
           <ViewBallot />
         </BallotContext.Provider>
