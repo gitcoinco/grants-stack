@@ -57,6 +57,7 @@ describe("View Ballot Page", () => {
       expect(projects.length).toEqual(shortlist.length);
       projects.forEach((project, i) => {
         expect(project.textContent).toContain(shortlist[i].projectMetadata.title);
+        expect(project.textContent).toContain(shortlist[i].projectMetadata.description);
       });
     });
 
