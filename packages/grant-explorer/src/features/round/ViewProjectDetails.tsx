@@ -4,10 +4,13 @@ import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { Project, ProjectMetadata } from "../api/types";
-import { ChevronLeftIcon } from "@heroicons/react/solid";
+import { ChevronLeftIcon, GlobeAltIcon, LightningBoltIcon } from "@heroicons/react/solid";
+import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
+import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
+import Footer from "../common/Footer";
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
@@ -51,7 +54,7 @@ export default function ViewProjectDetails() {
                 </div>
                 <div>
                   <DescriptionTitle />
-                  <Detail text={projectToRender.projectMetadata.description} />
+                  <Detail text={projectToRender.projectMetadata.description} testID="project-metadata"/>
                 </div>
               </div>
               <Sidebar
@@ -67,9 +70,12 @@ export default function ViewProjectDetails() {
           </>
         )}
       </div>
+      <Footer />
     </>
   );
 }
+
+
 
 function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
@@ -95,7 +101,7 @@ function Header(props: { projectMetadata: ProjectMetadata }) {
 function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
   return (
     <div className="border-b-2 pb-2">
-      <h1 className="text-3xl mt-6 font-thin text-purple-100">
+      <h1 className="text-3xl mt-6 font-thin text-black">
         {props.projectMetadata.title}
       </h1>
     </div>
@@ -105,26 +111,93 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
 function AboutProject(props: { projectToRender: Project }) {
 
   const { projectToRender } = props;
+  const projectRecipient = projectToRender.recipient.slice(0, 6) + "..." + projectToRender.recipient.slice(-4);
+  const projectWebsite = projectToRender.projectMetadata.website;
+  const projectTwitter = projectToRender.projectMetadata.projectTwitter;
+  const userGithub = projectToRender.projectMetadata.userGithub;
+  const projectGithub = projectToRender.projectMetadata.projectGithub;
 
   return (
-    <div className="border-b-2 pt-2 pb-6">
-      <Detail text={projectToRender.projectMetadata.website} />
-      <Detail text={`@${projectToRender.projectMetadata.projectTwitter}`} />
+    <div className="grid grid-cols-2 border-b-2 pt-2 pb-6">
+      {projectRecipient && 
+        (<span className="flex items-center mt-4 gap-1">
+          <LightningBoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <DetailSummary text={`${projectRecipient}`} testID="project-recipient" />
+        </span>)
+      }
+      {projectWebsite && 
+        (<span className="flex items-center mt-4 gap-1">
+          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a 
+            href={projectWebsite} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${projectWebsite}`} testID="project-website" />
+          </a>
+        </span>)
+      }
+      {projectTwitter && 
+        (<span className="flex items-center mt-4 gap-1">
+          <TwitterIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a 
+            href={`https://twitter.com/${projectTwitter}`}
+            target="_blank" 
+            rel="noreferrer" 
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${projectTwitter}`} testID="project-twitter" />
+          </a>
+        </span>)    
+      }
+      {userGithub && 
+        (<span className="flex items-center mt-4 gap-1">
+          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a 
+            href={`https://github.com/${userGithub}`}
+            target="_blank" 
+            rel="noreferrer" 
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${userGithub}`} testID="user-github" />
+          </a>
+        </span>)    
+      }
+      {projectGithub && 
+        (<span className="flex items-center mt-4 gap-1">
+          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a 
+            href={`https://github.com/${projectGithub}`}
+            target="_blank" 
+            rel="noreferrer" 
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${projectGithub}`} testID="project-github" />
+          </a>
+        </span>)    
+      }  
     </div>
   );
 }
 
 function DescriptionTitle() {
   return (
-    <h1 className="text-2xl mt-8 font-thin text-purple-100">
-      Project Description
+    <h1 className="text-2xl mt-8 font-thin text-black">
+      About
     </h1>
   );
 }
 
-function Detail(props: { text: string }) {
+function DetailSummary(props: { text: string, testID: string }) {
   return (
-    <p className="text-base font-normal text-purple-100 mt-4">{props.text}</p>
+    <p className="text-sm font-normal text-black" data-testid={props.testID} > {props.text} </p>
+  );
+}
+
+function Detail(props: { text: string, testID: string }) {
+  return (
+    <p className="text-base font-normal text-black" data-testid={props.testID} > {props.text} </p>
   );
 }
 
