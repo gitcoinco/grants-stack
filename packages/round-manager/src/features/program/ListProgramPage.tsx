@@ -127,11 +127,10 @@ function ListPrograms() {
           {isSuccess && hasNoPrograms() && startAProgramCard}
           {programList}
         </CardsContainer>
-
-        {fetchProgramsStatus === ProgressStatus.IN_PROGRESS && (
-          <Spinner text="We're fetching your Programs." />
-        )}
       </main>
+      {fetchProgramsStatus === ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Programs." />
+      )}
       <Footer />
     </div>
   );
