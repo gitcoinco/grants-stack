@@ -65,9 +65,9 @@ function ProjectsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (props.status === Status.Undefined) {
-      dispatch(loadProjects());
-    }
+    if (props.status !== Status.Undefined) return;
+
+    dispatch(loadProjects());
   }, [dispatch, props.status]);
 
   useEffect(() => {

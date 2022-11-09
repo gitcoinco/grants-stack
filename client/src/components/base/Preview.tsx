@@ -59,19 +59,17 @@ export default function Preview({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (props.status === Status.Completed) {
-      setTimeout(() => {
-        navigate(slugs.grants);
-        localResetStatus();
-        dispatch(
-          addAlert(
-            "success",
-            "Your project has been saved successfully!",
-            undefined
-          )
-        );
-      }, 1500);
-    }
+    if (props.status !== Status.Completed) return;
+
+    navigate(slugs.grants);
+    localResetStatus();
+    dispatch(
+      addAlert(
+        "success",
+        "Your project has been saved successfully!",
+        undefined
+      )
+    );
   }, [props.status]);
 
   const { credentials } = props;

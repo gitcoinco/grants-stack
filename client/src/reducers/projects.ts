@@ -38,6 +38,7 @@ export interface ProjectsState {
   ids: number[];
   events: ProjectEventsMap;
   applications: Application[];
+  applicationsStatus: Status;
 }
 
 const initialState: ProjectsState = {
@@ -46,6 +47,7 @@ const initialState: ProjectsState = {
   ids: [],
   events: {},
   applications: [],
+  applicationsStatus: Status.Undefined,
 };
 
 export const projectsReducer = (
@@ -87,7 +89,7 @@ export const projectsReducer = (
         ...state,
         applications: [],
         error: undefined,
-        status: Status.Loading,
+        applicationsStatus: Status.Loading,
       };
     }
 
@@ -104,7 +106,7 @@ export const projectsReducer = (
           },
         ],
         error: undefined,
-        status: Status.Loaded,
+        applicationsStatus: Status.Loaded,
       };
     }
 
@@ -118,7 +120,7 @@ export const projectsReducer = (
         ...state,
         applications,
         error: undefined,
-        status: Status.Loaded,
+        applicationsStatus: Status.Loaded,
       };
     }
 
@@ -128,7 +130,7 @@ export const projectsReducer = (
         ...state,
         applications: state.applications,
         error,
-        status: Status.Error,
+        applicationsStatus: Status.Error,
       };
     }
 
