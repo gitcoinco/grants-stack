@@ -761,15 +761,6 @@ function MatchingFundsAvailable(props: {
         Matching Funds Available
       </label>
       <div className="relative mt-1 rounded-md shadow-sm">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <span className="text-gray-500 sm:text-sm">
-            {
-              props.payoutTokenOptions.find(
-                (token) => token.address === props.token
-              )?.name
-            }
-          </span>
-        </div>
         <Input
           {...props.register}
           className={
@@ -780,11 +771,20 @@ function MatchingFundsAvailable(props: {
           $hasError={
             props.errors?.roundMetadata?.matchingFunds?.matchingFundsAvailable
           }
-          placeholder="Enter the amount denominated in the payout token."
+          placeholder="Enter the amount in chosen payout token."
           data-testid="matching-funds-available"
           aria-describedby="price-currency"
           step="any"
         />
+        <div className="pointer-events-none absolute inset-y-0 right-0 pr-10 flex items-center">
+          <span className="text-gray-500 sm:text-sm">
+            {
+              props.payoutTokenOptions.find(
+                (token) => token.address === props.token
+              )?.name
+            }
+          </span>
+        </div>
       </div>
       {props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable && (
         <p className="text-xs text-pink-500">

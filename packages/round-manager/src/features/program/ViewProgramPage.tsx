@@ -216,11 +216,11 @@ export default function ViewProgram() {
                         {roundItems}
                       </div>
                     )}
-                    {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-                      <Spinner text="We're fetching your Rounds." />
-                    )}
                   </div>
                 </div>
+                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+                  <Spinner text="We're fetching your Rounds." />
+                )}
               </div>
 
               {isRoundsFetched && roundItems.length === 0 && noRoundsGroup}
