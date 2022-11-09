@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { loadShortlist, saveShortlist } from "../features/api/LocalStorage";
+import { loadFinalBallot, loadShortlist, saveFinalBallot, saveShortlist } from "../features/api/LocalStorage";
 import { RoundContext } from "./RoundContext";
 
 export interface BallotContextState {
@@ -42,12 +42,17 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
       const storedShortlist =
         loadShortlist(currentRoundId) ?? initialBallotState.shortlist;
       setShortlist(storedShortlist);
+
+      const storedFinalBallot =
+        loadFinalBallot(currentRoundId) ?? initialBallotState.finalBallot;
+      setFinalBallot(storedFinalBallot);
     }
   }, [currentRoundId]);
 
   useEffect((): void => {
     if (currentRoundId) {
       saveShortlist(shortlist, currentRoundId);
+      saveFinalBallot(shortlist, currentRoundId);
     }
   }, [shortlist, currentRoundId]);
 
@@ -108,14 +113,35 @@ export const useBallot = (): UseBallot => {
     setShortlist(newShortlist);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleAddtoFinalBallot = (projectToAdd: Project): void => {
-    // TODO : Implement
+
+    // remove project from shortlist
+    handleRemoveProjectFromShortlist(projectToAdd);
+
+    const isProjectAlreadyPresent = finalBallot.find(
+      (project) => project.projectRegistryId === projectToAdd.projectRegistryId
+    );
+    const newFinalBallot = isProjectAlreadyPresent
+      ? finalBallot
+      : finalBallot.concat(projectToAdd);
+    setFinalBallot(newFinalBallot);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRemoveFromFinalBallot =  (projectToRemove: Project): void => {
-    // TODO: Implement
+
+    const isProjectInFinalBallotIndex = finalBallot.findIndex(
+      (project) => project.projectRegistryId === projectToRemove.projectRegistryId
+    );
+
+    const newFinalBallot = [...finalBallot];
+    if(isProjectInFinalBallotIndex !== -1) {
+      newFinalBallot.splice(isProjectInFinalBallotIndex);
+    }
+
+    setFinalBallot(newFinalBallot);
+
+    // add project to shortlist
+    handleAddProjectToShortlist(projectToRemove);
   }
 
   return [
