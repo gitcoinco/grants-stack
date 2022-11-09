@@ -48,9 +48,9 @@ These are contracts are created/deployed for every round created on goerli
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
 | Program                               | 0x86DceaCc03A52b7914b72eB4E10290f72BD99e68 |
-| QFVotingContract                      | 0xeBd0f5D44d2c5517ED7dC8c2F1C18dCf97BA02Ac |
+| QFVotingContract                      | 0x1a497D28890EfB320D04F534Fa6318B6A0657619 |
 | MerklePayoutContract                  | 0x4A68275B53165d9209Ec3f535a331A3f0160d6FF |
-| Round                                 | 0xB9c53D1280A0ce344803741EE04f3607cf7F85Ca |
+| Round                                 | 0xcEF1772Dd6764C95f14c26B25e8f012C072C5F77 |
 
 
 ## Fantom Testnetwork

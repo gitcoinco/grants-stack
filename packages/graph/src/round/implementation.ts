@@ -2,7 +2,7 @@ import {
   NewProjectApplication as NewProjectApplicationEvent,
   ProjectsMetaPtrUpdated as ProjectsMetaPtrUpdatedEvent,
   RoleGranted as RoleGrantedEvent,
-  RoleRevoked as RoleRevokedEvent
+  RoleRevoked as RoleRevokedEvent,
 } from "../../generated/templates/RoundImplementation/RoundImplementation";
 
 import {
@@ -10,11 +10,10 @@ import {
   Round,
   RoundAccount,
   RoundRole,
-  RoundProject
+  RoundProject,
 } from "../../generated/schema";
 import { fetchMetaPtrData, generateID, updateMetaPtr } from "../utils";
-import { JSONValueKind, log, store } from '@graphprotocol/graph-ts';
-
+import { JSONValueKind, log, store } from "@graphprotocol/graph-ts";
 
 // @dev: Enum for different states a project application can be in
 // enum ProjectApplicationStatus = {
@@ -24,7 +23,6 @@ import { JSONValueKind, log, store } from '@graphprotocol/graph-ts';
 //   APPEAL    = "APPEAL"
 // };
 
-
 /**
  * @dev Handles indexing on RoleGranted event.
  * @param event RoleGrantedEvent
@@ -32,14 +30,14 @@ import { JSONValueKind, log, store } from '@graphprotocol/graph-ts';
 export function handleRoleGranted(event: RoleGrantedEvent): void {
   const _round = event.address.toHex();
   const _role = event.params.role.toHex();
-  const _account= event.params.account.toHex();
+  const _account = event.params.account.toHex();
 
   // round
   let round = Round.load(_round);
   round = round == null ? new Round(_round) : round;
 
   // role
-  const roleID = [_round, _role].join('-');
+  const roleID = [_round, _role].join("-");
   let role = RoundRole.load(roleID);
   role = role == null ? new RoundRole(roleID) : role;
 
@@ -60,7 +58,6 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   account.save();
 }
 
-
 /**
  * @dev Handles indexing on RoleRevoked event.
  * @param event RoleRevokedEvent
@@ -68,22 +65,22 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
   const _round = event.address.toHex();
   const _role = event.params.role.toHex();
-  const _account= event.params.account.toHex();
+  const _account = event.params.account.toHex();
 
   // round
   let round = Round.load(_round);
   round = round == null ? new Round(_round) : round;
 
   // role
-  const roleID = [_round, _role].join('-');
+  const roleID = [_round, _role].join("-");
   let role = RoundRole.load(roleID);
   role = role == null ? new RoundRole(roleID) : role;
 
   // account
-  const accountId =  generateID([_round, _role, _account]);
-  let account = RoundAccount.load(accountId)
+  const accountId = generateID([_round, _role, _account]);
+  let account = RoundAccount.load(accountId);
   if (account) {
-    store.remove('ProgramAccount', account.id);
+    store.remove("ProgramAccount", account.id);
   }
 }
 
@@ -95,12 +92,14 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
  *
  * @param event NewProjectApplicationEvent
  */
-export function handleNewProjectApplication(event: NewProjectApplicationEvent): void {
+export function handleNewProjectApplication(
+  event: NewProjectApplicationEvent
+): void {
   const _round = event.address.toHex();
   const _project = event.params.project.toHex();
   const _metaPtr = event.params.applicationMetaPtr;
 
-  const projectId = [_project, _round].join('-');
+  const projectId = [_project, _round].join("-");
 
   // use projectId as metadataId
   const metaPtrId = projectId;
@@ -112,13 +111,12 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
   // create new MetaPtr entity
   let metaPtr = MetaPtr.load(metaPtrId);
   metaPtr = metaPtr == null ? new MetaPtr(metaPtrId) : metaPtr;
-  metaPtr.protocol =  _metaPtr[0].toI32() ;
+  metaPtr.protocol = _metaPtr[0].toI32();
   metaPtr.pointer = _metaPtr[1].toString();
-  metaPtr.save()
-
+  metaPtr.save();
 
   // create new RoundProject entity
-  let project = RoundProject.load(projectId)
+  let project = RoundProject.load(projectId);
   project = project == null ? new RoundProject(projectId) : project;
 
   //  RoundProject
@@ -138,8 +136,9 @@ export function handleNewProjectApplication(event: NewProjectApplicationEvent): 
  *
  * @param event ProjectsMetaPtrUpdatedEvent
  */
-export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent): void {
-
+export function handleProjectsMetaPtrUpdated(
+  event: ProjectsMetaPtrUpdatedEvent
+): void {
   const _round = event.address.toHex();
 
   const _metaPtr = event.params.newMetaPtr;
@@ -152,7 +151,7 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
   if (!round) return;
 
   // set projectsMetaPtr
-  const projectsMetaPtrId = ['projectsMetaPtr', _round].join('-');
+  const projectsMetaPtrId = ["projectsMetaPtr", _round].join("-");
   const projectsMetaPtr = updateMetaPtr(projectsMetaPtrId, protocol, pointer);
   round.projectsMetaPtr = projectsMetaPtr.id;
 
@@ -162,18 +161,19 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
   const metaPtrData = fetchMetaPtrData(protocol, pointer);
 
   if (!metaPtrData) {
-    log.warning('--> handleProjectsMetaPtrUpdated: metaPtrData is null {}', [_round])
+    log.warning("--> handleProjectsMetaPtrUpdated: metaPtrData is null {}", [
+      _round,
+    ]);
     return;
   }
 
   const _projects = metaPtrData.toArray();
 
   for (let i = 0; i < _projects.length; i++) {
-
     // construct projectId
     const _project = _projects[i].toObject();
 
-    const _id =  _project.get("id")
+    const _id = _project.get("id");
     if (!_id) continue;
     const projectId = _id.toString().toLowerCase();
 
@@ -213,5 +213,4 @@ export function handleProjectsMetaPtrUpdated(event: ProjectsMetaPtrUpdatedEvent)
 
     if (isProjectUpdated) project.save();
   }
-
 }

@@ -2,5 +2,6 @@
   "network": "optimism",
   "startBlock": 21463380,
   "programFactoryAddress": "",
+  "QFVotingStrategyFactoryAddress": "",
   "roundFactoryAddress": ""
 }
