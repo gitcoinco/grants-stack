@@ -44,7 +44,7 @@ export default function ViewBallot() {
               type="button"
               className=" items-center shadow-sm text-sm rounded w-full opacity-50"
             >
-              Cast your ballot!
+              Submit your donation!
             </Button>
           </div>
         </div>
@@ -64,11 +64,11 @@ function Header(chainId?: string, roundId?: string) {
     </div>
 
     <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">
-      Ballot Builder
+      Donation Builder
     </h1>
 
     <p className="my-4">
-      Select your favorite projects from the Shortlist to build your Final Ballot.
+      Select your favorite projects from the Shortlist to build your Final Donation.
     </p>
   </div>
  );
@@ -165,7 +165,7 @@ function EmptyProjecFinalBallot() {
     <>
       <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
         <h2 className="text-xl border-b-2 pb-2">
-          Final Ballot
+          Final Donation
         </h2>
 
         <div className="mt-4">
