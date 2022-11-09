@@ -167,20 +167,20 @@ export default function Twitter({
     <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
         disabled={handle?.length === 0}
-        styles={["ml-8 w-auto mt-20"]}
+        styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchTwitterOAuth()}
       >
         Verify
       </Button>
       <Tooltip
-        className="shrink ml-8"
+        className="shrink"
         bg="purple.900"
         hasArrow
         label="Optional: Verify your project so that our grant program partners know your project is trustworthy.
         You can also verify your project later, but doing so will incur additional gas fees."
       >
-        <QuestionMarkCircleIcon className="w-6 h-6  mt-20" color="gray" />
+        <QuestionMarkCircleIcon className="w-6 h-6  mt-14" color="gray" />
       </Tooltip>
     </div>
   );
