@@ -22,11 +22,11 @@ export const projectRegistryContract = (
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "";
+      address = "0x984749e408FF0446d8ADaf20E293F2F299396631";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
