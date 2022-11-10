@@ -1,7 +1,9 @@
 // --- Methods
+import { Tooltip } from "@chakra-ui/react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { debounce } from "ts-debounce";
@@ -123,11 +125,11 @@ export default function Github({
           // todo: this is a fix for only this specific error, we should handle this better
           if (props.formMetaData.projectGithub) {
             // eslint-disable-next-line max-len
-            errorMessage = `We failed to verify your GitHub account because your account is marked as private in ${props.formMetaData.projectGithub}. Please make your account public and try again.`;
+            errorMessage = `There was an issue with verifying your GitHub account, please try again.`;
           } else {
             errorMessage =
               // eslint-disable-next-line max-len
-              "We failed to verify your GitHub account because your account is marked as private in the org you are verifying. Please make your account public and try again.";
+              "There was an issue with verifying your GitHub account, please try again.";
           }
           verificationError(errorMessage);
           datadogRum.addError(error, { provider: providerId });
@@ -159,15 +161,24 @@ export default function Github({
     );
   }
   return (
-    <div hidden={!canVerify}>
+    <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
         disabled={org?.length === 0}
-        styles={["ml-8 w-auto mt-20"]}
+        styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchGithubOAuth()}
       >
         Verify
       </Button>
+      <Tooltip
+        className="shrink"
+        bg="purple.900"
+        hasArrow
+        label="Optional: Verify your project so that our grant program partners know your project is trustworthy.
+        You can also verify your project later, but doing so will incur additional gas fees."
+      >
+        <QuestionMarkCircleIcon className="w-6 h-6  mt-14" color="gray" />
+      </Tooltip>
     </div>
   );
 }

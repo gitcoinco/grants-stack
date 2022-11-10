@@ -136,7 +136,7 @@ const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
     address: addresses.projectRegistry,
     fromBlock: "0x00",
     toBlock: "latest",
-    topics: [updatedEventSig, hexIDs, []],
+    topics: [updatedEventSig, hexIDs],
   };
 
   // FIXME: remove when the fantom RPC bug has been fixed
