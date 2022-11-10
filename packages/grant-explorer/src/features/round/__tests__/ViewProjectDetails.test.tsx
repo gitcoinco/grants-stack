@@ -38,7 +38,7 @@ describe("<ViewProjectDetails/>", () => {
     expect(await screen.findByText(expectedProjectName)).toBeInTheDocument();
   });
 
-  it("shows project website", async () => {
+  describe("Show project details", () => {
     const expectedProject = makeApprovedProjectData({ grantApplicationId });
     const expectedProjectWebsite = expectedProject.projectMetadata.website;
 
@@ -46,9 +46,31 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    expect(await screen.findByText(expectedProjectWebsite)).toBeInTheDocument();
+    beforeEach(() => {
+      jest.clearAllMocks();
+      renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    });
+    
+    it("shows project recipient", async () => {
+      expect(await screen.getByTestId("project-recipient")).toBeInTheDocument();
+    });
+
+    it("shows project website", async () => {
+      expect(await screen.findByText(expectedProjectWebsite)).toBeInTheDocument();
+    });
+
+    it("shows project twitter", async () => {
+      expect(screen.getByTestId("project-twitter")).toBeInTheDocument();
+    });
+
+    it("shows project user github", async () => {
+      expect(screen.getByTestId("user-github")).toBeInTheDocument();
+    });
+
+    it("shows project github", async () => {
+      expect(screen.getByTestId("project-github")).toBeInTheDocument();
+    });
   });
 
   it("shows project description", async () => {
@@ -65,24 +87,6 @@ describe("<ViewProjectDetails/>", () => {
     expect(
       await screen.findByText(expectedProjectDescription)
     ).toBeInTheDocument();
-  });
-
-  it("shows project twitter", async () => {
-    const expectedProjectTwitter = `${faker.internet.userName()}`;
-    const expectedProject = makeApprovedProjectData(
-      { grantApplicationId },
-      { projectTwitter: expectedProjectTwitter }
-    );
-
-    const roundWithProjects = makeRoundData({
-      id: roundId,
-      approvedProjects: [expectedProject],
-    });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-
-    expect(
-      await screen.findByText(`@${expectedProjectTwitter}`)
-    ).toHaveTextContent(expectedProjectTwitter);
   });
 
   it("shows project banner", async () => {

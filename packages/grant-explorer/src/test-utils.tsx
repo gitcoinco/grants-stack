@@ -64,10 +64,14 @@ export const makeApprovedProjectData = (
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
     projectRegistryId: faker.datatype.number().toString(),
+    recipient: faker.finance.ethereumAddress(),
     projectMetadata: {
       title: faker.company.name(),
       description: faker.lorem.sentence(),
       website: faker.internet.url(),
+      projectTwitter: faker.internet.userName(),
+      projectGithub: faker.internet.userName(),
+      userGithub: faker.internet.userName(),
       ...projectMetadataOverrides,
     },
     status: ApplicationStatus.APPROVED,

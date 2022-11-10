@@ -1,7 +1,8 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
-export type Network = "goerli" | "optimism";
+export type Network = "goerli" | "optimism" | "Fantom";
 
 export interface Web3Instance {
   /**
@@ -133,11 +134,13 @@ export interface Round {
 export type Project = {
   grantApplicationId: GrantApplicationId;
   projectRegistryId: ProjectRegistryId;
+  recipient: recipient;
   projectMetadata: ProjectMetadata;
   status: ApplicationStatus;
 };
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
+export type recipient = string;
 
 export enum ApplicationStatus {
   PENDING = "PENDING",
@@ -152,4 +155,12 @@ export type ProjectMetadata = {
   bannerImg?: string;
   logoImg?: string;
   projectTwitter?: string;
+  userGithub?: string;
+  projectGithub?: string;
+  credentials?: ProjectCredentials;
+};
+
+export type ProjectCredentials = {
+  github?: VerifiableCredential;
+  twitter?: VerifiableCredential;
 };
