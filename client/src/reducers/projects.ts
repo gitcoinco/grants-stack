@@ -1,6 +1,7 @@
 import {
   ProjectsActions,
   PROJECTS_LOADED,
+  PROJECTS_ERROR,
   PROJECTS_LOADING,
   PROJECTS_UNLOADED,
   PROJECT_APPLICATIONS_ERROR,
@@ -72,6 +73,14 @@ export const projectsReducer = (
         status: Status.Loaded,
         ids,
         events,
+      };
+    }
+
+    case PROJECTS_ERROR: {
+      return {
+        ...state,
+        status: Status.Error,
+        error: action.error,
       };
     }
 

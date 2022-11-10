@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loadProjects } from "../../actions/projects";
@@ -12,12 +12,14 @@ import colors from "../../styles/colors";
 import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
+import ErrorModal from "../base/ErrorModal";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
 
 function ProjectsList() {
   const dispatch = useDispatch();
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
@@ -53,6 +55,7 @@ function ProjectsList() {
     return {
       status: state.projects.status,
       loading: state.projects.status === Status.Loading,
+      error: state.projects.status === Status.Error,
       projectIDs: state.projects.ids,
       chainID: state.web3.chainID,
       existingApplication,
@@ -91,7 +94,7 @@ function ProjectsList() {
     }
   }, [props.projectIDs, props.existingApplication]);
 
-  if (props.loading) {
+  if (props.loading && !props.error) {
     return <>loading...</>;
   }
 
@@ -101,79 +104,104 @@ function ProjectsList() {
         <h3>My Projects</h3>
         <p className="text-base">Bring your project to life.</p>
       </div>
-      <RoundApplyAlert
-        show={props.showRoundAlert}
-        confirmHandler={() => {
-          const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-          const path = roundPath(chainID, roundAddress);
-
-          navigate(path);
-        }}
-        round={props.round}
-      />
-      <div className="grow">
-        {props.projectIDs.length ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {props.projectIDs.map((id: number) => (
-              <Card projectId={id} key={id} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex h-full justify-center items-center">
-            <div className="flex flex-col items-center">
-              <div className="w-10">
-                <Globe color={colors["primary-background"]} />
-              </div>
-              <h4 className="mt-6">No projects</h4>
-              <p className="text-sm mt-6">
-                It looks like you haven&apos;t created any projects yet.
-              </p>
-              <p className="text-sm">
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gitcoin-violet-400"
-                  href="https://support.gitcoin.co/gitcoin-grants-protocol"
-                >
-                  Learn More.
-                </a>
-              </p>
-              <Link to={newGrantPath()} className="mt-6">
-                <Button variant={ButtonVariants.outline}>
-                  Create a Project
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-      <CallbackModal
-        modalOpen={props.showRoundModal}
-        confirmText="Apply to Grant Round"
-        cancelText="Skip"
-        confirmHandler={() => {
-          setToggleModal(ApplicationModalStatus.Closed);
-          const chainId = roundToApply?.split(":")[0];
-          const roundId = roundToApply?.split(":")[1];
-          const path = roundPath(chainId, roundId);
-
-          navigate(path);
-        }}
-        headerImageUri="/assets/round-apply.svg"
-        toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
-        hideCloseButton
-      >
+      {props.error && showErrorModal ? (
+        <ErrorModal
+          open
+          secondaryBtnText="Close"
+          primaryBtnText="Refresh Page"
+          onRetry={() => setShowErrorModal(false)}
+          onClose={() => navigate(0)}
+        >
+          <>
+            There has been an error loading your projects. Please try refreshing
+            the page. If the issue persists, reach out to our{" "}
+            <a
+              target="_blank"
+              className="text-gitcoin-violet-400 outline-none"
+              href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us"
+              rel="noreferrer"
+            >
+              Support team.
+            </a>
+          </>
+        </ErrorModal>
+      ) : (
         <>
-          <h5 className="font-medium mt-5 mb-2 text-lg">
-            Time to get your project funded!
-          </h5>
-          <p className="mb-6">
-            Congratulations on creating your project on Grants Hub! Continue to
-            apply for{" "}
-            {props.round ? props.round!.roundMetadata.name : "the round"}.
-          </p>
+          <RoundApplyAlert
+            show={props.showRoundAlert}
+            confirmHandler={() => {
+              const { chainID, roundAddress } = parseRoundToApply(roundToApply);
+              const path = roundPath(chainID, roundAddress);
+
+              navigate(path);
+            }}
+            round={props.round}
+          />
+          <div className="grow">
+            {props.projectIDs.length ? (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {props.projectIDs.map((id: number) => (
+                  <Card projectId={id} key={id} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-full justify-center items-center">
+                <div className="flex flex-col items-center">
+                  <div className="w-10">
+                    <Globe color={colors["primary-background"]} />
+                  </div>
+                  <h4 className="mt-6">No projects</h4>
+                  <p className="text-sm mt-6">
+                    It looks like you haven&apos;t created any projects yet.
+                  </p>
+                  <p className="text-sm">
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-gitcoin-violet-400"
+                      href="https://support.gitcoin.co/gitcoin-grants-protocol"
+                    >
+                      Learn More.
+                    </a>
+                  </p>
+                  <Link to={newGrantPath()} className="mt-6">
+                    <Button variant={ButtonVariants.outline}>
+                      Create a Project
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+          <CallbackModal
+            modalOpen={props.showRoundModal}
+            confirmText="Apply to Grant Round"
+            cancelText="Skip"
+            confirmHandler={() => {
+              setToggleModal(ApplicationModalStatus.Closed);
+              const chainId = roundToApply?.split(":")[0];
+              const roundId = roundToApply?.split(":")[1];
+              const path = roundPath(chainId, roundId);
+
+              navigate(path);
+            }}
+            headerImageUri="/assets/round-apply.svg"
+            toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
+            hideCloseButton
+          >
+            <>
+              <h5 className="font-medium mt-5 mb-2 text-lg">
+                Time to get your project funded!
+              </h5>
+              <p className="mb-6">
+                Congratulations on creating your project on Grants Hub! Continue
+                to apply for{" "}
+                {props.round ? props.round!.roundMetadata.name : "the round"}.
+              </p>
+            </>
+          </CallbackModal>
         </>
-      </CallbackModal>
+      )}
     </div>
   );
 }

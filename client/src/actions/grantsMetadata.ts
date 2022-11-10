@@ -181,16 +181,19 @@ export const fetchGrantData =
 
     dispatch(grantMetadataLoading(id));
 
-    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-    const item = await getMetadata(id, project, cacheKey);
+    try {
+      const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
+      const item = await getMetadata(id, project, cacheKey);
 
-    if (item === null) {
+      if (item === null) {
+        throw new Error();
+      }
+
+      dispatch(grantMetadataFetched(item));
+    } catch (error) {
       console.log("item is null");
       dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
-      return;
     }
-
-    dispatch(grantMetadataFetched(item));
   };
 
 export const unloadAll = grantsMetadataAllUnloaded;
