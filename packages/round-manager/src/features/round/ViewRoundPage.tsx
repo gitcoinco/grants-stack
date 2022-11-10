@@ -135,7 +135,7 @@ export default function ViewRoundPage() {
                       Copy link to round application
                     </p>
                     <CopyToClipboardButton
-                      textToCopy={`https://granthub.gitcoin.co/#/chains/${chain.id}/rounds/${id}`}
+                      textToCopy={`https://grantshub.gitcoin.co/#/chains/${chain.id}/rounds/${id}`}
                       styles="text-xs p-2"
                       iconStyle="h-4 w-4 mr-1"
                     />

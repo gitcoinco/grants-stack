@@ -167,7 +167,7 @@ function PreRoundPage(props: {
 
   const { round, chainId, roundId, element } = props;
 
-  const applicationURL = `https://granthub.gitcoin.co/#/chains/${chainId}/rounds/${roundId}`;
+  const applicationURL = `https://grantshub.gitcoin.co/#/chains/${chainId}/rounds/${roundId}`;
   const currentTime = new Date();
 
   const isBeforeApplicationStartDate = round && round.applicationsStartTime >= currentTime;
