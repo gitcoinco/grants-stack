@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getRoundProjectsApplied } from "../../actions/projects";
 import { RootState } from "../../reducers";
-import { Status } from "../../reducers/projects";
+// import { Status } from "../../reducers/projects";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import generateUniqueRoundApplicationID from "../../utils/roundApplication";
@@ -57,8 +57,6 @@ export default function Details({
   });
 
   useEffect(() => {
-    if (props.status !== Status.Undefined) return;
-
     dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
   }, [dispatch, props.projectID, props.chainId]);
 
