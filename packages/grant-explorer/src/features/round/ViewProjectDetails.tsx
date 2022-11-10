@@ -122,7 +122,7 @@ function AboutProject(props: { projectToRender: Project }) {
       {projectRecipient && 
         (<span className="flex items-center mt-4 gap-1">
           <LightningBoltIcon className="h-4 w-4 mr-1 opacity-40" />
-          <DetailSummary text={`${projectRecipient}`} testID="project-recipient" />
+          <DetailSummary text={`${projectRecipient}`} testID="project-recipient" sm={true} />
         </span>)
       }
       {projectWebsite && 
@@ -147,7 +147,7 @@ function AboutProject(props: { projectToRender: Project }) {
             rel="noreferrer" 
             className="text-base font-normal text-black"
           >
-            <DetailSummary text={`${projectTwitter}`} testID="project-twitter" />
+            <DetailSummary text={`@${projectTwitter}`} testID="project-twitter" />
           </a>
         </span>)    
       }
@@ -189,9 +189,9 @@ function DescriptionTitle() {
   );
 }
 
-function DetailSummary(props: { text: string, testID: string }) {
+function DetailSummary(props: { text: string, testID: string, sm?: boolean }) {
   return (
-    <p className="text-sm font-normal text-black" data-testid={props.testID} > {props.text} </p>
+    <p className={`${props.sm ? 'text-sm' : 'text-base'} font-normal text-black`} data-testid={props.testID} > {props.text} </p>
   );
 }
 
