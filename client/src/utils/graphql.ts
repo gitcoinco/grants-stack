@@ -23,22 +23,22 @@ const getGraphQLEndpoint = async (chainId: ChainId): Promise<GraphEndpoint> => {
   switch (chainId) {
     case ChainId.GOERLI_CHAIN_ID:
       return {
-        uri: process.env.REACT_APP_SUBGRAPH_URL_GOERLI,
+        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet",
         error: undefined,
       };
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return {
-        uri: process.env.REACT_APP_SUBGRAPH_URL_OPTIMISM_MAINNET,
+        uri: "https://api.thegraph.com/subgraphs/name/thelostone-mc/grants-round-optimism-mainnet",
         error: undefined,
       };
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
       return {
-        uri: process.env.REACT_APP_SUBGRAPH_URL_FANTOM_MAINNET,
+        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet",
         error: undefined,
       };
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return {
-        uri: process.env.REACT_APP_SUBGRAPH_URL_FANTOM_TESTNET,
+        uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet",
         error: undefined,
       };
     default:

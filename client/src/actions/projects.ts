@@ -253,7 +253,7 @@ export const getRoundProjectsApplied =
       dispatch({
         type: PROJECT_APPLICATIONS_ERROR,
         projectID,
-        error,
+        error: error.message,
       });
     }
   };
