@@ -54,9 +54,14 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
   useEffect((): void => {
     if (currentRoundId) {
       saveShortlist(shortlist, currentRoundId);
-      saveFinalBallot(shortlist, currentRoundId);
     }
   }, [shortlist, currentRoundId]);
+
+  useEffect((): void => {
+    if (currentRoundId) {
+      saveFinalBallot(finalBallot, currentRoundId);
+    }
+  }, [finalBallot, currentRoundId]);
 
   const providerProps: BallotContextState = {
     shortlist,
@@ -78,7 +83,7 @@ type UseBallot = [
   addProjectToShortlist: (projectToAdd: Project) => void,
   removeProjectFromShortlist: (projectToRemove: Project) => void,
   finalBallot: BallotContextState["finalBallot"],
-  handleAddtoFinalBallot: (projectToAdd: Project) => void,
+  handleAddtoFinalBallot: (projectsToAdd: Project[]) => void,
   handleRemoveFromFinalBallot: (projectToRemove: Project) => void
 ];
 export const useBallot = (): UseBallot => {
@@ -88,7 +93,6 @@ export const useBallot = (): UseBallot => {
   }
 
   const { shortlist, setShortlist } = context;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { finalBallot, setFinalBallot } = context;
 
   const handleAddProjectToShortlist = (projectToAdd: Project): void => {
@@ -115,17 +119,21 @@ export const useBallot = (): UseBallot => {
     setShortlist(newShortlist);
   };
 
-  const handleAddtoFinalBallot = (projectToAdd: Project): void => {
+  const handleAddtoFinalBallot = (projectsToAdd: Project[]): void => {
 
-    // remove project from shortlist
-    handleRemoveProjectFromShortlist(projectToAdd);
+    const newFinalBallot = [...finalBallot];
 
-    const isProjectAlreadyPresent = finalBallot.find(
-      (project) => project.projectRegistryId === projectToAdd.projectRegistryId
-    );
-    const newFinalBallot = isProjectAlreadyPresent
-      ? finalBallot
-      : finalBallot.concat(projectToAdd);
+    projectsToAdd.map(projectToAdd => {
+      const isProjectInFinalBallot= newFinalBallot.findIndex(
+        (project) => project.projectRegistryId === projectToAdd.projectRegistryId
+      );
+
+      if (isProjectInFinalBallot > -1) return;
+
+      handleRemoveProjectFromShortlist(projectToAdd);
+      newFinalBallot.push(projectToAdd);
+    })
+
     setFinalBallot(newFinalBallot);
   };
 
