@@ -305,7 +305,7 @@ const TestingUseBallotComponent = () => {
 
       <button
         data-testid="add-project-to-finalBallot"
-        onClick={() => handleAddtoFinalBallot(testProject)}
+        onClick={() => handleAddtoFinalBallot([testProject])}
       >
         Add Project To Final Ballot
       </button>

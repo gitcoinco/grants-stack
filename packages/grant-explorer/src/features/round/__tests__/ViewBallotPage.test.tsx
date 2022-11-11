@@ -1,5 +1,5 @@
 import ViewBallot from "../../ViewBallotPage";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
 import { makeApprovedProjectData } from "../../../test-utils";
@@ -407,6 +407,45 @@ describe("View Ballot Page", () => {
       /* Select button should turn gray */
       expect(screen.getByText("Select").classList).toContain("bg-grey-150");
     });
+
+    it("clicking on add to final donation moves project from shortlist to final donation", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+      const setFinalBallot = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: setFinalBallot,
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      /* Click on Select Button */
+      const moveToButton = screen.getByTestId("move-to-finalBallot");
+      fireEvent.click(moveToButton);
+
+      expect(setShortlist).toHaveBeenCalled();
+      expect(setFinalBallot).toHaveBeenCalled();
+    });
   });
 
   describe("Final Ballot", () => {
@@ -437,7 +476,7 @@ describe("View Ballot Page", () => {
         </MemoryRouter>
       );
 
-      const projects = screen.getAllByTestId("project");
+      const projects = screen.getAllByTestId("finalBallot-project");
       expect(projects.length).toEqual(finalBallot.length);
       projects.forEach((project, i) => {
         expect(project.textContent).toContain(
@@ -464,6 +503,44 @@ describe("View Ballot Page", () => {
         </MemoryRouter>
       );
       screen.getByText(/Add the projects you want to fund here!/i);
+    });
+
+    it("moves project from final donation to shortlist clicking send back", async () => {
+
+      const finalBallot: Project[] = [
+        makeApprovedProjectData(),
+        makeApprovedProjectData(),
+      ];
+
+      const setShortlist = jest.fn();
+      const setFinalBallot = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: [],
+                setShortlist: setShortlist,
+                finalBallot: finalBallot,
+                setFinalBallot: setFinalBallot,
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      // expect(screen.getAllByTestId("project").length).toEqual(0);
+      expect(screen.getAllByTestId("finalBallot-project").length).toEqual(2);
+
+      /* Click the first project */
+      const removeProjectFromFinalBallot = screen.getAllByTestId("remove-from-finalBallot")[0];
+      fireEvent.click(removeProjectFromFinalBallot);
+
+      expect(setFinalBallot).toHaveBeenCalled();
+      expect(setShortlist).toHaveBeenCalled();
     });
   });
 

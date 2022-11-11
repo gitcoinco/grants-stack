@@ -5,8 +5,8 @@ import { Link, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
 import { ChevronLeftIcon } from "@heroicons/react/solid";
-import { TrashIcon } from "@heroicons/react/outline";
-import { Button } from "./common/styles";
+import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
+import { Button, Input } from "./common/styles";
 import React, { useEffect, useState } from "react";
 
 export default function ViewBallot() {
@@ -37,11 +37,11 @@ export default function ViewBallot() {
         {Header(chainId, roundId)}
 
         <div className="grid grid-cols-2 gap-4">
-          {shortlistNotEmpty && ProjectShortlist(shortlist)}
-          {!shortlistNotEmpty && EmptyProjectShortlist(chainId, roundId)}
+          {shortlistNotEmpty && ShortlistProjects(shortlist)}
+          {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
 
-          {finalBallotNotEmpty && ProjectFinalBallot(finalBallot)}
-          {!finalBallotNotEmpty && EmptyProjecFinalBallot()}
+          {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
+          {!finalBallotNotEmpty && EmptyFinalBallot()}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div></div>
@@ -83,7 +83,7 @@ export default function ViewBallot() {
     );
   }
 
-  function ProjectShortlist(shortlist: Project[]) {
+  function ShortlistProjects(shortlist: Project[]) {
     return (
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
         <div className="flex justify-between border-b-2 pb-2">
@@ -163,7 +163,7 @@ export default function ViewBallot() {
     );
   }
 
-  function EmptyProjectShortlist(chainId?: string, roundId?: string) {
+  function EmptyShortlist(chainId?: string, roundId?: string) {
     return (
       <>
         <div className="block p-6 rounded-lg shadow-lg bg-white border">
@@ -191,21 +191,86 @@ export default function ViewBallot() {
     );
   }
 
-  function ProjectFinalBallot(finalBallot: Project[]) {
+  function FinalBallotProjects(finalBallot: Project[]) {
     return (
-      <div>
-        {finalBallot.map((project: Project, key: number) => {
-          return (
-            <div key={key} data-testid="project">
-              {project.projectMetadata.title}
-            </div>
-          );
-        })}
+      <div className="block p-6 rounded-lg shadow-lg bg-white border">
+        <div className="flex justify-between border-b-2 pb-2">
+          <h2 className="text-xl">Final Donation</h2>
+        </div>
+        <div className="my-4">
+          {finalBallot.map((project: Project, key: number) => {
+            return (
+              <FinalBallotProject
+                isSelected={
+                  isProjectAlreadySelected(project.projectRegistryId) > -1
+                }
+                project={project}
+                key={key}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
 
-  function EmptyProjecFinalBallot() {
+  function FinalBallotProject(
+    props: React.ComponentProps<"div"> & {
+      project: Project;
+      isSelected: boolean;
+    }
+  ) {
+
+    const [, , , , , handleRemoveFromFinalBallot] = useBallot();
+
+    return (
+      <div
+        data-testid="finalBallot-project"
+        className="border-b-2 border-grey-100"
+      >
+        <div
+          className={`mb-4 flex justify-between px-3 py-4 rounded-md
+            ${props.isSelected ? "bg-violet-100" : ""}`}
+        >
+          <div className="flex">
+            <img
+              className="h-[64px]"
+              src={
+                props.project.projectMetadata.logoImg
+                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                  : DefaultLogoImage
+              }
+              alt={"Project Logo"}
+            />
+
+            <div className="pl-4 mt-1">
+              <p className="font-semibold mb-2">
+                {props.project.projectMetadata.title}
+              </p>
+              <p className="text-sm">
+                {props.project.projectMetadata.description}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-1 flex space-x-4">
+            <Input
+              type="number"
+              className="w-24"
+            />
+            <p className="m-auto">DAI</p>
+            <ArrowCircleLeftIcon
+              data-testid="remove-from-finalBallot"
+              onClick={() => handleRemoveFromFinalBallot(props.project)}
+              className="w-6 h-6 m-auto"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function EmptyFinalBallot() {
     return (
       <>
         <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
@@ -250,6 +315,7 @@ export default function ViewBallot() {
   }
 
   function SelectActive(props: { onClick: () => void }) {
+    const [, , , , handleAddtoFinalBallot, ] =  useBallot();
     return (
       <Button
         type="button"
@@ -259,7 +325,9 @@ export default function ViewBallot() {
         data-testid="select"
       >
         {selected.length > 0 ? (
-          <>Add selected ({selected.length}) to Final Donation</>
+          <div data-testid="move-to-finalBallot" onClick={() => handleAddtoFinalBallot(selected)}>
+            Add selected ({selected.length}) to Final Donation
+          </div>
         ) : (
           <>Select</>
         )}
