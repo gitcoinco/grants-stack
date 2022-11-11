@@ -8,6 +8,7 @@ import {
 } from "../../../test-utils"
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
+import { payoutTokens } from "../../api/utils";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -33,7 +34,8 @@ describe("<ViewRound /> in case of before the application start date", () => {
     const applicationsEndTime = faker.date.future(1, applicationsStartTime);
     const roundStartTime = faker.date.soon(1, applicationsEndTime);
     const roundEndTime = faker.date.future(1, roundStartTime);
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    const token = payoutTokens[0].address;
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
   });
 
   it("Should show grayed out Applications Open buttom", async () => {
@@ -58,7 +60,8 @@ describe("<ViewRound /> in case of during the application period", () => {
     const applicationsEndTime = faker.date.soon();
     const roundStartTime = faker.date.future(1, applicationsEndTime);
     const roundEndTime = faker.date.soon(10, roundStartTime);
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    const token = payoutTokens[0].address;
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
   });
 
   it("should display 404 when round is not found", () => {
@@ -74,6 +77,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     expect(screen.getByText(stubRound.roundMetadata!.name)).toBeInTheDocument();
     expect(screen.getByTestId("application-period")).toBeInTheDocument();
     expect(screen.getByTestId("round-period")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-funds")).toBeInTheDocument();
     expect(screen.getByText(stubRound.roundMetadata!.eligibility!.description)).toBeInTheDocument();
     expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
   });
@@ -101,7 +105,8 @@ describe("<ViewRound /> in case of post application end date & before round star
     const applicationsStartTime = faker.date.past(1, applicationsEndTime);
     const roundStartTime = faker.date.soon();
     const roundEndTime = faker.date.future(1, roundStartTime);
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    const token = payoutTokens[0].address;
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
   });
 
   it("Should show Applications Closed button", async () => {
@@ -121,10 +126,11 @@ describe("<ViewRound /> in case of after the round start date", () => {
   const applicationsEndTime = faker.date.past(1, roundStartTime);
   const applicationsStartTime = faker.date.past(1, applicationsEndTime); 
   const roundEndTime = faker.date.soon();
+  const token = payoutTokens[0].address;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
   });
 
   it("should display 404 when round is not found", () => {
