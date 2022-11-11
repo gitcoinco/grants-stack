@@ -20,6 +20,12 @@ interface ProjectsLoadedAction {
   events: ProjectEventsMap;
 }
 
+export const PROJECTS_ERROR = "PROJECTS_ERROR";
+interface ProjectsErrorAction {
+  type: typeof PROJECTS_ERROR;
+  error: string;
+}
+
 export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
 export interface ProjectsUnloadedAction {
   type: typeof PROJECTS_UNLOADED;
@@ -54,6 +60,7 @@ interface ProjectApplicationsErrorAction {
 export type ProjectsActions =
   | ProjectsLoadingAction
   | ProjectsLoadedAction
+  | ProjectsErrorAction
   | ProjectsUnloadedAction
   | ProjectApplicationsLoadingAction
   | ProjectApplicationsNotFoundAction
@@ -67,6 +74,11 @@ const projectsLoading = () => ({
 const projectsLoaded = (events: ProjectEventsMap) => ({
   type: PROJECTS_LOADED,
   events,
+});
+
+const projectError = (error: string) => ({
+  type: PROJECTS_ERROR,
+  error,
 });
 
 const projectsUnload = () => ({
@@ -167,41 +179,45 @@ export const loadProjects =
     const state = getState();
     const { chainID, account } = state.web3;
 
-    const { createdEvents, updatedEvents, ids } =
-      await fetchProjectCreatedEvents(chainID!, account!);
+    try {
+      const { createdEvents, updatedEvents, ids } =
+        await fetchProjectCreatedEvents(chainID!, account!);
 
-    if (createdEvents.length === 0) {
-      dispatch(projectsLoaded({}));
-      return;
-    }
-
-    const events: ProjectEventsMap = {};
-
-    createdEvents.forEach((createEvent) => {
-      // FIXME: use this line when the fantom RPC bug has been fixed
-      // const id = createEvent.args!.projectID!;
-      const id = parseInt(createEvent.topics[1], 16);
-      events[id] = {
-        createdAtBlock: createEvent.blockNumber,
-        updatedAtBlock: undefined,
-      };
-    });
-
-    updatedEvents.forEach((updateEvent) => {
-      // FIXME: use this line when the fantom RPC bug has been fixed
-      // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-      const id = BigNumber.from(updateEvent.topics[1]).toNumber();
-      const event = events[id];
-      if (event !== undefined) {
-        event.updatedAtBlock = updateEvent.blockNumber;
+      if (createdEvents.length === 0) {
+        dispatch(projectsLoaded({}));
+        return;
       }
-    });
 
-    if (withMetaData) {
-      ids.map((id) => dispatch<any>(fetchGrantData(id)));
+      const events: ProjectEventsMap = {};
+
+      createdEvents.forEach((createEvent) => {
+        // FIXME: use this line when the fantom RPC bug has been fixed
+        // const id = createEvent.args!.projectID!;
+        const id = parseInt(createEvent.topics[1], 16);
+        events[id] = {
+          createdAtBlock: createEvent.blockNumber,
+          updatedAtBlock: undefined,
+        };
+      });
+
+      updatedEvents.forEach((updateEvent) => {
+        // FIXME: use this line when the fantom RPC bug has been fixed
+        // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+        const id = BigNumber.from(updateEvent.topics[1]).toNumber();
+        const event = events[id];
+        if (event !== undefined) {
+          event.updatedAtBlock = updateEvent.blockNumber;
+        }
+      });
+
+      if (withMetaData) {
+        ids.map((id) => dispatch<any>(fetchGrantData(id)));
+      }
+
+      dispatch(projectsLoaded(events));
+    } catch (error) {
+      dispatch(projectError("Cannot load projects"));
     }
-
-    dispatch(projectsLoaded(events));
   };
 
 export const getRoundProjectsApplied =

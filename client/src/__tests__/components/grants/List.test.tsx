@@ -74,6 +74,15 @@ describe("<List />", () => {
 
       expect(loadProjects).toBeCalledTimes(0);
     });
+
+    test("should fails if error occurs on project fetch", async () => {
+      const store = setupStore();
+      store.dispatch({ type: "PROJECTS_ERROR", error: "Cannot load projects" });
+
+      renderWrapped(<List />, store);
+
+      expect(screen.getByText("Error")).toBeInTheDocument();
+    });
   });
 
   describe("useEffect/checkRoundApplications", () => {

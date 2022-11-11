@@ -105,12 +105,13 @@ function Landing() {
       </div>
       <section className="flex flex-1 flex-col md:flex-row">
         <div className="flex flex-1 flex-col justify-center container px-8 md:px-10">
-          <h3 className="mb-4 pt-24 md:pt-0 md:mb-8">Grants Hub</h3>
-          <h1 className="w-auto text-5xl md:text-7xl mb-8">
-            Bring your project to life.
-          </h1>
+          <h3 className="mb-4 pt-24 md:pt-0 md:mb-4">
+            <img src="/assets/gitcoinWordLogo.svg" alt="Gitcoin logo" />
+          </h3>
+          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1">Grants Hub</h1>
           <p className="text-black text-xl w-full md:max-w-4xl">
-            Build and fund your projects all in one place.
+            Build and fund your project all in one place, and bring your vision
+            to life.
           </p>
           {!isConnected && (
             <div className="mt-8 mb-8 md:mb-0">
