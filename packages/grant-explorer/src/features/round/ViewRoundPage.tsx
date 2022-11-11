@@ -6,6 +6,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
+import { payoutTokens } from "../api/utils";
 import {
   Button,
   BasicCard,
@@ -174,6 +175,8 @@ function PreRoundPage(props: {
   const isDuringApplicationPeriod = round && round.applicationsStartTime <= currentTime && round.applicationsEndTime >= currentTime;
   const isAfterApplicationEndDateAndBeforeRoundStartDate = round && round.applicationsEndTime <= currentTime && round.roundStartTime >= currentTime;
 
+  const MatchingFundPayoutTokenName = round && payoutTokens.filter(t => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase())[0].name;
+
   return (
     <div className="container mx-auto flex flex-row bg-white">
       <div className="basis-1/2 mt-20 ">
@@ -203,8 +206,15 @@ function PreRoundPage(props: {
             {round.roundEndTime.toLocaleDateString()}
           </span>
         </p>
-        <p className="text-lg my-2 text-black font-normal">
-          Matching Funds Available: $$$
+        <p className="text-lg my-2 text-black font-normal" data-testid="matching-funds">
+          Matching Funds Available: 
+          <span>
+            {" "}
+            &nbsp;
+            {round.roundMetadata?.matchingFunds?.matchingFundsAvailable}
+            &nbsp;
+            {MatchingFundPayoutTokenName}
+          </span>
         </p>
         <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
           <span>{round.roundMetadata?.eligibility.description}</span>
