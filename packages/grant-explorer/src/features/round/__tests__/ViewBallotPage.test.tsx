@@ -1,5 +1,5 @@
 import ViewBallot from "../../ViewBallotPage";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
 import { makeApprovedProjectData } from "../../../test-utils";
@@ -14,7 +14,6 @@ const useParamsFn = () => ({
   roundId,
 });
 
-
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -26,7 +25,6 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("View Ballot Page", () => {
-
   describe("Shortlist", () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -43,8 +41,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: shortlist, setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: shortlist,
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -56,8 +56,12 @@ describe("View Ballot Page", () => {
       const projects = screen.getAllByTestId("project");
       expect(projects.length).toEqual(shortlist.length);
       projects.forEach((project, i) => {
-        expect(project.textContent).toContain(shortlist[i].projectMetadata.title);
-        expect(project.textContent).toContain(shortlist[i].projectMetadata.description);
+        expect(project.textContent).toContain(
+          shortlist[i].projectMetadata.title
+        );
+        expect(project.textContent).toContain(
+          shortlist[i].projectMetadata.description
+        );
       });
     });
 
@@ -67,8 +71,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -76,7 +82,330 @@ describe("View Ballot Page", () => {
           </RoundProvider>
         </MemoryRouter>
       );
-      screen.getByText(/Projects that you add to the Shortlist will appear here./i);
+      screen.getByText(
+        /Projects that you add to the Shortlist will appear here./i
+      );
+    });
+
+    it("shows trash button to remove project", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const trashButton = screen.getByTestId("remove-from-shortlist");
+      expect(trashButton).toBeInTheDocument();
+    });
+
+    it("calls setShortlist action when trash button is clicked", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const removeFromShortlist = screen.getAllByTestId(
+        "remove-from-shortlist"
+      )[0];
+      fireEvent.click(removeFromShortlist);
+
+      expect(setShortlist).toHaveBeenCalled();
+    });
+
+    it("shows default select button in grey state", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const SelectButton = screen.getByText("Select");
+      expect(SelectButton.classList).toContain("bg-grey-150");
+    });
+
+    it("select button turns violet when clicked", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+      const SelectButtonAfterClick = screen.getByTestId("select");
+      expect(SelectButtonAfterClick.classList).toContain("bg-violet-400");
+    });
+
+    it("active selected button turns grey when clicked", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist: shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+      fireEvent.click(SelectButton);
+      expect(SelectButton.classList).toContain("bg-grey-150");
+    });
+
+    it("selecting project from shortlist adds to selected state", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      expect(
+        screen.getAllByTestId("project")[0].firstElementChild!.classList
+      ).toContain("bg-violet-100");
+    });
+
+    it("unselecting project from shortlist removes from selected count", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      expect(screen.getByTestId("select")).toHaveTextContent(
+        "Add selected (1) to Final Donation"
+      );
+
+      /* Click the first project again to deselect it */
+      fireEvent.click(screen.getAllByTestId("project")[0]);
+
+      expect(screen.getByText("Select")).toBeInTheDocument();
+    });
+
+    it("selecting project turns background to violet", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      expect(
+        screen.getAllByTestId("project")[0].firstElementChild!.classList
+      ).toContain("bg-violet-100");
+    });
+    it("unselecting project turns background to white", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      expect(
+        screen.getAllByTestId("project")[0].firstElementChild!.classList
+      ).toContain("bg-violet-100");
+
+      fireEvent.click(screen.getAllByTestId("project")[0]);
+      expect(
+        screen.getAllByTestId("project")[0].firstElementChild!.classList
+      ).not.toContain("bg-violet-100");
+    });
+    it("unselecting all projects from selected state turns select button grey", () => {
+      const shortlist: Project[] = [makeApprovedProjectData()];
+
+      const setShortlist = jest.fn();
+
+      render(
+        <MemoryRouter>
+          <RoundProvider>
+            <BallotContext.Provider
+              value={{
+                shortlist,
+                setShortlist: setShortlist,
+                finalBallot: [],
+                setFinalBallot: () => {},
+              }}
+            >
+              <ViewBallot />
+            </BallotContext.Provider>
+          </RoundProvider>
+        </MemoryRouter>
+      );
+
+      /* Enable selection mode */
+      const SelectButton = screen.getByText("Select");
+      fireEvent.click(SelectButton);
+
+      /* Click the first project */
+      const FirstProject = screen.getAllByTestId("project")[0];
+      fireEvent.click(FirstProject);
+
+      /* Click the first project again */
+      fireEvent.click(screen.getAllByTestId("project")[0]);
+
+      /* Select button should turn gray */
+      expect(screen.getByText("Select").classList).toContain("bg-grey-150");
     });
   });
 
@@ -96,8 +425,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: finalBallot, setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: finalBallot,
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -109,7 +440,9 @@ describe("View Ballot Page", () => {
       const projects = screen.getAllByTestId("project");
       expect(projects.length).toEqual(finalBallot.length);
       projects.forEach((project, i) => {
-        expect(project.textContent).toContain(finalBallot[i].projectMetadata.title);
+        expect(project.textContent).toContain(
+          finalBallot[i].projectMetadata.title
+        );
       });
     });
 
@@ -119,8 +452,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
@@ -143,8 +478,10 @@ describe("View Ballot Page", () => {
           <RoundProvider>
             <BallotContext.Provider
               value={{
-                shortlist: [], setShortlist: () => {},
-                finalBallot: [], setFinalBallot: () => {}
+                shortlist: [],
+                setShortlist: () => {},
+                finalBallot: [],
+                setFinalBallot: () => {},
               }}
             >
               <ViewBallot />
