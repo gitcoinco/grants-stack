@@ -65,7 +65,7 @@ export default function ViewBallot() {
     return (
       <div>
         <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
+          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6 cursor-pointer" />
           <Link to={`/round/${chainId}/${roundId}`}>
             <span className="font-normal">Back</span>
           </Link>
@@ -155,7 +155,7 @@ export default function ViewBallot() {
             <TrashIcon
               data-testid="remove-from-shortlist"
               onClick={() => removeProjectFromShortlist(props.project)}
-              className="w-6 h-6"
+              className="w-6 h-6 cursor-pointer"
             />
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function ViewBallot() {
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
               onClick={() => handleRemoveFromFinalBallot(props.project)}
-              className="w-6 h-6 m-auto"
+              className="w-6 h-6 m-auto cursor-pointer"
             />
           </div>
         </div>
