@@ -2,9 +2,35 @@
 
 This document lists all the addresses of the contracts that have been deployed on a given network
 
+
+## Optimism Mainnet
+
+These are contracts are created/deployed once for optimism mainnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| ProgramFactory                        | 0x8918401DD47f1645fF1111D8E513c0404b84d5bB |
+| ProgramImplementation                 | 0x809E751e5C5bB1446e9ab2Ac37c687a35DE53BC6 |
+| QuadraticFundingVotingStrategyFactory | 0xE1F4A28299966686c689223Ee7803258Dbde0942 |
+| QFVotingStrategyImplementation        | 0x5987A30F7Cb138c231de96Fe1522Fe4f1e83940D |
+| RoundFactory                          | 0x0f0A4961274A578443089D06AfB9d1fC231A5a4D |
+| RoundImplementation                   | 0xCd5AbD09ee34BA604795F7f69413caf20ee0Ab60 |
+
+
+**Sample contracts unique to a round **
+
+These are contracts are created/deployed for every round created on optimism mainnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| Program                               | 0x228907B3b4C4877885320654b98465daF62C3766 |
+| QFVotingContract                      | 0x2D3Abb193d5118A2F96004A9316830d9E96f44Aa |
+| MerklePayoutContract                  | 0x835A581472Ce6a1f1108d9484567a2162C9959C8 |
+| Round                                 | 0xe0883e6F3113FC4C2d9539b9eE1659E59531e312 |
+
 ## Fantom Mainnet
 
-These are contracts are created/deployed once for fantom testnet
+These are contracts are created/deployed once for fantom mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -18,13 +44,13 @@ These are contracts are created/deployed once for fantom testnet
 
 **Sample contracts unique to a round **
 
-These are contracts are created/deployed for every round created on fantom testnet
+These are contracts are created/deployed for every round created on fantom mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
 | Program                               | 0x4fde273e009F58Aa0e5e09289242D5336FD18ad1 |
 | QFVotingContract                      | 0x818A3C8F82667bd222faF84a954F35d2b0Eb6a78 |
-| MerklePayoutContract                  | 0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5 | 
+| MerklePayoutContract                  | 0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5 |
 | Round                                 | 0x866485759ABC95c36FA77B216A5AdbA4275a14aB |
 
 ## Goerli Network
@@ -75,5 +101,5 @@ These are contracts are created/deployed for every round created on fantom testn
 |---------------------------------------|--------------------------------------------|
 | Program                               | 0x3Cd6edA7fDF9ab6b6AF6E226Ce184569C5DF8Ae5 |
 | QFVotingContract                      | 0x02B52C3a398567AdFffb3396d6eE3d3c2bff37fE |
-| MerklePayoutContract                  | 0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a | 
+| MerklePayoutContract                  | 0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a |
 | Round                                 | 0xd3E45c78050a6472e28b9E02AA8596F7868e63d6 |

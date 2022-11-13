@@ -14,9 +14,9 @@ export const roundParams: DeployParams = {
     roundContract: '0xcEF1772Dd6764C95f14c26B25e8f012C072C5F77'
   },
   "optimism-mainnet": {
-    roundFactoryContract: '',
-    roundImplementationContract: '',
-    roundContract: ''
+    roundFactoryContract: '0x0f0A4961274A578443089D06AfB9d1fC231A5a4D',
+    roundImplementationContract: '0xCd5AbD09ee34BA604795F7f69413caf20ee0Ab60',
+    roundContract: '0xe0883e6F3113FC4C2d9539b9eE1659E59531e312'
   },
   "fantom-mainnet": {
     roundFactoryContract: '0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E',
