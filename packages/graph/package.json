@@ -23,7 +23,8 @@
     "create-local": "graph create --node http://localhost:8020/ thelostone-mc/program-factory",
     "remove-local": "graph remove --node http://localhost:8020/ thelostone-mc/program-factory",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 thelostone-mc/program-factory",
-    "test": "graph test"
+    "test": "graph test",
+    "test:config-gen": "echo libsFolder: $(dirname `cd ../..; pwd`)/grants-round/node_modules > matchstick.yaml"
   },
   "dependencies": {
     "@graphprotocol/graph-ts": "0.27.0",

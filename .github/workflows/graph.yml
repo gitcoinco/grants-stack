@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
+          submodules: recursive
 
       - uses: actions/setup-node@v3
         with:
@@ -23,17 +24,30 @@ jobs:
       - name: Install Dependencies
         run: |
           yarn install
-          cd packages/graph
-          yarn install 
 
-      # - name: Setup
-      #   run: |
-      #     cd packages/graph
-      #     yarn add @graphprotocol/graph-cli
-      #     # yarn prepare:goerli
-      #     # yarn codegen
-          
-      # - name: Test
-      #   run: |
-      #     cd packages/graph
-      #     yarn test
+      - name: Install Graph Dependencies
+        run: |
+          cd packages/graph
+          yarn install
+          yarn add @graphprotocol/graph-cli
+          yarn build
+
+      - name: Prepare subgraph yaml
+        run: |
+          cd packages/graph
+          yarn codegen
+
+      - name: Generate code
+        run: |
+          cd packages/graph
+          yarn codegen
+
+      - name: Generate config
+        run: |
+          cd packages/graph
+          yarn test:config-gen
+
+      - name: Test
+        run: |
+          cd packages/graph
+          yarn test
