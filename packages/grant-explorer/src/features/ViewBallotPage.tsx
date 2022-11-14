@@ -1,5 +1,5 @@
 import { useBallot } from "../context/BallotContext";
-import { Project } from "./api/types";
+import { FinalBallotDonation, Project } from "./api/types";
 import { useRoundById } from "../context/RoundContext";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
@@ -17,6 +17,8 @@ export default function ViewBallot() {
 
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
+  const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
+  const [totalDonation, setTotalDonation] = useState(0);
 
   const [shortlist, , , finalBallot] = useBallot();
 
@@ -46,8 +48,7 @@ export default function ViewBallot() {
         <div className="grid grid-cols-2 gap-4">
           <div></div>
           <div>
-            {Summary()}
-
+            <Summary />
             <Button
               $variant="solid"
               type="button"
@@ -198,17 +199,17 @@ export default function ViewBallot() {
           <h2 className="text-xl">Final Donation</h2>
         </div>
         <div className="my-4">
-          {finalBallot.map((project: Project, key: number) => {
-            return (
+          {finalBallot.map((project: Project, key: number) => (
+            <div key={key}>
               <FinalBallotProject
                 isSelected={
                   isProjectAlreadySelected(project.projectRegistryId) > -1
                 }
                 project={project}
-                key={key}
+                index={key}
               />
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -218,10 +219,12 @@ export default function ViewBallot() {
     props: React.ComponentProps<"div"> & {
       project: Project;
       isSelected: boolean;
+      index: number;
     }
   ) {
-
     const [, , , , , handleRemoveFromFinalBallot] = useBallot();
+    const focusedElement = document?.activeElement?.id;
+    const inputID = "input-" + props.index;
 
     return (
       <div
@@ -253,9 +256,30 @@ export default function ViewBallot() {
             </div>
           </div>
 
-          <div className="mt-1 flex space-x-4">
+          <div className="mt-1 flex space-x-4 h-16 pl-4 pt-3">
             <Input
+              aria-label={
+                "Donation amount for project " +
+                props.project.projectMetadata.title
+              }
+              id={inputID}
+              key={inputID}
+              {...(focusedElement === inputID ? { autoFocus: true } : {})}
+              min="0"
+              value={
+                donations.find(
+                  (donation: FinalBallotDonation) =>
+                    donation.projectRegistryId ===
+                    props.project.projectRegistryId
+                )?.amount
+              }
               type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                updateDonations(
+                  props.project.projectRegistryId,
+                  Number(e.target.value)
+                );
+              }}
               className="w-24"
             />
             <p className="m-auto">DAI</p>
@@ -291,10 +315,14 @@ export default function ViewBallot() {
       <>
         <div className="my-5 block p-6 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
           <h2 className="text-xl border-b-2 pb-2">Summary</h2>
-
           <div className="flex justify-between mt-4">
             <p>Your Contribution</p>
-            <p>000.00 DAI</p>
+            <p>
+              <span data-testid={"totalDonation"} className="mr-2">
+                {totalDonation}
+              </span>
+              <span>DAI</span>
+            </p>
           </div>
         </div>
       </>
@@ -315,7 +343,7 @@ export default function ViewBallot() {
   }
 
   function SelectActive(props: { onClick: () => void }) {
-    const [, , , , handleAddtoFinalBallot, ] =  useBallot();
+    const [, , , , handleAddtoFinalBallot] = useBallot();
     return (
       <Button
         type="button"
@@ -325,7 +353,10 @@ export default function ViewBallot() {
         data-testid="select"
       >
         {selected.length > 0 ? (
-          <div data-testid="move-to-finalBallot" onClick={() => handleAddtoFinalBallot(selected)}>
+          <div
+            data-testid="move-to-finalBallot"
+            onClick={() => handleAddtoFinalBallot(selected)}
+          >
             Add selected ({selected.length}) to Final Donation
           </div>
         ) : (
@@ -360,6 +391,29 @@ export default function ViewBallot() {
   function isProjectAlreadySelected(projectId: string): number {
     return selected.findIndex(
       (project) => project.projectRegistryId == projectId
+    );
+  }
+
+  function updateDonations(projectRegistryId: string, amount: number) {
+    const projectIndex = donations.findIndex(
+      (donation) => donation.projectRegistryId === projectRegistryId
+    );
+
+    const newState = donations;
+
+    if (projectIndex !== -1) {
+      newState[projectIndex].amount = amount;
+    } else {
+      newState.push({
+        projectRegistryId: projectRegistryId,
+        amount: amount,
+      });
+    }
+
+    setDonations(newState);
+
+    setTotalDonation(
+      donations.reduce((sum, donation) => sum + donation.amount, 0)
     );
   }
 }
