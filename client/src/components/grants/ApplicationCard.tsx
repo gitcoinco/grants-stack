@@ -1,7 +1,7 @@
 import { Badge, Box, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadRound, unloadRounds } from "../../actions/rounds";
+import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { RoundSupport } from "../../types";
 import { formatDate } from "../../utils/components";
@@ -42,7 +42,6 @@ export default function ApplicationCard({
 
   useEffect(() => {
     if (applicationData.roundID !== undefined) {
-      dispatch(unloadRounds());
       dispatch(loadRound(applicationData.roundID));
     }
   }, [dispatch, applicationData.roundID]);
