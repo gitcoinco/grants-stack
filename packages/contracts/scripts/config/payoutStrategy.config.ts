@@ -10,7 +10,7 @@ export const PayoutParams: DeployParams = {
     merklePayoutContract: '0x4A68275B53165d9209Ec3f535a331A3f0160d6FF'
   },
   "optimism-mainnet": {
-    merklePayoutContract: ''
+    merklePayoutContract: '0x835A581472Ce6a1f1108d9484567a2162C9959C8'
   },
   "fantom-mainnet": {
     merklePayoutContract: '0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5'
