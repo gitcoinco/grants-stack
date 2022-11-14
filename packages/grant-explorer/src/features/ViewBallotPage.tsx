@@ -297,7 +297,7 @@ export default function ViewBallot() {
               }}
               className="w-24"
             />
-            <p className="m-auto">DAI</p>
+            <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
               onClick={() => handleRemoveFromFinalBallot(props.project)}
@@ -341,7 +341,7 @@ export default function ViewBallot() {
               <span data-testid={"totalDonation"} className="mr-2">
                 {totalDonation}
               </span>
-              <span>DAI</span>
+              <span data-testid={"summaryPayoutToken"}>{selectedPayoutToken.name}</span>
             </p>
           </div>
         </div>

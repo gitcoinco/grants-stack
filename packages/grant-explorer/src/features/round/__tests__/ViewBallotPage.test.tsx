@@ -6,6 +6,7 @@ import { makeApprovedProjectData } from "../../../test-utils";
 import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
+import { getPayoutTokenOptions } from "../../api/utils";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -63,6 +64,30 @@ describe("View Ballot Page", () => {
 
       const PayoutTokenDropdown = screen.getByTestId("payout-token-select");
       expect(PayoutTokenDropdown).toBeInTheDocument();
+    });
+
+    it("renders a dropdown list of tokens when payout token input is clicked", async () => {
+      const chainId = 5;
+
+      const useParamsFn = () => ({
+        chainId,
+        roundId,
+      })
+
+      jest.mock("react-router-dom", () => ({
+        ...jest.requireActual("react-router-dom"),
+        useParams: useParamsFn,
+      }));
+
+      renderWrapped();
+
+      const options = getPayoutTokenOptions(chainId.toString());
+
+      const payoutTokenSelection = screen.getByTestId("payout-token-select");
+      fireEvent.click(payoutTokenSelection);
+
+      const selectOptions = await screen.findAllByTestId("payout-token-option");
+      expect(selectOptions).toHaveLength(options.length);
     });
 
     it("shows trash button to remove project", () => {
@@ -392,6 +417,25 @@ describe("View Ballot Page", () => {
 
     expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
   });
+
+  it("updates token summary based on selected token", async () => {
+    const chainId = 5;
+
+    const useParamsFn = () => ({
+      chainId,
+      roundId,
+    })
+
+    jest.mock("react-router-dom", () => ({
+      ...jest.requireActual("react-router-dom"),
+      useParams: useParamsFn,
+    }));
+
+    renderWrapped();
+
+    const options = getPayoutTokenOptions(chainId.toString());
+    expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(options[0].name);
+  })
 });
 
 function renderWrapped(
