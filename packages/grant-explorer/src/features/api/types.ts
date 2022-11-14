@@ -176,3 +176,11 @@ export enum ProgressStatus {
   NOT_STARTED = "NOT_STARTED",
   IS_ERROR = "IS_ERROR",
 }
+
+export type PayoutToken = {
+  name: string;
+  chainId: string;
+  address: string;
+  logo?: string;
+  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+};

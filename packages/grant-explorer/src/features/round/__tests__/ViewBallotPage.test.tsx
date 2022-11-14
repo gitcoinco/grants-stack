@@ -36,22 +36,7 @@ describe("View Ballot Page", () => {
         makeApprovedProjectData(),
       ];
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: () => {},
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist);
 
       const projects = screen.getAllByTestId("project");
       expect(projects.length).toEqual(shortlist.length);
@@ -66,46 +51,24 @@ describe("View Ballot Page", () => {
     });
 
     it("shows message that you have no projects", () => {
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: [],
-                setShortlist: () => {},
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped();
+
       screen.getByText(
         /Projects that you add to the Shortlist will appear here./i
       );
     });
 
+    it("shows payout token drop down", () => {
+      renderWrapped();
+
+      const PayoutTokenDropdown = screen.getByTestId("payout-token-select");
+      expect(PayoutTokenDropdown).toBeInTheDocument();
+    });
+
     it("shows trash button to remove project", () => {
       const shortlist: Project[] = [makeApprovedProjectData()];
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: () => {},
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist);
 
       const trashButton = screen.getByTestId("remove-from-shortlist");
       expect(trashButton).toBeInTheDocument();
@@ -116,22 +79,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       const removeFromShortlist = screen.getAllByTestId(
         "remove-from-shortlist"
@@ -146,22 +94,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       const SelectButton = screen.getByText("Select");
       expect(SelectButton.classList).toContain("bg-grey-150");
@@ -172,22 +105,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       const SelectButton = screen.getByText("Select");
       fireEvent.click(SelectButton);
@@ -200,22 +118,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       const SelectButton = screen.getByText("Select");
       fireEvent.click(SelectButton);
@@ -228,22 +131,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -263,22 +151,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -303,22 +176,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -337,22 +195,7 @@ describe("View Ballot Page", () => {
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -371,27 +214,13 @@ describe("View Ballot Page", () => {
         screen.getAllByTestId("project")[0].firstElementChild!.classList
       ).not.toContain("bg-violet-100");
     });
+
     it("unselecting all projects from selected state turns select button grey", () => {
       const shortlist: Project[] = [makeApprovedProjectData()];
 
       const setShortlist = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -414,22 +243,7 @@ describe("View Ballot Page", () => {
       const setShortlist = jest.fn();
       const setFinalBallot = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: shortlist,
-                setShortlist: setShortlist,
-                finalBallot: [],
-                setFinalBallot: setFinalBallot,
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped(shortlist, setShortlist, [], setFinalBallot);
 
       /* Enable selection mode */
       const SelectButton = screen.getByText("Select");
@@ -459,22 +273,7 @@ describe("View Ballot Page", () => {
         makeApprovedProjectData(),
       ];
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: [],
-                setShortlist: () => {},
-                finalBallot: finalBallot,
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped([], () => {}, finalBallot);
 
       const projects = screen.getAllByTestId("finalBallot-project");
       expect(projects.length).toEqual(finalBallot.length);
@@ -486,22 +285,8 @@ describe("View Ballot Page", () => {
     });
 
     it("shows message that you have no projects", () => {
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: [],
-                setShortlist: () => {},
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped();
+
       screen.getByText(/Add the projects you want to fund here!/i);
     });
 
@@ -514,22 +299,7 @@ describe("View Ballot Page", () => {
       const setShortlist = jest.fn();
       const setFinalBallot = jest.fn();
 
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: [],
-                setShortlist: setShortlist,
-                finalBallot: finalBallot,
-                setFinalBallot: setFinalBallot,
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped([], setShortlist, finalBallot, setFinalBallot);
 
       // expect(screen.getAllByTestId("project").length).toEqual(0);
       expect(screen.getAllByTestId("finalBallot-project").length).toEqual(2);
@@ -551,22 +321,7 @@ describe("View Ballot Page", () => {
     });
 
     it("shows default amount when you have no projects in final ballot", () => {
-      render(
-        <MemoryRouter>
-          <RoundProvider>
-            <BallotContext.Provider
-              value={{
-                shortlist: [],
-                setShortlist: () => {},
-                finalBallot: [],
-                setFinalBallot: () => {},
-              }}
-            >
-              <ViewBallot />
-            </BallotContext.Provider>
-          </RoundProvider>
-        </MemoryRouter>
-      );
+      renderWrapped();
 
       const totalDonation = screen.getByTestId("totalDonation");
       expect(totalDonation).toHaveTextContent("0");
@@ -576,22 +331,7 @@ describe("View Ballot Page", () => {
   it("reflects a change in donation to one project in the final contribution", () => {
     const finalBallot: Project[] = [makeApprovedProjectData()];
 
-    render(
-      <MemoryRouter>
-        <RoundProvider>
-          <BallotContext.Provider
-            value={{
-              shortlist: [],
-              setShortlist: () => {},
-              finalBallot,
-              setFinalBallot: () => {},
-            }}
-          >
-            <ViewBallot />
-          </BallotContext.Provider>
-        </RoundProvider>
-      </MemoryRouter>
-    );
+    renderWrapped([], () => {}, finalBallot);
 
     /* Set donation amount on one project */
     const projectDonationInput = screen.getByRole("spinbutton", {
@@ -614,22 +354,7 @@ describe("View Ballot Page", () => {
       makeApprovedProjectData(),
     ];
 
-    render(
-      <MemoryRouter>
-        <RoundProvider>
-          <BallotContext.Provider
-            value={{
-              shortlist: [],
-              setShortlist: () => {},
-              finalBallot,
-              setFinalBallot: () => {},
-            }}
-          >
-            <ViewBallot />
-          </BallotContext.Provider>
-        </RoundProvider>
-      </MemoryRouter>
-    );
+    renderWrapped([], () => {}, finalBallot);
 
     /* Set donation amount on one project */
     const projectDonationInput = screen.getByRole("spinbutton", {
@@ -668,3 +393,27 @@ describe("View Ballot Page", () => {
     expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
   });
 });
+
+function renderWrapped(
+  shortlist: Project[] = [],
+  setShortlist = () => {},
+  finalBallot: Project[] = [],
+  setFinalBallot = () => {},
+) { 
+  render(
+    <MemoryRouter>
+      <RoundProvider>
+        <BallotContext.Provider
+          value={{
+            shortlist: shortlist,
+            setShortlist: setShortlist,
+            finalBallot: finalBallot,
+            setFinalBallot: setFinalBallot,
+          }}
+        >
+          <ViewBallot />
+        </BallotContext.Provider>
+      </RoundProvider>
+    </MemoryRouter>
+  )
+}

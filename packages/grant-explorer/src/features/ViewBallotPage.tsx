@@ -1,16 +1,27 @@
 import { useBallot } from "../context/BallotContext";
-import { FinalBallotDonation, Project } from "./api/types";
+import { FinalBallotDonation, PayoutToken, Project } from "./api/types";
 import { useRoundById } from "../context/RoundContext";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
-import { ChevronLeftIcon } from "@heroicons/react/solid";
+import { CheckIcon, ChevronLeftIcon, SelectorIcon } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { classNames, getPayoutTokenOptions } from "./api/utils";
+import { Listbox, Transition } from "@headlessui/react";
 
 export default function ViewBallot() {
+
+  
   const { chainId, roundId } = useParams();
+
+  const payoutTokenOptions: PayoutToken[] = [
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    ...getPayoutTokenOptions(chainId!),
+  ];
+
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(payoutTokenOptions[0]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
@@ -196,7 +207,11 @@ export default function ViewBallot() {
     return (
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
         <div className="flex justify-between border-b-2 pb-2">
-          <h2 className="text-xl">Final Donation</h2>
+          <h2 className="mt-2 text-xl">Final Donation</h2>
+          <p className="mt-2 amount-text">Amount / Currency</p>
+          <PayoutTokenDropdown
+            payoutTokenOptions={payoutTokenOptions}
+          />
         </div>
         <div className="my-4">
           {finalBallot.map((project: Project, key: number) => (
@@ -298,14 +313,19 @@ export default function ViewBallot() {
     return (
       <>
         <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
-          <h2 className="text-xl border-b-2 pb-2">Final Donation</h2>
-
-          <div className="mt-4">
-            <p className="text-grey-500">
-              Add the projects you want to fund here!
-            </p>
+          <div className="flex justify-between border-b-2 pb-2">
+            <h2 className="mt-2 text-xl">Final Donation</h2>
+            <p className="mt-2 amount-text">Amount / Currency</p>
+            <PayoutTokenDropdown
+              payoutTokenOptions={payoutTokenOptions}
+            />
           </div>
+        <div className="mt-4">
+          <p className="text-grey-500">
+            Add the projects you want to fund here!
+          </p>
         </div>
+      </div>
       </>
     );
   }
@@ -414,6 +434,126 @@ export default function ViewBallot() {
 
     setTotalDonation(
       donations.reduce((sum, donation) => sum + donation.amount, 0)
+    );
+  }
+  
+  function PayoutTokenDropdown(props: {
+    payoutTokenOptions: PayoutToken[];
+  }) {
+   
+    return (
+      <div className="relative col-span-6 sm:col-span-3">
+        <Listbox value={selectedPayoutToken} onChange={setSelectedPayoutToken}>
+          {({ open }) => (
+            <div>
+              <div className="mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <PayoutTokenButton
+                  token={props.payoutTokenOptions.find(
+                    (t) => t.address === selectedPayoutToken?.address
+                  )}
+                />
+                <Transition
+                  show={open}
+                  as={Fragment}
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    {props.payoutTokenOptions.map(
+                      (token) =>
+                        !token.default && (
+                          <Listbox.Option
+                            key={token.name}
+                            className={({ active }) =>
+                              classNames(
+                                active
+                                  ? "text-white bg-indigo-600"
+                                  : "text-gray-900",
+                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                              )
+                            }
+                            value={token}
+                            data-testid="payout-token-option"
+                          >
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  {token.logo ? (
+                                    <img
+                                      src={token.logo}
+                                      alt=""
+                                      className="h-6 w-6 flex-shrink-0 rounded-full"
+                                    />
+                                  ) : null}
+                                  <span
+                                    className={classNames(
+                                      selected ? "font-semibold" : "font-normal",
+                                      "ml-3 block truncate"
+                                    )}
+                                  >
+                                    {token.name}
+                                  </span>
+                                </div>
+  
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? "text-white" : "text-indigo-600",
+                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                    )}
+                                  >
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        )
+                    )}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+
+            </div>
+          )}
+        </Listbox>
+      </div>
+    );
+  }
+
+  function PayoutTokenButton(props: {
+    token?: PayoutToken;
+  }) {
+    const { token } = props;
+    return (
+      <Listbox.Button
+        className="relative w-full cursor-default rounded-md border h-10 border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+        data-testid="payout-token-select"
+      >
+        <span className="flex items-center">
+          {token?.logo ? (
+            <img
+              src={token?.logo}
+              alt=""
+              className="h-6 w-6 flex-shrink-0 rounded-full"
+            />
+          ) : null}
+          {token?.default ? (
+            <span className="ml-3 block truncate text-gray-500">
+              {token?.name}
+            </span>
+          ) : (
+            <span className="ml-3 block truncate">{token?.name}</span>
+          )}
+        </span>
+        <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+          <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+        </span>
+      </Listbox.Button>
     );
   }
 }
