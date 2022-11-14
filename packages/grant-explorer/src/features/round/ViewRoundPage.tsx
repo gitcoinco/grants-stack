@@ -80,8 +80,8 @@ function BeforeRoundStart(props: {round: Round, chainId: string, roundId: string
             )}
           />
         </main>
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 }
