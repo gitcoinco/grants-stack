@@ -142,6 +142,11 @@ export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
 export type recipient = string;
 
+export type FinalBallotDonation = {
+  projectRegistryId: ProjectRegistryId,
+  amount: number;
+}
+
 export enum ApplicationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",

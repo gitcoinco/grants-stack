@@ -1,5 +1,5 @@
 import ViewBallot from "../../ViewBallotPage";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
 import { makeApprovedProjectData } from "../../../test-utils";
@@ -505,8 +505,7 @@ describe("View Ballot Page", () => {
       screen.getByText(/Add the projects you want to fund here!/i);
     });
 
-    it("moves project from final donation to shortlist clicking send back", async () => {
-
+    it("moves project from final donation to shortlist when clicking the send back button", async () => {
       const finalBallot: Project[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),
@@ -536,7 +535,9 @@ describe("View Ballot Page", () => {
       expect(screen.getAllByTestId("finalBallot-project").length).toEqual(2);
 
       /* Click the first project */
-      const removeProjectFromFinalBallot = screen.getAllByTestId("remove-from-finalBallot")[0];
+      const removeProjectFromFinalBallot = screen.getAllByTestId(
+        "remove-from-finalBallot"
+      )[0];
       fireEvent.click(removeProjectFromFinalBallot);
 
       expect(setFinalBallot).toHaveBeenCalled();
@@ -549,7 +550,7 @@ describe("View Ballot Page", () => {
       jest.clearAllMocks();
     });
 
-    it("shows default amount that you have no projects in final ballot", () => {
+    it("shows default amount when you have no projects in final ballot", () => {
       render(
         <MemoryRouter>
           <RoundProvider>
@@ -566,8 +567,104 @@ describe("View Ballot Page", () => {
           </RoundProvider>
         </MemoryRouter>
       );
-      screen.getByText(/Your contribution/i);
-      screen.getByText(/000.00 DAI/i);
+
+      const totalDonation = screen.getByTestId("totalDonation");
+      expect(totalDonation).toHaveTextContent("0");
     });
+  });
+
+  it("reflects a change in donation to one project in the final contribution", () => {
+    const finalBallot: Project[] = [makeApprovedProjectData()];
+
+    render(
+      <MemoryRouter>
+        <RoundProvider>
+          <BallotContext.Provider
+            value={{
+              shortlist: [],
+              setShortlist: () => {},
+              finalBallot,
+              setFinalBallot: () => {},
+            }}
+          >
+            <ViewBallot />
+          </BallotContext.Provider>
+        </RoundProvider>
+      </MemoryRouter>
+    );
+
+    /* Set donation amount on one project */
+    const projectDonationInput = screen.getByRole("spinbutton", {
+      name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+    });
+
+    fireEvent.change(projectDonationInput, {
+      target: {
+        value: "10",
+      },
+    });
+
+    const totalDonation = screen.getByTestId("totalDonation");
+    expect(totalDonation).toHaveTextContent("10");
+  });
+
+  it("reflects a change in donation to two projects in the final contribution", () => {
+    const finalBallot: Project[] = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
+
+    render(
+      <MemoryRouter>
+        <RoundProvider>
+          <BallotContext.Provider
+            value={{
+              shortlist: [],
+              setShortlist: () => {},
+              finalBallot,
+              setFinalBallot: () => {},
+            }}
+          >
+            <ViewBallot />
+          </BallotContext.Provider>
+        </RoundProvider>
+      </MemoryRouter>
+    );
+
+    /* Set donation amount on one project */
+    const projectDonationInput = screen.getByRole("spinbutton", {
+      name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+    });
+    fireEvent.change(projectDonationInput, {
+      target: {
+        value: "10",
+      },
+    });
+
+    const secondProjectDonationInput = screen.getByRole("spinbutton", {
+      name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
+    });
+    fireEvent.change(secondProjectDonationInput, {
+      target: {
+        value: "20",
+      },
+    });
+
+    const totalDonation = screen.getByTestId("totalDonation");
+    expect(totalDonation).toHaveTextContent("30");
+
+    /* Lower donation */
+    fireEvent.change(
+      screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
+      }),
+      {
+        target: {
+          value: "10",
+        },
+      }
+    );
+
+    expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
   });
 });
