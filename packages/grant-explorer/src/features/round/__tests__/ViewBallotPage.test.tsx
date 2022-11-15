@@ -527,6 +527,32 @@ describe("View Ballot Page", () => {
       expect(await screen.queryByTestId("confirm-modal")).toBeInTheDocument();
     })
 
+    it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
+      const finalBallot: Project[] = [
+        makeApprovedProjectData(),
+      ];
+
+      renderWrapped([], () => {}, finalBallot);
+
+      /* Set donation amount on one project */
+      const projectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      });
+      fireEvent.change(projectDonationInput, {
+        target: {
+          value: "1",
+        },
+      });
+
+      /* Click on Confirm Button */
+      const confirmButton = screen.getByTestId("handle-confirmation");
+      fireEvent.click(confirmButton);
+
+      const confirmModalButton = screen.getByTestId("confirm-modal-button");
+      fireEvent.click(confirmModalButton);
+      expect(await screen.queryByTestId("info-modal")).toBeInTheDocument();
+    })
+
   })
 
 });

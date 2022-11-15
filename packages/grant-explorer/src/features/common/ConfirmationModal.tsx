@@ -75,6 +75,7 @@ export default function ConfirmationModal({
                     type="button"
                     className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                     onClick={props.confirmButtonAction}
+                    data-testid={"confirm-modal-button"}
                   >
                     {confirmButtonText}
                   </Button>
