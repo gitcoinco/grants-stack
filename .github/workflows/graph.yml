@@ -36,6 +36,11 @@ jobs:
           cd packages/graph
           yarn prepare:goerli
 
+      - name: Build
+        run: |
+          cd packages/graph
+          yarn build
+
       - name: Generate code
         run: |
           cd packages/graph
