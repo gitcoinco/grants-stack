@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from "react";
+import React, {Fragment, ReactNode, useRef} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "./styles";
 
@@ -10,6 +10,7 @@ interface ModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   confirmButtonAction: () => void;
   cancelButtonAction?: () => void;
+  children?: ReactNode;
 }
 
 export default function ConfirmationModal({
@@ -20,6 +21,7 @@ export default function ConfirmationModal({
   },
   confirmButtonText = "Confirm",
   cancelButtonAction = () => setIsOpen(false),
+  children,
   ...props
 }: ModalProps) {
   const cancelButtonRef = useRef(null);
@@ -90,6 +92,7 @@ export default function ConfirmationModal({
             </Transition.Child>
           </div>
         </div>
+        {children}
       </Dialog>
     </Transition.Root>
   );

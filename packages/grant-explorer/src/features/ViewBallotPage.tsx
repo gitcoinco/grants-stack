@@ -13,7 +13,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
-
+import InfoModal from "./common/InfoModal";
 
 export default function ViewBallot() {
 
@@ -34,6 +34,7 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
   const [totalDonation, setTotalDonation] = useState(0);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openInfoModal, setOpenInfoModal] = useState(false);
 
 
   const [shortlist, , , finalBallot] = useBallot();
@@ -62,7 +63,7 @@ export default function ViewBallot() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
 
       <div className="mx-20 h-screen px-4 py-7">
         {Header(chainId, roundId)}
@@ -77,49 +78,32 @@ export default function ViewBallot() {
         <div className="grid grid-cols-2 gap-4">
           <div></div>
           <div>
-            <Summary />
+            <Summary/>
             <Button
-              $variant="solid"
-              data-testid="handle-confirmation"
-              type="button"
-              onClick={handleConfirmation}
-              className="items-center shadow-sm text-sm rounded w-full"
+                $variant="solid"
+                data-testid="handle-confirmation"
+                type="button"
+                onClick={handleConfirmation}
+                className="items-center shadow-sm text-sm rounded w-full"
             >
               Submit your donation!
             </Button>
-            { donationError.emptyInput &&
-              <p data-testid="emptyInput" className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                <span>You must enter donations for all final ballot projects</span>
-              </p>
+            {donationError.emptyInput &&
+                <p data-testid="emptyInput"
+                   className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
+                  <span>You must enter donations for all final ballot projects</span>
+                </p>
             }
-            { donationError.insufficientBalance &&
-              <p data-testid="insufficientBalance" className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                <span >You do not have enough funds for these donations</span>
-              </p>
+            {donationError.insufficientBalance &&
+                <p data-testid="insufficientBalance"
+                   className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
+                  <span>You do not have enough funds for these donations</span>
+                </p>
             }
           </div>
-
-          <ConfirmationModal
-            title={"Confirm Decision"}
-            confirmButtonText={"Confirm"}
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            confirmButtonAction={() => {}} // TODO: wiring in next story
-            body={
-              <>
-                <p className="text-sm text-grey-400">
-                  {finalBallot.length} project{finalBallot.length > 1 && 's'} on your Final Donation.
-                </p>
-                <div className="my-8">
-                  <FinalBallotConfirmCount />
-                </div>
-                <AdditionalGasFeesNote />
-              </>
-            }
-            isOpen={openConfirmationModal}
-            setIsOpen={setOpenConfirmationModal}
-          />
+          <PayoutModals />
         </div>
       </div>
     </>
@@ -668,4 +652,60 @@ export default function ViewBallot() {
 
     setOpenConfirmationModal(true);
   }
+
+  function PayoutModals() {
+    return (
+        <>
+          <ConfirmationModal
+            title={"Confirm Decision"}
+            confirmButtonText={"Confirm"}
+            confirmButtonAction={() => {
+              setOpenInfoModal(true);
+              setOpenConfirmationModal(false);
+            }}
+            body={<ConfirmationModalBody />}
+            isOpen={openConfirmationModal}
+            setIsOpen={setOpenConfirmationModal}
+          />
+            <InfoModal
+                title={"Heads up!"}
+                body={<InfoModalBody />}
+                isOpen={openInfoModal}
+                setIsOpen={setOpenInfoModal}
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                continueButtonAction={() => {}} // TODO: Wire this up to payouts
+            />
+        </>
+    );
+  }
+
+  function InfoModalBody() {
+    return (
+        <div className="text-sm text-grey-400 gap-16">
+          <p className="text-sm">
+            Submitting your donation will require signing two transactions:
+          </p>
+          <ul className="list-disc list-inside pl-3 pt-3">
+            <li>Approving the contract to access your wallet</li>
+            <li>Approving the transaction</li>
+          </ul>
+        </div>
+    );
+  }
+
+  function ConfirmationModalBody() {
+    const projectsCount =  finalBallot.length;
+    return (
+        <>
+          <p className="text-sm text-grey-400">
+            {projectsCount} project{projectsCount   > 1 && "s"} on your Final Donation.
+          </p>
+          <div className="my-8">
+            <FinalBallotConfirmCount/>
+          </div>
+          <AdditionalGasFeesNote/>
+        </>
+    );
+  }
+
 }
