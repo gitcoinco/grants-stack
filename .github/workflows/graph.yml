@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          # fetch-depth: 1
           submodules: recursive
 
       - uses: actions/setup-node@v3
@@ -30,12 +30,11 @@ jobs:
           cd packages/graph
           yarn install
           yarn add @graphprotocol/graph-cli
-          yarn build
 
       - name: Prepare subgraph yaml
         run: |
           cd packages/graph
-          yarn codegen
+          yarn prepare:goerli
 
       - name: Generate code
         run: |
