@@ -29,7 +29,6 @@ jobs:
         run: |
           cd packages/graph
           yarn install
-          yarn add @graphprotocol/graph-cli
 
       - name: Prepare subgraph yaml
         run: |

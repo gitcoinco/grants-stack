@@ -27,10 +27,11 @@
     "test:config-gen": "echo libsFolder: $(dirname `cd ../..; pwd`)/grants-round/node_modules > matchstick.yaml"
   },
   "dependencies": {
-    "@graphprotocol/graph-ts": "0.27.0",
     "@openzeppelin/subgraphs": "^0.1.8"
   },
   "devDependencies": {
+    "@graphprotocol/graph-ts": "0.27.0",
+    "@graphprotocol/graph-cli": "0.27.0",
     "matchstick-as": "^0.5.0",
     "mustache": "^4.2.0"
   }
