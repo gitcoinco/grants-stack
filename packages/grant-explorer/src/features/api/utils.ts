@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types"
 
 export enum ChainId {
@@ -79,12 +80,14 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
           name: "DAI",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          decimal: 18,
           logo: TokenNamesAndLogos["DAI"],
         },
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+          decimal: 18,
           logo: TokenNamesAndLogos["ETH"],
         },
       ];
@@ -95,18 +98,21 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          decimal: 18,
           logo: TokenNamesAndLogos["FTM"],
         },
         {
           name: "BUSD",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+          decimal: 18,
           logo: TokenNamesAndLogos["BUSD"],
         },
         {
           name: "DAI",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
+          decimal: 18,
           logo: TokenNamesAndLogos["DAI"],
         },
       ];
@@ -117,6 +123,7 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
           name: "DAI",
           chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
           address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+          decimal: 18,
           logo: TokenNamesAndLogos["DAI"],
         },
       ];
@@ -128,18 +135,21 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
           name: "BUSD",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+          decimal: 18,
           logo: TokenNamesAndLogos["BUSD"],
         },
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          decimal: 18,
           logo: TokenNamesAndLogos["DAI"],
         },
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
+          address: ethers.constants.AddressZero,
+          decimal: 18,
           logo: TokenNamesAndLogos["ETH"],
         },
       ];
