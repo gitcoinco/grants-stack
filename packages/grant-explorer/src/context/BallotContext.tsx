@@ -80,11 +80,12 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
 /* Custom Hooks */
 type UseBallot = [
   shortlist: BallotContextState["shortlist"],
-  addProjectToShortlist: (projectToAdd: Project) => void,
-  removeProjectFromShortlist: (projectToRemove: Project) => void,
   finalBallot: BallotContextState["finalBallot"],
-  handleAddtoFinalBallot: (projectsToAdd: Project[]) => void,
-  handleRemoveFromFinalBallot: (projectToRemove: Project) => void
+  handleAddProjectsToShortlist: (projects: Project[]) => void,
+  handleRemoveProjectsFromShortlist: (projects: Project[]) => void,
+  handleAddProjectsToFinalBallot: (projects: Project[]) => void,
+  handleRemoveProjectsFromFinalBallot: (projects: Project[]) => void,
+  handleRemoveProjectsFromFinalBallotAndAddToShortlist: (projects: Project[]) => void,
 ];
 export const useBallot = (): UseBallot => {
   const context = useContext(BallotContext);
@@ -95,71 +96,67 @@ export const useBallot = (): UseBallot => {
   const { shortlist, setShortlist } = context;
   const { finalBallot, setFinalBallot } = context;
 
-  const handleAddProjectToShortlist = (projectToAdd: Project): void => {
-    const isProjectAlreadyPresent = shortlist.find(
-      (project) => project.projectRegistryId === projectToAdd.projectRegistryId
-    );
-    const newShortlist = isProjectAlreadyPresent
-      ? shortlist
-      : shortlist.concat(projectToAdd);
-    setShortlist(newShortlist);
-  };
-
-  const handleRemoveProjectFromShortlist = (projectToRemove: Project): void => {
-    const isProjectInShortlistIndex = shortlist.findIndex(
-      (project) =>
-        project.projectRegistryId === projectToRemove.projectRegistryId
-    );
-
-    const newShortlist = [...shortlist];
-    if (isProjectInShortlistIndex !== -1) {
-      newShortlist.splice(isProjectInShortlistIndex);
-    }
+  const handleAddProjectsToShortlist = (projectsToAdd: Project[]): void => {
+    // Add projects to the shortlist if they are not already present
+    const newShortlist = projectsToAdd.reduce((acc, projectToAdd) => {
+        const isProjectAlreadyPresent = acc.find(
+            (project) =>
+            project.projectRegistryId === projectToAdd.projectRegistryId
+        );
+        return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
+    }, shortlist);
 
     setShortlist(newShortlist);
-  };
+    };
 
-  const handleAddtoFinalBallot = (projectsToAdd: Project[]): void => {
+  const handleRemoveProjectsFromShortlist = (projectsToRemove: Project[]): void => {
+    // Remove projects from the shortlist if they are present
+    const newShortlist = shortlist.filter(
+        (project) =>
+        !projectsToRemove.find(
+            (projectToRemove) => projectToRemove.projectRegistryId === project.projectRegistryId
+        )
+    );
+    setShortlist(newShortlist);
+  }
 
-    const newFinalBallot = [...finalBallot];
-
-    projectsToAdd.map(projectToAdd => {
-      const isProjectInFinalBallot= newFinalBallot.findIndex(
-        (project) => project.projectRegistryId === projectToAdd.projectRegistryId
+  const handleAddProjectsToFinalBallot = (projectsToAdd: Project[]): void => {
+    // Add the projects to the final ballot from the shortlist and remove them from the shortlist
+    const newFinalBallot = projectsToAdd.reduce((acc, projectToAdd) => {
+      const isProjectAlreadyPresent = acc.find(
+          (project) =>
+          project.projectRegistryId === projectToAdd.projectRegistryId
       );
-
-      if (isProjectInFinalBallot > -1) return;
-
-      handleRemoveProjectFromShortlist(projectToAdd);
-      newFinalBallot.push(projectToAdd);
-    })
-
+      return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
+    }, finalBallot);
     setFinalBallot(newFinalBallot);
-  };
+    handleRemoveProjectsFromShortlist(projectsToAdd);
+  }
 
-  const handleRemoveFromFinalBallot =  (projectToRemove: Project): void => {
-
-    const isProjectInFinalBallotIndex = finalBallot.findIndex(
-      (project) => project.projectRegistryId === projectToRemove.projectRegistryId
+  const handleRemoveProjectsFromFinalBallot = (projectsToRemove: Project[]): void => {
+    // Remove the projects from the final ballot and add them back to the shortlist
+    const newFinalBallot = finalBallot.filter(
+        (project) =>
+            !projectsToRemove.find(
+                (projectToRemove) => projectToRemove.projectRegistryId === project.projectRegistryId
+            )
     );
-
-    const newFinalBallot = [...finalBallot];
-    if(isProjectInFinalBallotIndex !== -1) {
-      newFinalBallot.splice(isProjectInFinalBallotIndex);
-    }
-
     setFinalBallot(newFinalBallot);
+  }
 
-    // add project to shortlist
-    handleAddProjectToShortlist(projectToRemove);
+  const handleRemoveProjectsFromFinalBallotAndAddToShortlist = (projectsToRemove: Project[]): void => {
+    // Remove projects from final ballot if they are present and add them back to the shortlist
+    handleRemoveProjectsFromFinalBallot(projectsToRemove);
+    handleAddProjectsToShortlist(projectsToRemove);
   }
 
   return [
     shortlist,
-    handleAddProjectToShortlist,
-    handleRemoveProjectFromShortlist,
     finalBallot,
-    handleAddtoFinalBallot,
-    handleRemoveFromFinalBallot,
+    handleAddProjectsToShortlist,
+    handleRemoveProjectsFromShortlist,
+    handleAddProjectsToFinalBallot,
+    handleRemoveProjectsFromFinalBallot,
+    handleRemoveProjectsFromFinalBallotAndAddToShortlist,
   ];
 };
