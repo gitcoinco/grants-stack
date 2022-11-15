@@ -177,7 +177,7 @@ function AboutProject(props: { projectToRender: Project }) {
     switch (verifiedProviders[provider]) {
       case VerifiedCredentialState.VALID:
         return (
-          <span className="rounded-full bg-teal-100 px-3 inline-flex flex-row justify-center items-center">
+          <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
             <ShieldCheckIcon
               className="w-5 h-5 text-teal-500 mr-2"
               data-testid={`${provider}-verifiable-credential`}
@@ -187,7 +187,7 @@ function AboutProject(props: { projectToRender: Project }) {
         );
       case VerifiedCredentialState.INVALID:
         return (
-          <span className="rounded-full bg-red-100 px-3 inline-flex flex-row justify-center items-center">
+          <span className="rounded-full bg-red-100 px-2.5 inline-flex flex-row justify-center items-center">
             <XCircleIcon
               className="w-5 h-5 text-white mr-2"
               data-testid={`${provider}-verifiable-credential-unverified`}

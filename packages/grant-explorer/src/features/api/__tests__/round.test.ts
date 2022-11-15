@@ -76,6 +76,7 @@ describe("getRoundById", () => {
     const expectedApprovedApplication = makeApprovedProjectData();
 
     let graphQLResultWithApprovedApplication: GetRoundByIdResult;
+    let graphQLResultWithProjectOwners: any;
     let roundMetadataIpfsResult: any;
     let roundProjectStatusesIpfsResult: any;
 
@@ -101,6 +102,24 @@ describe("getRoundById", () => {
           ],
         },
       }
+
+      graphQLResultWithProjectOwners = {
+        data: {
+          projects: [
+            {
+              id: expectedApprovedApplication.projectRegistryId,
+              accounts: [
+                {
+                  account: {
+                      address: "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017"
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      };
+
       roundMetadataIpfsResult = expectedRound.roundMetadata
       roundProjectStatusesIpfsResult = [{
         id: expectedApprovedApplication.grantApplicationId,
@@ -123,7 +142,10 @@ describe("getRoundById", () => {
         }
       };
 
-      (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResultWithApprovedApplication);
+      (graphql_fetch as jest.Mock)
+        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
+        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
           return roundMetadataIpfsResult
@@ -152,7 +174,11 @@ describe("getRoundById", () => {
           },
         },
       };
-      (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResultWithApprovedApplication);
+
+      (graphql_fetch as jest.Mock)
+        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
+        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
           return roundMetadataIpfsResult
