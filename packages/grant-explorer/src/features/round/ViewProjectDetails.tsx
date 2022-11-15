@@ -6,7 +6,7 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, LightningBoltIcon, ShieldCheckIcon, XCircleIcon } from "@heroicons/react/solid";
+import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, LightningBoltIcon, ShieldCheckIcon } from "@heroicons/react/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
@@ -183,16 +183,6 @@ function AboutProject(props: { projectToRender: Project }) {
               data-testid={`${provider}-verifiable-credential`}
             />
             <p className="text-teal-500 font-medium text-xs">Verified</p>
-          </span>
-        );
-      case VerifiedCredentialState.INVALID:
-        return (
-          <span className="rounded-full bg-red-100 px-2.5 inline-flex flex-row justify-center items-center">
-            <XCircleIcon
-              className="w-5 h-5 text-white mr-2"
-              data-testid={`${provider}-verifiable-credential-unverified`}
-            />
-            <p className="text-white font-medium text-xs">Invalid</p>
           </span>
         );
       default:
