@@ -234,9 +234,9 @@ export async function getProjectOwners(
       true
     );
 
-    return res.data.projects[0].accounts.map(
+    return res.data?.projects[0]?.accounts.map(
       (account: { account: { address: string } }) => account.account.address
-    );
+    ) || [];
   } catch (err) {
     console.log("error", err);
     throw Error("Unable to fetch project owners");
