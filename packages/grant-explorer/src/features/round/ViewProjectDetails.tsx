@@ -12,7 +12,6 @@ import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import ReactTooltip from "react-tooltip";
-import { useState } from "react";
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
