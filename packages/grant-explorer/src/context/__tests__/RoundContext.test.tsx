@@ -22,7 +22,7 @@ describe("<ListRoundProvider />", () => {
   describe("useRoundById()", () => {
     it("provides round based on given round id", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId: string = expectedRound.id!;
       (getRoundById as any).mockResolvedValue(expectedRound);
 
       render(
@@ -38,7 +38,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading to true when getRoundById call is in progress", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId: string = expectedRound.id!;
       (getRoundById as any).mockReturnValue(new Promise<Round>(() => {}));
 
       render(
@@ -56,7 +56,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading back to false and when getRoundById call succeeds", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId: string = expectedRound.id!;
       (getRoundById as any).mockResolvedValue(expectedRound);
 
       render(
@@ -76,7 +76,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading back to false when getRoundById call fails", async () => {
       const expectedRound = makeRoundData();
-      const expectedRoundId: string = expectedRound.id;
+      const expectedRoundId: string = expectedRound.id!;
       (getRoundById as any).mockRejectedValue(new Error(":("));
 
       render(

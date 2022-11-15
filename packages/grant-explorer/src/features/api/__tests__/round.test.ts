@@ -1,12 +1,17 @@
 import { makeApprovedProjectData, makeRoundData } from "../../../test-utils"
 import { ApplicationStatus, Round } from "../types"
 import { fetchFromIPFS, graphql_fetch } from "../utils"
-import { getRoundById, GetRoundByIdResult } from "../round"
+import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round"
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
   graphql_fetch: jest.fn(),
   fetchFromIPFS: jest.fn(),
+}));
+
+jest.mock("../round", () => ({
+  ...jest.requireActual("../round"),
+  getProjectOwners: jest.fn(),
 }));
 
 describe("getRoundById", () => {
@@ -102,6 +107,12 @@ describe("getRoundById", () => {
         status: ApplicationStatus.APPROVED,
         payoutAddress: "some payout address"
       }]
+
+      const projectOwners = expectedApprovedApplication.projectMetadata.owners.map(
+        (it) => it.address
+      );
+
+      (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
     })
 
     it("maps approved project metadata for old application format", async () => {

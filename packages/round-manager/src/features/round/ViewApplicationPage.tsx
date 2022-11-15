@@ -464,10 +464,10 @@ export default function ViewApplicationPage() {
 
                   {answerBlocks &&
                     answerBlocks?.map((block: AnswerBlock) => (
-                      <>
+                      <div key={block.questionId}>
                         <h2 className="text-xs mb-2">{block.question}</h2>
                         <p className="text-base mb-6">{block.answer}</p>
-                      </>
+                      </div>
                     ))}
                 </div>
                 <div className="sm:basis-1/4 text-center sm:ml-3"></div>
