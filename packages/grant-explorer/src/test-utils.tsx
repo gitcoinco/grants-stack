@@ -13,6 +13,10 @@ import {
   Round,
 } from "./features/api/types";
 import { BallotProvider } from "./context/BallotContext";
+import { Provider } from "react-redux";
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { store } from "./app/store";
+import history from "./history";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -101,3 +105,13 @@ export const renderWithContext = (
       </RoundContext.Provider>
     </MemoryRouter>
   );
+
+export const renderWrapped = (ui: JSX.Element) => {
+  render(
+    <Provider store={store}>
+      <ReduxRouter store={store} history={history}>
+        {ui}
+      </ReduxRouter>
+    </Provider>
+  );
+};
