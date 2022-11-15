@@ -181,6 +181,7 @@ export type PayoutToken = {
   name: string;
   chainId: string;
   address: string;
+  decimal: number;
   logo?: string;
   default?: boolean;
 };
