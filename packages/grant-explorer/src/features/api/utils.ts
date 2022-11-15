@@ -1,4 +1,4 @@
-import { IPFSObject } from "./types"
+import { IPFSObject, PayoutToken } from "./types"
 
 export enum ChainId {
   GOERLI_CHAIN_ID = '5',
@@ -70,6 +70,82 @@ export const payoutTokens = [
     logo: TokenNamesAndLogos["ETH"],
   },
 ];
+
+export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+          address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "FTM",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          logo: TokenNamesAndLogos["FTM"],
+        },
+        {
+          name: "BUSD",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+          logo: TokenNamesAndLogos["BUSD"],
+        },
+        {
+          name: "DAI",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+          address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      return [
+        {
+          name: "BUSD",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+          logo: TokenNamesAndLogos["BUSD"],
+        },
+        {
+          name: "DAI",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.GOERLI_CHAIN_ID,
+          address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
+  }
+};
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -204,3 +280,6 @@ export const abbreviateAddress = (address: string) => `${address.slice(0, 8)}...
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
 
+export const classNames = (...classes: string[]) => {
+  return classes.filter(Boolean).join(" ");
+}
