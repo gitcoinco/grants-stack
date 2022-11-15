@@ -4,13 +4,15 @@ import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { Project, ProjectMetadata } from "../api/types";
-import { ChevronLeftIcon, GlobeAltIcon, LightningBoltIcon } from "@heroicons/react/solid";
+import { ChevronLeftIcon, GlobeAltIcon, LightningBoltIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
+import ReactTooltip from "react-tooltip";
+import { useState } from "react";
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
@@ -242,6 +244,7 @@ function Sidebar(props: {
         removeFromBallot={props.removeFromBallot}
         addToBallot={props.addToBallot}
       />
+        <ShortlistTooltip />
     </div>
   );
 }
@@ -251,20 +254,62 @@ function BallotSelectionToggle(props: {
   addToBallot: () => void;
   removeFromBallot: () => void;
 }) {
-  return (
+    const [active, setActive] = useState(false);
+
+    return (
     <>
       {props.isAddedToBallot ? (
         <Button
-          data-testid="remove-from-ballot"
+          data-testid="remove-from-shortlist"
           onClick={props.removeFromBallot}
+          className={"w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
         >
-          Remove from ballot
+          Remove from Shortlist
         </Button>
       ) : (
-        <Button data-testid="add-to-ballot" onClick={props.addToBallot}>
-          Back this project
+        <Button
+            data-testid="add-to-shortlist"
+            onClick={() => {
+                setActive(true);
+                setTimeout(() => {
+                    props.addToBallot();
+                    setActive(false);
+                }, 3000);
+            }}
+            className={"w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"}>
+            {active ? "Added to Shortlist" : "Add to Shortlist"}
         </Button>
       )}
     </>
+  );
+}
+
+function ShortlistTooltip() {
+  return (
+      <span className="flex items-center justify-center mt-2">
+            <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="shortlist-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3"
+                data-testid={"shortlist-tooltip"}
+            />
+            <ReactTooltip
+                id="shortlist-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+            >
+              <p className="text-xs">
+                  This interactive tool allows you to  <br />
+                  visualize how you distribute your <br />
+                  impact across projects as you make <br />
+                  your decisions. Adjust as you go and<br />
+                  then decide when you're ready to <br />
+                  submit your final choices.<br />
+              </p>
+            </ReactTooltip>
+            <p className={'text-base font-normal text-black'}>What is the Shortlist?</p>
+      </span>
   );
 }
