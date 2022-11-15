@@ -30,6 +30,7 @@ export default function ViewBallot() {
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
   const [totalDonation, setTotalDonation] = useState(0);
+  const [fixedDonation, setFixedDonation] = useState(0);
 
   const [shortlist, , , finalBallot] = useBallot();
 
@@ -206,13 +207,38 @@ export default function ViewBallot() {
   function FinalBallotProjects(finalBallot: Project[]) {
     return (
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
-        <div className="flex justify-between border-b-2 pb-2">
-          <h2 className="mt-2 text-xl">Final Donation</h2>
-          <p className="mt-2 amount-text">Amount / Currency</p>
-          <PayoutTokenDropdown
-            payoutTokenOptions={payoutTokenOptions}
-          />
-        </div>
+        <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+            <div className="basis-[28%]">
+              <h2 className="mt-2 text-xl">Final Donation</h2>
+            </div>
+            <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
+              <p className="mt-3 text-sm amount-text">Amount</p>
+              <Input
+                aria-label={
+                  "Donation amount for all projects "
+                }
+                id={"input-donationamount"}
+                min="0"
+                value={fixedDonation}
+                type="number"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setFixedDonation(Number(e.target.value));
+                }}
+                className="w-24"
+              />
+              <PayoutTokenDropdown
+                payoutTokenOptions={payoutTokenOptions}
+              />
+              <Button
+                type="button"
+                $variant="outline"
+                onClick={() => {updateAllDonations(fixedDonation)}}
+                className="text-xs px-4 py-2 text-purple-600 border-0"
+              >
+                Apply to all
+              </Button>
+            </div>
+          </div>
         <div className="my-4">
           {finalBallot.map((project: Project, key: number) => (
             <div key={key}>
@@ -313,12 +339,36 @@ export default function ViewBallot() {
     return (
       <>
         <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
-          <div className="flex justify-between border-b-2 pb-2">
-            <h2 className="mt-2 text-xl">Final Donation</h2>
-            <p className="mt-2 amount-text">Amount / Currency</p>
-            <PayoutTokenDropdown
-              payoutTokenOptions={payoutTokenOptions}
-            />
+          <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+            <div className="basis-[28%]">
+              <h2 className="mt-2 text-xl">Final Donation</h2>
+            </div>
+            <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
+              <p className="mt-3 text-sm amount-text">Amount</p>
+              <Input
+                aria-label={
+                  "Donation amount for all projects "
+                }
+                id={"input-donationamount"}
+                min="0"
+                value={fixedDonation}
+                type="number"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setFixedDonation(Number(e.target.value));
+                }}
+                className="w-24"
+              />
+              <PayoutTokenDropdown
+                payoutTokenOptions={payoutTokenOptions}
+              />
+              <Button
+                type="button"
+                $variant="outline"
+                className="text-xs px-4 py-2 text-purple-600 border-0"
+              >
+                Apply to all
+              </Button>
+            </div>
           </div>
         <div className="mt-4">
           <p className="text-grey-500">
@@ -436,13 +486,21 @@ export default function ViewBallot() {
       donations.reduce((sum, donation) => sum + donation.amount, 0)
     );
   }
+
+  function updateAllDonations(amount: number) {
+    const newState = donations;
+    newState.forEach((state) => {
+      state.amount = amount;
+    })
+    setDonations(newState);
+  }
   
   function PayoutTokenDropdown(props: {
     payoutTokenOptions: PayoutToken[];
   }) {
    
     return (
-      <div className="relative col-span-6 sm:col-span-3">
+      <div className="mt-1 relative col-span-6 sm:col-span-3">
         <Listbox value={selectedPayoutToken} onChange={setSelectedPayoutToken}>
           {({ open }) => (
             <div>
