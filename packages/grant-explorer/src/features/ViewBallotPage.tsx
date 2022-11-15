@@ -14,6 +14,7 @@ import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
 import InfoModal from "./common/InfoModal";
+import Footer from "./common/Footer";
 
 export default function ViewBallot() {
 
@@ -62,51 +63,52 @@ export default function ViewBallot() {
   }, [shortlistSelect]);
 
   return (
-    <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <>
+        <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
 
-      <div className="mx-20 h-screen px-4 py-7">
-        {Header(chainId, roundId)}
+        <div className="mx-20 h-screen px-4 py-7">
+          {Header(chainId, roundId)}
 
-        <div className="grid grid-cols-2 gap-4">
-          {shortlistNotEmpty && ShortlistProjects(shortlist)}
-          {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
+          <div className="grid grid-cols-2 gap-4">
+            {shortlistNotEmpty && ShortlistProjects(shortlist)}
+            {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
 
-          {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
-          {!finalBallotNotEmpty && EmptyFinalBallot()}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div></div>
-          <div>
-            <Summary/>
-            <Button
-                $variant="solid"
-                data-testid="handle-confirmation"
-                type="button"
-                onClick={handleConfirmation}
-                className="items-center shadow-sm text-sm rounded w-full"
-            >
-              Submit your donation!
-            </Button>
-            {donationError.emptyInput &&
-                <p data-testid="emptyInput"
-                   className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
-                  <span>You must enter donations for all final ballot projects</span>
-                </p>
-            }
-            {donationError.insufficientBalance &&
-                <p data-testid="insufficientBalance"
-                   className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
-                  <span>You do not have enough funds for these donations</span>
-                </p>
-            }
+            {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
+            {!finalBallotNotEmpty && EmptyFinalBallot()}
           </div>
-          <PayoutModals />
+          <div className="grid grid-cols-2 gap-4">
+            <div></div>
+            <div>
+              <Summary/>
+              <Button
+                  $variant="solid"
+                  data-testid="handle-confirmation"
+                  type="button"
+                  onClick={handleConfirmation}
+                  className="items-center shadow-sm text-sm rounded w-full"
+              >
+                Submit your donation!
+              </Button>
+              {donationError.emptyInput &&
+                  <p data-testid="emptyInput"
+                     className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
+                    <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
+                    <span>You must enter donations for all final ballot projects</span>
+                  </p>
+              }
+              {donationError.insufficientBalance &&
+                  <p data-testid="insufficientBalance"
+                     className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
+                    <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
+                    <span>You do not have enough funds for these donations</span>
+                  </p>
+              }
+            </div>
+            <PayoutModals/>
+          </div>
+          <Footer/>
         </div>
-      </div>
-    </>
+      </>
   );
 
   function Header(chainId?: string, roundId?: string) {
