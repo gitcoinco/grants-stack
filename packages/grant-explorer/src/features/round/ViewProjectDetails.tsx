@@ -290,12 +290,12 @@ function ShortlistTooltip() {
             <InformationCircleIcon
                 data-tip
                 data-background-color="#0E0333"
-                data-for="payout-token-tooltip"
+                data-for="shortlist-tooltip"
                 className="inline h-4 w-4 ml-2 mr-3"
-                data-testid={"payout-token-tooltip"}
+                data-testid={"shortlist-tooltip"}
             />
             <ReactTooltip
-                id="payout-token-tooltip"
+                id="shortlist-tooltip"
                 place="bottom"
                 type="dark"
                 effect="solid"
