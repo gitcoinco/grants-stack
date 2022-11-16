@@ -257,11 +257,12 @@ const testProject: Project = makeApprovedProjectData();
 const TestingUseBallotComponent = () => {
   const [
     shortlist,
-    handleAddProjectToShortlist,
-    handleRemoveProjectFromShortlist,
     finalBallot,
-    handleAddtoFinalBallot,
-    handleRemoveFromFinalBallot
+    handleAddProjectsToShortlist,
+    handleRemoveProjectsFromShortlist,
+    handleAddProjectsToFinalBallot,
+    handleRemoveProjectsFromFinalBallot,
+    handleRemoveProjectsFromFinalBallotAndAddToShortlist,
   ] = useBallot();
 
 
@@ -291,28 +292,28 @@ const TestingUseBallotComponent = () => {
 
       <button
         data-testid="add-project-to-shortlist"
-        onClick={() => handleAddProjectToShortlist(testProject)}
+        onClick={() => handleAddProjectsToShortlist([testProject])}
       >
         Add Project To Shortlist
       </button>
 
       <button
         data-testid="remove-project-from-shortlist"
-        onClick={() => handleRemoveProjectFromShortlist(testProject)}
+        onClick={() => handleRemoveProjectsFromShortlist([testProject])}
       >
         Remove Project From Shortlist
       </button>
 
       <button
         data-testid="add-project-to-finalBallot"
-        onClick={() => handleAddtoFinalBallot([testProject])}
+        onClick={() => handleAddProjectsToFinalBallot([testProject])}
       >
         Add Project To Final Ballot
       </button>
 
       <button
         data-testid="remove-project-from-finalBallot"
-        onClick={() => handleRemoveFromFinalBallot(testProject)}
+        onClick={() => handleRemoveProjectsFromFinalBallotAndAddToShortlist([testProject])}
       >
         Remove Project From Final Ballot
       </button>

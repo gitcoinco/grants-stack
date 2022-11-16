@@ -12,7 +12,6 @@ import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import ReactTooltip from "react-tooltip";
-import { useState } from "react";
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
@@ -28,8 +27,11 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
-  const [shortlist, addProjectToShortlist, removeProjectFromShortlist] = useBallot();
-  const isAddedToBallot = shortlist.some(
+  const [shortlist, finalBallot, handleAddProjectsToShortlist, handleRemoveProjectsFromShortlist, , handleRemoveProjectsFromFinalBallot, ] = useBallot();
+  const isAddedToShortlist = shortlist.some(
+    (project) => project.grantApplicationId === applicationId
+  );
+  const isAddedToFinalBallot = finalBallot.some(
     (project) => project.grantApplicationId === applicationId
   );
 
@@ -60,12 +62,15 @@ export default function ViewProjectDetails() {
                 </div>
               </div>
               <Sidebar
-                addedToBallot={isAddedToBallot}
-                removeFromBallot={() => {
-                  removeProjectFromShortlist(projectToRender);
+                isAdded={isAddedToShortlist || isAddedToFinalBallot}
+                removeFromShortlist={() => {
+                  handleRemoveProjectsFromShortlist([projectToRender]);
                 }}
-                addToBallot={() => {
-                  addProjectToShortlist(projectToRender);
+                removeFromFinalBallot={() => {
+                  handleRemoveProjectsFromFinalBallot([projectToRender]);}
+                }
+                addToShortlist={() => {
+                  handleAddProjectsToShortlist([projectToRender]);
                 }}
               />
             </div>
@@ -233,16 +238,18 @@ export function ProjectLogo(props: {
 }
 
 function Sidebar(props: {
-  addedToBallot: boolean;
-  removeFromBallot: () => void;
-  addToBallot: () => void;
+  isAdded: boolean;
+  removeFromShortlist: () => void;
+  removeFromFinalBallot: () => void;
+  addToShortlist: () => void;
 }) {
   return (
     <div className="ml-6">
       <BallotSelectionToggle
-        isAddedToBallot={props.addedToBallot}
-        removeFromBallot={props.removeFromBallot}
-        addToBallot={props.addToBallot}
+        isAdded={props.isAdded}
+        removeFromShortlist={props.removeFromShortlist}
+        removeFromFinalBallot={props.removeFromFinalBallot}
+        addToBallot={props.addToShortlist}
       />
         <ShortlistTooltip />
     </div>
@@ -250,38 +257,57 @@ function Sidebar(props: {
 }
 
 function BallotSelectionToggle(props: {
-  isAddedToBallot: boolean;
+  isAdded: boolean;
   addToBallot: () => void;
-  removeFromBallot: () => void;
+  removeFromShortlist: () => void;
+  removeFromFinalBallot: () => void;
 }) {
-    const [active, setActive] = useState(false);
+    const { applicationId } = useParams();
+    const [shortlist, finalBallot, , , , , ] = useBallot();
 
+    const isAddedToShortlist = shortlist.some(
+        (project) => project.grantApplicationId === applicationId
+    );
+    const isAddedToFinalBallot = finalBallot.some(
+        (project) => project.grantApplicationId === applicationId
+    );
+    // if the project is not added, show the add to shortlist button
+    // if the project is added to the shortlist, show the remove from shortlist button
+    // if the project is added to the final ballot, show the remove from final ballot button
+    if (props.isAdded) {
+        if (isAddedToShortlist) {
+            return (
+                <Button
+                  data-testid="remove-from-shortlist"
+                  onClick={props.removeFromShortlist}
+                  className={"w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
+                >
+                  Remove from Shortlist
+                </Button>
+            );
+        }
+        if (isAddedToFinalBallot) {
+            return (
+                <Button
+                    data-testid="remove-from-final-ballot"
+                    onClick={props.removeFromFinalBallot}
+                    className={"w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
+                >
+                    Remove from Final Ballot
+                </Button>
+            );
+        }
+    }
     return (
-    <>
-      {props.isAddedToBallot ? (
-        <Button
-          data-testid="remove-from-shortlist"
-          onClick={props.removeFromBallot}
-          className={"w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
-        >
-          Remove from Shortlist
-        </Button>
-      ) : (
         <Button
             data-testid="add-to-shortlist"
             onClick={() => {
-                setActive(true);
-                setTimeout(() => {
-                    props.addToBallot();
-                    setActive(false);
-                }, 3000);
+                props.addToBallot();
             }}
             className={"w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"}>
-            {active ? "Added to Shortlist" : "Add to Shortlist"}
+            Add to Shortlist
         </Button>
-      )}
-    </>
-  );
+    );
 }
 
 function ShortlistTooltip() {
