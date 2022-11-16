@@ -145,9 +145,11 @@ export default function Twitter({
     // open the channel
     const channel = new BroadcastChannel("twitter_oauth_channel");
     // event handler will listen for messages from the child (debounced to avoid multiple submissions)
-    channel.onmessage = debounce((event: MessageEvent) => {
-      listenForRedirect(event.data);
-    });
+    channel.onmessage = debounce(
+      (event: { target: string; data: { code: string; state: string } }) => {
+        listenForRedirect(event);
+      }
+    );
 
     return () => {
       channel.close();
