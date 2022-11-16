@@ -7,7 +7,7 @@ import DefaultLogoImage from "../assets/default_logo.png";
 import { CheckIcon, ChevronLeftIcon, SelectorIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { classNames, getPayoutTokenOptions } from "./api/utils";
 import { Listbox, Transition } from "@headlessui/react";
 import { useAccount, useBalance } from "wagmi";
