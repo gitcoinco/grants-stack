@@ -23,6 +23,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import { BallotProvider } from "./context/BallotContext";
 import ViewBallot from "./features/ViewBallotPage";
+import { QFDonationProvider } from "./context/QFDonationContext";
 
 // Initialize datadog
 initDatadog();
@@ -58,7 +59,11 @@ root.render(
 
                   <Route
                     path="/round/:chainId/:roundId/ballot"
-                    element={<ViewBallot />}
+                    element={
+                      <QFDonationProvider>
+                        <ViewBallot />
+                      </QFDonationProvider>
+                    }
                   />
 
                   {/* Access Denied */}
