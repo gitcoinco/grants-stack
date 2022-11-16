@@ -1,7 +1,7 @@
 import { useBallot } from "../context/BallotContext";
-import { FinalBallotDonation, PayoutToken, Project } from "./api/types";
+import { FinalBallotDonation, PayoutToken, ProgressStatus, Project } from "./api/types";
 import { useRoundById } from "../context/RoundContext";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
 import {
@@ -20,6 +20,11 @@ import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
 import InfoModal from "./common/InfoModal";
 import Footer from "./common/Footer";
+import ProgressModal from "./common/ProgressModal";
+import ErrorModal from "./common/ErrorModal";
+import { modalDelayMs } from "../constants";
+import { useQFDonation } from "../context/QFDonationContext";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -47,6 +52,8 @@ export default function ViewBallot() {
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [shortlist, finalBallot, , , ,] = useBallot();
 
@@ -72,6 +79,61 @@ export default function ViewBallot() {
       setSelected([]);
     }
   }, [shortlistSelect]);
+
+
+  const navigate = useNavigate();
+
+  const {
+    submitDonations,
+    tokenApprovalStatus,
+    voteStatus,
+    indexingStatus,
+  } = useQFDonation();
+
+  useEffect(() => {
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_ERROR ||
+      voteStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, modalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        navigate("/"); // TODO: Wire in thank you page
+      }, 5000);
+    }
+  }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus]);
+
+
+  const progressSteps = [
+    {
+      name: "Approve",
+      description: "Approve the contract to access your wallet",
+      status: tokenApprovalStatus,
+    },
+    {
+      name: "Submit",
+      description: "Finalize your contribution",
+      status: voteStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   return (
     <>
@@ -744,8 +806,18 @@ export default function ViewBallot() {
           body={<InfoModalBody />}
           isOpen={openInfoModal}
           setIsOpen={setOpenInfoModal}
+          continueButtonAction={handleSubmitDonation}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we submit your donation."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          continueButtonAction={() => {}} // TODO: Wire this up to payouts
+          tryAgainFn={() => {}} // TODO: Wire in next story
         />
       </>
     );
@@ -780,4 +852,27 @@ export default function ViewBallot() {
       </>
     );
   }
+
+  async function handleSubmitDonation () {
+    try {
+
+      setTimeout(() => {
+        setOpenProgressModal(true);
+        setOpenInfoModal(false);
+      }, modalDelayMs)
+
+      await submitDonations({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        roundId: roundId!,
+        donations: donations,
+        donationToken: selectedPayoutToken,
+        totalDonation: totalDonation
+      });
+      setOpenProgressModal(false);
+    } catch (error) {
+      datadogLogs.logger.error(`error: handleSubmitDonation - ${error}, id: ${roundId}`);
+      console.error(error);
+    }
+  }
+
 }
