@@ -14,7 +14,7 @@ import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
 import { classNames, getPayoutTokenOptions } from "./api/utils";
 import { Listbox, Transition } from "@headlessui/react";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
@@ -39,7 +39,11 @@ export default function ViewBallot() {
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
-  const [totalDonation, setTotalDonation] = useState(0);
+
+  const totalDonation = useMemo(() => {
+    return donations.reduce((sum, donation) => sum + donation.amount, 0);
+  }, [donations]);
+
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
@@ -554,10 +558,6 @@ export default function ViewBallot() {
     }
 
     setDonations(newState);
-
-    setTotalDonation(
-      donations.reduce((sum, donation) => sum + donation.amount, 0)
-    );
   }
 
   function updateAllDonations(amount: number) {
@@ -688,14 +688,15 @@ export default function ViewBallot() {
   }
 
   function handleConfirmation() {
-
     const newState = {
       emptyInput: false,
-      insufficientBalance: false
-    }
+      insufficientBalance: false,
+    };
 
     // check to ensure all projects have donation amount
-    const emptyDonations = donations.filter(donation =>  !donation.amount || donation.amount == 0);
+    const emptyDonations = donations.filter(
+      (donation) => !donation.amount || donation.amount == 0
+    );
 
     if (donations.length == 0 || emptyDonations.length > 0) {
       newState.emptyInput = true;
@@ -707,12 +708,12 @@ export default function ViewBallot() {
 
     // check if signer has enough token balance
     const accountBalance = selectedPayoutTokenBalance.data?.value;
-    const tokenBalance = ethers.utils.parseUnits(totalDonation.toString(), selectedPayoutToken.decimal);
+    const tokenBalance = ethers.utils.parseUnits(
+      totalDonation.toString(),
+      selectedPayoutToken.decimal
+    );
 
-    if (
-      !accountBalance ||
-      BigNumber.from(tokenBalance).gt(accountBalance)
-    ) {
+    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
       newState.insufficientBalance = true;
       setDonationError(newState);
       return;
@@ -764,16 +765,17 @@ export default function ViewBallot() {
   }
 
   function ConfirmationModalBody() {
-    const projectsCount =  finalBallot.length;
+    const projectsCount = finalBallot.length;
     return (
       <>
         <p className="text-sm text-grey-400">
-          {projectsCount} project{projectsCount   > 1 && "s"} on your Final Donation.
+          {projectsCount} project{projectsCount > 1 && "s"} on your Final
+          Donation.
         </p>
         <div className="my-8">
-          <FinalBallotConfirmCount/>
+          <FinalBallotConfirmCount />
         </div>
-        <AdditionalGasFeesNote/>
+        <AdditionalGasFeesNote />
       </>
     );
   }
