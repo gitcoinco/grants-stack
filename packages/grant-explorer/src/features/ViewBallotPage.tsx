@@ -4,7 +4,11 @@ import { useRoundById } from "../context/RoundContext";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
-import { CheckIcon, ChevronLeftIcon, SelectorIcon } from "@heroicons/react/solid";
+import {
+  CheckIcon,
+  ChevronLeftIcon,
+  SelectorIcon,
+} from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
 import React, { Fragment, useEffect, useState } from "react";
@@ -12,8 +16,6 @@ import { classNames, getPayoutTokenOptions } from "./api/utils";
 import { Listbox, Transition } from "@headlessui/react";
 
 export default function ViewBallot() {
-
-  
   const { chainId, roundId } = useParams();
 
   const payoutTokenOptions: PayoutToken[] = [
@@ -21,7 +23,9 @@ export default function ViewBallot() {
     ...getPayoutTokenOptions(chainId!),
   ];
 
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(payoutTokenOptions[0]);
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
+    payoutTokenOptions[0]
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
@@ -30,7 +34,7 @@ export default function ViewBallot() {
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
   const [totalDonation, setTotalDonation] = useState(0);
-  const [fixedDonation, setFixedDonation] = useState(0);
+  const [fixedDonation, setFixedDonation] = useState<number>();
 
   const [shortlist, , , finalBallot] = useBallot();
 
@@ -208,37 +212,35 @@ export default function ViewBallot() {
     return (
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
-            <div className="basis-[28%]">
-              <h2 className="mt-2 text-xl">Final Donation</h2>
-            </div>
-            <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
-              <p className="mt-3 text-sm amount-text">Amount</p>
-              <Input
-                aria-label={
-                  "Donation amount for all projects "
-                }
-                id={"input-donationamount"}
-                min="0"
-                value={fixedDonation}
-                type="number"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setFixedDonation(Number(e.target.value));
-                }}
-                className="w-24"
-              />
-              <PayoutTokenDropdown
-                payoutTokenOptions={payoutTokenOptions}
-              />
-              <Button
-                type="button"
-                $variant="outline"
-                onClick={() => {updateAllDonations(fixedDonation)}}
-                className="text-xs px-4 py-2 text-purple-600 border-0"
-              >
-                Apply to all
-              </Button>
-            </div>
+          <div className="basis-[28%]">
+            <h2 className="mt-2 text-xl">Final Donation</h2>
           </div>
+          <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
+            <p className="mt-3 text-sm amount-text">Amount</p>
+            <Input
+              aria-label={"Donation amount for all projects "}
+              id={"input-donationamount"}
+              min="0"
+              value={fixedDonation}
+              type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setFixedDonation(Number(e.target.value));
+              }}
+              className="w-24"
+            />
+            <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() => {
+                updateAllDonations(fixedDonation ?? 0);
+              }}
+              className="text-xs px-4 py-2 text-purple-600 border-0"
+            >
+              Apply to all
+            </Button>
+          </div>
+        </div>
         <div className="my-4">
           {finalBallot.map((project: Project, key: number) => (
             <div key={key}>
@@ -346,9 +348,7 @@ export default function ViewBallot() {
             <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
               <p className="mt-3 text-sm amount-text">Amount</p>
               <Input
-                aria-label={
-                  "Donation amount for all projects "
-                }
+                aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
                 value={fixedDonation}
@@ -358,9 +358,7 @@ export default function ViewBallot() {
                 }}
                 className="w-24"
               />
-              <PayoutTokenDropdown
-                payoutTokenOptions={payoutTokenOptions}
-              />
+              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
               <Button
                 type="button"
                 $variant="outline"
@@ -370,12 +368,12 @@ export default function ViewBallot() {
               </Button>
             </div>
           </div>
-        <div className="mt-4">
-          <p className="text-grey-500">
-            Add the projects you want to fund here!
-          </p>
+          <div className="mt-4">
+            <p className="text-grey-500">
+              Add the projects you want to fund here!
+            </p>
+          </div>
         </div>
-      </div>
       </>
     );
   }
@@ -391,7 +389,9 @@ export default function ViewBallot() {
               <span data-testid={"totalDonation"} className="mr-2">
                 {totalDonation}
               </span>
-              <span data-testid={"summaryPayoutToken"}>{selectedPayoutToken.name}</span>
+              <span data-testid={"summaryPayoutToken"}>
+                {selectedPayoutToken.name}
+              </span>
             </p>
           </div>
         </div>
@@ -488,17 +488,17 @@ export default function ViewBallot() {
   }
 
   function updateAllDonations(amount: number) {
-    const newState = donations;
-    newState.forEach((state) => {
-      state.amount = amount;
-    })
-    setDonations(newState);
+    const newDonations = finalBallot.map((project) => {
+      return {
+        amount,
+        projectRegistryId: project.projectRegistryId,
+      } as FinalBallotDonation;
+    });
+
+    setDonations(newDonations);
   }
-  
-  function PayoutTokenDropdown(props: {
-    payoutTokenOptions: PayoutToken[];
-  }) {
-   
+
+  function PayoutTokenDropdown(props: { payoutTokenOptions: PayoutToken[] }) {
     return (
       <div className="mt-1 relative col-span-6 sm:col-span-3">
         <Listbox value={selectedPayoutToken} onChange={setSelectedPayoutToken}>
@@ -546,14 +546,16 @@ export default function ViewBallot() {
                                   ) : null}
                                   <span
                                     className={classNames(
-                                      selected ? "font-semibold" : "font-normal",
+                                      selected
+                                        ? "font-semibold"
+                                        : "font-normal",
                                       "ml-3 block truncate"
                                     )}
                                   >
                                     {token.name}
                                   </span>
                                 </div>
-  
+
                                 {selected ? (
                                   <span
                                     className={classNames(
@@ -575,7 +577,6 @@ export default function ViewBallot() {
                   </Listbox.Options>
                 </Transition>
               </div>
-
             </div>
           )}
         </Listbox>
@@ -583,9 +584,7 @@ export default function ViewBallot() {
     );
   }
 
-  function PayoutTokenButton(props: {
-    token?: PayoutToken;
-  }) {
+  function PayoutTokenButton(props: { token?: PayoutToken }) {
     const { token } = props;
     return (
       <Listbox.Button
