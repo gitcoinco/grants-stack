@@ -7,6 +7,7 @@ import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
+import { tmpdir } from "os";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -72,7 +73,7 @@ describe("View Ballot Page", () => {
       const useParamsFn = () => ({
         chainId,
         roundId,
-      })
+      });
 
       jest.mock("react-router-dom", () => ({
         ...jest.requireActual("react-router-dom"),
@@ -424,7 +425,7 @@ describe("View Ballot Page", () => {
     const useParamsFn = () => ({
       chainId,
       roundId,
-    })
+    });
 
     jest.mock("react-router-dom", () => ({
       ...jest.requireActual("react-router-dom"),
@@ -434,16 +435,84 @@ describe("View Ballot Page", () => {
     renderWrapped();
 
     const options = getPayoutTokenOptions(chainId.toString());
-    expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(options[0].name);
-  })
+    expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
+      options[0].name
+    );
+  });
+
+  it("apply to all and amount fields are visible", async () => {
+    const useParamsFn = () => ({
+      chainId,
+      roundId,
+    });
+
+    jest.mock("react-router-dom", () => ({
+      ...jest.requireActual("react-router-dom"),
+      useParams: useParamsFn,
+    }));
+
+    renderWrapped();
+
+    const amountInputField = screen.getByRole("spinbutton", {
+      name: /donation amount for all projects/i,
+    });
+    expect(amountInputField).toBeInTheDocument();
+
+    const applyAllButton = screen.getByRole("button", {
+      name: /apply to all/i,
+    });
+    expect(applyAllButton).toBeInTheDocument();
+  });
+
+  it("applies the donation to all projects", function () {
+    const finalBallot: Project[] = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
+
+    const setShortlist = jest.fn();
+    const setFinalBallot = jest.fn();
+
+    renderWrapped([], setShortlist, finalBallot, setFinalBallot);
+
+    const amountInputField = screen.getByRole("spinbutton", {
+      name: /donation amount for all projects/i,
+    });
+    const applyAllButton = screen.getByRole("button", {
+      name: /apply to all/i,
+    });
+
+    fireEvent.change(amountInputField, {
+      target: {
+        value: 100,
+      },
+    });
+    fireEvent.click(applyAllButton);
+
+    const projectDonationInput1 = screen.getByRole<HTMLInputElement>(
+      "spinbutton",
+      {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      }
+    );
+    const projectDonationInput2 = screen.getByRole<HTMLInputElement>(
+      "spinbutton",
+      {
+        name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
+      }
+    );
+
+    expect(projectDonationInput1.value).toBe("100");
+    expect(projectDonationInput2.value).toBe("100");
+  });
 });
 
 function renderWrapped(
   shortlist: Project[] = [],
   setShortlist = () => {},
   finalBallot: Project[] = [],
-  setFinalBallot = () => {},
-) { 
+  setFinalBallot = () => {}
+) {
   render(
     <MemoryRouter>
       <RoundProvider>
@@ -459,5 +528,5 @@ function renderWrapped(
         </BallotContext.Provider>
       </RoundProvider>
     </MemoryRouter>
-  )
+  );
 }
