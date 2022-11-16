@@ -266,7 +266,6 @@ function BallotSelectionToggle(props: {
     const { applicationId } = useParams();
     const [shortlist, finalBallot, , , , , ] = useBallot();
 
-    const [active, setActive] = useState(false);
     const isAddedToShortlist = shortlist.some(
         (project) => project.grantApplicationId === applicationId
     );
