@@ -1,10 +1,10 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { BytesLike, ethers, Signer } from "ethers";
 import { createContext, ReactNode, SetStateAction, useContext, useState } from "react";
+import { useSigner } from "wagmi";
 import { approveTokenOnContract, voteOnRoundContract } from "../features/api/application";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import { FinalBallotDonation, PayoutToken, ProgressStatus } from "../features/api/types";
-import { useWallet } from "../features/common/Auth";
 
 export interface QFDonationState {
 
@@ -146,7 +146,7 @@ export const useQFDonation = () => {
     );
   }
 
-  const { signer } = useWallet(); // THIS BREAKS
+  const { data: signer } = useSigner();
 
   const handleSubmitDonations = async ( params: QFDonationParams ) => {
     return _submitDonations({
@@ -263,7 +263,7 @@ async function waitForSubgraphToUpdate(
 }
 
 function encodeQFVotes(donationToken: PayoutToken, donations: FinalBallotDonation[]) : BytesLike[] {
-  let encodedVotes: BytesLike[] = [];
+  const encodedVotes: BytesLike[] = [];
 
   donations.map(donation => {
     const vote = [

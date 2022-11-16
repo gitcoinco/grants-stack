@@ -42,7 +42,7 @@ root.render(
               <ReduxRouter history={history} store={store}>
                 <Routes>
                   {/* Protected Routes */}
-                  <Route element={<Auth />}></Route>
+                  <Route element={<Auth />} />
 
                   {/* Default Route */}
                   <Route path="/" element={<NotFound />} />
