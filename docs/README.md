@@ -19,7 +19,7 @@ The ProjectRegistry is a smart contract that allows people to manage projects an
 Each ProjectRegistry contract is deployed as an upgradeable contract following the openzeppelin `TransparentUpgradeableProxy` pattern.
 
 Each projects has a pointer to its metadata file with all the project attributes. All metadata files are stored
-in a decentralized storage like IPFS. The metadata pointer documentation can be found in the [Metadata Pointers](./contracts/docs/MetadataPointers.md) document.
+in a decentralized storage like IPFS. The metadata pointer documentation can be found in the [Metadata Pointers](../contracts/docs/MetadataPointers.md) document.
 
 Any EVM compatible chain can have its own ProjectRegistry.
 
@@ -64,13 +64,13 @@ We currently deployed our ProjectRegistry contract to the chains specified below
 Each chain has its own subgraph that caches all the projects with their owners and
 the pointer to their metadata.
 
-More info in the [subgraph folder](./graph/README.md).
+More info in the [subgraph folder](../graph/README.md).
 
 ## Contracts
 
-The [contracts folder](./contracts) contains the hardhat project with the contracts and their documentation.
+The [contracts folder](../contracts) contains the hardhat project with the contracts and their documentation.
 
 ## Client dApp
 
-The [client folder](./client) contains the client dApp that allows users to
+The [client folder](../client) contains the client dApp that allows users to
 interact with their projects and to apply to grant rounds.
