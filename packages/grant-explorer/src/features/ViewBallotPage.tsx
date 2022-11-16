@@ -546,7 +546,7 @@ export default function ViewBallot() {
       (donation) => donation.projectRegistryId === projectRegistryId
     );
 
-    const newState = donations;
+    const newState = [...donations];
 
     if (projectIndex !== -1) {
       newState[projectIndex].amount = amount;

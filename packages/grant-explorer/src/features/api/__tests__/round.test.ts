@@ -144,7 +144,7 @@ describe("getRoundById", () => {
         "someChain"
       );
 
-      expect(actualRound).toMatchObjewct(expectedRound);
+      expect(actualRound).toMatchObject(expectedRound);
     });
 
     it("maps approved project metadata for new application format", async () => {
