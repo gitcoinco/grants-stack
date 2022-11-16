@@ -8,12 +8,18 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   SelectorIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
-import React, { Fragment, useEffect, useState } from "react";
 import { classNames, getPayoutTokenOptions } from "./api/utils";
 import { Listbox, Transition } from "@headlessui/react";
+import React, { Fragment, useEffect, useState } from "react";
+import { useAccount, useBalance } from "wagmi";
+import { BigNumber, ethers } from "ethers";
+import ConfirmationModal from "./common/ConfirmationModal";
+import InfoModal from "./common/InfoModal";
+import Footer from "./common/Footer";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -35,8 +41,24 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
   const [totalDonation, setTotalDonation] = useState(0);
   const [fixedDonation, setFixedDonation] = useState<number>();
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openInfoModal, setOpenInfoModal] = useState(false);
 
   const [shortlist, , , finalBallot] = useBallot();
+
+  const { address } = useAccount();
+
+  const tokenDetail =
+    selectedPayoutToken.address == ethers.constants.AddressZero
+      ? { addressOrName: address }
+      : { addressOrName: address, token: selectedPayoutToken.address };
+
+  const selectedPayoutTokenBalance = useBalance(tokenDetail);
+
+  const [donationError, setDonationError] = useState({
+    emptyInput: false,
+    insufficientBalance: false,
+  });
 
   const shortlistNotEmpty = shortlist.length > 0;
   const finalBallotNotEmpty = finalBallot.length > 0;
@@ -67,13 +89,37 @@ export default function ViewBallot() {
             <Summary />
             <Button
               $variant="solid"
+              data-testid="handle-confirmation"
               type="button"
-              className="items-center shadow-sm text-sm rounded w-full opacity-50"
+              onClick={handleConfirmation}
+              className="items-center shadow-sm text-sm rounded w-full"
             >
               Submit your donation!
             </Button>
+            {donationError.emptyInput && (
+              <p
+                data-testid="emptyInput"
+                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                <span>
+                  You must enter donations for all final ballot projects
+                </span>
+              </p>
+            )}
+            {donationError.insufficientBalance && (
+              <p
+                data-testid="insufficientBalance"
+                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                <span>You do not have enough funds for these donations</span>
+              </p>
+            )}
           </div>
+          <PayoutModals />
         </div>
+        <Footer />
       </div>
     </>
   );
@@ -399,6 +445,33 @@ export default function ViewBallot() {
     );
   }
 
+  function AdditionalGasFeesNote() {
+    return (
+      <p className="text-sm italic text-grey-400 mb-2">
+        Changes could be subject to additional gas fees.
+      </p>
+    );
+  }
+
+  function FinalBallotConfirmCount() {
+    return (
+      <div
+        className="flex justify-center"
+        data-testid="final-ballot-project-count"
+      >
+        <CheckIcon
+          className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1 mr-2"
+          aria-hidden="true"
+        />
+        <p className="font-bold">
+          <span className="mr-1">{totalDonation}</span>
+          <span className="mr-1">{selectedPayoutToken.name}</span>
+          <span>Contributed</span>
+        </p>
+      </div>
+    );
+  }
+
   function SelectInactive(props: { onClick: () => void }) {
     return (
       <Button
@@ -611,6 +684,97 @@ export default function ViewBallot() {
           <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>
       </Listbox.Button>
+    );
+  }
+
+  function handleConfirmation() {
+
+    const newState = {
+      emptyInput: false,
+      insufficientBalance: false
+    }
+
+    // check to ensure all projects have donation amount
+    const emptyDonations = donations.filter(donation =>  !donation.amount || donation.amount == 0);
+
+    if (donations.length == 0 || emptyDonations.length > 0) {
+      newState.emptyInput = true;
+      setDonationError(newState);
+      return;
+    } else {
+      setDonationError(newState);
+    }
+
+    // check if signer has enough token balance
+    const accountBalance = selectedPayoutTokenBalance.data?.value;
+    const tokenBalance = ethers.utils.parseUnits(totalDonation.toString(), selectedPayoutToken.decimal);
+
+    if (
+      !accountBalance ||
+      BigNumber.from(tokenBalance).gt(accountBalance)
+    ) {
+      newState.insufficientBalance = true;
+      setDonationError(newState);
+      return;
+    } else {
+      setDonationError(newState);
+    }
+
+    setOpenConfirmationModal(true);
+  }
+
+  function PayoutModals() {
+    return (
+      <>
+        <ConfirmationModal
+          title={"Confirm Decision"}
+          confirmButtonText={"Confirm"}
+          confirmButtonAction={() => {
+            setOpenInfoModal(true);
+            setOpenConfirmationModal(false);
+          }}
+          body={<ConfirmationModalBody />}
+          isOpen={openConfirmationModal}
+          setIsOpen={setOpenConfirmationModal}
+        />
+        <InfoModal
+          title={"Heads up!"}
+          body={<InfoModalBody />}
+          isOpen={openInfoModal}
+          setIsOpen={setOpenInfoModal}
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          continueButtonAction={() => {}} // TODO: Wire this up to payouts
+        />
+      </>
+    );
+  }
+
+  function InfoModalBody() {
+    return (
+      <div className="text-sm text-grey-400 gap-16">
+        <p className="text-sm">
+          Submitting your donation will require signing two transactions:
+        </p>
+        <ul className="list-disc list-inside pl-3 pt-3">
+          <li>Approving the contract to access your wallet</li>
+          <li>Approving the transaction</li>
+        </ul>
+      </div>
+    );
+  }
+
+  function ConfirmationModalBody() {
+    const projectsCount =  finalBallot.length;
+    return (
+      <>
+        <p className="text-sm text-grey-400">
+          {projectsCount} project{projectsCount   > 1 && "s"} on your Final Donation.
+        </p>
+        <div className="my-8">
+          <FinalBallotConfirmCount/>
+        </div>
+        <AdditionalGasFeesNote/>
+      </>
     );
   }
 }

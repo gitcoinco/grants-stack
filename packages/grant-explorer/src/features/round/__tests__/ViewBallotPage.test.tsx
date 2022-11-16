@@ -7,10 +7,22 @@ import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
-import { tmpdir } from "os";
+import { BigNumber, ethers } from "ethers";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
+const userAddress = faker.finance.ethereumAddress();
+
+const mockAccount = {
+  account: userAddress,
+};
+
+const mockBalance = {
+  data: {
+    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
+  },
+};
+
 const useParamsFn = () => ({
   chainId,
   roundId,
@@ -18,6 +30,10 @@ const useParamsFn = () => ({
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
+jest.mock("wagmi", () => ({
+  useAccount: () => mockAccount,
+  useBalance: () => mockBalance,
+}));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
 }));
@@ -352,92 +368,170 @@ describe("View Ballot Page", () => {
       const totalDonation = screen.getByTestId("totalDonation");
       expect(totalDonation).toHaveTextContent("0");
     });
-  });
 
-  it("reflects a change in donation to one project in the final contribution", () => {
-    const finalBallot: Project[] = [makeApprovedProjectData()];
+    it("reflects a change in donation to one project in the final contribution", () => {
+      const finalBallot: Project[] = [makeApprovedProjectData()];
 
-    renderWrapped([], () => {}, finalBallot);
+      renderWrapped([], () => {}, finalBallot);
 
-    /* Set donation amount on one project */
-    const projectDonationInput = screen.getByRole("spinbutton", {
-      name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
-    });
+      /* Set donation amount on one project */
+      const projectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      });
 
-    fireEvent.change(projectDonationInput, {
-      target: {
-        value: "10",
-      },
-    });
-
-    const totalDonation = screen.getByTestId("totalDonation");
-    expect(totalDonation).toHaveTextContent("10");
-  });
-
-  it("reflects a change in donation to two projects in the final contribution", () => {
-    const finalBallot: Project[] = [
-      makeApprovedProjectData(),
-      makeApprovedProjectData(),
-    ];
-
-    renderWrapped([], () => {}, finalBallot);
-
-    /* Set donation amount on one project */
-    const projectDonationInput = screen.getByRole("spinbutton", {
-      name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
-    });
-    fireEvent.change(projectDonationInput, {
-      target: {
-        value: "10",
-      },
-    });
-
-    const secondProjectDonationInput = screen.getByRole("spinbutton", {
-      name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
-    });
-    fireEvent.change(secondProjectDonationInput, {
-      target: {
-        value: "20",
-      },
-    });
-
-    const totalDonation = screen.getByTestId("totalDonation");
-    expect(totalDonation).toHaveTextContent("30");
-
-    /* Lower donation */
-    fireEvent.change(
-      screen.getByRole("spinbutton", {
-        name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
-      }),
-      {
+      fireEvent.change(projectDonationInput, {
         target: {
           value: "10",
         },
-      }
-    );
+      });
 
-    expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
-  });
-
-  it("updates token summary based on selected token", async () => {
-    const chainId = 5;
-
-    const useParamsFn = () => ({
-      chainId,
-      roundId,
+      const totalDonation = screen.getByTestId("totalDonation");
+      expect(totalDonation).toHaveTextContent("10");
     });
 
-    jest.mock("react-router-dom", () => ({
-      ...jest.requireActual("react-router-dom"),
-      useParams: useParamsFn,
-    }));
+    it("reflects a change in donation to two projects in the final contribution", () => {
+      const finalBallot: Project[] = [
+        makeApprovedProjectData(),
+        makeApprovedProjectData(),
+      ];
 
-    renderWrapped();
+      renderWrapped([], () => {}, finalBallot);
 
-    const options = getPayoutTokenOptions(chainId.toString());
-    expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
-      options[0].name
-    );
+      /* Set donation amount on one project */
+      const projectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      });
+      fireEvent.change(projectDonationInput, {
+        target: {
+          value: "10",
+        },
+      });
+
+      const secondProjectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
+      });
+      fireEvent.change(secondProjectDonationInput, {
+        target: {
+          value: "20",
+        },
+      });
+
+      const totalDonation = screen.getByTestId("totalDonation");
+      expect(totalDonation).toHaveTextContent("30");
+
+      /* Lower donation */
+      fireEvent.change(
+        screen.getByRole("spinbutton", {
+          name: `Donation amount for project ${finalBallot[1].projectMetadata.title}`,
+        }),
+        {
+          target: {
+            value: "10",
+          },
+        }
+      );
+
+      expect(screen.getByTestId("totalDonation")).toHaveTextContent("20");
+    });
+
+    it("updates token summary based on selected token", async () => {
+      const chainId = 5;
+
+      const useParamsFn = () => ({
+        chainId,
+        roundId,
+      });
+
+      jest.mock("react-router-dom", () => ({
+        ...jest.requireActual("react-router-dom"),
+        useParams: useParamsFn,
+      }));
+
+      renderWrapped();
+
+      const options = getPayoutTokenOptions(chainId.toString());
+      expect(screen.getByTestId("summaryPayoutToken")).toHaveTextContent(
+        options[0].name
+      );
+    });
+  });
+
+  describe("Submit Your Donation", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("shows error when clicking on submit with a donation field empty", async () => {
+      const finalBallot: Project[] = [makeApprovedProjectData()];
+
+      renderWrapped([], () => {}, finalBallot);
+
+      /* Click on Confirm Button */
+      const confirmButton = screen.getByTestId("handle-confirmation");
+      fireEvent.click(confirmButton);
+
+      expect(
+        await screen.queryByTestId("confirm-modal")
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("insufficientBalance")
+      ).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("emptyInput")).toBeInTheDocument();
+    });
+
+    it("shows error when clicking on submit with user having lesser balance then total donation", async () => {
+      const finalBallot: Project[] = [makeApprovedProjectData()];
+
+      renderWrapped([], () => {}, finalBallot);
+
+      /* Set donation amount on one project */
+      const projectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      });
+      fireEvent.change(projectDonationInput, {
+        target: {
+          value: "100",
+        },
+      });
+
+      /* Click on Confirm Button */
+      const confirmButton = screen.getByTestId("handle-confirmation");
+      fireEvent.click(confirmButton);
+
+      expect(
+        await screen.queryByTestId("insufficientBalance")
+      ).toBeInTheDocument();
+      expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("confirm-modal")
+      ).not.toBeInTheDocument();
+    });
+
+    it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
+      const finalBallot: Project[] = [makeApprovedProjectData()];
+
+      renderWrapped([], () => {}, finalBallot);
+
+      /* Set donation amount on one project */
+      const projectDonationInput = screen.getByRole("spinbutton", {
+        name: `Donation amount for project ${finalBallot[0].projectMetadata.title}`,
+      });
+      fireEvent.change(projectDonationInput, {
+        target: {
+          value: "1",
+        },
+      });
+
+      /* Click on Confirm Button */
+      const confirmButton = screen.getByTestId("handle-confirmation");
+      fireEvent.click(confirmButton);
+
+      expect(
+        await screen.queryByTestId("insufficientBalance")
+      ).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("confirm-modal")).toBeInTheDocument();
+    });
   });
 
   it("apply to all and amount fields are visible", async () => {
@@ -504,6 +598,37 @@ describe("View Ballot Page", () => {
 
     expect(projectDonationInput1.value).toBe("100");
     expect(projectDonationInput2.value).toBe("100");
+  });
+
+  it("shows payout token drop down", () => {
+    renderWrapped();
+
+    const PayoutTokenDropdown = screen.getByTestId("payout-token-select");
+    expect(PayoutTokenDropdown).toBeInTheDocument();
+  });
+
+  it("renders a dropdown list of tokens when payout token input is clicked", async () => {
+    const chainId = 5;
+
+    const useParamsFn = () => ({
+      chainId,
+      roundId,
+    });
+
+    jest.mock("react-router-dom", () => ({
+      ...jest.requireActual("react-router-dom"),
+      useParams: useParamsFn,
+    }));
+
+    renderWrapped();
+
+    const options = getPayoutTokenOptions(chainId.toString());
+
+    const payoutTokenSelection = screen.getByTestId("payout-token-select");
+    fireEvent.click(payoutTokenSelection);
+
+    const selectOptions = await screen.findAllByTestId("payout-token-option");
+    expect(selectOptions).toHaveLength(options.length);
   });
 });
 
