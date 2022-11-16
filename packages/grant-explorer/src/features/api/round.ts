@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import {
   ApplicationStatus,
@@ -234,9 +235,12 @@ export async function getProjectOwners(
       true
     );
 
-    return res.data?.projects[0]?.accounts.map(
-      (account: { account: { address: string } }) => account.account.address
-    ) || [];
+    return (
+      res.data?.projects[0]?.accounts.map(
+        (account: { account: { address: string } }) =>
+          ethers.utils.getAddress(account.account.address)
+      ) || []
+    );
   } catch (err) {
     console.log("error", err);
     throw Error("Unable to fetch project owners");

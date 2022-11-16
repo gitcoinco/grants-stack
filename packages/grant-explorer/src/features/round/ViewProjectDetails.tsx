@@ -96,8 +96,6 @@ export default function ViewProjectDetails() {
   );
 }
 
-
-
 function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
     <div>
@@ -145,7 +143,7 @@ function AboutProject(props: { projectToRender: Project }) {
   const projectGithub = projectToRender.projectMetadata.projectGithub;
 
   useEffect(() => {
-    if (projectToRender?.projectMetadata.owners) {
+    if (projectToRender?.projectMetadata?.owners) {
       const credentials: ProjectCredentials =
         projectToRender?.projectMetadata.credentials ?? {};
 
@@ -447,7 +445,7 @@ async function isVerified(
     project
   );
   const vcIssuedToAtLeastOneProjectOwner = (
-    project?.projectMetadata.owners ?? []
+    project?.projectMetadata?.owners ?? []
   ).some((owner) => vcIssuedToAddress(verifiableCredential, owner.address));
 
   return vcHasValidProof &&
