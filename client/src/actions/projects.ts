@@ -226,7 +226,6 @@ export const getApplicationsByRoundId =
   // eslint-disable-next-line
   async (roundId: string, chainId: any, dispatch: Dispatch) => {
     try {
-      console.log("fetching applications for round", roundId);
       // query the subgraph for all rounds by the given account in the given program
       const res = await graphqlFetch(
         `
@@ -259,7 +258,7 @@ export const getApplicationsByRoundId =
         const metadata = await ipfsClient.fetchJson(project.round.projectsMetaPtr.pointer);
         if (project.id === metadata[0].id) {
           project.status = metadata[0].status;
-          // dispatch any updates to the store
+          // dispatch any updates to the store when the project ids match
           dispatch({
             type: PROJECT_APPLICATIONS_LOADED,
             projectID: project.id,
@@ -302,19 +301,16 @@ export const getRoundProjectsApplied =
         chainId,
         { projectID }
       );
-
       const applications = applicationsFound.data.roundProjects;
-      // update each application with the status from the contract
-      // eslint-disable-next-line
-      applications.map((roundApp: any) => {
-        getApplicationsByRoundId(roundApp.round.id, chainId, dispatch);
-      });
-
-      // todo: update the application status from the contract using same action
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
         applications,
+      });
+      // update each application with the status from the contract
+      // eslint-disable-next-line
+      applications.map((roundApp: any) => {
+        getApplicationsByRoundId(roundApp.round.id, chainId, dispatch);
       });
     } catch (error: any) {
       datadogRum.addError(error, { projectID });
