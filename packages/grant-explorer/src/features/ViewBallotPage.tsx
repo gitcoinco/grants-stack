@@ -265,7 +265,7 @@ export default function ViewBallot() {
           <div className="basis-[28%]">
             <h2 className="mt-2 text-xl">Final Donation</h2>
           </div>
-          <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
+          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
             <p className="mt-3 text-sm amount-text">Amount</p>
             <Input
               aria-label={"Donation amount for all projects "}
@@ -396,7 +396,7 @@ export default function ViewBallot() {
             <div className="basis-[28%]">
               <h2 className="mt-2 text-xl">Final Donation</h2>
             </div>
-            <div className="lg:flex lg:flex-row gap-2 basis-[72%] ">
+            <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
               <p className="mt-3 text-sm amount-text">Amount</p>
               <Input
                 aria-label={"Donation amount for all projects "}
