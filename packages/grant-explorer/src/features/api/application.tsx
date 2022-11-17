@@ -1,4 +1,4 @@
-import { BytesLike, ethers, Signer } from "ethers";
+import { BigNumber, BytesLike, ethers, Signer } from "ethers";
 import { roundImplementationContract, ERC20Contract } from "./contracts";
 
 export const voteOnRoundContract = async (
@@ -6,6 +6,9 @@ export const voteOnRoundContract = async (
   signer: Signer,
   encodedVotes: BytesLike[]
 ): Promise<{ transactionBlockNumber: number }> => {
+
+  // checksum conversion
+  roundId = ethers.utils.getAddress(roundId);
   
   const roundImplementation = new ethers.Contract(
     roundId,
@@ -31,9 +34,13 @@ export const approveTokenOnContract = async (
   signer: Signer,
   votingStrategy: string,
   tokenAddress: string,
-  amount: number
-): Promise<{ transactionBlockNumber: number }> => {
+  amount: BigNumber
+): Promise<void> => {
   
+  // checksum conversion
+  votingStrategy = ethers.utils.getAddress(votingStrategy);
+  tokenAddress = ethers.utils.getAddress(tokenAddress);
+
   const tokenContract = new ethers.Contract(
     tokenAddress,
     ERC20Contract.abi,
@@ -45,14 +52,5 @@ export const approveTokenOnContract = async (
     amount
   );
 
-  const tx = approveTx.wait();
-
-  const receipt = await tx.wait();
-
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
-  return {
-    transactionBlockNumber: blockNumber,
-  };
+  approveTx.wait();
 };

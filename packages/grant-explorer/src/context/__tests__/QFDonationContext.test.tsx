@@ -1,25 +1,30 @@
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
+import { useSigner } from "wagmi";
 import { approveTokenOnContract, voteOnRoundContract } from "../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 import { ProgressStatus } from "../../features/api/types";
 import { getPayoutTokenOptions } from "../../features/api/utils";
 import { QFDonationParams, QFDonationProvider, useQFDonation } from "../QFDonationContext";
 
+const mockWallet = {
+  address: "0x0",
+  signer: {
+    getChainId: () => {
+      return 1
+    },
+  },
+};
+
 jest.mock("../../features/api/application");
 jest.mock("../../features/api/subgraph");
 jest.mock("../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));
-const mockWallet = {
-  address: "0x0",
-  signer: {
-    getChainId: () => {
-      /* do nothing.*/
-    },
-  },
-};
+jest.mock("wagmi", () => ({
+  useSigner: () => mockWallet.signer,
+}));
 
 const roundId = faker.finance.ethereumAddress();
 const donationToken = getPayoutTokenOptions('5')[0];
@@ -322,7 +327,6 @@ const TestUseQFDonationComponent = () => {
     indexingStatus,
   } = useQFDonation();
 
-
   return (
     <div>
       <button
@@ -331,7 +335,8 @@ const TestUseQFDonationComponent = () => {
             roundId: roundId,
             donations: [],
             donationToken: donationToken,
-            totalDonation: totalDonation
+            totalDonation: totalDonation,
+            votingStrategy: faker.finance.ethereumAddress()
           } as QFDonationParams);
         }}
         data-testid="submit-qf-donations"

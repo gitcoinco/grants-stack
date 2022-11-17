@@ -29,18 +29,18 @@ import { datadogLogs } from "@datadog/browser-logs";
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
+
   const payoutTokenOptions: PayoutToken[] = [
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ...getPayoutTokenOptions(chainId!),
   ];
 
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
-    payoutTokenOptions[0]
-  );
-
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
 
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(payoutTokenOptions[0]);
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
@@ -816,8 +816,7 @@ export default function ViewBallot() {
         <ErrorModal
           isOpen={openErrorModal}
           setIsOpen={setOpenErrorModal}
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          tryAgainFn={() => {}} // TODO: Wire in next story
+          tryAgainFn={handleSubmitDonation}
         />
       </>
     );
@@ -856,17 +855,21 @@ export default function ViewBallot() {
   async function handleSubmitDonation () {
     try {
 
+      if (!round || !roundId) {
+        throw new Error("round is null");
+      }
+
       setTimeout(() => {
         setOpenProgressModal(true);
         setOpenInfoModal(false);
       }, modalDelayMs)
 
       await submitDonations({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        roundId: roundId!,
+        roundId: roundId,
         donations: donations,
         donationToken: selectedPayoutToken,
-        totalDonation: totalDonation
+        totalDonation: totalDonation,
+        votingStrategy: round.votingStrategy
       });
       setOpenProgressModal(false);
     } catch (error) {
