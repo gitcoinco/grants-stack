@@ -8,7 +8,7 @@ export type Images = {
 export interface Metadata {
   protocol: number;
   pointer: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   website: string;
@@ -144,7 +144,7 @@ export type Round = {
 };
 
 export type ProjectOption = {
-  id: number | undefined;
+  id: string | undefined;
   title?: string;
 };
 

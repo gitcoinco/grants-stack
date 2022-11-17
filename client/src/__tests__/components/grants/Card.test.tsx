@@ -1,6 +1,6 @@
+import { fetchGrantData } from "../../../actions/grantsMetadata";
 import Card from "../../../components/grants/Card";
 import setupStore from "../../../store";
-import { fetchGrantData } from "../../../actions/grantsMetadata";
 import { renderWrapped } from "../../../utils/test_utils";
 
 jest.mock("../../../actions/grantsMetadata");
@@ -11,7 +11,7 @@ describe("<Card />", () => {
       const store = setupStore();
       (fetchGrantData as jest.Mock).mockReturnValue({ type: "TEST" });
 
-      renderWrapped(<Card projectId={1} />, store);
+      renderWrapped(<Card projectId={"1:1:1"} />, store);
 
       expect(fetchGrantData).toBeCalledTimes(1);
     });

@@ -85,7 +85,10 @@ const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
 
-const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
+const fetchProjectCreatedUpdatedEvents = async (
+  chainID: number,
+  account: string
+) => {
   const addresses = addressesByChainID(chainID!);
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
@@ -130,6 +133,10 @@ const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
   // const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
   const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
 
+  const fullIds = ids.map(
+    (id) => `${chainID}:${addresses.projectRegistry}:${id}`
+  );
+
   // FIXME: use this line when the fantom RPC bug has been fixed
   // const hexIDs = createdEvents.map((event) =>
   //   event.args!.projectID!.toHexString()
@@ -167,7 +174,7 @@ const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
   return {
     createdEvents,
     updatedEvents,
-    ids,
+    fullIds,
   };
 };
 
@@ -181,7 +188,7 @@ export const loadProjects =
 
     try {
       const { createdEvents, updatedEvents, ids } =
-        await fetchProjectCreatedEvents(chainID!, account!);
+        await fetchProjectCreatedUpdatedEvents(chainID!, account!);
 
       if (createdEvents.length === 0) {
         dispatch(projectsLoaded({}));
@@ -211,7 +218,7 @@ export const loadProjects =
       });
 
       if (withMetaData) {
-        ids.map((id) => dispatch<any>(fetchGrantData(id)));
+        ids!.map((id) => dispatch<any>(fetchGrantData(id)));
       }
 
       dispatch(projectsLoaded(events));

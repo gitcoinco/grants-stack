@@ -140,7 +140,7 @@ function ProjectsList() {
           <div className="grow">
             {props.projectIDs.length ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {props.projectIDs.map((id: number) => (
+                {props.projectIDs.map((id: string) => (
                   <Card projectId={id} key={id} />
                 ))}
               </div>

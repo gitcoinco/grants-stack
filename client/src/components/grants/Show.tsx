@@ -60,7 +60,7 @@ function Project() {
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
     if (params.id !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(Number(params.id)));
+      dispatch(fetchGrantData(params.id));
     }
   }, [dispatch, params.id, props.currentProject]);
 

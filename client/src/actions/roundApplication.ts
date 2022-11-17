@@ -255,7 +255,7 @@ export const submitApplication =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const projectUniqueID = generateUniqueRoundApplicationID(
       chainID,
-      Number(projectId)
+      projectId
     );
 
     try {
@@ -282,12 +282,12 @@ export const submitApplication =
   };
 
 export const checkRoundApplications =
-  (chainID: number, roundAddress: string, projectIDs: Array<number>) =>
+  (chainID: number, roundAddress: string, projectIDs: Array<string>) =>
   async (dispatch: Dispatch) => {
     const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const uniqueIDsToIDs = Object.fromEntries(
-      projectIDs.map((id: number) => [
+      projectIDs.map((id: string) => [
         generateUniqueRoundApplicationID(chainID, id),
         id,
       ])

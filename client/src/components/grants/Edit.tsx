@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../reducers";
+import { useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import ProjectForm from "../base/ProjectForm";
-import Button, { ButtonVariants } from "../base/Button";
-import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
-import colors from "../../styles/colors";
-import Cross from "../icons/Cross";
-import ExitModal from "../base/ExitModal";
-import VerificationForm from "../base/VerificationForm";
-import { ProjectFormStatus } from "../../types";
-import Preview from "../base/Preview";
 import {
-  metadataSaved,
   credentialsSaved,
   formReset,
+  metadataSaved,
 } from "../../actions/projectForm";
+import { RootState } from "../../reducers";
+import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
+import colors from "../../styles/colors";
+import { ProjectFormStatus } from "../../types";
+import Button, { ButtonVariants } from "../base/Button";
+import ExitModal from "../base/ExitModal";
+import Preview from "../base/Preview";
+import ProjectForm from "../base/ProjectForm";
+import VerificationForm from "../base/VerificationForm";
+import Cross from "../icons/Cross";
 
 function EditProject() {
   const params = useParams();
@@ -47,7 +47,7 @@ function EditProject() {
       projectID !== undefined &&
       props.metadataStatus === GrantsMetadataStatus.Undefined
     ) {
-      dispatch(fetchGrantData(Number(projectID)));
+      dispatch(fetchGrantData(projectID));
     }
   }, [dispatch, projectID, props.metadataStatus]);
 
