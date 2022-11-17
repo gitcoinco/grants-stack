@@ -1,13 +1,25 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { BytesLike, ethers, Signer } from "ethers";
-import { createContext, ReactNode, SetStateAction, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import { useSigner } from "wagmi";
-import { approveTokenOnContract, voteOnRoundContract } from "../features/api/application";
+import {
+  approveTokenOnContract,
+  voteOnRoundContract,
+} from "../features/api/application";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
-import { FinalBallotDonation, PayoutToken, ProgressStatus } from "../features/api/types";
+import {
+  FinalBallotDonation,
+  PayoutToken,
+  ProgressStatus,
+} from "../features/api/types";
 
 export interface QFDonationState {
-
   tokenApprovalStatus: ProgressStatus;
   setTokenApprovalStatus: React.Dispatch<SetStateAction<ProgressStatus>>;
   voteStatus: ProgressStatus;
@@ -33,27 +45,23 @@ export const initialQFDonationState: QFDonationState = {
 
 export type QFDonationParams = {
   roundId: string;
-  donations: FinalBallotDonation[],
-  donationToken: PayoutToken,
-  totalDonation: number,
-  votingStrategy: string,
+  donations: FinalBallotDonation[];
+  donationToken: PayoutToken;
+  totalDonation: number;
+  votingStrategy: string;
 };
 
 interface SubmitDonationParams {
   signer: Signer;
   context: QFDonationState;
   roundId: string;
-  donations: FinalBallotDonation[],
-  donationToken: PayoutToken,
-  totalDonation: number,
-  votingStrategy: string
+  donations: FinalBallotDonation[];
+  donationToken: PayoutToken;
+  totalDonation: number;
+  votingStrategy: string;
 }
 
-export const QFDonationProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [tokenApprovalStatus, setTokenApprovalStatus] = useState(
     initialQFDonationState.tokenApprovalStatus
   );
@@ -86,15 +94,10 @@ export const QFDonationContext = createContext<QFDonationState>(
 );
 
 function resetToInitialState(context: QFDonationState) {
-  const { setTokenApprovalStatus, setVoteStatus, setIndexingStatus } =
-    context;
+  const { setTokenApprovalStatus, setVoteStatus, setIndexingStatus } = context;
 
-  setTokenApprovalStatus(
-    initialQFDonationState.tokenApprovalStatus
-  );
-  setVoteStatus(
-    initialQFDonationState.voteStatus
-  );
+  setTokenApprovalStatus(initialQFDonationState.tokenApprovalStatus);
+  setVoteStatus(initialQFDonationState.voteStatus);
   setIndexingStatus(initialQFDonationState.indexingStatus);
 }
 
@@ -107,11 +110,9 @@ async function _submitDonations({
   totalDonation,
   votingStrategy,
 }: SubmitDonationParams) {
-
   resetToInitialState(context);
 
   try {
-
     // Token Approval
     await approveTokenForDonation(
       signer,
@@ -127,32 +128,27 @@ async function _submitDonations({
       roundId,
       donationToken,
       donations,
-      context,
+      totalDonation,
+      context
     );
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, transactionBlockNumber, context);
-
   } catch (error) {
     datadogLogs.logger.error(`error: _submitDonations - ${error}`);
     console.error("Error while bulk submitting donations: ", error);
   }
 }
 
-
 export const useQFDonation = () => {
-  const context = useContext<QFDonationState>(
-    QFDonationContext
-  );
+  const context = useContext<QFDonationState>(QFDonationContext);
   if (context === undefined) {
-    throw new Error(
-      "useQFDonation must be used within a QFDonationProvider"
-    );
+    throw new Error("useQFDonation must be used within a QFDonationProvider");
   }
 
   const { data: signer } = useSigner();
 
-  const handleSubmitDonations = async ( params: QFDonationParams ) => {
+  const handleSubmitDonations = async (params: QFDonationParams) => {
     return _submitDonations({
       ...params,
       signer: signer as Signer,
@@ -186,7 +182,10 @@ async function approveTokenForDonation(
       return;
     }
 
-    const amountInUnits = ethers.utils.parseUnits(amount.toString(), token.decimal);
+    const amountInUnits = ethers.utils.parseUnits(
+      amount.toString(),
+      token.decimal
+    );
 
     await approveTokenOnContract(
       signerOrProvider,
@@ -197,7 +196,6 @@ async function approveTokenForDonation(
 
     console.log("token approval");
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
@@ -207,12 +205,12 @@ async function approveTokenForDonation(
   }
 }
 
-
 async function vote(
   signerOrProvider: Signer,
   roundId: string,
   token: PayoutToken,
   donations: FinalBallotDonation[],
+  totalDonation: number,
   context: QFDonationState
 ): Promise<number> {
   const { setVoteStatus } = context;
@@ -225,12 +223,12 @@ async function vote(
     const { transactionBlockNumber } = await voteOnRoundContract(
       roundId,
       signerOrProvider,
-      encodedVotes
+      encodedVotes,
+      totalDonation
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
     return transactionBlockNumber;
-
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
@@ -238,7 +236,6 @@ async function vote(
     setVoteStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
-
 }
 
 async function waitForSubgraphToUpdate(
@@ -269,24 +266,28 @@ async function waitForSubgraphToUpdate(
   }
 }
 
-function encodeQFVotes(donationToken: PayoutToken, donations: FinalBallotDonation[]) : BytesLike[] {
+function encodeQFVotes(
+  donationToken: PayoutToken,
+  donations: FinalBallotDonation[]
+): BytesLike[] {
   const encodedVotes: BytesLike[] = [];
 
-  donations.map(donation => {
-    const amountInUnits = ethers.utils.parseUnits(donation.amount.toString(), donationToken.decimal);
-    let projectAddress = "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA" // TODO: REPLACE
+  donations.map((donation) => {
+    const amountInUnits = ethers.utils.parseUnits(
+      donation.amount.toString(),
+      donationToken.decimal
+    );
+    let projectAddress = "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA"; // TODO: REPLACE
     projectAddress = ethers.utils.getAddress(projectAddress);
 
-    const vote = [
-      donationToken.address,
-      amountInUnits,
-      projectAddress
-    ]
+    const vote = [donationToken.address, amountInUnits, projectAddress];
 
-    encodedVotes.push(ethers.utils.defaultAbiCoder.encode(
-      ["address", "uint256", "address"],
-      vote
-    ));
+    encodedVotes.push(
+      ethers.utils.defaultAbiCoder.encode(
+        ["address", "uint256", "address"],
+        vote
+      )
+    );
   });
 
   return encodedVotes;
