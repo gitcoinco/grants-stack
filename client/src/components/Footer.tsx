@@ -21,7 +21,7 @@ export default function Footer() {
             hasArrow
           >
             <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
-              <a href="https://support.gitcoin.co/">
+              <a href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us">
                 <Support color="none" />
               </a>
             </li>

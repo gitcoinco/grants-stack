@@ -26,7 +26,7 @@ export const menuItems: Menu[] = [
     Icon: ChatBubbleLeftRightIcon,
     title: "Contact Support",
     subTitle: "Reach our support team for help",
-    link: "https://support.gitcoin.co/",
+    link: "https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us",
   },
   {
     Icon: ClipboardDocumentListIcon,
