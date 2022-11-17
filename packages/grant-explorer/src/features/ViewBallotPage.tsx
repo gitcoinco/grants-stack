@@ -48,7 +48,7 @@ export default function ViewBallot() {
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
 
-  const [shortlist, , , finalBallot] = useBallot();
+  const [shortlist, finalBallot, , , ,] = useBallot();
 
   const { address } = useAccount();
 
@@ -185,7 +185,7 @@ export default function ViewBallot() {
       isSelected: boolean;
     }
   ) {
-    const [, , removeProjectFromShortlist] = useBallot();
+    const [, , , handleRemoveProjectsFromShortlist] = useBallot();
 
     return (
       <div
@@ -221,7 +221,7 @@ export default function ViewBallot() {
           <div className="mt-4">
             <TrashIcon
               data-testid="remove-from-shortlist"
-              onClick={() => removeProjectFromShortlist(props.project)}
+              onClick={() => handleRemoveProjectsFromShortlist([props.project])}
               className="w-6 h-6 cursor-pointer"
             />
           </div>
@@ -315,7 +315,8 @@ export default function ViewBallot() {
       index: number;
     }
   ) {
-    const [, , , , , handleRemoveFromFinalBallot] = useBallot();
+    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
+
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
 
@@ -378,7 +379,7 @@ export default function ViewBallot() {
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
-              onClick={() => handleRemoveFromFinalBallot(props.project)}
+              onClick={() => handleRemoveProjectsFromFinalBallotAndAddToShortlist([props.project])}
               className="w-6 h-6 m-auto cursor-pointer"
             />
           </div>
@@ -490,7 +491,7 @@ export default function ViewBallot() {
   }
 
   function SelectActive(props: { onClick: () => void }) {
-    const [, , , , handleAddtoFinalBallot] = useBallot();
+    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
     return (
       <Button
         type="button"
@@ -502,7 +503,7 @@ export default function ViewBallot() {
         {selected.length > 0 ? (
           <div
             data-testid="move-to-finalBallot"
-            onClick={() => handleAddtoFinalBallot(selected)}
+            onClick={async () => handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)}
           >
             Add selected ({selected.length}) to Final Donation
           </div>
