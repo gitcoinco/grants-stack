@@ -253,30 +253,36 @@ export const getApplicationsByRoundId =
       );
 
       const ipfsClient = new PinataClient();
+      if (!res?.data?.roundProjects) return;
       for (const project of res.data.roundProjects) {
+        if (!project) return;
         // eslint-disable-next-line
         const metadata = await ipfsClient.fetchJson(project.round.projectsMetaPtr.pointer);
-        if (project.id === metadata[0].id) {
-          project.status = metadata[0].status;
-          // dispatch any updates to the store when the project ids match
-          dispatch({
-            type: PROJECT_APPLICATIONS_LOADED,
-            projectID: project.id,
-            applications: [
-              ...project,
-              {
-                round: {
-                  id: roundId,
+        console.log("metadata", metadata);
+        // eslint-disable-next-line
+        metadata.map((meta: any) => {
+          if (project.id === meta.id) {
+            console.log("project", meta);
+            // dispatch any updates to the store when the project ids match
+            dispatch({
+              type: PROJECT_APPLICATIONS_LOADED,
+              projectID: meta.id,
+              applications: [
+                ...project,
+                {
+                  round: {
+                    id: roundId,
+                  },
+                  status: meta.status,
                 },
-                status: project.status,
-              },
-            ],
-          });
-        }
+              ],
+            });
+          }
+        });
       }
     } catch (error) {
       datadogRum.addError(error, { roundId });
-      console.error("getApplicationsByRoundId() error", error);
+      console.error("getApplicationsByRoundId() error", { roundId, error });
     }
   };
 
@@ -302,6 +308,7 @@ export const getRoundProjectsApplied =
         { projectID }
       );
       const applications = applicationsFound.data.roundProjects;
+      if (!applications) return;
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
