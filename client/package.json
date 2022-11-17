@@ -17,6 +17,7 @@
     "@pinata/sdk": "^1.1.26",
     "@rainbow-me/rainbowkit": "^0.7.2",
     "@redux-devtools/extension": "^3.2.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
