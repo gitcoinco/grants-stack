@@ -222,57 +222,6 @@ export const loadProjects =
     }
   };
 
-// eslint-disable-next-line
-const updateApplicationStatusFromContract = async (
-  applications: any[],
-  projectsMetaPtr: any,
-  filterByStatus?: string
-) => {
-  // Handle scenario where operator hasn't review any projects in the round
-  if (!projectsMetaPtr)
-    return filterByStatus
-      ? applications.filter(
-          (application) => application.status === filterByStatus
-        )
-      : applications;
-
-  const ipfsClient = new PinataClient();
-  const applicationsFromContract = await ipfsClient.fetchJson(
-    projectsMetaPtr.pointer
-  );
-  console.log("applicationsFromContract", applicationsFromContract);
-
-  // Iterate over all applications indexed by graph
-  applications.map((application) => {
-    try {
-      console.log("application before", application);
-      // fetch matching application index from contract
-      const index = applicationsFromContract.findIndex(
-        (applicationFromContract: any) =>
-          application.id === applicationFromContract.id
-      );
-      console.log("index", index);
-      // update status of application from contract / default to pending
-      // eslint-disable-next-line
-      application.status =
-        index >= 0 ? applicationsFromContract[index].status : "PENDING";
-      console.log("application after", application);
-    } catch {
-      // eslint-disable-next-line
-      application.status = "PENDING";
-    }
-    return application;
-  });
-
-  if (filterByStatus) {
-    return applications.filter(
-      (application) => application.status === filterByStatus
-    );
-  }
-
-  return applications;
-};
-
 export const getApplicationsByRoundId =
   // eslint-disable-next-line
   async (roundId: string, chainId: any, dispatch: Dispatch) => {
@@ -306,13 +255,24 @@ export const getApplicationsByRoundId =
 
       const ipfsClient = new PinataClient();
       for (const project of res.data.roundProjects) {
-        console.log("project", project);
         // eslint-disable-next-line
         const metadata = await ipfsClient.fetchJson(project.round.projectsMetaPtr.pointer);
-        console.log("metadata", metadata[0]);
         if (project.id === metadata[0].id) {
           project.status = metadata[0].status;
           // dispatch any updates to the store
+          dispatch({
+            type: PROJECT_APPLICATIONS_LOADED,
+            projectID: project.id,
+            applications: [
+              ...project,
+              {
+                round: {
+                  id: roundId,
+                },
+                status: project.status,
+              },
+            ],
+          });
         }
       }
     } catch (error) {
@@ -329,7 +289,6 @@ export const getRoundProjectsApplied =
     });
 
     try {
-      console.log("fetching graphql project application data");
       const applicationsFound: any = await graphqlFetch(
         `query roundProjects($projectID: String) {
           roundProjects(where: { project: $projectID }) {
@@ -345,11 +304,9 @@ export const getRoundProjectsApplied =
       );
 
       const applications = applicationsFound.data.roundProjects;
-      console.log("applications found for project", applications);
       // update each application with the status from the contract
       // eslint-disable-next-line
       applications.map((roundApp: any) => {
-        console.log("roundApp", roundApp);
         getApplicationsByRoundId(roundApp.round.id, chainId, dispatch);
       });
 
@@ -357,7 +314,7 @@ export const getRoundProjectsApplied =
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
-        applications: applicationsFound.data.roundProjects,
+        applications,
       });
     } catch (error: any) {
       datadogRum.addError(error, { projectID });

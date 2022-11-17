@@ -123,7 +123,7 @@ export const projectsReducer = (
       } = action;
       return {
         ...state,
-        applications,
+        applications: [...applications],
         error: undefined,
       };
     }

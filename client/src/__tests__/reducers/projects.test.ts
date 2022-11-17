@@ -23,24 +23,44 @@ describe("projects reducer", () => {
       type: "PROJECT_APPLICATIONS_LOADING",
     });
 
+    expect(newState.applications).toEqual([]);
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_LOADED",
       projectID: "12345",
-      applications: [],
+      applications: [
+        {
+          round: {
+            id: "0x12345",
+          },
+          status: "APPROVED",
+        },
+      ],
     });
 
+    expect(newState.applications).toEqual([
+      {
+        round: { id: "0x12345" },
+        status: "APPROVED",
+      },
+    ]);
   });
 
   it("PROJECT_APPLICATIONS_NOT_FOUND updates state", async () => {
     const newState: ProjectsState = projectsReducer(state, {
       type: "PROJECT_APPLICATIONS_NOT_FOUND",
       projectID: "12345",
-      roundID: "0x1234",
+      roundID: "0x12345",
     });
 
+    expect(newState.applications).toEqual([
+      {
+        round: { id: "0x12345" },
+        status: "PENDING",
+      },
+    ]);
   });
 
   it("PROJECT_APPLICATIONS_ERROR updates state", async () => {
