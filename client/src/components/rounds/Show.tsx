@@ -128,15 +128,14 @@ function Round() {
         >
           <>
             There has been an error loading the grant round data. Please try
-            refreshing the page. If the issue persists, please reach out to us
-            on{" "}
+            refreshing the page. If the issue persists, please reach out to our{" "}
             <a
               target="_blank"
               className="text-gitcoin-violet-400 outline-none"
-              href="https://discord.com/invite/gitcoin"
+              href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us"
               rel="noreferrer"
             >
-              Discord.
+              Support team.
             </a>
           </>
         </ErrorModal>
@@ -163,15 +162,14 @@ function Round() {
         >
           <>
             There has been an error loading the grant round data. Please try
-            refreshing the page. If the issue persists, please reach out to us
-            on{" "}
+            refreshing the page. If the issue persists, please reach out to our{" "}
             <a
               target="_blank"
               className="text-gitcoin-violet-400 outline-none"
-              href="https://discord.com/invite/gitcoin"
+              href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us"
               rel="noreferrer"
             >
-              Discord.
+              Support team.
             </a>
           </>
         </ErrorModal>
