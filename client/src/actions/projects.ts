@@ -5,11 +5,32 @@ import { Dispatch } from "redux";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
-import { AppStatus } from "../reducers/projects";
+import { Application, AppStatus } from "../reducers/projects";
 import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
+
+type RoundProject = {
+  id: string;
+  metaPtr: {
+    protocol: number;
+    pointer: string;
+  };
+  status: string;
+  round: {
+    projectsMetaPtr: {
+      protocol: number;
+      pointer: string;
+    };
+  };
+};
+
+type Res = {
+  data: {
+    roundProjects: RoundProject[];
+  };
+};
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -49,7 +70,7 @@ export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
-  applications: any;
+  applications: Application[];
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
@@ -227,7 +248,7 @@ export const getApplicationsByRoundId =
   async (roundId: string, chainId: any, dispatch: Dispatch) => {
     try {
       // query the subgraph for all rounds by the given account in the given program
-      const res = await graphqlFetch(
+      const res: Res = await graphqlFetch(
         `
           query GetApplicationsByRoundId($roundId: String!, $status: String) {
             roundProjects(where: {
@@ -253,31 +274,27 @@ export const getApplicationsByRoundId =
       );
 
       const ipfsClient = new PinataClient();
-      if (!res?.data?.roundProjects) return;
-      for (const project of res.data.roundProjects) {
-        if (!project) return;
+      const applicationsFound = res.data.roundProjects;
+      // eslint-disable-next-line
+      for (let i = 0; i < applicationsFound.length; i++) {
+        const app = res.data.roundProjects[i];
         // eslint-disable-next-line
-        const metadata = await ipfsClient.fetchJson(project.round.projectsMetaPtr.pointer);
-        console.log("metadata", metadata);
-        // eslint-disable-next-line
-        metadata.map((meta: any) => {
-          if (project.id === meta.id) {
-            console.log("project", meta);
-            // dispatch any updates to the store when the project ids match
-            dispatch({
-              type: PROJECT_APPLICATIONS_LOADED,
-              projectID: meta.id,
-              applications: [
-                ...project,
-                {
-                  round: {
-                    id: roundId,
-                  },
-                  status: meta.status,
-                },
-              ],
-            });
-          }
+        const metadata = await ipfsClient.fetchJson(app.round.projectsMetaPtr.pointer);
+        const realStatus = metadata.find((m: any) => m.id === app.id);
+        console.log("foo", realStatus);
+        // todo: create an object to pass to the reducer
+        // dispatch any updates to the store when the project ids match
+        dispatch({
+          type: PROJECT_APPLICATIONS_LOADED,
+          projectID: app.id,
+          applications: [
+            {
+              round: {
+                id: roundId,
+              },
+              status: realStatus.status,
+            },
+          ],
         });
       }
     } catch (error) {
