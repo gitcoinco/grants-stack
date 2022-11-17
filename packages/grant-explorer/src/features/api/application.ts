@@ -4,7 +4,8 @@ import { roundImplementationContract, ERC20Contract } from "./contracts";
 export const voteOnRoundContract = async (
   roundId: string,
   signer: Signer,
-  encodedVotes: BytesLike[]
+  encodedVotes: BytesLike[],
+  amount = 0
 ): Promise<{ transactionBlockNumber: number }> => {
 
   // checksum conversion
@@ -16,8 +17,14 @@ export const voteOnRoundContract = async (
     signer
   );
 
+  const amountInWei = ethers.utils.parseUnits(
+    amount.toString(),
+    "ether"
+  );
+
   const tx = await roundImplementation.vote(
-    encodedVotes
+    encodedVotes,
+    { value:  amountInWei }
   );
 
   const receipt = await tx.wait();
