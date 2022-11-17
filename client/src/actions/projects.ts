@@ -1,5 +1,5 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
@@ -222,6 +222,7 @@ export const loadProjects =
     }
   };
 
+// eslint-disable-next-line
 const updateApplicationStatusFromContract = async (
   applications: any[],
   projectsMetaPtr: any,
@@ -274,7 +275,7 @@ const updateApplicationStatusFromContract = async (
 
 export const getApplicationsByRoundId =
   // eslint-disable-next-line
-  async (roundId: string, chainId: any) => {
+  async (roundId: string, chainId: any, dispatch: Dispatch) => {
     try {
       console.log("fetching applications for round", roundId);
       // query the subgraph for all rounds by the given account in the given program
@@ -303,35 +304,17 @@ export const getApplicationsByRoundId =
         { roundId }
       );
 
-      const grantApplications: any[] = [];
-
       const ipfsClient = new PinataClient();
       for (const project of res.data.roundProjects) {
+        console.log("project", project);
         // eslint-disable-next-line
-        const metadata = await ipfsClient.fetchJson(project.metaPtr.pointer);
-        console.log("metadata", metadata);
-
-        // const signature = metadata?.signature;
-        const application = metadata.application
-          ? metadata.application
-          : metadata;
-
-        grantApplications.push({
-          ...application,
-          status: project.status,
-          id: project.id,
-          projectsMetaPtr: project.round.projectsMetaPtr,
-        });
-
-        console.log("grantApplications******", grantApplications);
-
-        updateApplicationStatusFromContract(
-          grantApplications,
-          res.data.roundProjects[0].round.projectsMetaPtr
-        );
+        const metadata = await ipfsClient.fetchJson(project.round.projectsMetaPtr.pointer);
+        console.log("metadata", metadata[0]);
+        if (project.id === metadata[0].id) {
+          project.status = metadata[0].status;
+          // dispatch any updates to the store
+        }
       }
-
-      return grantApplications;
     } catch (error) {
       datadogRum.addError(error, { roundId });
       console.error("getApplicationsByRoundId() error", error);
@@ -362,15 +345,12 @@ export const getRoundProjectsApplied =
       );
 
       const applications = applicationsFound.data.roundProjects;
-      console.log(
-        "applications found for project",
-        applicationsFound.data.roundProjects
-      );
+      console.log("applications found for project", applications);
       // update each application with the status from the contract
       // eslint-disable-next-line
-      applications.map((application: any) => {
-        // fetch the round metadata
-        getApplicationsByRoundId(application.round.id, chainId);
+      applications.map((roundApp: any) => {
+        console.log("roundApp", roundApp);
+        getApplicationsByRoundId(roundApp.round.id, chainId, dispatch);
       });
 
       // todo: update the application status from the contract using same action
@@ -404,51 +384,5 @@ export const checkGrantApplicationStatus = async (
 
   return obj ? (obj.status as AppStatus) : "PENDING";
 };
-
-// fetchApplicationData() is called when a user clicks on a project
-// to view the project details page
-// eslint-disable-next-line
-const fetchApplicationData = async (
-  res: any,
-  id: string,
-  projectRegistry: Contract
-): Promise<any[]> =>
-  Promise.all(
-    res.data.roundProjects.map(async (project: any): Promise<any> => {
-      const ipfsClient = new PinataClient();
-      const metadata = await ipfsClient.fetchJson(project.metaPtr.pointer);
-
-      const application = metadata.application
-        ? metadata.application
-        : metadata;
-
-      let { status } = project;
-
-      if (id) {
-        status = await checkGrantApplicationStatus(
-          project.id,
-          project.round.projectsMetaPtr
-        );
-      }
-
-      const projectMetadata = application.project;
-      const projectRegistryId = projectMetadata.id;
-      const projectOwners = await projectRegistry.getProjectOwners(
-        projectRegistryId
-      );
-      const grantApplicationProjectMetadata: any = {
-        ...projectMetadata,
-        owners: projectOwners.map((address: string) => ({ address })),
-      };
-
-      return {
-        ...application,
-        status,
-        id: project.id,
-        project: grantApplicationProjectMetadata,
-        projectsMetaPtr: project.round.projectsMetaPtr,
-      } as any;
-    })
-  );
 
 export const unloadProjects = () => projectsUnload();
