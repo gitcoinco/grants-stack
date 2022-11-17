@@ -281,6 +281,7 @@ export const getApplicationsByRoundId =
         // eslint-disable-next-line
         const metadata = await ipfsClient.fetchJson(app.round.projectsMetaPtr.pointer);
         const realStatus = metadata.find((m: any) => m.id === app.id);
+        if (!realStatus) return;
         console.log("foo", realStatus);
         // todo: create an object to pass to the reducer
         // dispatch any updates to the store when the project ids match
