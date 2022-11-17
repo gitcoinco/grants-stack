@@ -1,10 +1,12 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
+import { AppStatus } from "../reducers/projects";
+import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
@@ -220,6 +222,122 @@ export const loadProjects =
     }
   };
 
+const updateApplicationStatusFromContract = async (
+  applications: any[],
+  projectsMetaPtr: any,
+  filterByStatus?: string
+) => {
+  // Handle scenario where operator hasn't review any projects in the round
+  if (!projectsMetaPtr)
+    return filterByStatus
+      ? applications.filter(
+          (application) => application.status === filterByStatus
+        )
+      : applications;
+
+  const ipfsClient = new PinataClient();
+  const applicationsFromContract = await ipfsClient.fetchJson(
+    projectsMetaPtr.pointer
+  );
+  console.log("applicationsFromContract", applicationsFromContract);
+
+  // Iterate over all applications indexed by graph
+  applications.map((application) => {
+    try {
+      console.log("application before", application);
+      // fetch matching application index from contract
+      const index = applicationsFromContract.findIndex(
+        (applicationFromContract: any) =>
+          application.id === applicationFromContract.id
+      );
+      console.log("index", index);
+      // update status of application from contract / default to pending
+      // eslint-disable-next-line
+      application.status =
+        index >= 0 ? applicationsFromContract[index].status : "PENDING";
+      console.log("application after", application);
+    } catch {
+      // eslint-disable-next-line
+      application.status = "PENDING";
+    }
+    return application;
+  });
+
+  if (filterByStatus) {
+    return applications.filter(
+      (application) => application.status === filterByStatus
+    );
+  }
+
+  return applications;
+};
+
+export const getApplicationsByRoundId =
+  // eslint-disable-next-line
+  async (roundId: string, chainId: any) => {
+    try {
+      console.log("fetching applications for round", roundId);
+      // query the subgraph for all rounds by the given account in the given program
+      const res = await graphqlFetch(
+        `
+          query GetApplicationsByRoundId($roundId: String!, $status: String) {
+            roundProjects(where: {
+              round: $roundId
+            }) {
+              id
+              metaPtr {
+                protocol
+                pointer
+              }
+              status
+              round {
+                projectsMetaPtr {
+                  protocol
+                  pointer
+                }
+              }
+            }
+          }
+        `,
+        chainId,
+        { roundId }
+      );
+
+      const grantApplications: any[] = [];
+
+      const ipfsClient = new PinataClient();
+      for (const project of res.data.roundProjects) {
+        // eslint-disable-next-line
+        const metadata = await ipfsClient.fetchJson(project.metaPtr.pointer);
+        console.log("metadata", metadata);
+
+        // const signature = metadata?.signature;
+        const application = metadata.application
+          ? metadata.application
+          : metadata;
+
+        grantApplications.push({
+          ...application,
+          status: project.status,
+          id: project.id,
+          projectsMetaPtr: project.round.projectsMetaPtr,
+        });
+
+        console.log("grantApplications******", grantApplications);
+
+        updateApplicationStatusFromContract(
+          grantApplications,
+          res.data.roundProjects[0].round.projectsMetaPtr
+        );
+      }
+
+      return grantApplications;
+    } catch (error) {
+      datadogRum.addError(error, { roundId });
+      console.error("getApplicationsByRoundId() error", error);
+    }
+  };
+
 export const getRoundProjectsApplied =
   (projectID: string, chainId: ChainId) => async (dispatch: Dispatch) => {
     dispatch({
@@ -228,7 +346,7 @@ export const getRoundProjectsApplied =
     });
 
     try {
-      console.log("fetching graphql project data");
+      console.log("fetching graphql project application data");
       const applicationsFound: any = await graphqlFetch(
         `query roundProjects($projectID: String) {
           roundProjects(where: { project: $projectID }) {
@@ -243,6 +361,19 @@ export const getRoundProjectsApplied =
         { projectID }
       );
 
+      const applications = applicationsFound.data.roundProjects;
+      console.log(
+        "applications found for project",
+        applicationsFound.data.roundProjects
+      );
+      // update each application with the status from the contract
+      // eslint-disable-next-line
+      applications.map((application: any) => {
+        // fetch the round metadata
+        getApplicationsByRoundId(application.round.id, chainId);
+      });
+
+      // todo: update the application status from the contract using same action
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
@@ -257,5 +388,67 @@ export const getRoundProjectsApplied =
       });
     }
   };
+
+export const checkGrantApplicationStatus = async (
+  id: any,
+  projectsMetaPtr: any
+): Promise<AppStatus> => {
+  let reviewedApplications: any[] = [];
+
+  const ipfsClient = new PinataClient();
+  if (projectsMetaPtr) {
+    reviewedApplications = await ipfsClient.fetchJson(projectsMetaPtr.pointer);
+  }
+
+  const obj = reviewedApplications.find((o) => o.id === id);
+
+  return obj ? (obj.status as AppStatus) : "PENDING";
+};
+
+// fetchApplicationData() is called when a user clicks on a project
+// to view the project details page
+// eslint-disable-next-line
+const fetchApplicationData = async (
+  res: any,
+  id: string,
+  projectRegistry: Contract
+): Promise<any[]> =>
+  Promise.all(
+    res.data.roundProjects.map(async (project: any): Promise<any> => {
+      const ipfsClient = new PinataClient();
+      const metadata = await ipfsClient.fetchJson(project.metaPtr.pointer);
+
+      const application = metadata.application
+        ? metadata.application
+        : metadata;
+
+      let { status } = project;
+
+      if (id) {
+        status = await checkGrantApplicationStatus(
+          project.id,
+          project.round.projectsMetaPtr
+        );
+      }
+
+      const projectMetadata = application.project;
+      const projectRegistryId = projectMetadata.id;
+      const projectOwners = await projectRegistry.getProjectOwners(
+        projectRegistryId
+      );
+      const grantApplicationProjectMetadata: any = {
+        ...projectMetadata,
+        owners: projectOwners.map((address: string) => ({ address })),
+      };
+
+      return {
+        ...application,
+        status,
+        id: project.id,
+        project: grantApplicationProjectMetadata,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+      } as any;
+    })
+  );
 
 export const unloadProjects = () => projectsUnload();

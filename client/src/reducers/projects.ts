@@ -18,13 +18,12 @@ export enum Status {
   Error,
 }
 
-export enum AppStatus {
-  Approved = "APPROVED",
-  Rejected = "REJECTED",
-  Pending = "PENDING",
-  NotFound = "NOT_FOUND",
-  Unknown = "UNKNOWN",
-}
+export type AppStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "APPEAL"
+  | "FRAUD";
 
 export type Application = {
   round: {
@@ -39,7 +38,6 @@ export interface ProjectsState {
   ids: number[];
   events: ProjectEventsMap;
   applications: Application[];
-  applicationsStatus: Status;
 }
 
 const initialState: ProjectsState = {
@@ -48,7 +46,6 @@ const initialState: ProjectsState = {
   ids: [],
   events: {},
   applications: [],
-  applicationsStatus: Status.Undefined,
 };
 
 export const projectsReducer = (
@@ -98,7 +95,7 @@ export const projectsReducer = (
         ...state,
         applications: [],
         error: undefined,
-        applicationsStatus: Status.Loading,
+        status: Status.Loading,
       };
     }
 
@@ -111,11 +108,10 @@ export const projectsReducer = (
             round: {
               id: roundID,
             },
-            status: AppStatus.NotFound,
+            status: "PENDING",
           },
         ],
         error: undefined,
-        applicationsStatus: Status.Loaded,
       };
     }
 
@@ -129,7 +125,6 @@ export const projectsReducer = (
         ...state,
         applications,
         error: undefined,
-        applicationsStatus: Status.Loaded,
       };
     }
 
@@ -139,7 +134,6 @@ export const projectsReducer = (
         ...state,
         applications: state.applications,
         error,
-        applicationsStatus: Status.Error,
       };
     }
 

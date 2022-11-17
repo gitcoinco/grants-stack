@@ -15,7 +15,6 @@ describe("projects reducer", () => {
       ids: [],
       events: {},
       applications: [],
-      applicationsStatus: Status.Undefined,
     };
   });
 
@@ -24,7 +23,6 @@ describe("projects reducer", () => {
       type: "PROJECT_APPLICATIONS_LOADING",
     });
 
-    expect(newState.applicationsStatus).toBe(Status.Loading);
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
@@ -34,7 +32,6 @@ describe("projects reducer", () => {
       applications: [],
     });
 
-    expect(newState.applicationsStatus).toBe(Status.Loaded);
   });
 
   it("PROJECT_APPLICATIONS_NOT_FOUND updates state", async () => {
@@ -44,7 +41,6 @@ describe("projects reducer", () => {
       roundID: "0x1234",
     });
 
-    expect(newState.applicationsStatus).toBe(Status.Loaded);
   });
 
   it("PROJECT_APPLICATIONS_ERROR updates state", async () => {
@@ -54,7 +50,6 @@ describe("projects reducer", () => {
       error: "error",
     });
 
-    expect(newState.applicationsStatus).toBe(Status.Error);
     expect(newState.error).toBe("error");
   });
 });

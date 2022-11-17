@@ -35,6 +35,11 @@ export default class PinataClient {
     return fetch(url).then((resp) => resp.text());
   }
 
+  fetchJson(cid: string) {
+    const url = this.fileURL(cid);
+    return fetch(url).then((resp) => resp.json());
+  }
+
   baseRequestData(name: string) {
     return {
       pinataOptions: {
