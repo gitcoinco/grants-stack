@@ -35,7 +35,8 @@ export type QFDonationParams = {
   roundId: string;
   donations: FinalBallotDonation[],
   donationToken: PayoutToken,
-  totalDonation: number
+  totalDonation: number,
+  votingStrategy: string,
 };
 
 interface SubmitDonationParams {
@@ -44,7 +45,8 @@ interface SubmitDonationParams {
   roundId: string;
   donations: FinalBallotDonation[],
   donationToken: PayoutToken,
-  totalDonation: number
+  totalDonation: number,
+  votingStrategy: string
 }
 
 export const QFDonationProvider = ({
@@ -103,6 +105,7 @@ async function _submitDonations({
   donations,
   donationToken,
   totalDonation,
+  votingStrategy,
 }: SubmitDonationParams) {
 
   resetToInitialState(context);
@@ -114,6 +117,7 @@ async function _submitDonations({
       signer,
       donationToken,
       totalDonation,
+      votingStrategy,
       context
     );
 
@@ -168,29 +172,32 @@ async function approveTokenForDonation(
   signerOrProvider: Signer,
   token: PayoutToken,
   amount: number,
+  votingStrategy: string,
   context: QFDonationState
-): Promise<number> {
+): Promise<void> {
   const { setTokenApprovalStatus } = context;
 
   try {
     setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
 
-    const votingStrategy = ethers.constants.AddressZero; // TODO wire in voting contract address
+    if (token.address == ethers.constants.AddressZero) {
+      // avoid calling approval for native token
+      setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
+      return;
+    }
 
-    // TODO: Skip if token is 0x0 as no approval is needed
+    const amountInUnits = ethers.utils.parseUnits(amount.toString(), token.decimal);
 
-    // TODO : convert amount to BigNumber for approval
-
-    const { transactionBlockNumber } = await approveTokenOnContract(
+    await approveTokenOnContract(
       signerOrProvider,
-      token.address,
       votingStrategy,
-      amount // TODO: check if this should be BigNum
+      token.address,
+      amountInUnits
     );
 
+    console.log("token approval");
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
 
-    return transactionBlockNumber;
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
@@ -248,7 +255,7 @@ async function waitForSubgraphToUpdate(
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
-    const chainId = await signerOrProvider.getChainId();
+    const chainId = await signerOrProvider?.getChainId();
 
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
 
@@ -266,10 +273,14 @@ function encodeQFVotes(donationToken: PayoutToken, donations: FinalBallotDonatio
   const encodedVotes: BytesLike[] = [];
 
   donations.map(donation => {
+    const amountInUnits = ethers.utils.parseUnits(donation.amount.toString(), donationToken.decimal);
+    let projectAddress = "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA" // TODO: REPLACE
+    projectAddress = ethers.utils.getAddress(projectAddress);
+
     const vote = [
       donationToken.address,
-      donation.amount, // TODO: update to BigNum
-      "0x0" // TODO: update to project address
+      amountInUnits,
+      projectAddress
     ]
 
     encodedVotes.push(ethers.utils.defaultAbiCoder.encode(
