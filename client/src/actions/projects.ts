@@ -226,7 +226,7 @@ export const loadProjects =
     }
   };
 
-export const getApplicationStatusFromContract =
+export const fetchApplicationStatusesFromContract =
   (roundAddresses: string[], projectID: string, projectApplicationID: string) =>
   async (dispatch: Dispatch) => {
     roundAddresses.forEach(async (roundAddress: string) => {
@@ -321,7 +321,7 @@ export const fetchProjectApplications =
         (app: Application) => app.roundID
       );
       dispatch<any>(
-        getApplicationStatusFromContract(
+        fetchApplicationStatusesFromContract(
           roundAddresses,
           projectID,
           projectApplicationID
