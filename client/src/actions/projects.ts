@@ -38,6 +38,7 @@ export interface ProjectsUnloadedAction {
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
+  projectID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
