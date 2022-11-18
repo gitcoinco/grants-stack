@@ -1,12 +1,17 @@
 import { makeApprovedProjectData, makeRoundData } from "../../../test-utils"
 import { ApplicationStatus, Round } from "../types"
 import { fetchFromIPFS, graphql_fetch } from "../utils"
-import { getRoundById, GetRoundByIdResult } from "../round"
+import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round"
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
   graphql_fetch: jest.fn(),
   fetchFromIPFS: jest.fn(),
+}));
+
+jest.mock("../round", () => ({
+  ...jest.requireActual("../round"),
+  getProjectOwners: jest.fn(),
 }));
 
 describe("getRoundById", () => {
@@ -71,6 +76,7 @@ describe("getRoundById", () => {
     const expectedApprovedApplication = makeApprovedProjectData();
 
     let graphQLResultWithApprovedApplication: GetRoundByIdResult;
+    let graphQLResultWithProjectOwners: any;
     let roundMetadataIpfsResult: any;
     let roundProjectStatusesIpfsResult: any;
 
@@ -96,12 +102,36 @@ describe("getRoundById", () => {
           ],
         },
       }
+
+      graphQLResultWithProjectOwners = {
+        data: {
+          projects: [
+            {
+              id: expectedApprovedApplication.projectRegistryId,
+              accounts: [
+                {
+                  account: {
+                      address: "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017"
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      };
+
       roundMetadataIpfsResult = expectedRound.roundMetadata
       roundProjectStatusesIpfsResult = [{
         id: expectedApprovedApplication.grantApplicationId,
         status: ApplicationStatus.APPROVED,
         payoutAddress: "some payout address"
       }]
+
+      const projectOwners = expectedApprovedApplication.projectMetadata.owners.map(
+        (it) => it.address
+      );
+
+      (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
     })
 
     it("maps approved project metadata for old application format", async () => {
@@ -112,7 +142,10 @@ describe("getRoundById", () => {
         }
       };
 
-      (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResultWithApprovedApplication);
+      (graphql_fetch as jest.Mock)
+        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
+        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
           return roundMetadataIpfsResult
@@ -141,7 +174,11 @@ describe("getRoundById", () => {
           },
         },
       };
-      (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResultWithApprovedApplication);
+
+      (graphql_fetch as jest.Mock)
+        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
+        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
+
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
           return roundMetadataIpfsResult

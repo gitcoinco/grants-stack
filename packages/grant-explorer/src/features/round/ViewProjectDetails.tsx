@@ -3,8 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
-import { Project, ProjectMetadata } from "../api/types";
-import { ChevronLeftIcon, GlobeAltIcon, LightningBoltIcon, InformationCircleIcon } from "@heroicons/react/solid";
+import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
+import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, LightningBoltIcon, ShieldCheckIcon } from "@heroicons/react/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
@@ -12,6 +14,18 @@ import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import ReactTooltip from "react-tooltip";
+import { useEffect, useState } from "react";
+
+enum VerifiedCredentialState {
+  VALID,
+  INVALID,
+  PENDING,
+}
+
+export const IAM_SERVER =
+  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
+const verifier = new PassportVerifier();
 
 export default function ViewProjectDetails() {
   datadogLogs.logger.info(
@@ -82,8 +96,6 @@ export default function ViewProjectDetails() {
   );
 }
 
-
-
 function Header(props: { projectMetadata: ProjectMetadata }) {
   return (
     <div>
@@ -116,6 +128,12 @@ function ProjectTitle(props: { projectMetadata: ProjectMetadata }) {
 }
 
 function AboutProject(props: { projectToRender: Project }) {
+  const [verifiedProviders, setVerifiedProviders] = useState<{
+    [key: string]: VerifiedCredentialState;
+  }>({
+    github: VerifiedCredentialState.PENDING,
+    twitter: VerifiedCredentialState.PENDING,
+  });
 
   const { projectToRender } = props;
   const projectRecipient = projectToRender.recipient.slice(0, 6) + "..." + projectToRender.recipient.slice(-4);
@@ -123,6 +141,52 @@ function AboutProject(props: { projectToRender: Project }) {
   const projectTwitter = projectToRender.projectMetadata.projectTwitter;
   const userGithub = projectToRender.projectMetadata.userGithub;
   const projectGithub = projectToRender.projectMetadata.projectGithub;
+
+  useEffect(() => {
+    if (projectToRender?.projectMetadata?.owners) {
+      const credentials: ProjectCredentials =
+        projectToRender?.projectMetadata.credentials ?? {};
+
+      if (!credentials) {
+        return;
+      }
+      const verify = async () => {
+        const newVerifiedProviders: { [key: string]: VerifiedCredentialState } =
+          { ...verifiedProviders };
+        for (const provider of Object.keys(verifiedProviders)) {
+          const verifiableCredential = credentials[provider];
+          if (verifiableCredential) {
+            newVerifiedProviders[provider] = await isVerified(
+              verifiableCredential,
+              verifier,
+              provider,
+              projectToRender
+            );
+          }
+        }
+
+        setVerifiedProviders(newVerifiedProviders);
+      };
+      verify();
+    }
+  }, [projectToRender?.projectMetadata.owners]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const getVerifiableCredentialVerificationResultView = (provider: string) => {
+    switch (verifiedProviders[provider]) {
+      case VerifiedCredentialState.VALID:
+        return (
+          <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
+            <ShieldCheckIcon
+              className="w-5 h-5 text-teal-500 mr-2"
+              data-testid={`${provider}-verifiable-credential`}
+            />
+            <p className="text-teal-500 font-medium text-xs">Verified</p>
+          </span>
+        );
+      default:
+        return <></>;
+    }
+  };
 
   return (
     <div className="grid grid-cols-2 border-b-2 pt-2 pb-6">
@@ -156,6 +220,7 @@ function AboutProject(props: { projectToRender: Project }) {
           >
             <DetailSummary text={`@${projectTwitter}`} testID="project-twitter" />
           </a>
+          {getVerifiableCredentialVerificationResultView("twitter")}
         </span>)    
       }
       {userGithub && 
@@ -182,6 +247,7 @@ function AboutProject(props: { projectToRender: Project }) {
           >
             <DetailSummary text={`${projectGithub}`} testID="project-github" />
           </a>
+          {getVerifiableCredentialVerificationResultView("github")}
         </span>)    
       }  
     </div>
@@ -339,3 +405,54 @@ function ShortlistTooltip() {
       </span>
   );
 }
+function vcProviderMatchesProject(
+  provider: string,
+  verifiableCredential: VerifiableCredential,
+  project: Project | undefined
+) {
+  let vcProviderMatchesProject = false;
+  if (provider === "twitter") {
+    vcProviderMatchesProject =
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() === project?.projectMetadata.projectTwitter?.toLowerCase();
+  } else if (provider === "github") {
+    vcProviderMatchesProject =
+      verifiableCredential.credentialSubject.provider
+        ?.split("#")[1]
+        .toLowerCase() === project?.projectMetadata.projectGithub?.toLowerCase();
+  }
+  return vcProviderMatchesProject;
+}
+
+function vcIssuedToAddress(vc: VerifiableCredential, address: string) {
+  const vcIdSplit = vc.credentialSubject.id.split(":");
+  const addressFromId = vcIdSplit[vcIdSplit.length - 1];
+  return addressFromId === address;
+}
+
+async function isVerified(
+  verifiableCredential: VerifiableCredential,
+  verifier: PassportVerifier,
+  provider: string,
+  project: Project | undefined
+) {
+  const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
+  const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
+  const providerMatchesProject = vcProviderMatchesProject(
+    provider,
+    verifiableCredential,
+    project
+  );
+  const vcIssuedToAtLeastOneProjectOwner = (
+    project?.projectMetadata?.owners ?? []
+  ).some((owner) => vcIssuedToAddress(verifiableCredential, owner.address));
+
+  return vcHasValidProof &&
+    vcIssuedByValidIAMServer &&
+    providerMatchesProject &&
+    vcIssuedToAtLeastOneProjectOwner
+    ? VerifiedCredentialState.VALID
+    : VerifiedCredentialState.INVALID;
+}
+

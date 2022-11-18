@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import {
   ApplicationStatus,
@@ -119,7 +120,10 @@ export async function getRoundById(
     const roundMetadata: RoundMetadata = await fetchFromIPFS(
       round.roundMetaPtr.pointer
     );
-    const approvedProjectsWithMetadata = await loadApprovedProjects(round);
+    const approvedProjectsWithMetadata = await loadApprovedProjects(
+      round,
+      chainId
+    );
 
     return {
       id: roundId,
@@ -141,7 +145,11 @@ export async function getRoundById(
   }
 }
 
-async function loadApprovedProjects(round: RoundResult): Promise<Project[]> {
+async function loadApprovedProjects(
+  round: RoundResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any
+): Promise<Project[]> {
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
   }
@@ -152,12 +160,12 @@ async function loadApprovedProjects(round: RoundResult): Promise<Project[]> {
   const approvedProjectIds: string[] = await getApprovedProjectIds(
     round.projectsMetaPtr
   );
-
   const approvedProjects = allRoundProjects.filter((project) =>
     approvedProjectIds.includes(project.id)
   );
   const fetchApprovedProjectMetadata: Promise<Project>[] = approvedProjects.map(
-    fetchMetadataAndMapProject
+    (project: RoundProjectResult) =>
+      fetchMetadataAndMapProject(project, chainId)
   );
 
   return Promise.all(fetchApprovedProjectMetadata);
@@ -175,7 +183,9 @@ async function getApprovedProjectIds(
 }
 
 async function fetchMetadataAndMapProject(
-  project: RoundProjectResult
+  project: RoundProjectResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any
 ): Promise<Project> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -183,13 +193,56 @@ async function fetchMetadataAndMapProject(
   // new format: { signature: "...", application: { round, project, ... } }
   const application = applicationData.application || applicationData;
   const projectMetadataFromApplication = application.project;
+  const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
+  const projectOwners = await getProjectOwners(chainId, projectRegistryId);
+
   return {
     grantApplicationId: project.id,
     projectRegistryId: project.project,
     recipient: application.recipient,
     projectMetadata: {
       ...projectMetadataFromApplication,
+      owners: projectOwners.map((address: string) => ({ address })),
     },
     status: ApplicationStatus.APPROVED,
   };
+}
+
+export async function getProjectOwners(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any,
+  projectRegistryId: string
+) {
+  try {
+    // get the subgraph for project owners by $projectRegistryId
+    const res = await graphql_fetch(
+      `
+        query GetProjectOwners($projectRegistryId: String) {
+          projects(where: {
+            id: $projectRegistryId
+          }) {
+            id
+            accounts {
+              account {
+                address
+              }
+            }
+          }
+        }
+      `,
+      chainId,
+      { projectRegistryId },
+      true
+    );
+
+    return (
+      res.data?.projects[0]?.accounts.map(
+        (account: { account: { address: string } }) =>
+          ethers.utils.getAddress(account.account.address)
+      ) || []
+    );
+  } catch (err) {
+    console.log("error", err);
+    throw Error("Unable to fetch project owners");
+  }
 }
