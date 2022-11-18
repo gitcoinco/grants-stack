@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
+import { BroadcastChannel } from "broadcast-channel";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import Footer from "../Footer";

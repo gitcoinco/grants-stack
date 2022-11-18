@@ -2,12 +2,16 @@ import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
+import { Application, AppStatus } from "../reducers/projects";
+import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
-import { ChainId, graphqlFetch } from "../utils/graphql";
+import { graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -34,20 +38,22 @@ export interface ProjectsUnloadedAction {
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
-}
-
-export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
-interface ProjectApplicationsNotFoundAction {
-  type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
   projectID: string;
-  roundID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
-  applications: any;
+  applications: Application[];
+}
+
+export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";
+interface ProjectApplicationUpdatedAction {
+  type: typeof PROJECT_APPLICATION_UPDATED;
+  projectID: string;
+  roundID: string;
+  status: AppStatus;
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
@@ -63,9 +69,9 @@ export type ProjectsActions =
   | ProjectsErrorAction
   | ProjectsUnloadedAction
   | ProjectApplicationsLoadingAction
-  | ProjectApplicationsNotFoundAction
   | ProjectApplicationsLoadedAction
-  | ProjectApplicationsErrorAction;
+  | ProjectApplicationsErrorAction
+  | ProjectApplicationUpdatedAction;
 
 const projectsLoading = () => ({
   type: PROJECTS_LOADING,
@@ -220,16 +226,69 @@ export const loadProjects =
     }
   };
 
-export const getRoundProjectsApplied =
-  (projectID: string, chainId: ChainId) => async (dispatch: Dispatch) => {
+export const fetchApplicationStatusesFromContract =
+  (roundAddresses: string[], projectID: string, projectApplicationID: string) =>
+  async (dispatch: Dispatch) => {
+    roundAddresses.forEach(async (roundAddress: string) => {
+      const contract = new ethers.Contract(
+        roundAddress,
+        RoundImplementationABI,
+        global.web3Provider!
+      );
+
+      try {
+        const result = await contract.projectsMetaPtr();
+        const pinataClient = new PinataClient();
+        const data = await pinataClient.fetchJson(result.pointer);
+        const projectApplication = data.find((app: any) => {
+          if (app.id === undefined) {
+            return false;
+          }
+
+          // appId is in the form "projectApplicationID-roundAddress"
+          const parts = app.id.split("-");
+          if (parts[0] === projectApplicationID) {
+            return true;
+          }
+
+          return false;
+        });
+
+        if (projectApplication !== undefined) {
+          dispatch({
+            type: "PROJECT_APPLICATION_UPDATED",
+            projectID,
+            roundID: roundAddress,
+            status: projectApplication.status,
+          });
+        }
+      } catch (error) {
+        datadogRum.addError(error, { roundAddress });
+        console.error("getApplicationStatusFromContract() error", {
+          roundAddress,
+          error,
+        });
+      }
+    });
+  };
+
+export const fetchProjectApplications =
+  (projectID: string) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
 
+    const state = getState();
+    const { chainID } = state.web3;
+    const projectApplicationID = generateUniqueRoundApplicationID(
+      chainID!,
+      Number(projectID)
+    );
+
     try {
-      console.log("fetching graphql project data");
-      const applicationsFound: any = await graphqlFetch(
+      const response: any = await graphqlFetch(
         `query roundProjects($projectID: String) {
           roundProjects(where: { project: $projectID }) {
             status
@@ -239,15 +298,35 @@ export const getRoundProjectsApplied =
           }
         }
         `,
-        chainId,
-        { projectID }
+        chainID!,
+        { projectID: projectApplicationID }
       );
+
+      const applications = response.data.roundProjects.map((rp: any) => ({
+        status: rp.status,
+        roundID: rp.round.id,
+      }));
 
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
-        applications: applicationsFound.data.roundProjects,
+        applications,
       });
+
+      // Update each application with the status from the contract
+      // FIXME: This part can be removed when we are sure that the
+      // aplication status returned from the graph is up to date.
+      // eslint-disable-next-line
+      const roundAddresses = applications.map(
+        (app: Application) => app.roundID
+      );
+      dispatch<any>(
+        fetchApplicationStatusesFromContract(
+          roundAddresses,
+          projectID,
+          projectApplicationID
+        )
+      );
     } catch (error: any) {
       datadogRum.addError(error, { projectID });
       dispatch({

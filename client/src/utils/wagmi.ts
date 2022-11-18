@@ -63,7 +63,7 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(fantomMainnet);
+  chainsAvailable.push(fantomMainnet, chain.optimism);
 } else {
   chainsAvailable.push(
     chain.optimism,
