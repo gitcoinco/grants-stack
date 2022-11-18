@@ -123,7 +123,7 @@ async function _submitDonations({
     );
 
     // Invoke Vote
-    const transactionBlockNumber = await vote(
+    const { txBlockNumber, txHash} = await vote(
       signer,
       roundId,
       donationToken,
@@ -133,7 +133,9 @@ async function _submitDonations({
     );
 
     // Wait for indexing on subgraph
-    await waitForSubgraphToUpdate(signer, transactionBlockNumber, context);
+    await waitForSubgraphToUpdate(signer, txBlockNumber, context);
+
+    return txHash;
   } catch (error) {
     datadogLogs.logger.error(`error: _submitDonations - ${error}`);
     console.error("Error while bulk submitting donations: ", error);
@@ -211,7 +213,7 @@ async function vote(
   donations: FinalBallotDonation[],
   totalDonation: number,
   context: QFDonationState
-): Promise<number> {
+): Promise<{ txBlockNumber: number, txHash: string }> {
   const { setVoteStatus } = context;
 
   try {
@@ -219,7 +221,7 @@ async function vote(
 
     const encodedVotes = encodeQFVotes(token, donations);
 
-    const { transactionBlockNumber } = await voteOnRoundContract(
+    const { txBlockNumber, txHash } = await voteOnRoundContract(
       roundId,
       signerOrProvider,
       encodedVotes,
@@ -227,7 +229,10 @@ async function vote(
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
-    return transactionBlockNumber;
+    return {
+      txBlockNumber: txBlockNumber,
+      txHash: txHash
+    };
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
@@ -239,26 +244,26 @@ async function vote(
 
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
-  transactionBlockNumber: number,
+  txBlockNumber: number,
   context: QFDonationState
 ) {
   const { setIndexingStatus } = context;
 
   try {
     datadogLogs.logger.error(
-      `waitForSubgraphToUpdate: txnBlockNumber - ${transactionBlockNumber}`
+      `waitForSubgraphToUpdate: txnBlockNumber - ${txBlockNumber}`
     );
 
     setIndexingStatus(ProgressStatus.IN_PROGRESS);
 
     const chainId = await signerOrProvider?.getChainId();
 
-    await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
+    await waitForSubgraphSyncTo(chainId, txBlockNumber);
 
     setIndexingStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
-      `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
+      `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`
     );
     setIndexingStatus(ProgressStatus.IS_ERROR);
     throw error;
