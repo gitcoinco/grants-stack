@@ -98,7 +98,6 @@ export const projectsReducer = (
           [action.projectID]: [],
         },
         error: undefined,
-        status: Status.Loading,
       };
     }
 
