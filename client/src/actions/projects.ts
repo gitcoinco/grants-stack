@@ -2,35 +2,16 @@ import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus } from "../reducers/projects";
 import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
-import { ChainId, graphqlFetch } from "../utils/graphql";
+import { graphqlFetch } from "../utils/graphql";
 import { fetchGrantData } from "./grantsMetadata";
-
-type RoundProject = {
-  id: string;
-  metaPtr: {
-    protocol: number;
-    pointer: string;
-  };
-  status: string;
-  round: {
-    projectsMetaPtr: {
-      protocol: number;
-      pointer: string;
-    };
-  };
-};
-
-type Res = {
-  data: {
-    roundProjects: RoundProject[];
-  };
-};
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -59,13 +40,6 @@ interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
 }
 
-export const PROJECT_APPLICATIONS_NOT_FOUND = "PROJECT_APPLICATIONS_NOT_FOUND";
-interface ProjectApplicationsNotFoundAction {
-  type: typeof PROJECT_APPLICATIONS_NOT_FOUND;
-  projectID: string;
-  roundID: string;
-}
-
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
@@ -86,7 +60,6 @@ export type ProjectsActions =
   | ProjectsErrorAction
   | ProjectsUnloadedAction
   | ProjectApplicationsLoadingAction
-  | ProjectApplicationsNotFoundAction
   | ProjectApplicationsLoadedAction
   | ProjectApplicationsErrorAction;
 
@@ -243,76 +216,65 @@ export const loadProjects =
     }
   };
 
-export const getApplicationsByRoundId =
+export const getApplicationStatusFromContract =
   // eslint-disable-next-line
-  async (roundId: string, chainId: any, dispatch: Dispatch) => {
+  async (roundAddress: string, projectApplicationID: string) => {
     try {
       // query the subgraph for all rounds by the given account in the given program
-      const res: Res = await graphqlFetch(
-        `
-          query GetApplicationsByRoundId($roundId: String!, $status: String) {
-            roundProjects(where: {
-              round: $roundId
-            }) {
-              id
-              metaPtr {
-                protocol
-                pointer
-              }
-              status
-              round {
-                projectsMetaPtr {
-                  protocol
-                  pointer
-                }
-              }
-            }
-          }
-        `,
-        chainId,
-        { roundId }
+      const contract = new ethers.Contract(
+        roundAddress,
+        RoundImplementationABI,
+        global.web3Provider!
       );
 
-      const ipfsClient = new PinataClient();
-      const applicationsFound = res.data.roundProjects;
-      // eslint-disable-next-line
-      for (let i = 0; i < applicationsFound.length; i++) {
-        const app = res.data.roundProjects[i];
-        // eslint-disable-next-line
-        const metadata = await ipfsClient.fetchJson(app.round.projectsMetaPtr.pointer);
-        const realStatus = metadata.find((m: any) => m.id === app.id);
-        if (!realStatus) return;
-        console.log("foo", realStatus);
-        // todo: create an object to pass to the reducer
-        // dispatch any updates to the store when the project ids match
-        dispatch({
-          type: PROJECT_APPLICATIONS_LOADED,
-          projectID: app.id,
-          applications: [
-            {
-              round: {
-                id: roundId,
-              },
-              status: realStatus.status,
-            },
-          ],
-        });
+      const result = await contract.projectsMetaPtr();
+      const pinataClient = new PinataClient();
+      const data = await pinataClient.fetchJson(result.pointer);
+      const projectApplication = data.find((app: any) => {
+        if (app.id === undefined) {
+          return false;
+        }
+
+        // appId is in the form "projectApplicationID-roundAddress"
+        const parts = app.id.split("-");
+        if (parts[0] === projectApplicationID) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (projectApplication !== undefined) {
+        return projectApplication.status;
       }
+
+      return undefined;
     } catch (error) {
-      datadogRum.addError(error, { roundId });
-      console.error("getApplicationsByRoundId() error", { roundId, error });
+      datadogRum.addError(error, { roundAddress });
+      console.error("getApplicationStatusFromContract() error", {
+        roundAddress,
+        error,
+      });
     }
   };
 
-export const getRoundProjectsApplied =
-  (projectID: string, chainId: ChainId) => async (dispatch: Dispatch) => {
+export const fetchProjectApplications =
+  (projectID: string) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
 
+    const state = getState();
+    const { chainID } = state.web3;
+    const projectApplicationID = generateUniqueRoundApplicationID(
+      chainID!,
+      Number(projectID)
+    );
+
     try {
-      const applicationsFound: any = await graphqlFetch(
+      const response: any = await graphqlFetch(
         `query roundProjects($projectID: String) {
           roundProjects(where: { project: $projectID }) {
             status
@@ -322,20 +284,35 @@ export const getRoundProjectsApplied =
           }
         }
         `,
-        chainId,
-        { projectID }
+        chainID!,
+        { projectID: projectApplicationID }
       );
-      const applications = applicationsFound.data.roundProjects;
-      if (!applications) return;
+
+      const applications = response.data.roundProjects.map((rp: any) => ({
+        status: rp.status,
+        roundID: rp.round.id,
+      }));
+
+      // Update each application with the status from the contract
+      // FIXME: This part can be removed when we are sure that the
+      // aplication status returned from the graph is up to date.
+      // eslint-disable-next-line
+      for (let i = 0; i < applications.length; i++) {
+        // eslint-disable-next-line
+        const updatedStatus = await getApplicationStatusFromContract(
+          applications[i].roundID,
+          projectApplicationID
+        );
+
+        if (updatedStatus !== undefined) {
+          applications[i].status = updatedStatus;
+        }
+      }
+
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
         applications,
-      });
-      // update each application with the status from the contract
-      // eslint-disable-next-line
-      applications.map((roundApp: any) => {
-        getApplicationsByRoundId(roundApp.round.id, chainId, dispatch);
       });
     } catch (error: any) {
       datadogRum.addError(error, { projectID });

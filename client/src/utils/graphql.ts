@@ -51,7 +51,7 @@ const getGraphQLEndpoint = async (chainId: ChainId): Promise<GraphEndpoint> => {
 
 export const graphqlFetch = async (
   query: string,
-  chainId: ChainId,
+  chainId: number,
   variables: object = {}
 ) => {
   const endpoint: GraphEndpoint = await getGraphQLEndpoint(chainId);

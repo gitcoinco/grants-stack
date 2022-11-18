@@ -2,11 +2,10 @@ import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getRoundProjectsApplied } from "../../actions/projects";
+import { fetchProjectApplications } from "../../actions/projects";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
-import generateUniqueRoundApplicationID from "../../utils/roundApplication";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -39,23 +38,17 @@ export default function Details({
   const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const chainId = state.web3.chainID;
-    const projectID = generateUniqueRoundApplicationID(
-      chainId!,
-      Number(params.id)
-    );
     const { applications } = state.projects;
 
     return {
-      chainId,
-      projectID,
+      projectID: params.id!,
       applications,
     };
   });
 
   useEffect(() => {
-    dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
-  }, [dispatch, props.projectID, props.chainId]);
+    dispatch(fetchProjectApplications(props.projectID));
+  }, [dispatch, props.projectID]);
 
   const renderApplications = () => (
     <>
@@ -65,10 +58,9 @@ export default function Details({
         </Box>
       )}
       <Box>
-        {props.applications.length !== 0 &&
-          showApplications &&
+        {showApplications &&
           props.applications.map((application) => {
-            const roundID = application?.round?.id;
+            const roundID = application?.roundID;
             const cardData = { application, roundID };
             return (
               <Box key={roundID} m={2}>

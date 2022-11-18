@@ -7,7 +7,6 @@ import {
   PROJECT_APPLICATIONS_ERROR,
   PROJECT_APPLICATIONS_LOADED,
   PROJECT_APPLICATIONS_LOADING,
-  PROJECT_APPLICATIONS_NOT_FOUND,
 } from "../actions/projects";
 import { ProjectEventsMap } from "../types";
 
@@ -26,9 +25,7 @@ export type AppStatus =
   | "FRAUD";
 
 export type Application = {
-  round: {
-    id: string;
-  };
+  roundID: string;
   status: AppStatus;
 };
 
@@ -99,31 +96,10 @@ export const projectsReducer = (
       };
     }
 
-    case PROJECT_APPLICATIONS_NOT_FOUND: {
-      const { roundID } = action;
-      return {
-        ...state,
-        applications: [
-          {
-            round: {
-              id: roundID,
-            },
-            status: "PENDING",
-          },
-        ],
-        error: undefined,
-      };
-    }
-
     case PROJECT_APPLICATIONS_LOADED: {
-      const {
-        applications,
-      }: {
-        applications: Application[];
-      } = action;
       return {
         ...state,
-        applications,
+        applications: action.applications,
         error: undefined,
       };
     }
