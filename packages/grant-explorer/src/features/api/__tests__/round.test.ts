@@ -24,7 +24,7 @@ describe("getRoundById", () => {
 
     expectedRoundData = makeRoundData();
     expectedRound = {
-      ...expectedRoundData
+      ...expectedRoundData,
     };
     delete expectedRound.store;
     delete expectedRound.applicationStore;
@@ -35,29 +35,37 @@ describe("getRoundById", () => {
           {
             id: expectedRoundData.id!,
             program: {
-              id: expectedRoundData.ownedBy
+              id: expectedRoundData.ownedBy,
             },
             roundMetaPtr: expectedRoundData.store!,
             applicationMetaPtr: expectedRoundData.applicationStore!,
-            applicationsStartTime: convertDateToSecondsString(expectedRoundData.applicationsStartTime),
-            applicationsEndTime: convertDateToSecondsString(expectedRoundData.applicationsEndTime),
-            roundStartTime: convertDateToSecondsString(expectedRoundData.roundStartTime),
-            roundEndTime: convertDateToSecondsString(expectedRoundData.roundEndTime),
+            applicationsStartTime: convertDateToSecondsString(
+              expectedRoundData.applicationsStartTime
+            ),
+            applicationsEndTime: convertDateToSecondsString(
+              expectedRoundData.applicationsEndTime
+            ),
+            roundStartTime: convertDateToSecondsString(
+              expectedRoundData.roundStartTime
+            ),
+            roundEndTime: convertDateToSecondsString(
+              expectedRoundData.roundEndTime
+            ),
             token: expectedRoundData.token,
             votingStrategy: expectedRoundData.votingStrategy,
             projectsMetaPtr: null,
-            projects: []
+            projects: [],
           },
         ],
-      }
+      },
     };
 
     (graphql_fetch as jest.Mock).mockResolvedValue(graphQLResult);
     (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
       if (pointer === expectedRoundData.store?.pointer) {
-        return expectedRoundData.roundMetadata
+        return expectedRoundData.roundMetadata;
       }
-      return {}
+      return {};
     });
   });
 
@@ -67,7 +75,9 @@ describe("getRoundById", () => {
     expect(actualRound).toMatchObject(expectedRound);
     expect(graphql_fetch as jest.Mock).toBeCalledTimes(1);
     expect(fetchFromIPFS as jest.Mock).toBeCalledTimes(1);
-    expect(fetchFromIPFS as jest.Mock).toBeCalledWith(expectedRoundData.store?.pointer);
+    expect(fetchFromIPFS as jest.Mock).toBeCalledWith(
+      expectedRoundData.store?.pointer
+    );
   });
 
   describe("when round has approved projects", () => {
@@ -86,17 +96,16 @@ describe("getRoundById", () => {
           rounds: [
             {
               ...graphQLResult.data.rounds[0],
-              projectsMetaPtr: { protocol: 1,
-                pointer: roundProjectStatuses },
+              projectsMetaPtr: { protocol: 1, pointer: roundProjectStatuses },
               projects: [
                 {
                   id: expectedApprovedApplication.grantApplicationId,
                   project: expectedApprovedApplication.projectRegistryId,
                   metaPtr: {
                     protocol: 1,
-                    pointer: approvedProjectMetadataPointer
-                  }
-                }
+                    pointer: approvedProjectMetadataPointer,
+                  },
+                },
               ],
             },
           ],
@@ -138,8 +147,8 @@ describe("getRoundById", () => {
       const oldFormat = {
         round: expectedRound.id,
         project: {
-          ...expectedApprovedApplication.projectMetadata
-        }
+          ...expectedApprovedApplication.projectMetadata,
+        },
       };
 
       (graphql_fetch as jest.Mock)
@@ -148,18 +157,21 @@ describe("getRoundById", () => {
 
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
-          return roundMetadataIpfsResult
+          return roundMetadataIpfsResult;
         }
         if (pointer === roundProjectStatuses) {
-          return roundProjectStatusesIpfsResult
+          return roundProjectStatusesIpfsResult;
         }
         if (pointer === approvedProjectMetadataPointer) {
-          return oldFormat
+          return oldFormat;
         }
-        return {}
+        return {};
       });
 
-      const actualRound = await getRoundById(expectedRoundData.id!, "someChain");
+      const actualRound = await getRoundById(
+        expectedRoundData.id!,
+        "someChain"
+      );
 
       expect(actualRound).toMatchObject(expectedRound);
     });
@@ -181,22 +193,26 @@ describe("getRoundById", () => {
 
       (fetchFromIPFS as jest.Mock).mockImplementation((pointer: string) => {
         if (pointer === expectedRoundData.store?.pointer) {
-          return roundMetadataIpfsResult
+          return roundMetadataIpfsResult;
         }
         if (pointer === roundProjectStatuses) {
-          return roundProjectStatusesIpfsResult
+          return roundProjectStatusesIpfsResult;
         }
         if (pointer === approvedProjectMetadataPointer) {
           return newFormat;
         }
-        return {}
+        return {};
       });
 
-      const actualRound = await getRoundById(expectedRoundData.id!, "someChain");
+      const actualRound = await getRoundById(
+        expectedRoundData.id!,
+        "someChain"
+      );
 
       expect(actualRound).toMatchObject(expectedRound);
     });
-  })
-})
+  });
+});
 
-const convertDateToSecondsString = (date: Date): string => (date.valueOf() / 1000).toString();
+const convertDateToSecondsString = (date: Date): string =>
+  (date.valueOf() / 1000).toString();

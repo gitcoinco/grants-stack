@@ -186,5 +186,5 @@ export type PayoutToken = {
   address: string;
   decimal: number;
   logo?: string;
-  default?: boolean;
+  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
 };
