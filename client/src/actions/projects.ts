@@ -337,20 +337,4 @@ export const fetchProjectApplications =
     }
   };
 
-export const checkGrantApplicationStatus = async (
-  id: any,
-  projectsMetaPtr: any
-): Promise<AppStatus> => {
-  let reviewedApplications: any[] = [];
-
-  const ipfsClient = new PinataClient();
-  if (projectsMetaPtr) {
-    reviewedApplications = await ipfsClient.fetchJson(projectsMetaPtr.pointer);
-  }
-
-  const obj = reviewedApplications.find((o) => o.id === id);
-
-  return obj ? (obj.status as AppStatus) : "PENDING";
-};
-
 export const unloadProjects = () => projectsUnload();
