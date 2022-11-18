@@ -149,6 +149,7 @@ export type recipient = string;
 export type FinalBallotDonation = {
   projectRegistryId: ProjectRegistryId,
   amount: number;
+  projectAddress: recipient;
 }
 
 export enum ApplicationStatus {

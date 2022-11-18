@@ -1,5 +1,11 @@
 import { useBallot } from "../context/BallotContext";
-import { FinalBallotDonation, PayoutToken, ProgressStatus, Project } from "./api/types";
+import {
+  FinalBallotDonation,
+  PayoutToken,
+  ProgressStatus,
+  Project,
+  recipient,
+} from "./api/types";
 import { useRoundById } from "../context/RoundContext";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
@@ -40,7 +46,9 @@ export default function ViewBallot() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
 
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(payoutTokenOptions[0]);
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
+    payoutTokenOptions[0]
+  );
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
@@ -80,15 +88,10 @@ export default function ViewBallot() {
     }
   }, [shortlistSelect]);
 
-
   const navigate = useNavigate();
 
-  const {
-    submitDonations,
-    tokenApprovalStatus,
-    voteStatus,
-    indexingStatus,
-  } = useQFDonation();
+  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus } =
+    useQFDonation();
 
   useEffect(() => {
     if (
@@ -107,7 +110,6 @@ export default function ViewBallot() {
       }, 5000);
     }
   }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus]);
-
 
   const progressSteps = [
     {
@@ -377,7 +379,8 @@ export default function ViewBallot() {
       index: number;
     }
   ) {
-    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
+    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
+      useBallot();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
@@ -433,7 +436,8 @@ export default function ViewBallot() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 updateDonations(
                   props.project.projectRegistryId,
-                  Number(e.target.value)
+                  Number(e.target.value),
+                  props.project.recipient
                 );
               }}
               className="w-24"
@@ -441,7 +445,11 @@ export default function ViewBallot() {
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
-              onClick={() => handleRemoveProjectsFromFinalBallotAndAddToShortlist([props.project])}
+              onClick={() =>
+                handleRemoveProjectsFromFinalBallotAndAddToShortlist([
+                  props.project,
+                ])
+              }
               className="w-6 h-6 m-auto cursor-pointer"
             />
           </div>
@@ -553,7 +561,8 @@ export default function ViewBallot() {
   }
 
   function SelectActive(props: { onClick: () => void }) {
-    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
+    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] =
+      useBallot();
     return (
       <Button
         type="button"
@@ -565,7 +574,9 @@ export default function ViewBallot() {
         {selected.length > 0 ? (
           <div
             data-testid="move-to-finalBallot"
-            onClick={async () => handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)}
+            onClick={async () =>
+              handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)
+            }
           >
             Add selected ({selected.length}) to Final Donation
           </div>
@@ -604,7 +615,11 @@ export default function ViewBallot() {
     );
   }
 
-  function updateDonations(projectRegistryId: string, amount: number) {
+  function updateDonations(
+    projectRegistryId: string,
+    amount: number,
+    projectAddress: recipient
+  ) {
     const projectIndex = donations.findIndex(
       (donation) => donation.projectRegistryId === projectRegistryId
     );
@@ -615,8 +630,9 @@ export default function ViewBallot() {
       newState[projectIndex].amount = amount;
     } else {
       newState.push({
-        projectRegistryId: projectRegistryId,
-        amount: amount,
+        projectRegistryId,
+        amount,
+        projectAddress,
       });
     }
 
@@ -852,9 +868,8 @@ export default function ViewBallot() {
     );
   }
 
-  async function handleSubmitDonation () {
+  async function handleSubmitDonation() {
     try {
-
       if (!round || !roundId) {
         throw new Error("round is null");
       }
@@ -862,20 +877,21 @@ export default function ViewBallot() {
       setTimeout(() => {
         setOpenProgressModal(true);
         setOpenInfoModal(false);
-      }, modalDelayMs)
+      }, modalDelayMs);
 
       await submitDonations({
         roundId: roundId,
         donations: donations,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,
-        votingStrategy: round.votingStrategy
+        votingStrategy: round.votingStrategy,
       });
       setOpenProgressModal(false);
     } catch (error) {
-      datadogLogs.logger.error(`error: handleSubmitDonation - ${error}, id: ${roundId}`);
+      datadogLogs.logger.error(
+        `error: handleSubmitDonation - ${error}, id: ${roundId}`
+      );
       console.error(error);
     }
   }
-
 }

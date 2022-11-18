@@ -183,7 +183,7 @@ async function approveTokenForDonation(
     }
 
     const amountInUnits = ethers.utils.parseUnits(
-      amount.toString(),
+      (amount * 2).toString(), // request spend allowance of twice the total donation amount
       token.decimal
     );
 
@@ -194,7 +194,6 @@ async function approveTokenForDonation(
       amountInUnits
     );
 
-    console.log("token approval");
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
@@ -277,7 +276,7 @@ function encodeQFVotes(
       donation.amount.toString(),
       donationToken.decimal
     );
-    let projectAddress = "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA"; // TODO: REPLACE
+    let projectAddress = donation.projectAddress;
     projectAddress = ethers.utils.getAddress(projectAddress);
 
     const vote = [donationToken.address, amountInUnits, projectAddress];
