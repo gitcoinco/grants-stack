@@ -183,7 +183,7 @@ async function approveTokenForDonation(
     }
 
     const amountInUnits = ethers.utils.parseUnits(
-      (amount * 2).toString(), // request spend allowance of twice the total donation amount
+      amount.toString(),
       token.decimal
     );
 
