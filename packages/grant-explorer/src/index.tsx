@@ -35,7 +35,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <WagmiConfig client={WagmiClient}>
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
             <BallotProvider>
               <ReduxRouter history={history} store={store}>
