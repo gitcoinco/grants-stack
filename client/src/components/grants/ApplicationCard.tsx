@@ -66,7 +66,21 @@ export default function ApplicationCard({
         </Box>
         <Box className="pl-2 mt-2 md:mt-0 text-gitcoin-gray-400">
           <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-            {applicationData.application.status}
+            {applicationData.application.status === "APPROVED" ? (
+              <span>{applicationData.application.status}</span>
+            ) : null}
+            {applicationData.application.status === "REJECTED" ? (
+              <span>{applicationData.application.status}</span>
+            ) : null}
+            {applicationData.application.status === "PENDING" ? (
+              <span>In Review</span>
+            ) : null}
+            {applicationData.application.status === "APPEAL" ? (
+              <span>{applicationData.application.status}</span>
+            ) : null}
+            {applicationData.application.status === "FRAUD" ? (
+              <span>{applicationData.application.status}</span>
+            ) : null}
           </Badge>
         </Box>
       </div>
