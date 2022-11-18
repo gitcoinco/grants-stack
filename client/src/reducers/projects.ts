@@ -7,6 +7,7 @@ import {
   PROJECT_APPLICATIONS_ERROR,
   PROJECT_APPLICATIONS_LOADED,
   PROJECT_APPLICATIONS_LOADING,
+  PROJECT_APPLICATION_UPDATED,
 } from "../actions/projects";
 import { ProjectEventsMap } from "../types";
 
@@ -107,6 +108,35 @@ export const projectsReducer = (
         applications: {
           ...state.applications,
           [action.projectID]: action.applications,
+        },
+        error: undefined,
+      };
+    }
+
+    case PROJECT_APPLICATION_UPDATED: {
+      const projectApplications = state.applications[action.projectID] || [];
+      const index = projectApplications.findIndex(
+        (app: Application) => app.roundID === action.roundID
+      );
+
+      if (index < 0) {
+        return state;
+      }
+
+      const updatedApplication = {
+        ...projectApplications[index],
+        status: action.status,
+      };
+
+      return {
+        ...state,
+        applications: {
+          ...state.applications,
+          [action.projectID]: [
+            ...projectApplications.slice(0, index),
+            updatedApplication,
+            ...projectApplications.slice(index + 1),
+          ],
         },
         error: undefined,
       };

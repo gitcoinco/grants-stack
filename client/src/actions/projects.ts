@@ -48,6 +48,14 @@ interface ProjectApplicationsLoadedAction {
   applications: Application[];
 }
 
+export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";
+interface ProjectApplicationUpdatedAction {
+  type: typeof PROJECT_APPLICATION_UPDATED;
+  projectID: string;
+  roundID: string;
+  status: AppStatus;
+}
+
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
 interface ProjectApplicationsErrorAction {
   type: typeof PROJECT_APPLICATIONS_ERROR;
@@ -62,7 +70,8 @@ export type ProjectsActions =
   | ProjectsUnloadedAction
   | ProjectApplicationsLoadingAction
   | ProjectApplicationsLoadedAction
-  | ProjectApplicationsErrorAction;
+  | ProjectApplicationsErrorAction
+  | ProjectApplicationUpdatedAction;
 
 const projectsLoading = () => ({
   type: PROJECTS_LOADING,
@@ -218,45 +227,49 @@ export const loadProjects =
   };
 
 export const getApplicationStatusFromContract =
-  // eslint-disable-next-line
-  async (roundAddress: string, projectApplicationID: string) => {
-    try {
-      // query the subgraph for all rounds by the given account in the given program
+  (roundAddresses: string[], projectID: string, projectApplicationID: string) =>
+  async (dispatch: Dispatch) => {
+    roundAddresses.forEach(async (roundAddress: string) => {
       const contract = new ethers.Contract(
         roundAddress,
         RoundImplementationABI,
         global.web3Provider!
       );
 
-      const result = await contract.projectsMetaPtr();
-      const pinataClient = new PinataClient();
-      const data = await pinataClient.fetchJson(result.pointer);
-      const projectApplication = data.find((app: any) => {
-        if (app.id === undefined) {
+      try {
+        const result = await contract.projectsMetaPtr();
+        const pinataClient = new PinataClient();
+        const data = await pinataClient.fetchJson(result.pointer);
+        const projectApplication = data.find((app: any) => {
+          if (app.id === undefined) {
+            return false;
+          }
+
+          // appId is in the form "projectApplicationID-roundAddress"
+          const parts = app.id.split("-");
+          if (parts[0] === projectApplicationID) {
+            return true;
+          }
+
           return false;
+        });
+
+        if (projectApplication !== undefined) {
+          dispatch({
+            type: "PROJECT_APPLICATION_UPDATED",
+            projectID,
+            roundID: roundAddress,
+            status: projectApplication.status,
+          });
         }
-
-        // appId is in the form "projectApplicationID-roundAddress"
-        const parts = app.id.split("-");
-        if (parts[0] === projectApplicationID) {
-          return true;
-        }
-
-        return false;
-      });
-
-      if (projectApplication !== undefined) {
-        return projectApplication.status;
+      } catch (error) {
+        datadogRum.addError(error, { roundAddress });
+        console.error("getApplicationStatusFromContract() error", {
+          roundAddress,
+          error,
+        });
       }
-
-      return undefined;
-    } catch (error) {
-      datadogRum.addError(error, { roundAddress });
-      console.error("getApplicationStatusFromContract() error", {
-        roundAddress,
-        error,
-      });
-    }
+    });
   };
 
 export const fetchProjectApplications =
@@ -294,27 +307,26 @@ export const fetchProjectApplications =
         roundID: rp.round.id,
       }));
 
-      // Update each application with the status from the contract
-      // FIXME: This part can be removed when we are sure that the
-      // aplication status returned from the graph is up to date.
-      // eslint-disable-next-line
-      for (let i = 0; i < applications.length; i++) {
-        // eslint-disable-next-line
-        const updatedStatus = await getApplicationStatusFromContract(
-          applications[i].roundID,
-          projectApplicationID
-        );
-
-        if (updatedStatus !== undefined) {
-          applications[i].status = updatedStatus;
-        }
-      }
-
       dispatch({
         type: PROJECT_APPLICATIONS_LOADED,
         projectID,
         applications,
       });
+
+      // Update each application with the status from the contract
+      // FIXME: This part can be removed when we are sure that the
+      // aplication status returned from the graph is up to date.
+      // eslint-disable-next-line
+      const roundAddresses = applications.map(
+        (app: Application) => app.roundID
+      );
+      dispatch<any>(
+        getApplicationStatusFromContract(
+          roundAddresses,
+          projectID,
+          projectApplicationID
+        )
+      );
     } catch (error: any) {
       datadogRum.addError(error, { projectID });
       dispatch({
