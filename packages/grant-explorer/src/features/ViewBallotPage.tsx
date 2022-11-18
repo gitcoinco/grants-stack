@@ -4,12 +4,17 @@ import { useRoundById } from "../context/RoundContext";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
-import { CheckIcon, ChevronLeftIcon, SelectorIcon, InformationCircleIcon } from "@heroicons/react/solid";
+import {
+  CheckIcon,
+  ChevronLeftIcon,
+  SelectorIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
-import React, { Fragment, useEffect, useState } from "react";
 import { classNames, getPayoutTokenOptions } from "./api/utils";
 import { Listbox, Transition } from "@headlessui/react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
@@ -17,7 +22,6 @@ import InfoModal from "./common/InfoModal";
 import Footer from "./common/Footer";
 
 export default function ViewBallot() {
-
   const { chainId, roundId } = useParams();
 
   const payoutTokenOptions: PayoutToken[] = [
@@ -25,7 +29,9 @@ export default function ViewBallot() {
     ...getPayoutTokenOptions(chainId!),
   ];
 
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(payoutTokenOptions[0]);
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
+    payoutTokenOptions[0]
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
@@ -33,24 +39,29 @@ export default function ViewBallot() {
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
-  const [totalDonation, setTotalDonation] = useState(0);
+
+  const totalDonation = useMemo(() => {
+    return donations.reduce((sum, donation) => sum + donation.amount, 0);
+  }, [donations]);
+
+  const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
-
 
   const [shortlist, finalBallot, , , ,] = useBallot();
 
   const { address } = useAccount();
 
-  const tokenDetail = selectedPayoutToken.address == ethers.constants.AddressZero
-  ? { addressOrName: address }
-  : { addressOrName: address, token: selectedPayoutToken.address}
+  const tokenDetail =
+    selectedPayoutToken.address == ethers.constants.AddressZero
+      ? { addressOrName: address }
+      : { addressOrName: address, token: selectedPayoutToken.address };
 
   const selectedPayoutTokenBalance = useBalance(tokenDetail);
 
-  const [ donationError, setDonationError] = useState({
+  const [donationError, setDonationError] = useState({
     emptyInput: false,
-    insufficientBalance: false
+    insufficientBalance: false,
   });
 
   const shortlistNotEmpty = shortlist.length > 0;
@@ -63,52 +74,58 @@ export default function ViewBallot() {
   }, [shortlistSelect]);
 
   return (
-      <>
-        <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+    <>
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
 
-        <div className="mx-20 h-screen px-4 py-7">
-          {Header(chainId, roundId)}
+      <div className="mx-20 h-screen px-4 py-7">
+        {Header(chainId, roundId)}
 
-          <div className="grid grid-cols-2 gap-4">
-            {shortlistNotEmpty && ShortlistProjects(shortlist)}
-            {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
+        <div className="grid grid-cols-2 gap-4">
+          {shortlistNotEmpty && ShortlistProjects(shortlist)}
+          {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
 
-            {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
-            {!finalBallotNotEmpty && EmptyFinalBallot()}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div></div>
-            <div>
-              <Summary/>
-              <Button
-                  $variant="solid"
-                  data-testid="handle-confirmation"
-                  type="button"
-                  onClick={handleConfirmation}
-                  className="items-center shadow-sm text-sm rounded w-full"
-              >
-                Submit your donation!
-              </Button>
-              {donationError.emptyInput &&
-                  <p data-testid="emptyInput"
-                     className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                    <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
-                    <span>You must enter donations for all final ballot projects</span>
-                  </p>
-              }
-              {donationError.insufficientBalance &&
-                  <p data-testid="insufficientBalance"
-                     className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm">
-                    <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
-                    <span>You do not have enough funds for these donations</span>
-                  </p>
-              }
-            </div>
-            <PayoutModals/>
-          </div>
-          <Footer/>
+          {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
+          {!finalBallotNotEmpty && EmptyFinalBallot()}
         </div>
-      </>
+        <div className="grid grid-cols-2 gap-4">
+          <div></div>
+          <div>
+            <Summary />
+            <Button
+              $variant="solid"
+              data-testid="handle-confirmation"
+              type="button"
+              onClick={handleConfirmation}
+              className="items-center shadow-sm text-sm rounded w-full"
+            >
+              Submit your donation!
+            </Button>
+            {donationError.emptyInput && (
+              <p
+                data-testid="emptyInput"
+                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                <span>
+                  You must enter donations for all final ballot projects
+                </span>
+              </p>
+            )}
+            {donationError.insufficientBalance && (
+              <p
+                data-testid="insufficientBalance"
+                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+              >
+                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                <span>You do not have enough funds for these donations</span>
+              </p>
+            )}
+          </div>
+          <PayoutModals />
+        </div>
+        <Footer />
+      </div>
+    </>
   );
 
   function Header(chainId?: string, roundId?: string) {
@@ -244,12 +261,35 @@ export default function ViewBallot() {
   function FinalBallotProjects(finalBallot: Project[]) {
     return (
       <div className="block p-6 rounded-lg shadow-lg bg-white border">
-        <div className="flex justify-between border-b-2 pb-2">
-          <h2 className="mt-2 text-xl">Final Donation</h2>
-          <p className="mt-2 amount-text">Amount / Currency</p>
-          <PayoutTokenDropdown
-            payoutTokenOptions={payoutTokenOptions}
-          />
+        <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+          <div className="basis-[28%]">
+            <h2 className="mt-2 text-xl">Final Donation</h2>
+          </div>
+          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+            <p className="mt-3 text-sm amount-text">Amount</p>
+            <Input
+              aria-label={"Donation amount for all projects "}
+              id={"input-donationamount"}
+              min="0"
+              value={fixedDonation}
+              type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setFixedDonation(Number(e.target.value));
+              }}
+              className="w-24"
+            />
+            <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() => {
+                updateAllDonations(fixedDonation ?? 0);
+              }}
+              className="text-xs px-4 py-2 text-purple-600 border-0"
+            >
+              Apply to all
+            </Button>
+          </div>
         </div>
         <div className="my-4">
           {finalBallot.map((project: Project, key: number) => (
@@ -352,19 +392,39 @@ export default function ViewBallot() {
     return (
       <>
         <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
-          <div className="flex justify-between border-b-2 pb-2">
-            <h2 className="mt-2 text-xl">Final Donation</h2>
-            <p className="mt-2 amount-text">Amount / Currency</p>
-            <PayoutTokenDropdown
-              payoutTokenOptions={payoutTokenOptions}
-            />
+          <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+            <div className="basis-[28%]">
+              <h2 className="mt-2 text-xl">Final Donation</h2>
+            </div>
+            <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+              <p className="mt-3 text-sm amount-text">Amount</p>
+              <Input
+                aria-label={"Donation amount for all projects "}
+                id={"input-donationamount"}
+                min="0"
+                value={fixedDonation}
+                type="number"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setFixedDonation(Number(e.target.value));
+                }}
+                className="w-24"
+              />
+              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+              <Button
+                type="button"
+                $variant="outline"
+                className="text-xs px-4 py-2 text-purple-600 border-0"
+              >
+                Apply to all
+              </Button>
+            </div>
           </div>
-        <div className="mt-4">
-          <p className="text-grey-500">
-            Add the projects you want to fund here!
-          </p>
+          <div className="mt-4">
+            <p className="text-grey-500">
+              Add the projects you want to fund here!
+            </p>
+          </div>
         </div>
-      </div>
       </>
     );
   }
@@ -380,7 +440,9 @@ export default function ViewBallot() {
               <span data-testid={"totalDonation"} className="mr-2">
                 {totalDonation}
               </span>
-              <span data-testid={"summaryPayoutToken"}>{selectedPayoutToken.name}</span>
+              <span data-testid={"summaryPayoutToken"}>
+                {selectedPayoutToken.name}
+              </span>
             </p>
           </div>
         </div>
@@ -398,7 +460,10 @@ export default function ViewBallot() {
 
   function FinalBallotConfirmCount() {
     return (
-      <div className="flex justify-center" data-testid="final-ballot-project-count">
+      <div
+        className="flex justify-center"
+        data-testid="final-ballot-project-count"
+      >
         <CheckIcon
           className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1 mr-2"
           aria-hidden="true"
@@ -482,7 +547,7 @@ export default function ViewBallot() {
       (donation) => donation.projectRegistryId === projectRegistryId
     );
 
-    const newState = donations;
+    const newState = [...donations];
 
     if (projectIndex !== -1) {
       newState[projectIndex].amount = amount;
@@ -494,18 +559,22 @@ export default function ViewBallot() {
     }
 
     setDonations(newState);
-
-    setTotalDonation(
-      donations.reduce((sum, donation) => sum + donation.amount, 0)
-    );
   }
 
-  function PayoutTokenDropdown(props: {
-    payoutTokenOptions: PayoutToken[];
-  }) {
+  function updateAllDonations(amount: number) {
+    const newDonations = finalBallot.map((project) => {
+      return {
+        amount,
+        projectRegistryId: project.projectRegistryId,
+      } as FinalBallotDonation;
+    });
 
+    setDonations(newDonations);
+  }
+
+  function PayoutTokenDropdown(props: { payoutTokenOptions: PayoutToken[] }) {
     return (
-      <div className="relative col-span-6 sm:col-span-3">
+      <div className="mt-1 relative col-span-6 sm:col-span-3">
         <Listbox value={selectedPayoutToken} onChange={setSelectedPayoutToken}>
           {({ open }) => (
             <div>
@@ -551,7 +620,9 @@ export default function ViewBallot() {
                                   ) : null}
                                   <span
                                     className={classNames(
-                                      selected ? "font-semibold" : "font-normal",
+                                      selected
+                                        ? "font-semibold"
+                                        : "font-normal",
                                       "ml-3 block truncate"
                                     )}
                                   >
@@ -580,7 +651,6 @@ export default function ViewBallot() {
                   </Listbox.Options>
                 </Transition>
               </div>
-
             </div>
           )}
         </Listbox>
@@ -588,9 +658,7 @@ export default function ViewBallot() {
     );
   }
 
-  function PayoutTokenButton(props: {
-    token?: PayoutToken;
-  }) {
+  function PayoutTokenButton(props: { token?: PayoutToken }) {
     const { token } = props;
     return (
       <Listbox.Button
@@ -621,14 +689,15 @@ export default function ViewBallot() {
   }
 
   function handleConfirmation() {
-
     const newState = {
       emptyInput: false,
-      insufficientBalance: false
-    }
+      insufficientBalance: false,
+    };
 
     // check to ensure all projects have donation amount
-    const emptyDonations = donations.filter(donation =>  !donation.amount || donation.amount == 0);
+    const emptyDonations = donations.filter(
+      (donation) => !donation.amount || donation.amount == 0
+    );
 
     if (donations.length == 0 || emptyDonations.length > 0) {
       newState.emptyInput = true;
@@ -640,12 +709,12 @@ export default function ViewBallot() {
 
     // check if signer has enough token balance
     const accountBalance = selectedPayoutTokenBalance.data?.value;
-    const tokenBalance = ethers.utils.parseUnits(totalDonation.toString(), selectedPayoutToken.decimal);
+    const tokenBalance = ethers.utils.parseUnits(
+      totalDonation.toString(),
+      selectedPayoutToken.decimal
+    );
 
-    if (
-      !accountBalance ||
-      BigNumber.from(tokenBalance).gt(accountBalance)
-    ) {
+    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
       newState.insufficientBalance = true;
       setDonationError(newState);
       return;
@@ -658,57 +727,57 @@ export default function ViewBallot() {
 
   function PayoutModals() {
     return (
-        <>
-          <ConfirmationModal
-            title={"Confirm Decision"}
-            confirmButtonText={"Confirm"}
-            confirmButtonAction={() => {
-              setOpenInfoModal(true);
-              setOpenConfirmationModal(false);
-            }}
-            body={<ConfirmationModalBody />}
-            isOpen={openConfirmationModal}
-            setIsOpen={setOpenConfirmationModal}
-          />
-            <InfoModal
-                title={"Heads up!"}
-                body={<InfoModalBody />}
-                isOpen={openInfoModal}
-                setIsOpen={setOpenInfoModal}
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                continueButtonAction={() => {}} // TODO: Wire this up to payouts
-            />
-        </>
+      <>
+        <ConfirmationModal
+          title={"Confirm Decision"}
+          confirmButtonText={"Confirm"}
+          confirmButtonAction={() => {
+            setOpenInfoModal(true);
+            setOpenConfirmationModal(false);
+          }}
+          body={<ConfirmationModalBody />}
+          isOpen={openConfirmationModal}
+          setIsOpen={setOpenConfirmationModal}
+        />
+        <InfoModal
+          title={"Heads up!"}
+          body={<InfoModalBody />}
+          isOpen={openInfoModal}
+          setIsOpen={setOpenInfoModal}
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          continueButtonAction={() => {}} // TODO: Wire this up to payouts
+        />
+      </>
     );
   }
 
   function InfoModalBody() {
     return (
-        <div className="text-sm text-grey-400 gap-16">
-          <p className="text-sm">
-            Submitting your donation will require signing two transactions:
-          </p>
-          <ul className="list-disc list-inside pl-3 pt-3">
-            <li>Approving the contract to access your wallet</li>
-            <li>Approving the transaction</li>
-          </ul>
-        </div>
+      <div className="text-sm text-grey-400 gap-16">
+        <p className="text-sm">
+          Submitting your donation will require signing two transactions:
+        </p>
+        <ul className="list-disc list-inside pl-3 pt-3">
+          <li>Approving the contract to access your wallet</li>
+          <li>Approving the transaction</li>
+        </ul>
+      </div>
     );
   }
 
   function ConfirmationModalBody() {
-    const projectsCount =  finalBallot.length;
+    const projectsCount = finalBallot.length;
     return (
-        <>
-          <p className="text-sm text-grey-400">
-            {projectsCount} project{projectsCount   > 1 && "s"} on your Final Donation.
-          </p>
-          <div className="my-8">
-            <FinalBallotConfirmCount/>
-          </div>
-          <AdditionalGasFeesNote/>
-        </>
+      <>
+        <p className="text-sm text-grey-400">
+          {projectsCount} project{projectsCount > 1 && "s"} on your Final
+          Donation.
+        </p>
+        <div className="my-8">
+          <FinalBallotConfirmCount />
+        </div>
+        <AdditionalGasFeesNote />
+      </>
     );
   }
-
 }

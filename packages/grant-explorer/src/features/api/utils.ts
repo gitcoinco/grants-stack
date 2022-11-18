@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types"
 
 export enum ChainId {
@@ -148,7 +147,7 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: ethers.constants.AddressZero,
+          address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
           decimal: 18,
           logo: TokenNamesAndLogos["ETH"],
         },
