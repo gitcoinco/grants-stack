@@ -642,8 +642,9 @@ export default function ViewBallot() {
   function updateAllDonations(amount: number) {
     const newDonations = finalBallot.map((project) => {
       return {
-        amount,
         projectRegistryId: project.projectRegistryId,
+        amount,
+        projectAddress: project.recipient,
       } as FinalBallotDonation;
     });
 
