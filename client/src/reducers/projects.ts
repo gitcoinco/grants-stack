@@ -34,7 +34,9 @@ export interface ProjectsState {
   error: string | undefined;
   ids: number[];
   events: ProjectEventsMap;
-  applications: Application[];
+  applications: {
+    [projectID: string]: Application[];
+  };
 }
 
 const initialState: ProjectsState = {
@@ -42,7 +44,7 @@ const initialState: ProjectsState = {
   error: undefined,
   ids: [],
   events: {},
-  applications: [],
+  applications: {},
 };
 
 export const projectsReducer = (
@@ -90,7 +92,7 @@ export const projectsReducer = (
     case PROJECT_APPLICATIONS_LOADING: {
       return {
         ...state,
-        applications: [],
+        applications: {},
         error: undefined,
         status: Status.Loading,
       };
@@ -99,7 +101,10 @@ export const projectsReducer = (
     case PROJECT_APPLICATIONS_LOADED: {
       return {
         ...state,
-        applications: action.applications,
+        applications: {
+          ...state.applications,
+          [action.projectID]: action.applications,
+        },
         error: undefined,
       };
     }

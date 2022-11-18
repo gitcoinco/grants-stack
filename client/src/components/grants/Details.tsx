@@ -38,7 +38,7 @@ export default function Details({
   const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const { applications } = state.projects;
+    const applications = state.projects.applications[params.id!] || [];
 
     return {
       projectID: params.id!,
