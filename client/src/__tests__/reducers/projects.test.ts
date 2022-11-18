@@ -3,6 +3,7 @@ import {
   projectsReducer,
   ProjectsState,
   Status,
+  AppStatus,
 } from "../../reducers/projects";
 
 describe("projects reducer", () => {
@@ -14,53 +15,53 @@ describe("projects reducer", () => {
       error: undefined,
       ids: [],
       events: {},
-      applications: [],
+      applications: {},
     };
   });
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
-    const newState: ProjectsState = projectsReducer(state, {
+    const initialState = {
+      ...state,
+      applications: {
+        "1": [{ roundID: "0x1234", status: "PENDING" as AppStatus }],
+        "2": [{ roundID: "0x4567", status: "PENDING" as AppStatus }],
+      },
+    };
+
+    const newState: ProjectsState = projectsReducer(initialState, {
       type: "PROJECT_APPLICATIONS_LOADING",
+      projectID: "2",
     });
 
-    expect(newState.applications).toEqual([]);
+    expect(newState.applications).toEqual({
+      "1": [{ roundID: "0x1234", status: "PENDING" }],
+      "2": [],
+    });
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
-    const newState: ProjectsState = projectsReducer(state, {
+    const initialState = {
+      ...state,
+      applications: {
+        "1": [{ roundID: "0x1234", status: "PENDING" as AppStatus }],
+      },
+    };
+
+    const newState: ProjectsState = projectsReducer(initialState, {
       type: "PROJECT_APPLICATIONS_LOADED",
-      projectID: "12345",
+      projectID: "2",
       applications: [
         {
-          round: {
-            id: "0x12345",
-          },
+          roundID: "0x3456",
           status: "APPROVED",
         },
       ],
     });
 
-    expect(newState.applications).toEqual([
-      {
-        round: { id: "0x12345" },
-        status: "APPROVED",
-      },
-    ]);
-  });
-
-  it("PROJECT_APPLICATIONS_NOT_FOUND updates state", async () => {
-    const newState: ProjectsState = projectsReducer(state, {
-      type: "PROJECT_APPLICATIONS_NOT_FOUND",
-      projectID: "12345",
-      roundID: "0x12345",
+    expect(newState.applications).toEqual({
+      "1": [{ roundID: "0x1234", status: "PENDING" }],
+      "2": [{ roundID: "0x3456", status: "APPROVED" }],
     });
-
-    expect(newState.applications).toEqual([
-      {
-        round: { id: "0x12345" },
-        status: "PENDING",
-      },
-    ]);
   });
 
   it("PROJECT_APPLICATIONS_ERROR updates state", async () => {

@@ -92,7 +92,10 @@ export const projectsReducer = (
     case PROJECT_APPLICATIONS_LOADING: {
       return {
         ...state,
-        applications: {},
+        applications: {
+          ...state.applications,
+          [action.projectID]: [],
+        },
         error: undefined,
         status: Status.Loading,
       };
@@ -110,11 +113,9 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATIONS_ERROR: {
-      const { error } = action;
       return {
         ...state,
-        applications: state.applications,
-        error,
+        error: action.error,
       };
     }
 
