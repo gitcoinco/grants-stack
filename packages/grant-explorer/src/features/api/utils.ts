@@ -185,14 +185,20 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param query - The query to be executed
  * @param chainId - The chain ID of the blockchain indexed by the subgraph
  * @param variables - The variables to be used in the query
+ * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
  * @returns The result of the query
  */
 export const graphql_fetch = async (
   query: string,
   chainId: ChainId,
-  variables: object = {}
+  variables: object = {},
+  fromProjectRegistry = false
 ) => {
-  const endpoint = await getGraphQLEndpoint(chainId);
+  let endpoint = await getGraphQLEndpoint(chainId);
+
+  if (fromProjectRegistry) {
+    endpoint = endpoint.replace("grants-round", "grants-hub")
+  }
 
   return fetch(endpoint, {
     method: "POST",

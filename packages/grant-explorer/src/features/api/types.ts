@@ -153,6 +153,10 @@ export enum ApplicationStatus {
   REJECTED = "REJECTED",
 }
 
+interface ProjectOwner {
+  address: string;
+}
+
 export type ProjectMetadata = {
   title: string;
   description: string;
@@ -163,13 +167,12 @@ export type ProjectMetadata = {
   userGithub?: string;
   projectGithub?: string;
   credentials?: ProjectCredentials;
+  owners: ProjectOwner[];
 };
 
 export type ProjectCredentials = {
-  github?: VerifiableCredential;
-  twitter?: VerifiableCredential;
+  [key: string]: VerifiableCredential;
 };
-
 export enum ProgressStatus {
   IS_SUCCESS = "IS_SUCCESS",
   IN_PROGRESS = "IN_PROGRESS",
