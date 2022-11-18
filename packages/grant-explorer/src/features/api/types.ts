@@ -57,6 +57,10 @@ export interface Contract {
    * Contract ABI in Human Readable ABI format
    */
   abi: Array<string>;
+  /**
+   * Contract ABI in binary format
+   */
+  bytecode?: string;
 }
 
 // TODO: Document this
@@ -145,6 +149,7 @@ export type recipient = string;
 export type FinalBallotDonation = {
   projectRegistryId: ProjectRegistryId,
   amount: number;
+  projectAddress: recipient;
 }
 
 export enum ApplicationStatus {

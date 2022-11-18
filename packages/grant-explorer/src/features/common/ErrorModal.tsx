@@ -79,7 +79,7 @@ export default function ErrorModal({
                       </div>
                     </div>
                   </div>
-                  <div className="self-end mt-12">
+                  <div className="self-end mt-4">
                     <Button
                       type="button"
                       $variant="outline"
@@ -88,7 +88,7 @@ export default function ErrorModal({
                         tryAgainFn();
                         setIsOpen(false);
                       }}
-                      className="mr-4"
+                      className="mr-4 text-sm"
                     >
                       Try Again
                     </Button>
@@ -99,6 +99,7 @@ export default function ErrorModal({
                         setIsOpen(false);
                       }}
                       data-testid="done"
+                      className="text-sm"
                     >
                       Done
                     </Button>

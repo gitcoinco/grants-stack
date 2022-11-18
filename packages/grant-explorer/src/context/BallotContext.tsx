@@ -87,6 +87,7 @@ type UseBallot = [
   handleRemoveProjectsFromFinalBallot: (projects: Project[]) => void,
   handleRemoveProjectsFromFinalBallotAndAddToShortlist: (projects: Project[]) => void,
 ];
+
 export const useBallot = (): UseBallot => {
   const context = useContext(BallotContext);
   if (context === undefined) {
