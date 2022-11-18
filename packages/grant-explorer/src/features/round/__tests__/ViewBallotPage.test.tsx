@@ -23,6 +23,10 @@ const mockBalance = {
   },
 };
 
+const mockSigner = {
+  data: {}
+}
+
 const useParamsFn = () => ({
   chainId,
   roundId,
@@ -33,6 +37,7 @@ jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
+  useSigner: () => mockSigner,
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
