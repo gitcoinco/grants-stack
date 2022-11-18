@@ -277,7 +277,7 @@ export default function ViewBallot() {
                 {props.project.projectMetadata.title}
               </p>
               <p className="text-sm">
-                {props.project.projectMetadata.description}
+                {props.project.projectMetadata.description.slice(0, 130)}
               </p>
             </div>
           </div>
@@ -410,7 +410,7 @@ export default function ViewBallot() {
                 {props.project.projectMetadata.title}
               </p>
               <p className="text-sm">
-                {props.project.projectMetadata.description}
+                {props.project.projectMetadata.description.slice(0, 130)}
               </p>
             </div>
           </div>
