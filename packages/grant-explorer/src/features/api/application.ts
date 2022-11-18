@@ -5,7 +5,7 @@ export const voteOnRoundContract = async (
   roundId: string,
   signer: Signer,
   encodedVotes: BytesLike[],
-  amount = 0
+  nativeTokenAmount = 0
 ): Promise<{ transactionBlockNumber: number }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -21,9 +21,14 @@ export const voteOnRoundContract = async (
     encodedVotes[0]
   );
 
-  amount = decodedValues[0] === ethers.constants.AddressZero ? amount : 0;
+  // only send native token amount as value to vote function
+  nativeTokenAmount =
+    decodedValues[0] === ethers.constants.AddressZero ? nativeTokenAmount : 0;
 
-  const amountInWei = ethers.utils.parseUnits(amount.toString(), "ether");
+  const amountInWei = ethers.utils.parseUnits(
+    nativeTokenAmount.toString(),
+    "ether"
+  );
 
   const tx = await roundImplementation.vote(encodedVotes, {
     value: amountInWei,
@@ -57,5 +62,5 @@ export const approveTokenOnContract = async (
 
   const approveTx = await tokenContract.approve(votingStrategy, amount);
 
-  approveTx.wait();
+  await approveTx.wait();
 };

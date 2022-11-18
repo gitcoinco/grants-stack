@@ -886,7 +886,11 @@ export default function ViewBallot() {
         totalDonation: totalDonation,
         votingStrategy: round.votingStrategy,
       });
-      setOpenProgressModal(false);
+
+      setTimeout(() => {
+        // TODO: redirect to thank you page
+        setOpenProgressModal(false);
+      }, modalDelayMs);
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
