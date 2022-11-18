@@ -114,7 +114,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
           logo: TokenNamesAndLogos["DAI"],
         },
         {
