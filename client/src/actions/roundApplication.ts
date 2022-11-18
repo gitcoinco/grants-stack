@@ -12,7 +12,7 @@ import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { metadataToProject } from "../utils/utils";
-import { getRoundProjectsApplied } from "./projects";
+import { fetchProjectApplications } from "./projects";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -267,7 +267,7 @@ export const submitApplication =
         roundAddress,
         projectId: Number(projectId),
       });
-      dispatch<any>(getRoundProjectsApplied(projectUniqueID, chainID));
+      dispatch<any>(fetchProjectApplications(projectId));
     } catch (e) {
       datadogRum.addError(e);
       console.error("error calling applyToRound:", e);

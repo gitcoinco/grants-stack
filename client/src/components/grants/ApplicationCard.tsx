@@ -65,9 +65,41 @@ export default function ApplicationCard({
           {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
         <Box className="pl-2 mt-2 md:mt-0 text-gitcoin-gray-400">
-          <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-            {applicationData.application.status}
-          </Badge>
+          {applicationData.application.status === "APPROVED" ? (
+            <Badge
+              colorScheme="green"
+              className="bg-gitcoin-gray-100"
+              borderRadius="full"
+              p={2}
+            >
+              <span>{applicationData.application.status}</span>
+            </Badge>
+          ) : null}
+          {applicationData.application.status === "REJECTED" ? (
+            <Badge
+              colorScheme="red"
+              className="bg-gitcoin-gray-100"
+              borderRadius="full"
+              p={2}
+            >
+              <span>{applicationData.application.status}</span>
+            </Badge>
+          ) : null}
+          {applicationData.application.status === "PENDING" ? (
+            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
+              <span>In Review</span>
+            </Badge>
+          ) : null}
+          {applicationData.application.status === "APPEAL" ? (
+            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
+              <span>{applicationData.application.status}</span>
+            </Badge>
+          ) : null}
+          {applicationData.application.status === "FRAUD" ? (
+            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
+              <span>{applicationData.application.status}</span>
+            </Badge>
+          ) : null}
         </Box>
       </div>
       {props.support && (

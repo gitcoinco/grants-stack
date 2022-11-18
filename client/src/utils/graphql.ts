@@ -19,7 +19,7 @@ export type GraphEndpoint = {
  * @param chainId
  * @returns GraphEndpoint
  */
-const getGraphQLEndpoint = async (chainId: ChainId): Promise<GraphEndpoint> => {
+const getGraphQLEndpoint = (chainId: number): GraphEndpoint => {
   switch (chainId) {
     case ChainId.GOERLI_CHAIN_ID:
       return {
@@ -51,10 +51,10 @@ const getGraphQLEndpoint = async (chainId: ChainId): Promise<GraphEndpoint> => {
 
 export const graphqlFetch = async (
   query: string,
-  chainId: ChainId,
+  chainId: number,
   variables: object = {}
 ) => {
-  const endpoint: GraphEndpoint = await getGraphQLEndpoint(chainId);
+  const endpoint: GraphEndpoint = getGraphQLEndpoint(chainId);
   if (!endpoint.error && endpoint.uri) {
     return fetch(endpoint.uri, {
       method: "POST",
