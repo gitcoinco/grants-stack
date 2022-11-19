@@ -261,9 +261,9 @@ export default function ViewBallot() {
           className={`mb-4 flex justify-between px-3 py-4 rounded-md
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
-          <div className="flex">
+          <div className="flex pr-9">
             <img
-              className="h-[64px]"
+              className="h-[64px] my-3"
               src={
                 props.project.projectMetadata.logoImg
                   ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
@@ -276,8 +276,8 @@ export default function ViewBallot() {
               <p className="font-semibold mb-2">
                 {props.project.projectMetadata.title}
               </p>
-              <p className="text-sm">
-                {props.project.projectMetadata.description.slice(0, 130)}
+              <p className="text-sm text-ellipsis overflow-hidden h-16">
+                {props.project.projectMetadata.description}
               </p>
             </div>
           </div>
@@ -396,7 +396,7 @@ export default function ViewBallot() {
         >
           <div className="flex">
             <img
-              className="h-[64px]"
+              className="h-[64px] my-3"
               src={
                 props.project.projectMetadata.logoImg
                   ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
@@ -405,12 +405,12 @@ export default function ViewBallot() {
               alt={"Project Logo"}
             />
 
-            <div className="pl-4 mt-1">
+            <div className="pl-4 mt-1 overflow-auto">
               <p className="font-semibold mb-2">
                 {props.project.projectMetadata.title}
               </p>
-              <p className="text-sm">
-                {props.project.projectMetadata.description.slice(0, 130)}
+              <p className="text-sm text-sm text-ellipsis overflow-hidden h-16">
+                {props.project.projectMetadata.description}
               </p>
             </div>
           </div>
