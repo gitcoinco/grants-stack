@@ -14,7 +14,7 @@ const roundId = faker.finance.ethereumAddress();
 const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
-  account: userAddress,
+  address: userAddress,
 };
 
 const mockBalance = {
@@ -41,6 +41,7 @@ jest.mock("wagmi", () => ({
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  ...jest.requireActual("@rainbow-me/rainbowkit"),
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -475,12 +476,8 @@ describe("View Ballot Page", () => {
       const confirmButton = screen.getByTestId("handle-confirmation");
       fireEvent.click(confirmButton);
 
-      expect(
-        await screen.queryByTestId("confirm-modal")
-      ).not.toBeInTheDocument();
-      expect(
-        await screen.queryByTestId("insufficientBalance")
-      ).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("insufficientBalance")).not.toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).toBeInTheDocument();
     });
 
@@ -503,13 +500,9 @@ describe("View Ballot Page", () => {
       const confirmButton = screen.getByTestId("handle-confirmation");
       fireEvent.click(confirmButton);
 
-      expect(
-        await screen.queryByTestId("insufficientBalance")
-      ).toBeInTheDocument();
+      expect(await screen.queryByTestId("insufficientBalance")).toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
-      expect(
-        await screen.queryByTestId("confirm-modal")
-      ).not.toBeInTheDocument();
+      expect(await screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
     });
 
     it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
