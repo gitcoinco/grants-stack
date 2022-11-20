@@ -106,10 +106,10 @@ export default function ViewBallot() {
 
     if (indexingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
-        navigate("/"); // TODO: Wire in thank you page
+        navigate(`/round/${chainId}/${roundId}`);
       }, 5000);
     }
-  }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus]);
+  }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus, chainId, roundId]);
 
   const progressSteps = [
     {
@@ -880,7 +880,7 @@ export default function ViewBallot() {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
-      await submitDonations({
+      const txHash = await submitDonations({
         roundId: roundId,
         donations: donations,
         donationToken: selectedPayoutToken,
@@ -889,9 +889,10 @@ export default function ViewBallot() {
       });
 
       setTimeout(() => {
-        // TODO: redirect to thank you page
         setOpenProgressModal(false);
+        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
       }, modalDelayMs);
+
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
