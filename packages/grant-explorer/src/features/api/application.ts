@@ -6,7 +6,7 @@ export const voteOnRoundContract = async (
   signer: Signer,
   encodedVotes: BytesLike[],
   nativeTokenAmount = 0
-): Promise<{ transactionBlockNumber: number }> => {
+): Promise<{ txBlockNumber: number, txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
 
@@ -40,7 +40,8 @@ export const voteOnRoundContract = async (
 
   const blockNumber = receipt.blockNumber;
   return {
-    transactionBlockNumber: blockNumber,
+    txBlockNumber: blockNumber,
+    txHash: tx.hash
   };
 };
 

@@ -181,6 +181,29 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 };
 
 /**
+ * Fetch subgraph network for provided web3 network
+ *
+ * @param chainId - The chain ID of the blockchain2
+ * @returns the subgraph endpoint
+ */
+ export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+      return `https://optimistic.etherscan.io/tx/${txHash}`;
+
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `https://ftmscan.com/tx/${txHash}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `https://testnet.ftmscan.com/tx/${txHash}`;
+
+    case ChainId.GOERLI_CHAIN_ID:
+    default:
+      return `https://goerli.etherscan.io/tx/${txHash}`;
+  }
+};
+
+/**
  * Fetch data from a GraphQL endpoint
  *
  * @param query - The query to be executed
