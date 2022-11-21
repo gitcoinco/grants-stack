@@ -445,10 +445,15 @@ export default function ViewBallot() {
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
-              onClick={() =>
+              onClick={() => {
                 handleRemoveProjectsFromFinalBallotAndAddToShortlist([
                   props.project,
-                ])
+                ]);
+                updateDonations(
+                  props.project.projectRegistryId,
+                  0,
+                  props.project.recipient
+                )}
               }
               className="w-6 h-6 m-auto cursor-pointer"
             />
