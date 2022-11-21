@@ -4,6 +4,7 @@ export const slugs = {
   root: `/`,
   grants: `/projects`,
   grant: `/projects/:id`,
+  project: `/chains/:chainId/registry/:registryAddress/projects/:id`,
   edit: `/projects/:id/edit`,
   newGrant: `/projects/new`,
   round: `/chains/:chainId/rounds/:roundId`,
@@ -32,6 +33,18 @@ export const grantPath = (id: string | number) => {
   datadogLogs.logger.info(`====> Route: /projects/${id}`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   return `/projects/${id}`;
+};
+
+export const projectPath = (
+  chainId: string | undefined,
+  registryAddress: string | undefined,
+  projectId: string | undefined
+) => {
+  datadogLogs.logger.info(
+    `====> Route: /chains/${chainId}/registry/${registryAddress}/projects/${projectId}`
+  );
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+  return `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}`;
 };
 
 export const editPath = (id: string | number) => {

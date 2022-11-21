@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
-import { grantPath } from "../../routes";
+import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
+import { getProjectNumberFromId } from "../../utils/utils";
 import TextLoading from "../base/TextLoading";
 
 function Card({ projectId }: { projectId: string }) {
@@ -20,8 +21,10 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
+    const id = getProjectNumberFromId(projectId);
+
     return {
-      id: projectId,
+      id,
       loading,
       currentProject: project,
       bannerImg,
@@ -38,7 +41,13 @@ function Card({ projectId }: { projectId: string }) {
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <Link to={grantPath(projectId)}>
+      <Link
+        to={projectPath(
+          projectId.split(":")[0],
+          projectId.split(":")[1],
+          projectId.split(":")[2]
+        )}
+      >
         <img
           className="w-full h-32 object-cover"
           src={props.bannerImg}

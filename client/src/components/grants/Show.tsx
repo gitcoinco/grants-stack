@@ -45,8 +45,13 @@ function Project() {
       grantMetadata?.metadata
     );
 
+    let fullId = params.id;
+    if (params.chainID && params.registryAddress) {
+      fullId = `${params.chainID}:${params.registryAddress}:${params.id}`;
+    }
+
     return {
-      id: params.id,
+      id: fullId,
       loading,
       bannerImg,
       logoImg,

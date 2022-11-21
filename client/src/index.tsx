@@ -52,6 +52,7 @@ root.render(
                   />
                   <Route path={slugs.grants} element={<ProjectsList />} />
                   <Route path={slugs.grant} element={<Project />} />
+                  <Route path={slugs.project} element={<Project />} />
                   <Route path={slugs.newGrant} element={<NewProject />} />
                   <Route path={slugs.edit} element={<EditProject />} />
                   <Route path={slugs.round} element={<RoundShow />} />
