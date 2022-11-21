@@ -185,6 +185,7 @@ export const loadProjects =
 
     const state = getState();
     const { chainID, account } = state.web3;
+    const addresses = addressesByChainID(chainID!);
 
     try {
       const { createdEvents, updatedEvents, ids } =
@@ -200,7 +201,11 @@ export const loadProjects =
       createdEvents.forEach((createEvent) => {
         // FIXME: use this line when the fantom RPC bug has been fixed
         // const id = createEvent.args!.projectID!;
-        const id = parseInt(createEvent.topics[1], 16);
+        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+          createEvent.topics[1],
+          16
+        )}`;
+
         events[id] = {
           createdAtBlock: createEvent.blockNumber,
           updatedAtBlock: undefined,
