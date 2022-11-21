@@ -1,21 +1,22 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x4fE3Ce42BB2373C8fD2f59A59EdC397656EE142e",
-    "txHash": "0x707d49794c72e7ed6db4da02cda4bc6e9e89d4c3e13a4aeae6133e2585fae548"
+    "address": "0xEE77c6AB57F292591CB369C688B05f53F9E0131A",
+    "txHash": "0xecdfd3ebfa14356a565ef32d378e394f9c3c431671dd6b967b734eed89790ede"
   },
   "proxies": [
     {
-      "address": "0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19",
-      "txHash": "0xa5972cb9754e92f33baf23d4c165685b3ce77ec71696d4acc70bbeefbb27ae6a",
+      "address": "0x984749e408FF0446d8ADaf20E293F2F299396631",
+      "txHash": "0x68e2276e31e3b82211316975e2f0928acbdc75f7ccba5c0f6dd90a50ea000638",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "52f823d303e767ecefd845a6e9dc82b39d11b3f8b0ba804cfde9b846aa43439b": {
-      "address": "0x5C5ebf52f2eAC42d1640714abed069F9E573D805",
-      "txHash": "0x43ff3692fc684e68f55e672a20b48599e23e9e335b5ca92d387a53944c175af2",
+    "dda0a5ffb8e6592be7a26a2e20d284b9d5137193393c860de04425daf45d2a6e": {
+      "address": "0x09b7Dd0588d4Dbc131BFf3A5a9c81fBA1F1d083B",
+      "txHash": "0x277743f440e491a31c5f101a8f58b74850e4d154700af491560f7ae7aa4e973c",
       "layout": {
+        "solcVersion": "0.8.4",
         "storage": [
           {
             "label": "_initialized",
@@ -46,7 +47,7 @@
             "label": "projects",
             "offset": 0,
             "slot": "2",
-            "type": "t_mapping(t_uint256,t_struct(Project)397_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Project)406_storage)",
             "contract": "ProjectRegistry",
             "src": "contracts/ProjectRegistry.sol:46"
           },
@@ -54,7 +55,7 @@
             "label": "projectsOwners",
             "offset": 0,
             "slot": "3",
-            "type": "t_mapping(t_uint256,t_struct(OwnerList)404_storage)",
+            "type": "t_mapping(t_uint256,t_struct(OwnerList)413_storage)",
             "contract": "ProjectRegistry",
             "src": "contracts/ProjectRegistry.sol:49"
           }
@@ -72,11 +73,11 @@
             "label": "mapping(address => address)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(OwnerList)404_storage)": {
+          "t_mapping(t_uint256,t_struct(OwnerList)413_storage)": {
             "label": "mapping(uint256 => struct ProjectRegistry.OwnerList)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(Project)397_storage)": {
+          "t_mapping(t_uint256,t_struct(Project)406_storage)": {
             "label": "mapping(uint256 => struct ProjectRegistry.Project)",
             "numberOfBytes": "32"
           },
@@ -84,7 +85,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(MetaPtr)846_storage": {
+          "t_struct(MetaPtr)855_storage": {
             "label": "struct MetaPtr",
             "members": [
               {
@@ -102,7 +103,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(OwnerList)404_storage": {
+          "t_struct(OwnerList)413_storage": {
             "label": "struct ProjectRegistry.OwnerList",
             "members": [
               {
@@ -120,7 +121,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Project)397_storage": {
+          "t_struct(Project)406_storage": {
             "label": "struct ProjectRegistry.Project",
             "members": [
               {
@@ -131,7 +132,7 @@
               },
               {
                 "label": "metadata",
-                "type": "t_struct(MetaPtr)846_storage",
+                "type": "t_struct(MetaPtr)855_storage",
                 "offset": 0,
                 "slot": "1"
               }
