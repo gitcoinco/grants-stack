@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types"
 
 export enum ChainId {
@@ -30,7 +31,7 @@ export const payoutTokens = [
   {
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["FTM"],
   },
   {
@@ -66,7 +67,7 @@ export const payoutTokens = [
   {
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
+    address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["ETH"],
   },
 ];
@@ -96,7 +97,7 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          address: ethers.constants.AddressZero,
           decimal: 18,
           logo: TokenNamesAndLogos["FTM"],
         },
@@ -140,14 +141,14 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
           decimal: 18,
           logo: TokenNamesAndLogos["DAI"],
         },
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0x7af963cf6d228e564e2a0aa0ddbf06210b38615d",
+          address: ethers.constants.AddressZero,
           decimal: 18,
           logo: TokenNamesAndLogos["ETH"],
         },
@@ -176,6 +177,29 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     case ChainId.GOERLI_CHAIN_ID:
     default:
       return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+  }
+};
+
+/**
+ * Fetch subgraph network for provided web3 network
+ *
+ * @param chainId - The chain ID of the blockchain2
+ * @returns the subgraph endpoint
+ */
+ export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+      return `https://optimistic.etherscan.io/tx/${txHash}`;
+
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `https://ftmscan.com/tx/${txHash}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `https://testnet.ftmscan.com/tx/${txHash}`;
+
+    case ChainId.GOERLI_CHAIN_ID:
+    default:
+      return `https://goerli.etherscan.io/tx/${txHash}`;
   }
 };
 

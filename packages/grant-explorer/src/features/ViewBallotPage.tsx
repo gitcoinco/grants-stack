@@ -1,7 +1,13 @@
 import { useBallot } from "../context/BallotContext";
-import { FinalBallotDonation, PayoutToken, Project } from "./api/types";
+import {
+  FinalBallotDonation,
+  PayoutToken,
+  ProgressStatus,
+  Project,
+  recipient,
+} from "./api/types";
 import { useRoundById } from "../context/RoundContext";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "./common/Navbar";
 import DefaultLogoImage from "../assets/default_logo.png";
 import {
@@ -21,22 +27,29 @@ import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "./common/ConfirmationModal";
 import InfoModal from "./common/InfoModal";
 import Footer from "./common/Footer";
+import ProgressModal from "./common/ProgressModal";
+import ErrorModal from "./common/ErrorModal";
+import { modalDelayMs } from "../constants";
+import { useQFDonation } from "../context/QFDonationContext";
+import { datadogLogs } from "@datadog/browser-logs";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
 
   const payoutTokenOptions: PayoutToken[] = [
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ...getPayoutTokenOptions(chainId!),
   ];
 
-  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
-    payoutTokenOptions[0]
-  );
-
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   useRoundById(chainId!, roundId!);
 
+  const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
+    payoutTokenOptions[0]
+  );
   const [shortlistSelect, setShortlistSelect] = useState(false);
   const [selected, setSelected] = useState<Project[]>([]);
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
@@ -48,6 +61,8 @@ export default function ViewBallot() {
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openInfoModal, setOpenInfoModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [shortlist, finalBallot, , , ,] = useBallot();
 
@@ -73,6 +88,55 @@ export default function ViewBallot() {
       setSelected([]);
     }
   }, [shortlistSelect]);
+
+  const navigate = useNavigate();
+
+  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus } =
+    useQFDonation();
+
+  useEffect(() => {
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_ERROR ||
+      voteStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, modalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        navigate(`/round/${chainId}/${roundId}`);
+      }, 5000);
+    }
+  }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus, chainId, roundId]);
+
+  const progressSteps = [
+    {
+      name: "Approve",
+      description: "Approve the contract to access your wallet",
+      status: tokenApprovalStatus,
+    },
+    {
+      name: "Submit",
+      description: "Finalize your contribution",
+      status: voteStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   return (
     <>
@@ -329,7 +393,6 @@ export default function ViewBallot() {
     }
   ) {
     const { project, roundRoutePath } = props;
-
     const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
 
     const focusedElement = document?.activeElement?.id;
@@ -395,7 +458,8 @@ export default function ViewBallot() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 updateDonations(
                   props.project.projectRegistryId,
-                  Number(e.target.value)
+                  Number(e.target.value),
+                  props.project.recipient
                 );
               }}
               className="w-24"
@@ -403,7 +467,16 @@ export default function ViewBallot() {
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
-              onClick={() => handleRemoveProjectsFromFinalBallotAndAddToShortlist([props.project])}
+              onClick={() => {
+                handleRemoveProjectsFromFinalBallotAndAddToShortlist([
+                  props.project,
+                ]);
+                updateDonations(
+                  props.project.projectRegistryId,
+                  0,
+                  props.project.recipient
+                )}
+              }
               className="w-6 h-6 m-auto cursor-pointer"
             />
           </div>
@@ -515,7 +588,8 @@ export default function ViewBallot() {
   }
 
   function SelectActive(props: { onClick: () => void }) {
-    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
+    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] =
+      useBallot();
     return (
       <Button
         type="button"
@@ -527,7 +601,9 @@ export default function ViewBallot() {
         {selected.length > 0 ? (
           <div
             data-testid="move-to-finalBallot"
-            onClick={async () => handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)}
+            onClick={async () =>
+              handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)
+            }
           >
             Add selected ({selected.length}) to Final Donation
           </div>
@@ -566,7 +642,11 @@ export default function ViewBallot() {
     );
   }
 
-  function updateDonations(projectRegistryId: string, amount: number) {
+  function updateDonations(
+    projectRegistryId: string,
+    amount: number,
+    projectAddress: recipient
+  ) {
     const projectIndex = donations.findIndex(
       (donation) => donation.projectRegistryId === projectRegistryId
     );
@@ -577,8 +657,9 @@ export default function ViewBallot() {
       newState[projectIndex].amount = amount;
     } else {
       newState.push({
-        projectRegistryId: projectRegistryId,
-        amount: amount,
+        projectRegistryId,
+        amount,
+        projectAddress,
       });
     }
 
@@ -588,8 +669,9 @@ export default function ViewBallot() {
   function updateAllDonations(amount: number) {
     const newDonations = finalBallot.map((project) => {
       return {
-        amount,
         projectRegistryId: project.projectRegistryId,
+        amount,
+        projectAddress: project.recipient,
       } as FinalBallotDonation;
     });
 
@@ -768,8 +850,17 @@ export default function ViewBallot() {
           body={<InfoModalBody />}
           isOpen={openInfoModal}
           setIsOpen={setOpenInfoModal}
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          continueButtonAction={() => {}} // TODO: Wire this up to payouts
+          continueButtonAction={handleSubmitDonation}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we submit your donation."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmitDonation}
         />
       </>
     );
@@ -803,5 +894,37 @@ export default function ViewBallot() {
         <AdditionalGasFeesNote />
       </>
     );
+  }
+
+  async function handleSubmitDonation() {
+    try {
+      if (!round || !roundId) {
+        throw new Error("round is null");
+      }
+
+      setTimeout(() => {
+        setOpenProgressModal(true);
+        setOpenInfoModal(false);
+      }, modalDelayMs);
+
+      const txHash = await submitDonations({
+        roundId: roundId,
+        donations: donations,
+        donationToken: selectedPayoutToken,
+        totalDonation: totalDonation,
+        votingStrategy: round.votingStrategy,
+      });
+
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
+      }, modalDelayMs);
+
+    } catch (error) {
+      datadogLogs.logger.error(
+        `error: handleSubmitDonation - ${error}, id: ${roundId}`
+      );
+      console.error(error);
+    }
   }
 }

@@ -21,4 +21,4 @@ const programImplementation = [
   "function updateMetaPtr(tuple(uint256 protocol, string pointer) newMetaPtr)",
 ];
 
-export default programImplementation
+export default programImplementation;
