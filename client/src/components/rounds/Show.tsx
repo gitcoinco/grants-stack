@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSwitchNetwork } from "wagmi";
 import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -14,6 +15,7 @@ import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
+import SwitchNetworkModal from "../base/SwitchNetworkModal";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -21,6 +23,7 @@ function Round() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { switchNetwork } = useSwitchNetwork();
 
   const { roundId, chainId } = params;
 
@@ -106,13 +109,20 @@ function Round() {
     }
   }, [props.projectsStatus, dispatch]);
 
+  const onSwitchNetwork = () => {
+    if (switchNetwork) {
+      switchNetwork(props.roundChainId);
+    }
+  };
+
   if (props.web3ChainId !== props.roundChainId) {
+    const roundNetworkName = networkPrettyName(props.roundChainId);
     return (
-      <p>
-        This application has been deployed to{" "}
-        {networkPrettyName(props.roundChainId)} and you are connected to{" "}
-        {networkPrettyName(props.web3ChainId ?? 1)}
-      </p>
+      // eslint-disable-next-line
+      <SwitchNetworkModal
+        networkName={roundNetworkName}
+        onSwitchNetwork={onSwitchNetwork}
+      />
     );
   }
 
