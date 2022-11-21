@@ -32,6 +32,7 @@ import ErrorModal from "./common/ErrorModal";
 import { modalDelayMs } from "../constants";
 import { useQFDonation } from "../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -65,6 +66,8 @@ export default function ViewBallot() {
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [shortlist, finalBallot, , , ,] = useBallot();
+
+  const { openConnectModal } = useConnectModal();
 
   const { address } = useAccount();
 
@@ -317,7 +320,7 @@ export default function ViewBallot() {
             </p>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-11">
             <Link to={"/round/" + chainId + "/" + roundId}>
               <Button
                 $variant="solid"
@@ -811,6 +814,12 @@ export default function ViewBallot() {
       return;
     } else {
       setDonationError(newState);
+    }
+
+    // check if wallet is connected
+    if (!address) {
+      openConnectModal && openConnectModal();
+      return;
     }
 
     // check if signer has enough token balance
