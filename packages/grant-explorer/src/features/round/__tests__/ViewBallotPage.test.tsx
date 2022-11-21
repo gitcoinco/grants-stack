@@ -308,6 +308,21 @@ describe("View Ballot Page", () => {
       expect(setShortlist).toHaveBeenCalled();
       expect(setFinalBallot).toHaveBeenCalled();
     });
+
+    it("should contain a link element with each test id to redirect the user back to the project", () => {
+        const shortlist: Project[] = [makeApprovedProjectData()];
+
+        const setShortlist = jest.fn();
+        const setFinalBallot = jest.fn();
+
+        renderWrapped(shortlist, setShortlist, [], setFinalBallot);
+
+        shortlist.map((project) => {
+          const link = screen.getByTestId(`${project.projectRegistryId}-project-link`);
+          expect(link).toBeInTheDocument();
+        });
+    });
+
   });
 
   describe("Final Ballot", () => {

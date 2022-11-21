@@ -15,6 +15,7 @@ import {
   ChevronLeftIcon,
   SelectorIcon,
   InformationCircleIcon,
+  EyeIcon
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
@@ -237,6 +238,7 @@ export default function ViewBallot() {
                   isProjectAlreadySelected(project.projectRegistryId) > -1
                 }
                 project={project}
+                roundRoutePath={`/round/${chainId}/${roundId}`}
                 key={key}
               />
             );
@@ -249,9 +251,11 @@ export default function ViewBallot() {
   function ShortlistProject(
     props: React.ComponentProps<"div"> & {
       project: Project;
+      roundRoutePath: string;
       isSelected: boolean;
     }
   ) {
+    const { project, roundRoutePath } = props;
     const [, , , handleRemoveProjectsFromShortlist] = useBallot();
 
     return (
@@ -265,15 +269,22 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <img
-              className="h-[64px]"
-              src={
-                props.project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                  : DefaultLogoImage
-              }
-              alt={"Project Logo"}
-            />
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+              <img
+                  className="inline-block"
+                  src={
+                    props.project.projectMetadata.logoImg
+                        ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                        : DefaultLogoImage
+                  }
+                  alt={"Project Logo"}
+              />
+              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
+                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                </Link>
+              </div>
+            </div>
 
             <div className="pl-4 mt-1">
               <p className="font-semibold mb-2">
@@ -367,6 +378,7 @@ export default function ViewBallot() {
                 }
                 project={project}
                 index={key}
+                roundRoutePath={`/round/${chainId}/${roundId}`}
               />
             </div>
           ))}
@@ -380,10 +392,11 @@ export default function ViewBallot() {
       project: Project;
       isSelected: boolean;
       index: number;
+      roundRoutePath: string;
     }
   ) {
-    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
-      useBallot();
+    const { project, roundRoutePath } = props;
+    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
@@ -398,20 +411,29 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <img
-              className="h-[64px]"
-              src={
-                props.project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                  : DefaultLogoImage
-              }
-              alt={"Project Logo"}
-            />
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+              <img
+                className="inline-block"
+                src={
+                  props.project.projectMetadata.logoImg
+                      ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                      : DefaultLogoImage
+                }
+                alt={"Project Logo"}
+              />
+              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
+                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                </Link>
+              </div>
+            </div>
 
             <div className="pl-4 mt-1">
-              <p className="font-semibold mb-2">
-                {props.project.projectMetadata.title}
-              </p>
+              <Link to={`${roundRoutePath}/${project.grantApplicationId}`} data-testid={"final-ballot-project-link"}>
+                <p className="font-semibold mb-2">
+                  {props.project.projectMetadata.title}
+                </p>
+              </Link>
               <p className="text-sm">
                 {props.project.projectMetadata.description}
               </p>
