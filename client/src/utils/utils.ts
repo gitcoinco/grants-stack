@@ -40,3 +40,8 @@ export const metadataToProject = (
 
   return p;
 };
+
+export const getProjectNumberFromId = (id: string): number => {
+  const split = id.split(":");
+  return parseInt(split[split.length - 1], 10);
+};

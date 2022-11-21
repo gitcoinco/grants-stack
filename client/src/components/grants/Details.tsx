@@ -43,7 +43,7 @@ export default function Details({
     const { applicationsStatus } = state.projects;
     const projectID = generateUniqueRoundApplicationID(
       chainId!,
-      params.id || "0"
+      parseInt(params.id || "0", 10)
     );
     const { applications } = state.projects;
 

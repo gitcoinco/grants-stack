@@ -11,7 +11,7 @@ import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { metadataToProject } from "../utils/utils";
+import { getProjectNumberFromId, metadataToProject } from "../utils/utils";
 import { getRoundProjectsApplied } from "./projects";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
@@ -140,9 +140,10 @@ export const submitApplication =
       return;
     }
 
-    const projectId = formInputs[projectQuestionId];
-    const projectMetadata: any =
-      state.grantsMetadata[Number(projectId)].metadata;
+    const projectID = formInputs[projectQuestionId];
+    const projectNumber = getProjectNumberFromId(projectID);
+
+    const projectMetadata: any = state.grantsMetadata[projectID].metadata;
     if (projectMetadata === undefined) {
       dispatch(
         applicationError(
@@ -255,7 +256,7 @@ export const submitApplication =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const projectUniqueID = generateUniqueRoundApplicationID(
       chainID,
-      projectId
+      projectNumber
     );
 
     try {
@@ -265,7 +266,7 @@ export const submitApplication =
       dispatch({
         type: ROUND_APPLICATION_LOADED,
         roundAddress,
-        projectId: Number(projectId),
+        projectId: projectID,
       });
       dispatch<any>(getRoundProjectsApplied(projectUniqueID, chainID));
     } catch (e) {
@@ -288,7 +289,7 @@ export const checkRoundApplications =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const uniqueIDsToIDs = Object.fromEntries(
       projectIDs.map((id: string) => [
-        generateUniqueRoundApplicationID(chainID, id),
+        generateUniqueRoundApplicationID(chainID, getProjectNumberFromId(id)),
         id,
       ])
     );
