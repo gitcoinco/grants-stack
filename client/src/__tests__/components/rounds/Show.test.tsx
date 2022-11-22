@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
+import { loadProjects } from "../../../actions/projects";
+import { loadRound, unloadRounds } from "../../../actions/rounds";
+import { web3ChainIDLoaded } from "../../../actions/web3";
 import Show from "../../../components/rounds/Show";
 import setupStore from "../../../store";
-import { unloadRounds, loadRound } from "../../../actions/rounds";
-import { web3ChainIDLoaded } from "../../../actions/web3";
 import {
-  renderWrapped,
-  buildRound,
   buildProjectMetadata,
+  buildRound,
+  renderWrapped,
 } from "../../../utils/test_utils";
-import { loadProjects } from "../../../actions/projects";
 
 jest.mock("../../../actions/rounds");
 jest.mock("../../../actions/projects");
@@ -22,10 +22,20 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
+jest.mock("wagmi", () => ({
+  useSwitchNetwork: () => ({
+    switchNetwork: jest.fn(),
+  }),
+  useNetwork: () => ({
+    chain: jest.fn(),
+  }),
+}));
+
 describe("<Show />", () => {
   describe("with a valid round", () => {
     let store: any;
-    let chainId: number;
+    // todo: mock the chainId for the round and the web3 chainId
+    // let chainId: number;
 
     beforeEach(() => {
       store = setupStore();
@@ -43,12 +53,7 @@ describe("<Show />", () => {
 
         renderWrapped(<Show />, store);
 
-        // todo: update this to passing for updated behavior
-        if (chainId === 5) {
-          expect(loadProjects).toBeCalledTimes(1);
-        } else {
-          expect(loadProjects).toBeCalledTimes(0);
-        }
+        expect(loadProjects).toBeCalledTimes(1);
       });
 
       test("should not be called if it's already loading", async () => {
