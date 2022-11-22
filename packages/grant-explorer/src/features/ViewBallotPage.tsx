@@ -45,9 +45,6 @@ export default function ViewBallot() {
     ...getPayoutTokenOptions(chainId!),
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  useRoundById(chainId!, roundId!);
-
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
     payoutTokenOptions[0]
   );
@@ -349,7 +346,7 @@ export default function ViewBallot() {
               aria-label={"Donation amount for all projects "}
               id={"input-donationamount"}
               min="0"
-              value={fixedDonation}
+              value={fixedDonation ?? ''}
               type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(Number(e.target.value));
@@ -502,7 +499,7 @@ export default function ViewBallot() {
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
-                value={fixedDonation}
+                value={fixedDonation ?? ''}
                 type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(Number(e.target.value));
