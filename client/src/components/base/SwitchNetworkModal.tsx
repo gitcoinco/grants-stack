@@ -30,7 +30,7 @@ function SwitchNetworkModal({
             onClick={onSwitchNetwork}
             variant={ButtonVariants.primary}
           >
-            Switch Network
+            Switch Network to Continue
           </Button>
         </div>
       </>
