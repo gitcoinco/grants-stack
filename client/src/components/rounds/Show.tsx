@@ -14,6 +14,7 @@ import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
+import LoadingSpinner from "../base/LoadingSpinner";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -147,7 +148,14 @@ function Round() {
     props.status !== Status.Loaded ||
     props.projectsStatus !== ProjectStatus.Loaded
   ) {
-    return <p>loading...</p>;
+    return (
+      <LoadingSpinner
+        label="Loading Round"
+        size="24"
+        thickness="6px"
+        showText
+      />
+    );
   }
 
   if (props.roundState === undefined || props.round === undefined) {
