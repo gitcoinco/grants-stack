@@ -96,7 +96,14 @@ function ProjectsList() {
   }, [props.projectIDs, props.existingApplication]);
 
   if (props.loading && !props.error) {
-    return <LoadingSpinner size="24" thickness="6px" showText />;
+    return (
+      <LoadingSpinner
+        label="Loading Projects"
+        size="24"
+        thickness="6px"
+        showText
+      />
+    );
   }
 
   return (

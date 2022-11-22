@@ -143,7 +143,7 @@ describe("<List />", () => {
 
         renderWrapped(<List />, store);
 
-        expect(screen.findByDisplayValue("Loading...")).toBeTruthy();
+        expect(screen.getByText("Loading Projects")).toBeInTheDocument();
       });
 
       test("should show an empty list", async () => {

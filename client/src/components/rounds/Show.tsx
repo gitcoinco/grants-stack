@@ -148,7 +148,14 @@ function Round() {
     props.status !== Status.Loaded ||
     props.projectsStatus !== ProjectStatus.Loaded
   ) {
-    return <LoadingSpinner size="24" thickness="6px" showText />;
+    return (
+      <LoadingSpinner
+        label="Loading Round"
+        size="24"
+        thickness="6px"
+        showText
+      />
+    );
   }
 
   if (props.roundState === undefined || props.round === undefined) {
