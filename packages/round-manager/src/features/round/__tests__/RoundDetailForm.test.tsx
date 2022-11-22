@@ -388,7 +388,7 @@ describe("<RoundDetailForm />", () => {
       <RoundDetailForm stepper={FormStepper} initialData={{ program }} />
     );
 
-    expect(screen.getByText(chain.name)).toBeInTheDocument();
+    expect(screen.getByText(chain.name!)).toBeInTheDocument();
     expect(screen.getByTestId("chain-logo")).toBeInTheDocument();
   });
 
