@@ -76,7 +76,11 @@ function Round() {
       ApplicationModalStatus.Undefined
     );
 
+  const isOnRoundChain = props.web3ChainId === props.roundChainId;
+
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (
       roundId &&
       props.applicationEnded !== undefined &&
@@ -91,6 +95,8 @@ function Round() {
   }, [roundId, props.applicationEnded]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (roundId !== undefined) {
       dispatch(unloadRounds());
       dispatch(loadRound(roundId));
@@ -98,12 +104,16 @@ function Round() {
   }, [dispatch, roundId]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (props.round) {
       setRoundData(props.round);
     }
   }, [props.round]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (props.projectsStatus === ProjectStatus.Undefined) {
       dispatch(loadProjects(true));
     }
@@ -115,7 +125,7 @@ function Round() {
     }
   };
 
-  if (props.web3ChainId !== props.roundChainId) {
+  if (!isOnRoundChain) {
     const roundNetworkName = networkPrettyName(props.roundChainId);
     return (
       // eslint-disable-next-line
