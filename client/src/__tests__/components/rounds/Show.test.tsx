@@ -60,7 +60,9 @@ describe("<Show />", () => {
         store.dispatch(web3ChainIDLoaded(5));
 
         renderWrapped(<Show />, store);
-        expect(screen.queryByTestId("switch-network-modal")).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("switch-network-modal")
+        ).not.toBeInTheDocument();
       });
     });
 
