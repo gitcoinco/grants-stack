@@ -6,7 +6,7 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import { getProjectNumberFromId } from "../../utils/utils";
+import { getProjectURIComponents } from "../../utils/utils";
 import TextLoading from "../base/TextLoading";
 
 function Card({ projectId }: { projectId: string }) {
@@ -21,7 +21,7 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const id = getProjectNumberFromId(projectId);
+    const { id } = getProjectURIComponents(projectId);
 
     return {
       id,

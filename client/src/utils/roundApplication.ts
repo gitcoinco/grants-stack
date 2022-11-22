@@ -3,7 +3,7 @@ import { addressesByChainID } from "../contracts/deployments";
 
 const generateUniqueRoundApplicationID = (
   chainID: number,
-  projectNumber: number
+  projectNumber: string
 ) => {
   const addresses = addressesByChainID(chainID);
   return ethers.utils.solidityKeccak256(

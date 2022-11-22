@@ -46,7 +46,7 @@ function Project() {
     );
 
     let fullId = params.id;
-    if (params.chainID && params.registryAddress) {
+    if (params.chainId && params.registryAddress) {
       fullId = `${params.chainID}:${params.registryAddress}:${params.id}`;
     }
 
@@ -122,7 +122,11 @@ function Project() {
             </Link>
             {props.id && (
               <Link
-                to={editPath(props.id)}
+                to={editPath(
+                  props.id.split(":")[0],
+                  props.id.split(":")[1],
+                  props.id.split(":")[2]
+                )}
                 className="sm:w-auto mx-w-full ml-0"
               >
                 <Button

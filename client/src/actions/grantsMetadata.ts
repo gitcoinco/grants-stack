@@ -8,7 +8,7 @@ import { RootState } from "../reducers";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
-import { getProjectNumberFromId } from "../utils/utils";
+import { getProjectURIComponents } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -86,9 +86,8 @@ const getProjectById = async (
     signerOrProvider
   );
 
-  const project: ProjectRegistryMetadata = await projectRegistry.projects(
-    getProjectNumberFromId(projectId)
-  );
+  const { id } = getProjectURIComponents(projectId);
+  const project: ProjectRegistryMetadata = await projectRegistry.projects(id);
 
   return project;
 };

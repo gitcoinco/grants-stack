@@ -1,3 +1,5 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import { datadogRum } from "@datadog/browser-rum";
 import { Metadata, Project } from "../types";
 
 // Checks if tests are being run jest
@@ -41,7 +43,16 @@ export const metadataToProject = (
   return p;
 };
 
-export const getProjectNumberFromId = (id: string): number => {
+export const getProjectURIComponents = (id: string) => {
   const split = id.split(":");
-  return parseInt(split[split.length - 1], 10);
+  if (split.length < 3) {
+    datadogRum.addError("Invalid project id", { id: id });
+    datadogLogs.logger.error("Invalid project id", { id: id });
+    throw new Error("Invalid project ID");
+  }
+  return {
+    chainId: split[0],
+    roundAddress: split[1],
+    id: split[2],
+  };
 };

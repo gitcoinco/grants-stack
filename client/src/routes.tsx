@@ -3,9 +3,8 @@ import { datadogLogs } from "@datadog/browser-logs";
 export const slugs = {
   root: `/`,
   grants: `/projects`,
-  grant: `/projects/:id`,
   project: `/chains/:chainId/registry/:registryAddress/projects/:id`,
-  edit: `/projects/:id/edit`,
+  edit: `/chains/:chainId/registry/:registryAddress/projects/:id/edit`,
   newGrant: `/projects/new`,
   round: `/chains/:chainId/rounds/:roundId`,
   roundApplication: `/chains/:chainId/rounds/:roundId/apply`,
@@ -29,12 +28,6 @@ export const newGrantPath = () => {
   return slugs.newGrant;
 };
 
-export const grantPath = (id: string | number) => {
-  datadogLogs.logger.info(`====> Route: /projects/${id}`);
-  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  return `/projects/${id}`;
-};
-
 export const projectPath = (
   chainId: string | undefined,
   registryAddress: string | undefined,
@@ -47,10 +40,16 @@ export const projectPath = (
   return `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}`;
 };
 
-export const editPath = (id: string | number) => {
-  datadogLogs.logger.info(`====> Route: /projects/${id}/edit`);
+export const editPath = (
+  chainId: string | undefined,
+  registryAddress: string | undefined,
+  projectId: string | undefined
+) => {
+  datadogLogs.logger.info(
+    `====> Route: /chains/${chainId}/registry/${registryAddress}/projects/${projectId}/edit`
+  );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  return `/projects/${id}/edit`;
+  return `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}/edit`;
 };
 
 export const roundPath = (
