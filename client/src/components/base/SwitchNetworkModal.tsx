@@ -11,7 +11,7 @@ function SwitchNetworkModal({
   return (
     <BaseModal isOpen onClose={() => {}} hideCloseButton>
       <>
-        <div className="flex">
+        <div data-testid="switch-network-modal" className="flex">
           <div className="text-center">
             <div className="">
               <p className="text-primary-text text-[18px] flex justify-center p-2">

@@ -45,6 +45,25 @@ describe("<Show />", () => {
       store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
     });
 
+    describe("<SwitchNetworkModal />", () => {
+      test("renders when the round's chainId does not match the user's chainId", () => {
+        store.dispatch(web3ChainIDLoaded(1));
+
+        renderWrapped(<Show />, store);
+        expect(screen.getByTestId("switch-network-modal")).toBeInTheDocument();
+      });
+
+      test("does not render when the round's chainId matches the user's chainId", () => {
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        store.dispatch(web3ChainIDLoaded(5));
+
+        renderWrapped(<Show />, store);
+        expect(screen.queryByTestId("switch-network-modal")).not.toBeInTheDocument();
+      });
+    });
+
     describe("useEffect/loadProjects", () => {
       test("should be called the first time", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
