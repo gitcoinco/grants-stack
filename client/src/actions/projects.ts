@@ -1,3 +1,4 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -174,7 +175,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   return {
     createdEvents,
     updatedEvents,
-    fullIds,
+    ids: fullIds,
   };
 };
 
@@ -228,6 +229,8 @@ export const loadProjects =
 
       dispatch(projectsLoaded(events));
     } catch (error) {
+      datadogRum.addError(error);
+      datadogLogs.logger.error("Failed to load projects", error as Error);
       dispatch(projectError("Cannot load projects"));
     }
   };

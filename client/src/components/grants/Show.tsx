@@ -3,6 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { loadProjects } from "../../actions/projects";
+import { addressesByChainID } from "../../contracts/deployments";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
@@ -30,7 +31,18 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(params.id)];
+    const { chainID } = state.web3;
+    const addresses = addressesByChainID(chainID!);
+    if (
+      params.registryAddress?.toLowerCase() !==
+      addresses.projectRegistry?.toLowerCase()
+    ) {
+      throw new Error("Invalid registry address");
+    }
+    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
+
+    const grantMetadata = state.grantsMetadata[fullId];
+
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
@@ -44,11 +56,6 @@ function Project() {
       ImgTypes.logoImg,
       grantMetadata?.metadata
     );
-
-    let fullId = params.id;
-    if (params.chainId && params.registryAddress) {
-      fullId = `${params.chainID}:${params.registryAddress}:${params.id}`;
-    }
 
     return {
       id: fullId,
@@ -64,10 +71,10 @@ function Project() {
     // called twice
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
-    if (params.id !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(params.id));
+    if (props.id !== undefined && props.currentProject === undefined) {
+      dispatch(fetchGrantData(props.id));
     }
-  }, [dispatch, params.id, props.currentProject]);
+  }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
     let unloaded = false;
