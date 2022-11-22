@@ -45,8 +45,8 @@ describe("listPrograms", () => {
     });
 
     const actualPrograms = await listPrograms("0x0", {
-      // @ts-expect-error Test file
       getNetwork: async () =>
+        // @ts-expect-error Test file
         Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
     });
 
@@ -88,8 +88,8 @@ describe("getProgramById", () => {
     });
 
     const actualProgram = await getProgramById(programId as string, {
-      // @ts-expect-error Test file
       getNetwork: async () =>
+        // @ts-expect-error Test file
         Promise.resolve({ chainId: ChainId.GOERLI_CHAIN_ID }),
     });
 
