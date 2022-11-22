@@ -150,9 +150,9 @@ describe("<ViewRound /> in case of after the round start date", () => {
     screen.getByTestId("loading-spinner");
   });
 
-  it("displays the project name of an approved grant application", async () => {
+  it("displays the project details of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
-    const expectedProjectName = expectedApprovedProject.projectMetadata.title;
+    
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
@@ -164,7 +164,13 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
-    await screen.findByText(expectedProjectName);
+    const ProjectTitle = await screen.getByTestId("project-title");
+    const ProjectOwner = await screen.getByTestId("project-owner");
+    const ProjectDescription = await screen.getByTestId("project-description");
+
+    expect(ProjectTitle).toBeInTheDocument();
+    expect(ProjectOwner).toBeInTheDocument();
+    expect(ProjectDescription).toBeInTheDocument();
   });
 
   it("displays the project banner of an approved grant application if provided", async () => {
