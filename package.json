@@ -11,6 +11,7 @@
     "build": "lerna run build --scope=round-manager",
     "compile": "lerna run compile --scope=contracts",
     "test": "lerna run test --ignore=@grants-round/graph",
+    "typecheck": "lerna exec --ignore=@grants-round/graph -- tsc --noEmit",
     "// contracts script": "====== packages/contract specific ======",
     "hh-test": "lerna run test --scope=contracts",
     "hh-compile": "lerna run compile --scope=contracts",
@@ -21,11 +22,13 @@
     "rm-test": "lerna run test --scope=round-manager",
     "rm-start": "lerna run start --scope=round-manager",
     "rm-slither": "lerna run slither --scope=round-manager",
+    "rm-typecheck": "lerna exec --scope=round-manager -- tsc --noEmit",
     "// grant explorer script": "====== packages/grant-explorer specific ======",
     "re-build": "lerna run build --scope=grant-explorer",
     "re-test": "lerna run test --scope=grant-explorer",
     "re-start": "lerna run start --scope=grant-explorer",
-    "re-slither": "lerna run slither --scope=grant-explorer"
+    "re-slither": "lerna run slither --scope=grant-explorer",
+    "re-typecheck": "lerna exec --scope=grant-explorer -- tsc --noEmit"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.1.0",
