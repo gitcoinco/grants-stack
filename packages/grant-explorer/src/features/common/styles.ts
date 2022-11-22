@@ -79,7 +79,7 @@ export const CardTitle = tw.p`
 export const CardDescription = tw.p`
   text-xs
   text-ellipsis
-  line-clamp-2
+  line-clamp-4
   text-grey-400
   leading-relaxed
 `;
