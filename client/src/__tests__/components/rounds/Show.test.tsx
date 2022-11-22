@@ -55,6 +55,7 @@ describe("<Show />", () => {
 
         expect(loadProjects).toBeCalledTimes(0);
         expect(screen.getByText("Loading Round")).toBeInTheDocument();
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
       });
     });
 
