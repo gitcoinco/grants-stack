@@ -60,6 +60,7 @@ describe("<Show />", () => {
         renderWrapped(<Show />, store);
 
         expect(loadProjects).toBeCalledTimes(0);
+        expect(screen.getByText("Loading Round")).toBeInTheDocument();
       });
     });
 
