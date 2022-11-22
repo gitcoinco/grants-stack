@@ -35,8 +35,6 @@ jest.mock("wagmi", () => ({
 describe("<Show />", () => {
   describe("with a valid round", () => {
     let store: any;
-    // todo: mock the chainId for the round and the web3 chainId
-    // let chainId: number;
 
     beforeEach(() => {
       store = setupStore();
