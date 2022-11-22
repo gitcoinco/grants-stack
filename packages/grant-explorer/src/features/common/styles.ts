@@ -47,7 +47,7 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[302px]
-  h-[294px]
+  h-[354px]
   ml-0
   mr-6
   my-3
