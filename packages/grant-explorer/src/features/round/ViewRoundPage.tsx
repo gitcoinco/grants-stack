@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardsContainer,
   CardTitle,
+  CardDescription,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
 
@@ -115,6 +116,7 @@ function AfterRoundStart(props: { round: Round, chainId: string, roundId: string
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
 
   const { project, roundRoutePath } = props;
+  const projectRecipient = project.recipient.slice(0, 6)
   return (
     <BasicCard data-testid="project-card">
       <Link
@@ -130,7 +132,9 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
           />
         </CardHeader>
         <CardContent>
-          <CardTitle>{project.projectMetadata.title}</CardTitle>
+          <CardTitle data-testid="project-title">{project.projectMetadata.title}</CardTitle>
+          <CardDescription className="mb-2" data-testid="project-owner">by {projectRecipient}</CardDescription>
+          <CardDescription data-testid="project-description">{project.projectMetadata.description}</CardDescription>
         </CardContent>
       </Link>
     </BasicCard>
