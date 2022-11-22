@@ -23,6 +23,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
   useSwitchNetwork: () => ({
     switchNetwork: jest.fn(),
   }),
@@ -41,6 +42,7 @@ describe("<Show />", () => {
       store = setupStore();
       const round = buildRound({ address: "0x1234" });
 
+      // todo: Test the chainId against the round's chainId
       store.dispatch(web3ChainIDLoaded(5));
       store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
     });
