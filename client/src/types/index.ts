@@ -1,4 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { ReactNode } from "react";
 
 export type Images = {
   bannerImg?: Blob;
@@ -49,7 +50,7 @@ export type ChangeHandlers =
 
 // Inputs
 export type InputProps = {
-  label: string;
+  label: string | ReactNode;
   name: string;
   info?: string;
   value?: string | number;
@@ -203,6 +204,7 @@ export type FormInputs = {
 };
 
 export enum ProjectFormStatus {
+  Network,
   Metadata,
   Verification,
   Preview,

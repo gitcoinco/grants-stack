@@ -13,6 +13,7 @@ import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
+import LoadingSpinner from "../base/LoadingSpinner";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
@@ -95,7 +96,14 @@ function ProjectsList() {
   }, [props.projectIDs, props.existingApplication]);
 
   if (props.loading && !props.error) {
-    return <>loading...</>;
+    return (
+      <LoadingSpinner
+        label="Loading Projects"
+        size="24"
+        thickness="6px"
+        showText
+      />
+    );
   }
 
   return (

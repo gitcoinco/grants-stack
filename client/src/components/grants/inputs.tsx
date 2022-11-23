@@ -51,7 +51,7 @@ export function TextInput({
       <legend>{info}</legend>
       <input
         type="text"
-        id={label}
+        id={name}
         name={name}
         value={value ?? ""}
         placeholder={placeholder}
@@ -152,7 +152,7 @@ export function WebsiteInput({
         <input
           type="text"
           className="rounded"
-          id={label}
+          id={name}
           name={name}
           value={sanitizedInput ?? ""}
           placeholder={placeholder}
@@ -190,7 +190,7 @@ export function TextArea({
       </div>
       <legend>{info}</legend>
       <textarea
-        id={label}
+        id={name}
         name={name}
         placeholder={placeholder}
         value={value ?? ""}
@@ -202,6 +202,7 @@ export function TextArea({
 }
 
 type SelectInputProps = InputProps & {
+  defaultValue?: number;
   options: ProjectOption[];
 };
 
@@ -214,6 +215,7 @@ export function Select({
   changeHandler,
   required,
   encrypted,
+  defaultValue,
 }: SelectInputProps) {
   return (
     <div className="relative">
@@ -237,6 +239,7 @@ export function Select({
           "bg-transparent": !disabled,
         })}
         onChange={(e) => changeHandler(e)}
+        defaultValue={defaultValue}
       >
         {options.map((option) => (
           <option key={`key-${option.id}`} value={option.id}>
