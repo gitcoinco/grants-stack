@@ -38,7 +38,6 @@ export default function Details({
   const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-
     const chainId = state.web3.chainID;
 
     const applications = state.projects.applications[params.id!] || [];

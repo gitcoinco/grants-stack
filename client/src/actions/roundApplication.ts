@@ -269,7 +269,7 @@ export const submitApplication =
         roundAddress,
         projectId: projectID,
       });
-      dispatch<any>(fetchProjectApplications(projectId));
+      dispatch<any>(fetchProjectApplications(projectID, chainID));
     } catch (e) {
       datadogRum.addError(e);
       console.error("error calling applyToRound:", e);

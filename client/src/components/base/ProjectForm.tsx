@@ -102,7 +102,10 @@ function ProjectForm({
             name="network"
             defaultValue={props.currentChain}
             label="Project Deployment Network:"
-            options={chains.map((i) => ({ id: i.id, title: i.name }))}
+            options={chains.map((i) => ({
+              id: i.id.toString(),
+              title: i.name,
+            }))}
             changeHandler={() => null}
             disabled
             required

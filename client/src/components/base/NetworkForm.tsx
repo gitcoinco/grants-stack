@@ -1,5 +1,5 @@
-import { shallowEqual, useSelector } from "react-redux";
 import { useState } from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import { useSwitchNetwork } from "wagmi";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
@@ -63,7 +63,10 @@ function NetworkForm({
                 </a>
               </span>
             }
-            options={chains.map((i) => ({ id: i.id, title: i.name }))}
+            options={chains.map((i) => ({
+              id: i.id.toString(),
+              title: i.name,
+            }))}
             changeHandler={handleNetworkSelect}
             required
           />

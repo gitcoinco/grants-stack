@@ -13,7 +13,6 @@ import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { fetchGrantData } from "./grantsMetadata";
-import generateUniqueRoundApplicationID from "../utils/roundApplication";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -288,7 +287,6 @@ export const fetchApplicationStatusesFromContract =
     });
   };
 
-
 export const fetchProjectApplications =
   (projectID: string, chain: ChainId) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -299,13 +297,9 @@ export const fetchProjectApplications =
     const state = getState();
     const { chainID } = state.web3;
 
-    const projectHash = generateUniqueRoundApplicationID(chainID!, projectID);
-
-    const state = getState();
-    const { chainID } = state.web3;
     const projectApplicationID = generateUniqueRoundApplicationID(
       chainID!,
-      Number(projectID)
+      projectID
     );
 
     try {
@@ -320,7 +314,7 @@ export const fetchProjectApplications =
         }
         `,
         chain,
-        { projectID: projectHash }
+        { projectID: projectApplicationID }
       );
 
       const applications = response.data.roundProjects.map((rp: any) => ({

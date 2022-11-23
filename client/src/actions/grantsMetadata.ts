@@ -157,14 +157,17 @@ const getMetadata = async (
 export const fetchGrantData =
   (id: string) => async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantMetadataLoadingURI(id));
+
     const state = getState();
     const { chainID } = state.web3;
+
     const addresses = addressesByChainID(chainID!);
     const { signer } = global;
 
     let project: ProjectRegistryMetadata;
 
     try {
+      console.log("DASA fetching project", id, addresses);
       project = await getProjectById(id, addresses, signer!);
     } catch (e) {
       datadogRum.addError(e);
