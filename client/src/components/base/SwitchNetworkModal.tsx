@@ -11,9 +11,9 @@ function SwitchNetworkModal({
   return (
     <BaseModal isOpen onClose={() => {}} hideCloseButton>
       <>
-        <div data-testid="switch-network-modal" className="flex">
+        <div data-testid="switch-networks-modal" className="flex">
           <div className="text-center">
-            <div className="">
+            <div data-testid="switch-networks-modal-title">
               <p className="text-primary-text text-[18px] flex justify-center p-2">
                 Switch Networks to Continue
               </p>
@@ -24,7 +24,10 @@ function SwitchNetworkModal({
             </div>
           </div>
         </div>
-        <div className="w-full justify-center text-center grid grid-cols-1">
+        <div
+          data-testid="switch-networks-modal-button"
+          className="w-full justify-center text-center grid grid-cols-1"
+        >
           <Button
             styles={["p-3", "justify-center"]}
             onClick={onSwitchNetwork}

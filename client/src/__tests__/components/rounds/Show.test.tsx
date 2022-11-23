@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { loadProjects } from "../../../actions/projects";
 import { loadRound, unloadRounds } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
@@ -49,11 +49,14 @@ describe("<Show />", () => {
         store.dispatch(web3ChainIDLoaded(1));
 
         renderWrapped(<Show />, store);
-        await waitFor(() => {
-          expect(
-            screen.getByTestId("switch-network-modal")
-          ).toBeInTheDocument();
-        });
+
+        expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("switch-networks-modal-title")
+        ).toHaveTextContent("Switch Networks to Continue");
+        expect(
+          screen.getByTestId("switch-networks-modal-button")
+        ).toHaveTextContent("Switch Networks to Continue");
       });
 
       test("does not render when the round's chainId matches the user's chainId", async () => {
@@ -63,11 +66,9 @@ describe("<Show />", () => {
         store.dispatch(web3ChainIDLoaded(5));
 
         renderWrapped(<Show />, store);
-        await waitFor(() => {
-          expect(
-            screen.queryByTestId("switch-network-modal")
-          ).not.toBeInTheDocument();
-        });
+        expect(
+          screen.queryByTestId("switch-network-modal")
+        ).not.toBeInTheDocument();
       });
     });
 
