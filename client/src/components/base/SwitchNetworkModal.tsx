@@ -15,7 +15,7 @@ function SwitchNetworkModal({
           <div className="text-center">
             <div className="">
               <p className="text-primary-text text-[18px] flex justify-center p-2">
-                Switch Network to Continue
+                Switch Networks to Continue
               </p>
               <p className="text-gitcoin-grey-400 text-[16px] flex justify-center p-2">
                 To apply for this round on {networkName}, you need to switch the
@@ -30,7 +30,7 @@ function SwitchNetworkModal({
             onClick={onSwitchNetwork}
             variant={ButtonVariants.primary}
           >
-            Switch Network to Continue
+            Switch Networks to Continue
           </Button>
         </div>
       </>
