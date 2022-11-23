@@ -6,8 +6,6 @@ import { getRoundProjectsApplied } from "../../actions/projects";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
-import generateUniqueRoundApplicationID from "../../utils/roundApplication";
-import { getProjectURIComponents } from "../../utils/utils";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -43,19 +41,11 @@ export default function Details({
     const chainId = state.web3.chainID;
     const { applicationsStatus } = state.projects;
 
-    const parseProjectID = () => {
-      if (params.id) {
-        const { id } = getProjectURIComponents(params.id!);
-        return generateUniqueRoundApplicationID(chainId!, id);
-      }
-      return null;
-    };
-
     const { applications } = state.projects;
 
     return {
       chainId,
-      projectID: parseProjectID(),
+      projectID: params.id ?? null,
       applications,
       status: applicationsStatus,
     };
