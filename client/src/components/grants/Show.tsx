@@ -10,6 +10,7 @@ import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
+import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
@@ -113,6 +114,11 @@ function Project() {
     return <>Loading grant data from IPFS... </>;
   }
 
+  function createEditPath() {
+    const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
+    return editPath(chainId, registryAddress, id);
+  }
+
   return (
     <div>
       {props.currentProject && (
@@ -127,14 +133,7 @@ function Project() {
               </h3>
             </Link>
             {props.id && (
-              <Link
-                to={editPath(
-                  props.id.split(":")[0],
-                  props.id.split(":")[1],
-                  props.id.split(":")[2]
-                )}
-                className="sm:w-auto mx-w-full ml-0"
-              >
+              <Link to={createEditPath()} className="sm:w-auto mx-w-full ml-0">
                 <Button
                   variant={ButtonVariants.outline}
                   styles={["sm:w-auto mx-w-full ml-0"]}

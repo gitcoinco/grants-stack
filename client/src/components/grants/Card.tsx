@@ -39,15 +39,14 @@ function Card({ projectId }: { projectId: string }) {
     }
   }, [dispatch, projectId, props.currentProject, props.status]);
 
+  function createProjectPath() {
+    const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
+    return projectPath(chainId, registryAddress, id);
+  }
+
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <Link
-        to={projectPath(
-          projectId.split(":")[0],
-          projectId.split(":")[1],
-          projectId.split(":")[2]
-        )}
-      >
+      <Link to={createProjectPath()}>
         <img
           className="w-full h-32 object-cover"
           src={props.bannerImg}

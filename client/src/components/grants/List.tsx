@@ -131,7 +131,7 @@ function ProjectsList() {
             show={props.showRoundAlert}
             confirmHandler={() => {
               const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-              const path = roundPath(chainID, roundAddress);
+              const path = roundPath(chainID!, roundAddress!);
 
               navigate(path);
             }}

@@ -29,9 +29,9 @@ export const newGrantPath = () => {
 };
 
 export const projectPath = (
-  chainId: string | undefined,
-  registryAddress: string | undefined,
-  projectId: string | undefined
+  chainId: string,
+  registryAddress: string,
+  projectId: string
 ) => {
   datadogLogs.logger.info(
     `====> Route: /chains/${chainId}/registry/${registryAddress}/projects/${projectId}`
@@ -41,9 +41,9 @@ export const projectPath = (
 };
 
 export const editPath = (
-  chainId: string | undefined,
-  registryAddress: string | undefined,
-  projectId: string | undefined
+  chainId: string,
+  registryAddress: string,
+  projectId: string
 ) => {
   datadogLogs.logger.info(
     `====> Route: /chains/${chainId}/registry/${registryAddress}/projects/${projectId}/edit`
@@ -52,19 +52,13 @@ export const editPath = (
   return `/chains/${chainId}/registry/${registryAddress}/projects/${projectId}/edit`;
 };
 
-export const roundPath = (
-  chainId: string | undefined,
-  roundId: string | undefined
-) => {
+export const roundPath = (chainId: string, roundId: string) => {
   datadogLogs.logger.info(`====> Route: /chains/${chainId}/rounds/${roundId}`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   return `/chains/${chainId}/rounds/${roundId}`;
 };
 
-export const roundApplicationPath = (
-  chainId: string | undefined,
-  roundId: string | undefined
-) => {
+export const roundApplicationPath = (chainId: string, roundId: string) => {
   datadogLogs.logger.info(
     `====> Route: /chains/${chainId}/rounds/${roundId}/apply`
   );

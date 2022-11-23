@@ -52,7 +52,7 @@ export const getProjectURIComponents = (id: string) => {
   }
   return {
     chainId: split[0],
-    roundAddress: split[1],
+    registryAddress: split[1],
     id: split[2],
   };
 };

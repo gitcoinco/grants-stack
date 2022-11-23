@@ -123,7 +123,7 @@ function Apply() {
         );
         navigate(
           projectPath(
-            chainId,
+            chainId!,
             addresses.projectRegistry,
             props.applicationState.projectsIDs[0].toString()
           )
