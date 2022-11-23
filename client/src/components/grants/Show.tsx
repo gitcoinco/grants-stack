@@ -78,7 +78,7 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
-
+    console.log("DASA", props.projectEvents);
     if (props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {
@@ -104,7 +104,7 @@ function Project() {
     return () => {
       unloaded = true;
     };
-  }, [props.id, props.projectEvents, props.currentProject, global, dispatch]);
+  }, [props.id, props.projectEvents, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
