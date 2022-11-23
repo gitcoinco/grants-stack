@@ -21,6 +21,9 @@ export function shortAddress(address: string): string {
 export const networkPrettyNames: { [key: string]: string } = {
   goerli: "Goerli",
   optimisticKovan: "Optimistic Kovan",
+  fantomTestnet: "Fantom Testnet",
+  fantom: "Fantom",
+  optimism: "Optimism",
 };
 export function networkPrettyName(chainId: number): string {
   const rawName = chains[chainId];

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSwitchNetwork } from "wagmi";
 import { loadProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -14,6 +15,7 @@ import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
+import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 
 function Round() {
@@ -22,6 +24,7 @@ function Round() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { switchNetwork } = useSwitchNetwork();
 
   const { roundId, chainId } = params;
 
@@ -74,7 +77,11 @@ function Round() {
       ApplicationModalStatus.Undefined
     );
 
+  const isOnRoundChain = props.web3ChainId === props.roundChainId;
+
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (
       roundId &&
       props.applicationEnded !== undefined &&
@@ -89,6 +96,8 @@ function Round() {
   }, [roundId, props.applicationEnded]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (roundId !== undefined) {
       dispatch(unloadRounds());
       dispatch(loadRound(roundId));
@@ -96,24 +105,35 @@ function Round() {
   }, [dispatch, roundId]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (props.round) {
       setRoundData(props.round);
     }
   }, [props.round]);
 
   useEffect(() => {
+    if (!isOnRoundChain) return;
+
     if (props.projectsStatus === ProjectStatus.Undefined) {
       dispatch(loadProjects(true));
     }
   }, [props.projectsStatus, dispatch]);
 
-  if (props.web3ChainId !== props.roundChainId) {
+  const onSwitchNetwork = () => {
+    if (switchNetwork) {
+      switchNetwork(props.roundChainId);
+    }
+  };
+
+  if (!isOnRoundChain) {
+    const roundNetworkName = networkPrettyName(props.roundChainId);
     return (
-      <p>
-        This application has been deployed to{" "}
-        {networkPrettyName(props.roundChainId)} and you are connected to{" "}
-        {networkPrettyName(props.web3ChainId ?? 1)}
-      </p>
+      // eslint-disable-next-line
+      <SwitchNetworkModal
+        networkName={roundNetworkName}
+        onSwitchNetwork={onSwitchNetwork}
+      />
     );
   }
 
