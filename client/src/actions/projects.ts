@@ -8,6 +8,7 @@ import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectEventsMap } from "../types";
 import { ChainId, graphqlFetch } from "../utils/graphql";
+import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -236,11 +237,16 @@ export const loadProjects =
   };
 
 export const getRoundProjectsApplied =
-  (projectID: string, chainId: ChainId) => async (dispatch: Dispatch) => {
+  (projectID: string, chain: ChainId) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
+    const state = getState();
+    const { chainID } = state.web3;
+
+    const projectHash = generateUniqueRoundApplicationID(chainID!, projectID);
 
     try {
       console.log("fetching graphql project data");
@@ -254,8 +260,8 @@ export const getRoundProjectsApplied =
           }
         }
         `,
-        chainId,
-        { projectID }
+        chain,
+        { projectID: projectHash }
       );
 
       dispatch({

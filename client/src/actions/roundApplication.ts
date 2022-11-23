@@ -254,6 +254,7 @@ export const submitApplication =
     });
 
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
+
     const projectUniqueID = generateUniqueRoundApplicationID(
       chainID,
       projectNumber
