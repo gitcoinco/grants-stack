@@ -9,13 +9,14 @@ import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
 import { formReset } from "../../actions/projectForm";
+import NetworkForm from "../base/NetworkForm";
 
 function NewProject() {
   const dispatch = useDispatch();
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
-    ProjectFormStatus.Metadata
+    ProjectFormStatus.Network
   );
 
   useEffect(
@@ -60,6 +61,10 @@ function NewProject() {
 
   const currentForm = (status: ProjectFormStatus) => {
     switch (status) {
+      case ProjectFormStatus.Network:
+        return (
+          <NetworkForm setVerifying={(newStatus) => setFormStatus(newStatus)} />
+        );
       case ProjectFormStatus.Metadata:
         return (
           <ProjectForm
