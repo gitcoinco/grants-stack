@@ -3,7 +3,6 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { resetApplication } from "../../actions/roundApplication";
 import { addAlert } from "../../actions/ui";
-import { addressesByChainID } from "../../contracts/deployments";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import {
@@ -15,6 +14,7 @@ import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
 import { applicationSteps } from "../../utils/steps";
+import { getProjectURIComponents } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -41,7 +41,6 @@ function Apply() {
     );
 
   const { roundId, chainId } = params;
-  const addresses = addressesByChainID(parseInt(chainId!, 10));
 
   const props = useSelector((state: RootState) => {
     const roundState = state.rounds[roundId!];
@@ -121,13 +120,14 @@ function Apply() {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        navigate(
-          projectPath(
-            chainId!,
-            addresses.projectRegistry,
-            props.applicationState.projectsIDs[0].toString()
-          )
+        const {
+          chainId: projectChainId,
+          registryAddress,
+          id,
+        } = getProjectURIComponents(
+          props.applicationState.projectsIDs[0].toString()
         );
+        navigate(projectPath(projectChainId, registryAddress, id));
       }, 1500);
     }
 
