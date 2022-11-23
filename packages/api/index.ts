@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as apigateway from "@pulumi/aws-apigateway";
-import { calculate } from "./votingStrategies/linearQuadraticFunding";
+import { calculate as calculateLinearQF } from "./votingStrategies/linearQuadraticFunding";
 
 // A Lambda function to invoke
 const fn = new aws.lambda.CallbackFunction("fn", {
@@ -17,7 +17,7 @@ const fn = new aws.lambda.CallbackFunction("fn", {
 const api = new apigateway.RestAPI("api", {
   routes: [
     { path: "/", method: "GET", eventHandler: fn },
-    { path: "/calculate", method: "GET", eventHandler: calculate },
+    { path: "/calculate", method: "POST", eventHandler: calculateLinearQF },
   ]
 });
 
