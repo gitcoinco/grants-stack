@@ -16,6 +16,7 @@ export type ToggleModalProps = {
 export type BaseModalProps = ToggleModalProps & {
   children?: JSX.Element;
   title?: string;
+  size?: string;
   footer?: JSX.Element;
   closeOnOverlayClick?: boolean;
   hideCloseButton?: boolean;
@@ -25,6 +26,7 @@ export function BaseModal({
   isOpen,
   onClose,
   children,
+  size,
   title,
   footer,
   closeOnOverlayClick,
@@ -35,7 +37,7 @@ export function BaseModal({
       isOpen={isOpen}
       onClose={onClose}
       closeOnOverlayClick={closeOnOverlayClick ?? true}
-      size="xl"
+      size={size || "xl"}
       isCentered
     >
       <ModalOverlay />
