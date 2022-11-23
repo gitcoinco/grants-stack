@@ -78,7 +78,6 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
-    console.log("DASA", props.projectEvents);
     if (props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {
