@@ -7,6 +7,7 @@ import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { FormInputs, Metadata, Project } from "../../types";
 import generateUniqueRoundApplicationID from "../../utils/roundApplication";
+import { getProjectURIComponents } from "../../utils/utils";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -42,19 +43,28 @@ export default function Details({
     const chainId = state.web3.chainID;
     const { applicationsStatus } = state.projects;
 
-    const projectID = generateUniqueRoundApplicationID(chainId!, params.id!);
+    const parseProjectID = () => {
+      if (params.id) {
+        const { id } = getProjectURIComponents(params.id!);
+        return generateUniqueRoundApplicationID(chainId!, id);
+      }
+      return null;
+    };
+
     const { applications } = state.projects;
 
     return {
       chainId,
-      projectID,
+      projectID: parseProjectID(),
       applications,
       status: applicationsStatus,
     };
   });
 
   useEffect(() => {
-    dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
+    if (props.projectID) {
+      dispatch(getRoundProjectsApplied(props.projectID, props.chainId!));
+    }
   }, [dispatch, props.projectID, props.chainId]);
 
   const renderApplications = () => (
