@@ -50,12 +50,14 @@ describe("<Show />", () => {
 
         renderWrapped(<Show />, store);
 
+        const element = screen.getByTestId("switch-networks-modal-button");
+        const button = element.firstChild;
+
+        expect(button).toHaveTextContent("Switch Networks to Continue");
+
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
           screen.getByTestId("switch-networks-modal-title")
-        ).toHaveTextContent("Switch Networks to Continue");
-        expect(
-          screen.getByTestId("switch-networks-modal-button")
         ).toHaveTextContent("Switch Networks to Continue");
       });
 
