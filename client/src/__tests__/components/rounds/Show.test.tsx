@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { loadProjects } from "../../../actions/projects";
 import { loadRound, unloadRounds } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
@@ -40,29 +40,34 @@ describe("<Show />", () => {
       store = setupStore();
       const round = buildRound({ address: "0x1234" });
 
-      // todo: Test the chainId against the round's chainId
       store.dispatch(web3ChainIDLoaded(5));
       store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
     });
 
     describe("<SwitchNetworkModal />", () => {
-      test("renders when the round's chainId does not match the user's chainId", () => {
+      test("renders when the round's chainId does not match the user's chainId", async () => {
         store.dispatch(web3ChainIDLoaded(1));
 
         renderWrapped(<Show />, store);
-        expect(screen.getByTestId("switch-network-modal")).toBeInTheDocument();
+        await waitFor(() => {
+          expect(
+            screen.getByTestId("switch-network-modal")
+          ).toBeInTheDocument();
+        });
       });
 
-      test("does not render when the round's chainId matches the user's chainId", () => {
+      test("does not render when the round's chainId matches the user's chainId", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
         (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
         store.dispatch(web3ChainIDLoaded(5));
 
         renderWrapped(<Show />, store);
-        expect(
-          screen.queryByTestId("switch-network-modal")
-        ).not.toBeInTheDocument();
+        await waitFor(() => {
+          expect(
+            screen.queryByTestId("switch-network-modal")
+          ).not.toBeInTheDocument();
+        });
       });
     });
 
