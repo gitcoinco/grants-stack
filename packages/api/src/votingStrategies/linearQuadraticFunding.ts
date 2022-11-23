@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { Contribution, ContributionsByProjectId, ProjectMatch } from "../types";
+import { Contribution, ContributionsByProjectId, ProjectMatch } from "../../types";
 
 async function calculateHandler(
   ev: APIGatewayProxyEvent,
