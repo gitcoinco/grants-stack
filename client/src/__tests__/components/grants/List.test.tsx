@@ -100,7 +100,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         events: {
-          "1": {
+          "1:1:1": {
             createdAtBlock: 1111,
             updatedAtBlock: 1112,
           },
@@ -310,7 +310,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "PROJECTS_LOADED",
             events: {
-              "1": {
+              "1:1:1": {
                 createdAtBlock: 1111,
                 updatedAtBlock: 1112,
               },
@@ -336,7 +336,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: "1",
+            project: "1:1:1",
           });
 
           when(useLocalStorage as jest.Mock)
