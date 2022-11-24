@@ -1,40 +1,45 @@
 import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { Results } from "../types";
-import { ChainId, fetchRoundMetadata, fetchFromGraphQL, getGraphQLEndpoint } from "./utils";
+import { ChainId, Results } from "../types";
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate
 } from "./votingStrategies/linearQuadraticFunding";
+
 /**
  * Orchestrator function which invokes calculate 
  */
 export const calculateHandler = async (
   ev: APIGatewayProxyEvent,
+  ctx: aws.lambda.Context
 ) => {
+
+  // load utils at runtime and deconstruct
+  // ref: https://github.com/pulumi/pulumi-aws/issues/249#issuecomment-401563361
+  const utils = await import("./utils")
+  const { fetchRoundMetadata } = utils
 
   // fetch chainId and roundId from post body
   const {chainId, roundId}: {chainId: ChainId, roundId: string} = ev.body
   ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
   : null;
 
-  const votingStrategyId = "0x1a497d28890efb320d04f534fa6318b6a0657619";
-  // roundId = 0xcef1772dd6764c95f14c26b25e8f012c072c5f77
-
-  let results;
+  let results: Results | undefined;
   
   // fetch metadata
-  // const metadata = await fetchRoundMetadata(chainId, roundId);
+  const metadata = await fetchRoundMetadata(chainId, roundId);
 
   // TODO: replace hardcoded with above line
-  const metadata = {
-    votingStrategyName: "quadraticFunding",
-    token: "0x1",
-    totalPot: 1000,
-  }
+  // const metadata = {
+  //   votingStrategyName: "quadraticFunding",
+  //   token: "0x1",
+  //   totalPot: 1000,
+  // }
+
+  const { id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
   // decide which handlers to invoke based on voting strategy name
-  switch(metadata.votingStrategyName) {
+  switch(strategyName) {
     case "quadraticFunding":
       const votes = await linearQFFetchVotes(chainId, votingStrategyId);
       results = await linearQFCalculate(metadata, votes);

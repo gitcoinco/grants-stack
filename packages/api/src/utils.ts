@@ -1,11 +1,4 @@
-import { RoundMetadata } from "../types";
-
-export enum ChainId {
-  GOERLI_CHAIN_ID = '5',
-  OPTIMISM_MAINNET_CHAIN_ID = '10',
-  FANTOM_MAINNET_CHAIN_ID = '250',
-  FANTOM_TESTNET_CHAIN_ID = '4002',
-}
+import { ChainId, RoundMetadata } from "../types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -30,24 +23,25 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
   }
 };
 
-
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
  *
  * @param cid - the unique content identifier that points to the data
  */
- export const fetchFromIPFS = (cid: string) => {
+export const fetchFromIPFS = (cid: string) => {
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
-  return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
-    if (resp.ok) {
-      return resp.json()
-    }
+  return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
+    (resp) => {
+      if (resp.ok) {
+        return resp.json();
+      }
 
-    return Promise.reject(resp)
-  })
-}
+      return Promise.reject(resp);
+    }
+  );
+};
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -57,10 +51,10 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
- export const fetchFromGraphQL = async (
+export const fetchFromGraphQL = async (
   chainId: ChainId,
   query: string,
-  variables: object = {},
+  variables: object = {}
 ) => {
   let endpoint = await getGraphQLEndpoint(chainId);
 
@@ -79,25 +73,6 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
   });
 };
 
-
-export const fetchVotingStrategy = async (chainId: ChainId, roundId: string) => {
-  const response = await fetchFromGraphQL(
-    chainId,
-    `
-      query GetVotingStrategy($roundId: String) {
-        votingStrategy {
-          id
-        }
-      }
-    `,
-    { roundId }
-  );
-
-  return response.data.votingStrategy.id
-
-}
-
-
 /**
  * Fetch metadata using roundId
  *
@@ -106,14 +81,13 @@ export const fetchVotingStrategy = async (chainId: ChainId, roundId: string) => 
  *
  * @returns Promise<RoundMetadata>
  */
- export const fetchRoundMetadata = async (
+export const fetchRoundMetadata = async (
   chainId: ChainId,
-  roundId: string,
-) : Promise<RoundMetadata> => {
-
+  roundId: string
+): Promise<RoundMetadata> => {
   const variables = { roundId };
 
-  const query =`
+  const query = `
     query GetMetadata($roundId: String) {
       rounds(where: {
         id: $roundId
@@ -132,21 +106,17 @@ export const fetchVotingStrategy = async (chainId: ChainId, roundId: string) => 
   `;
 
   // fetch from graphql
-  const response = await fetchFromGraphQL(
-    chainId,
-    query,
-    variables,
-  )
+  const response = await fetchFromGraphQL(chainId, query, variables);
 
   // fetch round metadata
   const roundMetadata = await fetchFromIPFS(response.data.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
 
   const metadata: RoundMetadata = {
-    votingStrategyName: response.data.votingStrategy.strategyName,
+    votingStrategy: { ...response.data.votingStrategy },
     token: response.data.token,
-    totalPot: totalPot
-  }
+    totalPot: totalPot,
+  };
 
   return metadata;
 };
