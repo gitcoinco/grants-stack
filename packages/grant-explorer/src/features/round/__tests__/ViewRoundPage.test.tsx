@@ -240,6 +240,48 @@ describe("<ViewRound /> in case of after the round start date", () => {
       expect(expectedProjectLinks).toContain(actualProjectLinkPathName);
     });
   });
+
+  describe("add project to ballot", () => {
+    const approvedProjects = [
+      makeApprovedProjectData(),
+    ];
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+  
+    it("shows an add-to-shortlist button", () => {
+      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+  
+      expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
+    });
+  
+    it("shows a remove-from-shortlist button replacing add-to-shortlist when add-to-shortlist is clicked", () => {
+      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+      const addToBallot = screen.getByTestId("add-to-shortlist");
+      fireEvent.click(addToBallot);
+      setTimeout(() => {
+        // wait three seconds after the user clicks add before proceeding
+        expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
+        expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
+      }, 3000);
+    });
+  
+    it("shows a add-to-shortlist button replacing a remove-from-shortlist button when remove-from-balled is clicked", () => {
+      renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+  
+      // click add to ballot
+      const addToBallot = screen.getByTestId("add-to-shortlist");
+      fireEvent.click(addToBallot);
+      setTimeout(() => {
+        // wait three seconds after the user clicks add before proceeding
+        expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
+        expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
+        // click remove from ballot
+        const removeFromBallot = screen.getByTestId("remove-from-shortlist");
+        fireEvent.click(removeFromBallot);
+        expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
+        expect(screen.queryByTestId("remove-from-shortlist")).not.toBeInTheDocument();
+      }, 3000);
+    })
+  });
 });
 
 
