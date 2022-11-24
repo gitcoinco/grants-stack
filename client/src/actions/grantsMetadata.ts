@@ -167,7 +167,6 @@ export const fetchGrantData =
     let project: ProjectRegistryMetadata;
 
     try {
-      console.log("DASA fetching project", id, addresses);
       project = await getProjectById(id, addresses, signer!);
     } catch (e) {
       datadogRum.addError(e);

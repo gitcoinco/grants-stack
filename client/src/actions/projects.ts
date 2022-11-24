@@ -206,7 +206,7 @@ export const loadProjects =
       const events: ProjectEventsMap = {};
 
       createdEvents.forEach((createEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed
+        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
         // const id = createEvent.args!.projectID!;
         const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
           createEvent.topics[1],
@@ -220,7 +220,7 @@ export const loadProjects =
       });
 
       updatedEvents.forEach((updateEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed
+        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
         // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
         const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
           updateEvent.topics[1],
