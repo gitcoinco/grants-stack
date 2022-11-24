@@ -4,7 +4,7 @@ import { ChainId, RoundMetadata } from "../types";
 /**
  * Fetch subgraph network for provided web3 network
  *
- * @param chainId - The chain ID of the blockchain2
+ * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
 export const getGraphQLEndpoint = async (chainId: ChainId) => {
@@ -19,8 +19,10 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet";
 
     case ChainId.GOERLI_CHAIN_ID:
-    default:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet";
+
+    default:
+      return "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs";
   }
 };
 
@@ -31,10 +33,6 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  // load node-fetch at runtime and deconstruct
-  // ref: https://github.com/pulumi/pulumi-aws/issues/249#issuecomment-401563361
-  // const fetch = await import("node-fetch")
-
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
@@ -113,13 +111,18 @@ export const fetchRoundMetadata = async (
   // fetch from graphql
   const response = await fetchFromGraphQL(chainId, query, variables);
 
+  const data = response.data?.rounds[0];
+
   // fetch round metadata
-  const roundMetadata = await fetchFromIPFS(response.data.roundMetaPtr.pointer);
+  const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
 
   const metadata: RoundMetadata = {
-    votingStrategy: { ...response.data.votingStrategy },
-    token: response.data.token,
+    votingStrategy: {
+      id: data?.votingStrategy.id,
+      strategyName: data?.votingStrategy.strategyName,
+    },
+    token: data?.token,
     totalPot: totalPot,
   };
 

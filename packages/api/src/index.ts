@@ -15,21 +15,23 @@ export const calculateHandler = async (
   ctx: aws.lambda.Context
 ) => {
   // fetch chainId and roundId from post body
-  const { chainId, roundId }: { chainId: ChainId; roundId: string } = ev.body
+  const body: { chainId: ChainId; roundId: string } = ev.body
     ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
     : null;
+
+  // TODO: use yup to validate body and return http status 400 if validation fails
 
   let results: Results | undefined;
 
   // fetch metadata
-  const metadata = await fetchRoundMetadata(chainId, roundId);
+  const metadata = await fetchRoundMetadata(body.chainId, body.roundId);
 
   const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
   // decide which handlers to invoke based on voting strategy name
   switch (strategyName) {
     case "quadraticFunding":
-      const votes = await linearQFFetchVotes(chainId, votingStrategyId);
+      const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);
       results = await linearQFCalculate(metadata, votes);
       break;
   }
