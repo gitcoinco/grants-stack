@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { ChainId, RoundMetadata } from "../types";
 
 /**
@@ -30,10 +31,14 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
+  // load node-fetch at runtime and deconstruct
+  // ref: https://github.com/pulumi/pulumi-aws/issues/249#issuecomment-401563361
+  // const fetch = await import("node-fetch")
+
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
-    (resp) => {
+    (resp: any) => {
       if (resp.ok) {
         return resp.json();
       }
@@ -64,7 +69,7 @@ export const fetchFromGraphQL = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, variables }),
-  }).then((resp) => {
+  }).then((resp: any) => {
     if (resp.ok) {
       return resp.json();
     }

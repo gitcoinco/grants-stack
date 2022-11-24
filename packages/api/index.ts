@@ -1,4 +1,3 @@
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as apigateway from "@pulumi/aws-apigateway";
 import { calculate } from "./src/index";

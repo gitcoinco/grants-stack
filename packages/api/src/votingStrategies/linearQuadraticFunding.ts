@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { QFContribution, QFContributionsByProjectId, ProjectMatch, RoundMetadata } from "../../types";
-import { ChainId, fetchFromGraphQL, getGraphQLEndpoint } from "../utils";
+import { QFContribution, QFContributionsByProjectId, ProjectMatch, RoundMetadata, ChainId } from "../../types";
+import { fetchFromGraphQL, getGraphQLEndpoint } from "../utils";
 
 
 
