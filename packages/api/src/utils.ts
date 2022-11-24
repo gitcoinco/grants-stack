@@ -80,33 +80,52 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
 };
 
 
+export const fetchVotingStrategy = async (chainId: ChainId, roundId: string) => {
+  const response = await fetchFromGraphQL(
+    chainId,
+    `
+      query GetVotingStrategy($roundId: String) {
+        votingStrategy {
+          id
+        }
+      }
+    `,
+    { roundId }
+  );
+
+  return response.data.votingStrategy.id
+
+}
+
+
 /**
- * Fetch metadata using votingStrategyId
+ * Fetch metadata using roundId
  *
  * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param votingStrategyId - The voting strategy address
+ * @param roundId - The address of the round contract
  *
  * @returns Promise<RoundMetadata>
  */
- export const fetchMetadataByVotingStrategyId = async (
+ export const fetchRoundMetadata = async (
   chainId: ChainId,
-  votingStrategyId: string,
+  roundId: string,
 ) : Promise<RoundMetadata> => {
 
-  const variables = { votingStrategyId };
+  const variables = { roundId };
 
   const query =`
-    query GetMetadata($votingStrategyId: String) {
-      votingStrategies(where:{
-        id: $votingStrategyId
+    query GetMetadata($roundId: String) {
+      rounds(where: {
+        id: $roundId
       }) {
-        strategyName
-        round {
-          token
-          roundMetaPtr {
-            protocol
-            pointer
-          }
+        votingStrategy {
+          id
+          strategyName
+        }
+        token
+        roundMetaPtr {
+          protocol
+          pointer
         }
       }
     }
@@ -119,16 +138,13 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
     variables,
   )
 
-  const votingStrategy = response.data.votingStrategies[0];
-
   // fetch round metadata
-  const round = votingStrategy.round;
-  const roundMetadata = await fetchFromIPFS(round.roundMetaPtr.pointer);
+  const roundMetadata = await fetchFromIPFS(response.data.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
 
   const metadata: RoundMetadata = {
-    votingStrategyName: votingStrategy.votingStrategyName,
-    token: round.token,
+    votingStrategyName: response.data.votingStrategy.strategyName,
+    token: response.data.token,
     totalPot: totalPot
   }
 

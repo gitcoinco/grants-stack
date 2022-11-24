@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { Results } from "../types";
-import { ChainId, fetchMetadataByVotingStrategyId, getGraphQLEndpoint } from "./utils";
+import { ChainId, fetchRoundMetadata, fetchFromGraphQL, getGraphQLEndpoint } from "./utils";
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate
@@ -12,15 +12,19 @@ import {
 export const calculateHandler = async (
   ev: APIGatewayProxyEvent,
 ) => {
-  
-  // TODO: Get chain ID and votingStrategyId from POST body
-  const chainId = "5" as ChainId;
+
+  // fetch chainId and roundId from post body
+  const {chainId, roundId}: {chainId: ChainId, roundId: string} = ev.body
+  ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
+  : null;
+
   const votingStrategyId = "0x1a497d28890efb320d04f534fa6318b6a0657619";
+  // roundId = 0xcef1772dd6764c95f14c26b25e8f012c072c5f77
 
   let results;
   
   // fetch metadata
-  // const metadata = await fetchMetadataByVotingStrategyId(chainId, votingStrategyId);
+  // const metadata = await fetchRoundMetadata(chainId, roundId);
 
   // TODO: replace hardcoded with above line
   const metadata = {
@@ -36,7 +40,6 @@ export const calculateHandler = async (
       results = await linearQFCalculate(metadata, votes);
       break;
   }
-
 
   return {
     statusCode: 200,
