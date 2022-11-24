@@ -29,13 +29,6 @@ export const calculateHandler = async (
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
-  // TODO: replace hardcoded with above line
-  // const metadata = {
-  //   votingStrategyName: "quadraticFunding",
-  //   token: "0x1",
-  //   totalPot: 1000,
-  // }
-
   const { id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
   // decide which handlers to invoke based on voting strategy name
