@@ -32,6 +32,7 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
+    console.log("DASA STATE", state);
     const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
     if (
@@ -64,7 +65,7 @@ function Project() {
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
-      projectEvents: state.projects.events[params.id!],
+      projectEvents: state.projects.events[fullId],
     };
   }, shallowEqual);
 
@@ -79,6 +80,7 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
+    console.log("DASA events", props.projectEvents);
     if (props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {

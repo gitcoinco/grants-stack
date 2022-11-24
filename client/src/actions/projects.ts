@@ -1,6 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
@@ -222,7 +222,10 @@ export const loadProjects =
       updatedEvents.forEach((updateEvent) => {
         // FIXME: use this line when the fantom RPC bug has been fixed
         // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-        const id = BigNumber.from(updateEvent.topics[1]).toNumber();
+        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+          updateEvent.topics[1],
+          16
+        )}`;
         const event = events[id];
         if (event !== undefined) {
           event.updatedAtBlock = updateEvent.blockNumber;
