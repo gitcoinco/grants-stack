@@ -1,12 +1,26 @@
-
-const calculate = () => {
-  // Get Voting Id and Chain Id from api POST body
+import { ProjectMatch, Results } from "../types";
+import { ChainId, fetchMetadataByVotingStrategyId, getGraphQLEndpoint } from "./utils";
+import {
+  fetchVotesHandler as linearQFFetchVotes,
+  calculateHandler as linearQFCalculate
+} from "./votingStrategies/linearQuadraticFunding";
+/**
+ * Orchestrator function which invokes calculate 
+ */
+export const calculate = async (chainId: ChainId, votingStrategyId: string): Promise<Results> => {
   
-  // Get subgraph URL from utils based on chain ID
+  let results;
+  
+  // fetch metadata
+  const metadata = await fetchMetadataByVotingStrategyId(chainId, votingStrategyId);
 
-  // Do subgraph call to fetch voting strategy name and contributions
+  // decide which handlers to invoke based on voting strategy name
+  switch(metadata.votingStrategyName) {
+    case "quadraticFunding":
+      const votes = await linearQFFetchVotes(chainId, votingStrategyId);
+      results = await linearQFCalculate(metadata, votes);
+      break;
+  }
 
-  // Based on voting type -> decide which voting strategy to call aka linearQF.calculate
-
-  // return results;
+  return results;
 };

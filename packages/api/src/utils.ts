@@ -1,3 +1,5 @@
+import { RoundMetadata } from "../types";
+
 export enum ChainId {
   GOERLI_CHAIN_ID = '5',
   OPTIMISM_MAINNET_CHAIN_ID = '10',
@@ -28,36 +30,39 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
   }
 };
 
+
+/**
+ * Fetch data from IPFS
+ * TODO: include support for fetching abitrary data e.g images
+ *
+ * @param cid - the unique content identifier that points to the data
+ */
+ export const fetchFromIPFS = (cid: string) => {
+  const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
+
+  return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(resp => {
+    if (resp.ok) {
+      return resp.json()
+    }
+
+    return Promise.reject(resp)
+  })
+}
+
 /**
  * Fetch data from a GraphQL endpoint
  *
- * @param votingStrategyId - The voting strategy address
+ * @param query - The query to be executed
  * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param variables - The variables to be used in the query
  * @returns The result of the query
  */
- export const fetchVotes = async (
-  votingStrategyId: string,
-  chainId: string
+ export const fetchFromGraphQL = async (
+  chainId: ChainId,
+  query: string,
+  variables: object = {},
 ) => {
-
-  const endpoint = await getGraphQLEndpoint(chainId as ChainId);
-  const variables = { votingStrategyId };
-
-  const query =`
-    query GetVotes($votingStrategyId: String) {
-      votingStrategies(where:{
-        id: $votingStrategyId
-      }) {
-        votes {
-          id
-          amount
-          token
-          from
-          to
-        }
-      }
-    }
-  `;
+  let endpoint = await getGraphQLEndpoint(chainId);
 
   return fetch(endpoint, {
     method: "POST",
@@ -72,4 +77,60 @@ export const getGraphQLEndpoint = async (chainId: ChainId) => {
 
     return Promise.reject(resp);
   });
+};
+
+
+/**
+ * Fetch metadata using votingStrategyId
+ *
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param votingStrategyId - The voting strategy address
+ *
+ * @returns Promise<RoundMetadata>
+ */
+ export const fetchMetadataByVotingStrategyId = async (
+  chainId: ChainId,
+  votingStrategyId: string,
+) : Promise<RoundMetadata> => {
+
+  const variables = { votingStrategyId };
+
+  const query =`
+    query GetMetadata($votingStrategyId: String) {
+      votingStrategies(where:{
+        id: $votingStrategyId
+      }) {
+        strategyName
+        round {
+          token
+          roundMetaPtr {
+            protocol
+            pointer
+          }
+        }
+      }
+    }
+  `;
+
+  // fetch from graphql
+  const response = await fetchFromGraphQL(
+    chainId,
+    query,
+    variables,
+  )
+
+  const votingStrategy = response.data.votingStrategies[0];
+
+  // fetch round metadata
+  const round = votingStrategy.round;
+  const roundMetadata = await fetchFromIPFS(round.roundMetaPtr.pointer);
+  const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+
+  const metadata: RoundMetadata = {
+    votingStrategyName: votingStrategy.votingStrategyName,
+    token: round.token,
+    totalPot: totalPot
+  }
+
+  return metadata;
 };
