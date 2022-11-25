@@ -4,3 +4,4 @@
 # treat warnings as errors to prevent the build passing locally, but failing on CI
 lerna run --scope=round-manager lint:fix -- --max-warnings=0
 yarn run test
+yarn run typecheck

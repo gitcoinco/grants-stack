@@ -15,6 +15,7 @@ import {
   ChevronLeftIcon,
   SelectorIcon,
   InformationCircleIcon,
+  EyeIcon
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "./common/styles";
@@ -31,6 +32,7 @@ import ErrorModal from "./common/ErrorModal";
 import { modalDelayMs } from "../constants";
 import { useQFDonation } from "../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -42,9 +44,6 @@ export default function ViewBallot() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ...getPayoutTokenOptions(chainId!),
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  useRoundById(chainId!, roundId!);
 
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
     payoutTokenOptions[0]
@@ -64,6 +63,8 @@ export default function ViewBallot() {
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [shortlist, finalBallot, , , ,] = useBallot();
+
+  const { openConnectModal } = useConnectModal();
 
   const { address } = useAccount();
 
@@ -234,6 +235,7 @@ export default function ViewBallot() {
                   isProjectAlreadySelected(project.projectRegistryId) > -1
                 }
                 project={project}
+                roundRoutePath={`/round/${chainId}/${roundId}`}
                 key={key}
               />
             );
@@ -246,9 +248,11 @@ export default function ViewBallot() {
   function ShortlistProject(
     props: React.ComponentProps<"div"> & {
       project: Project;
+      roundRoutePath: string;
       isSelected: boolean;
     }
   ) {
+    const { project, roundRoutePath } = props;
     const [, , , handleRemoveProjectsFromShortlist] = useBallot();
 
     return (
@@ -261,16 +265,23 @@ export default function ViewBallot() {
           className={`mb-4 flex justify-between px-3 py-4 rounded-md
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
-          <div className="flex pr-9">
-            <img
-              className="h-[64px] my-3"
-              src={
-                props.project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                  : DefaultLogoImage
-              }
-              alt={"Project Logo"}
-            />
+          <div className="flex">
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+              <img
+                  className="inline-block"
+                  src={
+                    props.project.projectMetadata.logoImg
+                        ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                        : DefaultLogoImage
+                  }
+                  alt={"Project Logo"}
+              />
+              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
+                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                </Link>
+              </div>
+            </div>
 
             <div className="pl-4 mt-1">
               <p className="font-semibold mb-2">
@@ -306,7 +317,7 @@ export default function ViewBallot() {
             </p>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-11">
             <Link to={"/round/" + chainId + "/" + roundId}>
               <Button
                 $variant="solid"
@@ -335,7 +346,7 @@ export default function ViewBallot() {
               aria-label={"Donation amount for all projects "}
               id={"input-donationamount"}
               min="0"
-              value={fixedDonation}
+              value={fixedDonation ?? ''}
               type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(Number(e.target.value));
@@ -364,6 +375,7 @@ export default function ViewBallot() {
                 }
                 project={project}
                 index={key}
+                roundRoutePath={`/round/${chainId}/${roundId}`}
               />
             </div>
           ))}
@@ -377,10 +389,11 @@ export default function ViewBallot() {
       project: Project;
       isSelected: boolean;
       index: number;
+      roundRoutePath: string;
     }
   ) {
-    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
-      useBallot();
+    const { project, roundRoutePath } = props;
+    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
@@ -395,21 +408,30 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <img
-              className="h-[64px] my-3"
-              src={
-                props.project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                  : DefaultLogoImage
-              }
-              alt={"Project Logo"}
-            />
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+              <img
+                className="inline-block"
+                src={
+                  props.project.projectMetadata.logoImg
+                      ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                      : DefaultLogoImage
+                }
+                alt={"Project Logo"}
+              />
+              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
+                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                </Link>
+              </div>
+            </div>
 
-            <div className="pl-4 mt-1 overflow-auto">
-              <p className="font-semibold mb-2">
-                {props.project.projectMetadata.title}
-              </p>
-              <p className="text-sm text-sm text-ellipsis overflow-hidden h-16">
+            <div className="pl-4 mt-1">
+              <Link to={`${roundRoutePath}/${project.grantApplicationId}`} data-testid={"final-ballot-project-link"}>
+                <p className="font-semibold mb-2">
+                  {props.project.projectMetadata.title}
+                </p>
+              </Link>
+              <p className="text-sm">
                 {props.project.projectMetadata.description}
               </p>
             </div>
@@ -445,10 +467,15 @@ export default function ViewBallot() {
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowCircleLeftIcon
               data-testid="remove-from-finalBallot"
-              onClick={() =>
+              onClick={() => {
                 handleRemoveProjectsFromFinalBallotAndAddToShortlist([
                   props.project,
-                ])
+                ]);
+                updateDonations(
+                  props.project.projectRegistryId,
+                  0,
+                  props.project.recipient
+                )}
               }
               className="w-6 h-6 m-auto cursor-pointer"
             />
@@ -472,7 +499,7 @@ export default function ViewBallot() {
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
-                value={fixedDonation}
+                value={fixedDonation ?? ''}
                 type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(Number(e.target.value));
@@ -784,6 +811,12 @@ export default function ViewBallot() {
       return;
     } else {
       setDonationError(newState);
+    }
+
+    // check if wallet is connected
+    if (!address) {
+      openConnectModal && openConnectModal();
+      return;
     }
 
     // check if signer has enough token balance

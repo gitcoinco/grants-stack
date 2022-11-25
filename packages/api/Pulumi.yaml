@@ -1,0 +1,3 @@
+name: voting-strategies
+description: service to run voting strategy calculations
+runtime: nodejs

@@ -47,7 +47,7 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[302px]
-  h-[294px]
+  h-[354px]
   ml-0
   mr-6
   my-3
@@ -79,7 +79,7 @@ export const CardTitle = tw.p`
 export const CardDescription = tw.p`
   text-xs
   text-ellipsis
-  line-clamp-2
+  line-clamp-4
   text-grey-400
   leading-relaxed
 `;
