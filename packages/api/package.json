@@ -7,6 +7,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.108",
     "@types/node": "^14",
+    "@types/node-fetch": "^2.6.2",
     "jest": "^29.3.1"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "@pulumi/pulumi": "^3.0.0",
     "aws-lambda": "^1.0.7",
     "node-fetch": "^2.6.6",
-    "typescript": "^4.0.0"
+    "typescript": "^4.0.0",
+    "yup": "^0.32.11"
   }
 }

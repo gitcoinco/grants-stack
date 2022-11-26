@@ -129,3 +129,24 @@ export const fetchRoundMetadata = async (
 
   return metadata;
 };
+
+export const handleResponse = (
+  code: number,
+  message: string,
+  body?: any
+): { statusCode: number; body: string } => {
+  let success: boolean = false;
+
+  if (code >= 200 && code < 400) {
+    success = true;
+  }
+
+  return {
+    statusCode: code,
+    body: JSON.stringify({
+      success,
+      message,
+      data: body ?? {},
+    }),
+  };
+};

@@ -1,7 +1,8 @@
 import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import * as yup from "yup";
 import { ChainId, Results } from "../types";
-import { fetchRoundMetadata } from "./utils";
+import { fetchRoundMetadata, handleResponse } from "./utils";
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate,
@@ -19,27 +20,45 @@ export const calculateHandler = async (
     ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
     : null;
 
-  // TODO: use yup to validate body and return http status 400 if validation fails
+  // validate request body
+  const schema = yup.object().shape({
+    chainId: yup.mixed<ChainId>().oneOf(Object.values(ChainId)).required(),
+    roundId: yup
+      .string()
+      .required()
+      .matches(
+        /^0x[a-fA-F0-9]{40}$/,
+        "roundId must be an ethereum contract address"
+      ),
+  });
+
+  try {
+    await schema.validate(body);
+  } catch (err: any) {
+    return handleResponse(400, err.errors[0]);
+  }
 
   let results: Results | undefined;
 
-  // fetch metadata
-  const metadata = await fetchRoundMetadata(body.chainId, body.roundId);
+  try {
+    // fetch metadata
+    const metadata = await fetchRoundMetadata(body.chainId, body.roundId);
 
-  const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+    const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
-  // decide which handlers to invoke based on voting strategy name
-  switch (strategyName) {
-    case "quadraticFunding":
-      const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);
-      results = await linearQFCalculate(metadata, votes);
-      break;
+    // decide which handlers to invoke based on voting strategy name
+    switch (strategyName) {
+      case "quadraticFunding":
+        const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);
+        results = await linearQFCalculate(metadata, votes);
+        break;
+    }
+  } catch {
+    // TODO: handle specific error cases
+    return handleResponse(500, "Something went wrong!");
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(results),
-  };
+  return handleResponse(200, "Calculations ran successfully", results);
 };
 
 export const calculate = new aws.lambda.CallbackFunction<
