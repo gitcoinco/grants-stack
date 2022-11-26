@@ -1,9 +1,11 @@
-import * as aws from "@pulumi/aws";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { QFContribution, QFContributionsByProjectId, ProjectMatch, RoundMetadata, ChainId } from "../../types";
-import { fetchFromGraphQL, getGraphQLEndpoint } from "../utils";
-
-
+import {
+  QFContribution,
+  QFContributionsByProjectId,
+  ProjectMatch,
+  RoundMetadata,
+  ChainId,
+} from "../../types";
+import { fetchFromGraphQL } from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -12,14 +14,13 @@ import { fetchFromGraphQL, getGraphQLEndpoint } from "../utils";
  * @param votingStrategyId - The voting strategy address
  * @returns The result of the query
  */
- export const fetchVotesHandler = async (
+export const fetchVotesHandler = async (
   chainId: ChainId,
   votingStrategyId: string
-) : Promise<QFContribution[]> => {
-
+): Promise<QFContribution[]> => {
   const variables = { votingStrategyId };
 
-  const query =`
+  const query = `
     query GetVotes($votingStrategyId: String) {
       votingStrategies(where:{
         id: $votingStrategyId
@@ -35,60 +36,25 @@ import { fetchFromGraphQL, getGraphQLEndpoint } from "../utils";
   `;
 
   // fetch from graphql
-  // const response = await fetchFromGraphQL(
-  //   chainId,
-  //   query,
-  //   variables,
-  // )
+  const response = await fetchFromGraphQL(chainId, query, variables);
 
-  // const votes = response.data?.votingStrategies[0]?.votes;
+  const votes = response.data?.votingStrategies[0]?.votes;
 
-  // let contributions: QFContribution[] = [];
+  let contributions: QFContribution[] = [];
 
-  // votes.map((vote: any) => {
+  votes.map((vote: any) => {
+    const contribution = {
+      projectId: vote.to, // TODO: we will have to update this to project id eventually
+      contributor: vote.from,
+      amount: Number(vote.amount),
+      token: vote.token,
+    };
 
-  //   const contribution = {
-  //     projectId: vote.to, // TODO: we will have to update this to project id eventually
-  //     contributor: vote.from,
-  //     amount: Number(vote.amount),
-  //     token: vote.token
-  //   };
-
-  //   contributions.push(contribution);
-  // });
-
-  // TODO: replace hardcoded with above line
-  const contributions = [
-    {
-        "projectId": "project1",
-        "amount": 10,
-        "contributor": "0x001...",
-        "timestamp": 0
-    },
-    {
-        "projectId": "project1",
-        "amount": 25,
-        "contributor": "0x001...",
-        "timestamp": 0
-    },
-    {
-        "projectId": "project2",
-        "amount": 99,
-        "contributor": "0x666...",
-        "timestamp": 0
-    },
-        {
-        "projectId": "project2",
-        "amount": 3,
-        "contributor": "0x888...",
-        "timestamp": 0
-    }
-  ];
-
+    contributions.push(contribution);
+  });
 
   return contributions;
 };
-
 
 export const calculateHandler = async (
   metadata: RoundMetadata,
@@ -171,5 +137,4 @@ export const calculateHandler = async (
     distribution: projectMatchDistributions,
     hasSaturated: hasSaturated,
   };
-
-}
+};

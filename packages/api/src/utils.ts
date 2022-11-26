@@ -8,6 +8,7 @@ import { ChainId, RoundMetadata } from "../types";
  * @returns the subgraph endpoint
  */
 export const getGraphQLEndpoint = async (chainId: ChainId) => {
+  // TODO: the urls should be environment variables
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet";
