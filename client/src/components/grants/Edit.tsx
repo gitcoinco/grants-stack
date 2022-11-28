@@ -1,22 +1,23 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../reducers";
+import { useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import ProjectForm from "../base/ProjectForm";
-import Button, { ButtonVariants } from "../base/Button";
-import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
-import colors from "../../styles/colors";
-import Cross from "../icons/Cross";
-import ExitModal from "../base/ExitModal";
-import VerificationForm from "../base/VerificationForm";
-import { ProjectFormStatus } from "../../types";
-import Preview from "../base/Preview";
 import {
-  metadataSaved,
   credentialsSaved,
   formReset,
+  metadataSaved,
 } from "../../actions/projectForm";
+import { RootState } from "../../reducers";
+import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
+import colors from "../../styles/colors";
+import { ProjectFormStatus } from "../../types";
+import Button, { ButtonVariants } from "../base/Button";
+import ExitModal from "../base/ExitModal";
+import Preview from "../base/Preview";
+import ProjectForm from "../base/ProjectForm";
+import VerificationForm from "../base/VerificationForm";
+import Cross from "../icons/Cross";
 
 function EditProject() {
   const params = useParams();
@@ -84,24 +85,44 @@ function EditProject() {
   }
 
   const currentSubText = (status: ProjectFormStatus) => {
-    let data: { title: string; description: string } | undefined;
+    let data:
+      | { title: string; description: string; element: JSX.Element | null }
+      | undefined;
     switch (status) {
       case ProjectFormStatus.Metadata:
         data = {
           title: "Project Details",
           description: "Tell us more about what you’re working on.",
+          element: (
+            <div className="flex rounded-md p-2 bg-gitcoin-violet-100 mr-4">
+              <p className="flex">
+                <InformationCircleIcon
+                  className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
+                  color="gitcoin-violet-500"
+                  width={16}
+                  height={16}
+                />
+              </p>
+              <p className="flex ml-2 text-sm text-gitcoin-violet-500 text=[14px]">
+                Please note that changes to project details will only be
+                reflected on subsequent grant round applications.
+              </p>
+            </div>
+          ),
         };
         break;
       case ProjectFormStatus.Verification:
         data = {
           title: "Project Socials",
           description: "Share where we can learn more about your project.",
+          element: null,
         };
         break;
       case ProjectFormStatus.Preview:
         data = {
           title: "Project Preview",
           description: "Preview your project's page.",
+          element: null,
         };
         break;
       default:
@@ -112,6 +133,7 @@ function EditProject() {
       <>
         <h5 className="mb-2">{data.title}</h5>
         <p className="mb-2">{data.description}</p>
+        {data.element}
       </>
     ) : null;
   };
