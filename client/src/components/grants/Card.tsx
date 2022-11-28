@@ -1,3 +1,4 @@
+import { Badge } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
+import { networkPrettyName } from "../../utils/wallet";
 import TextLoading from "../base/TextLoading";
 
 function Card({ projectId }: { projectId: string }) {
@@ -22,16 +24,21 @@ function Card({ projectId }: { projectId: string }) {
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
     const { id } = getProjectURIComponents(projectId);
+    const projectChainId = projectId.split(":")[0];
+    const projectChainName = networkPrettyName(Number(projectChainId));
 
     return {
       id,
       loading,
       currentProject: project,
+      projectChainName,
       bannerImg,
       logoImg,
       status,
     };
   }, shallowEqual);
+
+  console.log("project chain", { chain: props.projectChainName });
 
   useEffect(() => {
     if (projectId !== undefined && props.status === Status.Undefined) {
@@ -82,6 +89,15 @@ function Card({ projectId }: { projectId: string }) {
               </p>
             </div>
           )}
+        </div>
+        <div>
+          <Badge
+            className="bg-gitcoin-gray-100 px-2 ml-6 mb-2"
+            borderRadius="full"
+            p={1}
+          >
+            {props.projectChainName}
+          </Badge>
         </div>
       </Link>
     </div>
