@@ -94,14 +94,14 @@ function Card({ projectId }: { projectId: string }) {
         </div>
         <div>
           <Badge
-            className="flex bg-gitcoin-grey-50 px-2 ml-6 mb-2"
+            className="flex justify-center w-fit bg-gitcoin-grey-50 px-2 ml-6 mb-2"
             borderRadius="full"
             p={1}
           >
             <Image
               src={props.projectIconUri}
               alt="chain icon"
-              className="flex flex-shrink h-4 mr-2"
+              className="flex h-4 w-4 mr-2 rounded-full"
             />
             {props.projectChainName}
           </Badge>
