@@ -52,7 +52,7 @@ function Card({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
+    <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={createProjectPath()}>
         <img
           className="w-full h-32 object-cover"
@@ -80,26 +80,25 @@ function Card({ projectId }: { projectId: string }) {
           {props.loading ? (
             <TextLoading />
           ) : (
-            <div className="pt-4">
+            <div className="flex flex-col col-span-1 justify-between pt-4">
               <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
-              <p className="text-gray-700 text-base min-h-18 line-clamp-3">
+              <p className="text-gray-700 text-base min-h-[50px] line-clamp-3">
                 {props.currentProject?.description}
               </p>
             </div>
           )}
         </div>
-        <div>
+        <div className="flex flex-col col-span-1 justify-between w-fit min-h-[16px]">
           <Badge
-            className="flex justify-center w-fit bg-gitcoin-grey-50 px-2 ml-6 mb-2"
+            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-2 py-1 shadow-lg"
             borderRadius="full"
-            p={1}
           >
             <Image
               src={props.projectIconUri}
               alt="chain icon"
-              className="flex h-4 w-4 mr-2 rounded-full"
+              className="flex flex-row h-4 w-4 mr-1 rounded-full"
             />
             {props.projectChainName}
           </Badge>
