@@ -1,4 +1,4 @@
-import { Store, combineReducers, createStore } from "redux";
+import { combineReducers, createStore, Store } from "redux";
 import {
   grantMetadataFetched,
   grantMetadataLoading,
@@ -7,7 +7,7 @@ import {
 import { Metadata } from "../types";
 import { grantsMetadataReducer, Status } from "./grantsMetadata";
 
-const grantId = 1;
+const grantId = "1:1:1";
 
 describe("grantsMetaData reducer", () => {
   let store: Store;
@@ -18,9 +18,9 @@ describe("grantsMetaData reducer", () => {
   });
 
   it("sets loading status", () => {
-    store.dispatch(grantMetadataLoadingURI(1));
+    store.dispatch(grantMetadataLoadingURI("1:1:1"));
     store.dispatch(grantMetadataLoading(grantId));
-    expect(store.getState().grantsMetaData[1]).toEqual({
+    expect(store.getState().grantsMetaData["1:1:1"]).toEqual({
       status: Status.Loading,
       metadata: undefined,
     });
@@ -30,7 +30,7 @@ describe("grantsMetaData reducer", () => {
     const grantMetadata: Metadata = {
       protocol: 1,
       pointer: "0x1234",
-      id: 1,
+      id: "1:1:1",
       title: "Title",
       description: "Description",
       website: "www.grant.com",
@@ -44,7 +44,7 @@ describe("grantsMetaData reducer", () => {
       })
     );
 
-    expect(store.getState().grantsMetaData[1]).toEqual({
+    expect(store.getState().grantsMetaData["1:1:1"]).toEqual({
       status: Status.Loaded,
       metadata: grantMetadata,
     });

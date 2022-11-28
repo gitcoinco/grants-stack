@@ -1,5 +1,6 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Dispatch } from "redux";
 // import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
@@ -9,9 +10,9 @@ import { RootState } from "../reducers";
 import { Application, AppStatus } from "../reducers/projects";
 import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
-import { graphqlFetch } from "../utils/graphql";
-import { fetchGrantData } from "./grantsMetadata";
+import { ChainId, graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
+import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -91,7 +92,10 @@ const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
 
-const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
+const fetchProjectCreatedUpdatedEvents = async (
+  chainID: number,
+  account: string
+) => {
   const addresses = addressesByChainID(chainID!);
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
@@ -136,6 +140,10 @@ const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
   // const ids = createdEvents.map((event) => event.args!.projectID!.toNumber());
   const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
 
+  const fullIds = ids.map(
+    (id) => `${chainID}:${addresses.projectRegistry}:${id}`
+  );
+
   // FIXME: use this line when the fantom RPC bug has been fixed
   // const hexIDs = createdEvents.map((event) =>
   //   event.args!.projectID!.toHexString()
@@ -173,7 +181,7 @@ const fetchProjectCreatedEvents = async (chainID: number, account: string) => {
   return {
     createdEvents,
     updatedEvents,
-    ids,
+    ids: fullIds,
   };
 };
 
@@ -184,10 +192,11 @@ export const loadProjects =
 
     const state = getState();
     const { chainID, account } = state.web3;
+    const addresses = addressesByChainID(chainID!);
 
     try {
       const { createdEvents, updatedEvents, ids } =
-        await fetchProjectCreatedEvents(chainID!, account!);
+        await fetchProjectCreatedUpdatedEvents(chainID!, account!);
 
       if (createdEvents.length === 0) {
         dispatch(projectsLoaded({}));
@@ -197,9 +206,13 @@ export const loadProjects =
       const events: ProjectEventsMap = {};
 
       createdEvents.forEach((createEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed
+        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
         // const id = createEvent.args!.projectID!;
-        const id = parseInt(createEvent.topics[1], 16);
+        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+          createEvent.topics[1],
+          16
+        )}`;
+
         events[id] = {
           createdAtBlock: createEvent.blockNumber,
           updatedAtBlock: undefined,
@@ -207,9 +220,12 @@ export const loadProjects =
       });
 
       updatedEvents.forEach((updateEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed
+        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
         // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-        const id = BigNumber.from(updateEvent.topics[1]).toNumber();
+        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+          updateEvent.topics[1],
+          16
+        )}`;
         const event = events[id];
         if (event !== undefined) {
           event.updatedAtBlock = updateEvent.blockNumber;
@@ -217,11 +233,13 @@ export const loadProjects =
       });
 
       if (withMetaData) {
-        ids.map((id) => dispatch<any>(fetchGrantData(id)));
+        ids!.map((id) => dispatch<any>(fetchGrantData(id)));
       }
 
       dispatch(projectsLoaded(events));
     } catch (error) {
+      datadogRum.addError(error);
+      datadogLogs.logger.error("Failed to load projects", error as Error);
       dispatch(projectError("Cannot load projects"));
     }
   };
@@ -273,18 +291,18 @@ export const fetchApplicationStatusesFromContract =
   };
 
 export const fetchProjectApplications =
-  (projectID: string) =>
+  (projectID: string, chain: ChainId) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
-
     const state = getState();
     const { chainID } = state.web3;
+
     const projectApplicationID = generateUniqueRoundApplicationID(
       chainID!,
-      Number(projectID)
+      projectID
     );
 
     try {
@@ -298,7 +316,7 @@ export const fetchProjectApplications =
           }
         }
         `,
-        chainID!,
+        chain,
         { projectID: projectApplicationID }
       );
 

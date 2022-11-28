@@ -8,17 +8,18 @@ import { RootState } from "../reducers";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
+import { getProjectURIComponents } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
   type: typeof GRANT_METADATA_LOADING_URI;
-  id: number;
+  id: string;
 }
 
 export const GRANT_METADATA_LOADING = "GRANT_METADATA_LOADING";
 export interface GrantMetadataLoading {
   type: typeof GRANT_METADATA_LOADING;
-  id: number;
+  id: string;
 }
 
 export const GRANT_METADATA_FETCHED = "GRANT_METADATA_FETCHED";
@@ -30,7 +31,7 @@ export interface GrantMetadataFetched {
 export const GRANT_METADATA_FETCHING_ERROR = "GRANT_METADATA_FETCHING_ERROR";
 interface GrantMetadataFetchingError {
   type: typeof GRANT_METADATA_FETCHING_ERROR;
-  id: number;
+  id: string;
   error: string;
 }
 
@@ -46,12 +47,12 @@ export type GrantMetadataActions =
   | GrantMetadataFetchingError
   | GrantMetadataAllUnloadedAction;
 
-export const grantMetadataLoadingURI = (id: number): GrantMetadataActions => ({
+export const grantMetadataLoadingURI = (id: string): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING_URI,
   id,
 });
 
-export const grantMetadataLoading = (id: number): GrantMetadataActions => ({
+export const grantMetadataLoading = (id: string): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING,
   id,
 });
@@ -66,7 +67,7 @@ export const grantsMetadataAllUnloaded = (): GrantMetadataActions => ({
 });
 
 export const grantMetadataFetchingError = (
-  id: number,
+  id: string,
   error: string
 ): GrantMetadataActions => ({
   type: GRANT_METADATA_FETCHING_ERROR,
@@ -75,7 +76,7 @@ export const grantMetadataFetchingError = (
 });
 
 const getProjectById = async (
-  projectId: number,
+  projectId: string,
   addresses: any,
   signerOrProvider: any
 ) => {
@@ -85,15 +86,14 @@ const getProjectById = async (
     signerOrProvider
   );
 
-  const project: ProjectRegistryMetadata = await projectRegistry.projects(
-    projectId
-  );
+  const { id } = getProjectURIComponents(projectId);
+  const project: ProjectRegistryMetadata = await projectRegistry.projects(id);
 
   return project;
 };
 
 const getMetadata = async (
-  projectId: number,
+  projectId: string,
   project: any,
   cacheKey: string
 ) => {
@@ -155,10 +155,12 @@ const getMetadata = async (
 };
 
 export const fetchGrantData =
-  (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
+  (id: string) => async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(grantMetadataLoadingURI(id));
+
     const state = getState();
     const { chainID } = state.web3;
+
     const addresses = addressesByChainID(chainID!);
     const { signer } = global;
 

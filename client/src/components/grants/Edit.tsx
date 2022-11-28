@@ -8,6 +8,7 @@ import {
   formReset,
   metadataSaved,
 } from "../../actions/projectForm";
+import { addressesByChainID } from "../../contracts/deployments";
 import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
 import colors from "../../styles/colors";
@@ -28,12 +29,21 @@ function EditProject() {
     ProjectFormStatus.Metadata
   );
 
-  const projectID = params.id;
-
   const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(projectID)];
+    const { chainID } = state.web3;
+    const addresses = addressesByChainID(chainID!);
+    if (
+      params.registryAddress?.toLowerCase() !==
+      addresses.projectRegistry?.toLowerCase()
+    ) {
+      throw new Error("Invalid registry address");
+    }
+    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
+
+    const grantMetadata = state.grantsMetadata[fullId];
+
     return {
-      id: projectID,
+      id: fullId,
       projectMetadata: grantMetadata?.metadata,
       metadataStatus: grantMetadata
         ? grantMetadata.status
@@ -45,12 +55,12 @@ function EditProject() {
 
   useEffect(() => {
     if (
-      projectID !== undefined &&
+      props.id !== undefined &&
       props.metadataStatus === GrantsMetadataStatus.Undefined
     ) {
-      dispatch(fetchGrantData(Number(projectID)));
+      dispatch(fetchGrantData(props.id));
     }
-  }, [dispatch, projectID, props.metadataStatus]);
+  }, [dispatch, props.id, props.metadataStatus]);
 
   useEffect(() => {
     if (props.projectMetadata !== undefined) {

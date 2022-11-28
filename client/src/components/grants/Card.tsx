@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { RootState } from "../../reducers";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { grantPath } from "../../routes";
-import TextLoading from "../base/TextLoading";
-import { getProjectImage, ImgTypes } from "../../utils/components";
+import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
+import { projectPath } from "../../routes";
+import { getProjectImage, ImgTypes } from "../../utils/components";
+import { getProjectURIComponents } from "../../utils/utils";
+import TextLoading from "../base/TextLoading";
 
-function Card({ projectId }: { projectId: number }) {
+function Card({ projectId }: { projectId: string }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
@@ -20,8 +21,10 @@ function Card({ projectId }: { projectId: number }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
+    const { id } = getProjectURIComponents(projectId);
+
     return {
-      id: projectId,
+      id,
       loading,
       currentProject: project,
       bannerImg,
@@ -36,9 +39,14 @@ function Card({ projectId }: { projectId: number }) {
     }
   }, [dispatch, projectId, props.currentProject, props.status]);
 
+  function createProjectPath() {
+    const { chainId, registryAddress, id } = getProjectURIComponents(projectId);
+    return projectPath(chainId, registryAddress, id);
+  }
+
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <Link to={grantPath(projectId)}>
+      <Link to={createProjectPath()}>
         <img
           className="w-full h-32 object-cover"
           src={props.bannerImg}

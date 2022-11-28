@@ -22,11 +22,11 @@ jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
 const projectEventsMap: ProjectEventsMap = {
-  "1": {
+  "1:1:1": {
     createdAtBlock: 1111,
     updatedAtBlock: 1112,
   },
-  "2": {
+  "1:1:2": {
     createdAtBlock: 2222,
     updatedAtBlock: 2223,
   },
@@ -36,7 +36,7 @@ const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: 1,
+    id: "1:1:1",
     title: "First Project",
     description: "",
     website: "",
@@ -44,7 +44,7 @@ const projectsMetadata: Metadata[] = [
   {
     protocol: 2,
     pointer: "0x1234",
-    id: 2,
+    id: "1:1:2",
     title: "Second Project",
     description: "",
     website: "",
@@ -100,7 +100,7 @@ describe("<List />", () => {
       store.dispatch({
         type: "PROJECTS_LOADED",
         events: {
-          "1": {
+          "1:1:1": {
             createdAtBlock: 1111,
             updatedAtBlock: 1112,
           },
@@ -310,7 +310,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "PROJECTS_LOADED",
             events: {
-              "1": {
+              "1:1:1": {
                 createdAtBlock: 1111,
                 updatedAtBlock: 1112,
               },
@@ -336,7 +336,7 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: "1",
+            project: "1:1:1",
           });
 
           when(useLocalStorage as jest.Mock)
