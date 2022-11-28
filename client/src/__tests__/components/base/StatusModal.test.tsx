@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
-import StatusModal from "../../../components/rounds/StatusModal";
-import { grantSteps as steps } from "../../../utils/steps";
+import StatusModal from "../../../components/base/StatusModal";
+import { applicationSteps as steps } from "../../../utils/steps";
 import setupStore from "../../../store";
 import { renderWrapped } from "../../../utils/test_utils";
 
@@ -10,17 +10,67 @@ describe("<StatusModal />", () => {
     {
       error: false,
       currentStep: steps[0],
-      icons: ["current", "waiting", "waiting", "waiting", "waiting"],
+      icons: ["current", "waiting", "waiting", "waiting", "waiting", "waiting"],
     },
     {
       error: false,
       currentStep: steps[1],
-      icons: ["completed", "current", "waiting", "waiting", "waiting"],
+      icons: [
+        "completed",
+        "current",
+        "waiting",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
     },
     {
       error: false,
       currentStep: steps[2],
-      icons: ["completed", "completed", "current", "waiting", "waiting"],
+      icons: [
+        "completed",
+        "completed",
+        "current",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
+    },
+    {
+      error: false,
+      currentStep: steps[3],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "current",
+        "waiting",
+        "waiting",
+      ],
+    },
+    {
+      error: false,
+      currentStep: steps[4],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "current",
+        "waiting",
+      ],
+    },
+    {
+      error: false,
+      currentStep: steps[5],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "current",
+      ],
     },
 
     // with errors
@@ -28,17 +78,60 @@ describe("<StatusModal />", () => {
     {
       error: true,
       currentStep: steps[0],
-      icons: ["error", "waiting", "waiting", "waiting", "waiting"],
+      icons: ["error", "waiting", "waiting", "waiting", "waiting", "waiting"],
     },
     {
       error: true,
       currentStep: steps[1],
-      icons: ["completed", "error", "waiting", "waiting", "waiting"],
+      icons: ["completed", "error", "waiting", "waiting", "waiting", "waiting"],
     },
     {
       error: true,
       currentStep: steps[2],
-      icons: ["completed", "completed", "error", "waiting", "waiting"],
+      icons: [
+        "completed",
+        "completed",
+        "error",
+        "waiting",
+        "waiting",
+        "waiting",
+      ],
+    },
+    {
+      error: true,
+      currentStep: steps[3],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "error",
+        "waiting",
+        "waiting",
+      ],
+    },
+    {
+      error: true,
+      currentStep: steps[4],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "error",
+        "waiting",
+      ],
+    },
+    {
+      error: true,
+      currentStep: steps[5],
+      icons: [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "error",
+      ],
     },
   ];
 
