@@ -1,12 +1,66 @@
-import * as aws from "@pulumi/aws";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { Contribution, ContributionsByProjectId, ProjectMatch } from "../../types";
+import {
+  QFContribution,
+  QFContributionsByProjectId,
+  ProjectMatch,
+  RoundMetadata,
+  ChainId,
+} from "../../types";
+import { fetchFromGraphQL } from "../utils";
 
-async function calculateHandler(
-  ev: APIGatewayProxyEvent,
-  ctx: aws.lambda.Context
-) {
-  const totalProjectPoolAmount = 1000; // TODO: get from the project data
+/**
+ * Fetch data from a GraphQL endpoint
+ *
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param votingStrategyId - The voting strategy address
+ * @returns The result of the query
+ */
+export const fetchVotesHandler = async (
+  chainId: ChainId,
+  votingStrategyId: string
+): Promise<QFContribution[]> => {
+  const variables = { votingStrategyId };
+
+  const query = `
+    query GetVotes($votingStrategyId: String) {
+      votingStrategies(where:{
+        id: $votingStrategyId
+      }) {
+        votes {
+          amount
+          token
+          from
+          to
+        }
+      }
+    }
+  `;
+
+  // fetch from graphql
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  const votes = response.data?.votingStrategies[0]?.votes;
+
+  let contributions: QFContribution[] = [];
+
+  votes.map((vote: any) => {
+    const contribution = {
+      projectId: vote.to, // TODO: we will have to update this to project id eventually
+      contributor: vote.from,
+      amount: Number(vote.amount),
+      token: vote.token,
+    };
+
+    contributions.push(contribution);
+  });
+
+  return contributions;
+};
+
+export const calculateHandler = async (
+  metadata: RoundMetadata,
+  contributions: QFContribution[]
+) => {
+  const totalProjectPoolAmount = metadata.totalPot;
 
   // boolean determining the satisfaction of the quadratic funding amount constraint
   let hasSaturated = false;
@@ -14,18 +68,13 @@ async function calculateHandler(
   // the total amount of contributions per vote
   let totalMatch = 0;
 
-  // decode base64-encoded body to contributions
-  const contributions: Contribution[] = ev.body
-    ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
-    : null;
-
-  const contributionsByProjectId: ContributionsByProjectId = {};
+  const contributionsByProjectId: QFContributionsByProjectId = {};
   const projectMatchDistributions: ProjectMatch[] = [];
 
   const contributionAddresses: Set<string> = new Set();
 
   // group contributions by projectId
-  contributions.forEach((contribution: Contribution) => {
+  contributions.forEach((contribution: QFContribution) => {
     if (!contributionsByProjectId[contribution.projectId]) {
       contributionsByProjectId[contribution.projectId] = {
         contributions: contribution
@@ -82,16 +131,10 @@ async function calculateHandler(
     });
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      distribution: projectMatchDistributions,
-      hasSaturated: hasSaturated,
-    }),
-  };
-}
+  // TODO: Save into DB
 
-export const calculate = new aws.lambda.CallbackFunction<
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult
->("calculate", { callback: calculateHandler });
+  return {
+    distribution: projectMatchDistributions,
+    hasSaturated: hasSaturated,
+  };
+};
