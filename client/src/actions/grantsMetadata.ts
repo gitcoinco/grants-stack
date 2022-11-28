@@ -2,9 +2,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
-import { RootState } from "../reducers";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
@@ -154,69 +152,56 @@ const getMetadata = async (
   return ret;
 };
 
-export const fetchGrantData =
-  (id: string) => async (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(grantMetadataLoadingURI(id));
+export const fetchGrantData = (id: string) => async (dispatch: Dispatch) => {
+  dispatch(grantMetadataLoadingURI(id));
 
-    const state = getState();
-    const { chainID: stateChainID } = state.web3;
-    const { web3Provider } = global;
+  const { chainId, registryAddress } = getProjectURIComponents(id);
+  const { web3Provider } = global;
 
-    let chainID: number;
-    let addresses;
+  const chainID = parseInt(chainId, 10);
+  const addresses = { projectRegistry: registryAddress };
 
-    const splitID = id.split(":");
+  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
 
-    if (splitID.length > 1) {
-      const [chain, address] = splitID;
-      chainID = parseInt(chain, 10);
-      addresses = { projectRegistry: address };
-    } else {
-      chainID = stateChainID as number;
-      addresses = addressesByChainID(chainID!);
+  if (!chainConfig) {
+    throw new Error("app chain error");
+  }
+
+  // TODO: Create a more robust RPC here to avoid fails
+  const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+
+  let project: ProjectRegistryMetadata;
+
+  try {
+    project = await getProjectById(id, addresses, appProvider!);
+  } catch (e) {
+    datadogRum.addError(e);
+    console.error("error fetching project by id", e);
+    dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
+    return;
+  }
+
+  if (!project.metadata.protocol) {
+    console.error("project not found");
+    dispatch(grantMetadataFetchingError(id, "project not found"));
+    return;
+  }
+
+  dispatch(grantMetadataLoading(id));
+
+  try {
+    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
+    const item = await getMetadata(id, project, cacheKey);
+
+    if (item === null) {
+      throw new Error();
     }
 
-    const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
-
-    if (!chainConfig) {
-      throw new Error("app chain error");
-    }
-
-    // TODO: Create a more robust RPC here to avoid fails
-    const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
-
-    let project: ProjectRegistryMetadata;
-
-    try {
-      project = await getProjectById(id, addresses, appProvider!);
-    } catch (e) {
-      datadogRum.addError(e);
-      console.error("error fetching project by id", e);
-      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
-      return;
-    }
-
-    if (!project.metadata.protocol) {
-      console.error("project not found");
-      dispatch(grantMetadataFetchingError(id, "project not found"));
-      return;
-    }
-
-    dispatch(grantMetadataLoading(id));
-
-    try {
-      const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-      const item = await getMetadata(id, project, cacheKey);
-
-      if (item === null) {
-        throw new Error();
-      }
-
-      dispatch(grantMetadataFetched(item));
-    } catch (error) {
-      console.log("item is null");
-      dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
-    }
-  };
+    dispatch(grantMetadataFetched(item));
+  } catch (error) {
+    console.log("item is null");
+    dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
+  }
+};
 
 export const unloadAll = grantsMetadataAllUnloaded;
