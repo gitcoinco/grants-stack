@@ -2,11 +2,10 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { global } from "../global";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
-import { getProjectURIComponents } from "../utils/utils";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
@@ -156,19 +155,10 @@ export const fetchGrantData = (id: string) => async (dispatch: Dispatch) => {
   dispatch(grantMetadataLoadingURI(id));
 
   const { chainId, registryAddress } = getProjectURIComponents(id);
-  const { web3Provider } = global;
 
-  const chainID = parseInt(chainId, 10);
+  const chainID = Number(chainId);
   const addresses = { projectRegistry: registryAddress };
-
-  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
-
-  if (!chainConfig) {
-    throw new Error("app chain error");
-  }
-
-  // TODO: Create a more robust RPC here to avoid fails
-  const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+  const appProvider = getProviderByChainId(chainID);
 
   let project: ProjectRegistryMetadata;
 
