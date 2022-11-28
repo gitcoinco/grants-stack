@@ -159,15 +159,36 @@ export const fetchGrantData =
     dispatch(grantMetadataLoadingURI(id));
 
     const state = getState();
-    const { chainID } = state.web3;
+    const { chainID: stateChainID } = state.web3;
+    const { web3Provider } = global;
 
-    const addresses = addressesByChainID(chainID!);
-    const { signer } = global;
+    let chainID: number;
+    let addresses;
+
+    const splitID = id.split(":");
+
+    if (splitID.length > 1) {
+      const [chain, address] = splitID;
+      chainID = parseInt(chain, 10);
+      addresses = { projectRegistry: address };
+    } else {
+      chainID = stateChainID as number;
+      addresses = addressesByChainID(chainID!);
+    }
+
+    const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
+
+    if (!chainConfig) {
+      throw new Error("app chain error");
+    }
+
+    // TODO: Create a more robust RPC here to avoid fails
+    const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
 
     let project: ProjectRegistryMetadata;
 
     try {
-      project = await getProjectById(id, addresses, signer!);
+      project = await getProjectById(id, addresses, appProvider!);
     } catch (e) {
       datadogRum.addError(e);
       console.error("error fetching project by id", e);
