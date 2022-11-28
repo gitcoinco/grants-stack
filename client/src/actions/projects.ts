@@ -97,6 +97,16 @@ const fetchProjectCreatedUpdatedEvents = async (
   account: string
 ) => {
   const addresses = addressesByChainID(chainID!);
+  const { web3Provider } = global;
+
+  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
+
+  if (!chainConfig) {
+    throw new Error("app chain error");
+  }
+
+  const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
   //   addresses.projectRegistry,
@@ -121,7 +131,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: use queryFilter when the fantom RPC bug has been fixed
   // const createdEvents = await contract.queryFilter(createdFilter);
-  let createdEvents = await global.web3Provider!.getLogs(createdFilter);
+  let createdEvents = await appProvider!.getLogs(createdFilter);
 
   // FIXME: remove when the fantom RPC bug has been fixed
   createdEvents = createdEvents.filter(
@@ -170,7 +180,7 @@ const fetchProjectCreatedUpdatedEvents = async (
     updatedFilter.address = undefined;
   }
 
-  let updatedEvents = await global.web3Provider!.getLogs(updatedFilter);
+  let updatedEvents = await appProvider!.getLogs(updatedFilter);
   console.log(updatedEventSig);
   console.log(updatedFilter);
   // FIXME: remove when the fantom RPC bug has been fixed
@@ -188,60 +198,87 @@ const fetchProjectCreatedUpdatedEvents = async (
 export const loadProjects =
   (withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const { account } = state.web3;
+    const { web3Provider } = global;
+
+    const chains = web3Provider?.chains?.map((i) => i.id);
+
+    if (!chains) {
+      throw new Error("no app chains available");
+    }
+
     dispatch(projectsLoading());
 
-    const state = getState();
-    const { chainID, account } = state.web3;
-    const addresses = addressesByChainID(chainID!);
+    const chainAddresses = chains.map((i) => addressesByChainID(i));
 
-    try {
-      const { createdEvents, updatedEvents, ids } =
-        await fetchProjectCreatedUpdatedEvents(chainID!, account!);
+    const projects = await Promise.allSettled(
+      chains.map((chain) => fetchProjectCreatedUpdatedEvents(chain, account!))
+    );
 
-      if (createdEvents.length === 0) {
-        dispatch(projectsLoaded({}));
-        return;
-      }
+    let allFailed = true;
+    const ids = new Set<string>();
 
-      const events: ProjectEventsMap = {};
+    const events: ProjectEventsMap = projects.reduce(
+      (eventList, project, i) => {
+        if (project.status === "fulfilled") {
+          allFailed = false;
 
-      createdEvents.forEach((createEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-        // const id = createEvent.args!.projectID!;
-        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
-          createEvent.topics[1],
-          16
-        )}`;
+          const { createdEvents, updatedEvents } = project.value;
+          const chainID = chains[i];
+          const addresses = chainAddresses[i];
 
-        events[id] = {
-          createdAtBlock: createEvent.blockNumber,
-          updatedAtBlock: undefined,
-        };
-      });
+          createdEvents.forEach((createEvent) => {
+            // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
+            // const id = createEvent.args!.projectID!;
+            const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+              createEvent.topics[1],
+              16
+            )}`;
 
-      updatedEvents.forEach((updateEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-        // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
-          updateEvent.topics[1],
-          16
-        )}`;
-        const event = events[id];
-        if (event !== undefined) {
-          event.updatedAtBlock = updateEvent.blockNumber;
+            // eslint-disable-next-line no-param-reassign
+            eventList[id] = {
+              createdAtBlock: createEvent.blockNumber,
+              updatedAtBlock: undefined,
+            };
+
+            ids.add(id);
+          });
+
+          updatedEvents.forEach((updateEvent) => {
+            // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
+            // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+            const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
+              updateEvent.topics[1],
+              16
+            )}`;
+            if (eventList[id] !== undefined) {
+              // eslint-disable-next-line no-param-reassign
+              eventList[id].updatedAtBlock = updateEvent.blockNumber;
+            }
+          });
+        } else {
+          datadogLogs.logger.error(
+            "Failed to load projects",
+            new Error(`project load failed for network: ${chains[i]}`)
+          );
         }
-      });
 
-      if (withMetaData) {
-        ids!.map((id) => dispatch<any>(fetchGrantData(id)));
-      }
+        return eventList;
+      },
+      <ProjectEventsMap>{}
+    );
 
-      dispatch(projectsLoaded(events));
-    } catch (error) {
-      datadogRum.addError(error);
-      datadogLogs.logger.error("Failed to load projects", error as Error);
+    if (allFailed) {
+      datadogLogs.logger.error("Failed to load projects");
       dispatch(projectError("Cannot load projects"));
     }
+
+    if (withMetaData) {
+      Array.from(ids)!.map((id) => dispatch<any>(fetchGrantData(id)));
+    }
+
+    dispatch(projectsLoaded(events));
   };
 
 export const fetchApplicationStatusesFromContract =
