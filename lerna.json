@@ -3,7 +3,8 @@
     "packages/contracts",
     "packages/graph",
     "packages/round-manager",
-    "packages/grant-explorer"
+    "packages/grant-explorer",
+    "packages/api"
   ],
   "version": "independent",
   "npmClient": "yarn",
