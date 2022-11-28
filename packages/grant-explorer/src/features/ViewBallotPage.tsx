@@ -266,7 +266,7 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
                   className="inline-block"
                   src={
@@ -284,10 +284,10 @@ export default function ViewBallot() {
             </div>
 
             <div className="pl-4 mt-1">
-              <p className="font-semibold mb-2">
+              <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
                 {props.project.projectMetadata.title}
               </p>
-              <p className="text-sm">
+              <p className="text-sm text-ellipsis line-clamp-3">
                 {props.project.projectMetadata.description}
               </p>
             </div>
@@ -408,7 +408,7 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px]">
+            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
                 className="inline-block"
                 src={
@@ -427,11 +427,11 @@ export default function ViewBallot() {
 
             <div className="pl-4 mt-1">
               <Link to={`${roundRoutePath}/${project.grantApplicationId}`} data-testid={"final-ballot-project-link"}>
-                <p className="font-semibold mb-2">
+                <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
                   {props.project.projectMetadata.title}
                 </p>
               </Link>
-              <p className="text-sm">
+              <p className="text-sm text-ellipsis line-clamp-3">
                 {props.project.projectMetadata.description}
               </p>
             </div>
