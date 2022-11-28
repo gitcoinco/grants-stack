@@ -27,6 +27,14 @@ We currently deployed our ProjectRegistry contract to the chains specified below
 
 ## Chains
 
+### Ethereum Mainnet
+
+| Contract                          | Address                                    |
+|-----------------------------------|--------------------------------------------|
+| ProjectRegistry (Proxy)           | 0x03506eD3f57892C85DB20C36846e9c808aFe9ef4 |
+| ProjectRegistry Implementation    | 0x15fa08599EB017F89c1712d0Fe76138899FdB9db |
+| Proxy Admin                       | 0x1139c2F5e7C7EDd6Fc62d1105eCC5650E7168bF0 |
+
 ### Goerli
 
 | Contract                          | Address                                    |

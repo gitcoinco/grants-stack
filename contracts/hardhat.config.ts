@@ -66,6 +66,12 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic: process.env.MNEMONIC,
       },
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
     }
   },
 
