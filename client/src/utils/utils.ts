@@ -1,5 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { ethers } from "ethers";
+import { global } from "../global";
 import { Metadata, Project } from "../types";
 
 // Checks if tests are being run jest
@@ -55,4 +57,17 @@ export const getProjectURIComponents = (id: string) => {
     registryAddress: split[1],
     id: split[2],
   };
+};
+
+export const getProviderByChainId = (chainId: number) => {
+  const { web3Provider } = global;
+
+  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainId);
+
+  if (!chainConfig) {
+    throw new Error("app chain error");
+  }
+
+  // TODO: Create a more robust RPC here to avoid fails
+  return ethers.getDefaultProvider(chainConfig.rpcUrls.default);
 };

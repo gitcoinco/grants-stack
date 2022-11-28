@@ -10,8 +10,9 @@ import { RootState } from "../reducers";
 import { Application, AppStatus } from "../reducers/projects";
 import PinataClient from "../services/pinata";
 import { ProjectEventsMap } from "../types";
-import { ChainId, graphqlFetch } from "../utils/graphql";
+import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
+import { getProviderByChainId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -97,15 +98,8 @@ const fetchProjectCreatedUpdatedEvents = async (
   account: string
 ) => {
   const addresses = addressesByChainID(chainID!);
-  const { web3Provider } = global;
 
-  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainID);
-
-  if (!chainConfig) {
-    throw new Error("app chain error");
-  }
-
-  const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+  const appProvider = getProviderByChainId(chainID);
 
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
@@ -282,13 +276,20 @@ export const loadProjects =
   };
 
 export const fetchApplicationStatusesFromContract =
-  (roundAddresses: string[], projectID: string, projectApplicationID: string) =>
+  (
+    roundAddresses: string[],
+    projectID: string,
+    projectApplicationID: string,
+    chainId: number
+  ) =>
   async (dispatch: Dispatch) => {
     roundAddresses.forEach(async (roundAddress: string) => {
+      const appProvider = getProviderByChainId(chainId);
+
       const contract = new ethers.Contract(
         roundAddress,
         RoundImplementationABI,
-        global.web3Provider!
+        appProvider
       );
 
       try {
@@ -328,17 +329,14 @@ export const fetchApplicationStatusesFromContract =
   };
 
 export const fetchProjectApplications =
-  (projectID: string, chain: ChainId) =>
-  async (dispatch: Dispatch, getState: () => RootState) => {
+  (projectID: string, chain: number) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
-    const state = getState();
-    const { chainID } = state.web3;
 
     const projectApplicationID = generateUniqueRoundApplicationID(
-      chainID!,
+      chain,
       projectID
     );
 
@@ -379,7 +377,8 @@ export const fetchProjectApplications =
         fetchApplicationStatusesFromContract(
           roundAddresses,
           projectID,
-          projectApplicationID
+          projectApplicationID,
+          chain
         )
       );
     } catch (error: any) {
