@@ -16,6 +16,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
+  Input,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
@@ -98,10 +99,19 @@ function AfterRoundStart(props: { round: Round, chainId: string, roundId: string
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 px-4 py-7 h-screen">
         <main>
-          <p className="mt-6">
-            <span>Round Name: </span>
-            <span>{round.roundMetadata?.name}</span>
+          <p className="mt-6 mb-4">
+            <h3>{round.roundMetadata?.name}</h3>
           </p>
+          <p className="mb-4">
+            <span>Matching funds available: $$$</span>
+          </p>
+          <p className="mb-4 border-b-2 pb-4">{round.roundMetadata?.eligibility?.description}</p>
+          <div className="flex flex-row mb-6 w-full justify-between">
+            <p className="mt-1">
+              <span className="text-xl">All Projects</span>
+            </p>
+            <Input className="w-64 h-8 rounded-full" type="text" placeholder="Search" />
+          </div>
           {round.approvedProjects &&
             <ProjectList
               projects={round.approvedProjects}
