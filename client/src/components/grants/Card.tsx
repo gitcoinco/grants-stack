@@ -26,14 +26,14 @@ function Card({ projectId }: { projectId: string }) {
     const { id } = getProjectURIComponents(projectId);
     const projectChainId = projectId.split(":")[0];
     const projectChainName = networkPrettyName(Number(projectChainId));
-    const projectIconUri = getNetworkIcon(Number(projectChainId));
+    const projectChainIconUri = getNetworkIcon(Number(projectChainId));
 
     return {
       id,
       loading,
       currentProject: project,
       projectChainName,
-      projectIconUri,
+      projectChainIconUri,
       bannerImg,
       logoImg,
       status,
@@ -96,7 +96,7 @@ function Card({ projectId }: { projectId: string }) {
             borderRadius="full"
           >
             <Image
-              src={props.projectIconUri}
+              src={props.projectChainIconUri}
               alt="chain icon"
               className="flex flex-row h-4 w-4 mr-1 rounded-full"
             />
