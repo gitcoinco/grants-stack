@@ -3,7 +3,6 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { loadProjects } from "../../actions/projects";
-import { addressesByChainID } from "../../contracts/deployments";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
@@ -32,14 +31,6 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    if (
-      params.registryAddress?.toLowerCase() !==
-      addresses.projectRegistry?.toLowerCase()
-    ) {
-      throw new Error("Invalid registry address");
-    }
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
     const grantMetadata = state.grantsMetadata[fullId];

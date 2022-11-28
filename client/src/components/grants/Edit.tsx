@@ -8,7 +8,6 @@ import {
   formReset,
   metadataSaved,
 } from "../../actions/projectForm";
-import { addressesByChainID } from "../../contracts/deployments";
 import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
 import colors from "../../styles/colors";
@@ -30,14 +29,6 @@ function EditProject() {
   );
 
   const props = useSelector((state: RootState) => {
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    if (
-      params.registryAddress?.toLowerCase() !==
-      addresses.projectRegistry?.toLowerCase()
-    ) {
-      throw new Error("Invalid registry address");
-    }
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
     const grantMetadata = state.grantsMetadata[fullId];
