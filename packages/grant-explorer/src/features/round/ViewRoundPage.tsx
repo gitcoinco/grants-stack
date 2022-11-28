@@ -15,8 +15,10 @@ import {
   CardsContainer,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
+import { useBallot } from "../../context/BallotContext";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -116,9 +118,19 @@ function AfterRoundStart(props: { round: Round, chainId: string, roundId: string
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
 
   const { project, roundRoutePath } = props;
-  const projectRecipient = project.recipient.slice(0, 6)
+  const projectRecipient = project.recipient.slice(0, 6);
+
+  const [shortlist, finalBallot, handleAddProjectsToShortlist, handleRemoveProjectsFromShortlist, , handleRemoveProjectsFromFinalBallot, ] = useBallot();
+  const isAddedToShortlist = shortlist.some(
+    (shortlistedProject) => shortlistedProject.grantApplicationId === project.grantApplicationId
+  );
+  const isAddedToFinalBallot = finalBallot.some(
+    (ballotProject) => ballotProject.grantApplicationId === project.grantApplicationId
+  );
+
+
   return (
-    <BasicCard data-testid="project-card">
+    <BasicCard className="relative" data-testid="project-card">
       <Link
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
@@ -137,6 +149,23 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
           <CardDescription data-testid="project-description">{project.projectMetadata.description}</CardDescription>
         </CardContent>
       </Link>
+      <CardFooter className="bg-white">
+        <CardContent className="text-xs mt-4">
+          <ShortListButton
+            project={project}
+            isAdded={isAddedToShortlist || isAddedToFinalBallot}
+            removeFromShortlist={() => {
+              handleRemoveProjectsFromShortlist([project]);
+            }}
+            removeFromFinalBallot={() => {
+              handleRemoveProjectsFromFinalBallot([project]);}
+            }
+            addToShortlist={() => {
+              handleAddProjectsToShortlist([project]);
+            }}
+          />
+        </CardContent>
+      </CardFooter>
     </BasicCard>
   );
 }
@@ -162,6 +191,83 @@ const ProjectList = (props: {
     </CardsContainer>
   );
 };
+
+function ShortListButton(props: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  project: any;
+  isAdded: boolean;
+  removeFromShortlist: () => void;
+  removeFromFinalBallot: () => void;
+  addToShortlist: () => void;
+}) {
+  return (
+    <div>
+      <BallotSelectionToggle
+        project={props.project}
+        isAdded={props.isAdded}
+        removeFromShortlist={props.removeFromShortlist}
+        removeFromFinalBallot={props.removeFromFinalBallot}
+        addToBallot={props.addToShortlist}
+      />
+    </div>
+  );
+}
+
+function BallotSelectionToggle(props: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  project: any;
+  isAdded: boolean;
+  addToBallot: () => void;
+  removeFromShortlist: () => void;
+  removeFromFinalBallot: () => void;
+}) {
+
+    const [shortlist, finalBallot, , , , , ] = useBallot();
+
+    const isAddedToShortlist = shortlist.some(
+        (shortlistedProject) => shortlistedProject.grantApplicationId === props.project.grantApplicationId
+    );
+    const isAddedToFinalBallot = finalBallot.some(
+        (ballotProject) => ballotProject.grantApplicationId === props.project.grantApplicationId
+    );
+    // if the project is not added, show the add to shortlist button
+    // if the project is added to the shortlist, show the remove from shortlist button
+    // if the project is added to the final ballot, show the remove from final ballot button
+    if (props.isAdded) {
+        if (isAddedToShortlist) {
+            return (
+                <Button
+                  data-testid="remove-from-shortlist"
+                  onClick={props.removeFromShortlist}
+                  className={"w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
+                >
+                  Remove from Shortlist
+                </Button>
+            );
+        }
+        if (isAddedToFinalBallot) {
+            return (
+                <Button
+                    data-testid="remove-from-final-ballot"
+                    onClick={props.removeFromFinalBallot}
+                    className={"w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
+                >
+                    Remove from Final Ballot
+                </Button>
+            );
+        }
+    }
+    return (
+        <Button
+            data-testid="add-to-shortlist"
+            onClick={() => {
+                props.addToBallot();
+            }}
+            className={"w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"}>
+            Add to Shortlist
+        </Button>
+    );
+}
 
 function PreRoundPage(props: {
   round: Round;
