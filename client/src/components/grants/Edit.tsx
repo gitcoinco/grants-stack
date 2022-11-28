@@ -1,4 +1,4 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -100,8 +100,8 @@ function EditProject() {
         <InformationCircleIcon
           className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
           color="gitcoin-violet-500"
-          width={16}
-          height={16}
+          width={20}
+          height={20}
         />
       </p>
       <p className="flex mx-5 text-sm text-gitcoin-violet-500 text=[14px]">
