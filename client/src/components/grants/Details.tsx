@@ -38,17 +38,22 @@ export default function Details({
   const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
+    const chainId = state.web3.chainID;
+
     const applications = state.projects.applications[params.id!] || [];
 
     return {
+      chainId,
       projectID: params.id!,
       applications,
     };
   });
 
   useEffect(() => {
-    dispatch(fetchProjectApplications(props.projectID));
-  }, [dispatch, props.projectID]);
+    if (props.projectID) {
+      dispatch(fetchProjectApplications(props.projectID, props.chainId!));
+    }
+  }, [dispatch, props.projectID, props.chainId]);
 
   const renderApplications = () => (
     <>

@@ -1,10 +1,10 @@
 import {
   GrantMetadataActions,
-  GRANT_METADATA_LOADING_URI,
-  GRANT_METADATA_LOADING,
+  GRANT_METADATA_ALL_UNLOADED,
   GRANT_METADATA_FETCHED,
   GRANT_METADATA_FETCHING_ERROR,
-  GRANT_METADATA_ALL_UNLOADED,
+  GRANT_METADATA_LOADING,
+  GRANT_METADATA_LOADING_URI,
 } from "../actions/grantsMetadata";
 import { Metadata } from "../types";
 
@@ -16,7 +16,7 @@ export const enum Status {
 }
 
 export interface GrantsMetadataState {
-  [id: number]: {
+  [id: string]: {
     metadata: Metadata | undefined;
     status: Status;
     error: string | undefined;

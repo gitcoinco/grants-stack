@@ -1,7 +1,7 @@
 import {
   ProjectsActions,
-  PROJECTS_LOADED,
   PROJECTS_ERROR,
+  PROJECTS_LOADED,
   PROJECTS_LOADING,
   PROJECTS_UNLOADED,
   PROJECT_APPLICATIONS_ERROR,
@@ -33,7 +33,7 @@ export type Application = {
 export interface ProjectsState {
   status: Status;
   error: string | undefined;
-  ids: number[];
+  ids: string[];
   events: ProjectEventsMap;
   applications: {
     [projectID: string]: Application[];
@@ -63,7 +63,7 @@ export const projectsReducer = (
 
     case PROJECTS_LOADED: {
       const { events } = action;
-      const ids = Object.keys(events).map((id) => Number(id));
+      const ids = Object.keys(events);
 
       return {
         ...state,
