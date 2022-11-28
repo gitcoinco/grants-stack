@@ -40,8 +40,6 @@ function Card({ projectId }: { projectId: string }) {
     };
   }, shallowEqual);
 
-  console.log("project icon uri", { iconUri: props.projectIconUri });
-
   useEffect(() => {
     if (projectId !== undefined && props.status === Status.Undefined) {
       dispatch(fetchGrantData(projectId));
