@@ -18,6 +18,7 @@ module.exports = {
         'danger-text': '#D03E63',
         'green-text': '#11BC92',
         'gitcoin-gold': '#E1B815',
+        'gitcoin-grey-50': '#F3F3F5',
         'gitcoin-grey-300': '#A7A2B6',
         'gitcoin-grey-400': '#757087',
         'gitcoin-yellow': '#FFF8DB',

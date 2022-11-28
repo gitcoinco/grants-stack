@@ -25,6 +25,23 @@ export const networkPrettyNames: { [key: string]: string } = {
   fantom: "Fantom",
   optimism: "Optimism",
 };
+
+export const networkIcon: { [key: string]: string } = {
+  goerli: "",
+  optimisticKovan: "",
+  fantomTestnet:
+    "https://ipfs.io/ipfs/Qmf3a8sPpk8TM4x2aFCyb14SAmn2RZehiDFP7HhFMD1oLK?filename=ftm-testnet.png",
+  fantom:
+    "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9?filename=fantom-ftm-logo.png",
+  optimism: "",
+};
+
+export function getNetworkIcon(chainId: number): string {
+  const rawName = chains[chainId];
+
+  return networkIcon[rawName];
+}
+
 export function networkPrettyName(chainId: number): string {
   const rawName = chains[chainId];
 
