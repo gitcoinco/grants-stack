@@ -84,6 +84,23 @@ function EditProject() {
     return <>Couldn&apos;t load project data.</>;
   }
 
+  const editNotification = (
+    <div className="flex rounded-md p-2 bg-gitcoin-violet-100 mr-4">
+      <p className="flex">
+        <InformationCircleIcon
+          className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
+          color="gitcoin-violet-500"
+          width={16}
+          height={16}
+        />
+      </p>
+      <p className="flex ml-2 text-sm text-gitcoin-violet-500 text=[14px]">
+        Please note that changes to project details will only be reflected on
+        subsequent grant round applications.
+      </p>
+    </div>
+  );
+
   const currentSubText = (status: ProjectFormStatus) => {
     let data:
       | { title: string; description: string; element: JSX.Element | null }
@@ -93,36 +110,21 @@ function EditProject() {
         data = {
           title: "Project Details",
           description: "Tell us more about what you’re working on.",
-          element: (
-            <div className="flex rounded-md p-2 bg-gitcoin-violet-100 mr-4">
-              <p className="flex">
-                <InformationCircleIcon
-                  className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
-                  color="gitcoin-violet-500"
-                  width={16}
-                  height={16}
-                />
-              </p>
-              <p className="flex ml-2 text-sm text-gitcoin-violet-500 text=[14px]">
-                Please note that changes to project details will only be
-                reflected on subsequent grant round applications.
-              </p>
-            </div>
-          ),
+          element: editNotification,
         };
         break;
       case ProjectFormStatus.Verification:
         data = {
           title: "Project Socials",
           description: "Share where we can learn more about your project.",
-          element: null,
+          element: editNotification,
         };
         break;
       case ProjectFormStatus.Preview:
         data = {
           title: "Project Preview",
           description: "Preview your project's page.",
-          element: null,
+          element: editNotification,
         };
         break;
       default:
