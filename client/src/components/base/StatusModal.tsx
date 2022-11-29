@@ -1,5 +1,5 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { BaseModal } from "../base/BaseModal";
+import { BaseModal } from "./BaseModal";
 import { Status, Step } from "../../utils/steps";
 import { RoundApplicationError } from "../../reducers/roundApplication";
 import { NewGrantError } from "../../reducers/newGrant";
@@ -22,7 +22,7 @@ type StepComponentProps = {
 
 const completedIcon = (
   <span className="step-icon step-icon-completed flex h-9 items-center">
-    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 group-hover:bg-teal-800">
+    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-teal-600">
       <CheckIcon className="h-5 w-5 text-white" aria-hidden="true" />
     </span>
   </span>
@@ -46,16 +46,16 @@ const waitingIcon = (
   >
     <span
       // eslint-disable-next-line max-len
-      className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white group-hover:border-gray-400"
+      className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white"
     >
-      <span className="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" />
+      <span className="h-2.5 w-2.5 rounded-full bg-transparent" />
     </span>
   </span>
 );
 
 const errorIcon = (
   <span className="step-icon step-icon-error flex h-9 items-center">
-    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-600 group-hover:bg-red-800">
+    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-600">
       <XMarkIcon className="w-5 h-5 text-white" aria-hidden="true" />
     </span>
   </span>

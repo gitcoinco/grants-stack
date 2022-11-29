@@ -20,7 +20,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
-import StatusModal from "./StatusModal";
+import StatusModal from "../base/StatusModal";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
