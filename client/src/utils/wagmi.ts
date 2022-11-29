@@ -10,6 +10,9 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 
+const ftmTestnetIcon = "../assets/ftm-testnet.png";
+const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
+
 // RPC keys
 const alchemyId = process.env.ALCHEMY_ID;
 const infuraId = process.env.INFURA_ID;
@@ -21,8 +24,7 @@ const fantomTestnet: Chain = {
   id: 4002,
   name: "Fantom Testnet",
   network: "fantom testnet",
-  iconUrl:
-    "https://ipfs.io/ipfs/Qmf3a8sPpk8TM4x2aFCyb14SAmn2RZehiDFP7HhFMD1oLK?filename=ftm-testnet.png",
+  iconUrl: ftmTestnetIcon,
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
@@ -41,8 +43,7 @@ const fantomMainnet: Chain = {
   id: 250,
   name: "Fantom",
   network: "fantom mainnet",
-  iconUrl:
-    "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9?filename=fantom-ftm-logo.png",
+  iconUrl: ftmMainnetIcon,
   nativeCurrency: {
     decimals: 18,
     name: "Fantom",
@@ -63,13 +64,14 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(fantomMainnet, chain.optimism);
+  chainsAvailable.push(chain.mainnet, fantomMainnet, chain.optimism);
 } else {
   chainsAvailable.push(
     chain.optimism,
     chain.goerli,
     fantomTestnet,
-    fantomMainnet
+    fantomMainnet,
+    chain.mainnet
   );
 }
 

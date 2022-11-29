@@ -1,3 +1,4 @@
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -84,25 +85,47 @@ function EditProject() {
     return <>Couldn&apos;t load project data.</>;
   }
 
+  const editNotification = (
+    <div className="flex rounded-md p-4 bg-gitcoin-violet-100 mr-4">
+      <p className="flex">
+        <InformationCircleIcon
+          className="flex text-gitcoin-grey-300 fill-gitcoin-violet-400"
+          color="gitcoin-violet-500"
+          width={20}
+          height={20}
+        />
+      </p>
+      <p className="flex mx-5 text-sm text-gitcoin-violet-500 text=[14px]">
+        Please note that changes to project details will only be reflected on
+        subsequent grant round applications.
+      </p>
+    </div>
+  );
+
   const currentSubText = (status: ProjectFormStatus) => {
-    let data: { title: string; description: string } | undefined;
+    let data:
+      | { title: string; description: string; element: JSX.Element | null }
+      | undefined;
     switch (status) {
       case ProjectFormStatus.Metadata:
         data = {
           title: "Project Details",
           description: "Tell us more about what you’re working on.",
+          element: editNotification,
         };
         break;
       case ProjectFormStatus.Verification:
         data = {
           title: "Project Socials",
           description: "Share where we can learn more about your project.",
+          element: editNotification,
         };
         break;
       case ProjectFormStatus.Preview:
         data = {
           title: "Project Preview",
           description: "Preview your project's page.",
+          element: editNotification,
         };
         break;
       default:
@@ -113,6 +136,7 @@ function EditProject() {
       <>
         <h5 className="mb-2">{data.title}</h5>
         <p className="mb-2">{data.description}</p>
+        {data.element}
       </>
     ) : null;
   };
