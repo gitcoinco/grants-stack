@@ -8,6 +8,10 @@
 @import "./Layout";
 @import "./roundApplication";
 
+.gh-text-pink {
+  color: #F3587D;
+}
+
 /* lit modal */
 #lcm-modal-overlay {
   z-index: 9999;
