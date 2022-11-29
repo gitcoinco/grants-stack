@@ -5,6 +5,11 @@ import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
 import { chains } from "../contracts/deployments";
 
+const ftmTestnetIcon = "../assets/ftm-testnet.png";
+const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
+const optimismIcon = "../assets/optimism.png";
+const ethIcon = "../assets/eth-diamond-glyph.png";
+
 export function shortAddress(address: string): string {
   try {
     const formattedAddress = getAddress(address);
@@ -28,18 +33,12 @@ export const networkPrettyNames: { [key: string]: string } = {
 };
 
 export const networkIcon: { [key: string]: string } = {
-  mainnet:
-    "https://ethereum.org/static/a62391514b71539906d6bd8ec820c7d8/d1ef9/eth-diamond-glyph.png",
-  goerli:
-    "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/13c43/eth-diamond-black.png",
-  optimisticKovan:
-    "https://ipfs.io/ipfs/Qmc5Bmaeb3FXMCkghHhoszp9zzVWitZNRPHhaRCNJ2raNw?filename=OPIcon.png",
-  fantomTestnet:
-    "https://ipfs.io/ipfs/Qmf3a8sPpk8TM4x2aFCyb14SAmn2RZehiDFP7HhFMD1oLK?filename=ftm-testnet.png",
-  fantom:
-    "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9?filename=fantom-ftm-logo.png",
-  optimism:
-    "https://ipfs.io/ipfs/Qmc5Bmaeb3FXMCkghHhoszp9zzVWitZNRPHhaRCNJ2raNw?filename=OPIcon.png",
+  mainnet: ethIcon,
+  goerli: ethIcon,
+  optimisticKovan: optimismIcon,
+  fantomTestnet: ftmTestnetIcon,
+  fantom: ftmMainnetIcon,
+  optimism: optimismIcon,
 };
 
 export function getNetworkIcon(chainId: number): string {

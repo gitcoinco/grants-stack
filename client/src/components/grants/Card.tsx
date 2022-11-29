@@ -23,10 +23,9 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const { id } = getProjectURIComponents(projectId);
-    const projectChainId = projectId.split(":")[0];
-    const projectChainName = networkPrettyName(Number(projectChainId));
-    const projectChainIconUri = getNetworkIcon(Number(projectChainId));
+    const { id, chainId } = getProjectURIComponents(projectId);
+    const projectChainName = networkPrettyName(Number(chainId));
+    const projectChainIconUri = getNetworkIcon(Number(chainId));
 
     return {
       id,
@@ -92,13 +91,13 @@ function Card({ projectId }: { projectId: string }) {
         </div>
         <div className="flex flex-col col-span-1 justify-between w-fit min-h-[16px]">
           <Badge
-            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-2 py-1 shadow-lg"
+            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
             borderRadius="full"
           >
             <Image
               src={props.projectChainIconUri}
               alt="chain icon"
-              className="flex flex-row h-4 w-4 mr-1 rounded-full"
+              className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
             />
             {props.projectChainName}
           </Badge>
