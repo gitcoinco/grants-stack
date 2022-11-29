@@ -93,6 +93,19 @@ export const web3AccountDisconnected = (account: string): Web3Actions => ({
 export const initializeWeb3 =
   (signer: any, provider: any, chain: any, address: string) =>
   (dispatch: Dispatch) => {
+    let t: Web3Type;
+    if (window.ethereum) {
+      t = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
+      window.ethereum.on("chainChanged", () => {
+        window.location.reload();
+      });
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+    } else {
+      t = Web3Type.Remote;
+    }
+
     if (!chainIds.includes(String(chain?.id))) {
       dispatch(web3Error(WEB3_BAD_CHAIN_ERROR));
       return;
@@ -102,17 +115,6 @@ export const initializeWeb3 =
     global.web3Provider = provider;
     global.chainID = chain?.id;
     global.address = address;
-
-    let t: Web3Type;
-    if (window.ethereum) {
-      t = window.ethereum.isStatus ? Web3Type.Status : Web3Type.Generic;
-      window.ethereum.on("chainChanged", () => window.location.reload());
-      window.ethereum.on("accountsChanged", () => {
-        window.location.reload();
-      });
-    } else {
-      t = Web3Type.Remote;
-    }
 
     dispatch(web3Initialized(t));
     dispatch(web3AccountLoaded(address));
