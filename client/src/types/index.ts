@@ -149,6 +149,7 @@ export type Round = {
 export type ProjectOption = {
   id: string | undefined;
   title?: string;
+  icon?: any;
 };
 
 export interface RoundApplication {

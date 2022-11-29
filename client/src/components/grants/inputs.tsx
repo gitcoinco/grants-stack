@@ -241,11 +241,17 @@ export function Select({
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
       >
-        {options.map((option) => (
-          <option key={`key-${option.id}`} value={option.id}>
-            {option.title}
-          </option>
-        ))}
+        {options.map((option) => {
+          const { icon, title, id } = option;
+          return (
+            <option key={`key-${id}`} value={id}>
+              <div className="">
+                <span>{icon}</span>
+                <span className="ml-2">{title}</span>
+              </div>
+            </option>
+          );
+        })}
       </select>
     </div>
   );

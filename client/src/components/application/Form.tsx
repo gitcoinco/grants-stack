@@ -16,6 +16,8 @@ import {
   Round,
   RoundApplicationMetadata,
 } from "../../types";
+import { getProjectURIComponents } from "../../utils/utils";
+import { getNetworkIcon } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
@@ -142,13 +144,17 @@ export default function Form({
     handleSubmitApplication();
   };
 
+  // todo: add the chain logo for each project
   useEffect(() => {
-    const currentOptions = props.projectIDs.map(
-      (id): ProjectOption => ({
+    const currentOptions = props.projectIDs.map((id): ProjectOption => {
+      const { chainId } = getProjectURIComponents(id);
+      const projectChainIconUri = getNetworkIcon(Number(chainId));
+      return {
         id,
         title: props.allProjectMetadata[id]?.metadata?.title,
-      })
-    );
+        icon: projectChainIconUri,
+      };
+    });
     currentOptions.unshift({ id: undefined, title: "" });
 
     setProjectOptions(currentOptions);
