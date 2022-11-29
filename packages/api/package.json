@@ -14,6 +14,8 @@
     "@pulumi/aws": "5.10.0",
     "@pulumi/aws-apigateway": "^0.0.11",
     "@pulumi/awsx": "^1.0.0-beta",
+    "@pulumi/mysql": "^3.1.0",
+    "@pulumi/postgresql": "^3.6.0",
     "@pulumi/pulumi": "^3.0.0",
     "aws-lambda": "^1.0.7",
     "node-fetch": "^2.6.6",

@@ -2,7 +2,8 @@ import * as aws from "@pulumi/aws";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as yup from "yup";
 import { ChainId, Results } from "../types";
-import { fetchRoundMetadata, handleResponse } from "./utils";
+import {db, fetchRoundMetadata, handleResponse} from "./utils";
+const mysql = require("@pulumi/mysql")
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate,
@@ -65,3 +66,44 @@ export const calculate = new aws.lambda.CallbackFunction<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
 >("calculate", { callback: calculateHandler });
+
+
+// A function to run to connect to our database.
+function queryDatabase(): Promise<any> {
+    return new Promise((resolve, reject) => {
+        var postgres      = require('postgres'); // CHECK
+        var connection = postgres.createConnection({
+            host     : db.endpoint.get(),
+            user     : db.masterUsername.get(),
+            password : db.masterPassword.get(),
+            database : db.databaseName.get(),
+        });
+
+        connection.connect();
+
+        console.log("querying...")
+        connection.query('SELECT 1 + 1 AS solution', function (error: any, results: any, fields: any) {
+            if (error) { reject(error); return }
+            resolve(2);
+            // resolve(results[0].solution);
+        });
+
+        connection.end();
+    });
+}
+
+const testHandler = async (
+    ev: APIGatewayProxyEvent,
+    ctx: aws.lambda.Context
+) => {
+
+    const shit = await queryDatabase();
+
+    return handleResponse(200, "DB works",{ output: shit} );
+}
+
+
+export const test = new aws.lambda.CallbackFunction<
+    APIGatewayProxyEvent,
+    APIGatewayProxyResult
+    >("test", { callback: testHandler });

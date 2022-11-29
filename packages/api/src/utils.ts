@@ -150,3 +150,29 @@ export const handleResponse = (
     }),
   };
 };
+
+
+// WIP : DB
+import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+// Construct a VPC
+export const vpc = new awsx.ec2.Vpc("vpc");
+
+// Create an Aurora Serverless MySQL database
+const dbsubnet = new aws.rds.SubnetGroup("dbsubnet", {
+  subnetIds: vpc.privateSubnetIds,
+});
+const dbpassword = "Password"
+
+// TODO: Move to config file
+export const db = new aws.rds.Cluster("db", {
+  engine: "aurora-postgresql", // CHECK
+  engineMode: "serverless",
+  // engineVersion: "5.6.10a",
+  dbSubnetGroupName: dbsubnet.name,
+  masterUsername: "pulumi",
+  masterPassword: dbpassword,
+  skipFinalSnapshot: true,
+});
+
