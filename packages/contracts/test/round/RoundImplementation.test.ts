@@ -1233,7 +1233,7 @@ describe("RoundImplementation", function () {
 
     describe('test: applyToRound', () => {
 
-      let projectID: string;
+      let grantId: number;
       let newProjectMetaPtr: MetaPtr;
 
       let roundImplementation: RoundImplementation;
@@ -1242,7 +1242,7 @@ describe("RoundImplementation", function () {
 
       before(async() => {
 
-        projectID = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+        grantId = Math.floor(Math.random() * 10);
 
         newProjectMetaPtr = {
           protocol: 1,
@@ -1281,7 +1281,7 @@ describe("RoundImplementation", function () {
       });
 
       it('invoking applyToRound SHOULD revert WHEN invoked before applicationsStartTime has started', async () => {
-        await expect(roundImplementation.applyToRound(projectID, newProjectMetaPtr)).to.be.revertedWith(
+        await expect(roundImplementation.applyToRound(grantId, newProjectMetaPtr)).to.be.revertedWith(
           "applyToRound: round is not accepting application"
         );
       });
@@ -1290,7 +1290,7 @@ describe("RoundImplementation", function () {
 
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 7500])
 
-        await expect(roundImplementation.applyToRound(projectID, newProjectMetaPtr)).to.be.revertedWith(
+        await expect(roundImplementation.applyToRound(grantId, newProjectMetaPtr)).to.be.revertedWith(
           "applyToRound: round is not accepting application"
         );
       });
@@ -1299,12 +1299,12 @@ describe("RoundImplementation", function () {
 
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 110])
 
-        const txn = await roundImplementation.applyToRound(projectID, newProjectMetaPtr);
+        const txn = await roundImplementation.applyToRound(grantId, newProjectMetaPtr);
 
         expect(txn).to.emit(
           roundImplementation, 'NewProjectApplication'
         ).withArgs(
-          projectID,
+          grantId,
           [ newProjectMetaPtr.protocol, newProjectMetaPtr.pointer ]
         );
       });

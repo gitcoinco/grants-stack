@@ -53,8 +53,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Emitted when projects metaPtr is updated
   event ProjectsMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
-  /// @notice Emitted when a project has applied to the round
-  event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
+  /// @notice Emitted when a grant has applied to the round
+  event NewProjectApplication(uint256 indexed grantId, MetaPtr applicationMetaPtr);
 
   // --- Modifier ---
 
@@ -268,17 +268,17 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     projectsMetaPtr = newProjectsMetaPtr;
   }
 
-  /// @notice Submit a project application
-  /// @param projectID unique hash of the project
+  /// @notice Submit a grant application
+  /// @param grantId grant Id
   /// @param newApplicationMetaPtr appliction metaPtr
-  function applyToRound(bytes32 projectID, MetaPtr calldata newApplicationMetaPtr) external {
+  function applyToRound(uint256 grantId, MetaPtr calldata newApplicationMetaPtr) external {
     // slither-disable-next-line timestamp
     require(
       applicationsStartTime <= block.timestamp  &&
       block.timestamp <= applicationsEndTime,
       "applyToRound: round is not accepting application"
     );
-    emit NewProjectApplication(projectID, newApplicationMetaPtr);
+    emit NewProjectApplication(grantId, newApplicationMetaPtr);
   }
 
   /// @notice Invoked by voter to cast votes

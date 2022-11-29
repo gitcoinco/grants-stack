@@ -46,10 +46,12 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
     const randomAddress = Wallet.createRandom().address;
 
     let grant1 = Wallet.createRandom();
+    let grant1Id = Math.floor(Math.random() * 10);
     const grant1TokenTransferAmount = 150;
     const grant1NativeTokenTransferAmount = ethers.utils.parseUnits("0.1","ether");
 
     let grant2 = Wallet.createRandom();
+    let grant2Id = Math.floor(Math.random() * 10);
     const grant2TokenTransferAmount = 50;
     const grant2NativeTokenTransferAmount = ethers.utils.parseUnits("0.05","ether");
     let encodedVotes: BytesLike[] = [];
@@ -100,14 +102,14 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         // Prepare Votes - only ERC20
         const votes = [
-          [mockERC20.address, grant1TokenTransferAmount, grant1.address],
-          [mockERC20.address, grant2TokenTransferAmount, grant2.address],
+          [mockERC20.address, grant1TokenTransferAmount, grant1.address, grant1Id],
+          [mockERC20.address, grant2TokenTransferAmount, grant2.address, grant2Id],
         ];
 
         for (let i = 0; i < votes.length; i++) {
           encodedVotes.push(
             ethers.utils.defaultAbiCoder.encode(
-              ["address", "uint256", "address"],
+              ["address", "uint256", "address", "uint256"],
               votes[i]
             )
           );
@@ -341,8 +343,8 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
           // Prepare Votes - Native Token + ERC20
           const votes = [
-            [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address],
-            [mockERC20.address, grant2TokenTransferAmount, grant2.address],
+            [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address, grant1Id],
+            [mockERC20.address, grant2TokenTransferAmount, grant2.address, grant2Id],
           ];
 
           // Encode Votes
@@ -351,7 +353,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           for (let i = 0; i < votes.length; i++) {
             encodedVotes.push(
               ethers.utils.defaultAbiCoder.encode(
-                ["address", "uint256", "address"],
+                ["address", "uint256", "address", "uint256"],
                 votes[i]
               )
             );

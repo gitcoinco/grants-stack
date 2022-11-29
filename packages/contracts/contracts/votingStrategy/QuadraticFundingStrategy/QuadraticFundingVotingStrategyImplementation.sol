@@ -23,11 +23,12 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
   /// @notice Emitted when a new vote is sent
   event Voted(
-    address  token,                   // voting token
+    address token,                   // voting token
     uint256 amount,                   // voting amount
     address indexed voter,            // voter address
     address indexed grantAddress,     // grant address
-    address indexed roundAddress      // round address
+    address roundAddress,             // round address
+    uint256 indexed grantId           // grant id
   );
 
   // --- Core methods ---
@@ -54,7 +55,17 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
     /// @dev iterate over multiple donations and transfer funds
     for (uint256 i = 0; i < encodedVotes.length; i++) {
 
-      (address _token, uint256 _amount, address _grantAddress) = abi.decode(encodedVotes[i], (address, uint256, address));
+      (
+        address _token,
+        uint256 _amount,
+        address _grantAddress,
+        uint256 _grantId
+      ) = abi.decode(encodedVotes[i], (
+        address,
+        uint256,
+        address,
+        uint256
+      ));
 
       if (_token == address(0)) {
         /// @dev native token transfer to grant address
@@ -79,7 +90,8 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
         _amount,
         voterAddress,
         _grantAddress,
-        msg.sender
+        msg.sender,
+        _grantId
       );
 
     }
