@@ -5,10 +5,12 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@pulumi/aws-quickstart-aurora-postgres": "^0.0.3",
     "@types/aws-lambda": "^8.10.108",
     "@types/node": "^14",
     "@types/node-fetch": "^2.6.2",
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "mysql": "^2.18.1"
   },
   "dependencies": {
     "@pulumi/aws": "5.10.0",
