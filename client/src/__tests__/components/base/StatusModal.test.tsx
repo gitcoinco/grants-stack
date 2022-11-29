@@ -1,8 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import StatusModal from "../../../components/base/StatusModal";
-import { applicationSteps } from "../../../utils/steps";
-import { grantSteps } from "../../../utils/steps";
+import { applicationSteps, grantSteps } from "../../../utils/steps";
 import setupStore from "../../../store";
 import { renderWrapped } from "../../../utils/test_utils";
 
