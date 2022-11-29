@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
@@ -71,7 +71,7 @@ function ProjectsList() {
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
 
-    dispatch(loadProjects());
+    dispatch(loadAllChainsProjects());
   }, [dispatch, props.status]);
 
   useEffect(() => {

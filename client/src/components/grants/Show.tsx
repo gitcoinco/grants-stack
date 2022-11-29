@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
@@ -89,7 +89,7 @@ function Project() {
       }
     } else {
       // If user reloads Show projects will not exist
-      dispatch(loadProjects(true));
+      dispatch(loadAllChainsProjects(true));
     }
 
     return () => {

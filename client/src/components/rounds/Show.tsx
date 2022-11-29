@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
@@ -15,8 +15,8 @@ import { formatDate } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
-import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import LoadingSpinner from "../base/LoadingSpinner";
+import SwitchNetworkModal from "../base/SwitchNetworkModal";
 
 function Round() {
   const [roundData, setRoundData] = useState<any>();
@@ -116,7 +116,7 @@ function Round() {
     if (!isOnRoundChain) return;
 
     if (props.projectsStatus === ProjectStatus.Undefined) {
-      dispatch(loadProjects(true));
+      dispatch(loadAllChainsProjects(true));
     }
   }, [props.projectsStatus, dispatch]);
 
