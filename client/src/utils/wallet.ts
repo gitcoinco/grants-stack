@@ -5,6 +5,11 @@ import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
 import { chains } from "../contracts/deployments";
 
+const ftmTestnetIcon = "../assets/ftm-testnet.png";
+const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
+const optimismIcon = "../assets/optimism.png";
+const ethIcon = "../assets/eth-diamond-glyph.png";
+
 export function shortAddress(address: string): string {
   try {
     const formattedAddress = getAddress(address);
@@ -19,12 +24,29 @@ export function shortAddress(address: string): string {
 }
 
 export const networkPrettyNames: { [key: string]: string } = {
+  mainnet: "Mainnet",
   goerli: "Goerli",
   optimisticKovan: "Optimistic Kovan",
   fantomTestnet: "Fantom Testnet",
   fantom: "Fantom",
   optimism: "Optimism",
 };
+
+export const networkIcon: { [key: string]: string } = {
+  mainnet: ethIcon,
+  goerli: ethIcon,
+  optimisticKovan: optimismIcon,
+  fantomTestnet: ftmTestnetIcon,
+  fantom: ftmMainnetIcon,
+  optimism: optimismIcon,
+};
+
+export function getNetworkIcon(chainId: number): string {
+  const rawName = chains[chainId];
+
+  return networkIcon[rawName];
+}
+
 export function networkPrettyName(chainId: number): string {
   const rawName = chains[chainId];
 

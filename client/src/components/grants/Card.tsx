@@ -1,3 +1,4 @@
+import { Badge, Image } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import TextLoading from "../base/TextLoading";
 
 function Card({ projectId }: { projectId: string }) {
@@ -21,12 +23,16 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const { id } = getProjectURIComponents(projectId);
+    const { id, chainId } = getProjectURIComponents(projectId);
+    const projectChainName = networkPrettyName(Number(chainId));
+    const projectChainIconUri = getNetworkIcon(Number(chainId));
 
     return {
       id,
       loading,
       currentProject: project,
+      projectChainName,
+      projectChainIconUri,
       bannerImg,
       logoImg,
       status,
@@ -45,7 +51,7 @@ function Card({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg my-6">
+    <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">
       <Link to={createProjectPath()}>
         <img
           className="w-full h-32 object-cover"
@@ -73,15 +79,28 @@ function Card({ projectId }: { projectId: string }) {
           {props.loading ? (
             <TextLoading />
           ) : (
-            <div className="pt-4">
+            <div className="flex flex-col col-span-1 justify-between pt-4">
               <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
-              <p className="text-gray-700 text-base min-h-18 line-clamp-3">
+              <p className="text-gray-700 text-base min-h-[50px] line-clamp-3">
                 {props.currentProject?.description}
               </p>
             </div>
           )}
+        </div>
+        <div className="flex flex-col col-span-1 justify-between w-fit min-h-[16px]">
+          <Badge
+            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
+            borderRadius="full"
+          >
+            <Image
+              src={props.projectChainIconUri}
+              alt="chain icon"
+              className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
+            />
+            {props.projectChainName}
+          </Badge>
         </div>
       </Link>
     </div>
