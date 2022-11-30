@@ -31,6 +31,11 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 ### Development
 
+#### Local development with Docker
+```bash
+docker compose up # will build and start the docker container
+```
+
 - Install Pulumi and login into the account via the console
 - Ensure your `AWS` env are setup
 - Once your changes are done -> roll them onto the pulumi server using `pulumi up`

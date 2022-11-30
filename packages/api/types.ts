@@ -29,6 +29,11 @@ export type RoundMetadata = {
   totalPot: number;
 };
 
+export type CalculateParam = {
+  chainId: ChainId;
+  roundId: string;
+}
+
 /****************/
 /* = LinearQF = */
 /****************/

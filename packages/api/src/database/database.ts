@@ -44,5 +44,4 @@ export class DB extends ComponentResource {
             publiclyAccessible: false,
         }, { parent: this });
     }
-
 }

@@ -1,9 +1,9 @@
-import * as aws from "@pulumi/aws";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+// import * as aws from "@pulumi/aws";
+// import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as yup from "yup";
-import { ChainId, Results } from "../types";
+import { CalculateParam, ChainId, Results } from "../types";
 import { fetchRoundMetadata, handleResponse} from "./utils";
-import { db, queryDatabase, vpc } from "./database/db";
+// import { db, queryDatabase, vpc } from "./database/db";
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate,
@@ -12,14 +12,7 @@ import {
 /**
  * Orchestrator function which invokes calculate
  */
-export const calculateHandler = async (
-  ev: APIGatewayProxyEvent,
-  ctx: aws.lambda.Context
-) => {
-  // fetch chainId and roundId from post body
-  const body: { chainId: ChainId; roundId: string } = ev.body
-    ? JSON.parse(Buffer.from(ev.body, "base64").toString("utf-8"))
-    : null;
+export const calculateHandler = async (body: CalculateParam) => {
 
   // validate request body
   const schema = yup.object().shape({
@@ -32,7 +25,7 @@ export const calculateHandler = async (
         "roundId must be an ethereum contract address"
       ),
   });
-
+  
   try {
     await schema.validate(body);
   } catch (err: any) {
@@ -50,8 +43,8 @@ export const calculateHandler = async (
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
       case "quadraticFunding":
-        const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);
-        results = await linearQFCalculate(metadata, votes);
+        const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);        
+        results = await linearQFCalculate(metadata, votes);        
         break;
     }
   } catch {
@@ -62,31 +55,31 @@ export const calculateHandler = async (
   return handleResponse(200, "Calculations ran successfully", results);
 };
 
-export const calculate = new aws.lambda.CallbackFunction<
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult
->("calculate", { callback: calculateHandler });
+// export const calculate = new aws.lambda.CallbackFunction<
+//   APIGatewayProxyEvent,
+//   APIGatewayProxyResult
+// >("calculate", { callback: calculateHandler });
 
 
-const testHandler = async () => {
+// const testHandler = async () => {
 
-    const test = await queryDatabase();
+//     const test = await queryDatabase();
 
-    return handleResponse(200, "DB works",{ output: test} );
-}
+//     return handleResponse(200, "DB works",{ output: test} );
+// }
 
 
-export const test = new aws.lambda.CallbackFunction<
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult
->("test", {
-  vpcConfig: {
-    securityGroupIds: db.vpcSecurityGroupIds,
-    subnetIds: vpc.privateSubnetIds,
-  },
-  policies: [
-    aws.iam.ManagedPolicies.AWSLambdaVPCAccessExecutionRole,
-    aws.iam.ManagedPolicies.AmazonRDSFullAccess,
-  ],
-  callback: testHandler
-});
+// export const test = new aws.lambda.CallbackFunction<
+//   APIGatewayProxyEvent,
+//   APIGatewayProxyResult
+// >("test", {
+//   vpcConfig: {
+//     securityGroupIds: db.vpcSecurityGroupIds,
+//     subnetIds: vpc.privateSubnetIds,
+//   },
+//   policies: [
+//     aws.iam.ManagedPolicies.AWSLambdaVPCAccessExecutionRole,
+//     aws.iam.ManagedPolicies.AmazonRDSFullAccess,
+//   ],
+//   callback: testHandler
+// });

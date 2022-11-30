@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      # You can set the value of environment variables
+      # in your docker-compose.yml file
+      # Our Node app will use these to connect
+      # to the database
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=root
+  web:
+    build:
+      context: ./
+      target: dev
+    volumes:
+      - .:/src
+    command: npm run dev
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: development
+      DEBUG: nodejs-docker-express:*
