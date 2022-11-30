@@ -8,6 +8,11 @@ type ProgramParams = {
 type DeployParams = Record<string, ProgramParams>;
 
 export const programParams: DeployParams = {
+  "mainnet": {
+    programFactoryContract: '0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB',
+    programImplementationContract: '0x21B0be8253DEdA0d2d8f010d06ED86093d52359b',
+    programContract: '0x4fde273e009F58Aa0e5e09289242D5336FD18ad1'
+  },
   "goerli": {
     programFactoryContract: '0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9',
     programImplementationContract: '0x8568133fF3Ef0BD108868278Cb2a516Eaa3B8ABf',

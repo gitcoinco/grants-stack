@@ -6,6 +6,9 @@ type PayoutStrategies = {
 type DeployParams = Record<string, PayoutStrategies>;
 
 export const PayoutParams: DeployParams = {
+  "mainnet": {
+    merklePayoutContract: '0xC068C0EAF90533D3817a1782847eAA6719ABB6c7'
+  },
   "goerli": {
     merklePayoutContract: '0x4A68275B53165d9209Ec3f535a331A3f0160d6FF'
   },

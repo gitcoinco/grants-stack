@@ -24,7 +24,7 @@ const chainIds = {
   // mainnet
   mainnet: 1,
   "optimism-mainnet": 10,
-  "fantom-mainnet"    : 250
+  "fantom-mainnet"  : 250
 };
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -127,6 +127,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
       goerli: process.env.ETHERSCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
       opera: process.env.FTMSCAN_API_KEY,

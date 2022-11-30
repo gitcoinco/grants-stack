@@ -8,6 +8,11 @@ type QFVotingParams = {
 type DeployParams = Record<string, QFVotingParams>;
 
 export const QFVotingParams: DeployParams = {
+  "mainnet": {
+    factory: '0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38',
+    implementation: '0x114885035DAF6f8E09BE55Ed2169d41A512dad45',
+    contract: '0x818A3C8F82667bd222faF84a954F35d2b0Eb6a78'
+  },
   "goerli": {
     factory: '0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab',
     implementation: '0xfdEAf531f04fd7C6de3938e2069beE83aBadFe08',
