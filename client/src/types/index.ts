@@ -19,6 +19,7 @@ export interface Metadata {
   userGithub?: string;
   projectGithub?: string;
   credentials?: ProjectCredentials;
+  createdAt?: number;
 }
 
 export interface Project {
@@ -34,6 +35,7 @@ export interface Project {
   projectGithub?: string;
   projectTwitter?: string;
   credentials?: ProjectCredentials;
+  createdAt?: number;
 }
 
 export type ProjectRegistryMetadata = {

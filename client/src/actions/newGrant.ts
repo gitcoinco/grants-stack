@@ -92,6 +92,7 @@ export const publishGrant =
     }
 
     application.credentials = formCredentials;
+    application.createdAt = Date.now();
 
     dispatch(grantStatus(Status.UploadingJSON));
     const resp = await pinataClient.pinJSON(application);
