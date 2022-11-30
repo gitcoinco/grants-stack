@@ -3,6 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loadProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
+import { loadRound } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
@@ -73,6 +74,13 @@ function ProjectsList() {
 
     dispatch(loadProjects());
   }, [dispatch, props.status]);
+
+  useEffect(() => {
+    if (roundToApply) {
+      const [chainId, roundId] = roundToApply.split(":");
+      dispatch(loadRound(roundId, Number(chainId)));
+    }
+  }, [roundToApply]);
 
   useEffect(() => {
     if (roundToApply && props.projectIDs.length > 0) {
