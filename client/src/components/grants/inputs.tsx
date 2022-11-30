@@ -1,7 +1,6 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
-// import Select, { components, ControlProps } from "react-select";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
@@ -207,24 +206,6 @@ type SelectInputProps = InputProps & {
   options: ProjectOption[];
 };
 
-// const CustomOption = ({ props }: { props: any }) =>
-//   props ?
-//     <div {...props}></div>
-//   : null;
-
-// function Control({ children, ...props }: ControlProps<any>) {
-//   const style = { cursor: "pointer" };
-
-//   return (
-//     <components.Control {...props}>
-//       <span style={style}>
-//         🔥
-//       </span>
-//       {children}
-//     </components.Control>
-//   );
-// }
-
 export function Select({
   label,
   info,
@@ -295,10 +276,6 @@ export function CustomSelect({
         {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
-
-      {/* WIP Custom Select */}
-      {/* <Select components={{ Control }} options={options} /> */}
-
       <select
         id={name}
         name={name}
