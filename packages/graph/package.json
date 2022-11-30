@@ -12,6 +12,7 @@
   },
   "homepage": "https://github.com/gitcoinco/grants-round#readme",
   "scripts": {
+    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
     "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml",
     "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml",
     "prepare:local": "mustache config/localhost.json subgraph.template.yaml > subgraph.yaml",
