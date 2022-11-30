@@ -12,7 +12,7 @@ import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import { addAlert } from "../../actions/ui";
 import { grantSteps } from "../../utils/steps";
-import StatusModal from "../rounds/StatusModal";
+import StatusModal from "./StatusModal";
 import ErrorModal from "./ErrorModal";
 
 export default function Preview({
