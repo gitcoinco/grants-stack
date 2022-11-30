@@ -231,6 +231,20 @@ export function Select({
         {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
+      {/* <div>
+        <ul className="flex">
+          {options.map((option) => {
+            const { icon, title, id } = option;
+            const image = (<div><img src={icon} alt={title} className="w-6 h-6" /></div>);
+            return (
+              <li className="flex flex-col" key={id}>
+                {image} {title}
+              </li>
+            );
+          })}
+        </ul>
+      </div> */}
+
       <select
         id={name}
         name={name}
@@ -242,13 +256,16 @@ export function Select({
         defaultValue={defaultValue}
       >
         {options.map((option) => {
-          const { icon, title, id } = option;
+          const { title, id } = option;
+          const icon = option.chainInfo?.icon;
+          const image = (
+            <div>
+              <img src={icon} alt={title} className="w-6 h-6" />
+            </div>
+          );
           return (
-            <option key={`key-${id}`} value={id}>
-              <div className="">
-                <span>{icon}</span>
-                <span className="ml-2">{title}</span>
-              </div>
+            <option key={`key-${id}`} value={icon}>
+              {image} {title}
             </option>
           );
         })}

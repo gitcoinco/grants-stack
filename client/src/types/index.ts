@@ -149,7 +149,11 @@ export type Round = {
 export type ProjectOption = {
   id: string | undefined;
   title?: string;
-  icon?: any;
+  chainInfo?: {
+    chainId: number;
+    chainName: string;
+    icon?: any;
+  };
 };
 
 export interface RoundApplication {

@@ -17,7 +17,7 @@ import {
   RoundApplicationMetadata,
 } from "../../types";
 import { getProjectURIComponents } from "../../utils/utils";
-import { getNetworkIcon } from "../../utils/wallet";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
@@ -149,13 +149,18 @@ export default function Form({
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
       const projectChainIconUri = getNetworkIcon(Number(chainId));
+      const chainName = networkPrettyName(Number(chainId));
       return {
         id,
         title: props.allProjectMetadata[id]?.metadata?.title,
-        icon: projectChainIconUri,
+        chainInfo: {
+          chainId: Number(chainId),
+          icon: projectChainIconUri,
+          chainName,
+        },
       };
     });
-    currentOptions.unshift({ id: undefined, title: "" });
+    currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
 
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
