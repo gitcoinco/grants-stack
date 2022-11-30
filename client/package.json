@@ -46,6 +46,7 @@
     "react-redux": "^7.2.8",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.6.1",
     "redux-thunk": "^2.4.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

@@ -1,6 +1,7 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
+// import Select, { components, ControlProps } from "react-select";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
@@ -206,6 +207,24 @@ type SelectInputProps = InputProps & {
   options: ProjectOption[];
 };
 
+// const CustomOption = ({ props }: { props: any }) =>
+//   props ?
+//     <div {...props}></div>
+//   : null;
+
+// function Control({ children, ...props }: ControlProps<any>) {
+//   const style = { cursor: "pointer" };
+
+//   return (
+//     <components.Control {...props}>
+//       <span style={style}>
+//         🔥
+//       </span>
+//       {children}
+//     </components.Control>
+//   );
+// }
+
 export function Select({
   label,
   info,
@@ -231,19 +250,54 @@ export function Select({
         {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
-      {/* <div>
-        <ul className="flex">
-          {options.map((option) => {
-            const { icon, title, id } = option;
-            const image = (<div><img src={icon} alt={title} className="w-6 h-6" /></div>);
-            return (
-              <li className="flex flex-col" key={id}>
-                {image} {title}
-              </li>
-            );
-          })}
-        </ul>
-      </div> */}
+      <select
+        id={name}
+        name={name}
+        disabled={disabled}
+        className={classNames("w-full", {
+          "bg-transparent": !disabled,
+        })}
+        onChange={(e) => changeHandler(e)}
+        defaultValue={defaultValue}
+      >
+        {options.map((option) => (
+          <option key={`key-${option.id}`} value={option.id}>
+            {option.title}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function CustomSelect({
+  label,
+  info,
+  name,
+  options,
+  disabled,
+  changeHandler,
+  required,
+  encrypted,
+  defaultValue,
+}: SelectInputProps) {
+  return (
+    <div className="relative">
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
+          {required ? requiredSpan : optionalSpan}
+        </div>
+        {encrypted && encryptionTooltip}
+      </div>
+      <legend>{info}</legend>
+
+      {/* WIP Custom Select */}
+      {/* <Select components={{ Control }} options={options} /> */}
 
       <select
         id={name}
@@ -256,16 +310,12 @@ export function Select({
         defaultValue={defaultValue}
       >
         {options.map((option) => {
-          const { title, id } = option;
-          const icon = option.chainInfo?.icon;
-          const image = (
-            <div>
-              <img src={icon} alt={title} className="w-6 h-6" />
-            </div>
-          );
+          const { chainInfo, title, id } = option;
+          const chainName = chainInfo?.chainName ?? null;
+          const displayValue = chainName ? `${title} (${chainName})` : title;
           return (
-            <option key={`key-${id}`} value={icon}>
-              {image} {title}
+            <option key={`key-${id}`} value={id}>
+              {displayValue}
             </option>
           );
         })}

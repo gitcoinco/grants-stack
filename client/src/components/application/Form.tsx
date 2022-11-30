@@ -22,7 +22,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
 import {
-  Select,
+  CustomSelect,
   TextArea,
   TextInput,
   TextInputAddress,
@@ -174,7 +174,7 @@ export default function Form({
               return (
                 <>
                   <div className="mt-6 w-full sm:w-1/2 relative">
-                    <Select
+                    <CustomSelect
                       key={input.id}
                       name={`${input.id}`}
                       label={input.question}
