@@ -1,3 +1,4 @@
+// import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { Tooltip } from "@chakra-ui/react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
@@ -18,16 +19,23 @@ const providerId: ProviderID = "ClearTextTwitter";
 const parseHandle = (provider: string) =>
   provider.replace(/ClearTextTwitter#(.*)$/, "$1");
 
+// export const IAM_SERVER =
+//   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
+// const verifier = new PassportVerifier();
+
 export default function Twitter({
   handle,
   verificationComplete,
   verificationError,
   canVerify,
+  vc,
 }: {
   handle: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
+  vc?: VerifiableCredential;
 }) {
   const [complete, setComplete] = useState(false);
   const props = useSelector(
@@ -156,7 +164,11 @@ export default function Twitter({
     };
   });
 
-  if (complete) {
+  const alreadyVerified =
+    vc !== undefined &&
+    vc.credentialSubject.provider === `ClearTextTwitter#${handle}`;
+
+  if (complete || alreadyVerified) {
     return (
       <div className="flex ml-8 mt-14">
         <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />

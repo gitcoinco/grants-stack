@@ -1,5 +1,6 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { ChakraProvider } from "@chakra-ui/react";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import history from "../history";
@@ -31,13 +32,14 @@ export const buildRound = (round: any): Round => ({
 });
 
 export const buildVerifiableCredential = (
-  type: string
+  type: string,
+  handle: string,
 ): VerifiableCredential => ({
   "@context": ["https://www.w3.org/2018/credentials/v1"],
   type: ["VerifiableCredential"],
   credentialSubject: {
     id: "did:pkh:eip155:1:subject",
-    provider: `ClearText${type}#twitter-username-1`,
+    provider: `ClearText${type}#${handle}`,
     hash: "v0.0.0:hash",
     "@context": [
       {
@@ -71,8 +73,8 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
   projectGithub: "project-github-1",
   projectTwitter: "project-twitter-1",
   credentials: {
-    github: buildVerifiableCredential("Github"),
-    twitter: buildVerifiableCredential("Twitter"),
+    github: buildVerifiableCredential("Github", "my-github"),
+    twitter: buildVerifiableCredential("Twitter", "my-twitter"),
   },
   createdAt: 123,
   ...metadata,
@@ -81,9 +83,11 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
 export const renderWrapped = (ui: React.ReactElement, store = setupStore()) => {
   const wrapped = (
     <Provider store={store}>
-      <ReduxRouter store={store} history={history}>
-        {ui}
-      </ReduxRouter>
+      <ChakraProvider resetCSS={false}>
+        <ReduxRouter store={store} history={history}>
+          {ui}
+        </ReduxRouter>
+      </ChakraProvider>
     </Provider>
   );
 
