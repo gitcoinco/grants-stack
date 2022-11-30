@@ -7,7 +7,9 @@
     "build": "npx tsc",
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
+    "migrate": "npx prisma migrate dev --schema=./src/prisma/schema.prisma",
+    "generate": "npx prisma generate --schema=./src/prisma/schema.prisma"
   },
   "devDependencies": {
     "@pulumi/aws-quickstart-aurora-postgres": "^0.0.3",
@@ -15,6 +17,7 @@
     "@types/express": "^4.17.14",
     "@types/node": "^14.18.33",
     "@types/node-fetch": "^2.6.2",
+    "@prisma/client": "^4.7.0",
     "concurrently": "^7.6.0",
     "jest": "^29.3.1",
     "nodemon": "^2.0.20",

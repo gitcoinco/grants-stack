@@ -17,7 +17,9 @@ export type Results = {
 
 export type ProjectMatch = {
   projectId: string;
-  match: number;
+  amount: number;
+  token: string; 
+  roundId: number; 
 };
 
 export type RoundMetadata = {

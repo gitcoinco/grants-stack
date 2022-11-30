@@ -1,16 +1,16 @@
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "../../../../node_modules/prisma-gitcoin"
-// }
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
+}
 
 generator docs {
   provider = "node node_modules/prisma-docs-generator"
-  output = "./docs"
+  output = "../../docs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://root:root@localhost:5432/grants-round?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 model Round {
@@ -18,15 +18,17 @@ model Round {
   chainId            ChainId
   roundId            String
   votingStrategyName VotingStrategy
-  payouts            Payout[]
+  // TODO: Enable when round w/ relationship is implemented
+  // payouts            Payout[]
 }
 
 model Payout {
   id                 Int            @id @default(autoincrement())
   projectId          String
-  amount             String
+  amount             Float
   token              String
-  round              Round          @relation(fields: [roundId], references: [id])
+  // TODO: Invesitagte the foriegn key error here
+  // round              Round          @relation(fields: [roundId], references: [id])
   roundId            Int
 }
 

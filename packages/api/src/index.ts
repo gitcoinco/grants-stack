@@ -8,11 +8,15 @@ import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate,
 } from "./votingStrategies/linearQuadraticFunding";
+import { PrismaClient } from "@prisma/client";
 
 /**
  * Orchestrator function which invokes calculate
  */
 export const calculateHandler = async (body: CalculateParam) => {
+
+  // Prisma 
+  const prisma = new PrismaClient();
 
   // validate request body
   const schema = yup.object().shape({
@@ -33,6 +37,7 @@ export const calculateHandler = async (body: CalculateParam) => {
   }
 
   let results: Results | undefined;
+  let payout: any; 
 
   try {
     // fetch metadata
@@ -49,10 +54,31 @@ export const calculateHandler = async (body: CalculateParam) => {
     }
   } catch {
     // TODO: handle specific error cases
-    return handleResponse(500, "Something went wrong!");
+    return handleResponse(500, "Something went wrong with the calculation!");
+  }
+  
+  if (results && results.distribution.length > 0) {
+    // save the distribution results to the db
+    payout = await prisma.payout.createMany({
+      data: results.distribution
+    });
+  } else {
+    // TODO: handle specific error cases
+    return handleResponse(500, "Something went wrong with saving the distribution!");
   }
 
-  return handleResponse(200, "Calculations ran successfully", results);
+  return handleResponse(200, "Calculations ran successfully", payout);
+
+};
+
+// Fetch all distributions in the db
+export const getAllHandler = async () => {
+
+  const prisma = new PrismaClient();
+  const allDists = await prisma.payout.findMany({});
+
+  return handleResponse(200, "All distributions:", allDists);
+
 };
 
 // export const calculate = new aws.lambda.CallbackFunction<

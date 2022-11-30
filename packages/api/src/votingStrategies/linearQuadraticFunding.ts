@@ -112,7 +112,9 @@ export const calculateHandler = async (
     projectMatchDistributions.push({
       projectId:
         project.contributions[Object.keys(project.contributions)[0]].projectId,
-      match,
+      amount: match,
+      token: "0xffftest", // TODO: Tie in Token Address
+      roundId: 0 // TODO: Tie in the round ID
     } as ProjectMatch);
     totalMatch += match;
   });
@@ -127,7 +129,7 @@ export const calculateHandler = async (
     const ratio = totalProjectPoolAmount / totalMatch;
     // calculate the match distribution based on the ratio
     projectMatchDistributions.forEach((projectMatch) => {
-      projectMatch.match *= ratio;
+      projectMatch.amount *= ratio;
     });
   }
 

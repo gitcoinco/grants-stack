@@ -1,7 +1,7 @@
 
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { calculateHandler } from "./src/index";
+import { calculateHandler, getAllHandler } from "./src/index";
 import {json} from 'body-parser';
 
 dotenv.config();
@@ -14,11 +14,9 @@ app.listen(port, () => {
   console.log(`⚡️[server]: running on : ${port}`);
 });
 
-
 app.get('/', (req: Request, res: Response) => {
   res.json({ test : "it works"});
 });
-
 
 app.post('/calculate', async (req: Request, res: Response) => {
 
@@ -30,6 +28,11 @@ app.post('/calculate', async (req: Request, res: Response) => {
 
   res.json(response);
 });
+
+app.get('/all', async (req: Request, res: Response) => {
+  const response = await getAllHandler(); 
+  res.json(response); 
+})
 
 
 // app.post("/calculate/", async (request, response) => {

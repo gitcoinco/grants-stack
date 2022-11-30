@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-
   # web:
   #   build:
   #     context: ./
@@ -11,12 +10,15 @@ services:
   #     - postgres
   #   volumes:
   #     - .:/src
-  #   command: npm run dev
+  #   command: npm run generate && npm run migrate && npm run dev
   #   ports:
   #     - "8000:8000"
   #   environment:
   #     NODE_ENV: development
   #     DEBUG: nodejs-docker-express:*
+  #     DB_HOST: host.docker.internal
+  #     DB_USER: root
+  #     DB_PASS: root
 
   postgres:
     image: postgres:14.1-alpine
@@ -33,12 +35,12 @@ services:
       # Standard port for PostgreSQL databases
       - "5432:5432"
 
-  # pgadmin-compose:
-  #   image: dpage/pgadmin4
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: "placeholder@example.com"
-  #     PGADMIN_DEFAULT_PASSWORD: "fakepassword123!"
-  #   ports:
-  #     - "16543:80"
-  #   depends_on:
-  #     - postgres
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "placeholder@example.com"
+      PGADMIN_DEFAULT_PASSWORD: "fakepassword123!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
