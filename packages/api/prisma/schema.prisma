@@ -1,0 +1,50 @@
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../../../../node_modules/prisma-gitcoin"
+// }
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output = "./docs"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://root:root@localhost:5432/grants-round?schema=public"
+}
+
+model Round {
+  id                 Int            @id @default(autoincrement())
+  chainId            ChainId
+  roundId            String
+  votingStrategyName VotingStrategy
+  payouts            Payout[]
+}
+
+model Payout {
+  id                 Int            @id @default(autoincrement())
+  projectId          String
+  amount             String
+  token              String
+  round              Round          @relation(fields: [roundId], references: [id])
+  roundId            Int
+}
+
+enum ChainId {
+  GOERLI
+  OPTIMISM_MAINNET
+  FANTOM_MAINNET
+  FANTOM_TESTNET
+  LOCAL_ROUND_LAB
+}
+
+enum VotingStrategy {
+  LINEAR_QUADRATIC_FUNDING
+  QUADRATIC_VOTING
+}
+
+//   GOERLI_CHAIN_ID = "5",
+//   OPTIMISM_MAINNET_CHAIN_ID = "10",
+//   FANTOM_MAINNET_CHAIN_ID = "250",
+//   FANTOM_TESTNET_CHAIN_ID = "4002",
+//   LOCAL_ROUND_LAB = "3", // TODO: remove this later
