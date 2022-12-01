@@ -17,12 +17,17 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 ```
 .
+├── prisma
+│   ├── schema.prisma                   # Table schema
+│   ├── migrations                      # DB migrations
 ├── src
 │   ├── votingStrategies
 │       ├── linearQuadraticFunding.ts   # fetching QF votes + compute matching via linear QF
 │   ├── utils.ts                        # Helper functions
-│   ├── index.ts                        # Orchestrator Logic
-├── index.ts                            # Routes
+│   ├── handlers.ts                     # Orchestrator Logic
+│   ├── types.ts                        # Types Definition
+│   ├── routes.ts                       # Routes
+├── index.ts                            # node server configuration
 ├── Pulumi.dev.yaml                     # Pulumi AWS configuration
 ├── Pulumi.yaml                         # Pulumi configuration
 ├── package.json                        # Package configuration
@@ -50,17 +55,19 @@ This package consists of
 
 To run this application locally:
 
-1. Start the docker container to start the posgres DB
+1. Generate the `.env` file by cloning `env.sample`
+
+2. Start the docker container to start the posgres DB
 ```shell
 docker compose up
 ```
 
-2. On a seperate terminal, start the node server
+3. On a seperate terminal, start the node server
 ```shell
 npm run dev
 ```
 
-3. Run the migrations to create tables
+4. Run the migrations to create tables
 ```shell
 npm run prisma:migrate
 ```
