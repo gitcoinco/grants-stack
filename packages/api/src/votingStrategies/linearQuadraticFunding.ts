@@ -4,7 +4,7 @@ import {
   ProjectMatch,
   RoundMetadata,
   ChainId,
-} from "../../types";
+} from "../types";
 import { fetchFromGraphQL } from "../utils";
 
 /**
@@ -112,7 +112,8 @@ export const calculateHandler = async (
     projectMatchDistributions.push({
       projectId:
         project.contributions[Object.keys(project.contributions)[0]].projectId,
-      match,
+      amount: match,
+      token: metadata.token,
     } as ProjectMatch);
     totalMatch += match;
   });
@@ -127,11 +128,9 @@ export const calculateHandler = async (
     const ratio = totalProjectPoolAmount / totalMatch;
     // calculate the match distribution based on the ratio
     projectMatchDistributions.forEach((projectMatch) => {
-      projectMatch.match *= ratio;
+      projectMatch.amount *= ratio;
     });
   }
-
-  // TODO: Save into DB
 
   return {
     distribution: projectMatchDistributions,

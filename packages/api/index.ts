@@ -1,17 +1,17 @@
+import express, { Express } from "express";
+import dotenv from "dotenv";
+import routes from "./src/routes"
 
-import * as apigateway from "@pulumi/aws-apigateway";
-import { calculate, test } from "./src/index";
+dotenv.config();
 
-// A REST API to route requests to HTML content and the Lambda function
-const api = new apigateway.RestAPI("api", {
-  routes: [
-    { path: "/", method: "GET", eventHandler: test },
-    { path: "/calculate", method: "POST", eventHandler: calculate },
-  ]
+// TODO: include necessary middlewares for prod deploy
+
+const app: Express = express();
+const port = process.env.PORT;
+app.use(express.json());
+
+app.listen(port, () => {
+  console.log(`⚡️[server]: running on : ${port}`);
 });
 
-// The URL at which the REST API will be served.
-export const url = api.url;
-
-// Invoke this with:
-// $ pulumi logs -f
+app.use(routes)

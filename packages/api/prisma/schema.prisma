@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output = "./docs"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Round {
+  id                 Int            @id @default(autoincrement())
+  chainId            ChainId
+  roundId            String         @unique
+  votingStrategyName VotingStrategy
+  payouts            Payout[]
+
+  @@map("round")
+}
+
+model Payout {
+  id                 Int            @id @default(autoincrement())
+  projectId          String
+  amount             Float
+  token              String
+  round              Round          @relation(fields: [roundId], references: [id])
+  roundId            Int
+
+  @@unique([projectId, roundId], name: "payoutIdentifier")
+  @@map("payout")
+}
+
+
+enum ChainId {
+  GOERLI
+  OPTIMISM_MAINNET
+  FANTOM_MAINNET
+  FANTOM_TESTNET
+  LOCAL_ROUND_LAB
+}
+
+enum VotingStrategy {
+  LINEAR_QUADRATIC_FUNDING
+  QUADRATIC_VOTING
+}

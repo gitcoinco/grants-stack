@@ -23,7 +23,7 @@ export function handleVotingContractCreated(event: VotingContractCreatedEvent): 
   votingStrategy = new VotingStrategy(votingStrategyContractAddress.toHex());
 
   // set votingStrategy entity fields
-  votingStrategy.strategyName = "quadraticFunding";
+  votingStrategy.strategyName = "LINEAR_QUADRATIC_FUNDING";
   votingStrategy.strategyAddress = event.params.votingImplementation.toHex();
 
   votingStrategy.save();

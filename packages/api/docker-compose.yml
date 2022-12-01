@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  # web:
+  #   build:
+  #     context: ./
+  #     target: dev
+  #   depends_on:
+  #     # Our app does not work without our database
+  #     # so this ensures our database is loaded first
+  #     - postgres
+  #   volumes:
+  #     - .:/src
+  #   command: npm run generate && npm run migrate && npm run dev
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     NODE_ENV: development
+  #     DEBUG: nodejs-docker-express:*
+  #     DB_HOST: host.docker.internal
+  #     DB_USER: root
+  #     DB_PASS: root
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      # You can set the value of environment variables
+      # in your docker-compose.yml file
+      # Our Node app will use these to connect
+      # to the database
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=grants-round
+    ports:
+      # Standard port for PostgreSQL databases
+      - "5432:5432"
+
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "placeholder@example.com"
+      PGADMIN_DEFAULT_PASSWORD: "fakepassword123!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres
