@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { ChainId, RoundMetadata } from "../types";
+import { ChainId, RoundMetadata } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network

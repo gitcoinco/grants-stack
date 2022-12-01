@@ -1,5 +1,5 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-import { ChainId } from "../../types";
+import { ChainId } from "../types";
 import { fetchFromIPFS, fetchFromGraphQL} from "../utils";
 enableFetchMocks();
 

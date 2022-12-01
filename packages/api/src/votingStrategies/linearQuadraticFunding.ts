@@ -4,7 +4,7 @@ import {
   ProjectMatch,
   RoundMetadata,
   ChainId,
-} from "../../types";
+} from "../types";
 import { fetchFromGraphQL } from "../utils";
 
 /**
