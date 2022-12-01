@@ -1,5 +1,6 @@
 import * as yup from "yup";
-import { CalculateParam, ChainId, Results } from "./types";
+import { Request, Response } from "express";
+import { ChainId, Results } from "./types";
 import { fetchRoundMetadata, handleResponse } from "./utils";
 import {
   fetchVotesHandler as linearQFFetchVotes,
@@ -12,7 +13,7 @@ const prisma = new PrismaClient();
 /**
  * Orchestrator function which invokes calculate
  */
-export const calculateHandler = async (body: CalculateParam) => {
+export const calculateHandler = async (req: Request, res: Response) => {
   // validate request body
   const schema = yup.object().shape({
     chainId: yup.mixed<ChainId>().oneOf(Object.values(ChainId)).required(),
@@ -26,9 +27,9 @@ export const calculateHandler = async (body: CalculateParam) => {
   });
 
   try {
-    await schema.validate(body);
+    await schema.validate(req.body);
   } catch (err: any) {
-    return handleResponse(400, err.errors[0]);
+    handleResponse(res, 400, err.errors[0]);
   }
 
   let results: Results | undefined;
@@ -36,20 +37,20 @@ export const calculateHandler = async (body: CalculateParam) => {
 
   try {
     // fetch metadata
-    const metadata = await fetchRoundMetadata(body.chainId, body.roundId);
+    const metadata = await fetchRoundMetadata(req.body.chainId, req.body.roundId);
 
     const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
       case "quadraticFunding":
-        const votes = await linearQFFetchVotes(body.chainId, votingStrategyId);
+        const votes = await linearQFFetchVotes(req.body.chainId, votingStrategyId);
         results = await linearQFCalculate(metadata, votes);
         break;
     }
   } catch {
     // TODO: handle specific error cases
-    return handleResponse(500, "Something went wrong with the calculation!");
+    handleResponse(res, 500, "Something went wrong with the calculation!");
   }
 
   if (results && results.distribution.length > 0) {
@@ -59,18 +60,19 @@ export const calculateHandler = async (body: CalculateParam) => {
     });
   } else {
     // TODO: handle specific error cases
-    return handleResponse(
+    handleResponse(
+      res,
       500,
       "Something went wrong with saving the distribution!"
     );
   }
 
-  return handleResponse(200, "Calculations ran successfully", payout);
+  handleResponse(res, 200, "Calculations ran successfully", payout);
 };
 
 // Fetch all distributions in the db
-export const getAllHandler = async () => {
+export const getAllHandler = async (req: Request, res: Response) => {
   const allDists = await prisma.payout.findMany({});
 
-  return handleResponse(200, "All distributions:", allDists);
+  handleResponse(res, 200, "All distributions:", allDists);
 };

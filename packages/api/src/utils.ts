@@ -1,3 +1,4 @@
+import { Response } from "express";
 import fetch from "node-fetch";
 import { ChainId, RoundMetadata } from "./types";
 
@@ -131,22 +132,20 @@ export const fetchRoundMetadata = async (
 };
 
 export const handleResponse = (
+  res: Response,
   code: number,
   message: string,
   body?: any
-): { statusCode: number; body: string } => {
+) => {
   let success: boolean = false;
 
   if (code >= 200 && code < 400) {
     success = true;
   }
 
-  return {
-    statusCode: code,
-    body: JSON.stringify({
-      success,
-      message,
-      data: body ?? {},
-    }),
-  };
+  res.json({
+    success,
+    message,
+    data: body ?? {},
+  });
 };
