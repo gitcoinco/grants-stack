@@ -1,47 +1,51 @@
 version: '3.8'
-services:
-  # web:
-  #   image: node:18-slim
-  #   build:
-  #     context: ./
-  #     target: dev
-  #   depends_on:
-  #     # Our app does not work without our database
-  #     # so this ensures our database is loaded first
-  #     - postgres
-  #   volumes:
-  #     - .:/src
-  #   command: npm run prisma:generate && npm run prisma:migrate && npm run dev
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     NODE_ENV: development
-  #     DEBUG: nodejs-docker-express:*
-  #     DB_HOST: host.docker.internal
-  #     DB_USER: root
-  #     DB_PASS: root
 
+services:
+
+  # Load the postgres db
   postgres:
     image: postgres:14.1-alpine
     restart: always
-    environment:
-      # You can set the value of environment variables
-      # in your docker-compose.yml file
-      # Our Node app will use these to connect
-      # to the database
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
+    env_file:
+      - .env
     ports:
-      # Standard port for PostgreSQL databases
       - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
 
-  pgadmin-compose:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "placeholder@example.com"
-      PGADMIN_DEFAULT_PASSWORD: "fakepassword123!"
-    ports:
-      - "16543:80"
+  # Ephemeral db migration step
+  migration:
+    image: node:18-slim
+    build:
+      context: ./
+      target: dev
+      dockerfile: Dockerfile
+    depends_on: 
+      postgres: 
+        condition: service_healthy
+    command: npm run prisma:migrate
+
+  # Start the server
+  web:
+    image: node:18-slim
+    build:
+      context: ./
+      target: dev
+      dockerfile: Dockerfile
     depends_on:
-      - postgres
+      - migration
+    command: npm run dev
+    ports:
+      - "8000:8000"
+    env_file: 
+      - .env
+    links:
+      - postgres 
+
+volumes:
+  postgres: {}

@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y openssl libssl-dev
 
 WORKDIR /src
 COPY package*.json /
+COPY prisma ./prisma/
 
 EXPOSE 8000
 
