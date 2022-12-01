@@ -7,7 +7,7 @@ import { chains } from "../contracts/deployments";
 
 const ftmTestnetIcon = "../assets/ftm-testnet.png";
 const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
-const optimismIcon = "../assets/optimism.png";
+const optimismIcon = "../assets/OPIcon.png";
 const ethIcon = "../assets/eth-diamond-glyph.png";
 
 export function shortAddress(address: string): string {

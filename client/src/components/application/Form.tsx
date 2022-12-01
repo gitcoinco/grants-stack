@@ -16,11 +16,13 @@ import {
   Round,
   RoundApplicationMetadata,
 } from "../../types";
+import { getProjectURIComponents } from "../../utils/utils";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
 import {
-  Select,
+  CustomSelect,
   TextArea,
   TextInput,
   TextInputAddress,
@@ -142,14 +144,23 @@ export default function Form({
     handleSubmitApplication();
   };
 
+  // todo: add the chain logo for each project
   useEffect(() => {
-    const currentOptions = props.projectIDs.map(
-      (id): ProjectOption => ({
+    const currentOptions = props.projectIDs.map((id): ProjectOption => {
+      const { chainId } = getProjectURIComponents(id);
+      const projectChainIconUri = getNetworkIcon(Number(chainId));
+      const chainName = networkPrettyName(Number(chainId));
+      return {
         id,
         title: props.allProjectMetadata[id]?.metadata?.title,
-      })
-    );
-    currentOptions.unshift({ id: undefined, title: "" });
+        chainInfo: {
+          chainId: Number(chainId),
+          icon: projectChainIconUri,
+          chainName,
+        },
+      };
+    });
+    currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
 
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
@@ -163,7 +174,7 @@ export default function Form({
               return (
                 <>
                   <div className="mt-6 w-full sm:w-1/2 relative">
-                    <Select
+                    <CustomSelect
                       key={input.id}
                       name={`${input.id}`}
                       label={input.question}
