@@ -79,12 +79,11 @@ export const calculateHandler = async (req: Request, res: Response) => {
     // TODO: discuss if hasSaturated should be stored?
 
     if (results) {
+
       // save the distribution results to the db
-      // TODO: figure out a way to do bulk insert
-      for(let i = 0; i <= results.distribution.length; i++) {
-
-        const match = results.distribution[i];
-
+      // TODO: figure out if there is a better way to batch trasnactions
+      for (let i = 0; i <= results.distribution.length; i++) {
+        const match = results.distribution[i]; 
         await prisma.payout.upsert({
           where: {
             payoutIdentifier: {
@@ -101,9 +100,10 @@ export const calculateHandler = async (req: Request, res: Response) => {
             projectId: match.projectId,
             roundId: round.id,
           },
-        });
-      };
+        }); 
+      }
     }
+
   } catch (err) {
     handleResponse(res, 500, err as string);
   }
