@@ -62,7 +62,7 @@ function Card({ projectId }: { projectId: string }) {
           }}
           alt="project banner"
         />
-        <div className="p-6 relative text-start">
+        <div className="p-6 relative">
           <div className="flex w-full justify-start absolute -top-6">
             <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
               <img
@@ -79,7 +79,7 @@ function Card({ projectId }: { projectId: string }) {
           {props.loading ? (
             <TextLoading />
           ) : (
-            <div className="flex flex-col col-span-1 justify-between pt-4">
+            <div>
               <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
@@ -89,7 +89,7 @@ function Card({ projectId }: { projectId: string }) {
             </div>
           )}
         </div>
-        <div className="flex flex-col col-span-1 justify-between w-fit min-h-[16px]">
+        <div className="w-fit">
           <Badge
             className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
             borderRadius="full"
