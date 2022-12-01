@@ -4,6 +4,8 @@ import routes from "./src/routes"
 
 dotenv.config();
 
+// TODO: include necessary middlewares for prod deploy
+
 const app: Express = express();
 const port = process.env.PORT;
 app.use(express.json());

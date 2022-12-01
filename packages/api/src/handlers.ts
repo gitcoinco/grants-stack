@@ -1,12 +1,12 @@
 import * as yup from "yup";
 import { Request, Response } from "express";
 import { ChainId, Results } from "./types";
-import { fetchRoundMetadata, handleResponse } from "./utils";
+import { fetchRoundMetadata, getChainVerbose, handleResponse } from "./utils";
 import {
   fetchVotesHandler as linearQFFetchVotes,
   calculateHandler as linearQFCalculate,
 } from "./votingStrategies/linearQuadraticFunding";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, VotingStrategy } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -37,42 +37,71 @@ export const calculateHandler = async (req: Request, res: Response) => {
 
   try {
     // fetch metadata
-    const metadata = await fetchRoundMetadata(req.body.chainId, req.body.roundId);
+    const metadata = await fetchRoundMetadata(
+      req.body.chainId,
+      req.body.roundId
+    );
 
     const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
+    // create round if round does not exist
+    const chainId = getChainVerbose(req.body.chainId);
+    const upsertRound = await prisma.round.upsert({
+      where: {
+        roundId: req.body.roundId,
+      },
+      update: {
+        chainId,
+      },
+      create: {
+        chainId,
+        roundId: req.body.roundId,
+        votingStrategyName: <VotingStrategy>strategyName,
+      },
+    });
+
+    console.log(upsertRound);
+
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
-      case "quadraticFunding":
-        const votes = await linearQFFetchVotes(req.body.chainId, votingStrategyId);
+      case "LINEAR_QUADRATIC_FUNDING":
+        const votes = await linearQFFetchVotes(
+          req.body.chainId,
+          votingStrategyId
+        );
         results = await linearQFCalculate(metadata, votes);
         break;
     }
-  } catch {
-    // TODO: handle specific error cases
-    handleResponse(res, 500, "Something went wrong with the calculation!");
+
+    console.log(results);
+
+    if (results && results.distribution.length > 0) {
+      // save the distribution results to the db
+      // TODO: figure out a way to do bulk insert
+      results.distribution.forEach(async (match) => {
+        await prisma.payout.upsert({
+          where: {
+            payoutIdentifier: {
+              projectId: match.projectId,
+              roundId: upsertRound.id,
+            },
+          },
+          update: {
+            amount: match.amount,
+          },
+          create: {
+            amount: match.amount,
+            token: match.token,
+            projectId: match.projectId,
+            roundId: upsertRound.id,
+          },
+        });
+      });
+    }
+  } catch (err) {
+    handleResponse(res, 500, err as string);
   }
 
-  if (results && results.distribution.length > 0) {
-    // save the distribution results to the db
-    payout = await prisma.payout.createMany({
-      data: results.distribution,
-    });
-  } else {
-    // TODO: handle specific error cases
-    handleResponse(
-      res,
-      500,
-      "Something went wrong with saving the distribution!"
-    );
-  }
-
-  handleResponse(res, 200, "Calculations ran successfully", payout);
-};
-
-// Fetch all distributions in the db
-export const getAllHandler = async (req: Request, res: Response) => {
-  const allDists = await prisma.payout.findMany({});
-
-  handleResponse(res, 200, "All distributions:", allDists);
+  handleResponse(res, 200, "Calculations ran successfully", results);
+  return;
 };

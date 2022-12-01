@@ -8,8 +8,9 @@
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
-    "migrate": "npx prisma migrate dev --schema=./src/prisma/schema.prisma",
-    "generate": "npx prisma generate --schema=./src/prisma/schema.prisma"
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:generate": "npx prisma generate",
+    "prisma:docs": "npx prisma-docs-generator serve"
   },
   "devDependencies": {
     "@prisma/client": "^4.7.0",

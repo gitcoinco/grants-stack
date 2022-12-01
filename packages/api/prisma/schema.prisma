@@ -5,7 +5,7 @@ generator client {
 
 generator docs {
   provider = "node node_modules/prisma-docs-generator"
-  output = "../../docs/prisma"
+  output = "./docs"
 }
 
 datasource db {
@@ -16,10 +16,11 @@ datasource db {
 model Round {
   id                 Int            @id @default(autoincrement())
   chainId            ChainId
-  roundId            String
+  roundId            String         @unique
   votingStrategyName VotingStrategy
-  // TODO: Enable when round w/ relationship is implemented
-  // payouts            Payout[]
+  payouts            Payout[]
+
+  @@map("round")
 }
 
 model Payout {
@@ -27,10 +28,13 @@ model Payout {
   projectId          String
   amount             Float
   token              String
-  // TODO: Invesitagte the foriegn key error here
-  // round              Round          @relation(fields: [roundId], references: [id])
+  round              Round          @relation(fields: [roundId], references: [id])
   roundId            Int
+
+  @@unique([projectId, roundId], name: "payoutIdentifier")
+  @@map("payout")
 }
+
 
 enum ChainId {
   GOERLI

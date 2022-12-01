@@ -113,8 +113,7 @@ export const calculateHandler = async (
       projectId:
         project.contributions[Object.keys(project.contributions)[0]].projectId,
       amount: match,
-      token: "0xffftest", // TODO: Tie in Token Address
-      roundId: 0 // TODO: Tie in the round ID
+      token: metadata.token,
     } as ProjectMatch);
     totalMatch += match;
   });
@@ -132,8 +131,6 @@ export const calculateHandler = async (
       projectMatch.amount *= ratio;
     });
   }
-
-  // TODO: Save into DB
 
   return {
     distribution: projectMatchDistributions,

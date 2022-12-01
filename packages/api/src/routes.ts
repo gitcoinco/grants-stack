@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { calculateHandler, getAllHandler } from "./handlers";
+import { calculateHandler } from "./handlers";
 
 const router = Router();
 
@@ -9,6 +9,4 @@ router.get("/", (req: Request, res: Response) => {
 
 router.post("/calculate", calculateHandler);
 
-router.get("/all", getAllHandler);
-
-export default router
+export default router;
