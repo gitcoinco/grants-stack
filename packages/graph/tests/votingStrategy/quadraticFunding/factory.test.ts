@@ -47,7 +47,7 @@ describe("handleVotingContractCreated", () => {
     assert.assertNotNull(votingStrategy);
     assert.entityCount("VotingStrategy", 1);
   
-    assert.stringEquals(votingStrategy!.strategyName, "quadraticFunding");
+    assert.stringEquals(votingStrategy!.strategyName, "LINEAR_QUADRATIC_FUNDING");
     assert.stringEquals(votingStrategy!.strategyAddress, votingImplementation.toHex());
     assert.stringEquals(votingStrategy!.id, votingContractAddress.toHex());
   });
