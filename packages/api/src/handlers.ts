@@ -32,7 +32,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
   try {
     await schema.validate(req.body);
   } catch (err: any) {
-    handleResponse(res, 400, err.errors[0]);
+    return handleResponse(res, 400, err.errors[0]);
   }
 
   let results: Results | undefined;
@@ -76,14 +76,19 @@ export const calculateHandler = async (req: Request, res: Response) => {
         break;
     }
 
-    // TODO: discuss if hasSaturated should be stored?
-
     if (results) {
+
+      // update result is round saturation has changed
+      if (round.isSaturated != results.isSaturated) {
+        await prisma.round.update({
+          where: { id: round.id },
+          data: { isSaturated:  results.isSaturated },
+        })
+      }
 
       // save the distribution results to the db
       // TODO: figure out if there is a better way to batch trasnactions
-      for (let i = 0; i <= results.distribution.length; i++) {
-        const match = results.distribution[i]; 
+      results.distribution.forEach(async match => {
         await prisma.payout.upsert({
           where: {
             payoutIdentifier: {
@@ -100,15 +105,15 @@ export const calculateHandler = async (req: Request, res: Response) => {
             projectId: match.projectId,
             roundId: round.id,
           },
-        }); 
+        });
       }
-    }
+    )}
 
   } catch (err) {
-    handleResponse(res, 500, err as string);
+    return handleResponse(res, 500, err as string);
   }
 
-  handleResponse(res, 200, "Calculations ran successfully", results);
+  return handleResponse(res, 200, "Calculations ran successfully", results);
 };
 
 

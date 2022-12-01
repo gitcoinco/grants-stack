@@ -12,7 +12,7 @@ export enum ChainId {
 
 export type Results = {
   distribution: ProjectMatch[];
-  hasSaturated?: boolean;
+  isSaturated?: boolean;
 };
 
 export type ProjectMatch = {

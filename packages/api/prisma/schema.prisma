@@ -19,6 +19,7 @@ model Round {
   roundId            String         @unique
   votingStrategyName VotingStrategy
   payouts            Payout[]
+  isSaturated        Boolean        @default(false)
 
   @@map("round")
 }
@@ -35,7 +36,9 @@ model Payout {
   @@map("payout")
 }
 
-
+// ========= //
+// = ENUMS = //
+// ========= //
 enum ChainId {
   GOERLI
   OPTIMISM_MAINNET
@@ -43,6 +46,7 @@ enum ChainId {
   FANTOM_TESTNET
   LOCAL_ROUND_LAB
 }
+
 
 enum VotingStrategy {
   LINEAR_QUADRATIC_FUNDING
