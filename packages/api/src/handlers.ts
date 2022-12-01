@@ -12,6 +12,9 @@ const prisma = new PrismaClient();
 
 /**
  * Orchestrator function which invokes calculate
+ *
+ * @param req : Request
+ * @param res : Response
  */
 export const calculateHandler = async (req: Request, res: Response) => {
   // validate request body
@@ -73,10 +76,15 @@ export const calculateHandler = async (req: Request, res: Response) => {
         break;
     }
 
-    if (results && results.distribution.length > 0) {
+    // TODO: discuss if hasSaturated should be stored?
+
+    if (results) {
       // save the distribution results to the db
       // TODO: figure out a way to do bulk insert
-      results.distribution.forEach(async (match) => {
+      for(let i = 0; i <= results.distribution.length; i++) {
+
+        const match = results.distribution[i];
+
         await prisma.payout.upsert({
           where: {
             payoutIdentifier: {
@@ -94,11 +102,57 @@ export const calculateHandler = async (req: Request, res: Response) => {
             roundId: round.id,
           },
         });
-      });
+      };
     }
   } catch (err) {
     handleResponse(res, 500, err as string);
   }
 
   handleResponse(res, 200, "Calculations ran successfully", results);
+};
+
+
+/**
+ * Handles fetching round matches
+ *
+ * @param req : Request
+ * @param res : Response
+ */
+export const fetchMatchingHandler = async (req: Request, res: Response) => {
+  let results;
+
+  try {
+
+    const roundId = req.query.roundId?.toString();
+    const projectId = req.query.projectId?.toString();
+
+    const round = await prisma.round.findFirst({
+      where: {
+        roundId: roundId
+      }
+    });
+
+    if (roundId && round) {
+      if (projectId) {
+
+        results = await prisma.payout.findFirst({
+          where: {
+            roundId: round.id,
+            projectId: projectId
+          }
+        });
+      } else {
+        results = await prisma.payout.findMany({
+          where: {
+            roundId: round.id
+          }
+        });
+      }
+    }
+
+  } catch (err) {
+    handleResponse(res, 500, err as string);
+  }
+
+  handleResponse(res, 200, "fetched info sucessfully", results);
 };

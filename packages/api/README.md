@@ -40,7 +40,7 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 | endpoint            | request method | body                                                                                | params                              |
 |---------------------|----------------|-------------------------------------------------------------------------------------|-------------------------------------|
 | /calculate          | POST           | {   "chainId" : "3",     "roundId" : "0xcef1772dd6764c95f14c26b25e8f012c072c5f77" } |                  -                  |
-| /fetchRoundMatching | GET            |                                   -                                                 | roundId: string, projectId?: string |
+| /fetch-matching     | GET            |                                   -                                                 | roundId: string, projectId?: string |
 |                     |                |                                                                                     |                                     |
 
 
