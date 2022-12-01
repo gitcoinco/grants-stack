@@ -2,7 +2,7 @@
 
 This package is pulumi configured app which offers API / endpoints to:
 
-- calculate the matching distribution for a given round based on the voting strategy   
+- calculate the matching distribution for a given round based on the voting strategy
 - store the results of a calculations
 - return the latest distribution of funds within the round
 - return a specifc project's matching amount within a round
@@ -29,14 +29,49 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 └── README.md
 ```
 
+
+### Endpoints
+
+| endpoint            | request method | body                                                                                | params                              |
+|---------------------|----------------|-------------------------------------------------------------------------------------|-------------------------------------|
+| /calculate          | POST           | {   "chainId" : "3",     "roundId" : "0xcef1772dd6764c95f14c26b25e8f012c072c5f77" } |                  -                  |
+| /fetchRoundMatching | GET            |                                   -                                                 | roundId: string, projectId?: string |
+|                     |                |                                                                                     |                                     |
+
+
+
 ### Development
 
-#### Local development with Docker
-```bash
-docker compose up # will build and start the docker container
+This package consists of
+
+- an express node server
+- prisma (ORM) for defining schema and CRUD queries
+- posgres DB
+
+To run this application locally:
+
+1. Start the docker container to start the posgres DB
+```shell
+docker compose up
 ```
 
-- Install Pulumi and login into the account via the console
-- Ensure your `AWS` env are setup
-- Once your changes are done -> roll them onto the pulumi server using `pulumi up`
-- If deploy crashes midway, before running `pulumi up`, run `pulumi refresh` to clean previous incomplete deploy
+2. On a seperate terminal, start the node server
+```shell
+npm run dev
+```
+
+3. Run the migrations to create tables
+```shell
+npm run prisma:migrate
+```
+
+The node server will run on `http://localhost:8000/`
+
+
+Optionally, to generate docs
+```shell
+npm run prisma:generate # generate docs
+npm run prisma:docs     # view generated docs
+```
+
+The doc app will run on `http://localhost:5858/`
