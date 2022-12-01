@@ -33,34 +33,34 @@ export const calculateHandler = async (req: Request, res: Response) => {
   }
 
   let results: Results | undefined;
-  let payout: any;
 
   try {
+
+    const roundId = req.body.roundId
+
     // fetch metadata
     const metadata = await fetchRoundMetadata(
       req.body.chainId,
-      req.body.roundId
+      roundId
     );
 
     const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
     // create round if round does not exist
     const chainId = getChainVerbose(req.body.chainId);
-    const upsertRound = await prisma.round.upsert({
+    const round = await prisma.round.upsert({
       where: {
-        roundId: req.body.roundId,
+        roundId: roundId,
       },
       update: {
         chainId,
       },
       create: {
         chainId,
-        roundId: req.body.roundId,
+        roundId,
         votingStrategyName: <VotingStrategy>strategyName,
       },
     });
-
-    console.log(upsertRound);
 
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
@@ -73,8 +73,6 @@ export const calculateHandler = async (req: Request, res: Response) => {
         break;
     }
 
-    console.log(results);
-
     if (results && results.distribution.length > 0) {
       // save the distribution results to the db
       // TODO: figure out a way to do bulk insert
@@ -83,7 +81,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
           where: {
             payoutIdentifier: {
               projectId: match.projectId,
-              roundId: upsertRound.id,
+              roundId: round.id,
             },
           },
           update: {
@@ -93,7 +91,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
             amount: match.amount,
             token: match.token,
             projectId: match.projectId,
-            roundId: upsertRound.id,
+            roundId: round.id,
           },
         });
       });
@@ -103,5 +101,4 @@ export const calculateHandler = async (req: Request, res: Response) => {
   }
 
   handleResponse(res, 200, "Calculations ran successfully", results);
-  return;
 };
