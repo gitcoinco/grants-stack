@@ -72,6 +72,7 @@ const mainnetChains = () => {
   };
 
   return [
+    chain.mainnet,
     chain.optimism,
     fantomMainnet
   ];
