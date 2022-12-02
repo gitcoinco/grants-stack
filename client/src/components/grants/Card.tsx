@@ -52,57 +52,58 @@ function Card({ projectId }: { projectId: string }) {
 
   return (
     <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <Link to={createProjectPath()}>
-        <img
-          className="w-full h-32 object-cover"
-          src={props.bannerImg}
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "./assets/default-project-banner.png";
-          }}
-          alt="project banner"
-        />
-        <div className="p-6 relative">
-          <div className="flex w-full justify-start absolute -top-6">
-            <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
-              <img
-                className="rounded-full"
-                src={props.logoImg}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = "./assets/default-project-logo.png";
-                }}
-                alt="project logo"
-              />
-            </div>
+      <img
+        className="w-full h-32 object-cover"
+        src={props.bannerImg}
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = "./assets/default-project-banner.png";
+        }}
+        alt="project banner"
+      />
+      <div className="flex p-6 relative">
+        <div className="flex w-full justify-between absolute -top-6">
+          <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
+            <img
+              className="rounded-full"
+              src={props.logoImg}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./assets/default-project-logo.png";
+              }}
+              alt="project logo"
+            />
           </div>
-          {props.loading ? (
-            <TextLoading />
-          ) : (
-            <div>
-              <div className="font-semi-bold text-xl min-h-[56px] mb-2 line-clamp-2">
+        </div>
+        {props.loading ? (
+          <TextLoading />
+        ) : (
+          <Link to={createProjectPath()}>
+            <div className="flex flex-col justify-between mt-4">
+              <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
-              <p className="text-gray-700 text-base min-h-[72px] line-clamp-3">
+              <p className="text-gray-700 text-base line-clamp-3">
                 {props.currentProject?.description}
               </p>
             </div>
-          )}
-        </div>
-        <div className="w-fit">
-          <Badge
-            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
-            borderRadius="full"
-          >
-            <Image
-              src={props.projectChainIconUri}
-              alt="chain icon"
-              className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
-            />
-            {props.projectChainName}
-          </Badge>
-        </div>
-      </Link>
+          </Link>
+        )}
+      </div>
+
+      <div className="flex justify-end w-fit mt-auto">
+        <Badge
+          className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
+          borderRadius="full"
+        >
+          <Image
+            src={props.projectChainIconUri}
+            alt="chain icon"
+            className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
+          />
+          {props.projectChainName}
+        </Badge>
+      </div>
     </div>
   );
 }
