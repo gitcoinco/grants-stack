@@ -1,6 +1,12 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, RoundMetadata } from "./types";
+import {
+  ChainId,
+  CoinGeckoPriceResponse,
+  FromTicker,
+  RoundMetadata,
+  ToTicker,
+} from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -45,7 +51,7 @@ export const getChainVerbose = (id: string) => {
     default:
       return "LOCAL_ROUND_LAB";
   }
-}
+};
 
 /**
  * Fetch data from IPFS
@@ -168,3 +174,16 @@ export const handleResponse = (
     data: body ?? {},
   });
 };
+
+export async function getPriceForToken(from: FromTicker, to: ToTicker) {
+  const res: CoinGeckoPriceResponse = await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  ).then((res) => res.json());
+
+  return res;
+}

@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
-import { calculateHandler, fetchMatchingHandler } from "./handlers";
+import {
+  calculateHandler,
+  convertPriceHandler,
+  fetchMatchingHandler,
+} from "./handlers";
 
 const router = Router();
 
@@ -10,5 +14,7 @@ router.get("/", (req: Request, res: Response) => {
 router.post("/calculate", calculateHandler);
 
 router.get("/fetch-matching", fetchMatchingHandler);
+
+router.get("/convert-price", convertPriceHandler);
 
 export default router;
