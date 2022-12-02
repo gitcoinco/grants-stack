@@ -8,7 +8,7 @@ import { ChainId, RoundMetadata } from "./types";
  * @param chainId - The chain ID of the blockchain
  * @returns the subgraph endpoint
  */
-export const getGraphQLEndpoint = async (chainId: ChainId) => {
+export const getGraphQLEndpoint = (chainId: ChainId) => {
   // TODO: the urls should be environment variables
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET:
@@ -53,7 +53,7 @@ export const getChainVerbose = (id: string) => {
  *
  * @param cid - the unique content identifier that points to the data
  */
-export const fetchFromIPFS = (cid: string) => {
+export const fetchFromIPFS = async (cid: string) => {
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
@@ -80,7 +80,7 @@ export const fetchFromGraphQL = async (
   query: string,
   variables: object = {}
 ) => {
-  let endpoint = await getGraphQLEndpoint(chainId);
+  let endpoint = getGraphQLEndpoint(chainId);
 
   return fetch(endpoint, {
     method: "POST",
