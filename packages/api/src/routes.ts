@@ -15,6 +15,6 @@ router.post("/calculate", calculateHandler);
 
 router.get("/fetch-matching", fetchMatchingHandler);
 
-router.get("/convert-price", convertPriceHandler);
+router.post("/convert-price", convertPriceHandler);
 
 export default router;

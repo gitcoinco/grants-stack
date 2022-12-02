@@ -1,12 +1,6 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import {
-  ChainId,
-  CoinGeckoPriceResponse,
-  FromTicker,
-  RoundMetadata,
-  ToTicker,
-} from "./types";
+import { ChainId, ChainName, RoundMetadata } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -175,15 +169,15 @@ export const handleResponse = (
   });
 };
 
-export async function getPriceForToken(from: FromTicker, to: ToTicker) {
-  const res: CoinGeckoPriceResponse = await fetch(
-    "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+export async function getPriceForToken(contract: string, chain: ChainName) {
+  return await fetch(
+    `https://api.coingecko.com/api/v3/coins/${chain}/contract/${contract}`,
     {
       headers: {
         Accept: "application/json",
       },
     }
-  ).then((res) => res.json());
-
-  return res;
+  )
+    .then((res) => res.json())
+    .then((res) => res.market_data.current_price);
 }

@@ -55,11 +55,4 @@ export type QFContributionsByProjectId = {
   };
 };
 
-export type FromTicker = "ethereum" | "usdc" | "gtc" | "dai";
-export type ToTicker = "usd";
-
-export type CoinGeckoPriceResponse = {
-  [coin in FromTicker]: {
-    [fiat in ToTicker]: number;
-  };
-};
+export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
