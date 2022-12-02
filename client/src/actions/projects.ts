@@ -1,4 +1,3 @@
-import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -82,11 +81,6 @@ const projectsLoading = () => ({
 const projectsLoaded = (events: ProjectEventsMap) => ({
   type: PROJECTS_LOADED,
   events,
-});
-
-const projectError = (error: string) => ({
-  type: PROJECTS_ERROR,
-  error,
 });
 
 const projectsUnload = () => ({
@@ -236,7 +230,6 @@ export const loadProjects =
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const { account } = state.web3;
-
     const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
 
     const { projectID, eventList } = extractProjectEvents(
@@ -244,11 +237,9 @@ export const loadProjects =
       project.updatedEvents,
       chainID
     );
-
     if (projectID === "") {
-      dispatch(projectError("No projects found"));
-      datadogRum.addError(new Error("No projects found"));
-      datadogLogs.logger.error("No projects found");
+      // No projects found for this address on this chain
+      // This is not necessarily an error now that we fetch on all chains
       return;
     }
 
@@ -264,6 +255,7 @@ export const loadAllChainsProjects =
     dispatch(projectsLoading());
     const { web3Provider } = global;
     web3Provider?.chains?.forEach((chainID) => {
+      console.log("DASA", chainID);
       dispatch<any>(loadProjects(chainID.id, withMetaData));
     });
   };
