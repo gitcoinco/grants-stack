@@ -255,7 +255,6 @@ export const loadAllChainsProjects =
     dispatch(projectsLoading());
     const { web3Provider } = global;
     web3Provider?.chains?.forEach((chainID) => {
-      console.log("DASA", chainID);
       dispatch<any>(loadProjects(chainID.id, withMetaData));
     });
   };

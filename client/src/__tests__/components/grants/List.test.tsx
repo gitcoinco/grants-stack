@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import { when } from "jest-when";
 import { Store } from "redux";
-import { loadProjects } from "../../../actions/projects";
+import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
 import { checkRoundApplications } from "../../../actions/roundApplication";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import List from "../../../components/grants/List";
@@ -56,14 +56,16 @@ describe("<List />", () => {
     (useLocalStorage as jest.Mock).mockReturnValue([null]);
   });
 
-  describe("useEffect/loadProjects", () => {
+  describe("useEffect/loadAllChainsProjects", () => {
     test("should be called the first time", async () => {
       const store = setupStore();
-      (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+      // (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
       renderWrapped(<List />, store);
 
-      expect(loadProjects).toBeCalledTimes(1);
+      // How many times this will be called is going to change with the number of supported chains
+      expect(loadAllChainsProjects).toBeCalledTimes(1);
     });
 
     test("should not be called if it's already loading", async () => {
@@ -307,6 +309,7 @@ describe("<List />", () => {
 
         test("should be visible with toggleRoundApplicationModal set to notApplied, with only one project created and not applied yet", async () => {
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
+          store.dispatch({ type: "PROJECTS_UNLOADED" });
           store.dispatch({
             type: "PROJECTS_LOADED",
             events: {

@@ -52,6 +52,7 @@ function ProjectsList() {
       state.projects.ids.length === 1 &&
       toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
+
     const showRoundAlert = alreadyApplied === false;
 
     return {
