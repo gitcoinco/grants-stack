@@ -52,8 +52,39 @@ export default function ApplicationCard({
     }
   }, [props.round]);
 
+  const renderApplicationBadge = () => {
+    let colorScheme: string | undefined;
+    switch (applicationData.application.status) {
+      case "APPROVED":
+        colorScheme = "green";
+        break;
+      case "REJECTED":
+        colorScheme = "red";
+        break;
+      default:
+        colorScheme = undefined;
+        break;
+    }
+
+    return (
+      <Badge
+        colorScheme={colorScheme}
+        className="bg-gitcoin-gray-100"
+        borderRadius="full"
+        p={2}
+      >
+        <span>{applicationData.application.status}</span>
+      </Badge>
+    );
+  };
+
   return (
-    <Box p={2} className="border-gray-300" borderWidth="1px" borderRadius="md">
+    <Box
+      p={2}
+      className="border-gray-300 pt-4 pb-7 px-5"
+      borderWidth="1px"
+      borderRadius="md"
+    >
       <Box p={2} mb={4}>
         <span className="text-[16px] text-gitcoin-gray-400">
           {props.round?.programName}
@@ -61,49 +92,15 @@ export default function ApplicationCard({
       </Box>
       <div className="flex flex-1 flex-col md:flex-row justify-between">
         <Box className="pl-2 text-gitcoin-gray-400">
-          <div>{props.round?.roundMetadata.name}</div>
+          <div className="mb-1">{props.round?.roundMetadata.name}</div>
           {roundData ? <span>{renderApplicationDate()}</span> : <Spinner />}
         </Box>
         <Box className="pl-2 mt-2 md:mt-0 text-gitcoin-gray-400">
-          {applicationData.application.status === "APPROVED" ? (
-            <Badge
-              colorScheme="green"
-              className="bg-gitcoin-gray-100"
-              borderRadius="full"
-              p={2}
-            >
-              <span>{applicationData.application.status}</span>
-            </Badge>
-          ) : null}
-          {applicationData.application.status === "REJECTED" ? (
-            <Badge
-              colorScheme="red"
-              className="bg-gitcoin-gray-100"
-              borderRadius="full"
-              p={2}
-            >
-              <span>{applicationData.application.status}</span>
-            </Badge>
-          ) : null}
-          {applicationData.application.status === "PENDING" ? (
-            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-              <span>In Review</span>
-            </Badge>
-          ) : null}
-          {applicationData.application.status === "APPEAL" ? (
-            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-              <span>{applicationData.application.status}</span>
-            </Badge>
-          ) : null}
-          {applicationData.application.status === "FRAUD" ? (
-            <Badge className="bg-gitcoin-gray-100" borderRadius="full" p={2}>
-              <span>{applicationData.application.status}</span>
-            </Badge>
-          ) : null}
+          {renderApplicationBadge()}
         </Box>
       </div>
       {props.support && (
-        <Box p={2} className="mt-4 mb-6">
+        <Box p={2} className="mt-4 text-sm">
           <p>
             Have any questions about your grant round application?{" "}
             <a
