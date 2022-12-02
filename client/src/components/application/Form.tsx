@@ -1,5 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
@@ -9,6 +10,7 @@ import {
 } from "../../actions/roundApplication";
 import { RootState } from "../../reducers";
 import {
+  AddressType,
   ChangeHandlers,
   DynamicFormInputs,
   Metadata,
@@ -64,6 +66,7 @@ export default function Form({
     string | undefined
   >(undefined);
   const [showError, setShowError] = useState(false);
+  const [addressType, setAddressType] = useState<AddressType | undefined>();
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -242,6 +245,12 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInput}
                     required={input.required ?? true}
+                    onAddressType={(v) => setAddressType(v)}
+                    warningHighlight={
+                      addressType &&
+                      formInputs.isSafe === "Yes" &&
+                      !addressType.isSafe
+                    }
                   />
                 </>
               );
@@ -301,6 +310,32 @@ export default function Form({
               );
           }
         })}
+        {formInputs.isSafe === "Yes" &&
+          addressType &&
+          (!addressType.isSafe || !addressType.isContract) && (
+            <div
+              className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
+              role="alert"
+            >
+              <div className="text-gitcoin-yellow-500">
+                <ExclamationTriangleIcon height={25} width={25} />
+              </div>
+              <div className="pl-6">
+                <strong className="text-gitcoin-yellow-500 font-medium">
+                  Make sure your Gnosis safe or multi-sig is deployed on the
+                  current network.
+                </strong>
+                <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
+                  <li className="text-black">
+                    Looks like the payout wallet address you entered may not be
+                    a Gnosis Safe or multi-sig that has been deployed on the
+                    current network. Make sure your Gnosis Safe or multi-sig
+                    wallet is deployed on the current network before proceeding.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         {!formValidation.valid && showError && formValidation.errorCount > 0 && (
           <div
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
