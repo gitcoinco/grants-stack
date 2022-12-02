@@ -4,7 +4,7 @@ import {
   ProjectMatch,
   RoundMetadata,
   ChainId,
-} from "../../types";
+} from "../types";
 import { fetchFromGraphQL } from "../utils";
 
 /**
@@ -63,7 +63,7 @@ export const calculateHandler = async (
   const totalProjectPoolAmount = metadata.totalPot;
 
   // boolean determining the satisfaction of the quadratic funding amount constraint
-  let hasSaturated = false;
+  let isSaturated = false;
 
   // the total amount of contributions per vote
   let totalMatch = 0;
@@ -112,29 +112,28 @@ export const calculateHandler = async (
     projectMatchDistributions.push({
       projectId:
         project.contributions[Object.keys(project.contributions)[0]].projectId,
-      match,
+      amount: match,
+      token: metadata.token,
     } as ProjectMatch);
     totalMatch += match;
   });
 
   if (totalMatch > totalProjectPoolAmount) {
-    hasSaturated = true;
+    isSaturated = true;
   }
 
   // normalize the match distributions
-  if (hasSaturated) {
+  if (isSaturated) {
     // calculate the ratio of the total match to the total project pool amount
     const ratio = totalProjectPoolAmount / totalMatch;
     // calculate the match distribution based on the ratio
     projectMatchDistributions.forEach((projectMatch) => {
-      projectMatch.match *= ratio;
+      projectMatch.amount *= ratio;
     });
   }
 
-  // TODO: Save into DB
-
   return {
     distribution: projectMatchDistributions,
-    hasSaturated: hasSaturated,
+    isSaturated: isSaturated,
   };
 };

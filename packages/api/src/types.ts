@@ -3,21 +3,22 @@
 /***************/
 
 export enum ChainId {
-  GOERLI_CHAIN_ID = "5",
-  OPTIMISM_MAINNET_CHAIN_ID = "10",
-  FANTOM_MAINNET_CHAIN_ID = "250",
-  FANTOM_TESTNET_CHAIN_ID = "4002",
+  GOERLI = "5",
+  OPTIMISM_MAINNET = "10",
+  FANTOM_MAINNET = "250",
+  FANTOM_TESTNET = "4002",
   LOCAL_ROUND_LAB = "3", // TODO: remove this later
 }
 
 export type Results = {
   distribution: ProjectMatch[];
-  hasSaturated?: boolean;
+  isSaturated?: boolean;
 };
 
 export type ProjectMatch = {
   projectId: string;
-  match: number;
+  amount: number;
+  token: string;
 };
 
 export type RoundMetadata = {
@@ -27,6 +28,11 @@ export type RoundMetadata = {
   };
   token: string;
   totalPot: number;
+};
+
+export type CalculateParam = {
+  chainId: ChainId;
+  roundId: string;
 };
 
 /****************/

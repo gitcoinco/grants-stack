@@ -1,5 +1,6 @@
+import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, RoundMetadata } from "../types";
+import { ChainId, RoundMetadata } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -10,22 +11,41 @@ import { ChainId, RoundMetadata } from "../types";
 export const getGraphQLEndpoint = async (chainId: ChainId) => {
   // TODO: the urls should be environment variables
   switch (chainId) {
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+    case ChainId.OPTIMISM_MAINNET:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet";
 
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+    case ChainId.FANTOM_MAINNET:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet";
 
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+    case ChainId.FANTOM_TESTNET:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet";
 
-    case ChainId.GOERLI_CHAIN_ID:
+    case ChainId.GOERLI:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet";
 
     default:
       return "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs";
   }
 };
+
+export const getChainVerbose = (id: string) => {
+  switch (id) {
+    case ChainId.OPTIMISM_MAINNET:
+      return "OPTIMISM_MAINNET";
+
+    case ChainId.FANTOM_MAINNET:
+      return "FANTOM_MAINNET";
+
+    case ChainId.FANTOM_TESTNET:
+      return "FANTOM_TESTNET";
+
+    case ChainId.GOERLI:
+      return "GOERLI";
+
+    default:
+      return "LOCAL_ROUND_LAB";
+  }
+}
 
 /**
  * Fetch data from IPFS
@@ -131,22 +151,20 @@ export const fetchRoundMetadata = async (
 };
 
 export const handleResponse = (
+  res: Response,
   code: number,
   message: string,
   body?: any
-): { statusCode: number; body: string } => {
+) => {
   let success: boolean = false;
 
   if (code >= 200 && code < 400) {
     success = true;
   }
 
-  return {
-    statusCode: code,
-    body: JSON.stringify({
-      success,
-      message,
-      data: body ?? {},
-    }),
-  };
+  res.json({
+    success,
+    message,
+    data: body ?? {},
+  });
 };

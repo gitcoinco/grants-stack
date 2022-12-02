@@ -1,5 +1,5 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-import { ChainId } from "../../types";
+import { ChainId } from "../types";
 import { fetchFromIPFS, fetchFromGraphQL} from "../utils";
 enableFetchMocks();
 
@@ -66,7 +66,7 @@ describe("fetchFromGraphQL", () => {
       }
     `;
 
-    const res = await fetchFromGraphQL(ChainId.GOERLI_CHAIN_ID, query);
+    const res = await fetchFromGraphQL(ChainId.GOERLI, query);
 
     const params = {
       method: "POST",
@@ -99,7 +99,7 @@ describe("fetchFromGraphQL", () => {
     `;
 
     await expect(
-      fetchFromGraphQL(ChainId.GOERLI_CHAIN_ID, query)
+      fetchFromGraphQL(ChainId.GOERLI, query)
     ).rejects.toHaveProperty("status", 400);
 
     const params = {
@@ -126,7 +126,7 @@ describe("fetchFromGraphQL", () => {
       })
     );
 
-    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET_CHAIN_ID, `programs { id }`,);
+    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, `programs { id }`,);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
