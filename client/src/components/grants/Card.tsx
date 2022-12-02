@@ -80,10 +80,10 @@ function Card({ projectId }: { projectId: string }) {
             <TextLoading />
           ) : (
             <div>
-              <div className="font-semi-bold text-xl mb-2 line-clamp-2">
+              <div className="font-semi-bold text-xl min-h-[56px] mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
-              <p className="text-gray-700 text-base min-h-[50px] line-clamp-3">
+              <p className="text-gray-700 text-base min-h-[72px] line-clamp-3">
                 {props.currentProject?.description}
               </p>
             </div>
