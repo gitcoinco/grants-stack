@@ -52,33 +52,33 @@ function Card({ projectId }: { projectId: string }) {
 
   return (
     <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <img
-        className="w-full h-32 object-cover"
-        src={props.bannerImg}
-        onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = "./assets/default-project-banner.png";
-        }}
-        alt="project banner"
-      />
-      <div className="flex p-6 relative">
-        <div className="flex w-full justify-between absolute -top-6">
-          <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
-            <img
-              className="rounded-full"
-              src={props.logoImg}
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "./assets/default-project-logo.png";
-              }}
-              alt="project logo"
-            />
+      <Link to={createProjectPath()}>
+        <img
+          className="w-full h-32 object-cover"
+          src={props.bannerImg}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "./assets/default-project-banner.png";
+          }}
+          alt="project banner"
+        />
+        <div className="flex p-6 relative">
+          <div className="flex w-full justify-between absolute -top-6">
+            <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
+              <img
+                className="rounded-full"
+                src={props.logoImg}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "./assets/default-project-logo.png";
+                }}
+                alt="project logo"
+              />
+            </div>
           </div>
-        </div>
-        {props.loading ? (
-          <TextLoading />
-        ) : (
-          <Link to={createProjectPath()}>
+          {props.loading ? (
+            <TextLoading />
+          ) : (
             <div className="flex flex-col justify-between mt-4">
               <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
@@ -87,9 +87,9 @@ function Card({ projectId }: { projectId: string }) {
                 {props.currentProject?.description}
               </p>
             </div>
-          </Link>
-        )}
-      </div>
+          )}
+        </div>
+      </Link>
 
       <div className="flex justify-end w-fit mt-auto">
         <Badge
