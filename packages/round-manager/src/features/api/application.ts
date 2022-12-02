@@ -217,9 +217,11 @@ const fetchApplicationData = async (
 
       const projectMetadata = application.project;
       const projectRegistryId = projectMetadata.id;
-      const projectOwners = await projectRegistry.getProjectOwners(
-        projectRegistryId
-      );
+      const fixedId = projectRegistryId.includes(":")
+        ? projectRegistryId.split(":")[2]
+        : projectRegistryId;
+
+      const projectOwners = await projectRegistry.getProjectOwners(fixedId);
       const grantApplicationProjectMetadata: Project = {
         ...projectMetadata,
         owners: projectOwners.map((address: string) => ({ address })),
