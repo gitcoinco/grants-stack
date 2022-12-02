@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { IPFSObject, PayoutToken } from "./types"
 
 export enum ChainId {
+  MAINNET = '1',
   GOERLI_CHAIN_ID = '5',
   OPTIMISM_MAINNET_CHAIN_ID = '10',
   FANTOM_MAINNET_CHAIN_ID = '250',
@@ -16,6 +17,18 @@ export const TokenNamesAndLogos: Record<string, string> = {
 };
 
 export const payoutTokens = [
+  {
+    name: "DAI",
+    chainId: ChainId.MAINNET,
+    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    logo: TokenNamesAndLogos["DAI"],
+  },
+  {
+    name: "ETH",
+    chainId: ChainId.MAINNET,
+    address: ethers.constants.AddressZero,
+    logo: TokenNamesAndLogos["ETH"],
+  },
   {
     name: "DAI",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
@@ -74,6 +87,24 @@ export const payoutTokens = [
 
 export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
   switch (chainId) {
+    case ChainId.MAINNET: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.MAINNET,
+          address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          decimal: 18,
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.MAINNET,
+          address: ethers.constants.AddressZero,
+          decimal: 18,
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       return [
         {
@@ -165,6 +196,9 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
  */
 const getGraphQLEndpoint = async (chainId: ChainId) => {
   switch (chainId) {
+    case ChainId.MAINNET:
+      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
 

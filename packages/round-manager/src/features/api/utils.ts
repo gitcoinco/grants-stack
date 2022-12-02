@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { ApplicationMetadata, InputType, IPFSObject, Program } from "./types";
 
 export enum ChainId {
+  MAINNET = 1,
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
@@ -9,6 +10,11 @@ export enum ChainId {
 }
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
+  [ChainId.MAINNET]: {
+    id: ChainId.MAINNET,
+    name: "Mainnet", // TODO get canonical network names
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
   [ChainId.GOERLI_CHAIN_ID]: {
     id: ChainId.GOERLI_CHAIN_ID,
     name: "Goerli", // TODO get canonical network names
@@ -54,6 +60,22 @@ export const TokenNamesAndLogos: Record<string, string> = {
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   switch (chainId) {
+    case ChainId.MAINNET: {
+      return [
+        {
+          name: "DAI",
+          chainId: ChainId.MAINNET,
+          address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "ETH",
+          chainId: ChainId.MAINNET,
+          address: ethers.constants.AddressZero,
+          logo: TokenNamesAndLogos["ETH"],
+        },
+      ];
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       return [
         {
@@ -136,6 +158,9 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
  */
 const getGraphQLEndpoint = async (chainId: ChainId) => {
   switch (chainId) {
+    case ChainId.MAINNET:
+      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
 

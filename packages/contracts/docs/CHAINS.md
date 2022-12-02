@@ -2,10 +2,33 @@
 
 This document lists all the addresses of the contracts that have been deployed on a given network
 
+## Ethereum Mainnet
+
+These are contracts that are created/deployed once for ethereum mainnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| ProgramFactory                        | 0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB |
+| ProgramImplementation                 | 0x21B0be8253DEdA0d2d8f010d06ED86093d52359b |
+| QuadraticFundingVotingStrategyFactory | 0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38 |
+| QFVotingStrategyImplementation        | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |
+| RoundFactory                          | 0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe |
+| RoundImplementation                   | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
+
+**Sample contracts unique to a round **
+
+These are contracts that are created/deployed for every round created on ethereum mainnet
+
+| Contract                              | Address                                    |
+|---------------------------------------|--------------------------------------------|
+| Program                               | 0x4fde273e009F58Aa0e5e09289242D5336FD18ad1 |
+| QFVotingContract                      | 0x818A3C8F82667bd222faF84a954F35d2b0Eb6a78 |
+| MerklePayoutContract                  | 0xC068C0EAF90533D3817a1782847eAA6719ABB6c7 |
+| Round                                 | 0x3172a6cCE26529e7DD2B533e7c3622a0b544f349 |
 
 ## Optimism Mainnet
 
-These are contracts are created/deployed once for optimism mainnet
+These are contracts that are created/deployed once for optimism mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -19,7 +42,7 @@ These are contracts are created/deployed once for optimism mainnet
 
 **Sample contracts unique to a round **
 
-These are contracts are created/deployed for every round created on optimism mainnet
+These are contracts that are created/deployed for every round created on optimism mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -30,7 +53,7 @@ These are contracts are created/deployed for every round created on optimism mai
 
 ## Fantom Mainnet
 
-These are contracts are created/deployed once for fantom mainnet
+These are contracts that are created/deployed once for fantom mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -44,7 +67,7 @@ These are contracts are created/deployed once for fantom mainnet
 
 **Sample contracts unique to a round **
 
-These are contracts are created/deployed for every round created on fantom mainnet
+These are contracts that are created/deployed for every round created on fantom mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -55,7 +78,7 @@ These are contracts are created/deployed for every round created on fantom mainn
 
 ## Goerli Network
 
-These are contracts are created/deployed once for goerli
+These are contracts that are created/deployed once for goerli
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -69,7 +92,7 @@ These are contracts are created/deployed once for goerli
 
 **Sample contracts unique to a round **
 
-These are contracts are created/deployed for every round created on goerli
+These are contracts that are created/deployed for every round created on goerli
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -81,7 +104,7 @@ These are contracts are created/deployed for every round created on goerli
 
 ## Fantom Testnetwork
 
-These are contracts are created/deployed once for fantom testnet
+These are contracts that are created/deployed once for fantom testnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -95,7 +118,7 @@ These are contracts are created/deployed once for fantom testnet
 
 **Sample contracts unique to a round **
 
-These are contracts are created/deployed for every round created on fantom testnet
+These are contracts that are created/deployed for every round created on fantom testnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
