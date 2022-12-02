@@ -8,6 +8,7 @@ import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
+import { getProjectURIComponents } from "../utils/utils";
 import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
 import { unloadProjects } from "./projects";
 
@@ -66,11 +67,17 @@ export const grantCreated = ({
 });
 
 export const publishGrant =
-  (grantId?: string) =>
+  (fullId?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;
+
+    const { id: grantId } = fullId
+      ? getProjectURIComponents(fullId)
+      : { id: undefined };
+
+    const oldGrantMetadata = state.grantsMetadata[fullId || ""];
 
     if (formMetaData === undefined) {
       return;
@@ -92,6 +99,9 @@ export const publishGrant =
     }
 
     application.credentials = formCredentials;
+    application.createdAt = oldGrantMetadata
+      ? oldGrantMetadata.metadata?.createdAt
+      : Date.now();
 
     dispatch(grantStatus(Status.UploadingJSON));
     const resp = await pinataClient.pinJSON(application);

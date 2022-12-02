@@ -49,6 +49,9 @@ export default function Details({
     };
   });
 
+  const canShowApplications =
+    props.applications.length !== 0 && showApplications;
+
   useEffect(() => {
     if (props.projectID) {
       dispatch(
@@ -59,22 +62,19 @@ export default function Details({
 
   const renderApplications = () => (
     <>
-      {props.applications.length !== 0 && showApplications && (
-        <Box p={1}>
-          <span className="text-[20px]">My Applications</span>
-        </Box>
-      )}
+      <Box p={1}>
+        <span className="text-[20px]">My Applications</span>
+      </Box>
       <Box>
-        {showApplications &&
-          props.applications.map((application) => {
-            const roundID = application?.roundID;
-            const cardData = { application, roundID };
-            return (
-              <Box key={roundID} m={2}>
-                <ApplicationCard applicationData={cardData} />
-              </Box>
-            );
-          })}
+        {props.applications.map((application) => {
+          const roundID = application?.roundID;
+          const cardData = { application, roundID };
+          return (
+            <Box key={roundID} m={2}>
+              <ApplicationCard applicationData={cardData} />
+            </Box>
+          );
+        })}
       </Box>
     </>
   );
@@ -194,9 +194,11 @@ export default function Details({
               )}
             </div>
           </div>
-          <div className="flex flex-1 md:hidden flex-col">
-            {renderApplications()}
-          </div>
+          {canShowApplications && (
+            <div className="flex flex-1 md:hidden flex-col">
+              {renderApplications()}
+            </div>
+          )}
           <div className="mt-4">
             <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
               Description
@@ -211,9 +213,11 @@ export default function Details({
             </div>
           </div>
         </div>
-        <div className="max-w-md hidden md:flex flex-col">
-          {renderApplications()}
-        </div>
+        {canShowApplications && (
+          <div className="max-w-md w-full hidden md:flex flex-col">
+            {renderApplications()}
+          </div>
+        )}
       </div>
     </div>
   );

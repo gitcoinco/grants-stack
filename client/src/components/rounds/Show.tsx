@@ -207,7 +207,7 @@ function Round() {
 
   return (
     <div className="h-full w-full absolute flex flex-col justify-center items-center">
-      <div className="w-full lg:w-1/3 sm:w-2/3">
+      <div className="w-full lg:w-1/3 sm:w-2/3 px-4 md:mx-0">
         <h2 className="text-center uppercase text-2xl">
           {roundData?.programName}
         </h2>
@@ -235,7 +235,7 @@ function Round() {
             <>
               <Button
                 styles={[
-                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100",
+                  "w-full justify-center bg-gitcoin-grey-300 border-0 font-medium text-white py-3 shadow-gitcoin-sm opacity-100 m-0",
                 ]}
                 variant={ButtonVariants.primary}
                 disabled
@@ -258,7 +258,7 @@ function Round() {
                 <Link to={roundApplicationPath(chainId!, roundId!)}>
                   <Button
                     styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm",
+                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
                     ]}
                     variant={ButtonVariants.primary}
                   >
@@ -269,7 +269,7 @@ function Round() {
                 <Link to={newGrantPath()}>
                   <Button
                     styles={[
-                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm",
+                      "w-full justify-center border-0 font-medium py-3 shadow-gitcoin-sm m-0",
                     ]}
                     variant={ButtonVariants.primary}
                   >

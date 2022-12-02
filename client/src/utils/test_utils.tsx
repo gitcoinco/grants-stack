@@ -74,6 +74,7 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
     github: buildVerifiableCredential("Github"),
     twitter: buildVerifiableCredential("Twitter"),
   },
+  createdAt: 123,
   ...metadata,
 });
 

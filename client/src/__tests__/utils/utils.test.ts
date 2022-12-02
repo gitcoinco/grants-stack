@@ -7,6 +7,7 @@ describe("metadataToProject", () => {
     const p = metadataToProject(m, 123);
 
     expect(p.lastUpdated).toEqual(123);
+    expect(p.createdAt).toEqual(m.createdAt);
     expect(p.id).toEqual(String(m.id));
     expect(p.title).toEqual(m.title);
     expect(p.description).toEqual(m.description);

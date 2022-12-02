@@ -158,7 +158,7 @@ function EditProject() {
       case ProjectFormStatus.Preview:
         return (
           <Preview
-            currentProjectId={params.id}
+            currentProjectId={props.id}
             setVerifying={(verifyUpdate) => setFormStatus(verifyUpdate)}
           />
         );

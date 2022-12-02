@@ -250,3 +250,53 @@ export function Select({
     </div>
   );
 }
+
+export function CustomSelect({
+  label,
+  info,
+  name,
+  options,
+  disabled,
+  changeHandler,
+  required,
+  encrypted,
+  defaultValue,
+}: SelectInputProps) {
+  return (
+    <div className="relative">
+      <div className=" flex">
+        <div className="grow">
+          <label className="text-sm w-full" htmlFor={name}>
+            {label}
+          </label>
+        </div>
+        <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
+          {required ? requiredSpan : optionalSpan}
+        </div>
+        {encrypted && encryptionTooltip}
+      </div>
+      <legend>{info}</legend>
+      <select
+        id={name}
+        name={name}
+        disabled={disabled}
+        className={classNames("w-full", {
+          "bg-transparent": !disabled,
+        })}
+        onChange={(e) => changeHandler(e)}
+        defaultValue={defaultValue}
+      >
+        {options.map((option) => {
+          const { chainInfo, title, id } = option;
+          const chainName = chainInfo?.chainName ?? null;
+          const displayValue = chainName ? `${title} (${chainName})` : title;
+          return (
+            <option key={`key-${id}`} value={id}>
+              {displayValue}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  );
+}

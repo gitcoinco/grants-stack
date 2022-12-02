@@ -26,6 +26,7 @@ export const metadataToProject = (
 ): Project => {
   const p: Project = {
     lastUpdated,
+    createdAt: m.createdAt,
     id: String(m.id),
     title: m.title,
     description: m.description,
