@@ -322,15 +322,14 @@ export default function Form({
               </div>
               <div className="pl-6">
                 <strong className="text-gitcoin-yellow-500 font-medium">
-                  Make sure your Gnosis safe or multi-sig is deployed on the
-                  current network.
+                  Review your payout wallet address.
                 </strong>
                 <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
                   <li className="text-black">
-                    Looks like the payout wallet address you entered may not be
-                    a Gnosis Safe or multi-sig that has been deployed on the
-                    current network. Make sure your Gnosis Safe or multi-sig
-                    wallet is deployed on the current network before proceeding.
+                    It looks like the payout wallet address you have provided is
+                    not a multi-sig. Please update your payout wallet address to
+                    be a multi-sig, or update your selection to indicate you
+                    will no longer be using a multi-sig for payouts.
                   </li>
                 </ul>
               </div>
