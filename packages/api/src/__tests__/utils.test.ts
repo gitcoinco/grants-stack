@@ -1,55 +1,58 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-import { ChainId } from "../types";
-import { fetchFromIPFS, fetchFromGraphQL, getGraphQLEndpoint, getChainVerbose} from "../utils";
-
 enableFetchMocks();
+
+import { ChainId } from "../types";
+import {
+  fetchFromIPFS,
+  fetchFromGraphQL,
+  getGraphQLEndpoint,
+  getChainVerbose,
+} from "../utils";
 
 const fetchMock = fetch as FetchMock;
 
 describe("getGraphQLEndpoint", () => {
   it("returns the right graphQL endpoint based on chainID", () => {
-
     expect(getGraphQLEndpoint(ChainId.OPTIMISM_MAINNET)).toEqual(
       "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet"
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_MAINNET)).toEqual(
       "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet"
-    )
+    );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_TESTNET)).toEqual(
       "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet"
-    )
+    );
 
     expect(getGraphQLEndpoint(ChainId.GOERLI)).toEqual(
       "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet"
-    )
+    );
   });
 
   it("returns the default graphQL endpoint for invalid chainID", () => {
-
-    expect(getGraphQLEndpoint('999' as ChainId)).toEqual(
+    expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
       "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs"
-    )
+    );
   });
 });
 
 describe("getChainVerbose", () => {
   it("returns the right chain name chainID", () => {
-
-    expect(getChainVerbose(ChainId.OPTIMISM_MAINNET)).toEqual("OPTIMISM_MAINNET");
+    expect(getChainVerbose(ChainId.OPTIMISM_MAINNET)).toEqual(
+      "OPTIMISM_MAINNET"
+    );
     expect(getChainVerbose(ChainId.FANTOM_MAINNET)).toEqual("FANTOM_MAINNET");
     expect(getChainVerbose(ChainId.FANTOM_TESTNET)).toEqual("FANTOM_TESTNET");
     expect(getChainVerbose(ChainId.GOERLI)).toEqual("GOERLI");
   });
 
   it("returns the default chain name for invalid chainID", () => {
-    expect(getChainVerbose('999' as ChainId )).toEqual("LOCAL_ROUND_LAB");
+    expect(getChainVerbose("999" as ChainId)).toEqual("LOCAL_ROUND_LAB");
   });
 });
 
 describe("fetchFromIPFS", () => {
-
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   beforeEach(() => {
@@ -128,6 +131,7 @@ describe("fetchFromGraphQL", () => {
       id: "0x123456789544fe81379e2951623f008d200e1d18",
     });
   });
+
   it("should reject on non-200 status code", async () => {
     fetchMock.mockResponseOnce("", {
       status: 400,
@@ -167,7 +171,7 @@ describe("fetchFromGraphQL", () => {
       })
     );
 
-    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, `programs { id }`,);
+    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, `programs { id }`);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
@@ -178,8 +182,8 @@ describe("fetchFromGraphQL", () => {
 
 describe("fetchRoundMetadata", () => {
   // TODO:
-})
+});
 
 describe("handleResponse", () => {
   // TODO:
-})
+});
