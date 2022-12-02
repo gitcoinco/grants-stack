@@ -1,12 +1,14 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
+
 enableFetchMocks();
 
 import { ChainId } from "../types";
 import {
   fetchFromIPFS,
   fetchFromGraphQL,
-  getGraphQLEndpoint,
+  getGraphQLEndpoint,Ï
   getChainVerbose,
+  getPriceForToken,
 } from "../utils";
 
 const fetchMock = fetch as FetchMock;
@@ -176,6 +178,36 @@ describe("fetchFromGraphQL", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
       expect.anything()
+    );
+  });
+});
+
+describe("fetch prices for token", function () {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
+  it("should fetch prices for a certain token on a chain", async function () {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        market_data: {
+          current_price: "123.0",
+        },
+      })
+    );
+
+    await getPriceForToken(
+      "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "ethereum"
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `https://api.coingecko.com/api/v3/coins/ethereum/contract/0x6b175474e89094c44da98b954eedeac495271d0f`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
     );
   });
 });
