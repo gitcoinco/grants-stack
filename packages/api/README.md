@@ -62,16 +62,6 @@ To run this application locally:
 docker compose up
 ```
 
-3. On a seperate terminal, start the node server
-```shell
-npm run dev
-```
-
-4. Run the migrations to create tables
-```shell
-npm run prisma:migrate
-```
-
 The node server will run on `http://localhost:8000/`
 
 
