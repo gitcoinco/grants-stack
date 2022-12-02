@@ -1,7 +1,10 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
+import { ethers } from "ethers";
+import { useEffect } from "react";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
+import { getAddressType } from "../../utils/utils";
 
 const optionalSpan = (
   <span className="text-gray-400 inset-y-0 right-0">Optional</span>
@@ -73,7 +76,24 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
+  onAddressType,
+  warningHighlight,
 }: AddressInputProps) {
+  const verificationHandler = async () => {
+    if (onAddressType) {
+      if (typeof value === "string" && ethers.utils.isAddress(value)) {
+        const addressType = await getAddressType(value);
+        onAddressType(addressType);
+      } else {
+        onAddressType();
+      }
+    }
+  };
+
+  useEffect(() => {
+    verificationHandler();
+  }, [value]);
+
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <div className="flex">
@@ -105,6 +125,9 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
+        className={classNames({
+          "border border-gitcoin-yellow-500": warningHighlight,
+        })}
       />
     </div>
   );
