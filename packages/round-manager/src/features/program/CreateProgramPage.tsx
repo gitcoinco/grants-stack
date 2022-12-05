@@ -193,8 +193,9 @@ export default function CreateProgram() {
               <div className="grid grid-cols-1 gap-4 sm:items-start pt-7 pb-3.5 sm:px-6 bg-white">
                 <div className="sm:flex sm:flex-rows gap-4">
                   <div className="sm:basis-1/2">
-                    <label htmlFor="name" className="block text-xs">
+                    <label htmlFor="name" className="block text-sm">
                       Program Name
+                      <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
                     </label>
                     <Input
                       {...register("name", { required: true })}
@@ -213,7 +214,7 @@ export default function CreateProgram() {
                   </div>
 
                   <div className="sm:basis-1/2">
-                    <label htmlFor="program-chain" className="block text-xs">
+                    <label htmlFor="program-chain" className="block text-sm">
                       <span className="opacity-50">Program Chain</span>
                       <ProgramChain />
                     </label>
@@ -238,8 +239,8 @@ export default function CreateProgram() {
                 </div>
 
                 <div>
-                  <p className="font-bold text-base mb-4">Add Operator(s)</p>
-                  <label htmlFor="operators" className="block text-xs">
+                  <p className="text-grey-400 text-sm mb-4">Add Operator(s)</p>
+                  <label htmlFor="operators" className="block text-sm">
                     Wallet Address
                   </label>
 

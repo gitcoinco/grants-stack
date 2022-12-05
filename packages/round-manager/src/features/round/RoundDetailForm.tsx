@@ -239,7 +239,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 {program && <ProgramChain program={program} />}
               </div>
 
-              <p className="mt-6 mb-2">
+              <p className="mt-6 mb-4 text-sm">
                 Where can applicants reach you and/or your team if support is
                 needed?
               </p>
@@ -259,11 +259,14 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              <p className="mt-6">
+              <p className="mt-6 mb-4 text-sm">
                 What are the dates for the Applications and Round voting
                 period(s)
               </p>
-              <p className="text-xs mt-4 mb-2">Applications</p>
+              <p className="text-sm mb-2">
+                <span>Applications</span>
+                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              </p>
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
                   <div
@@ -382,7 +385,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   )}
                 </div>
               </div>
-              <p className="text-xs mt-4 mb-2">Round</p>
+              <p className="text-sm mt-4 mb-2">
+                Round
+                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              </p>
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
                   <div
@@ -520,9 +526,12 @@ function RoundName(props: {
 }) {
   return (
     <div className="col-span-6 sm:col-span-3">
-      <label htmlFor="roundMetadata.name" className="block text-xs font-medium">
-        Round Name
-      </label>
+      <div className="flex justify-between">
+        <label htmlFor="roundMetadata.name" className="text-sm">
+          Round Name
+        </label>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+      </div>
       <Input
         {...props.register}
         className={"h-10"}
@@ -562,7 +571,7 @@ function PayoutTokenButton(props: {
           />
         ) : null}
         {token?.default ? (
-          <span className="ml-3 block truncate text-gray-500">
+          <span className="ml-3 block truncate text-gray-400">
             {token?.name}
           </span>
         ) : (
@@ -582,7 +591,7 @@ function ProgramChain(props: { program: Program }) {
     <div className="col-span-6 sm:col-span-3 opacity-50">
       <Listbox disabled>
         <div>
-          <Listbox.Label className="block text-xs font-medium">
+          <Listbox.Label className="block text-sm">
             Program Chain
           </Listbox.Label>
           <div className="relative mt-1">
@@ -619,7 +628,7 @@ function PayoutTokenInformation() {
         data-tip
         data-background-color="#0E0333"
         data-for="payout-token-tooltip"
-        className="inline h-4 w-4 ml-2 mr-3"
+        className="inline h-4 w-4 ml-2 mr-3 mb-1"
         data-testid={"payout-token-tooltip"}
       />
       <ReactTooltip
@@ -657,8 +666,9 @@ function PayoutTokenDropdown(props: {
       <Listbox {...field}>
         {({ open }) => (
           <div>
-            <Listbox.Label className="block text-sm font-medium">
-              Payout Token
+            <Listbox.Label className="block text-sm">
+              <span>Payout Token</span>
+              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
               <PayoutTokenInformation />
             </Listbox.Label>
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -754,12 +764,13 @@ function MatchingFundsAvailable(props: {
   // not sure why UseFormRegisterReturn only takes strings for react-hook-form
   return (
     <div className="col-span-6 sm:col-span-3">
-      <label
-        htmlFor="matchingFundsAvailable"
-        className="block text-sm font-medium"
-      >
-        Matching Funds Available
-      </label>
+      <div className="flex justify-between">
+        <label htmlFor="matchingFundsAvailable" className="text-sm">
+          Matching Funds Available
+        </label>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+      </div>
+
       <div className="relative mt-1 rounded-md shadow-sm">
         <Input
           {...props.register}
@@ -777,7 +788,7 @@ function MatchingFundsAvailable(props: {
           step="any"
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 pr-10 flex items-center">
-          <span className="text-gray-500 sm:text-sm">
+          <span className="text-gray-400 sm:text-sm">
             {
               props.payoutTokenOptions.find(
                 (token) => token.address === props.token
@@ -819,15 +830,18 @@ function MatchingCap(props: {
       {" "}
       <div className="col-span-6 sm:col-span-3">
         <RadioGroup {...matchingCapField} data-testid="matching-cap-selection">
-          <RadioGroup.Label className="block text-sm font-medium">
-            Do you want a matching cap for projects?
-            <InformationCircleIcon
-              data-tip
-              data-background-color="#0E0333"
-              data-for="matching-cap-tooltip"
-              className="inline h-4 w-4 ml-2 mr-3"
-              data-testid={"matching-cap-tooltip"}
-            />
+          <RadioGroup.Label className="block text-sm">
+            <p className="text-sm">
+              <span>Do you want a matching cap for projects?</span>
+              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              <InformationCircleIcon
+                data-tip
+                data-background-color="#0E0333"
+                data-for="matching-cap-tooltip"
+                className="inline h-4 w-4 ml-2 mr-3 mb-1"
+                data-testid={"matching-cap-tooltip"}
+              />
+            </p>
             <ReactTooltip
               id="matching-cap-tooltip"
               place="bottom"
@@ -841,7 +855,7 @@ function MatchingCap(props: {
               </p>
             </ReactTooltip>
           </RadioGroup.Label>
-          <div className="flex flex-row gap-4 mt-2">
+          <div className="flex flex-row gap-4 mt-3">
             <RadioGroup.Option value={true}>
               {({ checked, active }) => (
                 <span className="flex items-center text-sm">
@@ -859,7 +873,7 @@ function MatchingCap(props: {
                   </span>
                   <RadioGroup.Label
                     as="span"
-                    className="ml-3 block text-md font-medium text-gray-700"
+                    className="ml-3 block text-sm text-gray-700"
                     data-testid="matching-cap-true"
                   >
                     Yes
@@ -884,7 +898,7 @@ function MatchingCap(props: {
                   </span>
                   <RadioGroup.Label
                     as="span"
-                    className="ml-3 block text-md font-medium text-gray-700"
+                    className="ml-3 block text-sm text-gray-700"
                     data-testid="matching-cap-false"
                   >
                     No
@@ -898,17 +912,20 @@ function MatchingCap(props: {
       <div className="col-span-6 sm:col-span-3">
         <label
           htmlFor="matchingCapAmount"
-          className="block text-sm font-medium"
+          className="block text-sm"
         >
-          If so, how much?
+          <p className="text-sm">
+            <span>If so, how much?</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+          </p>
         </label>
         <div className="relative mt-1 rounded-md shadow-sm">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-gray-500 sm:text-sm">%</span>
+            <span className="text-gray-400 sm:text-sm">%</span>
           </div>
           <Input
             className={
-              "block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500 h-10"
+              "block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
             }
             {...props.registerMatchingCapAmount}
             $hasError={
@@ -945,12 +962,12 @@ function ContactInformation(props: {
 }) {
   return (
     <div className="mt-2 mb-2">
-      <label
-        htmlFor="roundMetadata.support.info"
-        className="block text-xs font-medium"
-      >
-        Contact Information
-      </label>
+      <div className="flex justify-between">
+        <label htmlFor="roundMetadata.support.info" className="text-sm">
+          Contact Information
+        </label>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+      </div>
       <Input
         {...props.register}
         className={"h-10"}
@@ -985,7 +1002,7 @@ function SupportTypeButton(props: {
     >
       <span className="flex items-center">
         {supportType?.default ? (
-          <span className="ml-3 block truncate text-gray-500">
+          <span className="ml-3 block truncate text-gray-400">
             {supportType?.name}
           </span>
         ) : (
@@ -1014,12 +1031,15 @@ function SupportTypeDropdown(props: {
     },
   });
   return (
-    <>
+    <div className="col-span-6 sm:col-span-3 relative mt-2">
       <Listbox {...field}>
         {({ open }) => (
           <div>
-            <Listbox.Label className="text-xs mt-4 mb-2">
-              Support Input
+            <Listbox.Label className="text-sm mt-4 mb-2">
+              <p className="text-sm">
+                <span>Support Input</span>
+                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              </p>
             </Listbox.Label>
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
               <SupportTypeButton
@@ -1097,7 +1117,7 @@ function SupportTypeDropdown(props: {
           </div>
         )}
       </Listbox>
-    </>
+    </div>
   );
 }
 

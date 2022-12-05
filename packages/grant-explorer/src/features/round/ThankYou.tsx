@@ -75,8 +75,8 @@ export default function ThankYou() {
 
           </div>
         </main>
-        <Footer />
       </div>
+      <Footer />
     </>
   );
 

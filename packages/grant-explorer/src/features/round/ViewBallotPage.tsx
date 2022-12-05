@@ -228,7 +228,7 @@ export default function ViewBallot() {
 
     return (
       <div>
-        <div className="block p-6 rounded-lg shadow-lg bg-white border">
+        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <div className="flex justify-between border-b-2 pb-2">
             <h2 className="text-xl">Shortlist</h2>
             {shortlistSelect ? (
@@ -350,7 +350,7 @@ export default function ViewBallot() {
   function EmptyShortlist(chainId?: string, roundId?: string) {
     return (
       <>
-        <div className="block p-6 rounded-lg shadow-lg bg-white border">
+        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
 
           <div className="my-4">
@@ -377,7 +377,7 @@ export default function ViewBallot() {
 
   function FinalBallotProjects(finalBallot: Project[]) {
     return (
-      <div className="block p-6 rounded-lg shadow-lg bg-white border">
+      <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
         <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
           <div className="basis-[28%]">
             <h2 className="mt-2 text-xl">Final Donation</h2>
@@ -537,7 +537,7 @@ export default function ViewBallot() {
   function EmptyFinalBallot() {
     return (
       <>
-        <div className="block p-6 rounded-lg shadow-lg bg-white border border-violet-400">
+        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
           <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
             <div className="basis-[28%]">
               <h2 className="mt-2 text-xl">Final Donation</h2>
@@ -578,7 +578,7 @@ export default function ViewBallot() {
   function Summary() {
     return (
       <>
-        <div className="my-5 block p-6 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
+        <div className="my-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
           <h2 className="text-xl border-b-2 pb-2">Summary</h2>
           <div className="flex justify-between mt-4">
             <p>Your Contribution</p>
