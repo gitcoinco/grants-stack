@@ -1,6 +1,7 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
@@ -24,6 +25,19 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
+function getInputBorderStyle(highlightType: string) {
+  switch (highlightType) {
+    case "error":
+      return "border-gitcoin-pink-200";
+    case "success":
+      return "border-green-text";
+    case "warning":
+      return "border-gitcoin-yellow-500";
+    default:
+      return "";
+  }
+}
+
 export function TextInput({
   label,
   info,
@@ -34,7 +48,14 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
+  highlightType = "error",
 }: InputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <div className=" flex">
@@ -57,6 +78,7 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
+        className={borderStyle}
       />
     </div>
   );
@@ -73,7 +95,14 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
+  highlightType = "error",
 }: AddressInputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <div className="flex">
@@ -105,6 +134,7 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
+        className={borderStyle}
       />
     </div>
   );
@@ -120,7 +150,14 @@ export function WebsiteInput({
   changeHandler,
   required,
   encrypted,
+  highlightType = "error",
 }: InputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
     validatedEvent.target.value = `https://${event.target.value.trim()}`;
@@ -151,13 +188,13 @@ export function WebsiteInput({
         </span>
         <input
           type="text"
-          className="rounded"
           id={name}
           name={name}
           value={sanitizedInput ?? ""}
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
+          className={borderStyle}
         />
       </div>
     </div>
@@ -174,7 +211,14 @@ export function TextArea({
   changeHandler,
   required,
   encrypted,
+  highlightType = "error",
 }: InputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
       <div className=" flex">
@@ -196,6 +240,7 @@ export function TextArea({
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}
+        className={borderStyle}
       />
     </div>
   );
@@ -216,7 +261,14 @@ export function Select({
   required,
   encrypted,
   defaultValue,
+  highlightType = "error",
 }: SelectInputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   return (
     <div className="relative">
       <div className=" flex">
@@ -235,7 +287,7 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames("w-full", {
+        className={classNames(`w-full ${borderStyle}`, {
           "bg-transparent": !disabled,
         })}
         onChange={(e) => changeHandler(e)}
@@ -261,7 +313,14 @@ export function CustomSelect({
   required,
   encrypted,
   defaultValue,
+  highlightType = "error",
 }: SelectInputProps) {
+  const [borderStyle, setBorderStyle] = useState<string>("");
+
+  useEffect(() => {
+    setBorderStyle(getInputBorderStyle(highlightType));
+  }, [highlightType]);
+
   return (
     <div className="relative">
       <div className=" flex">
@@ -280,9 +339,13 @@ export function CustomSelect({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames("w-full", {
-          "bg-transparent": !disabled,
-        })}
+        className={classNames(
+          "w-full",
+          {
+            "bg-transparent": !disabled,
+          },
+          borderStyle
+        )}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
       >
