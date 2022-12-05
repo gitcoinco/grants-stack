@@ -8,7 +8,7 @@ async function main() {
   let account;
   let accountAddress;
 
-  if(process.env.USE_HARDWARE_WALLET==='true') {
+  if(process.env.USE_HARDWARE_WALLET==="true") {
     // with hardware wallet
     console.log("Waiting for hardware wallet to connect...");
     account = new LedgerSigner(ethers.provider);
