@@ -62,8 +62,8 @@ function Card({ projectId }: { projectId: string }) {
           }}
           alt="project banner"
         />
-        <div className="p-6 relative text-start">
-          <div className="flex w-full justify-start absolute -top-6">
+        <div className="flex p-6 relative">
+          <div className="flex w-full justify-between absolute -top-6">
             <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
               <img
                 className="rounded-full"
@@ -79,30 +79,31 @@ function Card({ projectId }: { projectId: string }) {
           {props.loading ? (
             <TextLoading />
           ) : (
-            <div className="flex flex-col col-span-1 justify-between pt-4">
+            <div className="flex flex-col justify-between mt-4">
               <div className="font-semi-bold text-xl mb-2 line-clamp-2">
                 {props.currentProject?.title}
               </div>
-              <p className="text-gray-700 text-base min-h-[50px] line-clamp-3">
+              <p className="text-gray-700 text-base line-clamp-3">
                 {props.currentProject?.description}
               </p>
             </div>
           )}
         </div>
-        <div className="flex flex-col col-span-1 justify-between w-fit min-h-[16px]">
-          <Badge
-            className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
-            borderRadius="full"
-          >
-            <Image
-              src={props.projectChainIconUri}
-              alt="chain icon"
-              className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
-            />
-            {props.projectChainName}
-          </Badge>
-        </div>
       </Link>
+
+      <div className="flex justify-end w-fit mt-auto">
+        <Badge
+          className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
+          borderRadius="full"
+        >
+          <Image
+            src={props.projectChainIconUri}
+            alt="chain icon"
+            className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
+          />
+          {props.projectChainName}
+        </Badge>
+      </div>
     </div>
   );
 }
