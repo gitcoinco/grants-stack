@@ -88,8 +88,8 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer />
       </div>
+      <Footer />
     </>
   );
 }

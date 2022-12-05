@@ -31,21 +31,26 @@ export default function Auth() {
         {isConnecting ? (
           <Spinner text="Connecting Wallet" />
         ) : (
-          <div className="container mx-auto flex flex-row bg-white">
-            <div className="basis-1/2 m-auto">
-              <LandingLogo className="block w-auto mb-6"></LandingLogo>
-              <h1 className="mb-6">Round Manager</h1>
-              <p className="text-2xl my-2 text-grey-400">
-                As a round operator you can manage high-impact
-                <br />
-                grant programs and distribute funds across different
-                <br />
-                rounds and voting mechanisms.
-              </p>
-              <ConnectButton />
+          <div className="grid grid-rows-3 grid-flow-col bg-white">
+            <div className="row-span-2">
             </div>
-            <div className="basis-1/2 right-0">
-              <LandingBanner className="right-0 align-middle"></LandingBanner>
+            <div className="row-span-5">
+              <div className="my-[15rem]">
+                <LandingLogo className="block w-auto mb-6 ml-2"></LandingLogo>
+                <h1 className="mb-6">Round Manager</h1>
+                <p className="text-2xl mt-2 mb-6 text-grey-400">
+                  As a round operator you can manage high-impact
+                  <br />
+                  grant programs and distribute funds across different
+                  <br />
+                  rounds and voting mechanisms.
+                </p>
+                <ConnectButton />
+              </div>
+
+            </div>
+            <div className="row-span-5">
+              <LandingBanner className="align-middle float-right"></LandingBanner>
             </div>
           </div>
         )}

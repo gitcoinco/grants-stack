@@ -107,22 +107,24 @@ function ListPrograms() {
     <div className="bg-grey-150">
       <Navbar programCta={isSuccess} />
       <header className="mb-2.5 bg-grey-500 overflow-hidden">
-        <div className="container mx-auto flex flex-row">
-          <div className="grow p-6 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">
+        <div className="grid grid-cols-2 grid-flow-col">
+          <div className="row-span-4 md:pt-14 md:pl-20 lg:pt-32 lg:pl-24">
             <h1 className="text-4xl lg:text-6xl text-white font-thin antialiased">
               My Programs
             </h1>
-            <p className="text-xl text-grey-400 mt-2">
-              Create a grant program and manage rounds with independent
-              criteria.
+            <p className="text-xl text-grey-400 mt-4">
+              <span className="block">
+                Create a grant program and manage rounds with
+              </span>
+              <span>independent criteria.</span>
             </p>
           </div>
-          <div className="right-0 hidden md:block">
-            <Banner />
+          <div className="row-span-8 hidden md:block">
+            <Banner className="float-right" />
           </div>
         </div>
       </header>
-      <main className="container mx-auto p-2 md:px-20">
+      <main className="container mx-5 p-2 md:px-20">
         <CardsContainer>
           {isSuccess && hasNoPrograms() && startAProgramCard}
           {programList}
