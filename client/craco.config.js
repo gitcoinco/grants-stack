@@ -1,6 +1,14 @@
 module.exports = {
   webpack: {
     configure: {
+      module: {
+        rules: [
+          {
+            test: /\.wasm$/,
+            type: "webassembly/async",
+          },
+        ],
+      },
       resolve: {
         fallback: {
           crypto: require.resolve("crypto-browserify"),
@@ -12,6 +20,9 @@ module.exports = {
           os: require.resolve("os-browserify"),
           url: require.resolve("url"),
         },
+      },
+      experiments: {
+        asyncWebAssembly: true,
       },
     },
   },
