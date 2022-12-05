@@ -255,7 +255,6 @@ export const loadProjects =
       });
     }
     dispatch(projectsLoaded(projectEventsMap));
-    // dispatch(projectsLoaded(eventList));
   };
 
 export const loadAllChainsProjects =
