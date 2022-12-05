@@ -42,7 +42,7 @@ export default function ApplicationCard({
 
   useEffect(() => {
     if (applicationData.roundID !== undefined) {
-      dispatch(loadRound(applicationData.roundID));
+      dispatch(loadRound(applicationData.roundID, applicationData.chainId));
     }
   }, [dispatch, applicationData.roundID]);
 

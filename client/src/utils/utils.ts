@@ -63,10 +63,14 @@ export const getProjectURIComponents = (id: string) => {
 export const getProviderByChainId = (chainId: number) => {
   const { web3Provider } = global;
 
-  const chainConfig = web3Provider?.chains?.find((i) => i.id === chainId);
+  const chainConfig = web3Provider?.chains?.find(
+    // Yes, parameter type for chainId is number, but sometimes we pass it as a string
+    // so adding a cast to Number just in case
+    (i) => i.id === Number(chainId)
+  );
 
   if (!chainConfig) {
-    throw new Error("app chain error");
+    throw new Error(`chainConfig not found for chain ID ${chainId}`);
   }
 
   // TODO: Create a more robust RPC here to avoid fails

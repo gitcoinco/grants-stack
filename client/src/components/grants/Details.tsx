@@ -68,7 +68,7 @@ export default function Details({
       <Box>
         {props.applications.map((application) => {
           const roundID = application?.roundID;
-          const cardData = { application, roundID };
+          const cardData = { application, roundID, chainId: props.chainId };
           return (
             <Box key={roundID} m={2}>
               <ApplicationCard applicationData={cardData} />
