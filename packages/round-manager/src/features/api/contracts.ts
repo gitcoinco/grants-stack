@@ -17,6 +17,10 @@ export const projectRegistryContract = (
   let address;
 
   switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4";
+      break;
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174";
       break;
@@ -53,6 +57,10 @@ export const programFactoryContract = (
   let address;
 
   switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB";
+      break;
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "0x8918401DD47f1645fF1111D8E513c0404b84d5bB";
       break;
@@ -94,6 +102,10 @@ export const roundFactoryContract = (
   let address;
 
   switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
+      break;
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "0x0f0A4961274A578443089D06AfB9d1fC231A5a4D";
       break;
@@ -135,6 +147,10 @@ export const qfVotingStrategyFactoryContract = (
   let address;
 
   switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
+      break;
+    }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
       address = "0xE1F4A28299966686c689223Ee7803258Dbde0942";
       break;
