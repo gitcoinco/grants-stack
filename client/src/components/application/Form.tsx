@@ -248,8 +248,9 @@ export default function Form({
                     onAddressType={(v) => setAddressType(v)}
                     warningHighlight={
                       addressType &&
-                      formInputs.isSafe === "Yes" &&
-                      !addressType.isSafe
+                      ((formInputs.isSafe === "Yes" &&
+                        !addressType.isContract) ||
+                        (formInputs.isSafe === "No" && addressType.isContract))
                     }
                   />
                 </>
@@ -310,9 +311,9 @@ export default function Form({
               );
           }
         })}
-        {formInputs.isSafe === "Yes" &&
-          addressType &&
-          (!addressType.isSafe || !addressType.isContract) && (
+        {addressType &&
+          ((formInputs.isSafe === "Yes" && !addressType.isContract) ||
+            (formInputs.isSafe === "No" && addressType.isContract)) && (
             <div
               className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
               role="alert"
@@ -326,10 +327,14 @@ export default function Form({
                 </strong>
                 <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
                   <li className="text-black">
-                    It looks like the payout wallet address you have provided is
-                    not a multi-sig. Please update your payout wallet address to
-                    be a multi-sig, or update your selection to indicate you
-                    will no longer be using a multi-sig for payouts.
+                    {formInputs.isSafe === "Yes" &&
+                      (!addressType.isContract || !addressType.isSafe) &&
+                      // eslint-disable-next-line max-len
+                      `It looks like the payout wallet address you have provided is not a multi-sig. Please update your payout wallet address to be a multi-sig, or update your selection to indicate you will no longer be using a multi-sig for payouts.`}
+                    {formInputs.isSafe === "No" &&
+                      (addressType.isSafe || addressType.isContract) &&
+                      // eslint-disable-next-line max-len
+                      `It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.`}
                   </li>
                 </ul>
               </div>
