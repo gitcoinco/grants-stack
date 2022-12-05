@@ -10,7 +10,7 @@ generator docs {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://$env(POSTGRES_USER):$env(POSTGRES_PASSWORD)@localhost:5432/$env(POSTGRES_DB)"
 }
 
 model Round {
