@@ -190,7 +190,7 @@ export const extractProjectEvents = (
 ) => {
   const chainAddresses = addressesByChainID(chainID);
   const eventList: { [key: string]: ProjectEvents } = {};
-  let projectID = "";
+  const projectEventsMap: ProjectEventsMap = {};
 
   createdEvents.forEach((createEvent) => {
     // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
@@ -206,7 +206,9 @@ export const extractProjectEvents = (
       updatedAtBlock: undefined,
     };
 
-    projectID = id;
+    projectEventsMap[id] = {
+      ...eventList[id],
+    };
   });
 
   updatedEvents.forEach((updateEvent) => {
@@ -220,9 +222,12 @@ export const extractProjectEvents = (
       // eslint-disable-next-line no-param-reassign
       eventList[id].updatedAtBlock = updateEvent.blockNumber;
     }
+    projectEventsMap[id] = {
+      ...eventList[id],
+    };
   });
 
-  return { projectID, eventList };
+  return projectEventsMap;
 };
 
 export const loadProjects =
@@ -232,22 +237,25 @@ export const loadProjects =
     const { account } = state.web3;
     const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
 
-    const { projectID, eventList } = extractProjectEvents(
-      project.createdEvents,
-      project.updatedEvents,
-      chainID
-    );
-    if (projectID === "") {
+    if (project.ids.length === 0) {
       // No projects found for this address on this chain
       // This is not necessarily an error now that we fetch on all chains
       return;
     }
 
-    if (withMetaData) {
-      dispatch<any>(fetchGrantData(projectID));
-    }
+    const projectEventsMap = extractProjectEvents(
+      project.createdEvents,
+      project.updatedEvents,
+      chainID
+    );
 
-    dispatch(projectsLoaded(eventList));
+    if (withMetaData) {
+      Object.keys(projectEventsMap).forEach(async (id) => {
+        dispatch<any>(fetchGrantData(id));
+      });
+    }
+    dispatch(projectsLoaded(projectEventsMap));
+    // dispatch(projectsLoaded(eventList));
   };
 
 export const loadAllChainsProjects =

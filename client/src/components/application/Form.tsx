@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import {
-  submitApplication,
   resetApplicationError,
+  submitApplication,
 } from "../../actions/roundApplication";
 import { RootState } from "../../reducers";
 import {
