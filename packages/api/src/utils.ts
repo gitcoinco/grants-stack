@@ -1,6 +1,6 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, RoundMetadata } from "./types";
+import { ChainId, ChainName, RoundMetadata } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -45,7 +45,7 @@ export const getChainVerbose = (id: string) => {
     default:
       return "LOCAL_ROUND_LAB";
   }
-}
+};
 
 /**
  * Fetch data from IPFS
@@ -168,3 +168,16 @@ export const handleResponse = (
     data: body ?? {},
   });
 };
+
+export async function getPriceForToken(contract: string, chain: ChainName) {
+  return await fetch(
+    `https://api.coingecko.com/api/v3/coins/${chain}/contract/${contract}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => res.market_data.current_price);
+}

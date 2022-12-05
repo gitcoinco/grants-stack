@@ -3,7 +3,7 @@
   "license": "AGPL-3.0-only",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --setupFiles dotenv/config",
     "build": "npx tsc",
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",

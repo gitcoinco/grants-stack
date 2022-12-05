@@ -1,5 +1,6 @@
 /***************/
 /* = General = */
+
 /***************/
 
 export enum ChainId {
@@ -53,3 +54,5 @@ export type QFContributionsByProjectId = {
     };
   };
 };
+
+export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
