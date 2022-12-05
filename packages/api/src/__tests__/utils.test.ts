@@ -6,7 +6,7 @@ import { ChainId } from "../types";
 import {
   fetchFromIPFS,
   fetchFromGraphQL,
-  getGraphQLEndpoint,Ï
+  getGraphQLEndpoint,
   getChainVerbose,
   getPriceForToken,
 } from "../utils";
