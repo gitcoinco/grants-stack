@@ -46,7 +46,7 @@ export function getStyleInfoForFeedback(
     case "warning":
       return {
         borderColor: "gitcoin-yellow-500",
-        feedbackColor: "gitcoin-yellow-500",
+        feedbackColor: "gitcoin-yellow",
       };
     default:
       return {

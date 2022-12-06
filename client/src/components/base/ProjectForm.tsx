@@ -72,6 +72,7 @@ function ProjectForm({
         valid: true,
         errorCount: 0,
       });
+      setFeedback([...feedback, { type: "none", message: "" }]);
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -80,16 +81,25 @@ function ProjectForm({
         valid: false,
         errorCount: error.inner.length,
       });
-      // set feedback for each field
       setFeedback([
-        { type: "error", message: "This is an error" },
-        { type: "none", message: "" },
-        { type: "warning", message: "This is a warining" },
+        ...error.inner.map((er) => {
+          const err = er as ValidationError;
+          console.log("ERROR", err);
+          if (err !== null) {
+            return {
+              type: "error",
+              message: err.message,
+            };
+          }
+          return {
+            type: "none",
+            message: "",
+          };
+        }),
       ]);
     }
   };
 
-  // perform validation after the fields state is updated
   useEffect(() => {
     validate();
   }, [props.formMetaData]);
