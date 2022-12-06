@@ -73,7 +73,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
           req.body.chainId,
           votingStrategyId
         );
-        results = await linearQFCalculate(metadata, votes);
+        results = await linearQFCalculate(metadata, votes, req.body.chainId);
         break;
     }
 

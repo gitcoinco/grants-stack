@@ -5,7 +5,7 @@ import {
   RoundMetadata,
   ChainId,
 } from "../types";
-import { fetchFromGraphQL } from "../utils";
+import { denominateAs, fetchFromGraphQL } from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -48,7 +48,7 @@ export const fetchVotesHandler = async (
       contributor: vote.from,
       amount: Number(vote.amount),
       token: vote.token,
-    };
+    } as QFContribution;
 
     contributions.push(contribution);
   });
@@ -58,7 +58,8 @@ export const fetchVotesHandler = async (
 
 export const calculateHandler = async (
   metadata: RoundMetadata,
-  contributions: QFContribution[]
+  contributions: QFContribution[],
+  chainId: ChainId
 ) => {
   const totalProjectPoolAmount = metadata.totalPot;
 
@@ -83,6 +84,13 @@ export const calculateHandler = async (
       };
       contributionAddresses.add(contribution.contributor);
     }
+    // denominate the contribution in the round token
+    contribution.amount = await denominateAs(
+        contribution.token,
+        metadata.token,
+        contribution.amount,
+        chainId
+    )
     // sum the contributions from the same address
     if (
       !contributionsByProjectId[contribution.projectId].contributions[

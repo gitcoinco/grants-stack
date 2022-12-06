@@ -181,3 +181,33 @@ export async function getPriceForToken(contract: string, chain: ChainName) {
     .then((res) => res.json())
     .then((res) => res.market_data.current_price);
 }
+
+export async function denominateAs(
+  token: string,
+  asToken: string,
+  amount: number,
+  chainId: ChainId,
+): Promise<number> {
+
+  // TODO: Export this to constants
+  const chainNames = {
+    [ChainId.MAINNET]: "ethereum",
+    [ChainId.GOERLI]: "goerli",
+    [ChainId.OPTIMISM_MAINNET]: "optimism",
+    [ChainId.FANTOM_MAINNET]: "fantom",
+    [ChainId.FANTOM_TESTNET]: "fantom_testnet",
+    [ChainId.LOCAL_ROUND_LAB]: "local_round_lab",
+  };
+
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/simple/token_price/${chainNames[chainId]}?contract_addresses=${token}%2C${asToken}&vs_currencies=usd`
+  );
+
+  const data = await response.json();
+  const tokenPrice = data[token].usd;
+  const asTokenPrice = data[asToken].usd;
+
+  return amount * (asTokenPrice / tokenPrice);
+}
+
+

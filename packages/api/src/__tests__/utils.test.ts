@@ -1,15 +1,15 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-
-enableFetchMocks();
-
 import { ChainId } from "../types";
 import {
-  fetchFromIPFS,
+  denominateAs,
   fetchFromGraphQL,
-  getGraphQLEndpoint,
+  fetchFromIPFS,
   getChainVerbose,
+  getGraphQLEndpoint,
   getPriceForToken,
 } from "../utils";
+
+enableFetchMocks();
 
 const fetchMock = fetch as FetchMock;
 
@@ -218,4 +218,20 @@ describe("fetchRoundMetadata", () => {
 
 describe("handleResponse", () => {
   // TODO:
+});
+
+
+describe("denominateAs", () => {
+
+  it("should convert an amount of one token to another", async () => {
+    // in this case, test usdc to usdc 1:1 conversion
+    const token1 = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const token2 = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const amount = 69;
+
+    const convertedAmount = await denominateAs(token1, token2, amount, ChainId.MAINNET);
+
+    expect(convertedAmount).toEqual(69);
+  });
+
 });
