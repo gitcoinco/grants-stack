@@ -169,8 +169,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   }
 
   let updatedEvents = await appProvider!.getLogs(updatedFilter);
-  console.log(updatedEventSig);
-  console.log(updatedFilter);
+
   // FIXME: remove when the fantom RPC bug has been fixed
   updatedEvents = updatedEvents.filter(
     (e) => e.address === addresses.projectRegistry
