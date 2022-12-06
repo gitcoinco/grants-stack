@@ -216,30 +216,62 @@ export default function ViewBallot() {
   }
 
   function ShortlistProjects(shortlist: Project[]) {
+
+    const [, , , handleRemoveProjectsFromShortlist, handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
+
     return (
-      <div className="block p-6 rounded-lg shadow-lg bg-white border">
-        <div className="flex justify-between border-b-2 pb-2">
-          <h2 className="text-xl">Shortlist</h2>
-          {shortlistSelect ? (
-            <SelectActive onClick={() => setShortlistSelect(false)} />
-          ) : (
-            <SelectInactive onClick={() => setShortlistSelect(true)} />
-          )}
+      <div>
+        <div className="block p-6 rounded-lg shadow-lg bg-white border">
+          <div className="flex justify-between border-b-2 pb-2">
+            <h2 className="text-xl">Shortlist</h2>
+            {shortlistSelect ? (
+              <SelectActive onClick={() => setShortlistSelect(false)} />
+            ) : (
+              <SelectInactive onClick={() => setShortlistSelect(true)} />
+            )}
+          </div>
+
+          <div className="my-4">
+            {shortlist.map((project: Project, key: number) => {
+              return (
+                <ShortlistProject
+                  isSelected={
+                    isProjectAlreadySelected(project.projectRegistryId) > -1
+                  }
+                  project={project}
+                  roundRoutePath={`/round/${chainId}/${roundId}`}
+                  key={key}
+                />
+              );
+            })}
+          </div>
         </div>
 
-        <div className="my-4">
-          {shortlist.map((project: Project, key: number) => {
-            return (
-              <ShortlistProject
-                isSelected={
-                  isProjectAlreadySelected(project.projectRegistryId) > -1
-                }
-                project={project}
-                roundRoutePath={`/round/${chainId}/${roundId}`}
-                key={key}
-              />
-            );
-          })}
+        <div className="flex mt-4 gap-4">
+          <Button
+            type="button"
+            $variant="outline"
+            data-testid="bulk-remove-from-shortlist"
+            onClick={() => {
+              handleRemoveProjectsFromShortlist(shortlist);
+            }}
+            className="grow text-xs px-4 py-2 border shadow-sm border-grey-100"
+          >
+            Clear all ({shortlist.length}) projects from the shortlist
+          </Button>
+
+          <Button
+            type="button"
+            $variant="outline"
+            data-testid="bulk-add-to-final-ballot"
+            onClick={() => {
+              handleAddProjectsToFinalBallotAndRemoveFromShortlist(shortlist);
+            }}
+            className="grow items-center px-4 py-2 border-none shadow-sm text-xs rounded text-violet-500 bg-violet-100"
+          >
+            Add all ({shortlist.length}) projects to Final Donation
+          </Button>
+          
         </div>
       </div>
     );

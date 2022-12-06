@@ -323,6 +323,49 @@ describe("View Ballot Page", () => {
         });
     });
 
+    describe("Shortlist Bulk Actions", () => {
+
+      const setShortlist = jest.fn();
+      const setFinalBallot = jest.fn();
+
+      it("should not display bulk operations on shortlist when no projects are present in the shortlist ", () => {
+        renderWrapped([], setShortlist, [], setFinalBallot);
+        
+        expect(screen.queryByTestId("bulk-remove-from-shortlist")).toBeNull();
+        expect(screen.queryByTestId("bulk-add-to-final-ballot")).toBeNull();
+      });
+      
+      it("should display bulk operations on shortlist when projects are present in the shortlist", () => {
+        const shortlist: Project[] = [makeApprovedProjectData()];
+      
+        renderWrapped(shortlist, setShortlist, [], setFinalBallot);
+
+        expect(screen.queryByTestId("bulk-remove-from-shortlist")).toBeTruthy();
+        expect(screen.queryByTestId("bulk-add-to-final-ballot")).toBeTruthy();
+
+      });
+
+      it("clicking on clear all button empties the shortlist", () => {
+        const shortlist: Project[] = [makeApprovedProjectData()];
+        renderWrapped(shortlist, setShortlist, [], setFinalBallot);
+
+        const clearAll = screen.getByTestId("bulk-remove-from-shortlist");
+        fireEvent.click(clearAll);
+        
+        expect(setShortlist).toHaveBeenCalled();
+      });
+
+      it("clicking on move all projects to final ballot button moves projects from shortlist to final ballot", () => {
+        const shortlist: Project[] = [makeApprovedProjectData()];
+        renderWrapped(shortlist, setShortlist, [], setFinalBallot);
+
+        const bulkAdd = screen.getByTestId("bulk-add-to-final-ballot");
+        fireEvent.click(bulkAdd);
+        
+        expect(setFinalBallot).toHaveBeenCalled();
+        expect(setShortlist).toHaveBeenCalled();
+      });
+    });
   });
 
   describe("Final Ballot", () => {
