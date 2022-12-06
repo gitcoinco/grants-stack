@@ -328,16 +328,14 @@ export default function Form({
               </div>
               <div className="pl-6">
                 <strong className="text-gitcoin-yellow-500 font-medium">
-                  {formInputs.isSafe === "Yes"
-                    ? "Make sure your Gnosis safe or multi-sig is deployed on the current network."
-                    : "Review your payout wallet address."}
+                  Review your payout wallet address.
                 </strong>
                 <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
                   <li className="text-black">
                     {formInputs.isSafe === "Yes" &&
                       (!addressType.isContract || !addressType.isSafe) &&
                       // eslint-disable-next-line max-len
-                      `It looks like the payout wallet address you entered may not be a Gnosis Safe or multi-sig that has been deployed on ${chainInfo?.name} network. Make sure your Gnosis Safe or multisig wallet is deployed on the ${chainInfo?.name} network before proceeding. `}
+                      `It looks like the payout wallet address you have provided may not be a valid multi-sig on the ${chainInfo?.name} network. Please update your payout wallet address before proceeding.`}
                     {formInputs.isSafe === "No" &&
                       (addressType.isSafe || addressType.isContract) &&
                       // eslint-disable-next-line max-len
