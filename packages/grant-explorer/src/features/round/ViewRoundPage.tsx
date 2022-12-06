@@ -101,14 +101,18 @@ function AfterRoundStart(props: {
   const { round, chainId, roundId } = props;
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [projects, setProjects] = useState<Project[]>()
+  const [projects, setProjects] = useState<Project[]>();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
-      const timeOutId = setTimeout(() => filterProjectsByTitle(searchQuery), 300);
+      const timeOutId = setTimeout(
+        () => filterProjectsByTitle(searchQuery),
+        300
+      );
       return () => clearTimeout(timeOutId);
     } else {
-      setProjects(round.approvedProjects)
+      setProjects(round.approvedProjects);
     }
   });
 
@@ -124,6 +128,7 @@ function AfterRoundStart(props: {
         project.projectMetadata.title.includes(query) &&
         project.projectMetadata.title !== query
     );
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
   };
 
@@ -150,14 +155,14 @@ function AfterRoundStart(props: {
           <hr className="mt-4 mb-8" />
           <div className="flex flex-row mb-6 w-full justify-between">
             <h3 className="text-[32px]">
-              All Projects (
-              {projects ? projects.length : 0})
+              All Projects ({projects ? projects.length : 0})
             </h3>
             <Input
               className="w-64 h-8 rounded-full"
               type="text"
               placeholder="Search..."
               value={searchQuery}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(e: any) => setSearchQuery(e.target.value)}
             />
           </div>
