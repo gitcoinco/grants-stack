@@ -3,6 +3,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import {
   submitApplication,
@@ -55,6 +56,7 @@ export default function Form({
   showErrorModal: boolean;
 }) {
   const dispatch = useDispatch();
+  const { chains } = useNetwork();
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [preview, setPreview] = useState(false);
@@ -70,6 +72,7 @@ export default function Form({
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
+    const { chainID } = state.web3;
     let selectedProjectMetadata: Metadata | undefined;
     if (selectedProjectID !== undefined && selectedProjectID !== "") {
       selectedProjectMetadata =
@@ -80,9 +83,11 @@ export default function Form({
       projectIDs: state.projects.ids,
       allProjectMetadata,
       selectedProjectMetadata,
+      chainID,
     };
   }, shallowEqual);
 
+  const chainInfo = chains.find((i) => i.id === props.chainID);
   const schema = roundApplication.applicationSchema;
 
   const handleInput = (e: ChangeHandlers) => {
@@ -323,14 +328,16 @@ export default function Form({
               </div>
               <div className="pl-6">
                 <strong className="text-gitcoin-yellow-500 font-medium">
-                  Review your payout wallet address.
+                  {formInputs.isSafe === "Yes"
+                    ? "Make sure your Gnosis safe or multi-sig is deployed on the current network."
+                    : "Review your payout wallet address."}
                 </strong>
                 <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
                   <li className="text-black">
                     {formInputs.isSafe === "Yes" &&
                       (!addressType.isContract || !addressType.isSafe) &&
                       // eslint-disable-next-line max-len
-                      `It looks like the payout wallet address you have provided is not a multi-sig. Please update your payout wallet address to be a multi-sig, or update your selection to indicate you will no longer be using a multi-sig for payouts.`}
+                      `It looks like the payout wallet address you entered may not be a Gnosis Safe or multi-sig that has been deployed on ${chainInfo?.name} network. Make sure your Gnosis Safe or multisig wallet is deployed on the ${chainInfo?.name} network before proceeding. `}
                     {formInputs.isSafe === "No" &&
                       (addressType.isSafe || addressType.isContract) &&
                       // eslint-disable-next-line max-len
