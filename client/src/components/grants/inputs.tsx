@@ -25,14 +25,28 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
-function getInputBorderStyle(highlightType: string) {
-  switch (highlightType) {
+// todo: should we leave these here or move it to form component?
+export function getInputBorderColor(feedbackType: string) {
+  switch (feedbackType) {
     case "error":
-      return "border-gitcoin-pink-200";
+      return "gitcoin-pink-200";
     case "success":
-      return "border-green-text";
+      return "green-text";
     case "warning":
-      return "border-gitcoin-yellow-500";
+      return "gitcoin-yellow-500";
+    default:
+      return "";
+  }
+}
+
+export function getInputFeedbackColor(feedbackType: string) {
+  switch (feedbackType) {
+    case "error":
+      return "gitcoin-pink-500";
+    case "success":
+      return "green-text";
+    case "warning":
+      return "gitcoin-yellow-500";
     default:
       return "";
   }
@@ -48,13 +62,16 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
-  highlightType = "error",
+  feedbackType,
 }: InputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  // todo: update to not have this in each input, maybe each form?
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -78,8 +95,13 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={borderStyle}
+        className={classNames(`border-${borderColor}`)}
       />
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -95,13 +117,15 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
-  highlightType = "error",
+  feedbackType,
 }: AddressInputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -134,8 +158,13 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={borderStyle}
+        className={classNames(`border-${borderColor}`)}
       />
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -150,13 +179,15 @@ export function WebsiteInput({
   changeHandler,
   required,
   encrypted,
-  highlightType = "error",
+  feedbackType,
 }: InputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -194,9 +225,14 @@ export function WebsiteInput({
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
-          className={borderStyle}
+          className={classNames(`border-${borderColor}`)}
         />
       </div>
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -211,13 +247,15 @@ export function TextArea({
   changeHandler,
   required,
   encrypted,
-  highlightType = "error",
+  feedbackType,
 }: InputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
@@ -240,8 +278,13 @@ export function TextArea({
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}
-        className={borderStyle}
+        className={classNames(`border-${borderColor}`)}
       />
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -261,13 +304,15 @@ export function Select({
   required,
   encrypted,
   defaultValue,
-  highlightType = "error",
+  feedbackType,
 }: SelectInputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   return (
     <div className="relative">
@@ -287,7 +332,7 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames(`w-full ${borderStyle}`, {
+        className={classNames(`w-full border-${borderColor}`, {
           "bg-transparent": !disabled,
         })}
         onChange={(e) => changeHandler(e)}
@@ -299,6 +344,11 @@ export function Select({
           </option>
         ))}
       </select>
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -313,13 +363,15 @@ export function CustomSelect({
   required,
   encrypted,
   defaultValue,
-  highlightType = "error",
+  feedbackType,
 }: SelectInputProps) {
-  const [borderStyle, setBorderStyle] = useState<string>("");
+  const [borderColor, setBorderColor] = useState<string>("");
+  const [feedbackColor, setFeedbackColor] = useState<string>("");
 
   useEffect(() => {
-    setBorderStyle(getInputBorderStyle(highlightType));
-  }, [highlightType]);
+    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
+    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
+  }, [feedbackType]);
 
   return (
     <div className="relative">
@@ -344,7 +396,7 @@ export function CustomSelect({
           {
             "bg-transparent": !disabled,
           },
-          borderStyle
+          `border-${borderColor}`
         )}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
@@ -360,6 +412,11 @@ export function CustomSelect({
           );
         })}
       </select>
+      {feedbackType?.message ? (
+        <span className={classNames(`text-${feedbackColor}`)}>
+          {feedbackType.message}
+        </span>
+      ) : null}
     </div>
   );
 }

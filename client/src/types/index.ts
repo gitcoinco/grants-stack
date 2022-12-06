@@ -61,7 +61,10 @@ export type InputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
-  highlightType?: "error" | "success" | "warning";
+  feedbackType?: {
+    type: string;
+    message: string;
+  };
 };
 
 export type AddressInputProps = {
@@ -75,7 +78,10 @@ export type AddressInputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
-  highlightType?: "error" | "success" | "warning";
+  feedbackType?: {
+    type: string;
+    message: string;
+  };
 };
 
 export type ProjectEvents = {

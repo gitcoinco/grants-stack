@@ -38,6 +38,9 @@ function ProjectForm({
   const [formValidation, setFormValidation] = useState(validation);
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
+  const [feedbackType, setHighlightType] = useState([
+    { type: "none", message: "" },
+  ]);
   const { chains } = useNetwork();
 
   const [, setLogoImg] = useState<Blob | undefined>();
@@ -79,6 +82,12 @@ function ProjectForm({
         valid: false,
         errorCount: error.inner.length,
       });
+      // testing that the border is showing up
+      setHighlightType([
+        { type: "error", message: "This is an error" },
+        { type: "success", message: "This is success" },
+        { type: "warning", message: "This is a warining" },
+      ]);
     }
   };
 
@@ -119,6 +128,7 @@ function ProjectForm({
           value={props.formMetaData.title}
           changeHandler={handleInput}
           required
+          feedbackType={feedbackType[0] ?? {}}
         />
         <WebsiteInput
           label="Project Website"
@@ -127,6 +137,7 @@ function ProjectForm({
           value={props.formMetaData.website}
           changeHandler={handleInput}
           required
+          feedbackType={feedbackType[1] ?? {}}
         />
 
         <ImageInput
@@ -159,6 +170,7 @@ function ProjectForm({
           value={props.formMetaData.description}
           changeHandler={handleInput}
           required
+          feedbackType={feedbackType[2] ?? {}}
         />
         {!formValidation.valid && submitted && (
           <div

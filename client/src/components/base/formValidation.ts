@@ -53,5 +53,6 @@ export async function validateApplication(
   const validatedInputs = await object(schema).validate(formInputs, {
     abortEarly: false,
   });
+
   return validatedInputs;
 }
