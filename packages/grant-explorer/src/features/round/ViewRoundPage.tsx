@@ -20,6 +20,7 @@ import {
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
+import { useEffect, useState } from "react";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -40,34 +41,36 @@ export default function ViewRound() {
     <Spinner text="We're fetching the Round." />
   ) : (
     <>
-      {round && chainId && roundId ?
-          <>
-            {isBeforeRoundStartDate &&
-              <BeforeRoundStart
-                round={round}
-                chainId={chainId}
-                roundId={roundId}
-              />
-            }
+      {round && chainId && roundId ? (
+        <>
+          {isBeforeRoundStartDate && (
+            <BeforeRoundStart
+              round={round}
+              chainId={chainId}
+              roundId={roundId}
+            />
+          )}
 
-            {isAfterRoundStartDate &&
-              <AfterRoundStart
-                round={round}
-                chainId={chainId}
-                roundId={roundId}
-              />
-            }
-          </>
-        :
-          <NotFoundPage />
-      }
-
+          {isAfterRoundStartDate && (
+            <AfterRoundStart
+              round={round}
+              chainId={chainId}
+              roundId={roundId}
+            />
+          )}
+        </>
+      ) : (
+        <NotFoundPage />
+      )}
     </>
   );
 }
 
-function BeforeRoundStart(props: {round: Round, chainId: string, roundId: string}) {
-
+function BeforeRoundStart(props: {
+  round: Round;
+  chainId: string;
+  roundId: string;
+}) {
   const { round, chainId, roundId } = props;
 
   return (
@@ -90,54 +93,107 @@ function BeforeRoundStart(props: {round: Round, chainId: string, roundId: string
   );
 }
 
-function AfterRoundStart(props: { round: Round, chainId: string, roundId: string }) {
-
+function AfterRoundStart(props: {
+  round: Round;
+  chainId: string;
+  roundId: string;
+}) {
   const { round, chainId, roundId } = props;
 
-  return(
+  const [searchQuery, setSearchQuery] = useState("");
+  const [projects, setProjects] = useState<Project[]>()
+
+  useEffect(() => {
+    if (searchQuery) {
+      const timeOutId = setTimeout(() => filterProjectsByTitle(searchQuery), 300);
+      return () => clearTimeout(timeOutId);
+    } else {
+      setProjects(round.approvedProjects)
+    }
+  });
+
+  const filterProjectsByTitle = (query: string) => {
+    // filter by exact title matches first
+    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+    const projects = round?.approvedProjects;
+    const exactMatches = projects?.filter(
+      (project) => project.projectMetadata.title === query
+    );
+    const nonExactMatches = projects?.filter(
+      (project) =>
+        project.projectMetadata.title.includes(query) &&
+        project.projectMetadata.title !== query
+    );
+    setProjects([...exactMatches!, ...nonExactMatches!]);
+  };
+
+  return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 px-4 py-7 h-screen">
         <main>
-          <p className="mt-6 mb-4">
-            <h3>{round.roundMetadata?.name}</h3>
+          <p className="text-5xl mt-5 mb-6">{round.roundMetadata?.name}</p>
+          <p className="text-2xl mb-4">
+            Matching funds available: $
+            {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
           </p>
-          <p className="mb-4">
-            <span>Matching funds available: $$$</span>
+          <p className="text-2xl mb-4">
+            {round.roundMetadata?.eligibility?.description}
           </p>
-          <p className="mb-4 border-b-2 pb-4">{round.roundMetadata?.eligibility?.description}</p>
+          <Button
+            $variant="solid"
+            type="button"
+            className="items-center shadow-sm text-xs rounded px-2.5 py-1.5"
+          >
+            Apply to Grant Round
+          </Button>
+          <hr className="mt-4 mb-8" />
           <div className="flex flex-row mb-6 w-full justify-between">
-            <p className="mt-1">
-              <span className="text-xl">All Projects</span>
-            </p>
-            <Input className="w-64 h-8 rounded-full" type="text" placeholder="Search" />
+            <h3 className="text-[32px]">
+              All Projects (
+              {projects ? projects.length : 0})
+            </h3>
+            <Input
+              className="w-64 h-8 rounded-full"
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e: any) => setSearchQuery(e.target.value)}
+            />
           </div>
-          {round.approvedProjects &&
+          {projects && (
             <ProjectList
-              projects={round.approvedProjects}
+              projects={projects}
               roundRoutePath={`/round/${chainId}/${roundId}`}
             />
-          }
+          )}
         </main>
       </div>
       <Footer />
     </>
-  )
+  );
 }
 
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
-
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
-  const [shortlist, finalBallot, handleAddProjectsToShortlist, handleRemoveProjectsFromShortlist, , handleRemoveProjectsFromFinalBallot, ] = useBallot();
+  const [
+    shortlist,
+    finalBallot,
+    handleAddProjectsToShortlist,
+    handleRemoveProjectsFromShortlist,
+    ,
+    handleRemoveProjectsFromFinalBallot,
+  ] = useBallot();
   const isAddedToShortlist = shortlist.some(
-    (shortlistedProject) => shortlistedProject.grantApplicationId === project.grantApplicationId
+    (shortlistedProject) =>
+      shortlistedProject.grantApplicationId === project.grantApplicationId
   );
   const isAddedToFinalBallot = finalBallot.some(
-    (ballotProject) => ballotProject.grantApplicationId === project.grantApplicationId
+    (ballotProject) =>
+      ballotProject.grantApplicationId === project.grantApplicationId
   );
-
 
   return (
     <BasicCard className="relative" data-testid="project-card">
@@ -148,15 +204,21 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
         <CardHeader>
           <ProjectBanner
             projectMetadata={project.projectMetadata}
-            classNameOverride= {
+            classNameOverride={
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
           />
         </CardHeader>
         <CardContent>
-          <CardTitle data-testid="project-title">{project.projectMetadata.title}</CardTitle>
-          <CardDescription className="mb-2" data-testid="project-owner">by {projectRecipient}</CardDescription>
-          <CardDescription data-testid="project-description">{project.projectMetadata.description}</CardDescription>
+          <CardTitle data-testid="project-title">
+            {project.projectMetadata.title}
+          </CardTitle>
+          <CardDescription className="mb-2" data-testid="project-owner">
+            by {projectRecipient}
+          </CardDescription>
+          <CardDescription data-testid="project-description">
+            {project.projectMetadata.description}
+          </CardDescription>
         </CardContent>
       </Link>
       <CardFooter className="bg-white">
@@ -168,8 +230,8 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
               handleRemoveProjectsFromShortlist([project]);
             }}
             removeFromFinalBallot={() => {
-              handleRemoveProjectsFromFinalBallot([project]);}
-            }
+              handleRemoveProjectsFromFinalBallot([project]);
+            }}
             addToShortlist={() => {
               handleAddProjectsToShortlist([project]);
             }}
@@ -184,7 +246,6 @@ const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
 }): JSX.Element => {
-
   const { projects, roundRoutePath } = props;
 
   return (
@@ -231,52 +292,60 @@ function BallotSelectionToggle(props: {
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
 }) {
+  const [shortlist, finalBallot, , , , ,] = useBallot();
 
-    const [shortlist, finalBallot, , , , , ] = useBallot();
-
-    const isAddedToShortlist = shortlist.some(
-        (shortlistedProject) => shortlistedProject.grantApplicationId === props.project.grantApplicationId
-    );
-    const isAddedToFinalBallot = finalBallot.some(
-        (ballotProject) => ballotProject.grantApplicationId === props.project.grantApplicationId
-    );
-    // if the project is not added, show the add to shortlist button
-    // if the project is added to the shortlist, show the remove from shortlist button
-    // if the project is added to the final ballot, show the remove from final ballot button
-    if (props.isAdded) {
-        if (isAddedToShortlist) {
-            return (
-                <Button
-                  data-testid="remove-from-shortlist"
-                  onClick={props.removeFromShortlist}
-                  className={"w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
-                >
-                  Remove from Shortlist
-                </Button>
-            );
-        }
-        if (isAddedToFinalBallot) {
-            return (
-                <Button
-                    data-testid="remove-from-final-ballot"
-                    onClick={props.removeFromFinalBallot}
-                    className={"w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"}
-                >
-                    Remove from Final Ballot
-                </Button>
-            );
-        }
-    }
-    return (
+  const isAddedToShortlist = shortlist.some(
+    (shortlistedProject) =>
+      shortlistedProject.grantApplicationId === props.project.grantApplicationId
+  );
+  const isAddedToFinalBallot = finalBallot.some(
+    (ballotProject) =>
+      ballotProject.grantApplicationId === props.project.grantApplicationId
+  );
+  // if the project is not added, show the add to shortlist button
+  // if the project is added to the shortlist, show the remove from shortlist button
+  // if the project is added to the final ballot, show the remove from final ballot button
+  if (props.isAdded) {
+    if (isAddedToShortlist) {
+      return (
         <Button
-            data-testid="add-to-shortlist"
-            onClick={() => {
-                props.addToBallot();
-            }}
-            className={"w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"}>
-            Add to Shortlist
+          data-testid="remove-from-shortlist"
+          onClick={props.removeFromShortlist}
+          className={
+            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+          }
+        >
+          Remove from Shortlist
         </Button>
-    );
+      );
+    }
+    if (isAddedToFinalBallot) {
+      return (
+        <Button
+          data-testid="remove-from-final-ballot"
+          onClick={props.removeFromFinalBallot}
+          className={
+            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+          }
+        >
+          Remove from Final Ballot
+        </Button>
+      );
+    }
+  }
+  return (
+    <Button
+      data-testid="add-to-shortlist"
+      onClick={() => {
+        props.addToBallot();
+      }}
+      className={
+        "w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
+      }
+    >
+      Add to Shortlist
+    </Button>
+  );
 }
 
 function PreRoundPage(props: {
@@ -285,24 +354,39 @@ function PreRoundPage(props: {
   roundId: string;
   element: (req: Requirement, index: number) => JSX.Element;
 }) {
-
   const { round, chainId, roundId, element } = props;
 
   const applicationURL = `https://grantshub.gitcoin.co/#/chains/${chainId}/rounds/${roundId}`;
   const currentTime = new Date();
 
-  const isBeforeApplicationStartDate = round && round.applicationsStartTime >= currentTime;
-  const isDuringApplicationPeriod = round && round.applicationsStartTime <= currentTime && round.applicationsEndTime >= currentTime;
-  const isAfterApplicationEndDateAndBeforeRoundStartDate = round && round.applicationsEndTime <= currentTime && round.roundStartTime >= currentTime;
+  const isBeforeApplicationStartDate =
+    round && round.applicationsStartTime >= currentTime;
+  const isDuringApplicationPeriod =
+    round &&
+    round.applicationsStartTime <= currentTime &&
+    round.applicationsEndTime >= currentTime;
+  const isAfterApplicationEndDateAndBeforeRoundStartDate =
+    round &&
+    round.applicationsEndTime <= currentTime &&
+    round.roundStartTime >= currentTime;
 
-  const MatchingFundPayoutTokenName = round && payoutTokens.filter(t => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase())[0].name;
+  const MatchingFundPayoutTokenName =
+    round &&
+    payoutTokens.filter(
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+    )[0].name;
 
   return (
     <div className="container mx-auto flex flex-row bg-white">
       <div className="basis-1/2 mt-20 ">
         <div className="lg:inline-block md:inline-block"></div>
-        <p className="mb-2 text-xl text-black font-bold">{round.roundMetadata?.name}</p>
-        <p className="text-lg my-2 text-black font-normal" data-testid="application-period">
+        <p className="mb-2 text-xl text-black font-bold">
+          {round.roundMetadata?.name}
+        </p>
+        <p
+          className="text-lg my-2 text-black font-normal"
+          data-testid="application-period"
+        >
           Application Period:
           <span>
             {" "}
@@ -314,7 +398,10 @@ function PreRoundPage(props: {
             {round.applicationsEndTime.toLocaleDateString()}
           </span>
         </p>
-        <p className="text-lg my-2 text-black font-normal" data-testid="round-period">
+        <p
+          className="text-lg my-2 text-black font-normal"
+          data-testid="round-period"
+        >
           Round Period:
           <span>
             {" "}
@@ -326,8 +413,11 @@ function PreRoundPage(props: {
             {round.roundEndTime.toLocaleDateString()}
           </span>
         </p>
-        <p className="text-lg my-2 text-black font-normal" data-testid="matching-funds">
-          Matching Funds Available: 
+        <p
+          className="text-lg my-2 text-black font-normal"
+          data-testid="matching-funds"
+        >
+          Matching Funds Available:
           <span>
             {" "}
             &nbsp;
@@ -339,34 +429,33 @@ function PreRoundPage(props: {
         <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
           <span>{round.roundMetadata?.eligibility.description}</span>
         </p>
-        <p className="mb-2 text-lg text-black font-bold" data-testid="round-eligibility">
+        <p
+          className="mb-2 text-lg text-black font-bold"
+          data-testid="round-eligibility"
+        >
           Round Eligibility
         </p>
         <ul className="list-disc list-inside text-lg text-black font-normal">
-          {round.roundMetadata?.eligibility.requirements?.map(
-            element
-          )}
+          {round.roundMetadata?.eligibility.requirements?.map(element)}
         </ul>
         <div className="container mx-auto flex">
-          {isBeforeApplicationStartDate &&
+          {isBeforeApplicationStartDate && (
             <InactiveButton
               label={`Applications Open ${round.applicationsStartTime.toLocaleDateString()}`}
               testid="applications-open-button"
-             />
-          }
+            />
+          )}
 
-          {isDuringApplicationPeriod &&
-           <ApplyButton
-            applicationURL={applicationURL}
-           />
-          }
+          {isDuringApplicationPeriod && (
+            <ApplyButton applicationURL={applicationURL} />
+          )}
 
-          {isAfterApplicationEndDateAndBeforeRoundStartDate &&
+          {isAfterApplicationEndDateAndBeforeRoundStartDate && (
             <InactiveButton
               label="Applications Closed"
               testid="applications-closed-button"
-             />
-          }
+            />
+          )}
         </div>
       </div>
       <div className="basis-1/2 right-0"></div>
@@ -375,24 +464,22 @@ function PreRoundPage(props: {
 }
 
 const ApplyButton = (props: { applicationURL: string }) => {
-
   const { applicationURL } = props;
 
   return (
     <Button
       type="button"
-      onClick={() => window.open(applicationURL, '_blank')}
+      onClick={() => window.open(applicationURL, "_blank")}
       className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 md:h-12 hover:bg-violet-200"
       data-testid="apply-button"
     >
       Apply to Grant Round
     </Button>
-  )
+  );
 };
 
 const InactiveButton = (props: { label: string; testid: string }) => {
-
-  const { label, testid} = props;
+  const { label, testid } = props;
 
   return (
     <Button
@@ -403,4 +490,5 @@ const InactiveButton = (props: { label: string; testid: string }) => {
     >
       {label}
     </Button>
-)};
+  );
+};
