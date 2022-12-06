@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
 import { loadRound } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -52,6 +52,7 @@ function ProjectsList() {
       state.projects.ids.length === 1 &&
       toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
+
     const showRoundAlert = alreadyApplied === false;
 
     return {
@@ -72,7 +73,7 @@ function ProjectsList() {
   useEffect(() => {
     if (props.status !== Status.Undefined) return;
 
-    dispatch(loadProjects());
+    dispatch(loadAllChainsProjects());
   }, [dispatch, props.status]);
 
   useEffect(() => {

@@ -68,8 +68,8 @@ export const projectsReducer = (
       return {
         ...state,
         status: Status.Loaded,
-        ids,
-        events,
+        ids: [...state.ids, ...ids],
+        events: { ...state.events, ...events },
       };
     }
 

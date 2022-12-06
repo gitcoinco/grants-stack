@@ -38,7 +38,7 @@ export default function Details({
   const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const chainId = state.web3.chainID;
+    const { chainId } = params;
 
     const applications = state.projects.applications[params.id!] || [];
 
@@ -54,7 +54,9 @@ export default function Details({
 
   useEffect(() => {
     if (props.projectID) {
-      dispatch(fetchProjectApplications(props.projectID, props.chainId!));
+      dispatch(
+        fetchProjectApplications(props.projectID, Number(props.chainId))
+      );
     }
   }, [dispatch, props.projectID, props.chainId]);
 
@@ -66,7 +68,7 @@ export default function Details({
       <Box>
         {props.applications.map((application) => {
           const roundID = application?.roundID;
-          const cardData = { application, roundID };
+          const cardData = { application, roundID, chainId: props.chainId };
           return (
             <Box key={roundID} m={2}>
               <ApplicationCard applicationData={cardData} />
