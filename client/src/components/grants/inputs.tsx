@@ -1,7 +1,6 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
 import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 
 const optionalSpan = (
@@ -25,30 +24,35 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
-// todo: should we leave these here or move it to form component?
-export function getInputBorderColor(feedbackType: string) {
-  switch (feedbackType) {
+export function getStyleInfoForFeedback(
+  feedback:
+    | {
+        type: string;
+        message: string;
+      }
+    | undefined
+) {
+  switch (feedback?.type) {
     case "error":
-      return "gitcoin-pink-200";
+      return {
+        borderColor: "gitcoin-pink-200",
+        feedbackColor: "gitcoin-pink-500",
+      };
     case "success":
-      return "green-text";
+      return {
+        borderColor: "green-text",
+        feedbackColor: "green-text",
+      };
     case "warning":
-      return "gitcoin-yellow-500";
+      return {
+        borderColor: "gitcoin-yellow-500",
+        feedbackColor: "gitcoin-yellow-500",
+      };
     default:
-      return "";
-  }
-}
-
-export function getInputFeedbackColor(feedbackType: string) {
-  switch (feedbackType) {
-    case "error":
-      return "gitcoin-pink-500";
-    case "success":
-      return "green-text";
-    case "warning":
-      return "gitcoin-yellow-500";
-    default:
-      return "";
+      return {
+        borderColor: "",
+        feedbackColor: "",
+      };
   }
 }
 
@@ -62,16 +66,16 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
-  feedbackType,
+  feedback,
 }: InputProps) {
-  // todo: update to not have this in each input, maybe each form?
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -97,9 +101,9 @@ export function TextInput({
         onChange={changeHandler}
         className={classNames(`border-${borderColor}`)}
       />
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
@@ -117,15 +121,16 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
-  feedbackType,
+  feedback,
 }: AddressInputProps) {
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -160,9 +165,9 @@ export function TextInputAddress({
         onChange={changeHandler}
         className={classNames(`border-${borderColor}`)}
       />
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
@@ -179,15 +184,16 @@ export function WebsiteInput({
   changeHandler,
   required,
   encrypted,
-  feedbackType,
+  feedback,
 }: InputProps) {
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -228,9 +234,9 @@ export function WebsiteInput({
           className={classNames(`border-${borderColor}`)}
         />
       </div>
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
@@ -247,15 +253,16 @@ export function TextArea({
   changeHandler,
   required,
   encrypted,
-  feedbackType,
+  feedback,
 }: InputProps) {
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
@@ -280,9 +287,9 @@ export function TextArea({
         onChange={(e) => changeHandler(e)}
         className={classNames(`border-${borderColor}`)}
       />
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
@@ -304,15 +311,16 @@ export function Select({
   required,
   encrypted,
   defaultValue,
-  feedbackType,
+  feedback,
 }: SelectInputProps) {
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   return (
     <div className="relative">
@@ -344,9 +352,9 @@ export function Select({
           </option>
         ))}
       </select>
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
@@ -363,15 +371,16 @@ export function CustomSelect({
   required,
   encrypted,
   defaultValue,
-  feedbackType,
+  feedback,
 }: SelectInputProps) {
-  const [borderColor, setBorderColor] = useState<string>("");
-  const [feedbackColor, setFeedbackColor] = useState<string>("");
+  let borderColor = "";
+  let feedbackColor = "";
 
-  useEffect(() => {
-    setBorderColor(getInputBorderColor(feedbackType?.type ?? ""));
-    setFeedbackColor(getInputFeedbackColor(feedbackType?.type ?? ""));
-  }, [feedbackType]);
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderColor = styleInfo.borderColor;
+    feedbackColor = styleInfo.feedbackColor;
+  }
 
   return (
     <div className="relative">
@@ -412,9 +421,9 @@ export function CustomSelect({
           );
         })}
       </select>
-      {feedbackType?.message ? (
+      {feedback?.message ? (
         <span className={classNames(`text-${feedbackColor}`)}>
-          {feedbackType.message}
+          {feedback.message}
         </span>
       ) : null}
     </div>
