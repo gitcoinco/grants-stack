@@ -9,7 +9,10 @@ import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import { getProjectURIComponents } from "../../utils/utils";
+import {
+  getProjectURIComponents,
+  getProviderByChainId,
+} from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
@@ -70,10 +73,11 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
+    const appProvider = getProviderByChainId(Number(params.chainId));
     if (props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {
-        global.web3Provider?.getBlock(createdAtBlock).then((data) => {
+        appProvider.getBlock(createdAtBlock).then((data) => {
           if (!unloaded) {
             setCreatedAt(formattedDate(data?.timestamp));
           }
@@ -81,7 +85,7 @@ function Project() {
       }
 
       if (updatedAtBlock !== undefined) {
-        global.web3Provider?.getBlock(updatedAtBlock).then((data) => {
+        appProvider.getBlock(updatedAtBlock).then((data) => {
           if (!unloaded) {
             setUpdatedAt(formattedDate(data?.timestamp));
           }
