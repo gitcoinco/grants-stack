@@ -9,7 +9,7 @@ import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
-import TextLoading from "../base/TextLoading";
+import LoadingCard from "./LoadingCard";
 
 function Card({ projectId }: { projectId: string }) {
   const dispatch = useDispatch();
@@ -52,58 +52,60 @@ function Card({ projectId }: { projectId: string }) {
 
   return (
     <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">
-      <Link to={createProjectPath()}>
-        <img
-          className="w-full h-32 object-cover"
-          src={props.bannerImg}
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "./assets/default-project-banner.png";
-          }}
-          alt="project banner"
-        />
-        <div className="flex p-6 relative">
-          <div className="flex w-full justify-between absolute -top-6">
-            <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
-              <img
-                className="rounded-full"
-                src={props.logoImg}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = "./assets/default-project-logo.png";
-                }}
-                alt="project logo"
-              />
-            </div>
-          </div>
-          {props.loading ? (
-            <TextLoading />
-          ) : (
-            <div className="flex flex-col justify-between mt-4">
-              <div className="font-semi-bold text-xl mb-2 line-clamp-2">
-                {props.currentProject?.title}
+      {props.loading ? (
+        <LoadingCard />
+      ) : (
+        <>
+          <Link to={createProjectPath()}>
+            <img
+              className="w-full h-32 object-cover"
+              src={props.bannerImg}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./assets/default-project-banner.png";
+              }}
+              alt="project banner"
+            />
+            <div className="flex p-6 relative">
+              <div className="flex w-full justify-between absolute -top-6">
+                <div className="rounded-full h-12 w-12 bg-quaternary-text border border-tertiary-text flex justify-center items-center">
+                  <img
+                    className="rounded-full"
+                    src={props.logoImg}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "./assets/default-project-logo.png";
+                    }}
+                    alt="project logo"
+                  />
+                </div>
               </div>
-              <p className="text-gray-700 text-base line-clamp-3">
-                {props.currentProject?.description}
-              </p>
+              <div className="flex flex-col justify-between mt-4">
+                <div className="font-semi-bold text-xl mb-2 line-clamp-2">
+                  {props.currentProject?.title}
+                </div>
+                <p className="text-gray-700 text-base line-clamp-3">
+                  {props.currentProject?.description}
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-      </Link>
+          </Link>
 
-      <div className="flex justify-end w-fit mt-auto">
-        <Badge
-          className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
-          borderRadius="full"
-        >
-          <Image
-            src={props.projectChainIconUri}
-            alt="chain icon"
-            className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
-          />
-          {props.projectChainName}
-        </Badge>
-      </div>
+          <div className="flex justify-end w-fit mt-auto">
+            <Badge
+              className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
+              borderRadius="full"
+            >
+              <Image
+                src={props.projectChainIconUri}
+                alt="chain icon"
+                className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
+              />
+              {props.projectChainName}
+            </Badge>
+          </div>
+        </>
+      )}
     </div>
   );
 }
