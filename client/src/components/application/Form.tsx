@@ -1,7 +1,7 @@
+import { useEffect, useState, Fragment } from "react";
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
@@ -180,7 +180,7 @@ export default function Form({
           switch (input.type) {
             case "PROJECT":
               return (
-                <>
+                <Fragment key={input.id}>
                   <div className="mt-6 w-full sm:w-1/2 relative">
                     <CustomSelect
                       key={input.id}
@@ -205,7 +205,7 @@ export default function Form({
                     </p>
                     <hr className="w-1/2" />
                   </div>
-                </>
+                </Fragment>
               );
             case "TEXT":
               return (
@@ -223,8 +223,8 @@ export default function Form({
             case "RECIPIENT":
               /* Radio for safe or multi-sig */
               return (
-                <>
-                  <div className="relative mt-2">
+                <Fragment key={input.id}>
+                  <div className="relative mt-2" data-testid="walletType">
                     <Stack>
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
@@ -258,7 +258,7 @@ export default function Form({
                         (formInputs.isSafe === "No" && addressType.isContract))
                     }
                   />
-                </>
+                </Fragment>
               );
             case "TEXTAREA":
               return (
