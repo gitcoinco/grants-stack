@@ -1,5 +1,5 @@
 import ViewRound from "../ViewRoundPage";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import {
   generateIpfsCid,
   makeApprovedProjectData,
@@ -257,10 +257,12 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     const searchQuery = "gitcoin";
     fireEvent.change(searchInput, { target: { value: searchQuery } });
-    await new Promise((resolve) => setTimeout(() => {resolve(null)}, 500));
-    const filteredProjectCards = screen.getAllByTestId("project-card");
-    expect(filteredProjectCards.length).toEqual(1);
-    expect(screen.getByText(searchQuery)).toBeInTheDocument();
+
+    await waitFor(() => {
+      const filteredProjectCards = screen.getAllByTestId("project-card");
+      expect(filteredProjectCards.length).toEqual(1);
+      expect(screen.getByText(searchQuery)).toBeInTheDocument();
+    })
   });
 
 
