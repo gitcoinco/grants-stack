@@ -25,13 +25,16 @@ services:
       context: ./
       target: dev
       dockerfile: Dockerfile
-    command: sh -c "npm run prisma:migrate && npm run dev"
     ports:
       - "8000:8000"
     env_file: 
       - .env
     links:
-      - postgres 
+      - postgres
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    command: sh -c "npm run prisma:migrate && npm run dev"
 
 volumes:
   postgres: {}
