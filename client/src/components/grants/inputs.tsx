@@ -95,7 +95,10 @@ export function TextInputAddress({
   }, [value]);
 
   return (
-    <div className="relative mt-6 w-full sm:w-1/2">
+    <div
+      className="relative mt-6 w-full sm:w-1/2"
+      data-testid="addressInputWrapper"
+    >
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
