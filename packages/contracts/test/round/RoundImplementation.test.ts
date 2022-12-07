@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
 import { BigNumberish, ContractTransaction, Wallet } from "ethers";
-import { BytesLike, isAddress } from "ethers/lib/utils";
+import { BytesLike, formatBytes32String, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { encodeMerkleUpdateDistributionParameters, encodeRoundParameters } from "../../scripts/utils";
@@ -1324,12 +1324,12 @@ describe("RoundImplementation", function () {
 
         // Prepare Votes
         const votes = [
-          [mockERC20.address, 5,  Wallet.createRandom().address]
+          [mockERC20.address, 5,  Wallet.createRandom().address, formatBytes32String("grant2")]
         ];
 
         for (let i = 0; i < votes.length; i++) {
           encodedVotes.push(ethers.utils.defaultAbiCoder.encode(
-            ["address", "uint256", "address"],
+            ["address", "uint256", "address", "bytes32"],
             votes[i]
           ));
         }

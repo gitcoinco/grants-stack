@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
-import { BytesLike, isAddress } from "ethers/lib/utils";
+import { BytesLike, isAddress, formatBytes32String } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { MockERC20, QuadraticFundingVotingStrategyImplementation } from "../../typechain";
@@ -100,14 +100,14 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         // Prepare Votes - only ERC20
         const votes = [
-          [mockERC20.address, grant1TokenTransferAmount, grant1.address],
-          [mockERC20.address, grant2TokenTransferAmount, grant2.address],
+          [mockERC20.address, grant1TokenTransferAmount, grant1.address, formatBytes32String("grant1")],
+          [mockERC20.address, grant2TokenTransferAmount, grant2.address, formatBytes32String("grant2")],
         ];
 
         for (let i = 0; i < votes.length; i++) {
           encodedVotes.push(
             ethers.utils.defaultAbiCoder.encode(
-              ["address", "uint256", "address"],
+              ["address", "uint256", "address", "bytes32"],
               votes[i]
             )
           );
@@ -203,6 +203,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant1TokenTransferAmount,
             user.address,
             grant1.address,
+            formatBytes32String("grant1"),
             user.address // note: this would be the round contract
           )
 
@@ -212,6 +213,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant2TokenTransferAmount,
             user.address,
             grant2.address,
+            formatBytes32String("grant2"),
             user.address // note: this would be the round contract
           )
 
@@ -232,8 +234,8 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         // Prepare Votes - only ERC20
         const votesInNativeToken = [
-          [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address],
-          [nativeTokenAddress, grant2NativeTokenTransferAmount, grant2.address],
+          [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address, formatBytes32String("grant1")],
+          [nativeTokenAddress, grant2NativeTokenTransferAmount, grant2.address, formatBytes32String("grant2")],
         ];
 
         beforeEach(async () => {
@@ -247,7 +249,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           for (let i = 0; i < votesInNativeToken.length; i++) {
             encodedVotesInNativeToken.push(
               ethers.utils.defaultAbiCoder.encode(
-                ["address", "uint256", "address"],
+                ["address", "uint256", "address", "bytes32"],
                 votesInNativeToken[i]
               )
             );
@@ -298,6 +300,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant1NativeTokenTransferAmount,
             user.address,
             grant1.address,
+            formatBytes32String("grant1"),
             user.address // note: this would be the round contract
           )
 
@@ -307,6 +310,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant2NativeTokenTransferAmount,
             user.address,
             grant2.address,
+            formatBytes32String("grant2"),
             user.address // note: this would be the round contract
           )
 
@@ -341,8 +345,8 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
           // Prepare Votes - Native Token + ERC20
           const votes = [
-            [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address],
-            [mockERC20.address, grant2TokenTransferAmount, grant2.address],
+            [nativeTokenAddress, grant1NativeTokenTransferAmount, grant1.address, formatBytes32String("grant1")],
+            [mockERC20.address, grant2TokenTransferAmount, grant2.address, formatBytes32String("grant2")],
           ];
 
           // Encode Votes
@@ -351,7 +355,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           for (let i = 0; i < votes.length; i++) {
             encodedVotes.push(
               ethers.utils.defaultAbiCoder.encode(
-                ["address", "uint256", "address"],
+                ["address", "uint256", "address", "bytes32"],
                 votes[i]
               )
             );
@@ -399,6 +403,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant1NativeTokenTransferAmount,
             user.address,
             grant1.address,
+            formatBytes32String("grant1"),
             user.address // note: this would be the round contract
           )
 
@@ -408,6 +413,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
             grant2TokenTransferAmount,
             user.address,
             grant2.address,
+            formatBytes32String("grant2"),
             user.address // note: this would be the round contract
           )
 
