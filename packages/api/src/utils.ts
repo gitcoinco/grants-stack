@@ -1,6 +1,6 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, ChainName, RoundMetadata } from "./types";
+import { ChainId, ChainName, RoundMetadata, DenominationResponse } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -181,3 +181,56 @@ export async function getPriceForToken(contract: string, chain: ChainName) {
     .then((res) => res.json())
     .then((res) => res.market_data.current_price);
 }
+
+export async function denominateAs(
+  token: string,
+  asToken: string,
+  amount: number,
+  chainId: ChainId,
+): Promise<DenominationResponse> {
+
+  // TODO: Export this to constants
+  const coingeckoSupportedChainNames: Record<number, string> = {
+    [ChainId.MAINNET]: "ethereum",
+    [ChainId.OPTIMISM_MAINNET]: "optimism",
+    [ChainId.FANTOM_MAINNET]: "fantom",
+  };
+  
+  if (!coingeckoSupportedChainNames[chainId]) {
+    return {
+      isSuccess: false,
+      amount: amount,
+      message: new Error(`ChainId ${chainId} is not supported by CoinGecko's API.`),
+    } as DenominationResponse;
+  }
+
+  try {
+
+    const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/${coingeckoSupportedChainNames[chainId]}?contract_addresses=${token}%2C${asToken}&vs_currencies=usd`
+    );
+
+    const data = await response.json();
+    const tokenPrice = data[token].usd;
+    const asTokenPrice = data[asToken].usd;
+    const convertedAmount = amount * (asTokenPrice / tokenPrice);
+
+    return {
+      isSuccess: true,
+      amount: convertedAmount,
+      message: `Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`,
+    } as DenominationResponse;
+
+  } catch (err) {
+
+    return {
+      isSuccess: false,
+      amount: amount,
+      message: err,
+    } as DenominationResponse;
+
+  }
+
+}
+
+

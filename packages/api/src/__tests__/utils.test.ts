@@ -1,15 +1,15 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-
-enableFetchMocks();
-
 import { ChainId } from "../types";
 import {
-  fetchFromIPFS,
+  denominateAs,
   fetchFromGraphQL,
-  getGraphQLEndpoint,
+  fetchFromIPFS,
   getChainVerbose,
+  getGraphQLEndpoint,
   getPriceForToken,
 } from "../utils";
+
+enableFetchMocks();
 
 const fetchMock = fetch as FetchMock;
 
@@ -218,4 +218,30 @@ describe("fetchRoundMetadata", () => {
 
 describe("handleResponse", () => {
   // TODO:
+});
+
+
+describe("denominateAs", () => {
+
+  it("should convert an amount of one token to another", async () => {
+    // in this case, test usdc to usdc 1:1 conversion
+    const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const amount = 69;
+    const convertedAmount = await denominateAs(token, token, amount, ChainId.MAINNET);
+    expect(convertedAmount.amount).toEqual(69);
+  });
+
+  it("should not convert if the chain is not supported", async () => {
+    const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const amount = 69;
+    const convertedAmount = await denominateAs(token, token, amount, ChainId.FANTOM_TESTNET);
+    expect(convertedAmount.amount).toEqual(amount);
+  });
+
+  it("should return the same amount if token contract is not available on the selected chain", async () => {
+    const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const amount = 69;
+    const convertedAmount = await denominateAs(token, token, amount, ChainId.OPTIMISM_MAINNET);
+    expect(convertedAmount.amount).toEqual(amount);
+  });
 });

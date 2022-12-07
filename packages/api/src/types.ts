@@ -4,6 +4,7 @@
 /***************/
 
 export enum ChainId {
+  MAINNET = "1",
   GOERLI = "5",
   OPTIMISM_MAINNET = "10",
   FANTOM_MAINNET = "250",
@@ -45,6 +46,7 @@ export type QFContribution = {
   amount: number;
   contributor: string;
   timestamp?: number;
+  token: string;
 };
 
 export type QFContributionsByProjectId = {
@@ -56,3 +58,10 @@ export type QFContributionsByProjectId = {
 };
 
 export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
+
+export type DenominationResponse = {
+  amount: number;
+  isSuccess: boolean;
+  message: string | Error;
+}
+

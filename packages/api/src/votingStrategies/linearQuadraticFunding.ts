@@ -4,8 +4,9 @@ import {
   ProjectMatch,
   RoundMetadata,
   ChainId,
+  DenominationResponse,
 } from "../types";
-import { fetchFromGraphQL } from "../utils";
+import { denominateAs, fetchFromGraphQL } from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -48,7 +49,7 @@ export const fetchVotesHandler = async (
       contributor: vote.from,
       amount: Number(vote.amount),
       token: vote.token,
-    };
+    } as QFContribution;
 
     contributions.push(contribution);
   });
@@ -58,7 +59,8 @@ export const fetchVotesHandler = async (
 
 export const calculateHandler = async (
   metadata: RoundMetadata,
-  contributions: QFContribution[]
+  contributions: QFContribution[],
+  chainId: ChainId
 ) => {
   const totalProjectPoolAmount = metadata.totalPot;
 
@@ -74,15 +76,28 @@ export const calculateHandler = async (
   const contributionAddresses: Set<string> = new Set();
 
   // group contributions by projectId
-  contributions.forEach((contribution: QFContribution) => {
+  for (const contribution of contributions) {
     if (!contributionsByProjectId[contribution.projectId]) {
       contributionsByProjectId[contribution.projectId] = {
         contributions: contribution
-          ? { [contribution.contributor]: contribution }
-          : {},
+            ? {[contribution.contributor]: contribution}
+            : {},
       };
       contributionAddresses.add(contribution.contributor);
     }
+    // denominate the contribution in the round token
+    // TODO: look into this logic. When should conversion happen?
+    // TODO: Determine how we want to pass any errors. If the conversion is unavailable, then the converted amount will
+    //       be the same as the original amount. Is this an error and should it be reported to the user?
+    //       The DenominationResponse type is defined in types.ts and includes a message/success field for future use.
+    const res: DenominationResponse = await denominateAs(
+        contribution.token,
+        metadata.token,
+        contribution.amount,
+        chainId
+    );
+    contribution.amount = res.amount;
+
     // sum the contributions from the same address
     if (
       !contributionsByProjectId[contribution.projectId].contributions[
@@ -97,7 +112,7 @@ export const calculateHandler = async (
         contribution.contributor
       ].amount += contribution.amount;
     }
-  });
+  }
 
   // calculate the linear quadratic funding for each project
   Object.values(contributionsByProjectId).forEach((project) => {
