@@ -112,4 +112,4 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
   }
 
   return returnValue;
-}
+};
