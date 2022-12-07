@@ -5,15 +5,19 @@ import { LedgerSigner } from "@anders-t/ethers-ledger";
 async function main() {
   const network = await ethers.provider.getNetwork();
   const networkName = await hre.network.name;
+  let account;
+  let accountAddress;
 
-  // without hardware wallet
-  // const [account] = await ethers.getSigners();
-  // const accountAddress = account.address;
+  if(process.env.USE_HARDWARE_WALLET==="true") {
+    // with hardware wallet
+    console.log("Waiting for hardware wallet to connect...");
+    account = new LedgerSigner(ethers.provider);
+  } else {
+    // default without hardware wallet
+    account = (await ethers.getSigners())[0];
+  }
 
-  // with hardware wallet
-  const account = new LedgerSigner(ethers.provider);
-  const accountAddress = await account.getAddress();
-
+  accountAddress = await account.getAddress();
   const balance = await ethers.provider.getBalance(accountAddress);
 
   console.log(`chainId: ${network.chainId}`);

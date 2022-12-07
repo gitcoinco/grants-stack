@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { loadProjects } from "../../actions/projects";
-import { addressesByChainID } from "../../contracts/deployments";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import { getProjectURIComponents } from "../../utils/utils";
+import {
+  getProjectURIComponents,
+  getProviderByChainId,
+} from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
@@ -32,14 +34,6 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    if (
-      params.registryAddress?.toLowerCase() !==
-      addresses.projectRegistry?.toLowerCase()
-    ) {
-      throw new Error("Invalid registry address");
-    }
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
     const grantMetadata = state.grantsMetadata[fullId];
@@ -79,10 +73,11 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
+    const appProvider = getProviderByChainId(Number(params.chainId));
     if (props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {
-        global.web3Provider?.getBlock(createdAtBlock).then((data) => {
+        appProvider.getBlock(createdAtBlock).then((data) => {
           if (!unloaded) {
             setCreatedAt(formattedDate(data?.timestamp));
           }
@@ -90,7 +85,7 @@ function Project() {
       }
 
       if (updatedAtBlock !== undefined) {
-        global.web3Provider?.getBlock(updatedAtBlock).then((data) => {
+        appProvider.getBlock(updatedAtBlock).then((data) => {
           if (!unloaded) {
             setUpdatedAt(formattedDate(data?.timestamp));
           }
@@ -98,7 +93,7 @@ function Project() {
       }
     } else {
       // If user reloads Show projects will not exist
-      dispatch(loadProjects(true));
+      dispatch(loadAllChainsProjects(true));
     }
 
     return () => {

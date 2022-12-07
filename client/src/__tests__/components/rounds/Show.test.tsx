@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
-import { loadProjects } from "../../../actions/projects";
+import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
 import { loadRound, unloadRounds } from "../../../actions/rounds";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Show from "../../../components/rounds/Show";
@@ -64,7 +64,7 @@ describe("<Show />", () => {
       test("does not render when the round's chainId matches the user's chainId", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
-        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
         store.dispatch(web3ChainIDLoaded(5));
 
         renderWrapped(<Show />, store);
@@ -74,15 +74,15 @@ describe("<Show />", () => {
       });
     });
 
-    describe("useEffect/loadProjects", () => {
+    describe("useEffect/loadAllChainsProjects", () => {
       test("should be called the first time", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
-        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
         renderWrapped(<Show />, store);
 
-        expect(loadProjects).toBeCalledTimes(1);
+        expect(loadAllChainsProjects).toBeCalledTimes(1);
       });
 
       test("should not be called if it's already loading", async () => {
@@ -103,7 +103,7 @@ describe("<Show />", () => {
       test("should allow you to apply to a round with a project", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
-        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",

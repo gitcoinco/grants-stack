@@ -4,7 +4,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
-import { global } from "../global";
+import { RootState } from "../reducers";
 import { Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import {
@@ -14,7 +14,7 @@ import {
   RoundApplicationMetadata,
   RoundMetadata,
 } from "../types";
-import { RootState } from "../reducers";
+import { getProviderByChainId } from "../utils/utils";
 
 const projectQuestion = {
   question: "Select a project you would like to apply for funding:",
@@ -94,16 +94,10 @@ export const loadRound =
 
     const state = getState();
     const { chainID: stateChainID } = state.web3;
-    const { web3Provider } = global;
 
     const chainId = roundChainId || stateChainID;
-    const chainConfig = web3Provider?.chains?.find((i) => i.id === chainId);
 
-    if (!chainConfig) {
-      throw new Error("Config for this chain provider not found");
-    }
-
-    const appProvider = ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+    const appProvider = getProviderByChainId(chainId!);
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);
     const pinataClient = new PinataClient();

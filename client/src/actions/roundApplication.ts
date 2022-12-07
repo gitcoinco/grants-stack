@@ -185,8 +185,9 @@ export const submitApplication =
         project,
         roundApplicationMetadata,
         roundAddress,
-        chainName
+        chainName === "mainnet" ? "ethereum" : chainName // lit wants "ethereum" for mainnet
       );
+
       application = await builder.build(roundAddress, formInputs);
 
       deterministicApplication = objectToDeterministicJSON(application as any);

@@ -1,4 +1,3 @@
-import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -9,9 +8,10 @@ import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus } from "../reducers/projects";
 import PinataClient from "../services/pinata";
-import { ProjectEventsMap } from "../types";
-import { ChainId, graphqlFetch } from "../utils/graphql";
+import { ProjectEvents, ProjectEventsMap } from "../types";
+import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
+import { getProviderByChainId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
@@ -83,11 +83,6 @@ const projectsLoaded = (events: ProjectEventsMap) => ({
   events,
 });
 
-const projectError = (error: string) => ({
-  type: PROJECTS_ERROR,
-  error,
-});
-
 const projectsUnload = () => ({
   type: PROJECTS_UNLOADED,
 });
@@ -97,6 +92,9 @@ const fetchProjectCreatedUpdatedEvents = async (
   account: string
 ) => {
   const addresses = addressesByChainID(chainID!);
+
+  const appProvider = getProviderByChainId(chainID);
+
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
   //   addresses.projectRegistry,
@@ -121,7 +119,7 @@ const fetchProjectCreatedUpdatedEvents = async (
 
   // FIXME: use queryFilter when the fantom RPC bug has been fixed
   // const createdEvents = await contract.queryFilter(createdFilter);
-  let createdEvents = await global.web3Provider!.getLogs(createdFilter);
+  let createdEvents = await appProvider!.getLogs(createdFilter);
 
   // FIXME: remove when the fantom RPC bug has been fixed
   createdEvents = createdEvents.filter(
@@ -170,9 +168,8 @@ const fetchProjectCreatedUpdatedEvents = async (
     updatedFilter.address = undefined;
   }
 
-  let updatedEvents = await global.web3Provider!.getLogs(updatedFilter);
-  console.log(updatedEventSig);
-  console.log(updatedFilter);
+  let updatedEvents = await appProvider!.getLogs(updatedFilter);
+
   // FIXME: remove when the fantom RPC bug has been fixed
   updatedEvents = updatedEvents.filter(
     (e) => e.address === addresses.projectRegistry
@@ -185,73 +182,105 @@ const fetchProjectCreatedUpdatedEvents = async (
   };
 };
 
-export const loadProjects =
-  (withMetaData?: boolean) =>
-  async (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(projectsLoading());
+export const extractProjectEvents = (
+  createdEvents: ethers.providers.Log[],
+  updatedEvents: ethers.providers.Log[],
+  chainID: number
+) => {
+  const chainAddresses = addressesByChainID(chainID);
+  const eventList: { [key: string]: ProjectEvents } = {};
+  const projectEventsMap: ProjectEventsMap = {};
 
-    const state = getState();
-    const { chainID, account } = state.web3;
-    const addresses = addressesByChainID(chainID!);
+  createdEvents.forEach((createEvent) => {
+    // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
+    // const id = createEvent.args!.projectID!;
+    const id = `${chainID}:${chainAddresses.projectRegistry}:${parseInt(
+      createEvent.topics[1],
+      16
+    )}`;
 
-    try {
-      const { createdEvents, updatedEvents, ids } =
-        await fetchProjectCreatedUpdatedEvents(chainID!, account!);
+    // eslint-disable-next-line no-param-reassign
+    eventList[id] = {
+      createdAtBlock: createEvent.blockNumber,
+      updatedAtBlock: undefined,
+    };
 
-      if (createdEvents.length === 0) {
-        dispatch(projectsLoaded({}));
-        return;
-      }
+    projectEventsMap[id] = {
+      ...eventList[id],
+    };
+  });
 
-      const events: ProjectEventsMap = {};
-
-      createdEvents.forEach((createEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-        // const id = createEvent.args!.projectID!;
-        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
-          createEvent.topics[1],
-          16
-        )}`;
-
-        events[id] = {
-          createdAtBlock: createEvent.blockNumber,
-          updatedAtBlock: undefined,
-        };
-      });
-
-      updatedEvents.forEach((updateEvent) => {
-        // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
-        // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
-        const id = `${chainID}:${addresses.projectRegistry}:${parseInt(
-          updateEvent.topics[1],
-          16
-        )}`;
-        const event = events[id];
-        if (event !== undefined) {
-          event.updatedAtBlock = updateEvent.blockNumber;
-        }
-      });
-
-      if (withMetaData) {
-        ids!.map((id) => dispatch<any>(fetchGrantData(id)));
-      }
-
-      dispatch(projectsLoaded(events));
-    } catch (error) {
-      datadogRum.addError(error);
-      datadogLogs.logger.error("Failed to load projects", error as Error);
-      dispatch(projectError("Cannot load projects"));
+  updatedEvents.forEach((updateEvent) => {
+    // FIXME: use this line when the fantom RPC bug has been fixed (update line to work with new project id format)
+    // const id = BigNumber.from(updateEvent.args!.projectID!).toNumber();
+    const id = `${chainID}:${chainAddresses.projectRegistry}:${parseInt(
+      updateEvent.topics[1],
+      16
+    )}`;
+    if (eventList[id] !== undefined) {
+      // eslint-disable-next-line no-param-reassign
+      eventList[id].updatedAtBlock = updateEvent.blockNumber;
     }
+    projectEventsMap[id] = {
+      ...eventList[id],
+    };
+  });
+
+  return projectEventsMap;
+};
+
+export const loadProjects =
+  (chainID: number, withMetaData?: boolean) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const { account } = state.web3;
+    const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
+
+    if (project.ids.length === 0) {
+      // No projects found for this address on this chain
+      // This is not necessarily an error now that we fetch on all chains
+      dispatch(projectsLoaded({}));
+      return;
+    }
+
+    const projectEventsMap = extractProjectEvents(
+      project.createdEvents,
+      project.updatedEvents,
+      chainID
+    );
+
+    if (withMetaData) {
+      Object.keys(projectEventsMap).forEach(async (id) => {
+        dispatch<any>(fetchGrantData(id));
+      });
+    }
+    dispatch(projectsLoaded(projectEventsMap));
+  };
+
+export const loadAllChainsProjects =
+  (withMetaData?: boolean) => async (dispatch: Dispatch) => {
+    dispatch(projectsLoading());
+    const { web3Provider } = global;
+    web3Provider?.chains?.forEach((chainID) => {
+      dispatch<any>(loadProjects(chainID.id, withMetaData));
+    });
   };
 
 export const fetchApplicationStatusesFromContract =
-  (roundAddresses: string[], projectID: string, projectApplicationID: string) =>
+  (
+    roundAddresses: string[],
+    projectID: string,
+    projectApplicationID: string,
+    chainId: number
+  ) =>
   async (dispatch: Dispatch) => {
     roundAddresses.forEach(async (roundAddress: string) => {
+      const appProvider = getProviderByChainId(chainId);
+
       const contract = new ethers.Contract(
         roundAddress,
         RoundImplementationABI,
-        global.web3Provider!
+        appProvider
       );
 
       try {
@@ -291,17 +320,14 @@ export const fetchApplicationStatusesFromContract =
   };
 
 export const fetchProjectApplications =
-  (projectID: string, chain: ChainId) =>
-  async (dispatch: Dispatch, getState: () => RootState) => {
+  (projectID: string, chain: number) => async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
-    const state = getState();
-    const { chainID } = state.web3;
 
     const projectApplicationID = generateUniqueRoundApplicationID(
-      chainID!,
+      chain,
       projectID
     );
 
@@ -342,7 +368,8 @@ export const fetchProjectApplications =
         fetchApplicationStatusesFromContract(
           roundAddresses,
           projectID,
-          projectApplicationID
+          projectApplicationID,
+          chain
         )
       );
     } catch (error: any) {
