@@ -5,7 +5,7 @@ import {
   makeApprovedProjectData,
   makeRoundData,
   renderWithContext,
-} from "../../../test-utils"
+} from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
 import { payoutTokens } from "../../api/utils";
@@ -30,12 +30,19 @@ describe("<ViewRound /> in case of before the application start date", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const applicationsStartTime = faker.date.soon(); 
+    const applicationsStartTime = faker.date.soon();
     const applicationsEndTime = faker.date.future(1, applicationsStartTime);
     const roundStartTime = faker.date.soon(1, applicationsEndTime);
     const roundEndTime = faker.date.future(1, roundStartTime);
     const token = payoutTokens[0].address;
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+      token: token,
+    });
   });
 
   it("Should show grayed out Applications Open buttom", async () => {
@@ -44,14 +51,12 @@ describe("<ViewRound /> in case of before the application start date", () => {
     const AppSubmissionButton = screen.getByTestId("applications-open-button");
     expect(AppSubmissionButton).toBeInTheDocument();
     expect(AppSubmissionButton).toBeDisabled();
-
   });
-
 });
 
 describe("<ViewRound /> in case of during the application period", () => {
   let stubRound: Round;
-  window.open = jest.fn()
+  window.open = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -61,7 +66,14 @@ describe("<ViewRound /> in case of during the application period", () => {
     const roundStartTime = faker.date.future(1, applicationsEndTime);
     const roundEndTime = faker.date.soon(10, roundStartTime);
     const token = payoutTokens[0].address;
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+      token: token,
+    });
   });
 
   it("should display 404 when round is not found", () => {
@@ -78,21 +90,23 @@ describe("<ViewRound /> in case of during the application period", () => {
     expect(screen.getByTestId("application-period")).toBeInTheDocument();
     expect(screen.getByTestId("round-period")).toBeInTheDocument();
     expect(screen.getByTestId("matching-funds")).toBeInTheDocument();
-    expect(screen.getByText(stubRound.roundMetadata!.eligibility!.description)).toBeInTheDocument();
+    expect(
+      screen.getByText(stubRound.roundMetadata!.eligibility!.description)
+    ).toBeInTheDocument();
     expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
   });
 
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
-    const appURL = 'https://grantshub.gitcoin.co/#/chains/'+ chainId + '/rounds/' + roundId
+    const appURL =
+      "https://grantshub.gitcoin.co/#/chains/" + chainId + "/rounds/" + roundId;
 
     const AppSubmissionButton = await screen.findByText("Apply to Grant Round");
     expect(AppSubmissionButton).toBeInTheDocument();
     fireEvent.click(AppSubmissionButton);
     expect(window.open).toBeCalled();
-    expect(window.open).toHaveBeenCalledWith(appURL,'_blank');
+    expect(window.open).toHaveBeenCalledWith(appURL, "_blank");
   });
-
 });
 
 describe("<ViewRound /> in case of post application end date & before round start date", () => {
@@ -106,31 +120,45 @@ describe("<ViewRound /> in case of post application end date & before round star
     const roundStartTime = faker.date.soon();
     const roundEndTime = faker.date.future(1, roundStartTime);
     const token = payoutTokens[0].address;
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+      token: token,
+    });
   });
 
   it("Should show Applications Closed button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
 
-    const AppSubmissionButton = screen.getByTestId("applications-closed-button");
+    const AppSubmissionButton = screen.getByTestId(
+      "applications-closed-button"
+    );
     expect(AppSubmissionButton).toBeInTheDocument();
     expect(AppSubmissionButton).toBeDisabled();
-
   });
-
 });
 
 describe("<ViewRound /> in case of after the round start date", () => {
   let stubRound: Round;
   const roundStartTime = faker.date.recent();
   const applicationsEndTime = faker.date.past(1, roundStartTime);
-  const applicationsStartTime = faker.date.past(1, applicationsEndTime); 
+  const applicationsStartTime = faker.date.past(1, applicationsEndTime);
   const roundEndTime = faker.date.soon();
   const token = payoutTokens[0].address;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    stubRound = makeRoundData({ id: roundId, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime, token: token });
+    stubRound = makeRoundData({
+      id: roundId,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+      token: token,
+    });
   });
 
   it("should display 404 when round is not found", () => {
@@ -152,13 +180,13 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   it("displays the project details of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
-    
+
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
-      applicationsStartTime, 
-      applicationsEndTime, 
-      roundStartTime, 
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
       roundEndTime,
     });
 
@@ -184,9 +212,9 @@ describe("<ViewRound /> in case of after the round start date", () => {
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
-      applicationsStartTime, 
-      applicationsEndTime, 
-      roundStartTime, 
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
       roundEndTime,
     });
 
@@ -204,7 +232,14 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
@@ -223,7 +258,14 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
@@ -241,14 +283,33 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
   });
 
-  it("search filters projects by title", async () => {
+  it("search filters projects by exact title matches first", async () => {
+    const projectMetadata = {
+      title: "gitcoin",
+      description: "test",
+      website: "test.com",
+      owners: [],
+    };
     const approvedProjects = [
       makeApprovedProjectData(),
       makeApprovedProjectData(),
-      makeApprovedProjectData({projectMetadata: {title: "gitcoin", description: "test", website: "test.com", owners: []}}),
+      makeApprovedProjectData({ projectMetadata }),
+      makeApprovedProjectData({
+        projectMetadata: { ...projectMetadata, title: "gitcoin pro" },
+      }),
+      makeApprovedProjectData({
+        projectMetadata: { ...projectMetadata, title: "my great gitcoin" },
+      }),
     ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
-    
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
+
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
     const searchInput = screen.getByPlaceholderText("Search");
@@ -259,25 +320,29 @@ describe("<ViewRound /> in case of after the round start date", () => {
     fireEvent.change(searchInput, { target: { value: searchQuery } });
 
     await waitFor(() => {
-      const filteredProjectCards = screen.getAllByTestId("project-card");
-      expect(filteredProjectCards.length).toEqual(1);
-      expect(screen.getByText(searchQuery)).toBeInTheDocument();
-    })
+      const filteredProjectCards = screen.getAllByTestId("project-title");
+      expect(filteredProjectCards.length).toEqual(3);
+      expect(filteredProjectCards[0].textContent).toEqual(searchQuery);
+    });
   });
 
-
   describe("add project to ballot", () => {
-    const approvedProjects = [
-      makeApprovedProjectData(),
-    ];
-    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
-  
+    const approvedProjects = [makeApprovedProjectData()];
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects,
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+    });
+
     it("shows an add-to-shortlist button", () => {
       renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
-  
+
       expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
     });
-  
+
     it("shows a remove-from-shortlist button replacing add-to-shortlist when add-to-shortlist is clicked", () => {
       renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
       const addToBallot = screen.getByTestId("add-to-shortlist");
@@ -285,27 +350,32 @@ describe("<ViewRound /> in case of after the round start date", () => {
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
-        expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("add-to-shortlist")
+        ).not.toBeInTheDocument();
       }, 3000);
     });
-  
+
     it("shows a add-to-shortlist button replacing a remove-from-shortlist button when remove-from-balled is clicked", () => {
       renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
-  
+
       // click add to ballot
       const addToBallot = screen.getByTestId("add-to-shortlist");
       fireEvent.click(addToBallot);
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
-        expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("add-to-shortlist")
+        ).not.toBeInTheDocument();
         // click remove from ballot
         const removeFromBallot = screen.getByTestId("remove-from-shortlist");
         fireEvent.click(removeFromBallot);
         expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
-        expect(screen.queryByTestId("remove-from-shortlist")).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("remove-from-shortlist")
+        ).not.toBeInTheDocument();
       }, 3000);
-    })
+    });
   });
 });
-
