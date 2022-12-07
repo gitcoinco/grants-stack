@@ -51,6 +51,7 @@ export function handleVote(event: VotedEvent): void {
   vote.amount = event.params.amount;
   vote.from = event.params.voter.toHex();
   vote.to = event.params.grantAddress.toHex();
+  vote.projectId = event.params.projectId.toHex();
 
   vote.save();
 }

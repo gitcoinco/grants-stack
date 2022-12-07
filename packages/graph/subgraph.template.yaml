@@ -143,7 +143,7 @@ templates:
         - name: QuadraticFundingVotingStrategyImplementation
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
-        - event: Voted(address,uint256,indexed address,indexed address,indexed address)
+        - event: Voted(address,uint256,indexed address,address,indexed bytes32,indexed address)
           handler: handleVote
           receipt: true
 
