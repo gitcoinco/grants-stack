@@ -32,8 +32,8 @@ services:
     links:
       - postgres
     volumes:
-      - ./src:/app/src
-      - ./prisma:/app/prisma
+      - ./src:/src
+      - ./prisma:/prisma
     command: sh -c "npm run prisma:migrate && npm run dev"
 
 volumes:
