@@ -11,6 +11,7 @@ let amount: BigInt;
 let voter: Address;
 let grantAddress: Address;
 let roundAddress: Address;
+let projectId: string;
 
 let newVoteEvent: VotedEvent;
 
@@ -21,6 +22,7 @@ function createNewVotedEvent(
   amount: BigInt,
   voter: Address,
   grantAddress: Address,
+  projectId: string,
   roundAddress: Address,
   votingStrategyAddress: Address
 ): VotedEvent {
@@ -30,14 +32,15 @@ function createNewVotedEvent(
   const amountParam = new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount));
   const voterParam = new ethereum.EventParam("voter", ethereum.Value.fromAddress(voter));
   const grantAddressParam = new ethereum.EventParam("grantAddress", ethereum.Value.fromAddress(grantAddress));
+  const projectIdParam = new ethereum.EventParam("projectId",ethereum.Value.fromString(projectId));
   const roundAddressParam = new ethereum.EventParam("roundAddress", ethereum.Value.fromAddress(roundAddress));
 
   newVoteEvent.parameters.push(tokenParam);
   newVoteEvent.parameters.push(amountParam);
   newVoteEvent.parameters.push(voterParam);
   newVoteEvent.parameters.push(grantAddressParam);
+  newVoteEvent.parameters.push(projectIdParam);
   newVoteEvent.parameters.push(roundAddressParam);
-
 
   newVoteEvent.address = votingStrategyAddress;
 
@@ -53,6 +56,7 @@ describe("handleVote", () => {
     voter = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
     grantAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2D");
     roundAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2E");
+    projectId = "randomId";
 
     // Create VotingStrategy entity
     votingStrategyAddress = Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2A");
@@ -74,6 +78,7 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
+
     roundEntity.save();
 
     // Link VotingStrategy to Round entity
@@ -85,6 +90,7 @@ describe("handleVote", () => {
       amount,
       voter,
       grantAddress,
+      projectId,
       roundAddress,
       votingStrategyAddress
     );
@@ -152,6 +158,7 @@ describe("handleVote", () => {
       anotherAmount,
       voter,
       anotherGrantAddress,
+      projectId,
       roundAddress,
       votingStrategyAddress
     );

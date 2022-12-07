@@ -114,5 +114,6 @@ type QFVote @entity {
   amount: BigInt!
   from: String!
   to: String!
+  projectId: String!
   # round: Round!
 }
