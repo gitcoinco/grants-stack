@@ -1,5 +1,5 @@
 import ViewRound from "../ViewRoundPage";
-import {fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import {
   generateIpfsCid,
   makeApprovedProjectData,
@@ -241,6 +241,29 @@ describe("<ViewRound /> in case of after the round start date", () => {
     });
   });
 
+  it("search filters projects by title", async () => {
+    const approvedProjects = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData({projectMetadata: {title: "gitcoin", description: "test", website: "test.com", owners: []}}),
+    ];
+    const roundWithProjects = makeRoundData({ id: roundId, approvedProjects, applicationsStartTime, applicationsEndTime, roundStartTime, roundEndTime });
+    
+    renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
+
+    const searchInput = screen.getByPlaceholderText("Search");
+    const projectCards = screen.getAllByTestId("project-card");
+    expect(projectCards.length).toEqual(approvedProjects.length);
+
+    const searchQuery = "gitcoin";
+    fireEvent.change(searchInput, { target: { value: searchQuery } });
+    await new Promise((resolve) => setTimeout(() => {resolve(null)}, 500));
+    const filteredProjectCards = screen.getAllByTestId("project-card");
+    expect(filteredProjectCards.length).toEqual(1);
+    expect(screen.getByText(searchQuery)).toBeInTheDocument();
+  });
+
+
   describe("add project to ballot", () => {
     const approvedProjects = [
       makeApprovedProjectData(),
@@ -283,5 +306,4 @@ describe("<ViewRound /> in case of after the round start date", () => {
     })
   });
 });
-
 
