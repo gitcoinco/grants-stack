@@ -38,6 +38,7 @@
     "react": "^18.1.0",
     "react-datetime": "^3.1.1",
     "react-dom": "^18.1.0",
+    "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.31.3",
     "react-redux": "^8.0.1",
     "react-router-dom": "6",
@@ -78,6 +79,7 @@
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
+    "@types/react-gtm-module": "^2.0.1",
     "autoprefixer": "^10.4.7",
     "jest-localstorage-mock": "^2.4.22",
     "postcss": "^8.4.14",
