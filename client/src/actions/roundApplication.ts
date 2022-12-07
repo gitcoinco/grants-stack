@@ -1,3 +1,4 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
@@ -10,7 +11,8 @@ import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
-import { metadataToProject } from "../utils/utils";
+import { getProjectURIComponents, metadataToProject } from "../utils/utils";
+import { fetchProjectApplications } from "./projects";
 
 // FIXME: rename to ROUND_APPLICATION_APPLYING
 export const ROUND_APPLICATION_LOADING = "ROUND_APPLICATION_LOADING";
@@ -26,6 +28,12 @@ interface RoundApplicationErrorAction {
   roundAddress: string;
   error: string;
   step: Status;
+}
+
+export const ROUND_APPLICATION_ERROR_RESET = "ROUND_APPLICATION_ERROR_RESET";
+interface RoundApplicationErrorResetAction {
+  type: typeof ROUND_APPLICATION_ERROR_RESET;
+  roundAddress: string;
 }
 
 // FIXME: rename to ROUND_APPLICATION_APPLIED
@@ -58,6 +66,7 @@ interface RoundApplicationResetAction {
 export type RoundApplicationActions =
   | RoundApplicationLoadingAction
   | RoundApplicationErrorAction
+  | RoundApplicationErrorResetAction
   | RoundApplicationLoadedAction
   | RoundApplicationFoundAction
   | RoundApplicationNotFoundAction
@@ -79,17 +88,23 @@ export const resetApplication = (roundAddress: string) => ({
   roundAddress,
 });
 
+export const resetApplicationError = (roundAddress: string) => ({
+  type: ROUND_APPLICATION_ERROR_RESET,
+  roundAddress,
+});
+
 export const submitApplication =
   (roundAddress: string, formInputs: { [id: number]: string }) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const roundState = state.rounds[roundAddress];
+
     dispatch({
       type: ROUND_APPLICATION_LOADING,
       roundAddress,
       status: Status.BuildingApplication,
     });
 
-    const state = getState();
-    const roundState = state.rounds[roundAddress];
     if (roundState === undefined) {
       dispatch(
         applicationError(
@@ -125,9 +140,10 @@ export const submitApplication =
       return;
     }
 
-    const projectId = formInputs[projectQuestionId];
-    const projectMetadata: any =
-      state.grantsMetadata[Number(projectId)].metadata;
+    const projectID = formInputs[projectQuestionId];
+    const { id: projectNumber } = getProjectURIComponents(projectID);
+
+    const projectMetadata: any = state.grantsMetadata[projectID].metadata;
     if (projectMetadata === undefined) {
       dispatch(
         applicationError(
@@ -154,21 +170,37 @@ export const submitApplication =
       return;
     }
 
-    const builder = new RoundApplicationBuilder(
-      true,
-      project,
-      roundApplicationMetadata,
+    dispatch({
+      type: ROUND_APPLICATION_LOADING,
       roundAddress,
-      chainName
-    );
-    const application: RoundApplication = await builder.build(
-      roundAddress,
-      formInputs
-    );
+      status: Status.LitAuthentication,
+    });
 
-    const deterministicApplication = objectToDeterministicJSON(
-      application as any
-    );
+    let application: RoundApplication;
+    let deterministicApplication: string;
+
+    try {
+      const builder = new RoundApplicationBuilder(
+        true,
+        project,
+        roundApplicationMetadata,
+        roundAddress,
+        chainName === "mainnet" ? "ethereum" : chainName // lit wants "ethereum" for mainnet
+      );
+
+      application = await builder.build(roundAddress, formInputs);
+
+      deterministicApplication = objectToDeterministicJSON(application as any);
+    } catch (error) {
+      dispatch(
+        applicationError(
+          roundAddress,
+          "cannot authenticate user",
+          Status.LitAuthentication
+        )
+      );
+      return;
+    }
 
     const { signer } = global;
 
@@ -187,6 +219,7 @@ export const submitApplication =
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
+      datadogRum.addError(e);
       dispatch(
         applicationError(
           roundAddress,
@@ -222,9 +255,10 @@ export const submitApplication =
     });
 
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
+
     const projectUniqueID = generateUniqueRoundApplicationID(
       chainID,
-      Number(projectId)
+      projectNumber
     );
 
     try {
@@ -234,9 +268,11 @@ export const submitApplication =
       dispatch({
         type: ROUND_APPLICATION_LOADED,
         roundAddress,
-        projectId: Number(projectId),
+        projectId: projectID,
       });
+      dispatch<any>(fetchProjectApplications(projectID, chainID));
     } catch (e) {
+      datadogRum.addError(e);
       console.error("error calling applyToRound:", e);
       dispatch(
         applicationError(
@@ -249,15 +285,15 @@ export const submitApplication =
   };
 
 export const checkRoundApplications =
-  (chainID: number, roundAddress: string, projectIDs: Array<number>) =>
+  (chainID: number, roundAddress: string, projectIDs: Array<string>) =>
   async (dispatch: Dispatch) => {
     const { signer } = global;
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const uniqueIDsToIDs = Object.fromEntries(
-      projectIDs.map((id: number) => [
-        generateUniqueRoundApplicationID(chainID, id),
-        id,
-      ])
+      projectIDs.map((fullId: string) => {
+        const { id } = getProjectURIComponents(fullId);
+        return [generateUniqueRoundApplicationID(chainID, id), id];
+      })
     );
 
     const applicationFilter = contract.filters.NewProjectApplication(
@@ -279,6 +315,7 @@ export const checkRoundApplications =
       });
     } catch (e) {
       // FIXME: dispatch an error?
+      datadogRum.addError(e);
       console.error("error getting round applications");
     } finally {
       if (applicationEvents.length === 0) {

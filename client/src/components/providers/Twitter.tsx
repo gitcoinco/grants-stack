@@ -1,13 +1,17 @@
+import { Tooltip } from "@chakra-ui/react";
+import { datadogLogs } from "@datadog/browser-logs";
+import { datadogRum } from "@datadog/browser-rum";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { datadogRum } from "@datadog/browser-rum";
+import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
-import Button, { ButtonVariants } from "../base/Button";
 import { global } from "../../global";
-import { fetchVerifiableCredential } from "./identity/credentials";
-import { ProviderID } from "../../types";
 import { RootState } from "../../reducers";
+import { ProviderID } from "../../types";
+import Button, { ButtonVariants } from "../base/Button";
+import { fetchVerifiableCredential } from "./identity/credentials";
 
 const providerId: ProviderID = "ClearTextTwitter";
 
@@ -18,22 +22,30 @@ export default function Twitter({
   handle,
   verificationComplete,
   verificationError,
+  canVerify,
 }: {
   handle: string;
   verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
+  canVerify: boolean;
 }) {
   const [complete, setComplete] = useState(false);
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
+      formMetaData: state.projectForm.metadata,
     }),
     shallowEqual
   );
 
+  useEffect(() => {
+    setComplete(false);
+  }, [props.formMetaData.projectTwitter]);
+
   const { signer } = global;
-  // Open Twitter authUrl in centered window
-  function openTwitterOAuthUrl(url: string): void {
+
+  // Fetch Twitter OAuth2 url from the IAM procedure
+  async function handleFetchTwitterOAuth(): Promise<void> {
     const width = 600;
     const height = 800;
     // eslint-disable-next-line no-restricted-globals
@@ -41,17 +53,13 @@ export default function Twitter({
     // eslint-disable-next-line no-restricted-globals
     const top = screen.height / 2 - height / 2;
 
-    // Pass data to the page via props
-    window.open(
-      url,
+    const authWindow = window.open(
+      "",
       "_blank",
       // eslint-disable-next-line max-len
       `toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
     );
-  }
 
-  // Fetch Twitter OAuth2 url from the IAM procedure
-  async function handleFetchTwitterOAuth(): Promise<void> {
     // Fetch data from external API
     const res = await fetch(
       `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL?.replace(
@@ -69,8 +77,10 @@ export default function Twitter({
       }
     );
     const data = await res.json();
-    // open new window for authUrl
-    openTwitterOAuthUrl(data.authUrl);
+
+    if (authWindow) {
+      authWindow.location = data.authUrl;
+    }
   }
 
   // Listener to watch for oauth redirect response on other windows (on the same host)
@@ -123,6 +133,7 @@ export default function Twitter({
           verificationError(
             "Couldn't connect to Twitter. Please try verifying again"
           );
+          datadogLogs.logger.error("Twitter verification failed", error);
           datadogRum.addError(error, { provider: providerId });
         })
         .finally(() => {});
@@ -134,9 +145,11 @@ export default function Twitter({
     // open the channel
     const channel = new BroadcastChannel("twitter_oauth_channel");
     // event handler will listen for messages from the child (debounced to avoid multiple submissions)
-    channel.onmessage = debounce((event: MessageEvent) => {
-      listenForRedirect(event.data);
-    });
+    channel.onmessage = debounce(
+      (event: { target: string; data: { code: string; state: string } }) => {
+        listenForRedirect(event);
+      }
+    );
 
     return () => {
       channel.close();
@@ -145,7 +158,7 @@ export default function Twitter({
 
   if (complete) {
     return (
-      <div className="flex ml-8">
+      <div className="flex ml-8 mt-14">
         <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />
         <p className="text-green-text font-normal">Verified</p>
       </div>
@@ -153,14 +166,24 @@ export default function Twitter({
   }
 
   return (
-    <div>
+    <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
-        styles={["ml-8 w-auto"]}
+        disabled={handle?.length === 0}
+        styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleFetchTwitterOAuth()}
       >
         Verify
       </Button>
+      <Tooltip
+        className="shrink"
+        bg="purple.900"
+        hasArrow
+        label="Optional: Verify your project so that our grant program partners know your project is trustworthy.
+        You can also verify your project later, but doing so will incur additional gas fees."
+      >
+        <QuestionMarkCircleIcon className="w-6 h-6  mt-14" color="gray" />
+      </Tooltip>
     </div>
   );
 }

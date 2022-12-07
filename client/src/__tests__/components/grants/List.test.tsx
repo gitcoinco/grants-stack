@@ -2,14 +2,15 @@ import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import { when } from "jest-when";
 import { Store } from "redux";
-import { loadProjects } from "../../../actions/projects";
+import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
 import { checkRoundApplications } from "../../../actions/roundApplication";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import List from "../../../components/grants/List";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { RootState } from "../../../reducers";
+import { ApplicationModalStatus } from "../../../reducers/roundApplication";
 import setupStore from "../../../store";
-import { Metadata, ProjectEvent } from "../../../types";
+import { Metadata, ProjectEventsMap } from "../../../types";
 import {
   buildProjectMetadata,
   buildRound,
@@ -20,22 +21,22 @@ jest.mock("../../../actions/projects");
 jest.mock("../../../actions/roundApplication");
 jest.mock("../../../hooks/useLocalStorage");
 
-const projects: ProjectEvent[] = [
-  {
-    id: 1,
-    block: 1111,
+const projectEventsMap: ProjectEventsMap = {
+  "1:1:1": {
+    createdAtBlock: 1111,
+    updatedAtBlock: 1112,
   },
-  {
-    id: 2,
-    block: 2222,
+  "1:1:2": {
+    createdAtBlock: 2222,
+    updatedAtBlock: 2223,
   },
-];
+};
 
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: 1,
+    id: "1:1:1",
     title: "First Project",
     description: "",
     website: "",
@@ -43,7 +44,7 @@ const projectsMetadata: Metadata[] = [
   {
     protocol: 2,
     pointer: "0x1234",
-    id: 2,
+    id: "1:1:2",
     title: "Second Project",
     description: "",
     website: "",
@@ -55,14 +56,16 @@ describe("<List />", () => {
     (useLocalStorage as jest.Mock).mockReturnValue([null]);
   });
 
-  describe("useEffect/loadProjects", () => {
+  describe("useEffect/loadAllChainsProjects", () => {
     test("should be called the first time", async () => {
       const store = setupStore();
-      (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+      (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+      // (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
       renderWrapped(<List />, store);
 
-      expect(loadProjects).toBeCalledTimes(1);
+      // How many times this will be called is going to change with the number of supported chains
+      expect(loadAllChainsProjects).toBeCalledTimes(1);
     });
 
     test("should not be called if it's already loading", async () => {
@@ -72,6 +75,15 @@ describe("<List />", () => {
       renderWrapped(<List />, store);
 
       expect(loadProjects).toBeCalledTimes(0);
+    });
+
+    test("should fails if error occurs on project fetch", async () => {
+      const store = setupStore();
+      store.dispatch({ type: "PROJECTS_ERROR", error: "Cannot load projects" });
+
+      renderWrapped(<List />, store);
+
+      expect(screen.getByText("Error")).toBeInTheDocument();
     });
   });
 
@@ -87,7 +99,15 @@ describe("<List />", () => {
         .calledWith("roundToApply", null)
         .mockReturnValue(["5:0x1234"]);
 
-      store.dispatch({ type: "PROJECTS_LOADED", projects: [projects[0]] });
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        events: {
+          "1:1:1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
+          },
+        },
+      });
       store.dispatch({
         type: "GRANT_METADATA_FETCHED",
         data: projectsMetadata[0],
@@ -109,7 +129,7 @@ describe("<List />", () => {
         .calledWith("roundToApply", null)
         .mockReturnValue([null]);
 
-      store.dispatch({ type: "PROJECTS_LOADED", projects: [] });
+      store.dispatch({ type: "PROJECTS_LOADED", events: {} });
 
       renderWrapped(<List />, store);
 
@@ -125,12 +145,13 @@ describe("<List />", () => {
 
         renderWrapped(<List />, store);
 
-        expect(screen.getByText("loading...")).toBeInTheDocument();
+        expect(screen.getByText("Loading Projects")).toBeInTheDocument();
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
       });
 
       test("should show an empty list", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADED", projects: [] });
+        store.dispatch({ type: "PROJECTS_LOADED", events: {} });
 
         renderWrapped(<List />, store);
 
@@ -144,7 +165,7 @@ describe("<List />", () => {
       test("should show projects", async () => {
         const store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
           data: projectsMetadata[0],
@@ -167,7 +188,7 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -187,14 +208,17 @@ describe("<List />", () => {
             .mockReturnValue([null]);
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([false]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
 
         test("should never be visible", async () => {
           renderWrapped(<List />, store);
 
-          expect(screen.queryByText("Apply to Round")).toBeNull();
+          expect(screen.queryByText("Apply")).toBeNull();
         });
       });
 
@@ -207,8 +231,11 @@ describe("<List />", () => {
             .mockReturnValue([`5:${roundAddress}`]);
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([false]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.Undefined]);
         });
 
         test("should be visible if user didn't apply yet", async () => {
@@ -227,13 +254,13 @@ describe("<List />", () => {
             data: buildProjectMetadata({}),
           });
 
-          store.dispatch({ type: "PROJECTS_LOADED", projects });
+          store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
 
           renderWrapped(<List />, store);
 
-          expect(screen.getByText("Apply to Round")).toBeInTheDocument();
+          expect(screen.getByText("Apply")).toBeInTheDocument();
         });
 
         test("should not be visible if user already applied", async () => {
@@ -245,7 +272,7 @@ describe("<List />", () => {
 
           renderWrapped(<List />, store);
 
-          expect(screen.queryByText("Apply to Round")).toBeNull();
+          expect(screen.queryByText("Apply")).toBeNull();
         });
       });
     });
@@ -256,7 +283,7 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", projects });
+        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -280,12 +307,25 @@ describe("<List />", () => {
             .mockReturnValue([`5:${roundAddress}`]);
         });
 
-        test("should be visible with toggleRoundApplicationModal set to true and not applied yet", async () => {
+        test("should be visible with toggleRoundApplicationModal set to notApplied, with only one project created and not applied yet", async () => {
           store.dispatch({ type: "ROUND_APPLICATION_NOT_FOUND", roundAddress });
+          store.dispatch({ type: "PROJECTS_UNLOADED" });
+          store.dispatch({
+            type: "PROJECTS_LOADED",
+            events: {
+              "1:1:1": {
+                createdAtBlock: 1111,
+                updatedAtBlock: 1112,
+              },
+            },
+          });
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([true]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
           renderWrapped(<List />, store);
 
@@ -299,12 +339,15 @@ describe("<List />", () => {
           store.dispatch({
             type: "ROUND_APPLICATION_FOUND",
             roundAddress,
-            project: projects[0].id,
+            project: "1:1:1",
           });
 
           when(useLocalStorage as jest.Mock)
-            .calledWith("toggleRoundApplicationModal", false)
-            .mockReturnValue([true]);
+            .calledWith(
+              "toggleRoundApplicationModal",
+              ApplicationModalStatus.Undefined
+            )
+            .mockReturnValue([ApplicationModalStatus.NotApplied]);
 
           renderWrapped(<List />, store);
 

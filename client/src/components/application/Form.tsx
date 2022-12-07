@@ -1,8 +1,12 @@
 import { Stack } from "@chakra-ui/react";
+import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
-import { submitApplication } from "../../actions/roundApplication";
+import {
+  resetApplicationError,
+  submitApplication,
+} from "../../actions/roundApplication";
 import { RootState } from "../../reducers";
 import {
   ChangeHandlers,
@@ -12,10 +16,13 @@ import {
   Round,
   RoundApplicationMetadata,
 } from "../../types";
+import { getProjectURIComponents } from "../../utils/utils";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
+import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
 import {
-  Select,
+  CustomSelect,
   TextArea,
   TextInput,
   TextInputAddress,
@@ -29,14 +36,21 @@ const validation = {
   errorCount: 0,
 };
 
+enum ValidationStatus {
+  Invalid,
+  Valid,
+}
+
 export default function Form({
   roundApplication,
   round,
   onSubmit,
+  showErrorModal,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
   onSubmit: () => void;
+  showErrorModal: boolean;
 }) {
   const dispatch = useDispatch();
 
@@ -60,7 +74,7 @@ export default function Form({
     }
 
     return {
-      projects: state.projects.projects,
+      projectIDs: state.projects.ids,
       allProjectMetadata,
       selectedProjectMetadata,
     };
@@ -88,8 +102,10 @@ export default function Form({
         errorCount: 0,
       });
       setDisableSubmit(false);
+      return ValidationStatus.Valid;
     } catch (e) {
       const error = e as ValidationError;
+      datadogRum.addError(error);
       console.log(error);
       setFormValidation({
         messages: error.inner.map((er) => (er as ValidationError).message),
@@ -97,12 +113,13 @@ export default function Form({
         errorCount: error.inner.length,
       });
       setDisableSubmit(true);
+      return ValidationStatus.Invalid;
     }
   };
 
   const handlePreviewClick = async () => {
-    await validate();
-    if (formValidation.valid) {
+    const valid = await validate();
+    if (valid === ValidationStatus.Valid) {
       setPreview(true);
       setShowError(false);
     } else {
@@ -118,14 +135,32 @@ export default function Form({
     }
   };
 
+  const closeErrorModal = async () => {
+    dispatch(resetApplicationError(round.address));
+  };
+
+  const handleSubmitApplicationRetry = async () => {
+    closeErrorModal();
+    handleSubmitApplication();
+  };
+
+  // todo: add the chain logo for each project
   useEffect(() => {
-    const currentOptions = props.projects.map(
-      (project): ProjectOption => ({
-        id: project.id,
-        title: props.allProjectMetadata[project.id]?.metadata?.title,
-      })
-    );
-    currentOptions.unshift({ id: undefined, title: "" });
+    const currentOptions = props.projectIDs.map((id): ProjectOption => {
+      const { chainId } = getProjectURIComponents(id);
+      const projectChainIconUri = getNetworkIcon(Number(chainId));
+      const chainName = networkPrettyName(Number(chainId));
+      return {
+        id,
+        title: props.allProjectMetadata[id]?.metadata?.title,
+        chainInfo: {
+          chainId: Number(chainId),
+          icon: projectChainIconUri,
+          chainName,
+        },
+      };
+    });
+    currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
 
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
@@ -139,7 +174,7 @@ export default function Form({
               return (
                 <>
                   <div className="mt-6 w-full sm:w-1/2 relative">
-                    <Select
+                    <CustomSelect
                       key={input.id}
                       name={`${input.id}`}
                       label={input.question}
@@ -201,10 +236,8 @@ export default function Form({
                     label="Payout Wallet Address"
                     placeholder={input.info}
                     name={`${input.id}`}
-                    tooltipValue="Please make sure the payout address you provide is a valid address that you own on the network
-                    you are applying on. If you provide the address for a gnosis SAFE or other multisig, please confirm the multisig
-                    is deployed to network, and not simply a multisig you own on L1. Round team will send a test transaction and
-                    require you send it back before sending the balance of any full grant."
+                    // eslint-disable-next-line max-len
+                    tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
                     value={formInputs[`${input.id}`]}
                     disabled={preview}
                     changeHandler={handleInput}
@@ -263,6 +296,7 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  encrypted={input.encrypted}
                 />
               );
           }
@@ -314,6 +348,11 @@ export default function Form({
           )}
         </div>
       </form>
+      <ErrorModal
+        open={showErrorModal}
+        onClose={closeErrorModal}
+        onRetry={handleSubmitApplicationRetry}
+      />
     </div>
   );
 }

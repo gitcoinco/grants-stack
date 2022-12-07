@@ -1,57 +1,28 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { BaseModal } from "../base/BaseModal";
-import { Status, RoundApplicationError } from "../../reducers/roundApplication";
+import { BaseModal } from "./BaseModal";
+import { Status, Step } from "../../utils/steps";
+import { RoundApplicationError } from "../../reducers/roundApplication";
+import { NewGrantError } from "../../reducers/newGrant";
 
 type StatusModalProps = {
   open: boolean;
   onClose: (open: boolean) => void;
   currentStatus: Status;
-  error?: RoundApplicationError;
+  steps: Step[];
+  error?: RoundApplicationError | NewGrantError;
+  title: string;
 };
-
-type Step = {
-  name: string;
-  description: string;
-  status: Status;
-};
-
-export const steps: Step[] = [
-  {
-    name: "Gathering Data",
-    description: "Preparing your application.",
-    status: Status.BuildingApplication,
-  },
-  {
-    name: "Signing",
-    description: "Signing the application metadata with your wallet.",
-    status: Status.SigningApplication,
-  },
-  {
-    name: "Storing",
-    description: "The metadata is being saved in a safe place.",
-    status: Status.UploadingMetadata,
-  },
-  {
-    name: "Applying",
-    description: "Sending your application.",
-    status: Status.SendingTx,
-  },
-  {
-    name: "Redirecting",
-    description: "Just another moment while we finish things up.",
-    status: Status.Sent,
-  },
-];
 
 type StepComponentProps = {
   ownStep: Step;
   currentStatus: Status;
-  error?: RoundApplicationError;
+  steps: Step[];
+  error?: RoundApplicationError | NewGrantError;
 };
 
 const completedIcon = (
   <span className="step-icon step-icon-completed flex h-9 items-center">
-    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 group-hover:bg-teal-800">
+    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-teal-600">
       <CheckIcon className="h-5 w-5 text-white" aria-hidden="true" />
     </span>
   </span>
@@ -75,22 +46,27 @@ const waitingIcon = (
   >
     <span
       // eslint-disable-next-line max-len
-      className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white group-hover:border-gray-400"
+      className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white"
     >
-      <span className="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" />
+      <span className="h-2.5 w-2.5 rounded-full bg-transparent" />
     </span>
   </span>
 );
 
 const errorIcon = (
   <span className="step-icon step-icon-error flex h-9 items-center">
-    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-600 group-hover:bg-red-800">
+    <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-red-600">
       <XMarkIcon className="w-5 h-5 text-white" aria-hidden="true" />
     </span>
   </span>
 );
 
-function StepComponent({ ownStep, currentStatus, error }: StepComponentProps) {
+function StepComponent({
+  ownStep,
+  currentStatus,
+  error,
+  steps,
+}: StepComponentProps) {
   let lastStepStatus = currentStatus;
 
   if (error !== undefined) {
@@ -137,32 +113,16 @@ export default function StatusModal({
   onClose,
   currentStatus,
   error,
+  steps,
+  title,
 }: StatusModalProps) {
-  const working = error === undefined && currentStatus !== Status.Sent;
-  const onCloseCallback = working ? () => {} : () => onClose(false);
-
   return (
-    <BaseModal
-      isOpen={open}
-      hideCloseButton={working}
-      onClose={onCloseCallback}
-    >
+    <BaseModal isOpen={open} onClose={() => onClose(false)} hideCloseButton>
       <>
         <div>
           <div>
             <h5 className="font-semibold mb-2">Processing...</h5>
-            {error === undefined && (
-              <p className="mb-4">
-                Please hold while we submit your grant round application.
-              </p>
-            )}
-
-            {error !== undefined && (
-              <p className="mb-4 bg-red-600 text-white py-2 px-2 rounded-md">
-                There has been a systems error while applyting to this round.
-                Please close this modal and try again.
-              </p>
-            )}
+            {error === undefined && <p className="mb-4">{title}</p>}
           </div>
         </div>
         <div>
@@ -173,6 +133,7 @@ export default function StatusModal({
                   key={step.name}
                   error={error}
                   ownStep={step}
+                  steps={steps}
                   currentStatus={currentStatus}
                 />
               ))}

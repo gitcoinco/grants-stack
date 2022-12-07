@@ -2,18 +2,28 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
-import { ProjectEvent } from "../../types";
 import { getProjectImage, ImgTypes } from "../../utils/components";
+import {
+  getProjectURIComponents,
+  getProviderByChainId,
+} from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
+
+const formattedDate = (timestamp: number | undefined) =>
+  new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
 function Project() {
   const [updatedAt, setUpdatedAt] = useState("");
@@ -24,7 +34,10 @@ function Project() {
   const params = useParams();
 
   const props = useSelector((state: RootState) => {
-    const grantMetadata = state.grantsMetadata[Number(params.id)];
+    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
+
+    const grantMetadata = state.grantsMetadata[fullId];
+
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
@@ -38,13 +51,14 @@ function Project() {
       ImgTypes.logoImg,
       grantMetadata?.metadata
     );
+
     return {
-      id: params.id,
+      id: fullId,
       loading,
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
-      projects: state.projects.projects,
+      projectEvents: state.projects.events[fullId],
     };
   }, shallowEqual);
 
@@ -52,55 +66,40 @@ function Project() {
     // called twice
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
-    if (params.id !== undefined && props.currentProject === undefined) {
-      dispatch(fetchGrantData(Number(params.id)));
+    if (props.id !== undefined && props.currentProject === undefined) {
+      dispatch(fetchGrantData(props.id));
     }
-  }, [dispatch, params.id, props.currentProject]);
+  }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
-    async function fetchTimeStamp(projects: ProjectEvent[], projectId: string) {
-      if (global) {
-        const currentProject = projects.find(
-          (project) => project.id === Number(projectId)
-        );
-        if (currentProject) {
-          const updatedBlockData = await global.web3Provider?.getBlock(
-            currentProject.block
-          );
-
-          const createdBlockData = await global.web3Provider?.getBlock(
-            currentProject.createdAtBlock!
-          );
-
-          const formattedUpdatedAtDate = new Date(
-            (updatedBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString("en", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-
-          const formattedCreatedAtDate = new Date(
-            (createdBlockData?.timestamp ?? 0) * 1000
-          ).toLocaleString("en", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
-
-          setUpdatedAt(formattedUpdatedAtDate);
-          setCreatedAt(formattedCreatedAtDate);
-        }
+    let unloaded = false;
+    const appProvider = getProviderByChainId(Number(params.chainId));
+    if (props.projectEvents !== undefined) {
+      const { createdAtBlock, updatedAtBlock } = props.projectEvents;
+      if (createdAtBlock !== undefined) {
+        appProvider.getBlock(createdAtBlock).then((data) => {
+          if (!unloaded) {
+            setCreatedAt(formattedDate(data?.timestamp));
+          }
+        });
       }
-    }
 
-    if (props.currentProject !== undefined && props.id !== undefined) {
-      fetchTimeStamp(props.projects, props.id);
+      if (updatedAtBlock !== undefined) {
+        appProvider.getBlock(updatedAtBlock).then((data) => {
+          if (!unloaded) {
+            setUpdatedAt(formattedDate(data?.timestamp));
+          }
+        });
+      }
     } else {
       // If user reloads Show projects will not exist
-      dispatch(loadProjects(true));
+      dispatch(loadAllChainsProjects(true));
     }
-  }, [props.id, props.currentProject, global, dispatch]);
+
+    return () => {
+      unloaded = true;
+    };
+  }, [props.id, props.projectEvents, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
@@ -108,6 +107,11 @@ function Project() {
     props.currentProject
   ) {
     return <>Loading grant data from IPFS... </>;
+  }
+
+  function createEditPath() {
+    const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
+    return editPath(chainId, registryAddress, id);
   }
 
   return (
@@ -124,10 +128,7 @@ function Project() {
               </h3>
             </Link>
             {props.id && (
-              <Link
-                to={editPath(props.id)}
-                className="sm:w-auto mx-w-full ml-0"
-              >
+              <Link to={createEditPath()} className="sm:w-auto mx-w-full ml-0">
                 <Button
                   variant={ButtonVariants.outline}
                   styles={["sm:w-auto mx-w-full ml-0"]}
@@ -146,6 +147,7 @@ function Project() {
             updatedAt={updatedAt}
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
+            showApplications
           />
         </>
       )}

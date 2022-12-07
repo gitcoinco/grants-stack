@@ -1,23 +1,22 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { RootState } from "../reducers";
-import { Metadata, ProjectRegistryMetadata } from "../types";
-import { global } from "../global";
-import { addressesByChainID } from "../contracts/deployments";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { LocalStorage } from "../services/Storage";
 import PinataClient from "../services/pinata";
+import { LocalStorage } from "../services/Storage";
+import { Metadata, ProjectRegistryMetadata } from "../types";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
 export interface GrantMetadataLoadingURI {
   type: typeof GRANT_METADATA_LOADING_URI;
-  id: number;
+  id: string;
 }
 
 export const GRANT_METADATA_LOADING = "GRANT_METADATA_LOADING";
 export interface GrantMetadataLoading {
   type: typeof GRANT_METADATA_LOADING;
-  id: number;
+  id: string;
 }
 
 export const GRANT_METADATA_FETCHED = "GRANT_METADATA_FETCHED";
@@ -29,7 +28,7 @@ export interface GrantMetadataFetched {
 export const GRANT_METADATA_FETCHING_ERROR = "GRANT_METADATA_FETCHING_ERROR";
 interface GrantMetadataFetchingError {
   type: typeof GRANT_METADATA_FETCHING_ERROR;
-  id: number;
+  id: string;
   error: string;
 }
 
@@ -45,12 +44,12 @@ export type GrantMetadataActions =
   | GrantMetadataFetchingError
   | GrantMetadataAllUnloadedAction;
 
-export const grantMetadataLoadingURI = (id: number): GrantMetadataActions => ({
+export const grantMetadataLoadingURI = (id: string): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING_URI,
   id,
 });
 
-export const grantMetadataLoading = (id: number): GrantMetadataActions => ({
+export const grantMetadataLoading = (id: string): GrantMetadataActions => ({
   type: GRANT_METADATA_LOADING,
   id,
 });
@@ -65,7 +64,7 @@ export const grantsMetadataAllUnloaded = (): GrantMetadataActions => ({
 });
 
 export const grantMetadataFetchingError = (
-  id: number,
+  id: string,
   error: string
 ): GrantMetadataActions => ({
   type: GRANT_METADATA_FETCHING_ERROR,
@@ -74,7 +73,7 @@ export const grantMetadataFetchingError = (
 });
 
 const getProjectById = async (
-  projectId: number,
+  projectId: string,
   addresses: any,
   signerOrProvider: any
 ) => {
@@ -84,15 +83,14 @@ const getProjectById = async (
     signerOrProvider
   );
 
-  const project: ProjectRegistryMetadata = await projectRegistry.projects(
-    projectId
-  );
+  const { id } = getProjectURIComponents(projectId);
+  const project: ProjectRegistryMetadata = await projectRegistry.projects(id);
 
   return project;
 };
 
 const getMetadata = async (
-  projectId: number,
+  projectId: string,
   project: any,
   cacheKey: string
 ) => {
@@ -115,6 +113,7 @@ const getMetadata = async (
         return ret;
       } catch (e) {
         // FIXME: dispatch error
+        datadogRum.addError(e);
         console.log("error parsing cached project metadata", e);
       }
     }
@@ -128,6 +127,7 @@ const getMetadata = async (
     content = await pinataClient.fetchText(project.metadata.pointer);
   } catch (e) {
     // FIXME: dispatch "ipfs error"
+    datadogRum.addError(e);
     console.error(e);
     return null;
   }
@@ -136,6 +136,7 @@ const getMetadata = async (
     metadata = JSON.parse(content);
   } catch (e) {
     // FIXME: dispatch JSON error
+    datadogRum.addError(e);
     console.error(e);
     return null;
   }
@@ -150,42 +151,47 @@ const getMetadata = async (
   return ret;
 };
 
-export const fetchGrantData =
-  (id: number) => async (dispatch: Dispatch, getState: () => RootState) => {
-    dispatch(grantMetadataLoadingURI(id));
-    const state = getState();
-    const { chainID } = state.web3;
-    const addresses = addressesByChainID(chainID!);
-    const { signer } = global;
+export const fetchGrantData = (id: string) => async (dispatch: Dispatch) => {
+  dispatch(grantMetadataLoadingURI(id));
 
-    let project: ProjectRegistryMetadata;
+  const { chainId, registryAddress } = getProjectURIComponents(id);
 
-    try {
-      project = await getProjectById(id, addresses, signer!);
-    } catch (e) {
-      console.error("error fetching project by id", e);
-      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
-      return;
-    }
+  const chainID = Number(chainId);
+  const addresses = { projectRegistry: registryAddress };
+  const appProvider = getProviderByChainId(chainID);
 
-    if (!project.metadata.protocol) {
-      console.error("project not found");
-      dispatch(grantMetadataFetchingError(id, "project not found"));
-      return;
-    }
+  let project: ProjectRegistryMetadata;
 
-    dispatch(grantMetadataLoading(id));
+  try {
+    project = await getProjectById(id, addresses, appProvider!);
+  } catch (e) {
+    datadogRum.addError(e);
+    console.error("error fetching project by id", e);
+    dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
+    return;
+  }
 
+  if (!project.metadata.protocol) {
+    console.error("project not found");
+    dispatch(grantMetadataFetchingError(id, "project not found"));
+    return;
+  }
+
+  dispatch(grantMetadataLoading(id));
+
+  try {
     const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
     const item = await getMetadata(id, project, cacheKey);
 
     if (item === null) {
-      console.log("item is null");
-      dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
-      return;
+      throw new Error();
     }
 
     dispatch(grantMetadataFetched(item));
-  };
+  } catch (error) {
+    console.log("item is null");
+    dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
+  }
+};
 
 export const unloadAll = grantsMetadataAllUnloaded;

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { grantsPath, newGrantPath } from "../routes";
+import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
@@ -15,13 +16,19 @@ export default function Header() {
       <div className="container mx-auto flex flex-wrap items-center justify-between">
         <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
           <Link to={grantsPath()}>
-            <div className="flex items-center">
+            <div className="flex">
               <img
-                className="py-4"
+                className="py-4 mr-4"
                 alt="Gitcoin Logo"
                 src="./assets/gitcoin-logo.svg"
               />
-              <h3 className="ml-6 mt-1">Grant Hub</h3>
+              <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
+              <img
+                className="py-4"
+                alt="Grants Hub Logo"
+                src="./assets/grants-hub-logo.svg"
+              />
+              <h3 className="ml-6 mt-1 inline-flex items-center">Grants Hub</h3>
             </div>
           </Link>
           <button
@@ -50,6 +57,7 @@ export default function Header() {
               </Button>
             </Link>
             <ConnectButton />
+            <CustomerSupport />
           </div>
         </div>
       </div>

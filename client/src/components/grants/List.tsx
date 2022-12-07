@@ -1,27 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { loadProjects } from "../../actions/projects";
+import { loadAllChainsProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
+import { loadRound } from "../../actions/rounds";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
+import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { newGrantPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
-import { ProjectEvent } from "../../types";
 import { parseRoundToApply } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
+import ErrorModal from "../base/ErrorModal";
+import LoadingSpinner from "../base/LoadingSpinner";
 import RoundApplyAlert from "../base/RoundApplyAlert";
 import Globe from "../icons/Globe";
 import Card from "./Card";
 
 function ProjectsList() {
   const dispatch = useDispatch();
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(true);
 
   const [toggleModal, setToggleModal] = useLocalStorage(
     "toggleRoundApplicationModal",
-    false
+    ApplicationModalStatus.Undefined
   );
 
   const [roundToApply] = useLocalStorage("roundToApply", null);
@@ -42,14 +46,20 @@ function ProjectsList() {
       const roundState = state.rounds[roundAddress];
       round = roundState ? roundState.round : undefined;
     }
+
     const showRoundModal =
-      toggleModal && roundToApply && alreadyApplied === false;
+      roundToApply &&
+      state.projects.ids.length === 1 &&
+      toggleModal === ApplicationModalStatus.NotApplied &&
+      alreadyApplied === false;
+
     const showRoundAlert = alreadyApplied === false;
 
     return {
       status: state.projects.status,
       loading: state.projects.status === Status.Loading,
-      projects: state.projects.projects,
+      error: state.projects.status === Status.Error,
+      projectIDs: state.projects.ids,
       chainID: state.web3.chainID,
       existingApplication,
       showRoundModal,
@@ -61,15 +71,21 @@ function ProjectsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (props.status === Status.Undefined) {
-      dispatch(loadProjects());
-    }
+    if (props.status !== Status.Undefined) return;
+
+    dispatch(loadAllChainsProjects());
   }, [dispatch, props.status]);
 
   useEffect(() => {
-    if (roundToApply && props.projects.length > 0) {
+    if (roundToApply) {
+      const [chainId, roundId] = roundToApply.split(":");
+      dispatch(loadRound(roundId, Number(chainId)));
+    }
+  }, [roundToApply]);
+
+  useEffect(() => {
+    if (roundToApply && props.projectIDs.length > 0) {
       const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-      const ids = props.projects.map((p) => p.id);
 
       // not loaded yet
       if (
@@ -77,84 +93,132 @@ function ProjectsList() {
         chainID !== undefined &&
         roundAddress !== undefined
       ) {
-        dispatch(checkRoundApplications(Number(chainID), roundAddress, ids));
+        dispatch(
+          checkRoundApplications(
+            Number(chainID),
+            roundAddress,
+            props.projectIDs
+          )
+        );
       }
     }
-  }, [props.projects, props.existingApplication]);
+  }, [props.projectIDs, props.existingApplication]);
 
-  if (props.loading) {
-    return <>loading...</>;
+  if (props.loading && !props.error) {
+    return (
+      <LoadingSpinner
+        label="Loading Projects"
+        size="24"
+        thickness="6px"
+        showText
+      />
+    );
   }
 
   return (
     <div className="flex flex-col flex-grow h-full mx-4 sm:mx-0">
       <div className="flex flex-col mt-4 mb-4">
         <h3>My Projects</h3>
-        <p className="text-base">
-          Manage projects across multiple grants programs.
-        </p>
+        <p className="text-base">Bring your project to life.</p>
       </div>
-      <RoundApplyAlert
-        show={props.showRoundAlert}
-        confirmHandler={() => {
-          const { chainID, roundAddress } = parseRoundToApply(roundToApply);
-          const path = roundPath(chainID, roundAddress);
-
-          navigate(path);
-        }}
-        round={props.round}
-      />
-      <div className="grow">
-        {props.projects.length ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {props.projects.map((event: ProjectEvent) => (
-              <Card projectId={event.id} key={event.id} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex h-full justify-center items-center">
-            <div className="flex flex-col items-center">
-              <div className="w-10">
-                <Globe color={colors["primary-background"]} />
-              </div>
-              <h4 className="mt-6">No projects</h4>
-              <p className="text-xs mt-6">
-                It looks like you haven&apos;t created any projects yet.
-              </p>
-              <p className="text-xs">Learn More</p>
-              <Link to={newGrantPath()} className="mt-6">
-                <Button variant={ButtonVariants.outline}>
-                  Create a Project
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-      <CallbackModal
-        modalOpen={props.showRoundModal}
-        confirmText="Apply to Grant Round"
-        confirmHandler={() => {
-          const chainId = roundToApply?.split(":")[0];
-          const roundId = roundToApply?.split(":")[1];
-          const path = roundPath(chainId, roundId);
-
-          navigate(path);
-        }}
-        headerImageUri="https://via.placeholder.com/300"
-        toggleModal={setToggleModal}
-      >
+      {props.error && showErrorModal ? (
+        <ErrorModal
+          open
+          secondaryBtnText="Close"
+          primaryBtnText="Refresh Page"
+          onRetry={() => setShowErrorModal(false)}
+          onClose={() => navigate(0)}
+        >
+          <>
+            There has been an error loading your projects. Please try refreshing
+            the page. If the issue persists, reach out to our{" "}
+            <a
+              target="_blank"
+              className="text-gitcoin-violet-400 outline-none"
+              href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us"
+              rel="noreferrer"
+            >
+              Support team.
+            </a>
+          </>
+        </ErrorModal>
+      ) : (
         <>
-          <h5 className="font-semibold mb-2 text-2xl">
-            Time to get your project funded!
-          </h5>
-          <p className="mb-4 ">
-            Congratulations on creating your project on Grant Hub! Continue to
-            apply for{" "}
-            {props.round ? props.round!.roundMetadata.name : "the round"}.
-          </p>
+          <RoundApplyAlert
+            show={props.showRoundAlert}
+            confirmHandler={() => {
+              const { chainID, roundAddress } = parseRoundToApply(roundToApply);
+              const path = roundPath(chainID!, roundAddress!);
+
+              navigate(path);
+            }}
+            round={props.round}
+          />
+          <div className="grow">
+            {props.projectIDs.length ? (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                {props.projectIDs.map((id: string) => (
+                  <Card projectId={id} key={id} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-full justify-center items-center">
+                <div className="flex flex-col items-center">
+                  <div className="w-10">
+                    <Globe color={colors["primary-background"]} />
+                  </div>
+                  <h4 className="mt-6">No projects</h4>
+                  <p className="text-sm mt-6">
+                    It looks like you haven&apos;t created any projects yet.
+                  </p>
+                  <p className="text-sm">
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-gitcoin-violet-400"
+                      href="https://support.gitcoin.co/gitcoin-grants-protocol"
+                    >
+                      Learn More.
+                    </a>
+                  </p>
+                  <Link to={newGrantPath()} className="mt-6">
+                    <Button variant={ButtonVariants.outline}>
+                      Create a Project
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+          <CallbackModal
+            modalOpen={props.showRoundModal}
+            confirmText="Apply to Grant Round"
+            cancelText="Skip"
+            confirmHandler={() => {
+              setToggleModal(ApplicationModalStatus.Closed);
+              const chainId = roundToApply?.split(":")[0];
+              const roundId = roundToApply?.split(":")[1];
+              const path = roundPath(chainId, roundId);
+
+              navigate(path);
+            }}
+            headerImageUri="/assets/round-apply.svg"
+            toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
+            hideCloseButton
+          >
+            <>
+              <h5 className="font-medium mt-5 mb-2 text-lg">
+                Time to get your project funded!
+              </h5>
+              <p className="mb-6">
+                Congratulations on creating your project on Grants Hub! Continue
+                to apply for{" "}
+                {props.round ? props.round!.roundMetadata.name : "the round"}.
+              </p>
+            </>
+          </CallbackModal>
         </>
-      </CallbackModal>
+      )}
     </div>
   );
 }

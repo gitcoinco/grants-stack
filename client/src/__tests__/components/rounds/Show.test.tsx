@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
+import { loadAllChainsProjects, loadProjects } from "../../../actions/projects";
+import { loadRound, unloadRounds } from "../../../actions/rounds";
+import { web3ChainIDLoaded } from "../../../actions/web3";
 import Show from "../../../components/rounds/Show";
 import setupStore from "../../../store";
-import { unloadRounds, loadRound } from "../../../actions/rounds";
-import { web3ChainIDLoaded } from "../../../actions/web3";
 import {
-  renderWrapped,
-  buildRound,
   buildProjectMetadata,
+  buildRound,
+  renderWrapped,
 } from "../../../utils/test_utils";
-import { loadProjects } from "../../../actions/projects";
 
 jest.mock("../../../actions/rounds");
 jest.mock("../../../actions/projects");
@@ -19,6 +19,16 @@ jest.mock("react-router-dom", () => ({
   useParams: () => ({
     roundId: "0x1234",
     chainId: 5,
+  }),
+}));
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchNetwork: () => ({
+    switchNetwork: jest.fn(),
+  }),
+  useNetwork: () => ({
+    chain: jest.fn(),
   }),
 }));
 
@@ -34,15 +44,45 @@ describe("<Show />", () => {
       store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
     });
 
-    describe("useEffect/loadProjects", () => {
-      test("should be called the first time", async () => {
-        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
-        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
-        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+    describe("<SwitchNetworkModal />", () => {
+      test("renders when the round's chainId does not match the user's chainId", async () => {
+        store.dispatch(web3ChainIDLoaded(1));
 
         renderWrapped(<Show />, store);
 
-        expect(loadProjects).toBeCalledTimes(1);
+        const element = screen.getByTestId("switch-networks-modal-button");
+        const button = element.firstChild;
+
+        expect(button).toHaveTextContent("Switch Networks to Continue");
+
+        expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("switch-networks-modal-title")
+        ).toHaveTextContent("Switch Networks to Continue");
+      });
+
+      test("does not render when the round's chainId matches the user's chainId", async () => {
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        store.dispatch(web3ChainIDLoaded(5));
+
+        renderWrapped(<Show />, store);
+        expect(
+          screen.queryByTestId("switch-network-modal")
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    describe("useEffect/loadAllChainsProjects", () => {
+      test("should be called the first time", async () => {
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+
+        renderWrapped(<Show />, store);
+
+        expect(loadAllChainsProjects).toBeCalledTimes(1);
       });
 
       test("should not be called if it's already loading", async () => {
@@ -54,6 +94,8 @@ describe("<Show />", () => {
         renderWrapped(<Show />, store);
 
         expect(loadProjects).toBeCalledTimes(0);
+        expect(screen.getByText("Loading Round")).toBeInTheDocument();
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
       });
     });
 
@@ -61,7 +103,7 @@ describe("<Show />", () => {
       test("should allow you to apply to a round with a project", async () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
-        (loadProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -70,11 +112,12 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
+          events: {},
         });
 
         renderWrapped(<Show />, store);
 
-        expect(screen.getByText("Apply to this round")).toBeInTheDocument();
+        expect(screen.getByText("Apply")).toBeInTheDocument();
       });
 
       test("should send you to project creation page", async () => {
@@ -84,6 +127,7 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
+          events: {},
         });
 
         renderWrapped(<Show />, store);

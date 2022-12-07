@@ -1,3 +1,4 @@
+import { datadogRum } from "@datadog/browser-rum";
 import React from "react";
 
 interface Props {
@@ -19,6 +20,7 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: any) {
+    datadogRum.addError(error);
     console.error(error);
   }
 

@@ -11,11 +11,13 @@ This package holds the subgraph which indexs data with regard the
 
 The following sections document the hosted services where the subgraph is deployed across different networks
 
-| Network        | GITHUB_USER/SUBGRAPH_NAME                      | Playground                                                                                  | Query                                                                                  |
-| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| optimism       | danielesalatti/grant-hub-project-registry      | https://thegraph.com/hosted-service/subgraph/danielesalatti/grant-hub-project-registry      | https://api.thegraph.com/subgraphs/name/danielesalatti/grant-hub-project-registry      |
-| goerli         | danielesalatti/project-registry-goerli         | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-goerli         | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-goerli         |
-| optimism-kovan | danielesalatti/project-registry-optimism-kovan | https://thegraph.com/hosted-service/subgraph/danielesalatti/project-registry-optimism-kovan | https://api.thegraph.com/subgraphs/name/danielesalatti/project-registry-optimism-kovan |
+| Network        | GITHUB_USER/SUBGRAPH_NAME             | Playground                                                                                           | Query                                                                         |
+| -------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| mainnet        | gitcoinco/grants-hub-optimism-mainnet | https://thegraph.com/explorer/subgraphs/94TgNF87pKDcuhFkELKQa6o3CcetJvyt3XwkhtsvhrHx?view=Playground | https://api.studio.thegraph.com/query/20308/grants-hub-mainnet/v0.0.1         |
+| optimism       | gitcoinco/grants-hub-optimism-mainnet | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-hub-optimism-mainnet                   | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-hub-optimism-mainnet |
+| goerli         | gitcoinco/grants-hub-goerli-testnet   | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-hub-goerli-testnet                     | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-hub-goerli-testnet   |
+| fantom         | gitcoinco/grants-hub-fantom-mainnet   | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-hub-fantom-mainnet                     | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-hub-fantom-mainnet   |
+| fantom-testnet | gitcoinco/grants-hub-fantom-testnet   | https://thegraph.com/hosted-service/subgraph/gitcoinco/grants-hub-fantom-testnet                     | https://api.thegraph.com/subgraphs/name/gitcoinco/grants-hub-fantom-testnet   |
 
 ## Directory Structure
 
@@ -61,7 +63,8 @@ yarn prepare:<NETWORK_TO_DEPLOY_SUBGRAPH>
 | -------------- |
 | optimism       |
 | goerli         |
-| optimism-kovan |
+| fantom         |
+| fantom-testnet |
 
 - Run codegen
 

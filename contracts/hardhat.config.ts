@@ -24,9 +24,22 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      }
+    }
+  },
 
   networks: {
+    hardhat: {
+      forking: {
+        url: process.env.GOERLI_URL || "",
+      },
+    },
     goerli: {
       url: process.env.GOERLI_URL || "",
       accounts: {
@@ -42,6 +55,24 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC,
       },
     },
+    fantomTestnet: {
+      url: process.env.FANTOM_TESTNEST_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    },
+    fantom: {
+      url: process.env.FANTOM_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+      },
+    }
   },
 
   gasReporter: {
@@ -51,10 +82,10 @@ const config: HardhatUserConfig = {
 
   etherscan: {
     apiKey: {
-      goerli: process.env.ETHERSCAN_API_KEY,
-      mainnet: process.env.ETHERSCAN_API_KEY,
-      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
-      optimisticKovan: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+      goerli: process.env.ETHERSCAN_API_KEY!,
+      mainnet: process.env.ETHERSCAN_API_KEY!,
+      optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY!,
+      opera: process.env.FANTOM_SCAN_KEY!,
     },
   },
 };

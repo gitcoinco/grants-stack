@@ -1,4 +1,5 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { ReactNode } from "react";
 
 export type Images = {
   bannerImg?: Blob;
@@ -8,7 +9,7 @@ export type Images = {
 export interface Metadata {
   protocol: number;
   pointer: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   website: string;
@@ -18,6 +19,7 @@ export interface Metadata {
   userGithub?: string;
   projectGithub?: string;
   credentials?: ProjectCredentials;
+  createdAt?: number;
 }
 
 export interface Project {
@@ -33,6 +35,7 @@ export interface Project {
   projectGithub?: string;
   projectTwitter?: string;
   credentials?: ProjectCredentials;
+  createdAt?: number;
 }
 
 export type ProjectRegistryMetadata = {
@@ -49,7 +52,7 @@ export type ChangeHandlers =
 
 // Inputs
 export type InputProps = {
-  label: string;
+  label: string | ReactNode;
   name: string;
   info?: string;
   value?: string | number;
@@ -57,6 +60,7 @@ export type InputProps = {
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
+  encrypted?: boolean;
 };
 
 export type AddressInputProps = {
@@ -69,22 +73,32 @@ export type AddressInputProps = {
   disabled?: boolean;
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
+  encrypted?: boolean;
 };
 
-export interface ProjectEvent {
-  id: number;
-  block: number;
-  createdAtBlock?: number;
-}
+export type ProjectEvents = {
+  createdAtBlock: number | undefined;
+  updatedAtBlock: number | undefined;
+};
+
+export type ProjectEventsMap = {
+  [projectID: string]: ProjectEvents;
+};
 
 export interface MetaPtr {
   protocol: string;
   pointer: string;
 }
 
+export interface RoundSupport {
+  type: string;
+  info: string;
+}
+
 export interface RoundMetadata {
   name: string;
   programContractAddress: string;
+  support?: RoundSupport;
 }
 
 export interface ProgramMetadata {
@@ -133,8 +147,13 @@ export type Round = {
 };
 
 export type ProjectOption = {
-  id: number | undefined;
+  id: string | undefined;
   title?: string;
+  chainInfo?: {
+    chainId: number;
+    chainName: string;
+    icon?: any;
+  };
 };
 
 export interface RoundApplication {
@@ -192,6 +211,7 @@ export type FormInputs = {
 };
 
 export enum ProjectFormStatus {
+  Network,
   Metadata,
   Verification,
   Preview,

@@ -1,10 +1,12 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import { metadataSaved, metadataImageSaved } from "../../actions/projectForm";
+import { metadataImageSaved, metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
-import { TextArea, TextInput, WebsiteInput } from "../grants/inputs";
+import { Select, TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import Button, { ButtonVariants } from "./Button";
 import ExitModal from "./ExitModal";
 import { validateProjectForm } from "./formValidation";
@@ -25,6 +27,7 @@ function ProjectForm({
 
   const props = useSelector(
     (state: RootState) => ({
+      currentChain: state.web3.chainID,
       status: state.newGrant.status,
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
@@ -35,6 +38,7 @@ function ProjectForm({
   const [formValidation, setFormValidation] = useState(validation);
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
+  const { chains } = useNetwork();
 
   const [, setLogoImg] = useState<Blob | undefined>();
   const [, setBannerImg] = useState<Blob | undefined>();
@@ -69,6 +73,7 @@ function ProjectForm({
       });
     } catch (e) {
       const error = e as ValidationError;
+      datadogRum.addError(error);
       setFormValidation({
         messages: error.inner.map((er) => (er as ValidationError).message),
         valid: false,
@@ -92,6 +97,21 @@ function ProjectForm({
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
+        <div className="relative mt-4 w-full sm:w-1/2">
+          <Select
+            name="network"
+            defaultValue={props.currentChain}
+            label="Project Deployment Network:"
+            options={chains.map((i) => ({
+              id: i.id.toString(),
+              title: i.name,
+            }))}
+            changeHandler={() => null}
+            disabled
+            required
+          />
+        </div>
+        <div className="border w-full mt-8" />
         <TextInput
           label="Project Name"
           name="title"
@@ -132,31 +152,6 @@ function ProjectForm({
           imgHandler={(buffer: Blob) => bannerChangedHandler(buffer)}
         />
 
-        <TextInput
-          label="Project Twitter"
-          name="projectTwitter"
-          placeholder="Your project's Twitter handle"
-          value={props.formMetaData.projectTwitter}
-          changeHandler={handleInput}
-          required={false}
-        />
-
-        <TextInput
-          label="Your Github Username"
-          name="userGithub"
-          placeholder="GitHub username you use to contribute to the project"
-          value={props.formMetaData.userGithub}
-          changeHandler={handleInput}
-          required={false}
-        />
-        <TextInput
-          label="Project Github Organization"
-          name="projectGithub"
-          placeholder="GitHub org name your project is a part of"
-          value={props.formMetaData.projectGithub}
-          changeHandler={handleInput}
-          required={false}
-        />
         <TextArea
           label="Project Description"
           name="description"

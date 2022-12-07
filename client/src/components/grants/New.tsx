@@ -9,13 +9,14 @@ import VerificationForm from "../base/VerificationForm";
 import { ProjectFormStatus } from "../../types";
 import Preview from "../base/Preview";
 import { formReset } from "../../actions/projectForm";
+import NetworkForm from "../base/NetworkForm";
 
 function NewProject() {
   const dispatch = useDispatch();
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
-    ProjectFormStatus.Metadata
+    ProjectFormStatus.Network
   );
 
   useEffect(
@@ -25,8 +26,45 @@ function NewProject() {
     []
   );
 
+  const currentSubText = (status: ProjectFormStatus) => {
+    let data: { title: string; description: string } | undefined;
+    switch (status) {
+      case ProjectFormStatus.Metadata:
+        data = {
+          title: "Project Details",
+          description: "Tell us more about what you’re working on.",
+        };
+        break;
+      case ProjectFormStatus.Verification:
+        data = {
+          title: "Project Socials",
+          description: "Share where we can learn more about your project.",
+        };
+        break;
+      case ProjectFormStatus.Preview:
+        data = {
+          title: "Project Preview",
+          description: "Preview your project's page.",
+        };
+        break;
+      default:
+        return null;
+    }
+
+    return data ? (
+      <>
+        <h5 className="mb-2">{data.title}</h5>
+        <p>{data.description}</p>
+      </>
+    ) : null;
+  };
+
   const currentForm = (status: ProjectFormStatus) => {
     switch (status) {
+      case ProjectFormStatus.Network:
+        return (
+          <NetworkForm setVerifying={(newStatus) => setFormStatus(newStatus)} />
+        );
       case ProjectFormStatus.Metadata:
         return (
           <ProjectForm
@@ -53,9 +91,9 @@ function NewProject() {
   return (
     <div className="mx-4">
       <div className="flex flex-col sm:flex-row justify-between">
-        <h3 className="mb-2">Create Project</h3>
+        <h3 className="mb-2">Create a Project</h3>
         <div className="w-full mb-2 inline-block sm:hidden">
-          <p>Tell us what you’re working on.</p>
+          {currentSubText(formStatus)}
         </div>
         <Button
           variant={ButtonVariants.outlineDanger}
@@ -71,7 +109,18 @@ function NewProject() {
 
       <div className="w-full flex">
         <div className="w-full md:w-1/3 mb-2 hidden sm:inline-block">
-          <p>Tell us what you’re working on.</p>
+          {currentSubText(formStatus)}
+          <p className="mt-8">
+            Need Help? Check out the{" "}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className="text-gitcoin-violet-400"
+              href="https://support.gitcoin.co/gitcoin-grants-protocol"
+            >
+              Grants Hub Guide.
+            </a>
+          </p>
         </div>
         <div className="w-full md:w-2/3">{currentForm(formStatus)}</div>
       </div>

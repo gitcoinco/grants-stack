@@ -1,17 +1,16 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { useState } from "react";
-import { useDatadogRum } from "react-datadog";
 import { LocalStorage } from "../services/Storage";
 
 export default function useLocalStorage(key: string, defaultValue: any): any[] {
   const localStorage = new LocalStorage();
-  const dataDog = useDatadogRum();
 
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = localStorage.get(key);
       return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
-      dataDog.addError(error);
+      datadogRum.addError(error);
       console.error(error);
       return defaultValue;
     }
@@ -24,7 +23,7 @@ export default function useLocalStorage(key: string, defaultValue: any): any[] {
       setStoredValue(valueToStore);
       localStorage.add(key, JSON.stringify(valueToStore));
     } catch (error) {
-      dataDog.addError(error);
+      datadogRum.addError(error);
       console.error(error);
     }
   };

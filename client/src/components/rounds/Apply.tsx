@@ -5,16 +5,22 @@ import { resetApplication } from "../../actions/roundApplication";
 import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
-import { Status as ApplicationStatus } from "../../reducers/roundApplication";
+import {
+  ApplicationModalStatus,
+  Status as ApplicationStatus,
+} from "../../reducers/roundApplication";
 import { Status as RoundStatus } from "../../reducers/rounds";
-import { grantPath, roundPath } from "../../routes";
+import { grantsPath, projectPath, roundPath } from "../../routes";
 import colors from "../../styles/colors";
 import { Round } from "../../types";
+import { applicationSteps } from "../../utils/steps";
+import { getProjectURIComponents } from "../../utils/utils";
 import Form from "../application/Form";
 import Button, { ButtonVariants } from "../base/Button";
+import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
-import StatusModal from "./StatusModal";
+import StatusModal from "../base/StatusModal";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -28,10 +34,11 @@ function Apply() {
   const [roundData, setRoundData] = useState<Round>();
   const [statusModalOpen, toggleStatusModal] = useState(false);
   const [, setRoundToApply] = useLocalStorage("roundToApply", null);
-  const [, setToggleRoundApplicationModal] = useLocalStorage(
-    "toggleRoundApplicationModal",
-    false
-  );
+  const [roundApplicationModal, setToggleRoundApplicationModal] =
+    useLocalStorage(
+      "toggleRoundApplicationModal",
+      ApplicationModalStatus.Undefined
+    );
 
   const { roundId, chainId } = params;
 
@@ -49,6 +56,8 @@ function Apply() {
     const applicationError = applicationState
       ? applicationState.error
       : undefined;
+    const showErrorModal =
+      applicationError && applicationStatus === ApplicationStatus.Error;
 
     return {
       roundState,
@@ -59,6 +68,7 @@ function Apply() {
       applicationStatus,
       applicationError,
       applicationMetadata: round?.applicationMetadata,
+      showErrorModal,
     };
   }, shallowEqual);
 
@@ -90,7 +100,10 @@ function Apply() {
   useEffect(() => {
     if (roundId) {
       setRoundToApply(`${chainId}:${roundId}`);
-      setToggleRoundApplicationModal(true);
+
+      if (roundApplicationModal === ApplicationModalStatus.Undefined) {
+        setToggleRoundApplicationModal(ApplicationModalStatus.NotApplied);
+      }
     }
 
     return () => {
@@ -107,7 +120,14 @@ function Apply() {
         dispatch(
           addAlert("success", applicationSuccessTitle, applicationSuccessBody)
         );
-        navigate(grantPath(props.applicationState.projectsIDs[0]));
+        const {
+          chainId: projectChainId,
+          registryAddress,
+          id,
+        } = getProjectURIComponents(
+          props.applicationState.projectsIDs[0].toString()
+        );
+        navigate(projectPath(projectChainId, registryAddress, id));
       }, 1500);
     }
 
@@ -118,8 +138,38 @@ function Apply() {
     };
   }, [props.applicationState]);
 
+  useEffect(() => {
+    if (
+      props.applicationState?.status === ApplicationStatus.Error ||
+      props.applicationError
+    ) {
+      toggleStatusModal(false);
+    }
+  }, [props.applicationStatus, props.applicationError]);
+
   if (props.roundStatus === RoundStatus.Error) {
-    return <div>Error loading round data: {props.roundError}</div>;
+    <div>
+      <ErrorModal
+        open
+        primaryBtnText="Refresh Page"
+        secondaryBtnText="Close"
+        onClose={() => navigate(grantsPath())}
+        onRetry={() => navigate(0)}
+      >
+        <>
+          There has been an error loading the grant round data. Please try
+          refreshing the page. If the issue persists, please reach out to us on{" "}
+          <a
+            target="_blank"
+            className="text-gitcoin-violet-400 outline-none"
+            href="https://discord.com/invite/gitcoin"
+            rel="noreferrer"
+          >
+            Discord.
+          </a>
+        </>
+      </ErrorModal>
+    </div>;
   }
 
   if (props.roundStatus !== RoundStatus.Loaded) {
@@ -127,7 +177,31 @@ function Apply() {
   }
 
   if (props.roundState === undefined || props.round === undefined) {
-    return <div>something went wrong</div>;
+    return (
+      <div>
+        <ErrorModal
+          open
+          primaryBtnText="Close"
+          secondaryBtnText="Refresh Page"
+          onRetry={() => navigate(grantsPath())}
+          onClose={() => navigate(0)}
+        >
+          <>
+            There has been an error loading the grant round data. Please try
+            refreshing the page. If the issue persists, please reach out to us
+            on{" "}
+            <a
+              target="_blank"
+              className="text-gitcoin-violet-400 outline-none"
+              href="https://discord.com/invite/gitcoin"
+              rel="noreferrer"
+            >
+              Discord.
+            </a>
+          </>
+        </ErrorModal>
+      </div>
+    );
   }
 
   return (
@@ -154,15 +228,26 @@ function Apply() {
             <p className="font-semibold">Grant Round</p>
             <p>{props.round.programName}</p>
             <p>{props.round.roundMetadata.name}</p>
-            <p className="font-semibold mt-4">Application Date</p>
+            <p className="font-semibold mt-4">Application Period:</p>
             <p>
               {formatDate(props.round.applicationsStartTime * 1000)} -{" "}
               {formatDate(props.round.applicationsEndTime * 1000)}
             </p>
-            <p className="font-semibold mt-4">Round Date</p>
+            <p className="font-semibold mt-4">Rounds Date:</p>
             <p>
               {formatDate(props.round.roundStartTime * 1000)} -{" "}
               {formatDate(props.round.roundEndTime * 1000)}
+            </p>
+            <p className="mt-4">
+              Need Help? Check out the{" "}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                className="text-gitcoin-violet-400"
+                href="https://support.gitcoin.co/gitcoin-grants-protocol"
+              >
+                Grants Hub Guide.
+              </a>
             </p>
           </div>
           <div className="w-full md:w-2/3">
@@ -172,6 +257,7 @@ function Apply() {
             {props.applicationMetadata !== undefined && (
               <Form
                 roundApplication={props.applicationMetadata}
+                showErrorModal={props.showErrorModal || false}
                 round={props.round}
                 onSubmit={() => {
                   toggleStatusModal(true);
@@ -180,7 +266,6 @@ function Apply() {
             )}
           </div>
         </div>
-
         <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
       </div>
 
@@ -190,7 +275,9 @@ function Apply() {
             open={statusModalOpen}
             onClose={toggleStatusModal}
             currentStatus={props.applicationState.status}
+            steps={applicationSteps}
             error={props.applicationState.error}
+            title="Please hold while we submit your grant round application."
           />
         )}
     </>

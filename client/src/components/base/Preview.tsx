@@ -10,9 +10,10 @@ import { ProjectFormStatus } from "../../types";
 import { formatDate } from "../../utils/components";
 import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
-import Toast from "./Toast";
-import TXLoading from "./TXLoading";
 import { addAlert } from "../../actions/ui";
+import { grantSteps } from "../../utils/steps";
+import StatusModal from "./StatusModal";
+import ErrorModal from "./ErrorModal";
 
 export default function Preview({
   currentProjectId,
@@ -24,7 +25,7 @@ export default function Preview({
   const dispatch = useDispatch();
 
   const [submitted, setSubmitted] = useState(false);
-  const [show, showToast] = useState(false);
+  const [show, showModal] = useState(false);
 
   const props = useSelector(
     (state: RootState) => ({
@@ -32,6 +33,7 @@ export default function Preview({
       credentials: state.projectForm.credentials,
       status: state.newGrant.status,
       error: state.newGrant.error,
+      openErrorModal: state.newGrant.error !== undefined,
     }),
     shallowEqual
   );
@@ -42,28 +44,32 @@ export default function Preview({
     dispatch(formReset());
   };
 
+  const resetSubmit = () => {
+    setSubmitted(false);
+    showModal(false);
+    dispatch(resetStatus());
+  };
+
   const publishProject = async () => {
     setSubmitted(true);
-    showToast(true);
-    await dispatch(publishGrant(currentProjectId));
+    showModal(true);
+    dispatch(publishGrant(currentProjectId));
   };
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (props.status === Status.Completed) {
-      setTimeout(() => {
-        navigate(slugs.grants);
-        localResetStatus();
-        dispatch(
-          addAlert(
-            "success",
-            "Your project has been saved successfully!",
-            undefined
-          )
-        );
-      }, 1500);
-    }
+    if (props.status !== Status.Completed) return;
+
+    navigate(slugs.grants);
+    localResetStatus();
+    dispatch(
+      addAlert(
+        "success",
+        "Your project has been saved successfully!",
+        undefined
+      )
+    );
   }, [props.status]);
 
   const { credentials } = props;
@@ -76,7 +82,6 @@ export default function Preview({
     <div>
       {/* TODO: fetch proper "created at" date */}
       <Details
-        preview
         updatedAt={formatDate(Date.now() / 1000)}
         createdAt={formatDate(Date.now() / 1000)}
         project={project}
@@ -86,6 +91,7 @@ export default function Preview({
         bannerImg={
           props.metadata?.bannerImgData ?? "./assets/default-project-banner.png"
         }
+        showApplications={false}
       />
       <div className="flex justify-end">
         <Button
@@ -102,14 +108,19 @@ export default function Preview({
           Save and Publish
         </Button>
       </div>
-      <Toast
-        show={show}
-        fadeOut={props.status === Status.Completed}
-        onClose={() => showToast(false)}
-        error={props.status === Status.Error}
-      >
-        <TXLoading status={props.status} error={props.error} />
-      </Toast>
+      <StatusModal
+        open={show && !props.openErrorModal}
+        onClose={() => showModal(false)}
+        currentStatus={props.status}
+        steps={grantSteps}
+        error={props.error}
+        title="Please hold on while we create your project."
+      />
+      <ErrorModal
+        open={props.openErrorModal}
+        onClose={resetSubmit}
+        onRetry={publishProject}
+      />
     </div>
   );
 }

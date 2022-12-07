@@ -1,20 +1,21 @@
+import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { Project } from "../types/index";
-import { global } from "../global";
-import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../contracts/deployments";
+import { global } from "../global";
+import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";
+import PinataClient from "../services/pinata";
+import { Project } from "../types/index";
+import { getProjectURIComponents } from "../utils/utils";
 import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
 import { unloadProjects } from "./projects";
-import PinataClient from "../services/pinata";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
   type: typeof NEW_GRANT_STATUS;
   status: Status;
-  error: string | undefined;
 }
 
 export const NEW_GRANT_CREATED = "NEW_GRANT_CREATED";
@@ -23,6 +24,13 @@ export interface GrantCreated {
   id: number;
   metaData: string;
   owner?: string;
+}
+
+export const NEW_GRANT_ERROR = "NEW_GRANT_ERROR";
+export interface GrantError {
+  type: typeof NEW_GRANT_ERROR;
+  step: Status;
+  error: string;
 }
 
 export const RESET_STATUS = "RESET_STATUS";
@@ -36,13 +44,15 @@ export const resetStatus = (): NewGrantActions => ({
   type: RESET_STATUS,
 });
 
-export const grantStatus = (
-  status: Status,
-  error: string | undefined
-): NewGrantActions => ({
+export const grantStatus = (status: Status): NewGrantActions => ({
   type: NEW_GRANT_STATUS,
   status,
+});
+
+export const grantError = (error: string, step: Status): GrantError => ({
+  type: NEW_GRANT_ERROR,
   error,
+  step,
 });
 
 export const grantCreated = ({
@@ -57,11 +67,17 @@ export const grantCreated = ({
 });
 
 export const publishGrant =
-  (grantId?: string) =>
+  (fullId?: string) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const { metadata: formMetaData, credentials: formCredentials } =
       state.projectForm;
+
+    const { id: grantId } = fullId
+      ? getProjectURIComponents(fullId)
+      : { id: undefined };
+
+    const oldGrantMetadata = state.grantsMetadata[fullId || ""];
 
     if (formMetaData === undefined) {
       return;
@@ -71,7 +87,7 @@ export const publishGrant =
     } as Project;
 
     const pinataClient = new PinataClient();
-    dispatch(grantStatus(Status.UploadingImages, undefined));
+    dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
       const resp = await pinataClient.pinFile(formMetaData.bannerImgData);
       application.bannerImg = resp.IpfsHash;
@@ -83,8 +99,11 @@ export const publishGrant =
     }
 
     application.credentials = formCredentials;
+    application.createdAt = oldGrantMetadata
+      ? oldGrantMetadata.metadata?.createdAt
+      : Date.now();
 
-    dispatch(grantStatus(Status.UploadingJSON, undefined));
+    dispatch(grantStatus(Status.UploadingJSON));
     const resp = await pinataClient.pinJSON(application);
     const metadataCID = resp.IpfsHash;
 
@@ -97,34 +116,42 @@ export const publishGrant =
       signer
     );
 
-    dispatch(grantStatus(Status.WaitingForSignature, undefined));
+    dispatch(grantStatus(Status.WaitingForSignature));
     let projectTx;
-
-    if (grantId !== undefined) {
-      try {
-        projectTx = await projectRegistry.updateProjectMetadata(grantId, {
-          protocol: 1,
-          pointer: metadataCID,
-        });
-      } catch (e) {
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
+    try {
+      if (grantId !== undefined) {
+        try {
+          projectTx = await projectRegistry.updateProjectMetadata(grantId, {
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
+      } else {
+        try {
+          projectTx = await projectRegistry.createProject({
+            protocol: 1,
+            pointer: metadataCID,
+          });
+        } catch (e) {
+          datadogRum.addError(e);
+          dispatch(grantError("transaction error", Status.Error));
+          console.error("tx error", e);
+          return;
+        }
       }
-    } else {
-      try {
-        projectTx = await projectRegistry.createProject({
-          protocol: 1,
-          pointer: metadataCID,
-        });
-      } catch (e) {
-        dispatch(grantStatus(Status.Error, "transaction error"));
-        console.error("tx error", e);
-        return;
-      }
+    } catch (e) {
+      datadogRum.addError(e);
+      dispatch(grantError("transaction error", Status.Error));
+      console.error("tx error", e);
+      return;
     }
 
-    dispatch(grantStatus(Status.TransactionInitiated, undefined));
+    dispatch(grantStatus(Status.TransactionInitiated));
     const txStatus = await projectTx.wait();
 
     // unload projects before changing the status
@@ -134,6 +161,6 @@ export const publishGrant =
     dispatch(unloadProjects());
 
     if (txStatus.status) {
-      dispatch(grantStatus(Status.Completed, undefined));
+      dispatch(grantStatus(Status.Completed));
     }
   };
