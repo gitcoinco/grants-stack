@@ -38,7 +38,9 @@ function ProjectForm({
   const [formValidation, setFormValidation] = useState(validation);
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
-  const [feedback, setFeedback] = useState([{ type: "none", message: "" }]);
+  const [feedback, setFeedback] = useState([
+    { title: "", type: "none", message: "" },
+  ]);
   const { chains } = useNetwork();
 
   const [, setLogoImg] = useState<Blob | undefined>();
@@ -72,7 +74,7 @@ function ProjectForm({
         valid: true,
         errorCount: 0,
       });
-      setFeedback([...feedback, { type: "none", message: "" }]);
+      setFeedback([...feedback, { title: "", type: "none", message: "" }]);
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -84,14 +86,16 @@ function ProjectForm({
       setFeedback([
         ...error.inner.map((er) => {
           const err = er as ValidationError;
-          console.log("ERROR", err);
+          console.log("ERROR", { err });
           if (err !== null) {
             return {
+              title: err.path!,
               type: "error",
               message: err.message,
             };
           }
           return {
+            title: "",
             type: "none",
             message: "",
           };
@@ -105,6 +109,7 @@ function ProjectForm({
   }, [props.formMetaData]);
 
   const nextStep = () => {
+    validate();
     setSubmitted(true);
     if (formValidation.valid) {
       setVerifying(ProjectFormStatus.Verification);
@@ -126,6 +131,7 @@ function ProjectForm({
             changeHandler={() => null}
             disabled
             required
+            feedback={{ type: "none", message: "" }}
           />
         </div>
         <div className="border w-full mt-8" />
@@ -136,7 +142,12 @@ function ProjectForm({
           value={props.formMetaData.title}
           changeHandler={handleInput}
           required
-          feedback={feedback[0] ?? {}}
+          feedback={
+            feedback.find((fb) => fb.title === "title") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
         <WebsiteInput
           label="Project Website"
@@ -145,7 +156,12 @@ function ProjectForm({
           value={props.formMetaData.website}
           changeHandler={handleInput}
           required
-          feedback={feedback[1] ?? {}}
+          feedback={
+            feedback.find((fb) => fb.title === "website") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
 
         <ImageInput
@@ -178,7 +194,12 @@ function ProjectForm({
           value={props.formMetaData.description}
           changeHandler={handleInput}
           required
-          feedback={feedback[2] ?? {}}
+          feedback={
+            feedback.find((fb) => fb.title === "description") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
         {!formValidation.valid && submitted && (
           <div

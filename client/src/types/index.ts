@@ -61,7 +61,7 @@ export type InputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
-  feedback?: {
+  feedback: {
     type: string;
     message: string;
   };
@@ -78,7 +78,7 @@ export type AddressInputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
-  feedback?: {
+  feedback: {
     type: string;
     message: string;
   };

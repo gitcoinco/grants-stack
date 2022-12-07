@@ -24,14 +24,10 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
-export function getStyleInfoForFeedback(
-  feedback:
-    | {
-        type: string;
-        message: string;
-      }
-    | undefined
-) {
+export function getStyleInfoForFeedback(feedback: {
+  type: string;
+  message: string;
+}) {
   switch (feedback?.type) {
     case "error":
       return {
@@ -99,12 +95,10 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={classNames(`border-${borderColor}`)}
+        className={`border-${borderColor}`}
       />
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );
@@ -166,9 +160,7 @@ export function TextInputAddress({
         className={classNames(`border-${borderColor}`)}
       />
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );
@@ -235,9 +227,7 @@ export function WebsiteInput({
         />
       </div>
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );
@@ -285,12 +275,10 @@ export function TextArea({
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}
-        className={classNames(`border-${borderColor}`)}
+        className={`border-${borderColor}`}
       />
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );
@@ -353,9 +341,7 @@ export function Select({
         ))}
       </select>
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );
@@ -422,9 +408,7 @@ export function CustomSelect({
         })}
       </select>
       {feedback?.message ? (
-        <span className={classNames(`text-${feedbackColor}`)}>
-          {feedback.message}
-        </span>
+        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
       ) : null}
     </div>
   );

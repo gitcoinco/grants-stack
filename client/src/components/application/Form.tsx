@@ -187,6 +187,7 @@ export default function Form({
                       disabled={preview}
                       changeHandler={handleProjectInput}
                       required={input.required ?? true}
+                      feedback={{ type: "none", message: "" }}
                     />
                   </div>
                   <div>
@@ -215,6 +216,7 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  feedback={{ type: "none", message: "" }}
                 />
               );
             case "RECIPIENT":
@@ -232,6 +234,7 @@ export default function Form({
                         info=""
                         required={input.required ?? true}
                         disabled={preview}
+                        feedback={{ type: "none", message: "" }}
                       />
                     </Stack>
                   </div>
@@ -247,6 +250,7 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInput}
                     required={input.required ?? true}
+                    feedback={{ type: "none", message: "" }}
                   />
                 </>
               );
@@ -261,6 +265,7 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  feedback={{ type: "none", message: "" }}
                 />
               );
             case "RADIO":
@@ -277,6 +282,7 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  feedback={{ type: "none", message: "" }}
                 />
               );
             // case "MULTIPLE":
@@ -302,6 +308,7 @@ export default function Form({
                   changeHandler={handleInput}
                   required={input.required ?? false}
                   encrypted={input.encrypted}
+                  feedback={{ type: "none", message: "" }}
                 />
               );
           }
