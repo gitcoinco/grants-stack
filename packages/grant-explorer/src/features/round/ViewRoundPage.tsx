@@ -20,6 +20,7 @@ import {
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
+import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 
 export default function ViewRound() {
@@ -121,12 +122,12 @@ function AfterRoundStart(props: {
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
     const projects = round?.approvedProjects;
     const exactMatches = projects?.filter(
-      (project) => project.projectMetadata.title === query
+      (project) => project.projectMetadata.title.toLocaleLowerCase() === query.toLocaleLowerCase()
     );
     const nonExactMatches = projects?.filter(
       (project) =>
-        project.projectMetadata.title.includes(query) &&
-        project.projectMetadata.title !== query
+        project.projectMetadata.title.toLocaleLowerCase().includes(query.toLocaleLowerCase()) &&
+        project.projectMetadata.title.toLocaleLowerCase() !== query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -137,34 +138,30 @@ function AfterRoundStart(props: {
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 px-4 py-7 h-screen">
         <main>
-          <p className="text-5xl mt-5 mb-6">{round.roundMetadata?.name}</p>
-          <p className="text-2xl mb-4">
+          <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
+          <p className="text-1xl mb-4">
             Matching funds available: $
             {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
           </p>
-          <p className="text-2xl mb-4">
+          <p className="text-1xl mb-4">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <Button
-            $variant="solid"
-            type="button"
-            className="items-center shadow-sm text-xs rounded px-2.5 py-1.5"
-          >
-            Apply to Grant Round
-          </Button>
           <hr className="mt-4 mb-8" />
-          <div className="flex flex-row mb-6 w-full justify-between">
-            <h3 className="text-[32px]">
+          <div className="flex flex-row mb-2 w-full justify-between">
+            <p className="text-2xl">
               All Projects ({projects ? projects.length : 0})
-            </h3>
-            <Input
-              className="w-64 h-8 rounded-full"
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(e: any) => setSearchQuery(e.target.value)}
-            />
+            </p>
+            <div className="relative">
+              <Search className="absolute h-4 w-4 mt-3 ml-3" />
+              <Input
+                className="w-64 h-8 rounded-full pl-10"
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onChange={(e: any) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
           {projects && (
             <ProjectList
