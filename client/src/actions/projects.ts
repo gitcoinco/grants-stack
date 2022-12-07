@@ -239,6 +239,7 @@ export const loadProjects =
     if (project.ids.length === 0) {
       // No projects found for this address on this chain
       // This is not necessarily an error now that we fetch on all chains
+      dispatch(projectsLoaded({}));
       return;
     }
 
