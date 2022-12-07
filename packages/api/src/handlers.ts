@@ -87,8 +87,8 @@ export const calculateHandler = async (req: Request, res: Response) => {
       }
 
       // save the distribution results to the db
-      // TODO: figure out if there is a better way to batch trasnactions
-      results.distribution.forEach(async (match) => {
+      // TODO: figure out if there is a better way to batch transactions
+      for (const match of results.distribution) {
         await prisma.payout.upsert({
           where: {
             payoutIdentifier: {
@@ -106,7 +106,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
             roundId: round.id,
           },
         });
-      });
+      }
     }
   } catch (err) {
     return handleResponse(res, 500, err as string);

@@ -58,3 +58,10 @@ export type QFContributionsByProjectId = {
 };
 
 export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
+
+export type DenominationResponse = {
+  amount: number;
+  isSuccess: boolean;
+  message: string | Error;
+}
+

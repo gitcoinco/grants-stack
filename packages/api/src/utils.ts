@@ -1,6 +1,6 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, ChainName, RoundMetadata } from "./types";
+import { ChainId, ChainName, RoundMetadata, DenominationResponse } from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -187,27 +187,50 @@ export async function denominateAs(
   asToken: string,
   amount: number,
   chainId: ChainId,
-): Promise<number> {
+): Promise<DenominationResponse> {
 
   // TODO: Export this to constants
-  const chainNames = {
+  const coingeckoSupportedChainNames: Record<number, string> = {
     [ChainId.MAINNET]: "ethereum",
-    [ChainId.GOERLI]: "goerli",
     [ChainId.OPTIMISM_MAINNET]: "optimism",
     [ChainId.FANTOM_MAINNET]: "fantom",
-    [ChainId.FANTOM_TESTNET]: "fantom_testnet",
-    [ChainId.LOCAL_ROUND_LAB]: "local_round_lab",
   };
+  
+  if (!coingeckoSupportedChainNames[chainId]) {
+    return {
+      isSuccess: false,
+      amount: amount,
+      message: new Error(`ChainId ${chainId} is not supported by CoinGecko's API.`),
+    } as DenominationResponse;
+  }
 
-  const response = await fetch(
-    `https://api.coingecko.com/api/v3/simple/token_price/${chainNames[chainId]}?contract_addresses=${token}%2C${asToken}&vs_currencies=usd`
-  );
+  try {
 
-  const data = await response.json();
-  const tokenPrice = data[token].usd;
-  const asTokenPrice = data[asToken].usd;
+    const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/token_price/${coingeckoSupportedChainNames[chainId]}?contract_addresses=${token}%2C${asToken}&vs_currencies=usd`
+    );
 
-  return amount * (asTokenPrice / tokenPrice);
+    const data = await response.json();
+    const tokenPrice = data[token].usd;
+    const asTokenPrice = data[asToken].usd;
+    const convertedAmount = amount * (asTokenPrice / tokenPrice);
+
+    return {
+      isSuccess: true,
+      amount: convertedAmount,
+      message: `Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`,
+    } as DenominationResponse;
+
+  } catch (err) {
+
+    return {
+      isSuccess: false,
+      amount: amount,
+      message: err,
+    } as DenominationResponse;
+
+  }
+
 }
 
 
