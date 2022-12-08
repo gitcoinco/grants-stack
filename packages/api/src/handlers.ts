@@ -15,6 +15,17 @@ import { PrismaClient, VotingStrategy } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+export const calculateRequestSchema = yup.object().shape({
+  chainId: yup.mixed<ChainId>().oneOf(Object.values(ChainId)).required(),
+  roundId: yup
+      .string()
+      .required()
+      .matches(
+          /^0x[a-fA-F0-9]{40}$/,
+          "roundId must be an ethereum contract address"
+      ),
+});
+
 /**
  * Orchestrator function which invokes calculate
  *
@@ -23,19 +34,9 @@ const prisma = new PrismaClient();
  */
 export const calculateHandler = async (req: Request, res: Response) => {
   // validate request body
-  const schema = yup.object().shape({
-    chainId: yup.mixed<ChainId>().oneOf(Object.values(ChainId)).required(),
-    roundId: yup
-      .string()
-      .required()
-      .matches(
-        /^0x[a-fA-F0-9]{40}$/,
-        "roundId must be an ethereum contract address"
-      ),
-  });
 
   try {
-    await schema.validate(req.body);
+    await calculateRequestSchema.validate(req.body);
   } catch (err: any) {
     return handleResponse(res, 400, err.errors[0]);
   }
@@ -185,3 +186,40 @@ export const convertPriceHandler = async (
     // we override the serialization block
   }
 };
+
+export const fetchRoundStatusHandler = async (req: Request, res: Response) => {
+  let results;
+
+  try {
+    const roundId = req.query.roundId?.toString();
+    const projectId = req.query.projectId?.toString();
+    const chainId = req.query.chainId?.toString();
+
+    const round = await prisma.round.findFirst({
+      where: {
+        roundId: roundId,
+      },
+    });
+
+    if (roundId && round) {
+      if (projectId) {
+        results = await prisma.payout.findFirst({
+          where: {
+            roundId: round.id,
+            projectId: projectId,
+          },
+        });
+      } else {
+        results = await prisma.payout.findMany({
+          where: {
+            roundId: round.id,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    handleResponse(res, 500, err as string);
+  }
+
+  handleResponse(res, 200, "fetched round status successfully", results);
+}
