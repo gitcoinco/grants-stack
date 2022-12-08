@@ -1,9 +1,18 @@
-import { log } from "@graphprotocol/graph-ts";
-import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
-import { Round, QFVote, VotingStrategy } from "../../../generated/schema";
-import { generateID } from "../../utils";
+// name     : implementation.ts
+// status   : legacy
+// version  : v1
+// abi      : abis/legacy/QuadraticFundingVotingStrategyImplementation/V1.json
+// reason   : Vote event is being updated to add a new parameter. 
+//            This results in an contract upgrade + ABI change
+//            This implementation is being updated to set projectId as
+//            the to address (the address to which the funds are sent to)
 
-const VERSION = "0.2.0";
+import { log } from "@graphprotocol/graph-ts";
+import { Voted as VotedEvent } from "../../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementationLegacyV1";
+import { QFVote, VotingStrategy } from "../../../../generated/schema";
+import { generateID } from "../../../utils";
+
+const VERSION = "0.1.0";
 
 /**
  * @dev Handles indexing on Voted event.
@@ -23,24 +32,6 @@ export function handleVote(event: VotedEvent): void {
     return;
   }
 
-  // if (!votingStrategy.round) {
-  //   log.warning("--> handleVotingContractCreated {} {}: votingStrategy.round is null", [
-  //     "QF",
-  //     votingStrategyAddress.toHex()
-  //   ]);
-  //   return;
-  // }
-
-  // // load Round contract
-  // let round = Round.load(votingStrategy.round!);
-  // if (!round) {
-  //   log.warning("--> handleVotingContractCreated {} : round {} not found", [
-  //     "QF",
-  //     votingStrategy.round!
-  //   ]);
-  //   return;
-  // }
-
   // create QFVote entity
   const voteID = generateID([
     event.transaction.hash.toHex(),
@@ -53,8 +44,9 @@ export function handleVote(event: VotedEvent): void {
   vote.amount = event.params.amount;
   vote.from = event.params.voter.toHex();
   vote.to = event.params.grantAddress.toHex();
-  vote.projectId = event.params.projectId.toHex();
 
+  // Defaulting projectID to empty string as projectID is not emitted in this ABI
+  vote.projectId = ""; 
   vote.version = VERSION;
 
   vote.save();

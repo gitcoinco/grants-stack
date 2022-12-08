@@ -4,6 +4,8 @@ import { QuadraticFundingVotingStrategyImplementation as VotingStrategyImplement
 import { VotingStrategy } from "../../../generated/schema";
 import { log } from "@graphprotocol/graph-ts";
 
+const VERSION = "0.1.0";
+
 /**
  * @dev Handles indexing on VotingContractCreated event.
  * @param event VotingContractCreatedEvent
@@ -25,6 +27,8 @@ export function handleVotingContractCreated(event: VotingContractCreatedEvent): 
   // set votingStrategy entity fields
   votingStrategy.strategyName = "LINEAR_QUADRATIC_FUNDING";
   votingStrategy.strategyAddress = event.params.votingImplementation.toHex();
+
+  votingStrategy.version = VERSION;
 
   votingStrategy.save();
 
