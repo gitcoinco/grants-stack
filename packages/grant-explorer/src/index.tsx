@@ -23,7 +23,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import { BallotProvider } from "./context/BallotContext";
-import ViewBallot from "./features/ViewBallotPage";
+import ViewBallot from "./features/round/ViewBallotPage";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
 

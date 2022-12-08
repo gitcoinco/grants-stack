@@ -1,36 +1,36 @@
-import { useBallot } from "../context/BallotContext";
+import { useBallot } from "../../context/BallotContext";
 import {
   FinalBallotDonation,
   PayoutToken,
   ProgressStatus,
   Project,
   recipient,
-} from "./api/types";
-import { useRoundById } from "../context/RoundContext";
+} from "../api/types";
+import { useRoundById } from "../../context/RoundContext";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Navbar from "./common/Navbar";
-import DefaultLogoImage from "../assets/default_logo.png";
+import Navbar from "../common/Navbar";
+import DefaultLogoImage from "../../assets/default_logo.png";
 import {
   CheckIcon,
   ChevronLeftIcon,
   SelectorIcon,
   InformationCircleIcon,
-  EyeIcon
+  EyeIcon,
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
-import { Button, Input } from "./common/styles";
-import { classNames, getPayoutTokenOptions } from "./api/utils";
+import { Button, Input } from "../common/styles";
+import { classNames, getPayoutTokenOptions } from "../api/utils";
 import { Listbox, Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
-import ConfirmationModal from "./common/ConfirmationModal";
-import InfoModal from "./common/InfoModal";
-import Footer from "./common/Footer";
-import ProgressModal from "./common/ProgressModal";
-import ErrorModal from "./common/ErrorModal";
-import { modalDelayMs } from "../constants";
-import { useQFDonation } from "../context/QFDonationContext";
+import ConfirmationModal from "../common/ConfirmationModal";
+import InfoModal from "../common/InfoModal";
+import Footer from "../common/Footer";
+import ProgressModal from "../common/ProgressModal";
+import ErrorModal from "../common/ErrorModal";
+import { modalDelayMs } from "../../constants";
+import { useQFDonation } from "../../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
@@ -110,7 +110,14 @@ export default function ViewBallot() {
         navigate(`/round/${chainId}/${roundId}`);
       }, 5000);
     }
-  }, [navigate, tokenApprovalStatus, voteStatus, indexingStatus, chainId, roundId]);
+  }, [
+    navigate,
+    tokenApprovalStatus,
+    voteStatus,
+    indexingStatus,
+    chainId,
+    roundId,
+  ]);
 
   const progressSteps = [
     {
@@ -300,17 +307,20 @@ export default function ViewBallot() {
           <div className="flex">
             <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
-                  className="inline-block"
-                  src={
-                    props.project.projectMetadata.logoImg
-                        ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                        : DefaultLogoImage
-                  }
-                  alt={"Project Logo"}
+                className="inline-block"
+                src={
+                  props.project.projectMetadata.logoImg
+                    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                    : DefaultLogoImage
+                }
+                alt={"Project Logo"}
               />
               <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
-                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
-                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
+                  <EyeIcon
+                    className="fill-gray-200 w-6 h-6 cursor-pointer"
+                    data-testid={`${project.projectRegistryId}-project-link`}
+                  />
                 </Link>
               </div>
             </div>
@@ -378,7 +388,7 @@ export default function ViewBallot() {
               aria-label={"Donation amount for all projects "}
               id={"input-donationamount"}
               min="0"
-              value={fixedDonation ?? ''}
+              value={fixedDonation ?? ""}
               type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(Number(e.target.value));
@@ -425,7 +435,8 @@ export default function ViewBallot() {
     }
   ) {
     const { project, roundRoutePath } = props;
-    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] = useBallot();
+    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
+      useBallot();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
@@ -445,20 +456,26 @@ export default function ViewBallot() {
                 className="inline-block"
                 src={
                   props.project.projectMetadata.logoImg
-                      ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                      : DefaultLogoImage
+                    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                    : DefaultLogoImage
                 }
                 alt={"Project Logo"}
               />
               <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
-                <Link to={`${roundRoutePath}/${project.grantApplicationId}`} >
-                  <EyeIcon className="fill-gray-200 w-6 h-6 cursor-pointer" data-testid={`${project.projectRegistryId}-project-link`}/>
+                <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
+                  <EyeIcon
+                    className="fill-gray-200 w-6 h-6 cursor-pointer"
+                    data-testid={`${project.projectRegistryId}-project-link`}
+                  />
                 </Link>
               </div>
             </div>
 
             <div className="pl-4 mt-1">
-              <Link to={`${roundRoutePath}/${project.grantApplicationId}`} data-testid={"final-ballot-project-link"}>
+              <Link
+                to={`${roundRoutePath}/${project.grantApplicationId}`}
+                data-testid={"final-ballot-project-link"}
+              >
                 <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
                   {props.project.projectMetadata.title}
                 </p>
@@ -507,8 +524,8 @@ export default function ViewBallot() {
                   props.project.projectRegistryId,
                   0,
                   props.project.recipient
-                )}
-              }
+                );
+              }}
               className="w-6 h-6 m-auto cursor-pointer"
             />
           </div>
@@ -531,7 +548,7 @@ export default function ViewBallot() {
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
                 min="0"
-                value={fixedDonation ?? ''}
+                value={fixedDonation ?? ""}
                 type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(Number(e.target.value));
@@ -957,7 +974,6 @@ export default function ViewBallot() {
         setOpenProgressModal(false);
         navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
       }, modalDelayMs);
-
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`

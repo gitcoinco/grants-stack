@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ReactComponent as Search } from "../../assets/search-black.svg";
 import { ReactComponent as ShortlistIcon } from "../../assets/shortlist-inactive.svg";
 
 export interface NavbarProps {
@@ -25,7 +24,6 @@ export default function Navbar(props: NavbarProps) {
                     </Link>
                 </div>
                 <div className="flex items-center gap-6">
-                    <Search/>
                     <Shortlist count={0} roundUrlPath={props.roundUrlPath}/>
                     <ConnectButton/>
                 </div>

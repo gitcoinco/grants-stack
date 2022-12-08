@@ -1,4 +1,4 @@
-import ViewBallot from "../../ViewBallotPage";
+import ViewBallot from "../ViewBallotPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
@@ -24,8 +24,8 @@ const mockBalance = {
 };
 
 const mockSigner = {
-  data: {}
-}
+  data: {},
+};
 
 const useParamsFn = () => ({
   chainId,
@@ -310,17 +310,19 @@ describe("View Ballot Page", () => {
     });
 
     it("should contain a link element with each test id to redirect the user back to the project", () => {
-        const shortlist: Project[] = [makeApprovedProjectData()];
+      const shortlist: Project[] = [makeApprovedProjectData()];
 
-        const setShortlist = jest.fn();
-        const setFinalBallot = jest.fn();
+      const setShortlist = jest.fn();
+      const setFinalBallot = jest.fn();
 
-        renderWrapped(shortlist, setShortlist, [], setFinalBallot);
+      renderWrapped(shortlist, setShortlist, [], setFinalBallot);
 
-        shortlist.map((project) => {
-          const link = screen.getByTestId(`${project.projectRegistryId}-project-link`);
-          expect(link).toBeInTheDocument();
-        });
+      shortlist.map((project) => {
+        const link = screen.getByTestId(
+          `${project.projectRegistryId}-project-link`
+        );
+        expect(link).toBeInTheDocument();
+      });
     });
 
     describe("Shortlist Bulk Actions", () => {
@@ -534,8 +536,12 @@ describe("View Ballot Page", () => {
       const confirmButton = screen.getByTestId("handle-confirmation");
       fireEvent.click(confirmButton);
 
-      expect(await screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
-      expect(await screen.queryByTestId("insufficientBalance")).not.toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("confirm-modal")
+      ).not.toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("insufficientBalance")
+      ).not.toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).toBeInTheDocument();
     });
 
@@ -558,9 +564,13 @@ describe("View Ballot Page", () => {
       const confirmButton = screen.getByTestId("handle-confirmation");
       fireEvent.click(confirmButton);
 
-      expect(await screen.queryByTestId("insufficientBalance")).toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("insufficientBalance")
+      ).toBeInTheDocument();
       expect(await screen.queryByTestId("emptyInput")).not.toBeInTheDocument();
-      expect(await screen.queryByTestId("confirm-modal")).not.toBeInTheDocument();
+      expect(
+        await screen.queryByTestId("confirm-modal")
+      ).not.toBeInTheDocument();
     });
 
     it("opens confirmation modal when user clicks on submit with sufficient balance and donation fields set", async () => {
