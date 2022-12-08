@@ -938,7 +938,8 @@ export default function ViewBallot() {
     return (
       <div className="text-sm text-grey-400 gap-16">
         <p className="text-sm">
-          Submitting your donation will require signing two transactions:
+          Submitting your donation will require signing two transactions<br/>
+          if you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
           <li>Approving the contract to access your wallet</li>
