@@ -147,10 +147,10 @@ export type ProjectRegistryId = string;
 export type recipient = string;
 
 export type FinalBallotDonation = {
-  projectRegistryId: ProjectRegistryId,
-  amount: number;
+  projectRegistryId: ProjectRegistryId;
+  amount: string;
   projectAddress: recipient;
-}
+};
 
 export enum ApplicationStatus {
   PENDING = "PENDING",
@@ -178,6 +178,7 @@ export type ProjectMetadata = {
 export type ProjectCredentials = {
   [key: string]: VerifiableCredential;
 };
+
 export enum ProgressStatus {
   IS_SUCCESS = "IS_SUCCESS",
   IN_PROGRESS = "IN_PROGRESS",
