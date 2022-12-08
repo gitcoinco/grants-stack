@@ -7,6 +7,7 @@ import {
   getChainVerbose,
   getGraphQLEndpoint,
   getPriceForToken,
+  getStartAndEndTokenPrices
 } from "../utils";
 
 enableFetchMocks();
@@ -220,6 +221,22 @@ describe("handleResponse", () => {
   // TODO:
 });
 
+describe("getStartAndEndTokenPrices", () => {
+
+    it("should fetch start and end token price", async () => {
+
+      const { startPrice, endPrice } = await getStartAndEndTokenPrices(
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          ChainId.MAINNET,
+          1392577232,
+          1622577232
+      );
+
+      expect(startPrice).toEqual(1.0062418761688314);
+      expect(endPrice).toEqual(1.0017286032156016);
+
+    });
+});
 
 describe("denominateAs", () => {
 
@@ -227,21 +244,22 @@ describe("denominateAs", () => {
     // in this case, test usdc to usdc 1:1 conversion
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, ChainId.MAINNET);
+    const convertedAmount = await denominateAs(token, token, amount, 1392577232, 1622577232, ChainId.MAINNET);
     expect(convertedAmount.amount).toEqual(69);
   });
 
   it("should not convert if the chain is not supported", async () => {
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, ChainId.FANTOM_TESTNET);
+    const convertedAmount = await denominateAs(token, token, amount, 0, 0, ChainId.FANTOM_TESTNET);
     expect(convertedAmount.amount).toEqual(amount);
   });
 
   it("should return the same amount if token contract is not available on the selected chain", async () => {
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, ChainId.OPTIMISM_MAINNET);
+    const convertedAmount = await denominateAs(token, token, amount, 0, 0, ChainId.OPTIMISM_MAINNET);
     expect(convertedAmount.amount).toEqual(amount);
   });
+
 });

@@ -120,6 +120,8 @@ export const fetchRoundMetadata = async (
           id
           strategyName
         }
+        roundStartTime
+        roundEndTime
         token
         roundMetaPtr {
           protocol
@@ -143,6 +145,8 @@ export const fetchRoundMetadata = async (
       id: data?.votingStrategy.id,
       strategyName: data?.votingStrategy.strategyName,
     },
+    roundStartTime: data?.roundStartTime,
+    roundEndTime: data?.roundEndTime,
     token: data?.token,
     totalPot: totalPot,
   };
@@ -169,6 +173,13 @@ export const handleResponse = (
   });
 };
 
+// NOTE: This should probably be moved to a separate file for constants
+const coingeckoSupportedChainNames: Record<number, string> = {
+  [ChainId.MAINNET]: "ethereum",
+  [ChainId.OPTIMISM_MAINNET]: "optimism",
+  [ChainId.FANTOM_MAINNET]: "fantom",
+};
+
 export async function getPriceForToken(contract: string, chain: ChainName) {
   return await fetch(
     `https://api.coingecko.com/api/v3/coins/${chain}/contract/${contract}`,
@@ -182,20 +193,43 @@ export async function getPriceForToken(contract: string, chain: ChainName) {
     .then((res) => res.market_data.current_price);
 }
 
+export async function getStartAndEndTokenPrices(
+    contract: string,
+    chainId: ChainId,
+    startTime: number,
+    endTime: number
+): Promise<{ startPrice: number, endPrice: number }> {
+  const chainName = coingeckoSupportedChainNames[chainId];
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+    const data = await res.json();
+    // NOTE: If the start or end time is out of range, the API will return the closest price to the start or end time
+    //       by selecting the first and last element in the array
+    //       We should consider storing this information in the future.
+    const startPrice = data.prices[0][1];
+    const endPrice = data.prices[data.prices.length - 1][1];
+    return { startPrice, endPrice };
+  } catch (err) {
+    throw err;
+  }
+}
+
 export async function denominateAs(
   token: string,
   asToken: string,
   amount: number,
+  startTime: number,
+  endTime: number,
   chainId: ChainId,
 ): Promise<DenominationResponse> {
 
-  // TODO: Export this to constants
-  const coingeckoSupportedChainNames: Record<number, string> = {
-    [ChainId.MAINNET]: "ethereum",
-    [ChainId.OPTIMISM_MAINNET]: "optimism",
-    [ChainId.FANTOM_MAINNET]: "fantom",
-  };
-  
   if (!coingeckoSupportedChainNames[chainId]) {
     return {
       isSuccess: false,
@@ -206,14 +240,12 @@ export async function denominateAs(
 
   try {
 
-    const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/token_price/${coingeckoSupportedChainNames[chainId]}?contract_addresses=${token}%2C${asToken}&vs_currencies=usd`
-    );
+    const tokenPrices = await getStartAndEndTokenPrices(token, chainId, startTime, endTime);
+    const asTokenPrices = await getStartAndEndTokenPrices(asToken, chainId, startTime, endTime);
 
-    const data = await response.json();
-    const tokenPrice = data[token].usd;
-    const asTokenPrice = data[asToken].usd;
-    const convertedAmount = amount * (asTokenPrice / tokenPrice);
+    const avgTokenPrice = (tokenPrices.startPrice + tokenPrices.endPrice) / 2;
+    const avgAsTokenPrice = (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
+    const convertedAmount = amount * (avgAsTokenPrice / avgTokenPrice);
 
     return {
       isSuccess: true,
