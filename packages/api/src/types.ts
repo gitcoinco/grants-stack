@@ -28,6 +28,8 @@ export type RoundMetadata = {
     id: string;
     strategyName: string;
   };
+  roundStartTime: number;
+  roundEndTime: number;
   token: string;
   totalPot: number;
 };

@@ -60,7 +60,7 @@ export const fetchVotesHandler = async (
 export const calculateHandler = async (
   metadata: RoundMetadata,
   contributions: QFContribution[],
-  chainId: ChainId
+  chainId: ChainId,
 ) => {
   const totalProjectPoolAmount = metadata.totalPot;
 
@@ -94,6 +94,8 @@ export const calculateHandler = async (
         contribution.token,
         metadata.token,
         contribution.amount,
+        metadata.roundStartTime,
+        metadata.roundEndTime,
         chainId
     );
     contribution.amount = res.amount;
