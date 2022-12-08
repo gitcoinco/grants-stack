@@ -165,53 +165,57 @@ export default function ViewBallot() {
       <div className="mx-20 h-screen px-4 py-7">
         {Header(chainId, roundId)}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex gap-4">
           {shortlistNotEmpty && ShortlistProjects(shortlist)}
           {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
 
           {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
           {!finalBallotNotEmpty && EmptyFinalBallot()}
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div></div>
-          <div>
-            <Summary />
-            <Button
-              $variant="solid"
-              data-testid="handle-confirmation"
-              type="button"
-              onClick={handleConfirmation}
-              className="items-center shadow-sm text-sm rounded w-full"
-            >
-              Submit your donation!
-            </Button>
-            {donationError.emptyInput && (
-              <p
-                data-testid="emptyInput"
-                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-              >
-                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                <span>
-                  You must enter donations for all final ballot projects
-                </span>
-              </p>
-            )}
-            {donationError.insufficientBalance && (
-              <p
-                data-testid="insufficientBalance"
-                className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-              >
-                <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                <span>You do not have enough funds for these donations</span>
-              </p>
-            )}
-          </div>
-          <PayoutModals />
-        </div>
         <Footer />
       </div>
     </>
   );
+
+  function SummaryContainer() {
+    return (
+      <>
+        <div>
+          <Summary />
+          <Button
+            $variant="solid"
+            data-testid="handle-confirmation"
+            type="button"
+            onClick={handleConfirmation}
+            className="items-center shadow-sm text-sm rounded w-full"
+          >
+            Submit your donation!
+          </Button>
+          {donationError.emptyInput && (
+            <p
+              data-testid="emptyInput"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>
+                You must enter donations for all final ballot projects
+              </span>
+            </p>
+          )}
+          {donationError.insufficientBalance && (
+            <p
+              data-testid="insufficientBalance"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>You do not have enough funds for these donations</span>
+            </p>
+          )}
+        </div>
+        <PayoutModals />
+      </>
+    )
+  }
 
   function Header(chainId?: string, roundId?: string) {
     return (
@@ -240,7 +244,7 @@ export default function ViewBallot() {
     const [, , , handleRemoveProjectsFromShortlist, handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
 
     return (
-      <div>
+      <div className="w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <div className="flex justify-between border-b-2 pb-2">
             <h2 className="text-xl">Shortlist</h2>
@@ -363,7 +367,7 @@ export default function ViewBallot() {
   function EmptyShortlist(chainId?: string, roundId?: string) {
     return (
       <>
-        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
+        <div className="w-1/2 h-full px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
 
           <div className="my-4">
@@ -390,51 +394,54 @@ export default function ViewBallot() {
 
   function FinalBallotProjects(finalBallot: Project[]) {
     return (
-      <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-        <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
-          <div className="basis-[28%]">
-            <h2 className="mt-2 text-xl">Final Donation</h2>
-          </div>
-          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
-            <p className="mt-3 text-sm amount-text">Amount</p>
-            <Input
-              aria-label={"Donation amount for all projects "}
-              id={"input-donationamount"}
-              min="0"
-              value={fixedDonation ?? ""}
-              type="number"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setFixedDonation(Number(e.target.value));
-              }}
-              className="w-24"
-            />
-            <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
-            <Button
-              type="button"
-              $variant="outline"
-              onClick={() => {
-                updateAllDonations(fixedDonation ?? 0);
-              }}
-              className="text-xs px-4 py-2 text-purple-600 border-0"
-            >
-              Apply to all
-            </Button>
-          </div>
-        </div>
-        <div className="my-4">
-          {finalBallot.map((project: Project, key: number) => (
-            <div key={key}>
-              <FinalBallotProject
-                isSelected={
-                  isProjectAlreadySelected(project.projectRegistryId) > -1
-                }
-                project={project}
-                index={key}
-                roundRoutePath={`/round/${chainId}/${roundId}`}
-              />
+      <div className="w-1/2 h-full">
+        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
+          <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+            <div className="basis-[28%]">
+              <h2 className="mt-2 text-xl">Final Donation</h2>
             </div>
-          ))}
+            <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+              <p className="mt-3 text-sm amount-text">Amount</p>
+              <Input
+                aria-label={"Donation amount for all projects "}
+                id={"input-donationamount"}
+                min="0"
+                value={fixedDonation ?? ""}
+                type="number"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setFixedDonation(Number(e.target.value));
+                }}
+                className="w-24"
+              />
+              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+              <Button
+                type="button"
+                $variant="outline"
+                onClick={() => {
+                  updateAllDonations(fixedDonation ?? 0);
+                }}
+                className="text-xs px-4 py-2 text-purple-600 border-0"
+              >
+                Apply to all
+              </Button>
+            </div>
+          </div>
+          <div className="my-4">
+            {finalBallot.map((project: Project, key: number) => (
+              <div key={key}>
+                <FinalBallotProject
+                  isSelected={
+                    isProjectAlreadySelected(project.projectRegistryId) > -1
+                  }
+                  project={project}
+                  index={key}
+                  roundRoutePath={`/round/${chainId}/${roundId}`}
+                />
+              </div>
+            ))}
+          </div>
         </div>
+        <SummaryContainer />
       </div>
     );
   }
@@ -549,7 +556,7 @@ export default function ViewBallot() {
 
   function EmptyFinalBallot() {
     return (
-      <>
+      <div className="w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
           <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
             <div className="basis-[28%]">
@@ -584,7 +591,8 @@ export default function ViewBallot() {
             </p>
           </div>
         </div>
-      </>
+        <SummaryContainer />
+      </div>
     );
   }
 
