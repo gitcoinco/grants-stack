@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { ChakraProvider } from "@chakra-ui/react";
 import { Store } from "redux";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
@@ -133,14 +132,12 @@ describe("<Form />", () => {
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
-        <ChakraProvider>
-          <Form
-            roundApplication={roundApplicationMetadata}
-            round={round}
-            onSubmit={jest.fn()}
-            showErrorModal={false}
-          />
-        </ChakraProvider>,
+        <Form
+          roundApplication={roundApplicationMetadata}
+          round={round}
+          onSubmit={jest.fn()}
+          showErrorModal={false}
+        />,
         store
       );
 
@@ -157,6 +154,48 @@ describe("<Form />", () => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
           target: { value: "0x34aa3f359a9d614239015126635ce7732c18fdf3" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Review your payout wallet address.")
+        ).toBeInTheDocument()
+      );
+    });
+
+    test("should validate address type", async () => {
+      const returnValue = {
+        isContract: true,
+        isSafe: true,
+        resolved: true,
+      };
+
+      jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+
+      renderWrapped(
+        <Form
+          roundApplication={roundApplicationMetadata}
+          round={round}
+          onSubmit={jest.fn()}
+          showErrorModal={false}
+        />,
+        store
+      );
+
+      const addressInputWrapper = screen.getByTestId("addressInputWrapper");
+      const walletTypeWrapper = screen.getByTestId("walletType");
+      const isNotSafeOption = walletTypeWrapper.querySelector(
+        'input[value="No"]'
+      ) as Element;
+      const addressInput = addressInputWrapper.querySelector(
+        "input"
+      ) as Element;
+
+      act(() => {
+        fireEvent.click(isNotSafeOption);
+        fireEvent.change(addressInput, {
+          target: { value: "0xaEea165460F734F25B7dcD081A78c22fC23A3862" },
         });
       });
 
