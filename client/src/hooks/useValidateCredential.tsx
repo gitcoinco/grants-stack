@@ -15,13 +15,14 @@ export default function useValidateCredential(
   async function validateCredential() {
     if (vc && providerId && handle) {
       const credential = vc;
-      credential.credentialSubject.provider = `${providerId}#${handle}`;
-
+      const validCredentialProvider =
+        credential.credentialSubject.provider?.toLowerCase() ===
+        `${providerId}#${handle}`.toLowerCase();
       const validCredential = await verifier.verifyCredential(credential);
       const validIssuer = IAM_SERVER === credential.issuer;
       // TODO: add owner check
       // address of vc.credentialSubject.id should be a project owner
-      setIsValid(validCredential && validIssuer);
+      setIsValid(validCredentialProvider && validCredential && validIssuer);
     } else {
       setIsValid(false);
     }
