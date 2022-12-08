@@ -53,7 +53,7 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
 
   const totalDonation = useMemo(() => {
-    return donations.reduce((sum, donation) => sum + donation.amount, 0);
+    return donations.reduce((sum, donation) => sum + Number(donation.amount),0);
   }, [donations]);
 
   const [fixedDonation, setFixedDonation] = useState<number>();
@@ -61,8 +61,9 @@ export default function ViewBallot() {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string>();
 
-  const [shortlist, finalBallot, , , ,] = useBallot();
+  const [shortlist, finalBallot] = useBallot();
 
   const { openConnectModal } = useConnectModal();
 
@@ -110,6 +111,17 @@ export default function ViewBallot() {
         navigate(`/round/${chainId}/${roundId}`);
       }, 5000);
     }
+
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
+      voteStatus === ProgressStatus.IS_SUCCESS
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        navigate(`/round/${chainId}/${roundId}/${transactionHash}/thankyou`);
+      }, modalDelayMs);
+    }
+
   }, [
     navigate,
     tokenApprovalStatus,
@@ -117,6 +129,7 @@ export default function ViewBallot() {
     indexingStatus,
     chainId,
     roundId,
+    transactionHash,
   ]);
 
   const progressSteps = [
@@ -507,7 +520,7 @@ export default function ViewBallot() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 updateDonations(
                   props.project.projectRegistryId,
-                  Number(e.target.value),
+                  e.target.value,
                   props.project.recipient
                 );
               }}
@@ -522,7 +535,7 @@ export default function ViewBallot() {
                 ]);
                 updateDonations(
                   props.project.projectRegistryId,
-                  0,
+                  "",
                   props.project.recipient
                 );
               }}
@@ -693,7 +706,7 @@ export default function ViewBallot() {
 
   function updateDonations(
     projectRegistryId: string,
-    amount: number,
+    amount: string,
     projectAddress: recipient
   ) {
     const projectIndex = donations.findIndex(
@@ -719,7 +732,7 @@ export default function ViewBallot() {
     const newDonations = finalBallot.map((project) => {
       return {
         projectRegistryId: project.projectRegistryId,
-        amount,
+        amount: amount.toString(),
         projectAddress: project.recipient,
       } as FinalBallotDonation;
     });
@@ -851,10 +864,10 @@ export default function ViewBallot() {
 
     // check to ensure all projects have donation amount
     const emptyDonations = donations.filter(
-      (donation) => !donation.amount || donation.amount == 0
+      (donation) => !donation.amount || Number(donation.amount) === 0
     );
 
-    if (donations.length == 0 || emptyDonations.length > 0) {
+    if (donations.length === 0 || emptyDonations.length > 0) {
       newState.emptyInput = true;
       setDonationError(newState);
       return;
@@ -970,10 +983,10 @@ export default function ViewBallot() {
         votingStrategy: round.votingStrategy,
       });
 
-      setTimeout(() => {
-        setOpenProgressModal(false);
-        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
-      }, modalDelayMs);
+      if (txHash) {
+        setTransactionHash(txHash);
+      }
+
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
