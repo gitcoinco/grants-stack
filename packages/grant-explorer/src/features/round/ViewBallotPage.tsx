@@ -53,10 +53,7 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
 
   const totalDonation = useMemo(() => {
-    return donations.reduce(
-      (sum, donation) => sum + Number(donation.amount),
-      0
-    );
+    return donations.reduce((sum, donation) => sum + Number(donation.amount),0);
   }, [donations]);
 
   const [fixedDonation, setFixedDonation] = useState<number>();
@@ -64,6 +61,7 @@ export default function ViewBallot() {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string>();
 
   const [shortlist, finalBallot] = useBallot();
 
@@ -113,6 +111,17 @@ export default function ViewBallot() {
         navigate(`/round/${chainId}/${roundId}`);
       }, 5000);
     }
+
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
+      voteStatus === ProgressStatus.IS_SUCCESS
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        navigate(`/round/${chainId}/${roundId}/${transactionHash}/thankyou`);
+      }, modalDelayMs);
+    }
+
   }, [
     navigate,
     tokenApprovalStatus,
@@ -120,6 +129,7 @@ export default function ViewBallot() {
     indexingStatus,
     chainId,
     roundId,
+    transactionHash,
   ]);
 
   const progressSteps = [
@@ -973,10 +983,10 @@ export default function ViewBallot() {
         votingStrategy: round.votingStrategy,
       });
 
-      setTimeout(() => {
-        setOpenProgressModal(false);
-        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
-      }, modalDelayMs);
+      if (txHash) {
+        setTransactionHash(txHash);
+      }
+
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
