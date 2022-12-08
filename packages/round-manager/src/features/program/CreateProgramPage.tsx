@@ -195,7 +195,9 @@ export default function CreateProgram() {
                   <div className="sm:basis-1/2">
                     <label htmlFor="name" className="block text-sm">
                       Program Name
-                      <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+                      <span className="text-right text-violet-400 float-right text-xs mt-1">
+                        *Required
+                      </span>
                     </label>
                     <Input
                       {...register("name", { required: true })}

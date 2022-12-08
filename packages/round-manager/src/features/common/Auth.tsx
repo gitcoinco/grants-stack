@@ -32,8 +32,7 @@ export default function Auth() {
           <Spinner text="Connecting Wallet" />
         ) : (
           <div className="grid grid-rows-3 grid-flow-col bg-white">
-            <div className="row-span-2">
-            </div>
+            <div className="row-span-2"></div>
             <div className="row-span-5">
               <div className="my-[15rem]">
                 <LandingLogo className="block w-auto mb-6 ml-2"></LandingLogo>
@@ -47,7 +46,6 @@ export default function Auth() {
                 </p>
                 <ConnectButton />
               </div>
-
             </div>
             <div className="row-span-5">
               <LandingBanner className="align-middle float-right"></LandingBanner>
