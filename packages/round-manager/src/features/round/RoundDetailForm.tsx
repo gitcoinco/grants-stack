@@ -265,7 +265,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </p>
               <p className="text-sm mb-2">
                 <span>Applications</span>
-                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+                <span className="text-right text-violet-400 float-right text-xs mt-1">
+                  *Required
+                </span>
               </p>
               <div className="grid grid-cols-6 gap-6 mb-1">
                 <div className="col-span-6 sm:col-span-3">
@@ -387,7 +389,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               </div>
               <p className="text-sm mt-4 mb-2">
                 Round
-                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+                <span className="text-right text-violet-400 float-right text-xs mt-1">
+                  *Required
+                </span>
               </p>
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
@@ -530,7 +534,9 @@ function RoundName(props: {
         <label htmlFor="roundMetadata.name" className="text-sm">
           Round Name
         </label>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
       </div>
       <Input
         {...props.register}
@@ -591,9 +597,7 @@ function ProgramChain(props: { program: Program }) {
     <div className="col-span-6 sm:col-span-3 opacity-50">
       <Listbox disabled>
         <div>
-          <Listbox.Label className="block text-sm">
-            Program Chain
-          </Listbox.Label>
+          <Listbox.Label className="block text-sm">Program Chain</Listbox.Label>
           <div className="relative mt-1">
             <Listbox.Button
               className={`relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm sm:text-sm h-10`}
@@ -668,7 +672,9 @@ function PayoutTokenDropdown(props: {
           <div>
             <Listbox.Label className="block text-sm">
               <span>Payout Token</span>
-              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              <span className="text-right text-violet-400 float-right text-xs mt-1">
+                *Required
+              </span>
               <PayoutTokenInformation />
             </Listbox.Label>
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -768,7 +774,9 @@ function MatchingFundsAvailable(props: {
         <label htmlFor="matchingFundsAvailable" className="text-sm">
           Matching Funds Available
         </label>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
       </div>
 
       <div className="relative mt-1 rounded-md shadow-sm">
@@ -833,7 +841,9 @@ function MatchingCap(props: {
           <RadioGroup.Label className="block text-sm">
             <p className="text-sm">
               <span>Do you want a matching cap for projects?</span>
-              <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+              <span className="text-right text-violet-400 float-right text-xs mt-1">
+                *Required
+              </span>
               <InformationCircleIcon
                 data-tip
                 data-background-color="#0E0333"
@@ -910,13 +920,12 @@ function MatchingCap(props: {
         </RadioGroup>
       </div>
       <div className="col-span-6 sm:col-span-3">
-        <label
-          htmlFor="matchingCapAmount"
-          className="block text-sm"
-        >
+        <label htmlFor="matchingCapAmount" className="block text-sm">
           <p className="text-sm">
             <span>If so, how much?</span>
-            <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+            <span className="text-right text-violet-400 float-right text-xs mt-1">
+              *Required
+            </span>
           </p>
         </label>
         <div className="relative mt-1 rounded-md shadow-sm">
@@ -966,7 +975,9 @@ function ContactInformation(props: {
         <label htmlFor="roundMetadata.support.info" className="text-sm">
           Contact Information
         </label>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+        <span className="text-right text-violet-400 float-right text-xs mt-1">
+          *Required
+        </span>
       </div>
       <Input
         {...props.register}
@@ -1038,7 +1049,9 @@ function SupportTypeDropdown(props: {
             <Listbox.Label className="text-sm mt-4 mb-2">
               <p className="text-sm">
                 <span>Support Input</span>
-                <span className="text-right text-violet-400 float-right text-xs mt-1">*Required</span>
+                <span className="text-right text-violet-400 float-right text-xs mt-1">
+                  *Required
+                </span>
               </p>
             </Listbox.Label>
             <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">

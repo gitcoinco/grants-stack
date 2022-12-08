@@ -42,6 +42,12 @@ export const payoutTokens = [
     logo: TokenNamesAndLogos["ETH"],
   },
   {
+    name: "WFTM",
+    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    logo: TokenNamesAndLogos["FTM"],
+  },
+  {
     name: "FTM",
     chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
     address: ethers.constants.AddressZero,
@@ -125,6 +131,13 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
       return [
+        {
+          name: "WFTM",
+          chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+          address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+          decimal: 18,
+          logo: TokenNamesAndLogos["FTM"],
+        },
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,

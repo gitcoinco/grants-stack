@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { initDatadog } from "./datadog";
-import TagManager from 'react-gtm-module'
+import TagManager from "react-gtm-module";
 
 import { store } from "./app/store";
 import { chains, client as WagmiClient } from "./app/wagmi";
@@ -41,8 +41,8 @@ if (process.env.REACT_APP_TAG_MANAGER) {
     gtmId: `${process.env.REACT_APP_TAG_MANAGER}`,
     events: {
       "gtm.start": new Date().getTime(),
-      "event": "gtm.js"
-    }
+      event: "gtm.js",
+    },
   });
 }
 
