@@ -50,6 +50,7 @@ describe("handleVotingContractCreated", () => {
     assert.stringEquals(votingStrategy!.strategyName, "LINEAR_QUADRATIC_FUNDING");
     assert.stringEquals(votingStrategy!.strategyAddress, votingImplementation.toHex());
     assert.stringEquals(votingStrategy!.id, votingContractAddress.toHex());
+    assert.stringEquals(votingStrategy!.version, "0.1.0");
   });
   
 });

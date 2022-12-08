@@ -100,6 +100,7 @@ type VotingStrategy @entity {
   strategyAddress: String!
   round: Round @derivedFrom(field: "votingStrategy")
   votes: [QFVote!] @derivedFrom(field: "votingStrategy")
+  version: String!
 }
 
 ########################
@@ -115,5 +116,6 @@ type QFVote @entity {
   from: String!
   to: String!
   projectId: String!
+  version: String!
   # round: Round!
 }
