@@ -24,10 +24,17 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
-export function getStyleInfoForFeedback(feedback: {
+export type Feedback = {
   type: string;
   message: string;
-}) {
+};
+
+export type FeedbackStyle = {
+  borderColor: string;
+  feedbackColor: string;
+};
+
+export function getStyleInfoForFeedback(feedback: Feedback): FeedbackStyle {
   switch (feedback?.type) {
     case "error":
       return {
@@ -64,14 +71,8 @@ export function TextInput({
   encrypted,
   feedback,
 }: InputProps) {
-  let borderColor = "";
-  let feedbackColor = "";
-
-  if (feedback) {
-    const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
-    feedbackColor = styleInfo.feedbackColor;
-  }
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderColor, feedbackColor } = styleInfo;
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -117,14 +118,8 @@ export function TextInputAddress({
   encrypted,
   feedback,
 }: AddressInputProps) {
-  let borderColor = "";
-  let feedbackColor = "";
-
-  if (feedback) {
-    const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
-    feedbackColor = styleInfo.feedbackColor;
-  }
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderColor, feedbackColor } = styleInfo;
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -178,14 +173,8 @@ export function WebsiteInput({
   encrypted,
   feedback,
 }: InputProps) {
-  let borderColor = "";
-  let feedbackColor = "";
-
-  if (feedback) {
-    const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
-    feedbackColor = styleInfo.feedbackColor;
-  }
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderColor, feedbackColor } = styleInfo;
 
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;

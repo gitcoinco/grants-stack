@@ -105,6 +105,8 @@ function ProjectForm({
   };
 
   useEffect(() => {
+    // dont trigger error on first load
+
     validate();
   }, [props.formMetaData]);
 
