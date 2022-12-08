@@ -220,3 +220,8 @@ export enum ProjectFormStatus {
 export type DynamicFormInputs = {
   [key: string]: string;
 };
+
+export enum CredentialProvider {
+  Twitter = "ClearTextTwitter",
+  Github = "ClearTextGithubOrg",
+}
