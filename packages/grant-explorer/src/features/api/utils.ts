@@ -245,8 +245,10 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
       return `https://testnet.ftmscan.com/tx/${txHash}`;
 
     case ChainId.GOERLI_CHAIN_ID:
+      return `https://goerli.etherscan.io/tx/${txHash}`
+
     default:
-      return `https://goerli.etherscan.io/tx/${txHash}`;
+      return `https://etherscan.io/tx/${txHash}`;
   }
 };
 
