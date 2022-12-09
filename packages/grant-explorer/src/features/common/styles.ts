@@ -40,6 +40,9 @@ export const Input = tw.input<InputProps>`
 
 export const CardsContainer = tw.div`
   flex
+  gap-5
+  justify-around
+  md:justify-start
   flex-row
   flex-wrap
   w-full
@@ -49,7 +52,7 @@ export const BasicCard = tw.div`
   w-[302px]
   h-[374px]
   ml-0
-  mr-6
+  mx-0
   my-3
   rounded
   bg-white
