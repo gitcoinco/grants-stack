@@ -90,8 +90,8 @@ export default function ViewProjectDetails() {
             </div>
           </>
         )}
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 }
