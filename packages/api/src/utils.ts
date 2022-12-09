@@ -166,7 +166,7 @@ export const handleResponse = (
     success = true;
   }
 
-  res.json({
+  return res.json({
     success,
     message,
     data: body ?? {},

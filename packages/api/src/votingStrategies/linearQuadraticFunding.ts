@@ -5,6 +5,8 @@ import {
   RoundMetadata,
   ChainId,
   DenominationResponse,
+  ChainName,
+  RoundStats,
 } from "../types";
 import { denominateAs, fetchFromGraphQL } from "../utils";
 
@@ -154,3 +156,42 @@ export const calculateHandler = async (
     isSaturated: isSaturated,
   };
 };
+
+/**
+ * Fetch Round Stats for a round using linearQF voting strategy
+ * @param chainName - Chain from which round / voting contract is deployed 
+ * @param contributions - QFContribution[] fetched by invoking fetchVotesHandler
+ */
+export const fetchRoundStatsHandler = async (
+  chainId: ChainId,
+  contributions: QFContribution[],
+  metadata: RoundMetadata
+): Promise<RoundStats> => {
+  let totalContributionsInUSD = 0;
+  let uniqueContributors: string[] = [];
+
+  denominateAs
+  contributions.map(async contribution => {
+    
+    if (!uniqueContributors.includes(contribution.projectId)) {
+      uniqueContributors.push(contribution.projectId);
+    }
+
+    const contributionInUSD = await denominateAs(
+      contribution.token,
+      metadata.token, // TODO: HARDCODE TO USDC TOKEN FOR STABLE
+      contribution.amount,
+      metadata.roundStartTime,
+      metadata.roundEndTime,
+      chainId
+  );
+
+    totalContributionsInUSD += contributionInUSD.amount;
+  });
+
+  return {
+    uniqueContributorCount: uniqueContributors.length,
+    contributionsCount: contributions.length,
+    totalContributionsInUSD: totalContributionsInUSD
+  };
+}

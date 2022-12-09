@@ -39,6 +39,18 @@ export type CalculateParam = {
   roundId: string;
 };
 
+export type RoundStats = {
+  uniqueContributorCount: number,
+  contributionsCount: number,
+  totalContributionsInUSD: number;
+}
+
+export type HandleResponseObject = {
+  success: boolean;
+  message: string;
+  data: object;
+}
+
 /****************/
 /* = LinearQF = */
 /****************/

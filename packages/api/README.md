@@ -24,7 +24,7 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 │   ├── votingStrategies
 │       ├── linearQuadraticFunding.ts   # fetching QF votes + compute matching via linear QF
 │   ├── utils.ts                        # Helper functions
-│   ├── handlers.ts                     # Orchestrator Logic
+│   ├── handlers                        # Orchestrator Logic
 │   ├── types.ts                        # Types Definition
 │   ├── routes.ts                       # Routes
 ├── index.ts                            # node server configuration
