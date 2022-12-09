@@ -1,6 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import {
@@ -64,6 +64,9 @@ export default function Form({
     string | undefined
   >(undefined);
   const [showError, setShowError] = useState(false);
+  const [feedback, setFeedback] = useState([
+    { title: "", type: "none", message: "" },
+  ]);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -102,6 +105,7 @@ export default function Form({
         errorCount: 0,
       });
       setDisableSubmit(false);
+      setFeedback([{ title: "", type: "none", message: "" }]);
       return ValidationStatus.Valid;
     } catch (e) {
       const error = e as ValidationError;
@@ -113,6 +117,24 @@ export default function Form({
         errorCount: error.inner.length,
       });
       setDisableSubmit(true);
+      setFeedback([
+        ...error.inner.map((er) => {
+          const err = er as ValidationError;
+          console.log("ERROR", { err });
+          if (err !== null) {
+            return {
+              title: err.path!,
+              type: "error",
+              message: err.message,
+            };
+          }
+          return {
+            title: "",
+            type: "none",
+            message: "",
+          };
+        }),
+      ]);
       return ValidationStatus.Invalid;
     }
   };
@@ -144,7 +166,15 @@ export default function Form({
     handleSubmitApplication();
   };
 
-  // todo: add the chain logo for each project
+  const didMountRef = useRef(false);
+
+  useEffect(() => {
+    if (didMountRef.current) {
+      validate();
+    }
+    didMountRef.current = true;
+  }, [formInputs]);
+
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
@@ -172,7 +202,7 @@ export default function Form({
           switch (input.type) {
             case "PROJECT":
               return (
-                <>
+                <Fragment key={input.id}>
                   <div className="mt-6 w-full sm:w-1/2 relative">
                     <CustomSelect
                       key={input.id}
@@ -182,7 +212,12 @@ export default function Form({
                       disabled={preview}
                       changeHandler={handleProjectInput}
                       required={input.required ?? true}
-                      feedback={{ type: "none", message: "" }}
+                      feedback={
+                        feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                          type: "none",
+                          message: "",
+                        }
+                      }
                     />
                   </div>
                   <div>
@@ -198,7 +233,7 @@ export default function Form({
                     </p>
                     <hr className="w-1/2" />
                   </div>
-                </>
+                </Fragment>
               );
             case "TEXT":
               return (
@@ -211,7 +246,12 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
-                  feedback={{ type: "none", message: "" }}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             case "RECIPIENT":
@@ -229,7 +269,12 @@ export default function Form({
                         info=""
                         required={input.required ?? true}
                         disabled={preview}
-                        feedback={{ type: "none", message: "" }}
+                        feedback={
+                          feedback.find((fb) => fb.title === "isSafe") ?? {
+                            type: "none",
+                            message: "",
+                          }
+                        }
                       />
                     </Stack>
                   </div>
@@ -245,7 +290,12 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInput}
                     required={input.required ?? true}
-                    feedback={{ type: "none", message: "" }}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
                   />
                 </>
               );
@@ -260,7 +310,12 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
-                  feedback={{ type: "none", message: "" }}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             case "RADIO":
@@ -277,7 +332,12 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
-                  feedback={{ type: "none", message: "" }}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             // case "MULTIPLE":
@@ -303,7 +363,12 @@ export default function Form({
                   changeHandler={handleInput}
                   required={input.required ?? false}
                   encrypted={input.encrypted}
-                  feedback={{ type: "none", message: "" }}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
           }
@@ -313,15 +378,15 @@ export default function Form({
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm text-gitcoin-pink-500 font-medium">
+            <strong className="text-gitcoin-pink-500 font-medium text-sm">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-            <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
+            <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li className="text-black" key={o}>
+                <li className="text-black my-2" key={o}>
                   {o}
                 </li>
               ))}
