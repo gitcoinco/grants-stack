@@ -58,7 +58,7 @@ export default function ThankYou() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 px-4 py-7 h-screen">
+      <div className="lg:mx-20 px-4 py-7 h-screen">
         <main>
           <div className="text-center">
             <h1 className="text-4xl my-8">Thank you for supporting our community.</h1>

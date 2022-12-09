@@ -65,7 +65,7 @@ export default function Footer() {
     <footer className="w-full">
       <div className="max-w-7xl md:flex md:justify-between mx-auto py-12 overflow-hidden">
         <div></div>
-        <div className="mt-8 md:mt-0">
+        <div className="mt-8 md:mt-0 flex justify-center mb-4">
           <GitcoinCommunityLogo className=""></GitcoinCommunityLogo>
         </div>
         <div className="flex justify-center space-x-8 md:order-1">

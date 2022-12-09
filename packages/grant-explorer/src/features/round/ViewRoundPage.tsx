@@ -77,7 +77,7 @@ function BeforeRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 px-4 py-7 h-screen">
+      <div className="lg:mx-20 px-4 py-7 h-screen">
         <main>
           <PreRoundPage
             round={round}
@@ -142,7 +142,7 @@ function AfterRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 px-4 py-7 h-screen">
+      <div className="lg:mx-20 px-4 py-7 h-screen">
         <main>
           <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
           <p className="text-1xl mb-4">
@@ -152,18 +152,18 @@ function AfterRoundStart(props: {
             &nbsp;
             {matchingFundPayoutTokenName}
           </p>
-          <p className="text-1xl mb-4">
+          <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <hr className="mt-4 mb-8" />
-          <div className="flex flex-row mb-2 w-full justify-between">
-            <p className="text-2xl">
+          <hr className="mt-4 mb-8"/>
+          <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
+            <p className="text-2xl mb-4">
               All Projects ({projects ? projects.length : 0})
             </p>
             <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3" />
+              <Search className="absolute h-4 w-4 mt-3 ml-3"/>
               <Input
-                className="w-64 h-8 rounded-full pl-10"
+                className="w-full lg:w-64 h-8 rounded-full pl-10"
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
