@@ -133,6 +133,12 @@ function AfterRoundStart(props: {
     setProjects([...exactMatches!, ...nonExactMatches!]);
   };
 
+  const matchingFundPayoutTokenName =
+    round &&
+    payoutTokens.filter(
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+    )[0].name;
+
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
@@ -140,8 +146,11 @@ function AfterRoundStart(props: {
         <main>
           <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
           <p className="text-1xl mb-4">
-            Matching funds available: $
+            Matching funds available:
+            &nbsp;
             {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
+            &nbsp;
+            {matchingFundPayoutTokenName}
           </p>
           <p className="text-1xl mb-4">
             {round.roundMetadata?.eligibility?.description}
@@ -372,7 +381,7 @@ function PreRoundPage(props: {
     round.applicationsEndTime <= currentTime &&
     round.roundStartTime >= currentTime;
 
-  const MatchingFundPayoutTokenName =
+  const matchingFundPayoutTokenName =
     round &&
     payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
@@ -425,7 +434,7 @@ function PreRoundPage(props: {
             &nbsp;
             {round.roundMetadata?.matchingFunds?.matchingFundsAvailable}
             &nbsp;
-            {MatchingFundPayoutTokenName}
+            {matchingFundPayoutTokenName}
           </span>
         </p>
         <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
