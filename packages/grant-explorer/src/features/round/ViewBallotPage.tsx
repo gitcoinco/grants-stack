@@ -60,7 +60,7 @@ export default function ViewBallot() {
       },
       0
   );
-  }, [donations, selectedPayoutToken]);
+  }, [donations]);
 
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
