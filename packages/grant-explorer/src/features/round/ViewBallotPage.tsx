@@ -53,8 +53,14 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
 
   const totalDonation = useMemo(() => {
-    return donations.reduce((sum, donation) => sum + Number(donation.amount),0);
-  }, [donations]);
+    return donations.reduce(
+      (acc, donation) => {
+        const decimalPlaces = (donation.amount.match(/\.(\d+)/) || [])[1]?.length || 0;
+        return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
+      },
+      0
+  );
+  }, [donations, selectedPayoutToken]);
 
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
@@ -605,7 +611,7 @@ export default function ViewBallot() {
             <p>Your Contribution</p>
             <p>
               <span data-testid={"totalDonation"} className="mr-2">
-                {totalDonation}
+                {totalDonation.toString()}
               </span>
               <span data-testid={"summaryPayoutToken"}>
                 {selectedPayoutToken.name}
