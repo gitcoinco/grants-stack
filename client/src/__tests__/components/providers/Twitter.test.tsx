@@ -50,7 +50,7 @@ describe("<Twitter />", () => {
       store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
-          projectTwitter: handle
+          projectTwitter: handle,
         }),
       });
 
@@ -60,8 +60,8 @@ describe("<Twitter />", () => {
         renderWrapped(
           <Twitter
             handle={handle}
-            verificationComplete={(e) => { }}
-            verificationError={(e) => { }}
+            verificationComplete={() => {}}
+            verificationError={() => {}}
             canVerify
           />,
           store
@@ -89,7 +89,7 @@ describe("<Twitter />", () => {
       store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
-          projectTwitter: "another-twitter-account"
+          projectTwitter: "another-twitter-account",
         }),
       });
 
@@ -99,8 +99,8 @@ describe("<Twitter />", () => {
         renderWrapped(
           <Twitter
             handle={handle}
-            verificationComplete={(e) => { }}
-            verificationError={(e) => { }}
+            verificationComplete={() => {}}
+            verificationError={() => {}}
             canVerify
           />,
           store
@@ -114,7 +114,8 @@ describe("<Twitter />", () => {
       const store = setupStore();
       const handle = "my-twitter-handle";
       const vc = buildVerifiableCredential("Twitter", handle);
-      vc.issuer = "did:key:rAndomDiDRanDOmdidrAndomDiDRanDOmdidrAndomDiDRanDOmdid";
+      vc.issuer =
+        "did:key:rAndomDiDRanDOmdidrAndomDiDRanDOmdidrAndomDiDRanDOmdid";
 
       store.dispatch({
         type: "GRANT_METADATA_FETCHED",
@@ -128,7 +129,7 @@ describe("<Twitter />", () => {
       store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
-          projectTwitter: handle
+          projectTwitter: handle,
         }),
       });
 
@@ -138,8 +139,8 @@ describe("<Twitter />", () => {
         renderWrapped(
           <Twitter
             handle={handle}
-            verificationComplete={(e) => { }}
-            verificationError={(e) => { }}
+            verificationComplete={() => {}}
+            verificationError={() => {}}
             canVerify
           />,
           store
@@ -166,7 +167,7 @@ describe("<Twitter />", () => {
       store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
-          projectTwitter: handle
+          projectTwitter: handle,
         }),
       });
 
@@ -174,8 +175,8 @@ describe("<Twitter />", () => {
         renderWrapped(
           <Twitter
             handle={handle}
-            verificationComplete={(e) => { }}
-            verificationError={(e) => { }}
+            verificationComplete={() => {}}
+            verificationError={() => {}}
             canVerify
           />,
           store
@@ -184,6 +185,5 @@ describe("<Twitter />", () => {
 
       expect(screen.queryByText("Verified")).not.toBeInTheDocument();
     });
-    
   });
 });
