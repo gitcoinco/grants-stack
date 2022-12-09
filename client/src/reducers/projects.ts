@@ -108,7 +108,7 @@ export const projectsReducer = (
         applications: {
           ...state.applications,
           [action.projectID]: [
-            ...state.applications[action.projectID],
+            ...(state.applications[action.projectID] ?? []),
             ...action.applications,
           ],
         },
