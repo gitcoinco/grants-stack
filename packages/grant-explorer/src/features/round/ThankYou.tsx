@@ -6,6 +6,7 @@ import { Button } from "../common/styles";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import { ChainId, getTxExplorer } from "../api/utils";
+import { useRoundById } from "../../context/RoundContext";
 
 
 export default function ThankYou() {
@@ -14,14 +15,20 @@ export default function ThankYou() {
 
   const { chainId, roundId, txHash } = useParams();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
+  const roundName = round?.roundMetadata?.name;
+
   const navigate = useNavigate();
 
-  function TwitterButton() {
+  function TwitterButton(props: {roundName ?: string}) {
+
+    const shareText = `I just donated to the ${props.roundName}. Join me! https://grant-explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
 
     return (
       <Button
         type="button"
-        onClick={() => window.open("twitter.com", '_blank')} // TODO: UPDATE
+        onClick={() => window.open(`http://twitter.com/share?text=${shareText}`, '_blank')}
         className="flex items-center justify-center shadow-sm text-sm rounded border-1 text-black bg-[#C1E4FC] px-10 border-grey-100 hover:shadow-md"
         data-testid="twitter-button"
       >
@@ -54,7 +61,7 @@ export default function ThankYou() {
             <h1 className="text-4xl my-8">Thank you for supporting our community.</h1>
 
             <div className="flex justify-center gap-6">
-              <TwitterButton />
+              <TwitterButton roundName={roundName} />
 
               <ViewTransactionButton />
             </div>

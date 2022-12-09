@@ -7,13 +7,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import ThankYou from "../ThankYou";
 import { ChainId, getTxExplorer } from "../../api/utils";
+import { RoundProvider } from "../../../context/RoundContext";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 const txHash = faker.finance.ethereumAddress();
 
-const useParamsFn = () => ({ 
-  chainId: chainId, 
+const useParamsFn = () => ({
+  chainId: chainId,
   roundId: roundId,
   txHash: txHash
 });
@@ -39,7 +40,9 @@ describe("<ThankYou/>", () => {
   it("Should show twitter, go back home, view your trasaction button", async () => {
 
     render(
-      <ThankYou/>
+      <RoundProvider>
+        <ThankYou/>
+      </RoundProvider>
     );
 
     expect(await screen.queryByTestId("view-tx-button")).toBeInTheDocument();
