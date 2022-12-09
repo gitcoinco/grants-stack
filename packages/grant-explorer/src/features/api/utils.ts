@@ -244,11 +244,11 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `https://testnet.ftmscan.com/tx/${txHash}`;
 
-    case ChainId.GOERLI_CHAIN_ID:
-      return `https://goerli.etherscan.io/tx/${txHash}`
+    case ChainId.MAINNET:
+      return `https://etherscan.io/tx/${txHash}`;
 
     default:
-      return `https://etherscan.io/tx/${txHash}`;
+       return `https://goerli.etherscan.io/tx/${txHash}`
   }
 };
 
