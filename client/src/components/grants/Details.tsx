@@ -54,9 +54,7 @@ export default function Details({
 
   useEffect(() => {
     if (props.projectID) {
-      dispatch(
-        fetchProjectApplications(props.projectID, Number(props.chainId))
-      );
+      dispatch(fetchProjectApplications(props.projectID, process.env));
     }
   }, [dispatch, props.projectID, props.chainId]);
 
@@ -68,7 +66,11 @@ export default function Details({
       <Box>
         {props.applications.map((application) => {
           const roundID = application?.roundID;
-          const cardData = { application, roundID, chainId: props.chainId };
+          const cardData = {
+            application,
+            roundID,
+            chainId: application.chainId,
+          };
           return (
             <Box key={roundID} m={2}>
               <ApplicationCard applicationData={cardData} />

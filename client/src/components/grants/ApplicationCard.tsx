@@ -1,10 +1,11 @@
-import { Badge, Box, Spinner } from "@chakra-ui/react";
+import { Badge, Box, Image, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import { RoundSupport } from "../../types";
 import { formatDate } from "../../utils/components";
+import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 
 export default function ApplicationCard({
   applicationData,
@@ -18,9 +19,18 @@ export default function ApplicationCard({
     const round = roundState ? roundState.round : undefined;
     const support: RoundSupport | undefined = round?.roundMetadata?.support;
 
+    const applicationChainName = networkPrettyName(
+      Number(applicationData.chainId)
+    );
+    const applicationChainIconUri = getNetworkIcon(
+      Number(applicationData.chainId)
+    );
+
     return {
       round,
       support,
+      applicationChainName,
+      applicationChainIconUri,
     };
   });
 
@@ -85,11 +95,19 @@ export default function ApplicationCard({
       borderWidth="1px"
       borderRadius="md"
     >
-      <Box p={2} mb={4}>
+      <Box p={2} mb={1}>
         <span className="text-[16px] text-gitcoin-gray-400">
           {props.round?.programName}
         </span>
       </Box>
+      <div className="flex justify-end w-fit mr-1 align-middle mb-2">
+        <Image
+          src={props.applicationChainIconUri}
+          alt="chain icon"
+          className="flex flex-row h-4 w-4 ml-2 mr-1 mt-1 rounded-full"
+        />
+        <span className="align-middle">{props.applicationChainName}</span>
+      </div>
       <div className="flex flex-1 flex-col md:flex-row justify-between">
         <Box className="pl-2 text-gitcoin-gray-400">
           <div className="mb-1">{props.round?.roundMetadata.name}</div>
