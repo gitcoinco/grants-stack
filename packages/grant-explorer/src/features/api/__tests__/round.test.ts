@@ -1,7 +1,7 @@
-import { makeApprovedProjectData, makeRoundData } from "../../../test-utils"
-import { ApplicationStatus, Round } from "../types"
-import { fetchFromIPFS, graphql_fetch } from "../utils"
-import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round"
+import { makeApprovedProjectData, makeRoundData } from "../../../test-utils";
+import { ApplicationStatus, Round } from "../types";
+import { fetchFromIPFS, graphql_fetch } from "../utils";
+import { getRoundById, GetRoundByIdResult, getProjectOwners } from "../round";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -52,7 +52,9 @@ describe("getRoundById", () => {
               expectedRoundData.roundEndTime
             ),
             token: expectedRoundData.token,
-            votingStrategy: expectedRoundData.votingStrategy,
+            votingStrategy: {
+              id: expectedRoundData.votingStrategy,
+            },
             projectsMetaPtr: null,
             projects: [],
           },
@@ -110,7 +112,7 @@ describe("getRoundById", () => {
             },
           ],
         },
-      }
+      };
 
       graphQLResultWithProjectOwners = {
         data: {
@@ -120,7 +122,7 @@ describe("getRoundById", () => {
               accounts: [
                 {
                   account: {
-                      address: "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017"
+                    address: "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017",
                   },
                 },
               ],
@@ -129,19 +131,22 @@ describe("getRoundById", () => {
         },
       };
 
-      roundMetadataIpfsResult = expectedRound.roundMetadata
-      roundProjectStatusesIpfsResult = [{
-        id: expectedApprovedApplication.grantApplicationId,
-        status: ApplicationStatus.APPROVED,
-        payoutAddress: "some payout address"
-      }]
+      roundMetadataIpfsResult = expectedRound.roundMetadata;
+      roundProjectStatusesIpfsResult = [
+        {
+          id: expectedApprovedApplication.grantApplicationId,
+          status: ApplicationStatus.APPROVED,
+          payoutAddress: "some payout address",
+        },
+      ];
 
-      const projectOwners = expectedApprovedApplication.projectMetadata.owners.map(
-        (it) => it.address
-      );
+      const projectOwners =
+        expectedApprovedApplication.projectMetadata.owners.map(
+          (it) => it.address
+        );
 
       (getProjectOwners as jest.Mock).mockResolvedValue(projectOwners);
-    })
+    });
 
     it("maps approved project metadata for old application format", async () => {
       const oldFormat = {

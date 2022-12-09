@@ -180,6 +180,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   it("displays the project details of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
+    const token = payoutTokens[0].address;
 
     const roundWithProjects = makeRoundData({
       id: roundId,
@@ -188,6 +189,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -209,6 +211,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       }
     );
     const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
+    const token = payoutTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedApprovedProject],
@@ -216,6 +219,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -232,6 +236,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
+    const token = payoutTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -239,6 +244,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -258,6 +264,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
+    const token = payoutTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -265,6 +272,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -301,6 +309,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
         projectMetadata: { ...projectMetadata, title: "my great gitcoin" },
       }),
     ];
+    const token = payoutTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -308,6 +317,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
@@ -328,6 +338,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   describe("add project to ballot", () => {
     const approvedProjects = [makeApprovedProjectData()];
+    const token = payoutTokens[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects,
@@ -335,6 +346,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       applicationsEndTime,
       roundStartTime,
       roundEndTime,
+      token,
     });
 
     it("shows an add-to-shortlist button", () => {
