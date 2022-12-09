@@ -1,4 +1,7 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
+
+enableFetchMocks();
+
 import { ChainId } from "../types";
 import {
   denominateAs,
@@ -7,10 +10,8 @@ import {
   getChainVerbose,
   getGraphQLEndpoint,
   getPriceForToken,
-  getStartAndEndTokenPrices
+  getStartAndEndTokenPrices,
 } from "../utils";
-
-enableFetchMocks();
 
 const fetchMock = fetch as FetchMock;
 
@@ -222,44 +223,88 @@ describe("handleResponse", () => {
 });
 
 describe("getStartAndEndTokenPrices", () => {
+  it("should fetch start and end token price", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        prices: [
+          [1622567980899, 0.9954632411776787],
+          [1622570866727, 1.0037974623619168],
+          [1622574275142, 1.0022713676604735],
+        ],
+        market_caps: [
+          [1622567980899, 22561032089.438694],
+          [1622570866727, 22759226878.52222],
+          [1622574275142, 22772493358.633835],
+        ],
+        total_volumes: [
+          [1622567980899, 2645486073.0251384],
+          [1622570866727, 2636577392.7841797],
+          [1622574275142, 2776326393.6250405],
+        ],
+      })
+    );
+    const { startPrice, endPrice } = await getStartAndEndTokenPrices(
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      ChainId.MAINNET,
+      1622567232,
+      1622577232
+    );
 
-    it("should fetch start and end token price", async () => {
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.coingecko.com/api/v3/coins/ethereum/contract/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/market_chart/range?vs_currency=usd&from=1622567232&to=1622577232",
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
 
-      const { startPrice, endPrice } = await getStartAndEndTokenPrices(
-          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          ChainId.MAINNET,
-          1392577232,
-          1622577232
-      );
-
-      expect(startPrice).toEqual(1.0062418761688314);
-      expect(endPrice).toEqual(1.0017286032156016);
-
-    });
+    expect(startPrice).toEqual(0.9954632411776787);
+    expect(endPrice).toEqual(1.0022713676604735);
+  });
 });
 
 describe("denominateAs", () => {
-
   it("should convert an amount of one token to another", async () => {
     // in this case, test usdc to usdc 1:1 conversion
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, 1392577232, 1622577232, ChainId.MAINNET);
+    const convertedAmount = await denominateAs(
+      token,
+      token,
+      amount,
+      1612577232,
+      1622577232,
+      ChainId.MAINNET
+    );
     expect(convertedAmount.amount).toEqual(69);
   });
 
   it("should not convert if the chain is not supported", async () => {
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, 0, 0, ChainId.FANTOM_TESTNET);
+    const convertedAmount = await denominateAs(
+      token,
+      token,
+      amount,
+      0,
+      0,
+      ChainId.FANTOM_TESTNET
+    );
     expect(convertedAmount.amount).toEqual(amount);
   });
 
   it("should return the same amount if token contract is not available on the selected chain", async () => {
     const token = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     const amount = 69;
-    const convertedAmount = await denominateAs(token, token, amount, 0, 0, ChainId.OPTIMISM_MAINNET);
+    const convertedAmount = await denominateAs(
+      token,
+      token,
+      amount,
+      0,
+      0,
+      ChainId.OPTIMISM_MAINNET
+    );
     expect(convertedAmount.amount).toEqual(amount);
   });
-
 });
