@@ -1,7 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
-import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
@@ -88,7 +87,6 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer />
       </div>
     </>
   );
@@ -179,7 +177,6 @@ function AfterRoundStart(props: {
             />
           )}
         </main>
-        <Footer />
       </div>
     </>
   );

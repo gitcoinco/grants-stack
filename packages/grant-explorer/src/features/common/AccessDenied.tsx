@@ -1,5 +1,4 @@
 import Navbar from "./Navbar";
-import Footer from "./Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 
 export default function AccessDenied() {
@@ -22,7 +21,6 @@ export default function AccessDenied() {
               </div>
             </div>
           </main>
-          <Footer />
         </div>
       </>
   );

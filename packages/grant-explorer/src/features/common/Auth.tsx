@@ -3,7 +3,6 @@ import { useAccount, useNetwork, useProvider, useSigner } from "wagmi"
 
 import { Web3Instance } from "../api/types"
 import { Spinner } from "./Spinner";
-import Footer from "./Footer";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 
@@ -38,7 +37,6 @@ export default function Auth() {
           </div>
         }
       </main>
-      <Footer />
     </div>
   ) : <Outlet context={data} />
 }

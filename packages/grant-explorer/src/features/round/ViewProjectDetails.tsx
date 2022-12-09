@@ -12,7 +12,6 @@ import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
 import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 
@@ -90,7 +89,6 @@ export default function ViewProjectDetails() {
             </div>
           </>
         )}
-        <Footer />
       </div>
     </>
   );

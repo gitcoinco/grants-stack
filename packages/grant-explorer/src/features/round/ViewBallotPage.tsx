@@ -26,7 +26,6 @@ import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
-import Footer from "../common/Footer";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { modalDelayMs } from "../../constants";
@@ -67,7 +66,6 @@ export default function ViewBallot() {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [transactionHash, setTransactionHash] = useState<string>();
 
   const [shortlist, finalBallot] = useBallot();
 
@@ -98,7 +96,7 @@ export default function ViewBallot() {
 
   const navigate = useNavigate();
 
-  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus } =
+  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus, txHash } =
     useQFDonation();
 
   useEffect(() => {
@@ -120,11 +118,12 @@ export default function ViewBallot() {
 
     if (
       tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
-      voteStatus === ProgressStatus.IS_SUCCESS
+      voteStatus === ProgressStatus.IS_SUCCESS &&
+        txHash !== ""
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        navigate(`/round/${chainId}/${roundId}/${transactionHash}/thankyou`);
+        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
       }, modalDelayMs);
     }
 
@@ -135,7 +134,7 @@ export default function ViewBallot() {
     indexingStatus,
     chainId,
     roundId,
-    transactionHash,
+    txHash,
   ]);
 
   const progressSteps = [
@@ -178,7 +177,6 @@ export default function ViewBallot() {
           {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
           {!finalBallotNotEmpty && EmptyFinalBallot()}
         </div>
-        <Footer />
       </div>
     </>
   );
@@ -990,17 +988,13 @@ export default function ViewBallot() {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
-      const txHash = await submitDonations({
+      await submitDonations({
         roundId: roundId,
         donations: donations,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,
         votingStrategy: round.votingStrategy,
       });
-
-      if (txHash) {
-        setTransactionHash(txHash);
-      }
 
     } catch (error) {
       datadogLogs.logger.error(

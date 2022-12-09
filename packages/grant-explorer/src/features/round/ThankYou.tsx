@@ -1,23 +1,25 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import { Button } from "../common/styles";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import { ChainId, getTxExplorer } from "../api/utils";
 import { useRoundById } from "../../context/RoundContext";
+import { useQFDonation } from "../../context/QFDonationContext";
 
 
 export default function ThankYou() {
-  datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/thankyou");
+  datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/:txHash/thankyou");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const { chainId, roundId, txHash } = useParams();
+  const { chainId, roundId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
   const roundName = round?.roundMetadata?.name;
+
+  const { txHash } = useQFDonation();
 
   const navigate = useNavigate();
 
@@ -55,8 +57,8 @@ export default function ThankYou() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 px-4 py-7 h-screen">
-        <main>
+      <div className="mx-20 px-4 py-7 flex flex-grow">
+        <main className="flex-grow">
           <div className="mx-auto text-center">
             <h1 className="text-4xl my-8">Thank you for supporting our community.</h1>
 
@@ -77,13 +79,14 @@ export default function ThankYou() {
             </Button>
 
             <div className="mt-11">
-              <ThankYouBanner/>
+              <div className="flex justify-center">
+                <ThankYouBanner/>
+              </div>
             </div>
 
           </div>
         </main>
       </div>
-      <Footer />
     </>
   );
 
