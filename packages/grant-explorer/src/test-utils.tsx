@@ -43,7 +43,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       matchingFunds: {
         matchingFundsAvailable: 1000,
         matchingCap: true,
-        matchingCapAmount: 100
+        matchingCapAmount: 100,
       },
     },
     store: {
