@@ -64,11 +64,6 @@ export default function Form({
     string | undefined
   >(undefined);
   const [showError, setShowError] = useState(false);
-  // const [borderStyle, setBorderStyle] = useState<string>("");
-
-  // useEffect(() => {
-  //   setBorderStyle(getInputBorderStyle(highlightType));
-  // }, [highlightType]);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;

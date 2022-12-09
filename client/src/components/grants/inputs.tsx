@@ -96,7 +96,7 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={`border-${borderColor}`}
+        className={classNames(borderColor ?? `border-${borderColor}`)}
       />
       {feedback?.message ? (
         <span className={`text-${feedbackColor}`}>{feedback.message}</span>

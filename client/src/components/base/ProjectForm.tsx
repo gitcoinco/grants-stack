@@ -1,5 +1,5 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
@@ -74,7 +74,7 @@ function ProjectForm({
         valid: true,
         errorCount: 0,
       });
-      setFeedback([...feedback, { title: "", type: "none", message: "" }]);
+      setFeedback([{ title: "", type: "none", message: "" }]);
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -104,10 +104,13 @@ function ProjectForm({
     }
   };
 
-  useEffect(() => {
-    // dont trigger error on first load
+  const didMountRef = useRef(false);
 
-    validate();
+  useEffect(() => {
+    if (didMountRef.current) {
+      validate();
+    }
+    didMountRef.current = true;
   }, [props.formMetaData]);
 
   const nextStep = () => {
