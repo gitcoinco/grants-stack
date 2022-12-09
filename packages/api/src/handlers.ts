@@ -151,10 +151,10 @@ export const fetchMatchingHandler = async (req: Request, res: Response) => {
       }
     }
   } catch (err) {
-    handleResponse(res, 500, err as string);
+    return handleResponse(res, 500, err as string);
   }
 
-  handleResponse(res, 200, "fetched info sucessfully", results);
+  return handleResponse(res, 200, "fetched info sucessfully", results);
 };
 
 const convertPriceRequestSchema = yup.object().shape({

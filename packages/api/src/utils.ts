@@ -229,7 +229,21 @@ export async function denominateAs(
   endTime: number,
   chainId: ChainId,
 ): Promise<DenominationResponse> {
+  // token = "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50"
+  // asToken = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
+  // chainId = ChainId.FANTOM_MAINNET
 
+  // token = "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+  // asToken = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1"
+  // chainId = ChainId.OPTIMISM_MAINNET
+
+  // TODO: Export this to constants
+  const coingeckoSupportedChainNames: Record<number, string> = {
+    [ChainId.MAINNET]: "ethereum",
+    [ChainId.OPTIMISM_MAINNET]: "optimistic-ethereum",
+    [ChainId.FANTOM_MAINNET]: "fantom",
+  };
+  
   if (!coingeckoSupportedChainNames[chainId]) {
     return {
       isSuccess: false,

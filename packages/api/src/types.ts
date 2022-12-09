@@ -46,6 +46,7 @@ export type CalculateParam = {
 export type QFContribution = {
   projectId: string;
   amount: number;
+  convertedAmount: number;
   contributor: string;
   timestamp?: number;
   token: string;
