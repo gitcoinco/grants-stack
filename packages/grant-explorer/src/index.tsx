@@ -26,7 +26,6 @@ import { BallotProvider } from "./context/BallotContext";
 import ViewBallot from "./features/round/ViewBallotPage";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
-import Footer from "./features/common/Footer";
 
 // Initialize datadog
 initDatadog();
@@ -95,7 +94,6 @@ root.render(
                   {/* 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <Footer />
               </ReduxRouter>
             </BallotProvider>
           </RoundProvider>

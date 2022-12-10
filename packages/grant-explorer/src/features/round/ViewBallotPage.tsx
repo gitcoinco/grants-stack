@@ -32,6 +32,7 @@ import { modalDelayMs } from "../../constants";
 import { useQFDonation } from "../../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import Footer from "../common/Footer";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -166,17 +167,17 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-
       <div className="mx-20 h-screen px-4 py-7">
-        {Header(chainId, roundId)}
-
-        <div className="flex gap-4">
-          {shortlistNotEmpty && ShortlistProjects(shortlist)}
-          {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
-
-          {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
-          {!finalBallotNotEmpty && EmptyFinalBallot()}
-        </div>
+        <main>
+          {Header(chainId, roundId)}
+          <div className="flex gap-4">
+            {shortlistNotEmpty && ShortlistProjects(shortlist)}
+            {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
+            {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
+            {!finalBallotNotEmpty && EmptyFinalBallot()}
+          </div>
+        </main>
+        <Footer />
       </div>
     </>
   );

@@ -62,7 +62,7 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="absolute bottom-0 w-full">
+    <footer className="w-full">
       <div className="max-w-7xl md:flex md:justify-between mx-auto py-12 overflow-hidden">
         <div></div>
         <div className="mt-8 md:mt-0">

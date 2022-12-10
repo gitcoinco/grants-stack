@@ -7,6 +7,7 @@ import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-log
 import { ChainId, getTxExplorer } from "../api/utils";
 import { useRoundById } from "../../context/RoundContext";
 import { useQFDonation } from "../../context/QFDonationContext";
+import Footer from "../common/Footer";
 
 
 export default function ThankYou() {
@@ -57,9 +58,9 @@ export default function ThankYou() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 px-4 py-7 flex flex-grow">
-        <main className="flex-grow">
-          <div className="mx-auto text-center">
+      <div className="mx-20 px-4 py-7 h-screen">
+        <main>
+          <div className="text-center">
             <h1 className="text-4xl my-8">Thank you for supporting our community.</h1>
 
             <div className="flex justify-center gap-6">
@@ -86,6 +87,7 @@ export default function ThankYou() {
 
           </div>
         </main>
+        <Footer />
       </div>
     </>
   );

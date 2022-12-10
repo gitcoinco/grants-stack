@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import { Button } from "./styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
 import { datadogLogs } from "@datadog/browser-logs";
+import Footer from "./Footer";
 
 export default function NotFoundPage() {
   datadogLogs.logger.info(`====> Route: NotFound`);
@@ -40,6 +41,7 @@ export default function NotFoundPage() {
               </div>
             </div>
           </main>
+          <Footer />
         </div>
       </>
   );

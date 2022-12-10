@@ -14,6 +14,7 @@ import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
+import Footer from "../common/Footer";
 
 enum VerifiedCredentialState {
   VALID,
@@ -52,43 +53,46 @@ export default function ViewProjectDetails() {
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 h-screen px-4 py-7">
-        <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
-          <Link to={`/round/${chainId}/${roundId}`}>
-            <span className="font-normal">Back to Grants</span>
-          </Link>
-        </div>
-        {!isLoading && projectToRender && (
-          <>
-            <Header projectMetadata={projectToRender.projectMetadata} />
-            <div className="flex">
-              <div className="grow">
-                <div>
-                  <ProjectTitle
-                    projectMetadata={projectToRender.projectMetadata}
-                  />
-                  <AboutProject projectToRender={projectToRender} />
+        <main>
+          <div className="flex flex-row items-center gap-3 text-sm">
+            <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
+            <Link to={`/round/${chainId}/${roundId}`}>
+              <span className="font-normal">Back to Grants</span>
+            </Link>
+          </div>
+          {!isLoading && projectToRender && (
+            <>
+              <Header projectMetadata={projectToRender.projectMetadata} />
+              <div className="flex">
+                <div className="grow">
+                  <div>
+                    <ProjectTitle
+                      projectMetadata={projectToRender.projectMetadata}
+                    />
+                    <AboutProject projectToRender={projectToRender} />
+                  </div>
+                  <div>
+                    <DescriptionTitle />
+                    <Detail text={projectToRender.projectMetadata.description} testID="project-metadata"/>
+                  </div>
                 </div>
-                <div>
-                  <DescriptionTitle />
-                  <Detail text={projectToRender.projectMetadata.description} testID="project-metadata"/>
-                </div>
+                <Sidebar
+                  isAdded={isAddedToShortlist || isAddedToFinalBallot}
+                  removeFromShortlist={() => {
+                    handleRemoveProjectsFromShortlist([projectToRender]);
+                  }}
+                  removeFromFinalBallot={() => {
+                    handleRemoveProjectsFromFinalBallot([projectToRender]);}
+                  }
+                  addToShortlist={() => {
+                    handleAddProjectsToShortlist([projectToRender]);
+                  }}
+                />
               </div>
-              <Sidebar
-                isAdded={isAddedToShortlist || isAddedToFinalBallot}
-                removeFromShortlist={() => {
-                  handleRemoveProjectsFromShortlist([projectToRender]);
-                }}
-                removeFromFinalBallot={() => {
-                  handleRemoveProjectsFromFinalBallot([projectToRender]);}
-                }
-                addToShortlist={() => {
-                  handleAddProjectsToShortlist([projectToRender]);
-                }}
-              />
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </main>
+        <Footer />
       </div>
     </>
   );

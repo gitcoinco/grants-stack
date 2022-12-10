@@ -21,6 +21,7 @@ import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
+import Footer from "../common/Footer";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -87,6 +88,7 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
+        <Footer />
       </div>
     </>
   );
@@ -177,6 +179,7 @@ function AfterRoundStart(props: {
             />
           )}
         </main>
+        <Footer />
       </div>
     </>
   );
