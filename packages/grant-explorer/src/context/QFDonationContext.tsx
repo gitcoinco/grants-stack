@@ -26,6 +26,10 @@ export interface QFDonationState {
   setVoteStatus: React.Dispatch<SetStateAction<ProgressStatus>>;
   indexingStatus: ProgressStatus;
   setIndexingStatus: React.Dispatch<SetStateAction<ProgressStatus>>;
+  txHash: string;
+  setTxHash: React.Dispatch<SetStateAction<string>>;
+  txBlockNumber: number;
+  setTxBlockNumber: React.Dispatch<SetStateAction<number>>;
 }
 
 export const initialQFDonationState: QFDonationState = {
@@ -41,6 +45,14 @@ export const initialQFDonationState: QFDonationState = {
   setIndexingStatus: () => {
     /**/
   },
+  txHash: "",
+  setTxHash: () => {
+    /**/
+  },
+  txBlockNumber: -1,
+  setTxBlockNumber: () => {
+      /**/
+  }
 };
 
 export type QFDonationParams = {
@@ -68,9 +80,14 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [voteStatus, setVoteStatus] = useState(
     initialQFDonationState.voteStatus
   );
-
   const [indexingStatus, setIndexingStatus] = useState(
     initialQFDonationState.indexingStatus
+  );
+  const [txHash, setTxHash] = useState(
+      initialQFDonationState.txHash
+  );
+  const [txBlockNumber, setTxBlockNumber] = useState(
+      initialQFDonationState.txBlockNumber
   );
 
   const providerProps: QFDonationState = {
@@ -80,6 +97,10 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
     setVoteStatus,
     indexingStatus,
     setIndexingStatus,
+    txHash,
+    setTxHash,
+    txBlockNumber,
+    setTxBlockNumber,
   };
 
   return (
@@ -94,11 +115,13 @@ export const QFDonationContext = createContext<QFDonationState>(
 );
 
 function resetToInitialState(context: QFDonationState) {
-  const { setTokenApprovalStatus, setVoteStatus, setIndexingStatus } = context;
+  const { setTokenApprovalStatus, setVoteStatus, setIndexingStatus, setTxHash, setTxBlockNumber } = context;
 
   setTokenApprovalStatus(initialQFDonationState.tokenApprovalStatus);
   setVoteStatus(initialQFDonationState.voteStatus);
   setIndexingStatus(initialQFDonationState.indexingStatus);
+  setTxHash(initialQFDonationState.txHash);
+  setTxBlockNumber(initialQFDonationState.txBlockNumber);
 }
 
 async function _submitDonations({
@@ -123,7 +146,7 @@ async function _submitDonations({
     );
 
     // Invoke Vote
-    const { txBlockNumber, txHash} = await vote(
+    await vote(
       signer,
       roundId,
       donationToken,
@@ -133,9 +156,8 @@ async function _submitDonations({
     );
 
     // Wait for indexing on subgraph
-    await waitForSubgraphToUpdate(signer, txBlockNumber, context);
+    await waitForSubgraphToUpdate(signer, context);
 
-    return txHash;
   } catch (error) {
     datadogLogs.logger.error(`error: _submitDonations - ${error}`);
     console.error("Error while bulk submitting donations: ", error);
@@ -163,6 +185,8 @@ export const useQFDonation = () => {
     tokenApprovalStatus: context.tokenApprovalStatus,
     voteStatus: context.voteStatus,
     indexingStatus: context.indexingStatus,
+    txHash: context.txHash,
+    txBlockNumber: context.txBlockNumber,
   };
 };
 
@@ -213,8 +237,8 @@ async function vote(
   donations: FinalBallotDonation[],
   totalDonation: number,
   context: QFDonationState
-): Promise<{ txBlockNumber: number, txHash: string }> {
-  const { setVoteStatus } = context;
+): Promise<void> {
+  const { setVoteStatus, setTxHash, setTxBlockNumber } = context;
 
   try {
     setVoteStatus(ProgressStatus.IN_PROGRESS);
@@ -229,10 +253,9 @@ async function vote(
     );
 
     setVoteStatus(ProgressStatus.IS_SUCCESS);
-    return {
-      txBlockNumber: txBlockNumber,
-      txHash: txHash
-    };
+    setTxHash(txHash);
+    setTxBlockNumber(txBlockNumber);
+
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
@@ -244,10 +267,9 @@ async function vote(
 
 async function waitForSubgraphToUpdate(
   signerOrProvider: Signer,
-  txBlockNumber: number,
   context: QFDonationState
 ) {
-  const { setIndexingStatus } = context;
+  const { setIndexingStatus, txBlockNumber } = context;
 
   try {
     datadogLogs.logger.error(

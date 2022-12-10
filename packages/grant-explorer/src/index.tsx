@@ -81,7 +81,11 @@ root.render(
 
                   <Route
                     path="/round/:chainId/:roundId/:txHash/thankyou"
-                    element={<ThankYou />}
+                    element={
+                      <QFDonationProvider>
+                        <ThankYou/>
+                      </QFDonationProvider>
+                    }
                   />
 
                   {/* Access Denied */}

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
-import Footer from "./Footer";
 import { Button } from "./styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
 import { datadogLogs } from "@datadog/browser-logs";
+import Footer from "./Footer";
 
 export default function NotFoundPage() {
   datadogLogs.logger.info(`====> Route: NotFound`);

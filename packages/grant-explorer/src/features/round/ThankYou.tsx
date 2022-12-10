@@ -1,29 +1,32 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import { Button } from "../common/styles";
 import { ReactComponent as ThankYouBanner } from "../../assets/thank-you.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/twitter-blue-logo.svg";
 import { ChainId, getTxExplorer } from "../api/utils";
 import { useRoundById } from "../../context/RoundContext";
+import { useQFDonation } from "../../context/QFDonationContext";
+import Footer from "../common/Footer";
 
 
 export default function ThankYou() {
-  datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/thankyou");
+  datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/:txHash/thankyou");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const { chainId, roundId, txHash } = useParams();
+  const { chainId, roundId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
   const roundName = round?.roundMetadata?.name;
 
+  const { txHash } = useQFDonation();
+
   const navigate = useNavigate();
 
   function TwitterButton(props: {roundName ?: string}) {
 
-    const shareText = `I just donated to the ${props.roundName}. Join me! https://grant-explorer.gitcoin.co/#/round/${chainId}/${roundId}`;
+    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://gitcoin.co/`;
 
     return (
       <Button
@@ -57,7 +60,7 @@ export default function ThankYou() {
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="mx-20 px-4 py-7 h-screen">
         <main>
-          <div className="mx-auto text-center">
+          <div className="text-center">
             <h1 className="text-4xl my-8">Thank you for supporting our community.</h1>
 
             <div className="flex justify-center gap-6">
@@ -77,13 +80,15 @@ export default function ThankYou() {
             </Button>
 
             <div className="mt-11">
-              <ThankYouBanner/>
+              <div className="flex justify-center">
+                <ThankYouBanner/>
+              </div>
             </div>
 
           </div>
         </main>
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 

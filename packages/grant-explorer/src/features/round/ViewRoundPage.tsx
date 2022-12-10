@@ -1,7 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
-import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
@@ -22,6 +21,7 @@ import { ProjectBanner } from "../common/ProjectBanner";
 import { useBallot } from "../../context/BallotContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
+import Footer from "../common/Footer";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");

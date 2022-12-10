@@ -26,13 +26,13 @@ import { useAccount, useBalance } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
-import Footer from "../common/Footer";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { modalDelayMs } from "../../constants";
 import { useQFDonation } from "../../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import Footer from "../common/Footer";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -67,7 +67,6 @@ export default function ViewBallot() {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [transactionHash, setTransactionHash] = useState<string>();
 
   const [shortlist, finalBallot] = useBallot();
 
@@ -98,7 +97,7 @@ export default function ViewBallot() {
 
   const navigate = useNavigate();
 
-  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus } =
+  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus, txHash } =
     useQFDonation();
 
   useEffect(() => {
@@ -120,11 +119,12 @@ export default function ViewBallot() {
 
     if (
       tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
-      voteStatus === ProgressStatus.IS_SUCCESS
+      voteStatus === ProgressStatus.IS_SUCCESS &&
+        txHash !== ""
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        navigate(`/round/${chainId}/${roundId}/${transactionHash}/thankyou`);
+        navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
       }, modalDelayMs);
     }
 
@@ -135,7 +135,7 @@ export default function ViewBallot() {
     indexingStatus,
     chainId,
     roundId,
-    transactionHash,
+    txHash,
   ]);
 
   const progressSteps = [
@@ -167,17 +167,16 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-
       <div className="mx-20 h-screen px-4 py-7">
-        {Header(chainId, roundId)}
-
-        <div className="flex gap-4">
-          {shortlistNotEmpty && ShortlistProjects(shortlist)}
-          {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
-
-          {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
-          {!finalBallotNotEmpty && EmptyFinalBallot()}
-        </div>
+        <main>
+          {Header(chainId, roundId)}
+          <div className="flex gap-4">
+            {shortlistNotEmpty && ShortlistProjects(shortlist)}
+            {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
+            {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
+            {!finalBallotNotEmpty && EmptyFinalBallot()}
+          </div>
+        </main>
         <Footer />
       </div>
     </>
@@ -990,17 +989,13 @@ export default function ViewBallot() {
         setOpenInfoModal(false);
       }, modalDelayMs);
 
-      const txHash = await submitDonations({
+      await submitDonations({
         roundId: roundId,
         donations: donations,
         donationToken: selectedPayoutToken,
         totalDonation: totalDonation,
         votingStrategy: round.votingStrategy,
       });
-
-      if (txHash) {
-        setTransactionHash(txHash);
-      }
 
     } catch (error) {
       datadogLogs.logger.error(
