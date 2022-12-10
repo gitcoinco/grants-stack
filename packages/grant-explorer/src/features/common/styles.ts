@@ -49,7 +49,7 @@ export const CardsContainer = tw.div`
 `;
 
 export const BasicCard = tw.div`
-  w-[302px]
+  w-[296px]
   h-[374px]
   ml-0
   mx-0
