@@ -167,10 +167,10 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="mx-20 h-screen px-4 py-7">
+      <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             {shortlistNotEmpty && ShortlistProjects(shortlist)}
             {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
             {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
@@ -249,7 +249,7 @@ export default function ViewBallot() {
     const [, , , handleRemoveProjectsFromShortlist, handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
 
     return (
-      <div className="w-1/2 h-full">
+      <div className="lg:w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <div className="flex justify-between border-b-2 pb-2">
             <h2 className="text-xl">Shortlist</h2>
@@ -372,7 +372,7 @@ export default function ViewBallot() {
   function EmptyShortlist(chainId?: string, roundId?: string) {
     return (
       <>
-        <div className="w-1/2 h-full px-[16px] py-4 rounded-lg shadow-lg bg-white border">
+        <div className="lg:w-1/2 h-full px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
 
           <div className="my-4">
@@ -399,33 +399,35 @@ export default function ViewBallot() {
 
   function FinalBallotProjects(finalBallot: Project[]) {
     return (
-      <div className="w-1/2 h-full">
+      <div className="lg:w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-          <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+          <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
             <div className="basis-[28%]">
               <h2 className="mt-2 text-xl">Final Donation</h2>
             </div>
             <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
-              <p className="mt-3 text-sm amount-text">Amount</p>
-              <Input
-                aria-label={"Donation amount for all projects "}
-                id={"input-donationamount"}
-                min="0"
-                value={fixedDonation ?? ""}
-                type="number"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setFixedDonation(Number(e.target.value));
-                }}
-                className="w-24"
-              />
+              <div className="flex gap-4">
+                <p className="mt-3 text-sm amount-text">Amount</p>
+                <Input
+                  aria-label={"Donation amount for all projects "}
+                  id={"input-donationamount"}
+                  min="0"
+                  value={fixedDonation ?? ""}
+                  type="number"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setFixedDonation(Number(e.target.value));
+                  }}
+                  className="w-24"
+                />
               <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+              </div>
               <Button
                 type="button"
                 $variant="outline"
                 onClick={() => {
                   updateAllDonations(fixedDonation ?? 0);
                 }}
-                className="text-xs px-4 py-2 text-purple-600 border-0"
+                className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
               >
                 Apply to all
               </Button>
@@ -472,7 +474,7 @@ export default function ViewBallot() {
         className="border-b-2 border-grey-100"
       >
         <div
-          className={`mb-4 flex justify-between px-3 py-4 rounded-md
+          className={`mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
@@ -511,7 +513,7 @@ export default function ViewBallot() {
             </div>
           </div>
 
-          <div className="mt-1 flex space-x-4 h-16 pl-4 pt-3">
+          <div className="mt-1 flex space-x-2 sm:space-x-4 h-16 pl-4 pt-3">
             <Input
               aria-label={
                 "Donation amount for project " +
