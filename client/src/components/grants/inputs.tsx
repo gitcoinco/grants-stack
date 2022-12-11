@@ -99,7 +99,9 @@ export function TextInput({
         className={`border-${borderColor}`}
       />
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
@@ -152,10 +154,12 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={classNames(`border-${borderColor}`)}
+        className={`border-${borderColor}`}
       />
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
@@ -212,11 +216,13 @@ export function WebsiteInput({
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
-          className={classNames(`border-${borderColor}`)}
+          className={`border-${borderColor}`}
         />
       </div>
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
@@ -267,7 +273,9 @@ export function TextArea({
         className={`border-${borderColor}`}
       />
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
@@ -330,7 +338,9 @@ export function Select({
         ))}
       </select>
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
@@ -397,7 +407,9 @@ export function CustomSelect({
         })}
       </select>
       {feedback?.message ? (
-        <span className={`text-${feedbackColor}`}>{feedback.message}</span>
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
       ) : null}
     </div>
   );
