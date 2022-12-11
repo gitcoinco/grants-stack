@@ -48,7 +48,13 @@ export const calculateHandler = async (req: Request, res: Response) => {
     // fetch metadata
     const metadata = await fetchRoundMetadata(req.body.chainId, roundId);
 
-    const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+    let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+    // for backward compatibility with older subgraph version
+    strategyName =
+      strategyName === "quadraticFunding"
+        ? VotingStrategy.LINEAR_QUADRATIC_FUNDING
+        : strategyName;
 
     // create round if round does not exist
     const chainId = getChainVerbose(req.body.chainId);
@@ -73,7 +79,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
           req.body.chainId,
           votingStrategyId
         );
-        results = await linearQFCalculate(metadata, votes, req.body.chainId);
+        results = await linearQFCalculate(metadata, votes);
         break;
     }
 
@@ -109,7 +115,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
       }
     }
   } catch (err) {
-    return handleResponse(res, 500, err as string);
+    return handleResponse(res, 500, (err as any).message);
   }
 
   return handleResponse(res, 200, "Calculations ran successfully", results);
