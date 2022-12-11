@@ -149,7 +149,6 @@ function ProjectForm({
           required
           feedback={
             feedback.find((fb) => fb.title === "title") ?? {
-              title: "",
               type: "none",
               message: "",
             }
@@ -164,7 +163,6 @@ function ProjectForm({
           required
           feedback={
             feedback.find((fb) => fb.title === "website") ?? {
-              title: "",
               type: "none",
               message: "",
             }
@@ -203,7 +201,6 @@ function ProjectForm({
           required
           feedback={
             feedback.find((fb) => fb.title === "description") ?? {
-              title: "",
               type: "none",
               message: "",
             }
@@ -211,19 +208,20 @@ function ProjectForm({
         />
         {!formValidation.valid && submitted && (
           <div
-            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="font-medium text-sm">
+            <strong className="text-gitcoin-pink-500 font-medium text-sm">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-
             <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li key={o}>{o}</li>
+                <li className="text-black my-2" key={o}>
+                  {o}
+                </li>
               ))}
             </ul>
           </div>
