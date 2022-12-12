@@ -4,7 +4,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
 import { useParams } from "react-router-dom";
@@ -14,6 +14,7 @@ import { CredentialProvider } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import { fetchVerifiableCredential } from "./identity/credentials";
 import useValidateCredential from "../../hooks/useValidateCredential";
+import { credentialsSaved } from "../../actions/projectForm";
 
 const parseHandle = (provider: string) =>
   provider.replace(/ClearTextTwitter#(.*)$/, "$1");
@@ -30,6 +31,7 @@ export default function Twitter({
   canVerify: boolean;
 }) {
   const params = useParams();
+  const dispatch = useDispatch();
   // const [complete, setComplete] = useState(false);
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
@@ -128,6 +130,11 @@ export default function Twitter({
                 handle.toLocaleLowerCase()
             ) {
               // setComplete(true);
+              dispatch(
+                credentialsSaved({
+                  twitter: verified.credential!,
+                })
+              );
               verificationComplete(verified.credential);
               verificationError();
             } else {
