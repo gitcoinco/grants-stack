@@ -129,6 +129,8 @@ export default function Form({
   };
 
   const handleInput = (e: ChangeHandlers) => {
+    // FIXME: This is a hack to get around the fact that the form validation
+    // does not take single inputs, but rather the entire form.
     validate();
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
