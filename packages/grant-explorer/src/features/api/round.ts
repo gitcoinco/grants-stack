@@ -101,7 +101,7 @@ export async function getRoundById(
             projectsMetaPtr {
               pointer
             }
-            projects {
+            projects(first: 1000) {
               id
               project
               ` +
