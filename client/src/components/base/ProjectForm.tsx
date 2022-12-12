@@ -219,7 +219,7 @@ function ProjectForm({
             </strong>
             <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li className="text-black my-2" key={o}>
+                <li className="text-black my-1" key={o}>
                   {o}
                 </li>
               ))}

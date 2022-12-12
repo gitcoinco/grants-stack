@@ -1,6 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import {
@@ -85,17 +85,6 @@ export default function Form({
 
   const schema = roundApplication.applicationSchema;
 
-  const handleInput = (e: ChangeHandlers) => {
-    const { value } = e.target;
-    setFormInputs({ ...formInputs, [e.target.name]: value });
-  };
-
-  const handleProjectInput = (e: ChangeHandlers) => {
-    const { value } = e.target;
-    setSelectedProjectID(value);
-    handleInput(e);
-  };
-
   const validate = async () => {
     try {
       await validateApplication(schema, formInputs);
@@ -139,6 +128,18 @@ export default function Form({
     }
   };
 
+  const handleInput = (e: ChangeHandlers) => {
+    validate();
+    const { value } = e.target;
+    setFormInputs({ ...formInputs, [e.target.name]: value });
+  };
+
+  const handleProjectInput = (e: ChangeHandlers) => {
+    const { value } = e.target;
+    setSelectedProjectID(value);
+    handleInput(e);
+  };
+
   const handlePreviewClick = async () => {
     const valid = await validate();
     if (valid === ValidationStatus.Valid) {
@@ -165,15 +166,6 @@ export default function Form({
     closeErrorModal();
     handleSubmitApplication();
   };
-
-  const didMountRef = useRef(false);
-
-  useEffect(() => {
-    if (didMountRef.current) {
-      validate();
-    }
-    didMountRef.current = true;
-  }, [formInputs]);
 
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
@@ -244,7 +236,9 @@ export default function Form({
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
-                  changeHandler={handleInput}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
                   required={input.required ?? false}
                   feedback={
                     feedback.find((fb) => fb.title === `${input.id}`) ?? {
@@ -386,7 +380,7 @@ export default function Form({
             </strong>
             <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li className="text-black my-2" key={o}>
+                <li className="text-black my-1" key={o}>
                   {o}
                 </li>
               ))}

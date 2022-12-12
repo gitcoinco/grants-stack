@@ -76,7 +76,7 @@ export function TextInput({
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
-      <div className=" flex">
+      <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
             {label}
