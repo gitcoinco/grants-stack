@@ -19,10 +19,10 @@ import {
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "../common/styles";
-import { classNames, getPayoutTokenOptions } from "../api/utils";
+import { ChainId, classNames, getPayoutTokenOptions } from "../api/utils";
 import { Listbox, Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
@@ -53,13 +53,11 @@ export default function ViewBallot() {
   const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
 
   const totalDonation = useMemo(() => {
-    return donations.reduce(
-      (acc, donation) => {
-        const decimalPlaces = (donation.amount.match(/\.(\d+)/) || [])[1]?.length || 0;
-        return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
-      },
-      0
-  );
+    return donations.reduce((acc, donation) => {
+      const decimalPlaces =
+        (donation.amount.match(/\.(\d+)/) || [])[1]?.length || 0;
+      return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
+    }, 0);
   }, [donations]);
 
   const [fixedDonation, setFixedDonation] = useState<number>();
@@ -73,6 +71,7 @@ export default function ViewBallot() {
   const { openConnectModal } = useConnectModal();
 
   const { address } = useAccount();
+  const { chain, chains } = useNetwork();
 
   const tokenDetail =
     selectedPayoutToken.address == ethers.constants.AddressZero
@@ -86,8 +85,18 @@ export default function ViewBallot() {
     insufficientBalance: false,
   });
 
+  const [donationDisabled, setDonationDisabled] = useState(false);
+
   const shortlistNotEmpty = shortlist.length > 0;
   const finalBallotNotEmpty = finalBallot.length > 0;
+
+  useEffect(() => {
+    if (Number(chainId) != chain?.id) {
+      setDonationDisabled(true);
+    } else {
+      setDonationDisabled(false);
+    }
+  });
 
   useEffect(() => {
     if (!shortlistSelect) {
@@ -97,8 +106,13 @@ export default function ViewBallot() {
 
   const navigate = useNavigate();
 
-  const { submitDonations, tokenApprovalStatus, voteStatus, indexingStatus, txHash } =
-    useQFDonation();
+  const {
+    submitDonations,
+    tokenApprovalStatus,
+    voteStatus,
+    indexingStatus,
+    txHash,
+  } = useQFDonation();
 
   useEffect(() => {
     if (
@@ -120,14 +134,13 @@ export default function ViewBallot() {
     if (
       tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
       voteStatus === ProgressStatus.IS_SUCCESS &&
-        txHash !== ""
+      txHash !== ""
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
         navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
       }, modalDelayMs);
     }
-
   }, [
     navigate,
     tokenApprovalStatus,
@@ -193,6 +206,7 @@ export default function ViewBallot() {
             type="button"
             onClick={handleConfirmation}
             className="items-center shadow-sm text-sm rounded w-full"
+            disabled={donationDisabled}
           >
             Submit your donation!
           </Button>
@@ -216,10 +230,25 @@ export default function ViewBallot() {
               <span>You do not have enough funds for these donations</span>
             </p>
           )}
+          {donationDisabled && (
+            <p
+              data-testid="emptyInput"
+              className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+            >
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <span>
+                You are on the wrong chain ({chain?.name}) for this round.
+                <br />
+                Please switch to{" "}
+                {chains.filter((c) => c?.id == Number(chainId))[0].name}{" "}
+                network.
+              </span>
+            </p>
+          )}
         </div>
         <PayoutModals />
       </>
-    )
+    );
   }
 
   function Header(chainId?: string, roundId?: string) {
@@ -245,8 +274,13 @@ export default function ViewBallot() {
   }
 
   function ShortlistProjects(shortlist: Project[]) {
-
-    const [, , , handleRemoveProjectsFromShortlist, handleAddProjectsToFinalBallotAndRemoveFromShortlist] = useBallot();
+    const [
+      ,
+      ,
+      ,
+      handleRemoveProjectsFromShortlist,
+      handleAddProjectsToFinalBallotAndRemoveFromShortlist,
+    ] = useBallot();
 
     return (
       <div className="lg:w-1/2 h-full">
@@ -300,7 +334,6 @@ export default function ViewBallot() {
           >
             Add all ({shortlist.length}) projects to Final Donation
           </Button>
-          
         </div>
       </div>
     );
@@ -419,7 +452,7 @@ export default function ViewBallot() {
                   }}
                   className="w-24"
                 />
-              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+                <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
               </div>
               <Button
                 type="button"
@@ -953,7 +986,8 @@ export default function ViewBallot() {
     return (
       <div className="text-sm text-grey-400 gap-16">
         <p className="text-sm">
-          Submitting your donation will require signing two transactions<br/>
+          Submitting your donation will require signing two transactions
+          <br />
           if you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
@@ -998,7 +1032,6 @@ export default function ViewBallot() {
         totalDonation: totalDonation,
         votingStrategy: round.votingStrategy,
       });
-
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
