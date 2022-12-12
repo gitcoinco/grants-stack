@@ -37,7 +37,6 @@ export default function Github({
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
 }) {
-  const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
@@ -47,6 +46,7 @@ export default function Github({
     shallowEqual
   );
   const { signer } = global;
+  const dispatch = useDispatch();
   const [GHID, setGHID] = useState("");
 
   const validGithubCredential: boolean = useValidateCredential(
