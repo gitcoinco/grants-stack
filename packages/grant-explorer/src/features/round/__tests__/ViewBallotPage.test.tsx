@@ -9,7 +9,7 @@ import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
 import { BigNumber, ethers } from "ethers";
 
-const chainId = faker.datatype.number();
+const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 const userAddress = faker.finance.ethereumAddress();
 
@@ -27,6 +27,23 @@ const mockSigner = {
   data: {},
 };
 
+const mockNetwork = {
+  chain: {
+    id: 5,
+    name: "Goerli",
+  },
+  chains: [
+    {
+      id: 10,
+      name: "Optimism",
+    },
+    {
+      id: 5,
+      name: "Goerli"
+    }
+  ],
+};
+
 const useParamsFn = () => ({
   chainId,
   roundId,
@@ -38,6 +55,7 @@ jest.mock("wagmi", () => ({
   useAccount: () => mockAccount,
   useBalance: () => mockBalance,
   useSigner: () => mockSigner,
+  useNetwork: () => mockNetwork,
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -326,25 +344,23 @@ describe("View Ballot Page", () => {
     });
 
     describe("Shortlist Bulk Actions", () => {
-
       const setShortlist = jest.fn();
       const setFinalBallot = jest.fn();
 
       it("should not display bulk operations on shortlist when no projects are present in the shortlist ", () => {
         renderWrapped([], setShortlist, [], setFinalBallot);
-        
+
         expect(screen.queryByTestId("bulk-remove-from-shortlist")).toBeNull();
         expect(screen.queryByTestId("bulk-add-to-final-ballot")).toBeNull();
       });
-      
+
       it("should display bulk operations on shortlist when projects are present in the shortlist", () => {
         const shortlist: Project[] = [makeApprovedProjectData()];
-      
+
         renderWrapped(shortlist, setShortlist, [], setFinalBallot);
 
         expect(screen.queryByTestId("bulk-remove-from-shortlist")).toBeTruthy();
         expect(screen.queryByTestId("bulk-add-to-final-ballot")).toBeTruthy();
-
       });
 
       it("clicking on clear all button empties the shortlist", () => {
@@ -353,7 +369,7 @@ describe("View Ballot Page", () => {
 
         const clearAll = screen.getByTestId("bulk-remove-from-shortlist");
         fireEvent.click(clearAll);
-        
+
         expect(setShortlist).toHaveBeenCalled();
       });
 
@@ -363,7 +379,7 @@ describe("View Ballot Page", () => {
 
         const bulkAdd = screen.getByTestId("bulk-add-to-final-ballot");
         fireEvent.click(bulkAdd);
-        
+
         expect(setFinalBallot).toHaveBeenCalled();
         expect(setShortlist).toHaveBeenCalled();
       });

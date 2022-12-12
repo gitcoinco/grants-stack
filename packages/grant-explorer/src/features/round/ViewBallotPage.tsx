@@ -80,23 +80,12 @@ export default function ViewBallot() {
 
   const selectedPayoutTokenBalance = useBalance(tokenDetail);
 
-  const [donationError, setDonationError] = useState({
-    emptyInput: false,
-    insufficientBalance: false,
-  });
-
-  const [donationDisabled, setDonationDisabled] = useState(false);
+  const [wrongChain, setWrongChain] = useState(false);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [emptyInput, setEmptyInput] = useState(false);
 
   const shortlistNotEmpty = shortlist.length > 0;
   const finalBallotNotEmpty = finalBallot.length > 0;
-
-  useEffect(() => {
-    if (Number(chainId) != chain?.id) {
-      setDonationDisabled(true);
-    } else {
-      setDonationDisabled(false);
-    }
-  });
 
   useEffect(() => {
     if (!shortlistSelect) {
@@ -206,11 +195,10 @@ export default function ViewBallot() {
             type="button"
             onClick={handleConfirmation}
             className="items-center shadow-sm text-sm rounded w-full"
-            disabled={donationDisabled}
           >
             Submit your donation!
           </Button>
-          {donationError.emptyInput && (
+          {emptyInput && (
             <p
               data-testid="emptyInput"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
@@ -221,7 +209,7 @@ export default function ViewBallot() {
               </span>
             </p>
           )}
-          {donationError.insufficientBalance && (
+          {insufficientBalance && (
             <p
               data-testid="insufficientBalance"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
@@ -230,9 +218,9 @@ export default function ViewBallot() {
               <span>You do not have enough funds for these donations</span>
             </p>
           )}
-          {donationDisabled && (
+          {wrongChain && (
             <p
-              data-testid="emptyInput"
+              data-testid="wrongChain"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
               <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
@@ -240,7 +228,7 @@ export default function ViewBallot() {
                 You are on the wrong chain ({chain?.name}) for this round.
                 <br />
                 Please switch to{" "}
-                {chains.filter((c) => c?.id == Number(chainId))[0].name}{" "}
+                {chains.filter((c) => c?.id == Number(chainId))[0]?.name}{" "}
                 network.
               </span>
             </p>
@@ -905,22 +893,16 @@ export default function ViewBallot() {
   }
 
   function handleConfirmation() {
-    const newState = {
-      emptyInput: false,
-      insufficientBalance: false,
-    };
-
     // check to ensure all projects have donation amount
     const emptyDonations = donations.filter(
       (donation) => !donation.amount || Number(donation.amount) === 0
     );
 
     if (donations.length === 0 || emptyDonations.length > 0) {
-      newState.emptyInput = true;
-      setDonationError(newState);
+      setEmptyInput(true);
       return;
     } else {
-      setDonationError(newState);
+      setEmptyInput(false);
     }
 
     // check if wallet is connected
@@ -937,11 +919,18 @@ export default function ViewBallot() {
     );
 
     if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
-      newState.insufficientBalance = true;
-      setDonationError(newState);
+      setInsufficientBalance(true);
       return;
     } else {
-      setDonationError(newState);
+      setInsufficientBalance(false);
+    }
+
+    // check to ensure user is on right network
+    if (Number(chainId) != chain?.id) {
+      setWrongChain(true);
+      return;
+    } else {
+      setWrongChain(false);
     }
 
     setOpenConfirmationModal(true);
