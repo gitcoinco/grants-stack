@@ -50,7 +50,7 @@ describe("<Github />", () => {
       store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
-          projectGithub: handle
+          projectGithub: handle,
         }),
       });
 
