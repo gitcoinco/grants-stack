@@ -3,6 +3,7 @@ import { calculateHandler } from "./handlers/calculateHandler";
 import { fetchMatchingHandler } from "./handlers/fetchMatchingHandler";
 import { convertPriceHandler } from "./handlers/convertPriceHandler";
 import { fetchRoundStatsHandler } from "./handlers/fetchRoundStatsHandler";
+import { fetchProjectInRoundStatsHandler } from "./handlers/fetchProjectInRoundStatsHandler";
 
 const router = Router();
 
@@ -16,6 +17,8 @@ router.get("/fetch-matching", fetchMatchingHandler);
 
 router.post("/convert-price", convertPriceHandler);
 
-router.get("/status", fetchRoundStatsHandler); 
+router.get("/round-stats", fetchRoundStatsHandler); 
+
+router.get("/project-stats", fetchProjectInRoundStatsHandler); 
 
 export default router;

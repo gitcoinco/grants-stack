@@ -1,13 +1,12 @@
 import { fetchRoundMetadata, handleResponse } from "../utils";
 import {
-  fetchVotesForRoundHandler as linearQFFetchVotesForRound,
+  fetchVotesForProjectInRoundHandler as linearQFFetchVotesForProjectInRound,
   fetchStatsHandler as linearQFFetchRoundStats,
 } from "../votingStrategies/linearQuadraticFunding";
 import { Request, Response } from "express";
 import { ChainId } from "../types";
 
-
-export const fetchRoundStatsHandler = async (req: Request, res: Response): Promise<Response> => {
+export const fetchProjectInRoundStatsHandler = async (req: Request, res: Response): Promise<Response> => {
 
   let results;
 
@@ -20,6 +19,9 @@ export const fetchRoundStatsHandler = async (req: Request, res: Response): Promi
     if (!req.query.chainId) return handleResponse(res , 400, "error: missing parameter chainId", results);
     const chainId = req.query.chainId as ChainId;
 
+    if (!req.query.projectId) return handleResponse(res , 400, "error: missing parameter projectId", results);
+    const projectId = req.query.projectId.toString();
+
     // fetch metadata
     const metadata = await fetchRoundMetadata(chainId, roundId);
 
@@ -29,7 +31,8 @@ export const fetchRoundStatsHandler = async (req: Request, res: Response): Promi
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
         // fetch votes
-        const votes = await linearQFFetchVotesForRound(chainId, votingStrategyId);
+        const votes = await linearQFFetchVotesForProjectInRound(chainId, votingStrategyId, projectId);
+
         // fetch round stats
         results =  await linearQFFetchRoundStats(chainId, votes, metadata);
         break;
@@ -43,5 +46,5 @@ export const fetchRoundStatsHandler = async (req: Request, res: Response): Promi
     return handleResponse(res, 500, "error: something went wrong.");
   }
 
-  return handleResponse(res, 200, "fetched round stats successfully", results);
+  return handleResponse(res, 200, "fetched project in round stats successfully", results);
 }

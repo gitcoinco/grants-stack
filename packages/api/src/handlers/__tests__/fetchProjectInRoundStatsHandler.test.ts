@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { faker } from '@faker-js/faker';
-import { fetchRoundStatsHandler } from "../fetchRoundStatsHandler";
+import { fetchProjectInRoundStatsHandler } from "../fetchProjectInRoundStatsHandler";
 import { HandleResponseObject } from "../../types";
 import { mockQFContribution, mockRoundMetadata, mockRoundStats } from "../../test-utils";
 import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
-describe("fetchRoundStatsHandler", () => {
+describe("fetchProjectInRoundStatsHandler", () => {
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -40,7 +40,7 @@ describe("fetchRoundStatsHandler", () => {
       },
     } as unknown as Request;
 
-    const responseJSON = await fetchRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter roundId");
@@ -55,10 +55,26 @@ describe("fetchRoundStatsHandler", () => {
       },
     } as unknown as Request;
 
-    const responseJSON = await fetchRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId");
+    expect(responseJSON.data).toEqual({});
+  });
+
+
+  it("returns error when invoked without projectId", async () => {
+    const req = {
+      query: {
+        roundId: roundId,
+        chainId: chainId,
+      },
+    } as unknown as Request;
+
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+
+    expect(responseJSON.success).toBeFalsy();
+    expect(responseJSON.message).toEqual("error: missing parameter projectId");
     expect(responseJSON.data).toEqual({});
   });
 
@@ -70,7 +86,7 @@ describe("fetchRoundStatsHandler", () => {
 
     jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
 
-    const responseJSON = await fetchRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: unsupported voting strategy");
@@ -78,8 +94,8 @@ describe("fetchRoundStatsHandler", () => {
 
   });
 
-  it("returns error stats when exception happens while invoking linearQFFetchVotesForRound", async () => {
-    const responseJSON = await fetchRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+  it("returns error stats when exception happens while invoking linearQFFetchVotesForProjectInRound", async () => {
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong.");
     expect(responseJSON.data).toEqual({});
@@ -92,18 +108,18 @@ describe("fetchRoundStatsHandler", () => {
     
     // mock votes
     const votes = [mockQFContribution, mockQFContribution];
-    jest.spyOn(linearQuadraticFunding, 'fetchVotesForRoundHandler').mockResolvedValueOnce(votes);
+    jest.spyOn(linearQuadraticFunding, 'fetchVotesForProjectInRoundHandler').mockResolvedValueOnce(votes);
 
     // mock votes
     const roundStats = mockRoundStats;
     jest.spyOn(linearQuadraticFunding, 'fetchStatsHandler').mockResolvedValueOnce(mockRoundStats);
 
-    const responseJSON = await fetchRoundStatsHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
         
-    expect(linearQuadraticFunding.fetchVotesForRoundHandler).toBeCalled();
+    expect(linearQuadraticFunding.fetchVotesForProjectInRoundHandler).toBeCalled();
     expect(linearQuadraticFunding.fetchStatsHandler).toBeCalled();
     expect(responseJSON.success).toEqual(true);
-    expect(responseJSON.message).toEqual("fetched round stats successfully");
+    expect(responseJSON.message).toEqual("fetched project in round stats successfully");
     expect(responseJSON.data).toEqual(roundStats);
   });
 });

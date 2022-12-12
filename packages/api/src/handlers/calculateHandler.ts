@@ -7,7 +7,7 @@ import {
   handleResponse,
 } from "../utils";
 import {
-  fetchVotesHandler as linearQFFetchVotes,
+  fetchVotesForRoundHandler as linearQFFetchVotesForRound,
   calculateHandler as linearQFCalculate,
 } from "../votingStrategies/linearQuadraticFunding";
 import { PrismaClient, VotingStrategy } from "@prisma/client";
@@ -69,7 +69,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
-        const votes = await linearQFFetchVotes(
+        const votes = await linearQFFetchVotesForRound(
           req.body.chainId,
           votingStrategyId
         );

@@ -17,18 +17,72 @@ import { denominateAs, fetchFromGraphQL } from "../utils";
  * @param votingStrategyId - The voting strategy address
  * @returns The result of the query
  */
-export const fetchVotesHandler = async (
+export const fetchVotesForRoundHandler = async (
   chainId: ChainId,
   votingStrategyId: string
 ): Promise<QFContribution[]> => {
   const variables = { votingStrategyId };
 
   const query = `
-    query GetVotes($votingStrategyId: String) {
+    query GetVotesForRound($votingStrategyId: String) {
       votingStrategies(where:{
         id: $votingStrategyId
       }) {
         votes {
+          amount
+          token
+          from
+          to
+        }
+      }
+    }
+  `;
+
+  // fetch from graphql
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  const votes = response.data?.votingStrategies[0]?.votes;
+
+  let contributions: QFContribution[] = [];
+
+  votes.map((vote: any) => {
+    const contribution = {
+      projectId: vote.to, // TODO: we will have to update this to project id eventually
+      contributor: vote.from,
+      amount: Number(vote.amount),
+      token: vote.token,
+    } as QFContribution;
+
+    contributions.push(contribution);
+  });
+
+  return contributions;
+};
+
+/**
+ * Fetch data from a GraphQL endpoint
+ *
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param votingStrategyId - The voting strategy address
+ * @param projectId - The projectId taking part in the round
+ * @returns The result of the query
+ */
+export const fetchVotesForProjectInRoundHandler = async (
+  chainId: ChainId,
+  votingStrategyId: string,
+  projectId: string
+): Promise<QFContribution[]> => {
+  const variables = { votingStrategyId, projectId };
+
+  // TODO: UPDATE LINE 83 from to -> projectId after upgrading subgraph
+  const query = `
+    query GetVotesForProjectInRound($votingStrategyId: String, projectId: String) {
+      votingStrategies(where: {
+        id: $votingStrategyId
+      }) {
+        votes(where: {
+          to: $projectId
+        }) {
           amount
           token
           from
@@ -160,9 +214,10 @@ export const calculateHandler = async (
 /**
  * Fetch Round Stats for a round using linearQF voting strategy
  * @param chainName - Chain from which round / voting contract is deployed 
- * @param contributions - QFContribution[] fetched by invoking fetchVotesHandler
+ * @param contributions - QFContribution[] fetched by invoking fetchVotesForRoundHandler
+ * @param metadata - RoundMetadata fetched by invoking fetchRoundMetadata
  */
-export const fetchRoundStatsHandler = async (
+export const fetchStatsHandler = async (
   chainId: ChainId,
   contributions: QFContribution[],
   metadata: RoundMetadata

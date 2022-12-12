@@ -37,11 +37,13 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 ### Endpoints
 
-| endpoint            | request method | body                                                                                | params                              |
-|---------------------|----------------|-------------------------------------------------------------------------------------|-------------------------------------|
-| /calculate          | POST           | {   "chainId" : "3",     "roundId" : "0xcef1772dd6764c95f14c26b25e8f012c072c5f77" } |                  -                  |
-| /fetch-matching     | GET            |                                   -                                                 | roundId: string, projectId?: string |
-|                     |                |                                                                                     |                                     |
+| endpoint            | request method | body                                        | params                              |
+|---------------------|----------------|---------------------------------------------|-------------------------------------|
+| /calculate          | POST           | { "chainId" : string, "roundId" : string }  |                  -                  |
+| /fetch-matching     | GET            |                     -                       | roundId: string, projectId?: string |
+| /convert-price      | GET            |                     -                       | contract: string, chainId: string   |
+| /round-stats        | GET            |                     -                       | roundId: string, chainId: string    |
+| /project-stats      | GET            |                     -                       | roundId: string, chainId: string, projectID:string   |
 
 
 
