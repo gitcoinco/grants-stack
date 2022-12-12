@@ -51,6 +51,7 @@ export const calculateHandler = async (req: Request, res: Response) => {
     let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
     // for backward compatibility with older subgraph version
+    // TODO: remove after re-indexing mainnet subgraph
     strategyName =
       strategyName === "quadraticFunding"
         ? VotingStrategy.LINEAR_QUADRATIC_FUNDING
