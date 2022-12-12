@@ -30,7 +30,7 @@ export default function Twitter({
   canVerify: boolean;
 }) {
   const params = useParams();
-  const [complete, setComplete] = useState(false);
+  // const [complete, setComplete] = useState(false);
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
     const twitterCredential =
@@ -48,9 +48,9 @@ export default function Twitter({
     props.formMetaData.projectTwitter
   );
 
-  useEffect(() => {
-    setComplete(false);
-  }, [props.formMetaData.projectTwitter]);
+  // useEffect(() => {
+  //   setComplete(false);
+  // }, [props.formMetaData.projectTwitter]);
 
   const { signer } = global;
 
@@ -127,7 +127,7 @@ export default function Twitter({
               parseHandle(provider).toLocaleLowerCase() ===
                 handle.toLocaleLowerCase()
             ) {
-              setComplete(true);
+              // setComplete(true);
               verificationComplete(verified.credential);
               verificationError();
             } else {
@@ -166,7 +166,7 @@ export default function Twitter({
     };
   });
 
-  if (complete || validTwitterCredential) {
+  if (validTwitterCredential) {
     return (
       <div className="flex ml-8 mt-14">
         <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />
