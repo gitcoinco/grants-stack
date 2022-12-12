@@ -32,7 +32,6 @@ export default function Twitter({
 }) {
   const params = useParams();
   const dispatch = useDispatch();
-  // const [complete, setComplete] = useState(false);
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
     const twitterCredential =
@@ -49,10 +48,6 @@ export default function Twitter({
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
-
-  // useEffect(() => {
-  //   setComplete(false);
-  // }, [props.formMetaData.projectTwitter]);
 
   const { signer } = global;
 
@@ -129,7 +124,6 @@ export default function Twitter({
               parseHandle(provider).toLocaleLowerCase() ===
                 handle.toLocaleLowerCase()
             ) {
-              // setComplete(true);
               dispatch(
                 credentialsSaved({
                   twitter: verified.credential!,
