@@ -54,7 +54,13 @@ export default function Details({
 
   useEffect(() => {
     if (props.projectID) {
-      dispatch(fetchProjectApplications(props.projectID, process.env));
+      dispatch(
+        fetchProjectApplications(
+          props.projectID,
+          Number(props.chainId),
+          process.env
+        )
+      );
     }
   }, [dispatch, props.projectID, props.chainId]);
 

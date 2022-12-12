@@ -141,7 +141,11 @@ export const submitApplication =
     }
 
     const projectID = formInputs[projectQuestionId];
-    const { id: projectNumber } = getProjectURIComponents(projectID);
+    const {
+      id: projectNumber,
+      registryAddress: projectRegistryAddress,
+      chainId: projectChainId,
+    } = getProjectURIComponents(projectID);
 
     const projectMetadata: any = state.grantsMetadata[projectID].metadata;
     if (projectMetadata === undefined) {
@@ -257,8 +261,9 @@ export const submitApplication =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
 
     const projectUniqueID = generateUniqueRoundApplicationID(
-      chainID,
-      projectNumber
+      Number(projectChainId),
+      projectNumber,
+      projectRegistryAddress
     );
 
     try {
@@ -270,7 +275,9 @@ export const submitApplication =
         roundAddress,
         projectId: projectID,
       });
-      dispatch<any>(fetchProjectApplications(projectID, process.env));
+      dispatch<any>(
+        fetchProjectApplications(projectID, Number(projectChainId), process.env)
+      );
     } catch (e) {
       datadogRum.addError(e);
       console.error("error calling applyToRound:", e);
@@ -291,8 +298,19 @@ export const checkRoundApplications =
     const contract = new ethers.Contract(roundAddress, RoundABI, signer);
     const uniqueIDsToIDs = Object.fromEntries(
       projectIDs.map((fullId: string) => {
-        const { id } = getProjectURIComponents(fullId);
-        return [generateUniqueRoundApplicationID(chainID, id), id];
+        const {
+          id,
+          registryAddress,
+          chainId: projectChainId,
+        } = getProjectURIComponents(fullId);
+        return [
+          generateUniqueRoundApplicationID(
+            Number(projectChainId),
+            id,
+            registryAddress
+          ),
+          id,
+        ];
       })
     );
 

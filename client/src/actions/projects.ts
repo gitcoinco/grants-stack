@@ -321,7 +321,7 @@ export const fetchApplicationStatusesFromContract =
   };
 
 export const fetchProjectApplications =
-  (projectID: string, reactEnv: any /* ProcessEnv */) =>
+  (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
   async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
@@ -331,9 +331,11 @@ export const fetchProjectApplications =
     const { web3Provider } = global;
 
     await web3Provider?.chains?.forEach(async (chain) => {
+      const addresses = addressesByChainID(projectChainId);
       const projectApplicationID = generateUniqueRoundApplicationID(
-        chain.id,
-        projectID
+        projectChainId,
+        projectID,
+        addresses.projectRegistry
       );
 
       try {
