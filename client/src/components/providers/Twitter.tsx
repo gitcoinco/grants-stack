@@ -3,7 +3,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
