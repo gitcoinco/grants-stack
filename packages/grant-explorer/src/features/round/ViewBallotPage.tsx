@@ -19,7 +19,7 @@ import {
 } from "@heroicons/react/solid";
 import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import { Button, Input } from "../common/styles";
-import { ChainId, classNames, getPayoutTokenOptions } from "../api/utils";
+import { classNames, getPayoutTokenOptions } from "../api/utils";
 import { Listbox, Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAccount, useBalance, useNetwork } from "wagmi";
