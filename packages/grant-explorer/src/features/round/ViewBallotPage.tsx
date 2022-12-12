@@ -209,7 +209,7 @@ export default function ViewBallot() {
               </span>
             </p>
           )}
-          {insufficientBalance && (
+          {insufficientBalance && !wrongChain && (
             <p
               data-testid="insufficientBalance"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
@@ -893,6 +893,15 @@ export default function ViewBallot() {
   }
 
   function handleConfirmation() {
+
+    // check to ensure user is on right network
+    if (Number(chainId) != chain?.id) {
+      setWrongChain(true);
+      return;
+    } else {
+      setWrongChain(false);
+    }
+
     // check to ensure all projects have donation amount
     const emptyDonations = donations.filter(
       (donation) => !donation.amount || Number(donation.amount) === 0
@@ -925,13 +934,7 @@ export default function ViewBallot() {
       setInsufficientBalance(false);
     }
 
-    // check to ensure user is on right network
-    if (Number(chainId) != chain?.id) {
-      setWrongChain(true);
-      return;
-    } else {
-      setWrongChain(false);
-    }
+
 
     setOpenConfirmationModal(true);
   }
