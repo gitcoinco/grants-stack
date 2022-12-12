@@ -16,8 +16,8 @@ export default function useValidateCredential(
     if (vc && providerId && handle) {
       const credential = vc;
       const validCredentialProvider =
-        credential.credentialSubject.provider?.toLowerCase() ===
-        `${providerId}#${handle}`.toLowerCase();
+        credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
+        handle.toLowerCase();
       const validCredential = await verifier.verifyCredential(credential);
       const validIssuer = IAM_SERVER === credential.issuer;
       // TODO: add owner check
