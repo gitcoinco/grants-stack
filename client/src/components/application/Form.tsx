@@ -60,6 +60,7 @@ export default function Form({
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [showProjectDetails] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
@@ -128,10 +129,10 @@ export default function Form({
     }
   };
 
-  const handleInput = (e: ChangeHandlers) => {
-    // FIXME: This is a hack to get around the fact that the form validation
-    // does not take single inputs, but rather the entire form.
-    validate();
+  const handleInput = async (e: ChangeHandlers) => {
+    if (submitted) {
+      await validate();
+    }
     const { value } = e.target;
     setFormInputs({ ...formInputs, [e.target.name]: value });
   };
@@ -143,6 +144,7 @@ export default function Form({
   };
 
   const handlePreviewClick = async () => {
+    setSubmitted(true);
     const valid = await validate();
     if (valid === ValidationStatus.Valid) {
       setPreview(true);

@@ -107,7 +107,7 @@ function ProjectForm({
   const didMountRef = useRef(false);
 
   useEffect(() => {
-    if (didMountRef.current) {
+    if (didMountRef.current && submitted) {
       validate();
     }
     didMountRef.current = true;
