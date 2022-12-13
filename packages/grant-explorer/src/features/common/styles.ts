@@ -50,7 +50,7 @@ export const CardsContainer = tw.div`
 
 export const BasicCard = tw.div`
   w-[302px]
-  h-[374px]
+  h-[406px]
   ml-0
   mx-0
   my-3
@@ -92,7 +92,7 @@ export const CardFooter = tw.div`
   bottom-0
   inset-x-0
   bg-zinc-50
-  h-16
+  h-30
   w-full
 `;
 

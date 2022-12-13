@@ -188,6 +188,8 @@ function AfterRoundStart(props: {
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
+  const totalContributions = 100;
+  const totalContributors = 24;
 
   const [
     shortlist,
@@ -234,6 +236,10 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
       </Link>
       <CardFooter className="bg-white">
         <CardContent className="text-xs mt-4">
+          <div className="border-t-2 pt-2 pb-2 text-grey-400">
+            <p className="text-sm">${totalContributions}</p>
+            <p className="text-xs">total raised by {totalContributors} contributors</p>
+          </div>
           <ShortListButton
             project={project}
             isAdded={isAddedToShortlist || isAddedToFinalBallot}
