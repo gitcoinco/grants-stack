@@ -54,6 +54,10 @@ export default function ViewBallot() {
 
   const totalDonation = useMemo(() => {
     return donations.reduce((acc, donation) => {
+      if(donation.amount == '') {
+        donation.amount = '0';
+      }
+
       const decimalPlaces =
         (donation.amount.match(/\.(\d+)/) || [])[1]?.length || 0;
       return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
