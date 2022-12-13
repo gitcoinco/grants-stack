@@ -36,6 +36,24 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
   }
 };
 
+
+export const getUSDCAddress = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET:
+      return "0x7f5c764cbc14f9669b88837ca1490cca17c31607"
+    
+    case ChainId.FANTOM_MAINNET:
+      return "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+    
+    case ChainId.MAINNET:
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+
+    default:
+      return "0x0000000000000000000000000000000000000000"
+  }
+};
+
+
 export const getChainVerbose = (id: string) => {
   switch (id) {
     case ChainId.OPTIMISM_MAINNET:
@@ -276,6 +294,8 @@ export async function denominateAs(
       (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
     const convertedAmount = amount * (avgAsTokenPrice / avgTokenPrice);
 
+    console.log(`Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`);
+    
     return {
       isSuccess: true,
       amount: convertedAmount,
