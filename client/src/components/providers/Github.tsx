@@ -2,10 +2,9 @@
 import { Tooltip } from "@chakra-ui/react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
 import { global } from "../../global";
@@ -14,6 +13,7 @@ import { RootState } from "../../reducers";
 import { ProviderID } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import { ClientType, fetchVerifiableCredential } from "./identity";
+import { credentialsSaved } from "../../actions/projectForm";
 
 // Each provider is recognised by its ID
 const providerId: ProviderID = "ClearTextGithubOrg";
@@ -31,15 +31,14 @@ function generateUID(length: number) {
 
 export default function Github({
   org,
-  verificationComplete,
   verificationError,
   canVerify,
 }: {
   org: string;
-  verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
 }) {
+  const dispatch = useDispatch();
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
@@ -116,7 +115,11 @@ export default function Github({
       )
         .then(async (verified: { credential: any }): Promise<void> => {
           setComplete(true);
-          verificationComplete(verified.credential);
+          dispatch(
+            credentialsSaved({
+              github: verified.credential!,
+            })
+          );
           verificationError();
         })
         .catch((error) => {

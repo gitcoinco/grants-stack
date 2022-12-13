@@ -92,7 +92,6 @@ export default function VerificationForm({
             !!props.formMetaData.projectGithub &&
             !!props.formMetaData.userGithub
           }
-          verificationComplete={() => {}} // todo: remove me
           verificationError={(providerError) => setError(providerError)}
         />
       </div>
