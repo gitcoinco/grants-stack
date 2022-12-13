@@ -13,11 +13,12 @@ export const mockRoundMetadata: RoundMetadata = {
 }
 
 export const mockQFContribution: QFContribution = {
+  convertedAmount: 0,
   projectId: faker.finance.ethereumAddress.toString(),
   amount: faker.datatype.number(),
   contributor: faker.finance.ethereumAddress.toString(),
   timestamp: faker.datatype.number(),
-  token: faker.finance.ethereumAddress.toString(),
+  token: faker.finance.ethereumAddress.toString()
 };
 
 export const mockRoundStats: RoundStats = {
