@@ -372,12 +372,12 @@ export default function ViewBallot() {
               </div>
             </div>
 
-            <div className="pl-4 mt-1">
+            <div className="px-4 mt-1">
               <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
                 {props.project.projectMetadata.title}
               </p>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {props.project.projectMetadata.description}
+                {props.project.projectMetadata.description.substring(0, 130)}
               </p>
             </div>
           </div>
@@ -533,7 +533,7 @@ export default function ViewBallot() {
                 </p>
               </Link>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {props.project.projectMetadata.description}
+                {props.project.projectMetadata.description.substring(0, 130)}
               </p>
             </div>
           </div>
