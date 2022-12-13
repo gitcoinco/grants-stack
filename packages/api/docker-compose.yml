@@ -34,7 +34,7 @@ services:
     volumes:
       - ./src:/src
       - ./prisma:/prisma
-    command: sh -c "npm run prisma:migrate && npm run dev"
+    command: sh -c "yarn prisma:migrate && yarn dev"
 
 volumes:
   postgres: {}
