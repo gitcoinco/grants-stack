@@ -1,7 +1,11 @@
 {
-  "name": "voting-strategies",
+  "name": "api",
   "license": "AGPL-3.0-only",
   "main": "index.js",
+  "engines": {
+    "npm": ">=8.5.5",
+    "node": ">=16.15.0"
+  },
   "scripts": {
     "test": "jest --setupFiles dotenv/config",
     "build": "npx tsc",
@@ -46,7 +50,7 @@
     ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
-      "/round-manager/node_modules/(?!(@spruceid))/"
+      "/api/node_modules/(?!(@spruceid))/"
     ]
   }
 }
