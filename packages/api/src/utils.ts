@@ -1,6 +1,11 @@
 import { Response } from "express";
 import fetch from "node-fetch";
-import { ChainId, ChainName, RoundMetadata, DenominationResponse } from "./types";
+import {
+  ChainId,
+  ChainName,
+  RoundMetadata,
+  DenominationResponse,
+} from "./types";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -19,6 +24,9 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
 
     case ChainId.FANTOM_TESTNET:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet";
+
+    case ChainId.MAINNET:
+      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
 
     case ChainId.GOERLI:
       return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet";
@@ -133,7 +141,6 @@ export const fetchRoundMetadata = async (
 
   // fetch from graphql
   const response = await fetchFromGraphQL(chainId, query, variables);
-
   const data = response.data?.rounds[0];
 
   // fetch round metadata
@@ -173,11 +180,22 @@ export const handleResponse = (
   });
 };
 
-// NOTE: This should probably be moved to a separate file for constants
-const coingeckoSupportedChainNames: Record<number, string> = {
-  [ChainId.MAINNET]: "ethereum",
-  [ChainId.OPTIMISM_MAINNET]: "optimism",
-  [ChainId.FANTOM_MAINNET]: "fantom",
+export const getChainName = (chainId: ChainId) => {
+  let error = true;
+  let chainName;
+
+  // TODO: Export this to constants
+  const coingeckoSupportedChainNames: Record<number, string> = {
+    [ChainId.MAINNET]: "ethereum",
+    [ChainId.OPTIMISM_MAINNET]: "optimistic-ethereum",
+    [ChainId.FANTOM_MAINNET]: "fantom",
+  };
+
+  if (coingeckoSupportedChainNames[chainId]) {
+    chainName = coingeckoSupportedChainNames[chainId];
+    error = false;
+  }
+  return { chainName, error };
 };
 
 export async function getPriceForToken(contract: string, chain: ChainName) {
@@ -194,13 +212,18 @@ export async function getPriceForToken(contract: string, chain: ChainName) {
 }
 
 export async function getStartAndEndTokenPrices(
-    contract: string,
-    chainId: ChainId,
-    startTime: number,
-    endTime: number
-): Promise<{ startPrice: number, endPrice: number }> {
-  const chainName = coingeckoSupportedChainNames[chainId];
+  contract: string,
+  chainId: ChainId,
+  startTime: number,
+  endTime: number
+): Promise<{ startPrice: number; endPrice: number }> {
   try {
+    const { chainName, error } = getChainName(chainId);
+    if (error) {
+      throw new Error(
+        `ChainId ${chainId} is not supported by CoinGecko's API.`
+      );
+    }
     const res = await fetch(
       `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`,
       {
@@ -210,6 +233,11 @@ export async function getStartAndEndTokenPrices(
       }
     );
     const data = await res.json();
+
+    if (data.error || data.status) {
+      throw new Error("An error occurred");
+    }
+
     // NOTE: If the start or end time is out of range, the API will return the closest price to the start or end time
     //       by selecting the first and last element in the array
     //       We should consider storing this information in the future.
@@ -227,24 +255,25 @@ export async function denominateAs(
   amount: number,
   startTime: number,
   endTime: number,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<DenominationResponse> {
-
-  if (!coingeckoSupportedChainNames[chainId]) {
-    return {
-      isSuccess: false,
-      amount: amount,
-      message: new Error(`ChainId ${chainId} is not supported by CoinGecko's API.`),
-    } as DenominationResponse;
-  }
-
   try {
-
-    const tokenPrices = await getStartAndEndTokenPrices(token, chainId, startTime, endTime);
-    const asTokenPrices = await getStartAndEndTokenPrices(asToken, chainId, startTime, endTime);
+    const tokenPrices = await getStartAndEndTokenPrices(
+      token,
+      chainId,
+      startTime,
+      endTime
+    );
+    const asTokenPrices = await getStartAndEndTokenPrices(
+      asToken,
+      chainId,
+      startTime,
+      endTime
+    );
 
     const avgTokenPrice = (tokenPrices.startPrice + tokenPrices.endPrice) / 2;
-    const avgAsTokenPrice = (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
+    const avgAsTokenPrice =
+      (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
     const convertedAmount = amount * (avgAsTokenPrice / avgTokenPrice);
 
     return {
@@ -252,17 +281,11 @@ export async function denominateAs(
       amount: convertedAmount,
       message: `Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`,
     } as DenominationResponse;
-
   } catch (err) {
-
     return {
       isSuccess: false,
       amount: amount,
       message: err,
     } as DenominationResponse;
-
   }
-
 }
-
-

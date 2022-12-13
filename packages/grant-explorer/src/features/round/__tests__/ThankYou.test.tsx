@@ -1,14 +1,7 @@
-import {
-  makeApprovedProjectData,
-  makeRoundData,
-  renderWithContext,
-} from "../../../test-utils";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import ThankYou from "../ThankYou";
-import { ChainId, getTxExplorer } from "../../api/utils";
 import { RoundProvider } from "../../../context/RoundContext";
-import { QFDonationProvider } from "../../../context/QFDonationContext";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();

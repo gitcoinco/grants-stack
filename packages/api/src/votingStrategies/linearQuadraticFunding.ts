@@ -4,11 +4,9 @@ import {
   ProjectMatch,
   RoundMetadata,
   ChainId,
-  DenominationResponse,
-  ChainName,
   RoundStats,
 } from "../types";
-import { denominateAs, fetchFromGraphQL } from "../utils";
+import { denominateAs, fetchFromGraphQL, getChainName } from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -34,6 +32,11 @@ export const fetchVotesForRoundHandler = async (
           from
           to
         }
+        round {
+          roundStartTime
+          roundEndTime
+          token
+        }
       }
     }
   `;
@@ -41,20 +44,47 @@ export const fetchVotesForRoundHandler = async (
   // fetch from graphql
   const response = await fetchFromGraphQL(chainId, query, variables);
 
-  const votes = response.data?.votingStrategies[0]?.votes;
+  const votes = response.data?.votingStrategies[0]?.votes ?? [];
+  const round = response.data?.votingStrategies[0]?.round;
 
   let contributions: QFContribution[] = [];
 
-  votes.map((vote: any) => {
-    const contribution = {
-      projectId: vote.to, // TODO: we will have to update this to project id eventually
-      contributor: vote.from,
-      amount: Number(vote.amount),
-      token: vote.token,
-    } as QFContribution;
+  const { error } = getChainName(chainId);
 
-    contributions.push(contribution);
-  });
+  if (error) {
+    throw new Error(`ChainId ${chainId} is not supported by CoinGecko's API.`);
+  }
+
+  contributions = await Promise.all(
+    votes.map(async (vote: any) => {
+      // denominate the contribution in the round token
+      // TODO: look into this logic. When should conversion happen?
+      // TODO: Determine how we want to pass any errors. If the conversion is unavailable, then the converted amount will
+      //       be the same as the original amount. Is this an error and should it be reported to the user?
+      //       The DenominationResponse type is defined in types.ts and includes a message/success field for future use.
+
+      const res = await denominateAs(
+        vote.token,
+        round.token,
+        vote.amount,
+        round.roundStartTime,
+        round.roundEndTime,
+        chainId
+      );
+
+      const convertedAmount = res.amount;
+
+      const contribution = {
+        projectId: vote.to, // TODO: we will have to update this to project id eventually
+        contributor: vote.from,
+        amount: Number(vote.amount),
+        convertedAmount,
+        token: vote.token,
+      } as QFContribution;
+
+      return contribution;
+    })
+  );
 
   return contributions;
 };
@@ -115,8 +145,7 @@ export const fetchVotesForProjectInRoundHandler = async (
 
 export const calculateHandler = async (
   metadata: RoundMetadata,
-  contributions: QFContribution[],
-  chainId: ChainId,
+  contributions: QFContribution[]
 ) => {
   const totalProjectPoolAmount = metadata.totalPot;
 
@@ -136,25 +165,11 @@ export const calculateHandler = async (
     if (!contributionsByProjectId[contribution.projectId]) {
       contributionsByProjectId[contribution.projectId] = {
         contributions: contribution
-            ? {[contribution.contributor]: contribution}
-            : {},
+          ? { [contribution.contributor]: contribution }
+          : {},
       };
       contributionAddresses.add(contribution.contributor);
     }
-    // denominate the contribution in the round token
-    // TODO: look into this logic. When should conversion happen?
-    // TODO: Determine how we want to pass any errors. If the conversion is unavailable, then the converted amount will
-    //       be the same as the original amount. Is this an error and should it be reported to the user?
-    //       The DenominationResponse type is defined in types.ts and includes a message/success field for future use.
-    const res: DenominationResponse = await denominateAs(
-        contribution.token,
-        metadata.token,
-        contribution.amount,
-        metadata.roundStartTime,
-        metadata.roundEndTime,
-        chainId
-    );
-    contribution.amount = res.amount;
 
     // sum the contributions from the same address
     if (
@@ -168,7 +183,7 @@ export const calculateHandler = async (
     } else {
       contributionsByProjectId[contribution.projectId].contributions[
         contribution.contributor
-      ].amount += contribution.amount;
+      ].convertedAmount += contribution.convertedAmount;
     }
   }
 
@@ -177,8 +192,8 @@ export const calculateHandler = async (
     let sumOfSqrtContrib = 0;
     let sumOfContrib = 0;
     Object.values(project.contributions).forEach((contribution) => {
-      sumOfSqrtContrib += Math.sqrt(contribution.amount);
-      sumOfContrib += contribution.amount;
+      sumOfSqrtContrib += Math.sqrt(contribution.convertedAmount);
+      sumOfContrib += contribution.convertedAmount;
     });
 
     const match = Math.pow(sumOfSqrtContrib, 2) - sumOfContrib;
