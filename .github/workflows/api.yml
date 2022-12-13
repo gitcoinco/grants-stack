@@ -25,9 +25,11 @@ jobs:
           yarn install
           cd packages/api
           yarn install --frozen-lockfile
+          
       - name: Build the API
         run: |
           yarn build
+          
       - name: Test the API
         run: |
           yarn test
