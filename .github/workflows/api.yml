@@ -1,0 +1,40 @@
+name: package/api - Build -> Test
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    concurrency: ci-api-${{ github.head_ref || github.run_id }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: packages/api/yarn.lock
+
+      - name: Install Dependencies
+        run: |
+          yarn install
+          cd packages/api
+          yarn install --frozen-lockfile
+          
+      - name: Build the API
+        run: |
+          yarn api-build
+          
+      - name: Test the API
+        env:
+          REACT_APP_SUBGRAPH_GOERLI_API: ${{ secrets.REACT_APP_SUBGRAPH_GOERLI_API }}
+          REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API }}
+          REACT_APP_SUBGRAPH_FANTOM_TESTNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API }}
+          REACT_APP_SUBGRAPH_FANTOM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API }}
+        run: |
+          yarn api-test
