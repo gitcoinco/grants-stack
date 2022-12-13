@@ -1,7 +1,6 @@
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { credentialsSaved, metadataSaved } from "../../actions/projectForm";
+import { metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { TextInput } from "../grants/inputs";
@@ -23,18 +22,9 @@ export default function VerificationForm({
     shallowEqual
   );
 
-  const [ghVerification, setGHVerification] = useState<VerifiableCredential>();
-  const [twitterVerification, setTwitterVerification] =
-    useState<VerifiableCredential>();
   const [error, setError] = useState<string | undefined>();
 
   const handleInput = (e: ChangeHandlers) => {
-    if (e.target.name === "projectGithub" || e.target.name === "userGithub") {
-      setGHVerification(undefined);
-    }
-    if (e.target.name === "projectTwitter") {
-      setTwitterVerification(undefined);
-    }
     const { value } = e.target;
     dispatch(
       metadataSaved({
@@ -45,12 +35,6 @@ export default function VerificationForm({
   };
 
   const saveAndPreview = () => {
-    dispatch(
-      credentialsSaved({
-        github: ghVerification!,
-        twitter: twitterVerification!,
-      })
-    );
     setVerifying(ProjectFormStatus.Preview);
   };
 
@@ -63,7 +47,6 @@ export default function VerificationForm({
           alt="Twitter Logo"
         />
         <TextInput
-          disabled={twitterVerification !== undefined}
           label="Twitter"
           name="projectTwitter"
           placeholder="Your project's Twitter handle"
@@ -73,7 +56,6 @@ export default function VerificationForm({
         />
         <Twitter
           handle={props.formMetaData.projectTwitter ?? ""}
-          verificationComplete={setTwitterVerification}
           verificationError={(providerError) => setError(providerError)}
           canVerify={!!props.formMetaData.projectTwitter}
         />
@@ -110,7 +92,7 @@ export default function VerificationForm({
             !!props.formMetaData.projectGithub &&
             !!props.formMetaData.userGithub
           }
-          verificationComplete={setGHVerification}
+          verificationComplete={() => {}} // todo: remove me
           verificationError={(providerError) => setError(providerError)}
         />
       </div>

@@ -6,18 +6,9 @@ import setupStore from "../../../store";
 import {
   renderWrapped,
   buildVerifiableCredential,
-  buildProjectMetadata,
   buildFormMetadata,
 } from "../../../utils/test_utils";
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: () => ({
-    chainId: "1",
-    registryAddress: "2",
-    id: "3",
-  }),
-}));
+import { credentialsSaved } from "../../../actions/projectForm";
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
@@ -39,31 +30,23 @@ describe("<Twitter />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectTwitter: handle,
-          credentials: { twitter: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectTwitter: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          twitter: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Twitter
-            handle={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -78,31 +61,23 @@ describe("<Twitter />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectTwitter: handle,
-          credentials: { twitter: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectTwitter: "another-twitter-account",
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          twitter: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Twitter
-            handle={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -118,31 +93,23 @@ describe("<Twitter />", () => {
         "did:key:rAndomDiDRanDOmdidrAndomDiDRanDOmdidrAndomDiDRanDOmdid";
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectTwitter: handle,
-          credentials: { twitter: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectTwitter: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          twitter: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Twitter
-            handle={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -156,29 +123,21 @@ describe("<Twitter />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectTwitter: handle,
-          credentials: { twitter: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectTwitter: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          twitter: vc,
+        })
+      );
+
       await act(async () => {
         renderWrapped(
-          <Twitter
-            handle={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });

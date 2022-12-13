@@ -45,7 +45,10 @@ export const projectFormReducer = (
     case CREDENTIALS_SAVED: {
       return {
         ...state,
-        credentials: action.credentials,
+        credentials: {
+          ...state.credentials,
+          ...action.credentials,
+        },
       };
     }
 

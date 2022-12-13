@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
-import { useParams } from "react-router-dom";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { CredentialProvider } from "../../types";
@@ -21,21 +20,16 @@ const parseHandle = (provider: string) =>
 
 export default function Twitter({
   handle,
-  verificationComplete,
   verificationError,
   canVerify,
 }: {
   handle: string;
-  verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
 }) {
-  const params = useParams();
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-    const twitterCredential =
-      state.grantsMetadata[fullId].metadata?.credentials?.twitter;
+    const twitterCredential = state.projectForm?.credentials?.twitter;
     return {
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
@@ -129,7 +123,6 @@ export default function Twitter({
                   twitter: verified.credential!,
                 })
               );
-              verificationComplete(verified.credential);
               verificationError();
             } else {
               verificationError(
