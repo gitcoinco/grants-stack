@@ -64,6 +64,11 @@ export type QFContribution = {
   token: string;
 };
 
+export type RoundProject = {
+  id: string;
+  payoutAddress: string;
+};
+
 export type QFContributionsByProjectId = {
   [projectId: string]: {
     contributions: {
