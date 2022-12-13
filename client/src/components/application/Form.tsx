@@ -86,9 +86,9 @@ export default function Form({
 
   const schema = roundApplication.applicationSchema;
 
-  const validate = async () => {
+  const validate = async (inputs: DynamicFormInputs) => {
     try {
-      await validateApplication(schema, formInputs);
+      await validateApplication(schema, inputs);
       setFormValidation({
         messages: [],
         valid: true,
@@ -129,12 +129,13 @@ export default function Form({
     }
   };
 
-  const handleInput = async (e: ChangeHandlers) => {
-    if (submitted) {
-      await validate();
-    }
+  const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
-    setFormInputs({ ...formInputs, [e.target.name]: value });
+    const inputs = { ...formInputs, [e.target.name]: value };
+    setFormInputs(inputs);
+    if (submitted) {
+      validate(inputs);
+    }
   };
 
   const handleProjectInput = (e: ChangeHandlers) => {
@@ -145,7 +146,7 @@ export default function Form({
 
   const handlePreviewClick = async () => {
     setSubmitted(true);
-    const valid = await validate();
+    const valid = await validate(formInputs);
     if (valid === ValidationStatus.Valid) {
       setPreview(true);
       setShowError(false);
