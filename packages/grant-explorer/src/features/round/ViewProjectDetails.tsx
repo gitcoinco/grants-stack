@@ -63,7 +63,7 @@ export default function ViewProjectDetails() {
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <div className="grow">
                   <div>
                     <ProjectTitle
@@ -312,7 +312,7 @@ function Sidebar(props: {
   addToShortlist: () => void;
 }) {
   return (
-    <div className="ml-6">
+    <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
       <BallotSelectionToggle
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
