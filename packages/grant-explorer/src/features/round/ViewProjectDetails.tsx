@@ -191,7 +191,7 @@ function AboutProject(props: { projectToRender: Project }) {
   };
 
   return (
-    <div className="grid grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
       {projectRecipient && 
         (<span className="flex items-center mt-4 gap-1">
           <LightningBoltIcon className="h-4 w-4 mr-1 opacity-40" />
