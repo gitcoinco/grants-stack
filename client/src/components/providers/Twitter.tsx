@@ -14,6 +14,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import { fetchVerifiableCredential } from "./identity/credentials";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { credentialsSaved } from "../../actions/projectForm";
+import VerifiedBadge from "../badges/VerifiedBadge";
 
 const parseHandle = (provider: string) =>
   provider.replace(/ClearTextTwitter#(.*)$/, "$1");
@@ -161,12 +162,7 @@ export default function Twitter({
   });
 
   if (validTwitterCredential) {
-    return (
-      <div className="flex ml-8 mt-14">
-        <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />
-        <p className="text-green-text font-normal">Verified</p>
-      </div>
-    );
+    return <VerifiedBadge />;
   }
 
   return (
