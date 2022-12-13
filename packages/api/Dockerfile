@@ -12,7 +12,7 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 
 FROM base as dev
 ENV NODE_ENV=development
-RUN npm install -g nodemon && npm install
+RUN yarn global add nodemon && yarn install
 
 EXPOSE 8000
 CMD ["nodemon", "bin/www"]

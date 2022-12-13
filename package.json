@@ -28,7 +28,11 @@
     "re-test": "lerna run test --scope=grant-explorer",
     "re-start": "lerna run start --scope=grant-explorer",
     "re-slither": "lerna run slither --scope=grant-explorer",
-    "re-typecheck": "lerna exec --scope=grant-explorer -- tsc --noEmit"
+    "re-typecheck": "lerna exec --scope=grant-explorer -- tsc --noEmit",
+    "// api script": "====== packages/api specific ======",
+    "api-build": "lerna run build --scope=api",
+    "api-test": "lerna run test --scope=api",
+    "api-start": "lerna run start --scope=api"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.1.0",
