@@ -26,7 +26,7 @@ export default function ThankYou() {
 
   function TwitterButton(props: {roundName ?: string}) {
 
-    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://gitcoin.co/`;
+    const shareText = `I just donated to the ${props.roundName} on @gitcoin. Join me in making a difference by donating today! https://grant-explorer.gitcoin.co/%23/round/${chainId}/${roundId}`;
 
     return (
       <Button
