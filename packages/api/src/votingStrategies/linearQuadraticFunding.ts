@@ -7,8 +7,12 @@ import {
   RoundStats,
   RoundProject,
 } from "../types";
-import { denominateAs, fetchFromGraphQL, getChainName, getUSDCAddress } from "../utils";
-import { utils, BigNumber } from "ethers";
+import {
+  denominateAs,
+  fetchFromGraphQL,
+  getChainName,
+  getUSDCAddress,
+} from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -239,26 +243,31 @@ export const fetchStatsHandler = async (
   contributions: QFContribution[],
   metadata: RoundMetadata
 ): Promise<RoundStats> => {
-
   const unique = (value: any, index: any, self: any) => {
     return self.indexOf(value) === index;
   };
-  let uniqueContributors = contributions.map((contribution) => contribution.contributor).filter(unique);
+  let uniqueContributors = contributions
+    .map((contribution) => contribution.contributor)
+    .filter(unique);
 
   const usdcAddress = getUSDCAddress(chainId);
 
-  let totalContributionsInUSD = (await Promise.all(contributions.map(async (contribution) => {
-    const contributionInUSD = await denominateAs(
-      contribution.token,
-      usdcAddress,
-      contribution.amount,
-      metadata.roundStartTime,
-      metadata.roundEndTime,
-      chainId
-    );
-      
-    return contributionInUSD.amount;
-  }))).reduce((a, b) => a + b , 0);
+  let totalContributionsInUSD = (
+    await Promise.all(
+      contributions.map(async (contribution) => {
+        const contributionInUSD = await denominateAs(
+          contribution.token,
+          usdcAddress,
+          contribution.amount,
+          metadata.roundStartTime,
+          metadata.roundEndTime,
+          chainId
+        );
+
+        return contributionInUSD.amount;
+      })
+    )
+  ).reduce((a, b) => a + b, 0);
 
   return {
     uniqueContributorCount: uniqueContributors.length,
