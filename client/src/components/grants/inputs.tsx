@@ -30,7 +30,7 @@ export type Feedback = {
 };
 
 export type FeedbackStyle = {
-  borderColor: string;
+  borderClass: string;
   feedbackColor: string;
 };
 
@@ -38,22 +38,22 @@ export function getStyleInfoForFeedback(feedback: Feedback): FeedbackStyle {
   switch (feedback?.type) {
     case "error":
       return {
-        borderColor: "gitcoin-pink-200",
+        borderClass: "input-error",
         feedbackColor: "gitcoin-pink-500",
       };
     case "success":
       return {
-        borderColor: "green-text",
+        borderClass: "input-success",
         feedbackColor: "green-text",
       };
     case "warning":
       return {
-        borderColor: "gitcoin-yellow-500",
+        borderClass: "input-warning",
         feedbackColor: "gitcoin-yellow",
       };
     default:
       return {
-        borderColor: "",
+        borderClass: "",
         feedbackColor: "",
       };
   }
@@ -72,7 +72,7 @@ export function TextInput({
   feedback,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
-  const { borderColor, feedbackColor } = styleInfo;
+  const { borderClass, feedbackColor } = styleInfo;
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -96,7 +96,7 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={`border-${borderColor}`}
+        className={borderClass}
       />
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
@@ -121,7 +121,7 @@ export function TextInputAddress({
   feedback,
 }: AddressInputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
-  const { borderColor, feedbackColor } = styleInfo;
+  const { borderClass, feedbackColor } = styleInfo;
 
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
@@ -154,7 +154,7 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={`border-${borderColor}`}
+        className={borderClass}
       />
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
@@ -178,7 +178,7 @@ export function WebsiteInput({
   feedback,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
-  const { borderColor, feedbackColor } = styleInfo;
+  const { borderClass, feedbackColor } = styleInfo;
 
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
@@ -216,7 +216,7 @@ export function WebsiteInput({
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
-          className={`border-${borderColor}`}
+          className={borderClass}
         />
       </div>
       {feedback?.message ? (
@@ -240,12 +240,12 @@ export function TextArea({
   encrypted,
   feedback,
 }: InputProps) {
-  let borderColor = "";
+  let borderClass = "";
   let feedbackColor = "";
 
   if (feedback) {
     const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
+    borderClass = styleInfo.borderClass;
     feedbackColor = styleInfo.feedbackColor;
   }
 
@@ -270,7 +270,7 @@ export function TextArea({
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}
-        className={`border-${borderColor}`}
+        className={borderClass}
       />
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
@@ -298,12 +298,12 @@ export function Select({
   defaultValue,
   feedback,
 }: SelectInputProps) {
-  let borderColor = "";
+  let borderClass = "";
   let feedbackColor = "";
 
   if (feedback) {
     const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
+    borderClass = styleInfo.borderClass;
     feedbackColor = styleInfo.feedbackColor;
   }
 
@@ -325,8 +325,9 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames(`w-full border-${borderColor}`, {
+        className={classNames(`w-full `, {
           "bg-transparent": !disabled,
+          borderClass,
         })}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
@@ -358,12 +359,12 @@ export function CustomSelect({
   defaultValue,
   feedback,
 }: SelectInputProps) {
-  let borderColor = "";
+  let borderClass = "";
   let feedbackColor = "";
 
   if (feedback) {
     const styleInfo = getStyleInfoForFeedback(feedback);
-    borderColor = styleInfo.borderColor;
+    borderClass = styleInfo.borderClass;
     feedbackColor = styleInfo.feedbackColor;
   }
 
@@ -390,7 +391,7 @@ export function CustomSelect({
           {
             "bg-transparent": !disabled,
           },
-          `border-${borderColor}`
+          borderClass
         )}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}

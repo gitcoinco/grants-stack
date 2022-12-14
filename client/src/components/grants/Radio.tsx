@@ -20,7 +20,7 @@ export default function Radio({
   feedback,
 }: RadioInputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
-  const { borderColor, feedbackColor } = styleInfo;
+  const { borderClass, feedbackColor } = styleInfo;
 
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
@@ -38,7 +38,7 @@ export default function Radio({
       </div>
       <legend>{info}</legend>
       <fieldset className="mt-4" id={name} disabled={disabled}>
-        <div className="space-y-2">
+        <div className={classNames("space-y-2 ", borderClass)}>
           {choices.map((choice) => {
             const choiceId = choice.toLowerCase().replaceAll(" ", "_");
             return (
@@ -51,8 +51,7 @@ export default function Radio({
                   onChange={changeHandler}
                   type="radio"
                   className={classNames(
-                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none",
-                    borderColor ?? `border-${borderColor}`
+                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
                   )}
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">
