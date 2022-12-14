@@ -67,13 +67,11 @@ export const metadataImageSaved = (
   fieldName,
 });
 
-export const credentialsSaved = ({
-  github,
-  twitter,
-}: ProjectCredentials): ProjectFormActions => ({
+export const credentialsSaved = (
+  vc: ProjectCredentials
+): ProjectFormActions => ({
   type: CREDENTIALS_SAVED,
   credentials: {
-    github,
-    twitter,
+    ...vc,
   },
 });

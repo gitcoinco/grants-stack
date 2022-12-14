@@ -197,8 +197,6 @@ export interface SignedRoundApplication {
   application: RoundApplication;
 }
 
-export type ProviderID = "ClearTextTwitter" | "ClearTextGithubOrg";
-
 export type ProjectCredentials = {
   github?: VerifiableCredential;
   twitter?: VerifiableCredential;
