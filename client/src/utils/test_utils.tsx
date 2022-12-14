@@ -1,11 +1,12 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { ChakraProvider } from "@chakra-ui/react";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import history from "../history";
 import setupStore from "../store";
-import { Metadata, Round } from "../types";
+import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
 
 export const buildAlert = (attrs = {}): Alert => ({
@@ -32,13 +33,14 @@ export const buildRound = (round: any): Round => ({
 });
 
 export const buildVerifiableCredential = (
-  type: string
+  type: string,
+  handle: string
 ): VerifiableCredential => ({
   "@context": ["https://www.w3.org/2018/credentials/v1"],
   type: ["VerifiableCredential"],
   credentialSubject: {
     id: "did:pkh:eip155:1:subject",
-    provider: `ClearText${type}#twitter-username-1`,
+    provider: `ClearText${type}#${handle}`,
     hash: "v0.0.0:hash",
     "@context": [
       {
@@ -72,10 +74,22 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
   projectGithub: "project-github-1",
   projectTwitter: "project-twitter-1",
   credentials: {
-    github: buildVerifiableCredential("Github"),
-    twitter: buildVerifiableCredential("Twitter"),
+    github: buildVerifiableCredential("Github", "my-github"),
+    twitter: buildVerifiableCredential("Twitter", "my-twitter"),
   },
   createdAt: 123,
+  ...metadata,
+});
+
+export const buildFormMetadata = (metadata: any): FormInputs => ({
+  title: "title 1",
+  description: "description",
+  website: "http://example.com",
+  bannerImg: "banner-1",
+  logoImg: "logo-1",
+  userGithub: "user-github-1",
+  projectGithub: "project-github-1",
+  projectTwitter: "project-twitter-1",
   ...metadata,
 });
 

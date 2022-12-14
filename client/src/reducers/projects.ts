@@ -28,6 +28,7 @@ export type AppStatus =
 export type Application = {
   roundID: string;
   status: AppStatus;
+  chainId: number;
 };
 
 export interface ProjectsState {
@@ -106,7 +107,10 @@ export const projectsReducer = (
         ...state,
         applications: {
           ...state.applications,
-          [action.projectID]: action.applications,
+          [action.projectID]: [
+            ...(state.applications[action.projectID] ?? []),
+            ...action.applications,
+          ],
         },
         error: undefined,
       };

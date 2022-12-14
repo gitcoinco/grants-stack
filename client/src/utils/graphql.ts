@@ -1,7 +1,10 @@
+import { env } from "process";
+
 /**
  * Chain Id to network id
  */
 export enum ChainId {
+  MAINNET_CHAIN_ID = 1,
   GOERLI_CHAIN_ID = 5,
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
@@ -19,8 +22,18 @@ export type GraphEndpoint = {
  * @param chainId
  * @returns GraphEndpoint
  */
-const getGraphQLEndpoint = (chainId: number): GraphEndpoint => {
+const getGraphQLEndpoint = (
+  chainId: number,
+  reactEnv?: any // ProcessEnv
+): GraphEndpoint => {
+  const environment = reactEnv || env;
   switch (chainId) {
+    case ChainId.MAINNET_CHAIN_ID:
+      return {
+        // eslint-disable-next-line max-len
+        uri: `https://gateway.thegraph.com/api/${environment.REACT_APP_SUBGRAPH_MAINNET_API_KEY}/subgraphs/id/94TgNF87pKDcuhFkELKQa6o3CcetJvyt3XwkhtsvhrHx`,
+        error: undefined,
+      };
     case ChainId.GOERLI_CHAIN_ID:
       return {
         uri: "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet",
@@ -52,9 +65,10 @@ const getGraphQLEndpoint = (chainId: number): GraphEndpoint => {
 export const graphqlFetch = async (
   query: string,
   chainId: number,
-  variables: object = {}
+  variables: object = {},
+  reactEnv?: any // ProcessEnv
 ) => {
-  const endpoint: GraphEndpoint = getGraphQLEndpoint(chainId);
+  const endpoint: GraphEndpoint = getGraphQLEndpoint(chainId, reactEnv);
   if (!endpoint.error && endpoint.uri) {
     return fetch(endpoint.uri, {
       method: "POST",

@@ -69,6 +69,7 @@ function NetworkForm({
             }))}
             changeHandler={handleNetworkSelect}
             required
+            feedback={{ type: "none", message: "" }}
           />
         </div>
         <div className="flex w-full justify-end mt-6">
