@@ -1,7 +1,6 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { ChakraProvider } from "@chakra-ui/react";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import history from "../history";

@@ -2,7 +2,6 @@ import { useEffect, useState, Fragment } from "react";
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
