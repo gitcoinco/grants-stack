@@ -45,6 +45,11 @@ export type RoundStats = {
   totalContributionsInUSD: number;
 }
 
+export type ProjectSummary = {
+  contributors: string[];
+  contributions: [];
+}
+
 export type HandleResponseObject = {
   success: boolean;
   message: string;

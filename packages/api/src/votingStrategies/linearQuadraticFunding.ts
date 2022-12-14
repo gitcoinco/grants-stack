@@ -106,7 +106,7 @@ export const fetchVotesForProjectInRoundHandler = async (
 
   // TODO: UPDATE LINE 83 from to -> projectId after upgrading subgraph
   const query = `
-    query GetVotesForProjectInRound($votingStrategyId: String, projectId: String) {
+    query GetVotesForProjectInRound($votingStrategyId: String, $projectId: String) {
       votingStrategies(where: {
         id: $votingStrategyId
       }) {
