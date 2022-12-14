@@ -4,7 +4,7 @@ import {
   fetchStatsHandler as linearQFFetchRoundStats,
 } from "../votingStrategies/linearQuadraticFunding";
 import { Request, Response } from "express";
-import { ChainId } from "../types";
+import { ChainId, QFContribution } from "../types";
 import { fetchFromGraphQL } from "../utils";
 
 export const fetchRoundStatsHandler = async (
@@ -57,8 +57,6 @@ export const fetchRoundStatsHandler = async (
     const roundProjects = roundProjectRes.data.round.projects;
     const projectStats = [];
 
-    // console.log(roundProjects);
-
     // handle how stats should be derived per voting strategy
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
@@ -69,21 +67,30 @@ export const fetchRoundStatsHandler = async (
         );
 
         for (let i = 0; i < roundProjects.length; i++) {
-          const projectVotes = [];
+          const projectVotes: QFContribution[] = [];
 
           votes.forEach((vote) => {
-            if (vote.projectId == roundProjects[i].payoutAddress) {
+            if (
+              vote.projectId.toLowerCase() ===
+              roundProjects[i].payoutAddress.toLowerCase()
+            ) {
               projectVotes.push(vote);
             }
           });
 
-          projectStats.push(projectVotes);
+          // fetch round stats
+          let resultForProject = await linearQFFetchRoundStats(
+            chainId,
+            projectVotes,
+            metadata
+          );
+          projectStats.push({
+            ...resultForProject,
+            projectId: roundProjects[i].payoutAddress,
+          });
         }
 
-        console.log(projectStats);
-        // fetch round stats
-        results = await linearQFFetchRoundStats(chainId, votes, metadata);
-        break;
+        return handleResponse(res, 200, "success", projectStats);
       default:
         return handleResponse(res, 400, "error: unsupported voting strategy");
     }
@@ -91,7 +98,10 @@ export const fetchRoundStatsHandler = async (
     // TODO: LOG ERROR TO SENTRY
     // console.error(err);
     // serialize javascript error to json
-    const serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
+    const serializedError = JSON.stringify(
+      err,
+      Object.getOwnPropertyNames(err)
+    );
     return handleResponse(res, 500, serializedError);
   }
 
