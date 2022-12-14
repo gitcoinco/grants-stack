@@ -21,7 +21,7 @@ router.get("/fetch-matching", fetchMatchingHandler);
 
 router.post("/convert-price", convertPriceHandler);
 
-router.get("/round-stats", fetchRoundStatsHandler); 
+router.get("/round-stats", fetchRoundStatsHandler);
 
 router.get("/project-stats", fetchProjectInRoundStatsHandler);
 

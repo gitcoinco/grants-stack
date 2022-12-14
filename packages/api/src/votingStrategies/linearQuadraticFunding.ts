@@ -5,8 +5,14 @@ import {
   RoundMetadata,
   ChainId,
   RoundStats,
+  RoundProject,
 } from "../types";
-import { denominateAs, fetchFromGraphQL, getChainName } from "../utils";
+import {
+  denominateAs,
+  fetchFromGraphQL,
+  getChainName,
+  getUSDCAddress,
+} from "../utils";
 
 /**
  * Fetch data from a GraphQL endpoint
@@ -21,12 +27,13 @@ export const fetchVotesForRoundHandler = async (
 ): Promise<QFContribution[]> => {
   const variables = { votingStrategyId };
 
+  // TODO: implement paging here instead of hard-coded limit of 1000
   const query = `
     query GetVotesForRound($votingStrategyId: String) {
       votingStrategies(where:{
         id: $votingStrategyId
       }) {
-        votes {
+        votes(first: 1000) {
           amount
           token
           from
@@ -228,7 +235,7 @@ export const calculateHandler = async (
 
 /**
  * Fetch Round Stats for a round using linearQF voting strategy
- * @param chainName - Chain from which round / voting contract is deployed 
+ * @param chainId - Chain from which round / voting contract is deployed
  * @param contributions - QFContribution[] fetched by invoking fetchVotesForRoundHandler
  * @param metadata - RoundMetadata fetched by invoking fetchRoundMetadata
  */
@@ -237,31 +244,35 @@ export const fetchStatsHandler = async (
   contributions: QFContribution[],
   metadata: RoundMetadata
 ): Promise<RoundStats> => {
-  let totalContributionsInUSD = 0;
-  let uniqueContributors: string[] = [];
+  const unique = (value: any, index: any, self: any) => {
+    return self.indexOf(value) === index;
+  };
+  let uniqueContributors = contributions
+    .map((contribution) => contribution.contributor)
+    .filter(unique);
 
-  denominateAs
-  contributions.map(async contribution => {
-    
-    if (!uniqueContributors.includes(contribution.projectId)) {
-      uniqueContributors.push(contribution.projectId);
-    }
+  const usdcAddress = getUSDCAddress(chainId);
 
-    const contributionInUSD = await denominateAs(
-      contribution.token,
-      metadata.token, // TODO: HARDCODE TO USDC TOKEN FOR STABLE
-      contribution.amount,
-      metadata.roundStartTime,
-      metadata.roundEndTime,
-      chainId
-  );
+  let totalContributionsInUSD = (
+    await Promise.all(
+      contributions.map(async (contribution) => {
+        const contributionInUSD = await denominateAs(
+          contribution.token,
+          usdcAddress,
+          contribution.amount,
+          metadata.roundStartTime,
+          metadata.roundEndTime,
+          chainId
+        );
 
-    totalContributionsInUSD += contributionInUSD.amount;
-  });
+        return contributionInUSD.amount;
+      })
+    )
+  ).reduce((a, b) => a + b, 0);
 
   return {
     uniqueContributorCount: uniqueContributors.length,
     contributionsCount: contributions.length,
-    totalContributionsInUSD: totalContributionsInUSD
+    totalContributionsInUSD: totalContributionsInUSD / 10 ** 18,
   };
-}
+};

@@ -36,6 +36,38 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
   }
 };
 
+
+/**
+ * Returns USDC address based on chain Id. 
+ * Useful when you need to convert amount from a given token
+ * to USDC (stable coin)
+ * 
+ * @param chainId ChainId
+ * @returns string
+ */
+export const getUSDCAddress = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET:
+      return "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
+
+    case ChainId.FANTOM_MAINNET:
+      return "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
+    
+    case ChainId.MAINNET:
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+
+    default:
+      return "0x0000000000000000000000000000000000000000";
+  }
+};
+
+
+/**
+ * Returns the chain name given the id
+ * 
+ * @param id string
+ * @returns string 
+ */
 export const getChainVerbose = (id: string) => {
   switch (id) {
     case ChainId.OPTIMISM_MAINNET:
@@ -161,6 +193,16 @@ export const fetchRoundMetadata = async (
   return metadata;
 };
 
+/**
+ * Generic function which handles how response is sent
+ * for any API implemented in this service
+ * 
+ * @param res Response
+ * @param code number
+ * @param message string
+ * @param body any
+ * @returns res.json
+ */
 export const handleResponse = (
   res: Response,
   code: number,
@@ -180,11 +222,16 @@ export const handleResponse = (
   });
 };
 
+/**
+ * Util function to get chainName for coingecko API calls
+ * 
+ * @param chainId 
+ * @returns { string, boolean}
+ */
 export const getChainName = (chainId: ChainId) => {
   let error = true;
   let chainName;
 
-  // TODO: Export this to constants
   const coingeckoSupportedChainNames: Record<number, string> = {
     [ChainId.MAINNET]: "ethereum",
     [ChainId.OPTIMISM_MAINNET]: "optimistic-ethereum",
@@ -275,7 +322,7 @@ export async function denominateAs(
     const avgAsTokenPrice =
       (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
     const convertedAmount = amount * (avgAsTokenPrice / avgTokenPrice);
-
+    
     return {
       isSuccess: true,
       amount: convertedAmount,

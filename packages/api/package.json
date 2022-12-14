@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "ethers": "^5.7.2",
     "express": "^4.17.1",
     "node-fetch": "^2.6.6",
     "yup": "^0.32.11"
