@@ -6,9 +6,9 @@ import setupStore from "../../../store";
 import {
   renderWrapped,
   buildVerifiableCredential,
-  buildProjectMetadata,
   buildFormMetadata,
 } from "../../../utils/test_utils";
+import { credentialsSaved } from "../../../actions/projectForm";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -39,31 +39,23 @@ describe("<Github />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectGithub: handle,
-          credentials: { github: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectGithub: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          github: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Github
-            org={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -78,31 +70,23 @@ describe("<Github />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectGithub: handle,
-          credentials: { github: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectGithub: "another-Github-account",
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          github: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Github
-            org={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -118,31 +102,23 @@ describe("<Github />", () => {
         "did:key:rAndomDiDRanDOmdidrAndomDiDRanDOmdidrAndomDiDRanDOmdid";
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectGithub: handle,
-          credentials: { github: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectGithub: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          github: vc,
+        })
+      );
+
       verifyCredentialMock.mockResolvedValue(true);
 
       await act(async () => {
         renderWrapped(
-          <Github
-            org={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -156,29 +132,21 @@ describe("<Github />", () => {
       vc.issuer = IAM_SERVER;
 
       store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: buildProjectMetadata({
-          id: "1:2:3",
-          projectGithub: handle,
-          credentials: { github: vc },
-        }),
-      });
-
-      store.dispatch({
         type: "METADATA_SAVED",
         metadata: buildFormMetadata({
           projectGithub: handle,
         }),
       });
 
+      store.dispatch(
+        credentialsSaved({
+          github: vc,
+        })
+      );
+
       await act(async () => {
         renderWrapped(
-          <Github
-            org={handle}
-            verificationComplete={() => {}}
-            verificationError={() => {}}
-            canVerify
-          />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
