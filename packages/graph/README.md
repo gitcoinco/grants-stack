@@ -49,9 +49,9 @@ The following sections document the hosted services where the subgraph is deploy
 ## Queries
 
 To know more about the queries which can be run on the playground, check out the documentation for
-- [Program](/docs/Program.md)
-- [Round](/docs/Round.md)
-- [QFVotingStrategy](/docs/QFVotingStrategy.md)
+- [Program](/packages/graph/docs/Program.md)
+- [Round](/packages/graph/docs/Round.md)
+- [QFVotingStrategy](/packages/graph/docs/QFVotingStrategy.md)
 
 To know the relationship between the different entities and the type of queries. Refer [schema.graphql](./schema.graphql)
 
