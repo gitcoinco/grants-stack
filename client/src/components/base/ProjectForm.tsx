@@ -1,5 +1,5 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
@@ -38,6 +38,9 @@ function ProjectForm({
   const [formValidation, setFormValidation] = useState(validation);
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, toggleModal] = useState(false);
+  const [feedback, setFeedback] = useState([
+    { title: "", type: "none", message: "" },
+  ]);
   const { chains } = useNetwork();
 
   const [, setLogoImg] = useState<Blob | undefined>();
@@ -71,6 +74,7 @@ function ProjectForm({
         valid: true,
         errorCount: 0,
       });
+      setFeedback([{ title: "", type: "none", message: "" }]);
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -79,15 +83,38 @@ function ProjectForm({
         valid: false,
         errorCount: error.inner.length,
       });
+      setFeedback([
+        ...error.inner.map((er) => {
+          const err = er as ValidationError;
+          console.log("ERROR", { err });
+          if (err !== null) {
+            return {
+              title: err.path!,
+              type: "error",
+              message: err.message,
+            };
+          }
+          return {
+            title: "",
+            type: "none",
+            message: "",
+          };
+        }),
+      ]);
     }
   };
 
-  // perform validation after the fields state is updated
+  const didMountRef = useRef(false);
+
   useEffect(() => {
-    validate();
+    if (didMountRef.current && submitted) {
+      validate();
+    }
+    didMountRef.current = true;
   }, [props.formMetaData]);
 
   const nextStep = () => {
+    validate();
     setSubmitted(true);
     if (formValidation.valid) {
       setVerifying(ProjectFormStatus.Verification);
@@ -109,6 +136,7 @@ function ProjectForm({
             changeHandler={() => null}
             disabled
             required
+            feedback={{ type: "none", message: "" }}
           />
         </div>
         <div className="border w-full mt-8" />
@@ -119,6 +147,12 @@ function ProjectForm({
           value={props.formMetaData.title}
           changeHandler={handleInput}
           required
+          feedback={
+            feedback.find((fb) => fb.title === "title") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
         <WebsiteInput
           label="Project Website"
@@ -127,6 +161,12 @@ function ProjectForm({
           value={props.formMetaData.website}
           changeHandler={handleInput}
           required
+          feedback={
+            feedback.find((fb) => fb.title === "website") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
 
         <ImageInput
@@ -159,22 +199,29 @@ function ProjectForm({
           value={props.formMetaData.description}
           changeHandler={handleInput}
           required
+          feedback={
+            feedback.find((fb) => fb.title === "description") ?? {
+              type: "none",
+              message: "",
+            }
+          }
         />
         {!formValidation.valid && submitted && (
           <div
-            className="p-4 text-red-700 border rounded border-red-900/10 bg-red-50 mt-8"
+            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm font-medium">
+            <strong className="text-gitcoin-pink-500 font-medium text-sm">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-
-            <ul className="mt-1 ml-2 text-xs list-disc list-inside">
+            <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li key={o}>{o}</li>
+                <li className="text-black my-1" key={o}>
+                  {o}
+                </li>
               ))}
             </ul>
           </div>

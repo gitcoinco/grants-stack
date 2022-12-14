@@ -1,6 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ValidationError } from "yup";
 import {
@@ -60,10 +60,14 @@ export default function Form({
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [showProjectDetails] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [selectedProjectID, setSelectedProjectID] = useState<
     string | undefined
   >(undefined);
   const [showError, setShowError] = useState(false);
+  const [feedback, setFeedback] = useState([
+    { title: "", type: "none", message: "" },
+  ]);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
@@ -82,26 +86,16 @@ export default function Form({
 
   const schema = roundApplication.applicationSchema;
 
-  const handleInput = (e: ChangeHandlers) => {
-    const { value } = e.target;
-    setFormInputs({ ...formInputs, [e.target.name]: value });
-  };
-
-  const handleProjectInput = (e: ChangeHandlers) => {
-    const { value } = e.target;
-    setSelectedProjectID(value);
-    handleInput(e);
-  };
-
-  const validate = async () => {
+  const validate = async (inputs: DynamicFormInputs) => {
     try {
-      await validateApplication(schema, formInputs);
+      await validateApplication(schema, inputs);
       setFormValidation({
         messages: [],
         valid: true,
         errorCount: 0,
       });
       setDisableSubmit(false);
+      setFeedback([{ title: "", type: "none", message: "" }]);
       return ValidationStatus.Valid;
     } catch (e) {
       const error = e as ValidationError;
@@ -113,12 +107,46 @@ export default function Form({
         errorCount: error.inner.length,
       });
       setDisableSubmit(true);
+      setFeedback([
+        ...error.inner.map((er) => {
+          const err = er as ValidationError;
+          console.log("ERROR", { err });
+          if (err !== null) {
+            return {
+              title: err.path!,
+              type: "error",
+              message: err.message,
+            };
+          }
+          return {
+            title: "",
+            type: "none",
+            message: "",
+          };
+        }),
+      ]);
       return ValidationStatus.Invalid;
     }
   };
 
+  const handleInput = (e: ChangeHandlers) => {
+    const { value } = e.target;
+    const inputs = { ...formInputs, [e.target.name]: value };
+    setFormInputs(inputs);
+    if (submitted) {
+      validate(inputs);
+    }
+  };
+
+  const handleProjectInput = (e: ChangeHandlers) => {
+    const { value } = e.target;
+    setSelectedProjectID(value);
+    handleInput(e);
+  };
+
   const handlePreviewClick = async () => {
-    const valid = await validate();
+    setSubmitted(true);
+    const valid = await validate(formInputs);
     if (valid === ValidationStatus.Valid) {
       setPreview(true);
       setShowError(false);
@@ -144,7 +172,6 @@ export default function Form({
     handleSubmitApplication();
   };
 
-  // todo: add the chain logo for each project
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
@@ -172,7 +199,7 @@ export default function Form({
           switch (input.type) {
             case "PROJECT":
               return (
-                <>
+                <Fragment key={input.id}>
                   <div className="mt-6 w-full sm:w-1/2 relative">
                     <CustomSelect
                       key={input.id}
@@ -182,6 +209,12 @@ export default function Form({
                       disabled={preview}
                       changeHandler={handleProjectInput}
                       required={input.required ?? true}
+                      feedback={
+                        feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                          type: "none",
+                          message: "",
+                        }
+                      }
                     />
                   </div>
                   <div>
@@ -197,7 +230,7 @@ export default function Form({
                     </p>
                     <hr className="w-1/2" />
                   </div>
-                </>
+                </Fragment>
               );
             case "TEXT":
               return (
@@ -208,8 +241,16 @@ export default function Form({
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
-                  changeHandler={handleInput}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
                   required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             case "RECIPIENT":
@@ -227,6 +268,12 @@ export default function Form({
                         info=""
                         required={input.required ?? true}
                         disabled={preview}
+                        feedback={
+                          feedback.find((fb) => fb.title === "isSafe") ?? {
+                            type: "none",
+                            message: "",
+                          }
+                        }
                       />
                     </Stack>
                   </div>
@@ -242,6 +289,12 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInput}
                     required={input.required ?? true}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
                   />
                 </>
               );
@@ -256,6 +309,12 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             case "RADIO":
@@ -272,6 +331,12 @@ export default function Form({
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
             // case "MULTIPLE":
@@ -297,6 +362,12 @@ export default function Form({
                   changeHandler={handleInput}
                   required={input.required ?? false}
                   encrypted={input.encrypted}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
                 />
               );
           }
@@ -306,15 +377,15 @@ export default function Form({
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
             role="alert"
           >
-            <strong className="text-sm text-gitcoin-pink-500 font-medium">
+            <strong className="text-gitcoin-pink-500 font-medium text-sm">
               There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
               {formValidation.errorCount}{" "}
               {formValidation.errorCount === 1 ? "error" : "errors"} with your
               form submission
             </strong>
-            <ul className="mt-1 ml-2 text-xs text-black list-disc list-inside">
+            <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
               {formValidation.messages.map((o) => (
-                <li className="text-black" key={o}>
+                <li className="text-black my-1" key={o}>
                   {o}
                 </li>
               ))}

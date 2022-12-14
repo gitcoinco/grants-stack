@@ -53,6 +53,7 @@ export default function VerificationForm({
           value={props.formMetaData.projectTwitter}
           changeHandler={handleInput}
           required={false}
+          feedback={{ type: "none", message: "" }}
         />
         <Twitter
           handle={props.formMetaData.projectTwitter ?? ""}
@@ -74,6 +75,7 @@ export default function VerificationForm({
           value={props.formMetaData.userGithub}
           changeHandler={handleInput}
           required={false}
+          feedback={{ type: "none", message: "" }}
         />
       </div>
       <div className="flex items-center mb-6">
@@ -85,6 +87,7 @@ export default function VerificationForm({
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
           required={false}
+          feedback={{ type: "none", message: "" }}
         />
         <Github
           org={props.formMetaData.projectGithub ?? ""}

@@ -24,6 +24,41 @@ const encryptionTooltip = (
   </Tooltip>
 );
 
+export type Feedback = {
+  type: string;
+  message: string;
+};
+
+export type FeedbackStyle = {
+  borderClass: string;
+  feedbackColor: string;
+};
+
+export function getStyleInfoForFeedback(feedback: Feedback): FeedbackStyle {
+  switch (feedback?.type) {
+    case "error":
+      return {
+        borderClass: "input-error",
+        feedbackColor: "gitcoin-pink-500",
+      };
+    case "success":
+      return {
+        borderClass: "input-success",
+        feedbackColor: "green-text",
+      };
+    case "warning":
+      return {
+        borderClass: "input-warning",
+        feedbackColor: "gitcoin-yellow",
+      };
+    default:
+      return {
+        borderClass: "",
+        feedbackColor: "",
+      };
+  }
+}
+
 export function TextInput({
   label,
   info,
@@ -34,10 +69,14 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
+  feedback,
 }: InputProps) {
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderClass, feedbackColor } = styleInfo;
+
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
-      <div className=" flex">
+      <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
             {label}
@@ -57,7 +96,13 @@ export function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
+        className={borderClass}
       />
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -73,7 +118,11 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
+  feedback,
 }: AddressInputProps) {
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderClass, feedbackColor } = styleInfo;
+
   return (
     <div className="relative mt-6 w-full sm:w-1/2">
       <div className="flex">
@@ -105,7 +154,13 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
+        className={borderClass}
       />
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -120,7 +175,11 @@ export function WebsiteInput({
   changeHandler,
   required,
   encrypted,
+  feedback,
 }: InputProps) {
+  const styleInfo = getStyleInfoForFeedback(feedback);
+  const { borderClass, feedbackColor } = styleInfo;
+
   const removeWhiteSpace = (event: React.ChangeEvent<HTMLInputElement>) => {
     const validatedEvent = event;
     validatedEvent.target.value = `https://${event.target.value.trim()}`;
@@ -151,15 +210,20 @@ export function WebsiteInput({
         </span>
         <input
           type="text"
-          className="rounded"
           id={name}
           name={name}
           value={sanitizedInput ?? ""}
           placeholder={placeholder}
           disabled={disabled}
           onChange={removeWhiteSpace}
+          className={borderClass}
         />
       </div>
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -174,7 +238,17 @@ export function TextArea({
   changeHandler,
   required,
   encrypted,
+  feedback,
 }: InputProps) {
+  let borderClass = "";
+  let feedbackColor = "";
+
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderClass = styleInfo.borderClass;
+    feedbackColor = styleInfo.feedbackColor;
+  }
+
   return (
     <div className="mt-6 w-full sm:w-1/2 relative">
       <div className=" flex">
@@ -196,7 +270,13 @@ export function TextArea({
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}
+        className={borderClass}
       />
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -216,7 +296,17 @@ export function Select({
   required,
   encrypted,
   defaultValue,
+  feedback,
 }: SelectInputProps) {
+  let borderClass = "";
+  let feedbackColor = "";
+
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderClass = styleInfo.borderClass;
+    feedbackColor = styleInfo.feedbackColor;
+  }
+
   return (
     <div className="relative">
       <div className=" flex">
@@ -235,8 +325,9 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames("w-full", {
+        className={classNames(`w-full `, {
           "bg-transparent": !disabled,
+          borderClass,
         })}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
@@ -247,6 +338,11 @@ export function Select({
           </option>
         ))}
       </select>
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -261,7 +357,17 @@ export function CustomSelect({
   required,
   encrypted,
   defaultValue,
+  feedback,
 }: SelectInputProps) {
+  let borderClass = "";
+  let feedbackColor = "";
+
+  if (feedback) {
+    const styleInfo = getStyleInfoForFeedback(feedback);
+    borderClass = styleInfo.borderClass;
+    feedbackColor = styleInfo.feedbackColor;
+  }
+
   return (
     <div className="relative">
       <div className=" flex">
@@ -280,9 +386,13 @@ export function CustomSelect({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames("w-full", {
-          "bg-transparent": !disabled,
-        })}
+        className={classNames(
+          "w-full",
+          {
+            "bg-transparent": !disabled,
+          },
+          borderClass
+        )}
         onChange={(e) => changeHandler(e)}
         defaultValue={defaultValue}
       >
@@ -297,6 +407,11 @@ export function CustomSelect({
           );
         })}
       </select>
+      {feedback?.message ? (
+        <span className={`text-sm text-${feedbackColor}`}>
+          {feedback.message}
+        </span>
+      ) : null}
     </div>
   );
 }
