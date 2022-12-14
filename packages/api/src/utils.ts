@@ -322,8 +322,6 @@ export async function denominateAs(
     const avgAsTokenPrice =
       (asTokenPrices.startPrice + asTokenPrices.endPrice) / 2;
     const convertedAmount = amount * (avgAsTokenPrice / avgTokenPrice);
-
-    console.log(`Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`);
     
     return {
       isSuccess: true,

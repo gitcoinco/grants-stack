@@ -55,6 +55,7 @@ export const fetchRoundStatsHandler = async (
     );
 
     const roundProjects = roundProjectRes.data.round.projects;
+    const projectStats = [];
 
     // console.log(roundProjects);
 
@@ -66,6 +67,20 @@ export const fetchRoundStatsHandler = async (
           chainId,
           votingStrategyId
         );
+
+        for (let i = 0; i < roundProjects.length; i++) {
+          const projectVotes = [];
+
+          votes.forEach((vote) => {
+            if (vote.projectId == roundProjects[i].payoutAddress) {
+              projectVotes.push(vote);
+            }
+          });
+
+          projectStats.push(projectVotes);
+        }
+
+        console.log(projectStats);
         // fetch round stats
         results = await linearQFFetchRoundStats(chainId, votes, metadata);
         break;
