@@ -104,6 +104,4 @@ export const fetchRoundStatsHandler = async (
     );
     return handleResponse(res, 500, serializedError);
   }
-
-  return handleResponse(res, 200, "fetched round stats successfully", results);
 };

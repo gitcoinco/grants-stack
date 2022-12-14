@@ -27,12 +27,13 @@ export const fetchVotesForRoundHandler = async (
 ): Promise<QFContribution[]> => {
   const variables = { votingStrategyId };
 
+  // TODO: implement paging here instead of hard-coded limit of 1000
   const query = `
     query GetVotesForRound($votingStrategyId: String) {
       votingStrategies(where:{
         id: $votingStrategyId
       }) {
-        votes {
+        votes(first: 1000) {
           amount
           token
           from
