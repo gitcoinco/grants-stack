@@ -7,10 +7,12 @@ import {
   denominateAs,
   fetchFromGraphQL,
   fetchFromIPFS,
+  getChainName,
   getChainVerbose,
   getGraphQLEndpoint,
   getPriceForToken,
   getStartAndEndTokenPrices,
+  getUSDCAddress,
 } from "../utils";
 
 const fetchMock = fetch as FetchMock;
@@ -38,6 +40,18 @@ describe("getGraphQLEndpoint", () => {
     expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
       "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs"
     );
+  });
+});
+
+describe("getUSDCAddress", () => {
+  it("returns the right USDC address based on the chainID", () => {
+    expect(getUSDCAddress(ChainId.OPTIMISM_MAINNET)).toEqual("0x7f5c764cbc14f9669b88837ca1490cca17c31607");
+    expect(getUSDCAddress(ChainId.FANTOM_MAINNET)).toEqual("0x04068DA6C83AFCFA0e13ba15A6696662335D5B75");
+    expect(getUSDCAddress(ChainId.MAINNET)).toEqual("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48");
+  });
+
+  it("returns default 0x0 address for chainId which is not supported", () => {
+    expect(getUSDCAddress(ChainId.LOCAL_ROUND_LAB)).toEqual("0x0000000000000000000000000000000000000000");
   });
 });
 
@@ -184,7 +198,27 @@ describe("fetchFromGraphQL", () => {
   });
 });
 
-describe("fetch prices for token", function () {
+describe("fetchRoundMetadata", () => {
+  // TODO:
+});
+
+describe("handleResponse", () => {
+  // TODO:
+});
+
+describe("getChainName", () => {
+  it("returns the chain name based on the chainId", () => {
+    expect(getChainName(ChainId.MAINNET)).toEqual({chainName: "ethereum", error: false});
+    expect(getChainName(ChainId.OPTIMISM_MAINNET)).toEqual({chainName: "optimistic-ethereum", error: false});
+    expect(getChainName(ChainId.FANTOM_MAINNET)).toEqual({chainName: "fantom", error: false});
+  })
+
+  it("returns error when unsupported chainId is passed", () => {
+    expect(getChainName(ChainId.LOCAL_ROUND_LAB)).toEqual({chainName: undefined, error: true});
+  })
+});
+
+describe("getPriceForToken", function () {
   beforeEach(() => {
     fetchMock.resetMocks();
   });
@@ -212,14 +246,6 @@ describe("fetch prices for token", function () {
       }
     );
   });
-});
-
-describe("fetchRoundMetadata", () => {
-  // TODO:
-});
-
-describe("handleResponse", () => {
-  // TODO:
 });
 
 describe("getStartAndEndTokenPrices", () => {
