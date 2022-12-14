@@ -1,3 +1,4 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -93,6 +94,22 @@ export const resetApplicationError = (roundAddress: string) => ({
   roundAddress,
 });
 
+// This should be made more generic and refactored out in the future
+const dispatchAndLogApplicationError = (
+  dispatch: Dispatch,
+  roundAddress: string,
+  error: string,
+  step: Status
+) => {
+  datadogRum.addError(new Error(error), {
+    roundAddress,
+  });
+  datadogLogs.logger.error(error, {
+    roundAddress,
+  });
+  dispatch(applicationError(roundAddress, error, step));
+};
+
 export const submitApplication =
   (roundAddress: string, formInputs: { [id: number]: string }) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
@@ -106,36 +123,33 @@ export const submitApplication =
     });
 
     if (roundState === undefined) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot load round data",
-          Status.BuildingApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot load round data",
+        Status.BuildingApplication
       );
       return;
     }
 
     const roundApplicationMetadata = roundState.round?.applicationMetadata;
     if (roundApplicationMetadata === undefined) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot load round application metadata",
-          Status.BuildingApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot load round application metadata",
+        Status.BuildingApplication
       );
       return;
     }
 
     const { projectQuestionId } = roundApplicationMetadata;
     if (projectQuestionId === undefined) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot find project question id",
-          Status.BuildingApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot find project question id",
+        Status.BuildingApplication
       );
       return;
     }
@@ -149,12 +163,11 @@ export const submitApplication =
 
     const projectMetadata: any = state.grantsMetadata[projectID].metadata;
     if (projectMetadata === undefined) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot find selected project metadata",
-          Status.BuildingApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot find selected project metadata",
+        Status.BuildingApplication
       );
       return;
     }
@@ -164,12 +177,11 @@ export const submitApplication =
     const { chainID } = state.web3;
     const chainName = chains[chainID!];
     if (chainID === undefined) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot find chain name",
-          Status.BuildingApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot find chain id",
+        Status.BuildingApplication
       );
       return;
     }
@@ -196,12 +208,11 @@ export const submitApplication =
 
       deterministicApplication = objectToDeterministicJSON(application as any);
     } catch (error) {
-      dispatch(
-        applicationError(
-          roundAddress,
-          "cannot authenticate user",
-          Status.LitAuthentication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "error building round application",
+        Status.LitAuthentication
       );
       return;
     }
@@ -223,13 +234,11 @@ export const submitApplication =
     try {
       signature = await signer.signMessage(hash);
     } catch (e) {
-      datadogRum.addError(e);
-      dispatch(
-        applicationError(
-          roundAddress,
-          "error signing round application",
-          Status.SigningApplication
-        )
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "error signing round application",
+        Status.SigningApplication
       );
       return;
     }
@@ -278,15 +287,12 @@ export const submitApplication =
       dispatch<any>(
         fetchProjectApplications(projectID, Number(projectChainId), process.env)
       );
-    } catch (e) {
-      datadogRum.addError(e);
-      console.error("error calling applyToRound:", e);
-      dispatch(
-        applicationError(
-          roundAddress,
-          "error calling applyToRound",
-          Status.SendingTx
-        )
+    } catch (e: any) {
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "error calling applyToRound",
+        Status.SendingTx
       );
     }
   };

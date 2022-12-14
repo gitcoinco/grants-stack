@@ -1,3 +1,4 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -307,7 +308,7 @@ export const fetchApplicationStatusesFromContract =
         }
       } catch (error: any) {
         datadogRum.addError(error, { roundAddress });
-        console.error("getApplicationStatusFromContract() error", {
+        datadogLogs.logger.error("getApplicationStatusFromContract() error", {
           roundAddress,
           error,
         });
