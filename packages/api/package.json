@@ -50,6 +50,9 @@
     "setupFiles": [
       "dotenv/config"
     ],
+    "modulePathIgnorePatterns": [
+      "bin"
+    ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
       "/api/node_modules/(?!(@spruceid))/"
