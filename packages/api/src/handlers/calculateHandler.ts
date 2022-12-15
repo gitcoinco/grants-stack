@@ -18,12 +18,12 @@ const prisma = new PrismaClient();
 export const calculateRequestSchema = yup.object().shape({
   chainId: yup.mixed<ChainId>().oneOf(Object.values(ChainId)).required(),
   roundId: yup
-      .string()
-      .required()
-      .matches(
-          /^0x[a-fA-F0-9]{40}$/,
-          "roundId must be an ethereum contract address"
-      ),
+    .string()
+    .required()
+    .matches(
+      /^0x[a-fA-F0-9]{40}$/,
+      "roundId must be an ethereum contract address"
+    ),
 });
 
 /**
@@ -164,5 +164,3 @@ export const fetchMatchingHandler = async (req: Request, res: Response) => {
 
   return handleResponse(res, 200, "fetched info sucessfully", results);
 };
-
-

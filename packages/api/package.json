@@ -34,6 +34,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@sentry/node": "^7.26.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "node-fetch": "^2.6.6",
