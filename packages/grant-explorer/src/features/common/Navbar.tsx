@@ -3,6 +3,7 @@ import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.sv
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useBallot } from "../../context/BallotContext";
+import CustomerSupport from "./CustomerSupport";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -30,6 +31,7 @@ export default function Navbar(props: NavbarProps) {
               roundUrlPath={props.roundUrlPath}
             />
             <ConnectButton />
+            <CustomerSupport />
           </div>
         </div>
       </div>
