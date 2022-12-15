@@ -1,4 +1,4 @@
-import React, {Fragment, ReactNode, useRef} from "react";
+import React, { Fragment, ReactNode, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "./styles";
 
@@ -75,6 +75,7 @@ export default function ConfirmationModal({
                     type="button"
                     className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                     onClick={props.confirmButtonAction}
+                    data-testid={"confirm-continue"}
                   >
                     {confirmButtonText}
                   </Button>
@@ -84,6 +85,7 @@ export default function ConfirmationModal({
                     className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                     onClick={cancelButtonAction}
                     ref={cancelButtonRef}
+                    data-testid={"confirm-cancel"}
                   >
                     Cancel
                   </Button>
