@@ -68,8 +68,8 @@ export const fetchProjectInRoundStatsHandler = async (
     // TODO: LOG ERROR TO SENTRY
     // console.error(err);
     // serialize javascript error to json
-    const serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
-    return handleResponse(res, 500, serializedError);
+    // const serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
+    return handleResponse(res, 500, "error: something went wrong.");
   }
 
   return handleResponse(
