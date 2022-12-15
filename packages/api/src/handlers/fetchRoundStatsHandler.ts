@@ -44,24 +44,25 @@ export const fetchRoundStatsHandler = async (
     const roundProjectRes = await fetchFromGraphQL(
       chainId,
       `query GetApprovedProjects($roundId:String!) {
-                round(id: $roundId) {
-                  projects(where: {status: "APPROVED"}) {
-                    id
-                    payoutAddress
-                  }
-                }
-              }`,
+        round(id: $roundId) {
+          projects(where: {status: "APPROVED"}) {
+            id
+            payoutAddress
+          }
+        }
+      }`,
       {
         roundId,
       }
     );
 
-    const roundProjects = roundProjectRes.data.round.projects;
-    const projectStats = [];
 
     // handle how stats should be derived per voting strategy
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
+        const roundProjects = roundProjectRes.data.round.projects;
+        const projectStats = [];
+
         // fetch votes
         const votes = await linearQFFetchVotesForRound(
           chainId,

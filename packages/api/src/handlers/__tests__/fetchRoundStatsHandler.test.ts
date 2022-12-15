@@ -69,7 +69,7 @@ describe("fetchRoundStatsHandler", () => {
     expect(responseJSON.data).toEqual({});
   });
 
-  it("returns error when no matching voting strategy is found", async () => {
+  it.only("returns error when no matching voting strategy is found", async () => {
     // mock fetchRoundMetadata call to return data with random votingStrategy name
     const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
     roundMetadata.votingStrategy.strategyName = faker.name.firstName();
