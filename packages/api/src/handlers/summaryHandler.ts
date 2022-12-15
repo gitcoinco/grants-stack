@@ -1,5 +1,5 @@
 import { ChainId, ProjectSummary, QFContribution } from "../types";
-import { fetchFromGraphQL, fetchRoundMetadata, handleResponse } from "../utils";
+import { fetchFromGraphQL, fetchRoundMetadata, getStrategyName, handleResponse } from "../utils";
 import {
   fetchStatsHandler as linearQFFetchRoundStats,
   fetchVotesForRoundHandler as linearQFFetchVotesForRound
@@ -42,7 +42,9 @@ export const getRoundSummary = async (chainId: ChainId, roundId: string): Promis
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
-  const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+  strategyName = getStrategyName(strategyName);
 
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
@@ -63,8 +65,11 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
   let results: any = [];
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
-  // console.log(metadata)
-  const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+  strategyName = getStrategyName(strategyName);
+
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":

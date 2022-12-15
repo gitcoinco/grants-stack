@@ -1,4 +1,4 @@
-import { fetchRoundMetadata, handleResponse } from "../utils";
+import { fetchRoundMetadata, getStrategyName, handleResponse } from "../utils";
 import {
   fetchVotesForRoundHandler as linearQFFetchVotesForRound,
   fetchStatsHandler as linearQFFetchRoundStats,
@@ -36,7 +36,9 @@ export const fetchRoundStatsHandler = async (
     // fetch metadata
     const metadata = await fetchRoundMetadata(chainId, roundId);
 
-    const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+    let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+    strategyName = getStrategyName(strategyName);
 
     /* Fetch all projects belonging to the round */
     const roundProjectRes = await fetchFromGraphQL(

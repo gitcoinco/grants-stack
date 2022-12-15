@@ -1,3 +1,4 @@
+import { VotingStrategy } from "@prisma/client";
 import { Response } from "express";
 import fetch from "node-fetch";
 import {
@@ -335,4 +336,21 @@ export async function denominateAs(
       message: err,
     } as DenominationResponse;
   }
+}
+
+
+/**
+ * This is temporary util function to support backward
+ * compatibility with older subgraph version
+ * 
+ * TODO: remove after re-indexing mainnet subgraph
+ * 
+ * @param strategyName string
+ * @returns string
+ */
+export const getStrategyName = (strategyName: string) => {
+  if (strategyName === "quadraticFunding") {
+    return VotingStrategy.LINEAR_QUADRATIC_FUNDING
+  }
+  return strategyName;
 }

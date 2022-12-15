@@ -1,4 +1,4 @@
-import { fetchRoundMetadata, handleResponse } from "../utils";
+import { fetchRoundMetadata, getStrategyName, handleResponse } from "../utils";
 import {
   fetchVotesForProjectInRoundHandler as linearQFFetchVotesForProjectInRound,
   fetchStatsHandler as linearQFFetchRoundStats,
@@ -44,7 +44,9 @@ export const fetchProjectInRoundStatsHandler = async (
     // fetch metadata
     const metadata = await fetchRoundMetadata(chainId, roundId);
 
-    const { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+    let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+
+    strategyName = getStrategyName(strategyName);
 
     // handle how stats should be derived per voting strategy
     switch (strategyName) {
