@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import cors from 'cors';
 import dotenv from "dotenv";
 import routes from "./src/routes"
 
@@ -8,6 +9,16 @@ dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
+
+// TODO: Add allowed origins to env
+const allowedOrigins = ['http://localhost:3000'];
+
+const options: cors.CorsOptions = {
+  origin: allowedOrigins
+};
+
+app.use(cors(options));
+
 app.use(express.json());
 
 app.listen(port, () => {

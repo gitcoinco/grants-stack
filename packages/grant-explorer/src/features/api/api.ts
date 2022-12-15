@@ -1,33 +1,27 @@
 import { useEffect, useState } from "react";
 
-export function useRoundStats({
+export function useRoundSummary({
   chainId,
   roundId,
 }: {
   chainId: string;
   roundId: string;
 }) {
-  const [roundStats, setRoundStats] = useState();
+  const [roundSummary, setRoundSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetch(
-      process.env.GRANTS_API_ENDPOINT +
-        "/round-stats?" +
-        new URLSearchParams({
-          chainId,
-          roundId,
-        }),
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((resp) => {
+    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}`;
+    fetch(url,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((resp) => {
         if (resp.ok) {
           return resp.json();
         } else {
@@ -37,19 +31,19 @@ export function useRoundStats({
         }
       })
       .then((data) => {
-        setRoundStats(data);
+        setRoundSummary(data);
         setLoading(false);
       });
   }, [chainId, roundId]);
 
   return {
-    data: roundStats,
+    data: roundSummary,
     error,
     loading,
   };
 }
 
-export function useProjectStats({
+export function useProjectSummary({
   chainId,
   roundId,
   projectId,
@@ -58,20 +52,15 @@ export function useProjectStats({
   roundId: string;
   projectId: string;
 }) {
-  const [roundStats, setRoundStats] = useState();
+  const [projectSummary, setProjectSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}/${new URLSearchParams({projectId})}`;
     fetch(
-      process.env.GRANTS_API_ENDPOINT +
-        "/project-stats?" +
-        new URLSearchParams({
-          chainId,
-          roundId,
-          projectId,
-        }),
+      url,
       {
         method: "GET",
         headers: {
@@ -88,13 +77,13 @@ export function useProjectStats({
         }
       })
       .then((data) => {
-        setRoundStats(data);
+        setProjectSummary(data);
         setLoading(false);
       });
   }, [chainId, roundId, projectId]);
 
   return {
-    data: roundStats,
+    data: projectSummary,
     error,
     loading,
   };

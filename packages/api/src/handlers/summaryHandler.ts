@@ -1,10 +1,6 @@
 import { ChainId, ProjectSummary, QFContribution } from "../types";
 import { fetchFromGraphQL, fetchRoundMetadata, getStrategyName, handleResponse } from "../utils";
-import {
-  fetchStatsHandler as linearQFFetchRoundStats,
-  fetchVotesForRoundHandler as linearQFFetchVotesForRound
-} from "../votingStrategies/linearQuadraticFunding";
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 
 export const summaryHandler = async (req: Request, res: Response) => {
   const { chainId, roundId } = req.params;
@@ -19,7 +15,8 @@ export const summaryHandler = async (req: Request, res: Response) => {
     // fetch project summaries
     try {
       const results = await getProjectsSummary(chainId as ChainId, roundId, projectIds);
-      return handleResponse(res, 200, "fetched project in round stats successfully", results);
+
+      return handleResponse(res, 200, "fetched project summary successfully", results);
     } catch (err) {
       return handleResponse(res, 500, "error: something went wrong");
     }
@@ -28,8 +25,8 @@ export const summaryHandler = async (req: Request, res: Response) => {
     // fetch round stats
     try {
       const results = await getRoundSummary(chainId as ChainId, roundId);
-      console.log("here");
-      return handleResponse(res, 200, "fetched round stats successfully", results);
+
+      return handleResponse(res, 200, "fetched round summary successfully", results);
     } catch (err) {
       return handleResponse(res, 500, "error: something went wrong", err);
     }
@@ -50,9 +47,9 @@ export const getRoundSummary = async (chainId: ChainId, roundId: string): Promis
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch votes
-      const votes = await linearQFFetchVotesForRound(chainId, votingStrategyId);
+      const votes = await fetchVotesForRound(chainId, votingStrategyId);
       // fetch round stats
-      results =  await linearQFFetchRoundStats(chainId, votes, metadata);
+      results =  await summarizeRound(chainId, votes);
       break;
     default:
       throw("error: unsupported voting strategy");
@@ -141,8 +138,7 @@ export const fetchVotesForProjects = async (
       }) {
         votes(where: {
           to_in: $projectIds
-        }) {
-          votingStrategy 
+        }){
           amount
           token
           from
@@ -172,6 +168,78 @@ export const fetchVotesForProjects = async (
 
   return contributions;
 };
+
+export const fetchVotesForRound = async (
+  chainId: ChainId,
+  votingStrategyId: string,
+): Promise<any> => {
+  const variables = { votingStrategyId };
+
+  // query and filter votes for a project by id
+  const query = `
+    query GetVotesForRound($votingStrategyId: String) {
+      votingStrategies(where:{
+        id: $votingStrategyId
+      }) {
+        votes(first: 1000) {
+          amount
+          token
+          from
+          to
+        }
+        round {
+          roundStartTime
+          roundEndTime
+          token
+        }
+      }
+    }
+  `;
+
+  // fetch from graphql
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  const votes = response.data?.votingStrategies[0]?.votes;
+
+  return votes;
+}
+type RoundSummary = {
+  contributions: {
+    [token: string]: number;
+  };
+  contributors: string[];
+};
+export const summarizeRound = async (
+  chainId: ChainId,
+  contributions: any[],
+): Promise<RoundSummary> => {
+
+  // Create an object to store the sums
+  const summary: RoundSummary = {
+    contributions: {},
+    contributors: [],
+  };
+  // Iterate over the array of objects
+  contributions.forEach((item: any) => {
+    // Get the token
+    const token = item.token;
+    const contributor = item.from;
+    //
+    // Initialize the sum for the token if it doesn't exist
+    if (!summary.contributions[token]) {
+      summary.contributions[token] = 0;
+    }
+    // Initialize the contributor if it doesn't exist
+    if (!summary.contributors.includes(contributor)) {
+      summary.contributors.push(contributor);
+    }
+    // Update the sum for the token
+    summary.contributions[token] += Number(item.amount);
+
+  });
+  // Return the sums object
+  return summary;
+}
 
 
 

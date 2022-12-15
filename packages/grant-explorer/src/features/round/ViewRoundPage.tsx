@@ -22,7 +22,7 @@ import { useBallot } from "../../context/BallotContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
-import { useRoundStats } from "../api/api";
+import { useRoundSummary } from "../api/api";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -33,12 +33,12 @@ export default function ViewRound() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round, isLoading } = useRoundById(chainId!, roundId!);
 
-  const roundStats = useRoundStats({
+  const roundStats = useRoundSummary({
     chainId: chainId!,
     roundId: roundId!,
   });
 
-  console.log("roundStats", roundStats);
+  console.log("roundSummary", roundStats);
 
   const currentTime = new Date();
 
