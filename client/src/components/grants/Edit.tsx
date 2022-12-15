@@ -2,6 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useSwitchNetwork } from "wagmi";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import {
   credentialsSaved,
@@ -12,16 +13,19 @@ import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
 import colors from "../../styles/colors";
 import { ProjectFormStatus } from "../../types";
+import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Preview from "../base/Preview";
 import ProjectForm from "../base/ProjectForm";
+import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
 
 function EditProject() {
   const params = useParams();
   const dispatch = useDispatch();
+  const { switchNetwork } = useSwitchNetwork();
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
@@ -41,8 +45,29 @@ function EditProject() {
         : GrantsMetadataStatus.Undefined,
       error: state.newGrant.error,
       formMetaData: state.projectForm.metadata,
+      chainId: state.web3.chainID,
     };
   }, shallowEqual);
+
+  const isOnProjectChain = Number(props.chainId) === Number(params.chainId);
+
+  const onSwitchNetwork = () => {
+    if (switchNetwork) {
+      switchNetwork(Number(params.chainId));
+    }
+  };
+
+  const renderNetworkChangeModal = () => {
+    const roundNetworkName = networkPrettyName(Number(params.chainId));
+    return (
+      // eslint-disable-next-line
+      <SwitchNetworkModal
+        networkName={roundNetworkName}
+        onSwitchNetwork={onSwitchNetwork}
+        action="edit this project"
+      />
+    );
+  };
 
   useEffect(() => {
     if (
@@ -205,6 +230,7 @@ function EditProject() {
         <div className="w-full md:w-2/3">{currentForm(formStatus)}</div>
       </div>
       <ExitModal modalOpen={modalOpen} toggleModal={toggleModal} />
+      {!isOnProjectChain && renderNetworkChangeModal()}
     </div>
   );
 }

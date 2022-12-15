@@ -4,9 +4,11 @@ import Button, { ButtonVariants } from "./Button";
 function SwitchNetworkModal({
   networkName,
   onSwitchNetwork,
+  action,
 }: {
   networkName: string;
   onSwitchNetwork: () => void;
+  action?: string;
 }) {
   return (
     <BaseModal isOpen onClose={() => {}} hideCloseButton>
@@ -18,8 +20,8 @@ function SwitchNetworkModal({
                 Switch Networks to Continue
               </p>
               <p className="text-gitcoin-grey-400 text-[16px] flex justify-center p-2">
-                To apply for this round on {networkName}, you need to switch the
-                network on your wallet.
+                To {action || "apply for this round"} on {networkName}, you need
+                to switch the network on your wallet.
               </p>
             </div>
           </div>
