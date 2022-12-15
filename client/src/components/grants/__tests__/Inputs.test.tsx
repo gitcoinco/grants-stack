@@ -35,6 +35,7 @@ describe("<TextInputAddress />", () => {
               {...oldProps}
               value={value}
               changeHandler={(e) => setValue(e.target.value)}
+              feedback={{ type: "none", message: "" }}
             />
           </ChakraProvider>
         );
