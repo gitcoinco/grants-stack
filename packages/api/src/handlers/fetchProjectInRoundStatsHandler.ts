@@ -69,7 +69,7 @@ export const fetchProjectInRoundStatsHandler = async (
     // console.error(err);
     // serialize javascript error to json
     // const serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
-    return handleResponse(res, 500, "error: something went wrong.");
+    return handleResponse(res, 500, "error: something went wrong");
   }
 
   return handleResponse(

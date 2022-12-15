@@ -2,9 +2,10 @@ import { fetchRoundMetadata, getStrategyName, handleResponse } from "../utils";
 import {
   fetchVotesForRoundHandler as linearQFFetchVotesForRound,
   fetchStatsHandler as linearQFFetchRoundStats,
+  groupStatsByProject,
 } from "../votingStrategies/linearQuadraticFunding";
 import { Request, Response } from "express";
-import { ChainId, QFContribution } from "../types";
+import { ChainId, QFContribution, RoundProject, RoundMetadata, ProjectStats } from "../types";
 import { fetchFromGraphQL } from "../utils";
 
 export const fetchRoundStatsHandler = async (
@@ -41,7 +42,47 @@ export const fetchRoundStatsHandler = async (
     strategyName = getStrategyName(strategyName);
 
     /* Fetch all projects belonging to the round */
-    const roundProjectRes = await fetchFromGraphQL(
+    const approvedProjects = await fetchApprovedProjects(chainId, roundId);
+
+    // handle how stats should be derived per voting strategy
+    switch (strategyName) {
+      case "LINEAR_QUADRATIC_FUNDING":
+
+        // fetch votes
+        const votes = await linearQFFetchVotesForRound(
+          chainId,
+          votingStrategyId
+        );
+
+        const projectStats = await groupStatsByProject(approvedProjects, votes, chainId, metadata);
+
+        return handleResponse(res, 200, "success", projectStats);
+      default:
+        return handleResponse(res, 400, "error: unsupported voting strategy");
+    }
+  } catch (err) {
+    // TODO: LOG ERROR TO SENTRY
+    const serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
+    console.error(serializedError);
+
+    return handleResponse(res, 500, "error: something went wrong");
+  }
+};
+
+/**
+ * Fetches list of approved projects
+ *
+ * @param chainId string
+ * @param roundId string
+ * @returns RoundProject[]
+ */
+const fetchApprovedProjects = async (chainId: ChainId, roundId: string): Promise<RoundProject[]> => {
+
+  // TODO: UPDATE LOGIC TO FETCH FROM CONTRACT
+  try {
+    // TODO: UPDATE L104 from payoutAddress to projectId
+    /* Fetch all projects belonging to the round */
+    const results = await fetchFromGraphQL(
       chainId,
       `query GetApprovedProjects($roundId:String!) {
         round(id: $roundId) {
@@ -56,55 +97,11 @@ export const fetchRoundStatsHandler = async (
       }
     );
 
-
-    // handle how stats should be derived per voting strategy
-    switch (strategyName) {
-      case "LINEAR_QUADRATIC_FUNDING":
-        const roundProjects = roundProjectRes.data.round.projects;
-        const projectStats = [];
-
-        // fetch votes
-        const votes = await linearQFFetchVotesForRound(
-          chainId,
-          votingStrategyId
-        );
-
-        for (let i = 0; i < roundProjects.length; i++) {
-          const projectVotes: QFContribution[] = [];
-
-          votes.forEach((vote) => {
-            if (
-              vote.projectId.toLowerCase() ===
-              roundProjects[i].payoutAddress.toLowerCase()
-            ) {
-              projectVotes.push(vote);
-            }
-          });
-
-          // fetch round stats
-          let resultForProject = await linearQFFetchRoundStats(
-            chainId,
-            projectVotes,
-            metadata
-          );
-          projectStats.push({
-            ...resultForProject,
-            projectId: roundProjects[i].payoutAddress,
-          });
-        }
-
-        return handleResponse(res, 200, "success", projectStats);
-      default:
-        return handleResponse(res, 400, "error: unsupported voting strategy");
-    }
+    return results.data.round.projects;
   } catch (err) {
-    // TODO: LOG ERROR TO SENTRY
-    // console.error(err);
-    // serialize javascript error to json
-    const serializedError = JSON.stringify(
-      err,
-      Object.getOwnPropertyNames(err)
-    );
-    return handleResponse(res, 500, serializedError);
+    // LOG TO SENTRY
+    console.error(err);
+    return [];
   }
-};
+}
+

@@ -97,7 +97,7 @@ describe("fetchProjectInRoundStatsHandler", () => {
   it("returns error stats when exception happens while invoking linearQFFetchVotesForProjectInRound", async () => {
     const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
     expect(responseJSON.success).toBeFalsy();
-    expect(responseJSON.message).toEqual("error: something went wrong.");
+    expect(responseJSON.message).toEqual("error: something went wrong");
     expect(responseJSON.data).toEqual({});
   });
 
@@ -105,7 +105,7 @@ describe("fetchProjectInRoundStatsHandler", () => {
     // mock round metadata
     const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));;
     jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
-    
+
     // mock votes
     const votes = [mockQFContribution, mockQFContribution];
     jest.spyOn(linearQuadraticFunding, 'fetchVotesForProjectInRoundHandler').mockResolvedValueOnce(votes);
@@ -115,7 +115,7 @@ describe("fetchProjectInRoundStatsHandler", () => {
     jest.spyOn(linearQuadraticFunding, 'fetchStatsHandler').mockResolvedValueOnce(mockRoundStats);
 
     const responseJSON = await fetchProjectInRoundStatsHandler(req, res) as unknown as HandleResponseObject;
-        
+
     expect(linearQuadraticFunding.fetchVotesForProjectInRoundHandler).toBeCalled();
     expect(linearQuadraticFunding.fetchStatsHandler).toBeCalled();
     expect(responseJSON.success).toEqual(true);

@@ -28,7 +28,10 @@ export const convertPriceHandler = async (
     let result = await getPriceForToken(req.body.contract, req.body.chain);
     return handleResponse(res, 200, "fetched info sucessfully", result);
   } catch (err) {
-    return handleResponse(res, 500, err as string); // FIXME: this won't work because error cannot be serialized
+    // TODO: LOG ERROR TO SENTRY
+    // return handleResponse(res, 500, err as string); // FIXME: this won't work because error cannot be serialized
+    return handleResponse(res, 500, "error: something went wrong");
+
     // (its properties arent enumerable)
     // so we either need a custom error message or bear the rist of leaking things when
     // we override the serialization block

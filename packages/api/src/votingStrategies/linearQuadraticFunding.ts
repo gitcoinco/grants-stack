@@ -6,6 +6,7 @@ import {
   ChainId,
   RoundStats,
   RoundProject,
+  ProjectStats,
 } from "../types";
 import {
   denominateAs,
@@ -276,3 +277,50 @@ export const fetchStatsHandler = async (
     totalContributionsInUSD: totalContributionsInUSD / 10 ** 18,
   };
 };
+
+/**
+ * returns round stats grouped by project
+ * 
+ * @param projects RoundProject[]
+ * @param votes QFContribution[]
+ * @param chainId ChainId
+ * @param metadata RoundMetadata
+ * @returns ProjectStats[]
+ */
+export const groupStatsByProject = async (
+  projects: RoundProject[],
+  votes: QFContribution[],
+  chainId: ChainId,
+  metadata: RoundMetadata
+): Promise<ProjectStats[]> => {
+
+  let projectStats: ProjectStats[] = [];
+
+  projects.forEach(async(project: RoundProject) => {
+    const projectVotes: QFContribution[] = [];
+
+    votes.forEach((vote) => {
+      if (
+        vote.projectId.toLowerCase() ===
+        project.payoutAddress.toLowerCase()
+      ) {
+        projectVotes.push(vote);
+      }
+    });
+
+    // fetch round stats
+    let resultForProject = await fetchStatsHandler(
+      chainId,
+      projectVotes,
+      metadata
+    );
+
+    projectStats.push({
+      ...resultForProject,
+      projectId: project.payoutAddress,
+    });
+
+  });
+
+  return projectStats;
+}

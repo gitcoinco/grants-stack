@@ -184,19 +184,17 @@ describe("fetchFromGraphQL", () => {
 
   it("should fetch data from the correct graphql endpoint for optimism network", async () => {
 
-    process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API="https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet;";
-
     fetchMock.mockResponseOnce(
       JSON.stringify({
         data: {},
       })
     );
 
-    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, `programs { id }`);
+    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, "");
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
-      expect.anything()
+      {"body": "{\"query\":\"\",\"variables\":{}}", "headers": {"Content-Type": "application/json"}, "method": "POST"}
     );
   });
 });

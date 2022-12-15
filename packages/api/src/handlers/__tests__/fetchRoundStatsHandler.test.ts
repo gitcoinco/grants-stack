@@ -69,7 +69,7 @@ describe("fetchRoundStatsHandler", () => {
     expect(responseJSON.data).toEqual({});
   });
 
-  it.only("returns error when no matching voting strategy is found", async () => {
+  it("returns error when no matching voting strategy is found", async () => {
     // mock fetchRoundMetadata call to return data with random votingStrategy name
     const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
     roundMetadata.votingStrategy.strategyName = faker.name.firstName();
@@ -88,17 +88,17 @@ describe("fetchRoundStatsHandler", () => {
     expect(responseJSON.data).toEqual({});
   });
 
-  it("returns error stats when exception happens while invoking linearQFFetchVotesForRound", async () => {
+  it("returns error stats when exception happens when exception occurs", async () => {
     const responseJSON = (await fetchRoundStatsHandler(
       req,
       res
     )) as unknown as HandleResponseObject;
     expect(responseJSON.success).toBeFalsy();
-    expect(responseJSON.message).toEqual("error: something went wrong.");
+    expect(responseJSON.message).toEqual("error: something went wrong");
     expect(responseJSON.data).toEqual({});
   });
 
-  it("returns round stats when invoked with valid parameters", async () => {
+  it.only("returns round stats when invoked with valid parameters", async () => {
     // mock round metadata
     const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
     jest

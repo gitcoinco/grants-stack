@@ -21,7 +21,7 @@ export const summaryHandler = async (req: Request, res: Response) => {
       const results = await getProjectsSummary(chainId as ChainId, roundId, projectIds);
       return handleResponse(res, 200, "fetched project in round stats successfully", results);
     } catch (err) {
-      return handleResponse(res, 500, "error: something went wrong.");
+      return handleResponse(res, 500, "error: something went wrong");
     }
 
   } else {

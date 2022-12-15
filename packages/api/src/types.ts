@@ -40,8 +40,16 @@ export type CalculateParam = {
 };
 
 export type RoundStats = {
-  uniqueContributorCount: number,
-  contributionsCount: number,
+  uniqueContributorCount: number;
+  contributionsCount: number;
+  totalContributionsInUSD: number;
+}
+
+// TODO: Infer from RoundStats
+export type ProjectStats = {
+  projectId: string;
+  uniqueContributorCount: number;
+  contributionsCount: number;
   totalContributionsInUSD: number;
 }
 
