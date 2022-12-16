@@ -1,3 +1,8 @@
+import { enableFetchMocks } from "jest-fetch-mock";
+
+enableFetchMocks();
+fetchMock.mockIf(/summary/, JSON.stringify({}));
+
 import ViewRound from "../ViewRoundPage";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import {
