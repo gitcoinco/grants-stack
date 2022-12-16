@@ -19,7 +19,7 @@ export const menuItems: Menu[] = [
     Icon: BookOpenIcon,
     title: "Grants Explorer Guide",
     subTitle: "Best practices for project owners",
-    link: "https://support.gitcoin.co/gitcoin-knowledge-base/",
+    link: "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-protocol/funder-faq/grants-explorer-guide",
   },
   {
     Icon: ChatBubbleLeftRightIcon,
@@ -31,7 +31,7 @@ export const menuItems: Menu[] = [
     Icon: ClipboardDocumentListIcon,
     title: "Give Feedback",
     subTitle: "Help us improve the product",
-    link: "",
+    link: "https://forms.gle/AcnGN9yYNwWwrEGH8",
   },
 ];
 

@@ -13,11 +13,11 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import {
   CheckIcon,
   ChevronLeftIcon,
-  SelectorIcon,
+  ChevronUpDownIcon,
   InformationCircleIcon,
   EyeIcon,
-} from "@heroicons/react/solid";
-import { ArrowCircleLeftIcon, TrashIcon } from "@heroicons/react/outline";
+} from "@heroicons/react/24/solid";
+import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Button, Input } from "../common/styles";
 import { classNames, getPayoutTokenOptions } from "../api/utils";
 import { Listbox, Transition } from "@headlessui/react";
@@ -566,7 +566,7 @@ export default function ViewBallot() {
               className="w-24"
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
-            <ArrowCircleLeftIcon
+            <ArrowLeftCircleIcon
               data-testid="remove-from-finalBallot"
               onClick={() => {
                 handleRemoveProjectsFromFinalBallotAndAddToShortlist([
@@ -890,7 +890,7 @@ export default function ViewBallot() {
           )}
         </span>
         <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-          <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>
       </Listbox.Button>
     );
