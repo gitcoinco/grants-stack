@@ -238,22 +238,6 @@ describe("fetchRoundMetadata", () => {
   });
 });
 
-describe("handleResponse", () => {
-
-  it("return response has success as false when code is 500", () => {
-
-  })
-
-  it("return response has success as true when code is 200", () => {
-
-  })
-
-  it("return response has body and message", () => {
-
-  })
-
-});
-
 describe("getChainName", () => {
   it("returns the chain name based on the chainId", () => {
     expect(getChainName(ChainId.MAINNET)).toEqual({chainName: "ethereum", error: false});
@@ -394,8 +378,3 @@ describe("getStrategyName", () => {
     expect(getStrategyName("hello")).toEqual("hello")
   });
 });
-
-
-describe("fetchTokenPrices", () => {
-  // TODO ADD
-})

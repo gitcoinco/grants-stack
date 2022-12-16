@@ -31,9 +31,5 @@ export const convertPriceHandler = async (
     // TODO: LOG ERROR TO SENTRY
     // return handleResponse(res, 500, err as string); // FIXME: this won't work because error cannot be serialized
     return handleResponse(res, 500, "error: something went wrong");
-
-    // (its properties arent enumerable)
-    // so we either need a custom error message or bear the rist of leaking things when
-    // we override the serialization block
   }
 };
