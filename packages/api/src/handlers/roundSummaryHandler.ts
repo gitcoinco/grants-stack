@@ -25,7 +25,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
   const { chainId, roundId } = req.params;
 
   if (!chainId || !roundId) {
-    handleResponse(res, 400, "error: missing parameter chainId or roundId");
+    return handleResponse(res, 400, "error: missing parameter chainId or roundId");
   }
 
   try {
@@ -65,7 +65,7 @@ export const getRoundSummary = async (
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
-      // fetch votes
+      // fetch contributtions
       const contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);

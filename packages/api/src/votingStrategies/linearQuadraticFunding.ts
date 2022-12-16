@@ -372,7 +372,7 @@ export const fetchQFContributionsForRound = async (
  * @param {string[]} projectIds - An array of project IDs to filter the contributions by.
  * @returns {Promise<QFVote[]>} A promise that resolves to an array of QFVote objects.
  */
-export const fetchQFContributionsForProject = async (
+export const fetchQFContributionsForProjects = async (
   chainId: ChainId,
   votingStrategyId: string,
   projectIds: string[],

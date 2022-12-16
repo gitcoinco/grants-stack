@@ -8,7 +8,7 @@ import {
 } from "../utils";
 import { Request, Response } from "express";
 import {
-  fetchQFContributionsForProject,
+  fetchQFContributionsForProjects,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
 
@@ -24,7 +24,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
   const {chainId, roundId, projectId} = req.params;
 
   if (!chainId || !roundId || !projectId) {
-    handleResponse(res, 400, "error: missing parameter chainId, roundId, or projectId");
+    return handleResponse(res, 400, "error: missing parameter chainId, roundId, or projectId");
   }
 
   try {
@@ -32,7 +32,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
 
     return handleResponse(res, 200, "fetched project summary successfully", results);
   } catch (err) {
-    return handleResponse(res, 500, "error: something went wrong");
+    return handleResponse(res, 500, "error: something went wrong", err);
   }
 };
 
@@ -58,8 +58,9 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch votes
-      const contributions = await fetchQFContributionsForProject(chainId, votingStrategyId, projectIds);
-      // fetch round stats
+      const contributions = await fetchQFContributionsForProjects(chainId, votingStrategyId, projectIds);
+
+      // fetch round stats      
       results =  await summarizeQFContributions(chainId, contributions);
       break;
     default:
