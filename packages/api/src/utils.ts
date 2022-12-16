@@ -5,8 +5,10 @@ import {
   ChainId,
   ChainName,
   RoundMetadata,
-  DenominationResponse,
+  DenominationResponse, QFVote, QFVoteSummary,
 } from "./types";
+import {BigNumber} from "ethers";
+import {formatUnits} from "ethers/lib/utils";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -272,14 +274,16 @@ export async function getStartAndEndTokenPrices(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
       );
     }
+    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`,
+      url,
       {
         headers: {
           Accept: "application/json",
         },
       }
     );
+    // TODO: Log to sentry
     const data = await res.json();
 
     if (data.error || data.status) {
@@ -354,3 +358,128 @@ export const getStrategyName = (strategyName: string) => {
   }
   return strategyName;
 }
+
+/**
+ * summarizeRound is an async function that summarizes a round of voting by counting the number of contributions, the number of unique contributors, the total amount of contributions in USD, and the average contribution in USD.
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch token prices from.
+ * @param {RoundMetadata} roundMetadata - An object containing metadata about the round, including the start and end times and the token being voted on.
+ * @param {QFVote[]} contributions - An array of QFVote objects representing the contributions made in the round.
+ * @return {Promise<QFVoteSummary>} - An object containing the summarized data for the round.
+ */
+export const summarizeQFVotes = async (
+  chainId: ChainId,
+  roundMetadata: RoundMetadata,
+  contributions: QFVote[]
+): Promise<QFVoteSummary> => {
+  // Create an object to store the sums
+  const summary: QFVoteSummary = {
+    contributionCount: 0,
+    uniqueContributors: 0,
+    totalContributionsInUSD: "",
+    averageUSDContribution: "",
+  };
+
+  const summaryContributions: any = {
+    contributions: {},
+    contributors: [],
+  };
+
+  // Iterate over the array of objects
+  contributions.forEach((item: QFVote) => {
+    // Get the token
+    const token = item.token;
+    const contributor = item.contributor;
+
+    // Initialize the sum for the token if it doesn't exist
+    if (!summaryContributions.contributions[token]) {
+      summaryContributions.contributions[token] = BigNumber.from("0");
+    }
+
+    // Initialize the contributor if it doesn't exist
+    if (!summaryContributions.contributors.includes(contributor)) {
+      summaryContributions.contributors.push(contributor);
+    }
+    // Update the sum for the token
+    summaryContributions.contributions[token] =
+      summaryContributions.contributions[token].add(item.amount);
+  });
+
+  let totalContributionsInUSD = 0;
+
+  const prices = await fetchTokenPrices(
+    chainId,
+    Object.keys(summaryContributions.contributions)
+  );
+
+  Object.keys(summaryContributions.contributions).map(async (tokenAddress) => {
+    const tokenAmount: number = Number(
+      formatUnits(summaryContributions.contributions[tokenAddress])
+    );
+
+    const conversionRate = prices[tokenAddress]?.usd;
+
+    const amountInUSD = tokenAmount * conversionRate;
+    totalContributionsInUSD += amountInUSD ? amountInUSD : 0;
+
+    return;
+  });
+
+  summary.totalContributionsInUSD = totalContributionsInUSD.toString();
+  summary.contributionCount = contributions.length;
+  summary.uniqueContributors = summaryContributions.contributors.length;
+  summary.averageUSDContribution = (
+    Number(summary.totalContributionsInUSD) / summary.uniqueContributors
+  ).toString();
+
+  return summary;
+};
+
+/**
+ * fetchTokenPrices is an async function that retrieves the current prices of the tokens in tokenAddresses in USD.
+ * If the native token of the chain with id chainId is included in tokenAddresses, its price is also included in the returned data.
+ *
+ * @param {ChainId} chainId - The id of the chain to retrieve the native token's price from.
+ * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
+ * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
+ */
+const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
+  let data: any = {};
+  try {
+    const { chainName } = getChainName(chainId);
+
+    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
+      ","
+    )}&vs_currencies=usd`;
+
+    const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const tokenPrices = await resTokenPriceEndpoint.json();
+    data = { ...data, ...tokenPrices };
+
+    if (
+      tokenAddresses.includes("0x0000000000000000000000000000000000000000") &&
+      chainName
+    ) {
+      const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
+      const resNativePriceEndpoint = await fetch(nativePriceEndpoint, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const nativeTokenPrice = (await resNativePriceEndpoint.json())[chainName];
+      data = {
+        ...data,
+        "0x0000000000000000000000000000000000000000": nativeTokenPrice,
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return data;
+};

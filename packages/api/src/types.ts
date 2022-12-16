@@ -3,6 +3,8 @@
 
 /***************/
 
+import {BigNumber} from "ethers";
+
 export enum ChainId {
   MAINNET = "1",
   GOERLI = "5",
@@ -98,3 +100,16 @@ export type DenominationResponse = {
   message: string | Error;
 }
 
+export type QFVote = {
+  amount: BigNumber;
+  token: string;
+  contributor: string;
+  projectId: string;
+};
+
+export type QFVoteSummary = {
+  contributionCount: number;
+  uniqueContributors: number;
+  totalContributionsInUSD?: string;
+  averageUSDContribution?: string;
+};

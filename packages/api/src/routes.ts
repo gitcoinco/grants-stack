@@ -6,7 +6,8 @@ import {fetchRoundStatsHandler} from "./handlers/fetchRoundStatsHandler";
 import {
   fetchProjectInRoundStatsHandler,
 } from "./handlers/fetchProjectInRoundStatsHandler";
-import {summaryHandler} from "./handlers/summaryHandler";
+import {roundSummaryHandler} from "./handlers/roundSummaryHandler";
+import {projectSummaryHandler} from "./handlers/projectSummaryHandler";
 
 
 const router = Router();
@@ -25,6 +26,8 @@ router.get("/round-stats", fetchRoundStatsHandler);
 
 router.get("/project-stats", fetchProjectInRoundStatsHandler);
 
-router.get("/summary/:chainId/:roundId", summaryHandler);
+router.get("/summary/:chainId/:roundId", roundSummaryHandler);
+
+router.get("/summary/:chainId/:roundId/:projectId", projectSummaryHandler);
 
 export default router;
