@@ -16,7 +16,11 @@ export default function Navbar({ programCta = true }: NavbarProps) {
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link to="/" className="flex-shrink-0 flex items-center">
+            <Link
+              to="/"
+              className="flex-shrink-0 flex items-center"
+              data-testid={"home-link"}
+            >
               <GitcoinLogo className="block h-8 w-auto" />
               <div className="hidden lg:block md:block">
                 <span className="mx-6 text-grey-400">|</span>
@@ -27,11 +31,12 @@ export default function Navbar({ programCta = true }: NavbarProps) {
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
               {programCta && (
-                <Link to="/program/create">
+                <Link to="/program/create" data-testid={"program-create"}>
                   <Button
                     $variant="solid"
                     type="button"
                     className="inline-flex items-center px-4 py-1.5 shadow-sm text-sm rounded"
+                    data-testid={"create-program"}
                   >
                     <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
                     Create Program

@@ -5,6 +5,7 @@ const navigation = [
   {
     name: "GitHub",
     href: "https://github.com/gitcoinco/grants-round",
+    testid: "github",
     icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="21"
@@ -42,6 +43,7 @@ const navigation = [
   {
     name: "GitBook",
     href: "https://gitcoin-2.gitbook.io/round/",
+    testid: "gitbook",
     icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="24"
@@ -74,6 +76,7 @@ export default function Footer() {
               key={item.name}
               href={item.href}
               className="text-gray-400 hover:text-gray-500"
+              data-testid={item.testid}
             >
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" />

@@ -7,6 +7,7 @@ import { Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { initDatadog } from "./datadog";
+import { initSentry } from "./sentry";
 import TagManager from "react-gtm-module";
 
 import { store } from "./app/store";
@@ -26,6 +27,9 @@ import { BallotProvider } from "./context/BallotContext";
 import ViewBallot from "./features/round/ViewBallotPage";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
+
+// Initialize sentry
+initSentry();
 
 // Initialize datadog
 initDatadog();

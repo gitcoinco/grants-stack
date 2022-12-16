@@ -31,6 +31,10 @@ import { CreateProgramProvider } from "./context/program/CreateProgramContext";
 import { RoundProvider } from "./context/round/RoundContext";
 import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
+import { initSentry } from "./sentry";
+
+// Initialize sentry
+initSentry();
 
 // Initialize datadog
 initDatadog();
