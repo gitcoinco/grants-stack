@@ -1,8 +1,7 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-import * as utils from "../utils";
 
 enableFetchMocks();
-
+import * as utils from "../utils";
 import { ChainId } from "../types";
 import {
   denominateAs,
@@ -51,13 +50,21 @@ describe("getGraphQLEndpoint", () => {
 
 describe("getUSDCAddress", () => {
   it("returns the right USDC address based on the chainID", () => {
-    expect(getUSDCAddress(ChainId.OPTIMISM_MAINNET)).toEqual("0x7f5c764cbc14f9669b88837ca1490cca17c31607");
-    expect(getUSDCAddress(ChainId.FANTOM_MAINNET)).toEqual("0x04068DA6C83AFCFA0e13ba15A6696662335D5B75");
-    expect(getUSDCAddress(ChainId.MAINNET)).toEqual("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48");
+    expect(getUSDCAddress(ChainId.OPTIMISM_MAINNET)).toEqual(
+      "0x7f5c764cbc14f9669b88837ca1490cca17c31607"
+    );
+    expect(getUSDCAddress(ChainId.FANTOM_MAINNET)).toEqual(
+      "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+    );
+    expect(getUSDCAddress(ChainId.MAINNET)).toEqual(
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    );
   });
 
   it("returns default 0x0 address for chainId which is not supported", () => {
-    expect(getUSDCAddress(ChainId.LOCAL_ROUND_LAB)).toEqual("0x0000000000000000000000000000000000000000");
+    expect(getUSDCAddress(ChainId.LOCAL_ROUND_LAB)).toEqual(
+      "0x0000000000000000000000000000000000000000"
+    );
   });
 });
 
@@ -189,7 +196,6 @@ describe("fetchFromGraphQL", () => {
   });
 
   it("should fetch data from the correct graphql endpoint for optimism network", async () => {
-
     fetchMock.mockResponseOnce(
       JSON.stringify({
         data: {},
@@ -200,7 +206,11 @@ describe("fetchFromGraphQL", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
-      {"body": "{\"query\":\"\",\"variables\":{}}", "headers": {"Content-Type": "application/json"}, "method": "POST"}
+      {
+        body: '{"query":"","variables":{}}',
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }
     );
   });
 });
@@ -213,42 +223,55 @@ describe("fetchRoundMetadata", () => {
 
     jest.spyOn(utils, "fetchFromGraphQL").mockResolvedValueOnce({
       data: {
-        rounds: [{
-          votingStrategy: roundMetadata.votingStrategy,
-          roundStartTime: roundMetadata.roundStartTime,
-          roundEndTime: roundMetadata.roundEndTime,
-          token: roundMetadata.token,
-          roundMetaPtr: {
-            protocol: "1",
-            pointer: faker.finance.ethereumAddress.toString()
-          }
-        }]
-      }
+        rounds: [
+          {
+            votingStrategy: roundMetadata.votingStrategy,
+            roundStartTime: roundMetadata.roundStartTime,
+            roundEndTime: roundMetadata.roundEndTime,
+            token: roundMetadata.token,
+            roundMetaPtr: {
+              protocol: "1",
+              pointer: faker.finance.ethereumAddress.toString(),
+            },
+          },
+        ],
+      },
     });
 
     jest.spyOn(utils, "fetchFromIPFS").mockResolvedValueOnce({
       matchingFunds: {
-        matchingFundsAvailable: roundMetadata.totalPot
-      }
+        matchingFundsAvailable: roundMetadata.totalPot,
+      },
     });
 
     const metadata = await fetchRoundMetadata(chainId, roundId);
 
     expect(metadata).toEqual(roundMetadata);
-
   });
 });
 
 describe("getChainName", () => {
   it("returns the chain name based on the chainId", () => {
-    expect(getChainName(ChainId.MAINNET)).toEqual({chainName: "ethereum", error: false});
-    expect(getChainName(ChainId.OPTIMISM_MAINNET)).toEqual({chainName: "optimistic-ethereum", error: false});
-    expect(getChainName(ChainId.FANTOM_MAINNET)).toEqual({chainName: "fantom", error: false});
-  })
+    expect(getChainName(ChainId.MAINNET)).toEqual({
+      chainName: "ethereum",
+      error: false,
+    });
+    expect(getChainName(ChainId.OPTIMISM_MAINNET)).toEqual({
+      chainName: "optimistic-ethereum",
+      error: false,
+    });
+    expect(getChainName(ChainId.FANTOM_MAINNET)).toEqual({
+      chainName: "fantom",
+      error: false,
+    });
+  });
 
   it("returns error when unsupported chainId is passed", () => {
-    expect(getChainName(ChainId.LOCAL_ROUND_LAB)).toEqual({chainName: undefined, error: true});
-  })
+    expect(getChainName(ChainId.LOCAL_ROUND_LAB)).toEqual({
+      chainName: undefined,
+      error: true,
+    });
+  });
 });
 
 describe("getPriceForToken", function () {
@@ -370,30 +393,28 @@ describe("denominateAs", () => {
 
 describe("getStrategyName", () => {
   it("returns LINEAR_QUADRATIC_FUNDING if strategyName is quadraticFunding", () => {
-    expect(
-      getStrategyName("quadraticFunding")
-    ).toEqual("LINEAR_QUADRATIC_FUNDING")
+    expect(getStrategyName("quadraticFunding")).toEqual(
+      "LINEAR_QUADRATIC_FUNDING"
+    );
   });
 
   it("returns input string if strategyName", () => {
-    expect(getStrategyName("hello")).toEqual("hello")
+    expect(getStrategyName("hello")).toEqual("hello");
   });
 });
 
 describe("groupBy", () => {
-
   it("groups array of objects by a given property", () => {
-
     const pets = [
-      {type:"Dog", name: faker.animal.dog},
-      {type:"Cat", name: faker.animal.cat},
-      {type:"Dog", name: faker.animal.dog}, 
-      {type:"Cat", name: faker.animal.cat},
-      {type:"Cat", name: faker.animal.cat}
+      { type: "Dog", name: faker.animal.dog },
+      { type: "Cat", name: faker.animal.cat },
+      { type: "Dog", name: faker.animal.dog },
+      { type: "Cat", name: faker.animal.cat },
+      { type: "Cat", name: faker.animal.cat },
     ];
-        
+
     const grouped = groupBy(pets, (pet: any) => pet.type);
-    
+
     expect(grouped.size).toEqual(2);
     expect(grouped.get("Dog").length).toEqual(2);
     expect(grouped.get("Cat").length).toEqual(3);
