@@ -76,7 +76,7 @@ export default function CustomerSupport() {
   return (
     <div className="relative" data-testid="customer-support" ref={menuRef}>
       <Button
-        className="flex items-center bg-transparent justify-center flex-row mt-2 mb-2 p-4 h-10 text-black-400"
+        className="flex items-center bg-transparent justify-center flex-row mt-2 mb-2 p-4 h-10 text-black-400 border-2 rounded-xl hover:brightness-400"
         onClick={toggleMenu}
       >
         <div className="fill-current w-6 h-6 mr-2">
