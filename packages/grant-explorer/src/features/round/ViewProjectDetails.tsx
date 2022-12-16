@@ -6,7 +6,7 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, LightningBoltIcon, ShieldCheckIcon } from "@heroicons/react/solid";
+import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, BoltIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
@@ -194,7 +194,7 @@ function AboutProject(props: { projectToRender: Project }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
       {projectRecipient && 
         (<span className="flex items-center mt-4 gap-1">
-          <LightningBoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
           <DetailSummary text={`${projectRecipient}`} testID="project-recipient" sm={true} />
         </span>)
       }
