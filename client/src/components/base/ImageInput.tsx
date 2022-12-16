@@ -165,7 +165,7 @@ export default function ImageInput({
               onDragLeave={(e) => handleDragLeave(e)}
             >
               <CloudUpload color={colors["secondary-text"]} />
-              <p>Click to Upload or drag and drop</p>
+              <p>Click to Upload or Drag and Drop</p>
               <p>PNG or JPG</p>
             </button>
           )}
