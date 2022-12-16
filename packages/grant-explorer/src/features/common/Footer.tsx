@@ -5,6 +5,7 @@ const navigation = [
   {
     name: "GitHub",
     href: "https://github.com/gitcoinco/grants-round",
+    testid: "github",
     icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="21"
@@ -42,6 +43,7 @@ const navigation = [
   {
     name: "GitBook",
     href: "https://gitcoin-2.gitbook.io/round/",
+    testid: "gitbook",
     icon: (props: SVGProps<SVGSVGElement>) => (
       <svg
         width="24"
@@ -65,7 +67,10 @@ export default function Footer() {
     <footer className="w-full">
       <div className="max-w-7xl md:flex md:justify-between mx-auto py-12 overflow-hidden">
         <div></div>
-        <div className="mt-8 md:mt-0 flex justify-center mb-4">
+        <div
+          className="mt-8 md:mt-0 flex justify-center mb-4"
+          data-testid={"gitcoin-community-logo"}
+        >
           <GitcoinCommunityLogo className=""></GitcoinCommunityLogo>
         </div>
         <div className="flex justify-center space-x-8 md:order-1">
@@ -74,6 +79,7 @@ export default function Footer() {
               key={item.name}
               href={item.href}
               className="text-gray-400 hover:text-gray-500"
+              data-testid={item.testid}
             >
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" />

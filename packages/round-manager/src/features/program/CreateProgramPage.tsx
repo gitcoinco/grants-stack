@@ -275,6 +275,7 @@ export default function CreateProgram() {
                     type="button"
                     $variant="outline"
                     className="inline-flex items-center px-3.5 py-2 mt-6 mb-8 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
+                    data-testid={"program-create-add-operator"}
                     onClick={() => {
                       append({ wallet: "" });
                     }}
