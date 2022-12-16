@@ -1,4 +1,5 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
+import * as utils from "../utils";
 
 enableFetchMocks();
 
@@ -7,13 +8,17 @@ import {
   denominateAs,
   fetchFromGraphQL,
   fetchFromIPFS,
+  fetchRoundMetadata,
   getChainName,
   getChainVerbose,
   getGraphQLEndpoint,
   getPriceForToken,
   getStartAndEndTokenPrices,
+  getStrategyName,
   getUSDCAddress,
 } from "../utils";
+import { mockRoundMetadata } from "../test-utils";
+import { faker } from "@faker-js/faker";
 
 const fetchMock = fetch as FetchMock;
 
@@ -200,11 +205,53 @@ describe("fetchFromGraphQL", () => {
 });
 
 describe("fetchRoundMetadata", () => {
-  // TODO:
+  it("returns valid round metadata in expected format", async () => {
+    const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
+    const chainId = ChainId.MAINNET;
+    const roundId = faker.finance.ethereumAddress.toString();
+
+    jest.spyOn(utils, "fetchFromGraphQL").mockResolvedValueOnce({
+      data: {
+        rounds: [{
+          votingStrategy: roundMetadata.votingStrategy,
+          roundStartTime: roundMetadata.roundStartTime,
+          roundEndTime: roundMetadata.roundEndTime,
+          token: roundMetadata.token,
+          roundMetaPtr: {
+            protocol: "1",
+            pointer: faker.finance.ethereumAddress.toString()
+          }
+        }]
+      }
+    });
+
+    jest.spyOn(utils, "fetchFromIPFS").mockResolvedValueOnce({
+      matchingFunds: {
+        matchingFundsAvailable: roundMetadata.totalPot
+      }
+    });
+
+    const metadata = await fetchRoundMetadata(chainId, roundId);
+
+    expect(metadata).toEqual(roundMetadata);
+
+  });
 });
 
 describe("handleResponse", () => {
-  // TODO:
+
+  it("return response has success as false when code is 500", () => {
+
+  })
+
+  it("return response has success as true when code is 200", () => {
+
+  })
+
+  it("return response has body and message", () => {
+
+  })
+
 });
 
 describe("getChainName", () => {
@@ -335,3 +382,20 @@ describe("denominateAs", () => {
     expect(convertedAmount.amount).toEqual(amount);
   });
 });
+
+describe("getStrategyName", () => {
+  it("returns LINEAR_QUADRATIC_FUNDING if strategyName is quadraticFunding", () => {
+    expect(
+      getStrategyName("quadraticFunding")
+    ).toEqual("LINEAR_QUADRATIC_FUNDING")
+  });
+
+  it("returns input string if strategyName", () => {
+    expect(getStrategyName("hello")).toEqual("hello")
+  });
+});
+
+
+describe("fetchTokenPrices", () => {
+  // TODO ADD
+})
