@@ -8,7 +8,7 @@
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
     "build": "tsc",
-    "test:watch": "jest --watch --notify",
+    "test:watch": "jest --watch --notifyMode=change",
     "prepare": "husky install",
     "typecheck:watch": "tsc --noEmit --watch"
   },
