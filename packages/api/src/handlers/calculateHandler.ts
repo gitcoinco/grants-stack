@@ -73,11 +73,12 @@ export const calculateHandler = async (req: Request, res: Response) => {
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
-        const votes = await linearQFFetchVotesForRound(
+        // TODO: replace with fetchQFContributionsForRound
+        const contributions = await linearQFFetchVotesForRound(
           req.body.chainId,
           votingStrategyId
         );
-        results = await linearQFCalculate(metadata, votes);
+        results = await linearQFCalculate(metadata, contributions);
         break;
     }
 

@@ -1,18 +1,19 @@
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import {
   QFContribution,
   QFContributionsByProjectId,
   ProjectMatch,
   RoundMetadata,
   ChainId,
-  RoundStats,
-  RoundProject,
-  ProjectStats,
+  QFContributionSummary,
+  QFVote,
 } from "../types";
 import {
   denominateAs,
   fetchFromGraphQL,
   getChainName,
-  getUSDCAddress,
+  fetchTokenPrices,
 } from "../utils";
 
 /**
@@ -93,60 +94,6 @@ export const fetchVotesForRoundHandler = async (
       return contribution;
     })
   );
-
-  return contributions;
-};
-
-/**
- * Fetch data from a GraphQL endpoint
- *
- * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param votingStrategyId - The voting strategy address
- * @param projectId - The projectId taking part in the round
- * @returns The result of the query
- */
-export const fetchVotesForProjectInRoundHandler = async (
-  chainId: ChainId,
-  votingStrategyId: string,
-  projectId: string
-): Promise<QFContribution[]> => {
-  const variables = { votingStrategyId, projectId };
-
-  // TODO: UPDATE LINE 83 from to -> projectId after upgrading subgraph
-  const query = `
-    query GetVotesForProjectInRound($votingStrategyId: String, $projectId: String) {
-      votingStrategies(where: {
-        id: $votingStrategyId
-      }) {
-        votes(where: {
-          to: $projectId
-        }) {
-          amount
-          token
-          from
-          to
-        }
-      }
-    }
-  `;
-
-  // fetch from graphql
-  const response = await fetchFromGraphQL(chainId, query, variables);
-
-  const votes = response.data?.votingStrategies[0]?.votes;
-
-  let contributions: QFContribution[] = [];
-
-  votes.map((vote: any) => {
-    const contribution = {
-      projectId: vote.to, // TODO: we will have to update this to project id eventually
-      contributor: vote.from,
-      amount: Number(vote.amount),
-      token: vote.token,
-    } as QFContribution;
-
-    contributions.push(contribution);
-  });
 
   return contributions;
 };
@@ -235,92 +182,287 @@ export const calculateHandler = async (
 };
 
 /**
- * Fetch Round Stats for a round using linearQF voting strategy
- * @param chainId - Chain from which round / voting contract is deployed
- * @param contributions - QFContribution[] fetched by invoking fetchVotesForRoundHandler
- * @param metadata - RoundMetadata fetched by invoking fetchRoundMetadata
+ * summarizeRound is an async function that summarizes a round of voting by counting the number of contributions, the number of unique contributors, the total amount of contributions in USD, and the average contribution in USD.
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch token prices from.
+ * @param {RoundMetadata} roundMetadata - An object containing metadata about the round, including the start and end times and the token being voted on.
+ * @param {QFVote[]} contributions - An array of QFVote objects representing the contributions made in the round.
+ * @return {Promise<QFContributionSummary>} - An object containing the summarized data for the round.
  */
-export const fetchStatsHandler = async (
+export const summarizeQFContributions = async (
   chainId: ChainId,
-  contributions: QFContribution[],
-  metadata: RoundMetadata
-): Promise<RoundStats> => {
-  const unique = (value: any, index: any, self: any) => {
-    return self.indexOf(value) === index;
+  contributions: QFVote[]
+): Promise<QFContributionSummary> => {
+  // Create an object to store the sums
+  const summary: QFContributionSummary = {
+    contributionCount: 0,
+    uniqueContributors: 0,
+    totalContributionsInUSD: "",
+    averageUSDContribution: "",
   };
-  let uniqueContributors = contributions
-    .map((contribution) => contribution.contributor)
-    .filter(unique);
 
-  const usdcAddress = getUSDCAddress(chainId);
-
-  let totalContributionsInUSD = (
-    await Promise.all(
-      contributions.map(async (contribution) => {
-        const contributionInUSD = await denominateAs(
-          contribution.token,
-          usdcAddress,
-          contribution.amount,
-          metadata.roundStartTime,
-          metadata.roundEndTime,
-          chainId
-        );
-
-        return contributionInUSD.amount;
-      })
-    )
-  ).reduce((a, b) => a + b, 0);
-
-  return {
-    uniqueContributorCount: uniqueContributors.length,
-    contributionsCount: contributions.length,
-    totalContributionsInUSD: totalContributionsInUSD / 10 ** 18,
+  const summaryContributions: any = {
+    contributions: {},
+    contributors: [],
   };
+
+  // Iterate over the array of objects
+  contributions.forEach((item: QFVote) => {
+    // Get the token
+    const token = item.token;
+    const contributor = item.contributor;
+
+    // Initialize the sum for the token if it doesn't exist
+    if (!summaryContributions.contributions[token]) {
+      summaryContributions.contributions[token] = BigNumber.from("0");
+    }
+
+    // Initialize the contributor if it doesn't exist
+    if (!summaryContributions.contributors.includes(contributor)) {
+      summaryContributions.contributors.push(contributor);
+    }
+    // Update the sum for the token
+    summaryContributions.contributions[token] =
+      summaryContributions.contributions[token].add(item.amount);
+  });
+
+  let totalContributionsInUSD = 0;
+
+  const prices = await fetchTokenPrices(
+    chainId,
+    Object.keys(summaryContributions.contributions)
+  );
+
+  Object.keys(summaryContributions.contributions).map(async (tokenAddress) => {
+    const tokenAmount: number = Number(
+      formatUnits(summaryContributions.contributions[tokenAddress])
+    );
+
+    const conversionRate = prices[tokenAddress]?.usd;
+
+    const amountInUSD = tokenAmount * conversionRate;
+    totalContributionsInUSD += amountInUSD ? amountInUSD : 0;
+
+    return;
+  });
+
+  summary.totalContributionsInUSD = totalContributionsInUSD.toString();
+  summary.contributionCount = contributions.length;
+  summary.uniqueContributors = summaryContributions.contributors.length;
+  summary.averageUSDContribution = (
+    Number(summary.totalContributionsInUSD) / summary.uniqueContributors
+  ).toString();
+
+  return summary;
+};
+
+
+/**
+ * fetchContributionsForRound is an async function that retrieves a 
+ * list of all votes made in a round identified by 
+ * the votingStrategyId parameter.
+ * The function uses pagination to retrieve all votes from the GraphQL API and returns them as an array of QFVote objects.
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<QFVote[]>} - An array of QFVote objects representing the votes made in the specified round.
+ */
+export const fetchQFContributionsForRound = async (
+  chainId: ChainId,
+  votingStrategyId: string
+): Promise<QFVote[]> => {
+  let lastID: string = "";
+  const query = `
+    query GetContributionsForRound($votingStrategyId: String) {
+      votingStrategies(where:{
+        id: $votingStrategyId
+      }) {
+        votes(first: 1000) {
+          id
+          amount
+          token
+          from
+          to
+        }
+        round {
+          roundStartTime
+          roundEndTime
+          token
+        }
+
+      }
+
+    }
+  `;
+  const variables = { votingStrategyId };
+  // fetch from graphql
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  const votes: QFVote[] = [];
+
+  response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+    votes.push({
+      amount: BigNumber.from(vote.amount),
+      token: vote.token,
+      contributor: vote.from,
+      projectId: vote.to, // TODO: update to projectID after contract upgrade
+    });
+    lastID = vote.id;
+  });
+
+  while (true) {
+    const query = `
+      query GetContributionsForRound($votingStrategyId: String, $lastID: String) {
+        votingStrategies(where:{
+          id: $votingStrategyId
+        }) {
+          votes(first: 1000, where: {
+              id_gt: $lastID
+          }) {
+            id
+            amount
+            token
+            from
+            to
+          }
+          round {
+            roundStartTime
+            roundEndTime
+            token
+          }
+        }
+      }
+    `;
+
+    // Fetch the next page of results from the GraphQL API
+    const response = await fetchFromGraphQL(chainId, query, {
+      votingStrategyId,
+      lastID,
+    });
+
+    // Check if the votes field is empty. If it is, stop paginating
+    if (response.data?.votingStrategies[0]?.votes.length === 0) {
+      break;
+    }
+
+    // Add the new votes to the list of votes
+    response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+      votes.push({
+        amount: BigNumber.from(vote.amount),
+        token: vote.token,
+        contributor: vote.from,
+        projectId: vote.to, // TODO: update to projectID after contract upgrade
+      });
+      lastID = vote.id;
+    });
+  }
+
+  return votes;
 };
 
 /**
- * returns round stats grouped by project
- * 
- * @param projects RoundProject[]
- * @param votes QFContribution[]
- * @param chainId ChainId
- * @param metadata RoundMetadata
- * @returns ProjectStats[]
+ * fetchContributionsForProject is a function that fetches a list of contributions for a given project from a GraphQL API.
+ *
+ * @param {ChainId} chainId - The ID of the chain to fetch data from.
+ * @param {string} votingStrategyId - The ID of the voting strategy to fetch data for.
+ * @param {string[]} projectIds - An array of project IDs to filter the contributions by.
+ * @returns {Promise<QFVote[]>} A promise that resolves to an array of QFVote objects.
  */
-export const groupStatsByProject = async (
-  projects: RoundProject[],
-  votes: QFContribution[],
+export const fetchQFContributionsForProject = async (
   chainId: ChainId,
-  metadata: RoundMetadata
-): Promise<ProjectStats[]> => {
+  votingStrategyId: string,
+  projectIds: string[],
+): Promise<QFVote[]> => {
+  let lastID: string = "";
+  const query = `
+    query GetContributionsForProject($votingStrategyId: String, $projectIds: [String]) {
+      votingStrategies(where:{
+        id: $votingStrategyId
+      }) {
+        votes(first: 1000, where: {
+          to_in: $projectIds
+        }) {
+          id
+          amount
+          token
+          from
+          to
+        }
+        round {
+          roundStartTime
+          roundEndTime
+          token
+        }
 
-  let projectStats: ProjectStats[] = [];
-
-  projects.forEach(async(project: RoundProject) => {
-    const projectVotes: QFContribution[] = [];
-
-    votes.forEach((vote) => {
-      if (
-        vote.projectId.toLowerCase() ===
-        project.payoutAddress.toLowerCase()
-      ) {
-        projectVotes.push(vote);
       }
+
+    }
+  `;
+  const variables = { votingStrategyId, projectIds };
+  // fetch from graphql
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  const votes: QFVote[] = [];
+
+  response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+    votes.push({
+      amount: BigNumber.from(vote.amount),
+      token: vote.token,
+      contributor: vote.from,
+      projectId: vote.to, // TODO: update to projectID after contract upgrade
     });
-
-    // fetch round stats
-    let resultForProject = await fetchStatsHandler(
-      chainId,
-      projectVotes,
-      metadata
-    );
-
-    projectStats.push({
-      ...resultForProject,
-      projectId: project.payoutAddress,
-    });
-
+    lastID = vote.id;
   });
 
-  return projectStats;
-}
+  while (true) {
+    const query = `
+      query GetContributionsForProject($votingStrategyId: String, $lastID: String, $projectIds: [String]) {
+        votingStrategies(where:{
+          id: $votingStrategyId
+        }) {
+          votes(first: 1000, where: {
+              id_gt: $lastID
+              to_in: $projectIds
+          }) {
+            id
+            amount
+            token
+            from
+            to
+          }
+          round {
+            roundStartTime
+            roundEndTime
+            token
+          }
+        }
+      }
+    `;
+
+    // Fetch the next page of results from the GraphQL API
+    const response = await fetchFromGraphQL(chainId, query, {
+      votingStrategyId,
+      lastID,
+      projectIds,
+    });
+
+    // Check if the votes field is empty. If it is, stop paginating
+    if (response.data?.votingStrategies[0]?.votes.length === 0) {
+      break;
+    }
+
+    // Add the new votes to the list of votes
+    response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+      votes.push({
+        amount: BigNumber.from(vote.amount),
+        token: vote.token,
+        contributor: vote.from,
+        projectId: vote.to, // TODO: update to projectID after contract upgrade
+      });
+      lastID = vote.id;
+    });
+  }
+
+  return votes;
+};
+

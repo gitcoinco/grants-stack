@@ -1,4 +1,4 @@
-import { QFContribution, RoundMetadata, RoundStats } from "./types";
+import { RoundMetadata } from "./types";
 import { faker } from '@faker-js/faker';
 
 export const mockRoundMetadata: RoundMetadata = {
@@ -10,19 +10,4 @@ export const mockRoundMetadata: RoundMetadata = {
   roundEndTime: faker.datatype.number(),
   token: faker.finance.ethereumAddress.toString(),
   totalPot: faker.datatype.number()
-}
-
-export const mockQFContribution: QFContribution = {
-  convertedAmount: 0,
-  projectId: faker.finance.ethereumAddress.toString(),
-  amount: faker.datatype.number(),
-  contributor: faker.finance.ethereumAddress.toString(),
-  timestamp: faker.datatype.number(),
-  token: faker.finance.ethereumAddress.toString()
-};
-
-export const mockRoundStats: RoundStats = {
-  uniqueContributorCount: faker.datatype.number(),
-  contributionsCount: faker.datatype.number(),
-  totalContributionsInUSD: faker.datatype.number(),
 }

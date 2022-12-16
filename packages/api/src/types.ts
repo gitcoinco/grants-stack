@@ -36,24 +36,6 @@ export type RoundMetadata = {
   totalPot: number;
 };
 
-export type CalculateParam = {
-  chainId: ChainId;
-  roundId: string;
-};
-
-export type RoundStats = {
-  uniqueContributorCount: number;
-  contributionsCount: number;
-  totalContributionsInUSD: number;
-}
-
-// TODO: Infer from RoundStats
-export type ProjectStats = {
-  projectId: string;
-  uniqueContributorCount: number;
-  contributionsCount: number;
-  totalContributionsInUSD: number;
-}
 
 export type ProjectSummary = {
   contributors: string[];
@@ -70,6 +52,7 @@ export type HandleResponseObject = {
 /* = LinearQF = */
 /****************/
 
+// TODO: REMOVE
 export type QFContribution = {
   projectId: string;
   amount: number;
@@ -84,6 +67,7 @@ export type RoundProject = {
   payoutAddress: string;
 };
 
+// TODO: REMOVE
 export type QFContributionsByProjectId = {
   [projectId: string]: {
     contributions: {
@@ -100,6 +84,7 @@ export type DenominationResponse = {
   message: string | Error;
 }
 
+// TODO: rename to QFContribution
 export type QFVote = {
   amount: BigNumber;
   token: string;
@@ -107,7 +92,7 @@ export type QFVote = {
   projectId: string;
 };
 
-export type QFVoteSummary = {
+export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
   totalContributionsInUSD?: string;
