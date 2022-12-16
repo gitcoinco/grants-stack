@@ -16,6 +16,7 @@ import {
   getStartAndEndTokenPrices,
   getStrategyName,
   getUSDCAddress,
+  groupBy,
 } from "../utils";
 import { mockRoundMetadata } from "../test-utils";
 import { faker } from "@faker-js/faker";
@@ -376,5 +377,25 @@ describe("getStrategyName", () => {
 
   it("returns input string if strategyName", () => {
     expect(getStrategyName("hello")).toEqual("hello")
+  });
+});
+
+describe("groupBy", () => {
+
+  it("groups array of objects by a given property", () => {
+
+    const pets = [
+      {type:"Dog", name: faker.animal.dog},
+      {type:"Cat", name: faker.animal.cat},
+      {type:"Dog", name: faker.animal.dog}, 
+      {type:"Cat", name: faker.animal.cat},
+      {type:"Cat", name: faker.animal.cat}
+    ];
+        
+    const grouped = groupBy(pets, (pet: any) => pet.type);
+    
+    expect(grouped.size).toEqual(2);
+    expect(grouped.get("Dog").length).toEqual(2);
+    expect(grouped.get("Cat").length).toEqual(3);
   });
 });

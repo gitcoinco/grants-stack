@@ -1,10 +1,12 @@
 import {
   ChainId,
   QFContributionSummary,
+  QFVote,
 } from "../types";
 import {
   fetchRoundMetadata,
   getStrategyName,
+  groupBy,
   handleResponse,
 } from "../utils";
 import { Request, Response } from "express";
@@ -53,7 +55,7 @@ export const getRoundSummary = async (
   roundId: string
 ): Promise<QFContributionSummary> => {
   let results;
-
+  
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
@@ -66,8 +68,15 @@ export const getRoundSummary = async (
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch contributtions
       const contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
+
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
+
+      // fetch projects in round stats
+      // const projectsSummary = await fetchProjectSummary(chainId, contributions);
+      // console.log(projectsSummary);
+      // results.projects = projectsSummary;
+
       break;
     default:
       throw "error: unsupported voting strategy";
@@ -75,3 +84,26 @@ export const getRoundSummary = async (
 
   return results;
 };
+
+
+const fetchProjectSummary = async ( chainId: ChainId, contributions: QFVote[]) => {
+  let projectsSummary: any = {};
+  const groupContributionsByProject = groupBy(contributions, (contribution: QFVote) => contribution.projectId);
+  
+  if(groupContributionsByProject.size == 0) {
+    return projectsSummary;
+  }
+
+  groupContributionsByProject.forEach(async contributionsForProject => {    
+    const projectSummary = await summarizeQFContributions(chainId, contributionsForProject);
+    const projectId = contributionsForProject[0].projectId;
+
+    projectsSummary[projectId] = projectSummary;
+    
+    projectsSummary[projectId] = projectSummary;
+    console.log(projectId, projectSummary);
+  });
+
+  return projectsSummary;
+
+}
