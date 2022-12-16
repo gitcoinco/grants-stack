@@ -1,6 +1,5 @@
 import {
   ChainId,
-  QFVote,
   QFContributionSummary,
 } from "../types";
 import {

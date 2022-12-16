@@ -15,7 +15,7 @@ router.post("/calculate", calculateHandler);
 
 router.get("/fetch-matching", fetchMatchingHandler);
 
-router.post("/convert-price", convertPriceHandler);
+router.get("/convert-price/:chainName/:tokenContract", convertPriceHandler);
 
 router.get("/summary/:chainId/:roundId", roundSummaryHandler);
 
