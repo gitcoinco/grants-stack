@@ -39,6 +39,7 @@
   "dependencies": {
     "@sentry/integrations": "^7.28.0",
     "@sentry/node": "^7.26.0",
+    "@tanstack/react-query": "^4.20.4",
     "cors": "^2.8.5",
     "ethers": "^5.7.2",
     "express": "^4.17.1",
