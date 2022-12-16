@@ -197,9 +197,13 @@ export const summarizeQFContributions = async (
   const summary: QFContributionSummary = {
     contributionCount: 0,
     uniqueContributors: 0,
-    totalContributionsInUSD: "",
-    averageUSDContribution: "",
+    totalContributionsInUSD: "0",
+    averageUSDContribution: "0",
   };
+
+  if (contributions.length == 0) {
+    return summary;
+  }
 
   const summaryContributions: any = {
     contributions: {},
