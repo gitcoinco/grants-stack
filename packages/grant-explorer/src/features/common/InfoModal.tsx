@@ -86,6 +86,7 @@ export default function InfoModal({
                       className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                       onClick={cancelButtonAction}
                       ref={cancelButtonRef}
+                      data-testid={"info-cancel"}
                     >
                       Cancel
                     </Button>
