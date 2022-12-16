@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "node16",
-    "lib": ["es2019"],
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "strict": true,
     "outDir": "dist",
     "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": ["src/**/*"]
 }

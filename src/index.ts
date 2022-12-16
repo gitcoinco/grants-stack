@@ -1,5 +1,8 @@
+import { add } from './operations'
+
 const main = () => {
-  console.log('hello, world')
+  const result = add(2, 4)
+  console.log('result is ', result)
 }
 
 main()
