@@ -7,6 +7,7 @@
     "start:dev": "NODE_ENV=development nodemon -e ts -x tsx -r dotenv-flow/config src/index.ts",
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
+    "build": "tsc",
     "test:watch": "jest --watch --notify",
     "prepare": "husky install",
     "typecheck:watch": "tsc --noEmit --watch"
