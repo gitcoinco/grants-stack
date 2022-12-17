@@ -13,7 +13,7 @@ import {
   denominateAs,
   fetchFromGraphQL,
   getChainName,
-  fetchTokenPrices,
+  fetchCurrentTokenPrices,
 } from "../utils";
 
 /**
@@ -232,7 +232,7 @@ export const summarizeQFContributions = async (
 
   let totalContributionsInUSD = 0;
 
-  const prices = await fetchTokenPrices(
+  const prices = await fetchCurrentTokenPrices(
     chainId,
     Object.keys(summaryContributions.contributions)
   );
