@@ -368,7 +368,7 @@ export const getStrategyName = (strategyName: string) => {
  * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
  * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
  */
-export const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
+export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
   let data: any = {};
   try {
     const { chainName } = getChainName(chainId);
@@ -427,4 +427,69 @@ export function groupBy(list: any[], keyGetter:any) {
     }
   });
   return map;
+}
+
+export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: string[], startTime: number, endTime: number) => {
+
+  try {
+    const {chainName, error} = getChainName(chainId);
+
+    if (error) {
+      throw error;
+    }
+
+    const averageTokenPrices: {
+      [address: string]: number;
+    } = {};
+
+    for (let address of tokenAddresses) {
+      averageTokenPrices[address] = 0;
+      if (address !== "0x0000000000000000000000000000000000000000") {
+        try {
+          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`
+          const resTokenPriceEndpoint = await fetch(
+            tokenPriceEndpoint,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              }
+            });
+          const tokenPriceData = await resTokenPriceEndpoint.json();
+
+          const {prices, error} = tokenPriceData;
+
+          if (error) {
+            averageTokenPrices[address] = -1;
+            throw new Error(`${address} is not found on coingecko`);
+          }
+
+          const startPrice = prices[0][1];
+          const endPrice = prices[prices.length - 1][1];
+
+          const averagePrice = (startPrice + endPrice) / 2;
+          averageTokenPrices[address] = averagePrice;
+        } catch (error) {
+          // TODO: log error
+        }
+      } else {
+        const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
+        const resNativePriceEndpoint = await fetch(nativePriceEndpoint, {
+          headers: {
+            method: "GET",
+            Accept: "application/json",
+          },
+        });
+
+        const nativePriceData = await resNativePriceEndpoint.json();
+        const {usd} = nativePriceData[chainName!];
+        averageTokenPrices[address] = usd;
+      }
+
+    }
+    return averageTokenPrices;
+  } catch (error) {
+    return {error};
+  }
+
 }
