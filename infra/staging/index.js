@@ -2,9 +2,10 @@
 import * as aws from "@pulumi/aws";
 
 // Variables
-// let dbUsername = `${process.env["DB_USER"]}`;
-// let dbPassword = pulumi.secret(`${process.env["DB_PASSWORD"]}`);
-// let dbName = `${process.env["DB_NAME"]}`;
+let dbUsername = `${process.env["DB_USER"]}`;
+let dbPassword = pulumi.secret(`${process.env["DB_PASSWORD"]}`);
+let dbName = `${process.env["DB_NAME"]}`;
+let apiImage = `${process.env["ECR_REGISTRY"]}/${process.env["ECR_REPOSITORY"]}:${process.env["API_IMAGE_TAG"]}`
 
 // KMS Key
 const grantsKey = new aws.kms.Key("grantsKey", {
@@ -61,35 +62,35 @@ const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
 });
 
 // Database
-// let dbSubnetGroup = new aws.rds.SubnetGroup("rds-subnet-group", {
-//     subnetIds: vpcPrivateSubnetIds
-// });
+let dbSubnetGroup = new aws.rds.SubnetGroup("rds-subnet-group", {
+    subnetIds: vpcPrivateSubnetIds
+});
 
-// const db_secgrp = new aws.ec2.SecurityGroup("db_secgrp", {
-//     description: "Security Group for DB",
-//     vpcId: vpc.id,
-//     ingress: [
-//         { protocol: "tcp", fromPort: 5432, toPort: 5432, cidrBlocks: ["0.0.0.0/0"] },
-//     ],
-//     egress: [{
-//         protocol: "-1",
-//         fromPort: 0,
-//         toPort: 0,
-//         cidrBlocks: ["0.0.0.0/0"],
-//     }],
-// });
+const db_secgrp = new aws.ec2.SecurityGroup("db_secgrp", {
+    description: "Security Group for DB",
+    vpcId: vpc.id,
+    ingress: [
+        { protocol: "tcp", fromPort: 5432, toPort: 5432, cidrBlocks: ["0.0.0.0/0"] },
+    ],
+    egress: [{
+        protocol: "-1",
+        fromPort: 0,
+        toPort: 0,
+        cidrBlocks: ["0.0.0.0/0"],
+    }],
+});
 
-// const postgresql = new aws.rds.Instance("grants-database", {
-//     allocatedStorage: 50,
-//     engine: "postgres",
-//     instanceClass: "db.t3.medium",
-//     name: dbName,
-//     password: dbPassword,
-//     username: dbUsername,
-//     skipFinalSnapshot: true,
-//     dbSubnetGroupName: dbSubnetGroup.id,
-//     vpcSecurityGroupIds: [db_secgrp.id],
-// });
+const postgresql = new aws.rds.Instance("grants-database", {
+    allocatedStorage: 50,
+    engine: "postgres",
+    instanceClass: "db.t3.medium",
+    name: dbName,
+    password: dbPassword,
+    username: dbUsername,
+    skipFinalSnapshot: true,
+    dbSubnetGroupName: dbSubnetGroup.id,
+    vpcSecurityGroupIds: [db_secgrp.id],
+});
 
 // Docker Registry
 
@@ -122,4 +123,18 @@ const grantsEcsProvider = new aws.ecs.ClusterCapacityProviders("fargateCapacityP
         weight: 100,
         capacityProvider: "FARGATE",
     }],
+});
+
+const api = new aws.ecs.TaskDefinition("api", {
+    family: "api",
+    containerDefinitions: JSON.stringify([
+        {
+            name: "api",
+            image: apiImage,
+            cpu: 10,
+            memory: 512,
+            essential: true,
+            portMappings: [],
+        },
+    ]),
 });

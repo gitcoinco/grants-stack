@@ -18,6 +18,8 @@ jobs:
     name: Build and Push Image
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    outputs:
+      dockerTag: ${{ steps.compute.outputs.docker_tag }}
     steps:
     - name: Check out code
       uses: actions/checkout@v2
@@ -43,7 +45,7 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: grants-c7fccce
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ steps.compute.outputs.docker_tag }}
       run: |
         cd packages/api
