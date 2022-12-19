@@ -1,5 +1,6 @@
-import { QFContribution, RoundMetadata, RoundStats } from "./types";
+import { QFContributionSummary, QFVote, RoundMetadata } from "./types";
 import { faker } from '@faker-js/faker';
+import { BigNumber } from "ethers";
 
 export const mockRoundMetadata: RoundMetadata = {
   votingStrategy: {
@@ -12,17 +13,16 @@ export const mockRoundMetadata: RoundMetadata = {
   totalPot: faker.datatype.number()
 }
 
-export const mockQFContribution: QFContribution = {
-  convertedAmount: 0,
-  projectId: faker.finance.ethereumAddress.toString(),
-  amount: faker.datatype.number(),
-  contributor: faker.finance.ethereumAddress.toString(),
-  timestamp: faker.datatype.number(),
-  token: faker.finance.ethereumAddress.toString()
+export const mockQFContributionSummary: QFContributionSummary = {
+  contributionCount: faker.datatype.number(),
+  uniqueContributors: faker.datatype.number(),
+  totalContributionsInUSD: faker.datatype.number().toString(),
+  averageUSDContribution: faker.datatype.number().toString(),
 };
 
-export const mockRoundStats: RoundStats = {
-  uniqueContributorCount: faker.datatype.number(),
-  contributionsCount: faker.datatype.number(),
-  totalContributionsInUSD: faker.datatype.number(),
-}
+export const mockQFVote: QFVote = {
+  amount: BigNumber.from("1"),
+  token: faker.finance.ethereumAddress.toString(),
+  contributor: faker.finance.ethereumAddress.toString(),
+  projectId: faker.finance.ethereumAddress.toString(),
+};

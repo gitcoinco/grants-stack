@@ -1,10 +1,12 @@
 import express, { Express } from "express";
+import cors from 'cors';
 import dotenv from "dotenv";
 import routes from "./src/routes";
 import * as Sentry from "@sentry/node";
 
+
 Sentry.init({
-  dsn: "https://d65e33d74350481b82b7b4efc62bcbb0@o4504301442957312.ingest.sentry.io/4504326423052288",
+  dsn: `${process.env.SENTRY_DSN}`,
 });
 
 dotenv.config();
@@ -12,6 +14,13 @@ dotenv.config();
 // TODO: include necessary middlewares for prod deploy
 
 const app: Express = express();
+
+// TODO: Add allowed origins to env
+const options: cors.CorsOptions = {
+  origin: ['http://localhost:3000']
+};
+app.use(cors(options));
+
 app.use(Sentry.Handlers.requestHandler());
 app.use(express.json());
 

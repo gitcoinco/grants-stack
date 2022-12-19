@@ -5,6 +5,7 @@ import {
   fetchRoundMetadata,
   getChainVerbose,
   getPriceForToken,
+  getStrategyName,
   handleResponse,
 } from "../utils";
 import {
@@ -51,13 +52,8 @@ export const calculateHandler = async (req: Request, res: Response) => {
 
     let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
-    // for backward compatibility with older subgraph version
-    // TODO: remove after re-indexing mainnet subgraph
-    strategyName =
-      strategyName === "quadraticFunding"
-        ? VotingStrategy.LINEAR_QUADRATIC_FUNDING
-        : strategyName;
-
+    strategyName = getStrategyName(strategyName);
+    
     // create round if round does not exist
     const chainId = getChainVerbose(req.body.chainId);
     const round = await prisma.round.upsert({
@@ -77,11 +73,12 @@ export const calculateHandler = async (req: Request, res: Response) => {
     // decide which handlers to invoke based on voting strategy name
     switch (strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
-        const votes = await linearQFFetchVotesForRound(
+        // TODO: replace with fetchQFContributionsForRound
+        const contributions = await linearQFFetchVotesForRound(
           req.body.chainId,
           votingStrategyId
         );
-        results = await linearQFCalculate(metadata, votes);
+        results = await linearQFCalculate(metadata, contributions);
         break;
     }
 

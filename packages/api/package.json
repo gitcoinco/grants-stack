@@ -18,7 +18,9 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "@jest-mock/express": "^2.0.1",
     "@prisma/client": "^4.7.0",
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.3",
     "@types/node": "^14.18.33",
@@ -36,6 +38,7 @@
   "dependencies": {
     "@sentry/node": "^7.26.0",
     "cors": "^2.8.5",
+    "ethers": "^5.7.2",
     "express": "^4.17.1",
     "node-fetch": "^2.6.6",
     "yup": "^0.32.11"
@@ -49,6 +52,9 @@
     "preset": "ts-jest",
     "setupFiles": [
       "dotenv/config"
+    ],
+    "modulePathIgnorePatterns": [
+      "bin"
     ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
