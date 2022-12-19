@@ -54,7 +54,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: build-and-test
+    needs: build
     environment: staging
     runs-on: ubuntu-latest
     env:
