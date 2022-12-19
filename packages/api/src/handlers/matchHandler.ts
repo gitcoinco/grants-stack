@@ -1,16 +1,19 @@
 import {
   ChainId,
-  QFVote,
+  QFVote, Results,
   RoundMetadata,
 } from "../types";
 import { Request, Response } from "express";
 import {
   fetchAverageTokenPrices,
-  fetchRoundMetadata,
+  fetchRoundMetadata, getChainVerbose,
   handleResponse,
 } from "../utils";
 import { fetchQFContributionsForRound } from "../votingStrategies/linearQuadraticFunding";
 import { formatUnits } from "ethers/lib/utils";
+import { PrismaClient, VotingStrategy } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const matchHandler = async (req: Request, res: Response) => {
   const { chainId, roundId } = req.params;
@@ -24,11 +27,26 @@ export const matchHandler = async (req: Request, res: Response) => {
     );
   }
 
-  let results: any;
+  let results: Results | undefined;
 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
+
+    const chainIdVerbose = getChainVerbose(chainId);
+    const round = await prisma.round.upsert({
+      where: {
+        roundId: roundId,
+      },
+      update: {
+        chainId: chainIdVerbose,
+      },
+      create: {
+        chainId: chainIdVerbose,
+        roundId,
+        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+      },
+    });
 
     switch (votingStrategy.strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
@@ -42,6 +60,39 @@ export const matchHandler = async (req: Request, res: Response) => {
           contributions
         );
         break;
+    }
+
+    if (results) {
+      // update result is round saturation has changed
+      if (round.isSaturated != results.isSaturated) {
+        await prisma.round.update({
+          where: { id: round.id },
+          data: { isSaturated: results.isSaturated },
+        });
+      }
+
+      // save the distribution results to the db
+      // TODO: figure out if there is a better way to batch transactions
+      for (const projectMatch of results.distribution) {
+        await prisma.payout.upsert({
+          where: {
+            payoutIdentifier: {
+              projectId: projectMatch.projectId,
+              roundId: round.id,
+            },
+          },
+          update: {
+            amount: projectMatch.match,
+          },
+          create: {
+            amount: projectMatch.match,
+            projectId: projectMatch.projectId,
+            contributionCount: Number(projectMatch.contributionCount),
+            sumOfContributions: Number(projectMatch.sumOfContributions),
+            roundId: round.id,
+          },
+        });
+      }
     }
   } catch (error) {
     return handleResponse(res, 500, "error: something went wrong");
