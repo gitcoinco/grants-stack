@@ -63,7 +63,7 @@ const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
 
 // Database
 let dbSubnetGroup = new aws.rds.SubnetGroup("rds-subnet-group", {
-    subnetIds: vpcPrivateSubnetIds
+    subnetIds: private_subnet.id
 });
 
 const db_secgrp = new aws.ec2.SecurityGroup("db_secgrp", {
