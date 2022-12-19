@@ -49,6 +49,11 @@ export const grantSteps: Step[] = [
     status: GrantStatus.UploadingImages,
   },
   {
+    name: "Signing",
+    description: "Waiting for wallet interaction.",
+    status: GrantStatus.WaitingForSignature,
+  },
+  {
     name: "Deploying",
     description: "Connecting to the Mainnet blockchain.",
     status: GrantStatus.TransactionInitiated,
