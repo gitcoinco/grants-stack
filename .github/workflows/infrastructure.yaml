@@ -111,10 +111,3 @@ jobs:
           stack-name: ${{ secrets.PULUMI_STACK }}
           upsert: false
           work-dir: infra/${{ inputs.environment }}
-
-        env:
-          # We need AWS_EC2_METADATA_DISABLED, because: https://github.com/actions/checkout/issues/440
-          AWS_EC2_METADATA_DISABLED: true
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          BUNDLE_USE_CHECKSUM: 'false'
