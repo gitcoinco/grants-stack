@@ -28,7 +28,8 @@ model Payout {
   id                 Int            @id @default(autoincrement())
   projectId          String
   amount             Float
-  token              String
+  sumOfContributions Float
+  contributionCount  Int
   round              Round          @relation(fields: [roundId], references: [id])
   roundId            Int
 

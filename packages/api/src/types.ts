@@ -15,7 +15,7 @@ export enum ChainId {
 }
 
 export type Results = {
-  distribution: ProjectMatch[];
+  distribution: any;
   isSaturated?: boolean;
 };
 
