@@ -74,9 +74,9 @@ export const matchHandler = async (req: Request, res: Response) => {
       // save the distribution results to the db
       // TODO: figure out if there is a better way to batch transactions
       for (const projectMatch of results.distribution) {
-        await prisma.payout.upsert({
+        await prisma.match.upsert({
           where: {
-            payoutIdentifier: {
+            matchIdentifier: {
               projectId: projectMatch.projectId,
               roundId: round.id,
             },
