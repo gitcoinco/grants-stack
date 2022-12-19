@@ -2,7 +2,7 @@ import {
   ChainId,
 } from "../types";
 import {
-  fetchRoundMetadata,
+  fetchRoundMetadata, getChainVerbose,
   getStrategyName,
   handleResponse,
 } from "../utils";
@@ -11,6 +11,13 @@ import {
   fetchQFContributionsForProjects,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
+import {PrismaClient, VotingStrategy} from "@prisma/client";
+import NodeCache from "node-cache";
+
+const prisma = new PrismaClient();
+
+// Schedule cache invalidation every 10 minutes
+const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
 
 /**
  * projectSummaryHandler is a function that handles HTTP requests
@@ -27,10 +34,70 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 400, "error: missing parameter chainId, roundId, or projectId");
   }
 
+  // Load from internal cache if available
+  const projectSummaryFromCache = cache.get(`${chainId}-${roundId}-${projectId}`);
+  if (projectSummaryFromCache) {
+    return handleResponse(res, 200, "project summary (cache)", projectSummaryFromCache);
+  }
+
   try {
+    // Initialize round if it doesn't exist
+    const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
+    const { votingStrategy } = metadata;
+    const chainIdVerbose = getChainVerbose(chainId);
+    const round = await prisma.round.upsert({
+      where: {
+        roundId: roundId,
+      },
+      update: {
+        chainId: chainIdVerbose,
+      },
+      create: {
+        chainId: chainIdVerbose,
+        roundId,
+        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+      },
+    });
+
+    // Initialize project if it doesn't exist
+    const project = await prisma.project.upsert({
+      where: {
+        roundId: round.id,
+      },
+      update: {
+        projectId,
+      },
+      create: {
+        roundId: round.id,
+        chainId: chainIdVerbose,
+        projectId: projectId,
+      }
+
+    });
+
     const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId]);
 
-    return handleResponse(res, 200, "fetched project summary successfully", results);
+    // upload to project summary to db
+    await prisma.projectSummary.upsert({
+      where: {
+        projectId: project.id,
+      },
+      update: {
+        contributionCount: results.contributionCount,
+        uniqueContributors: results.uniqueContributors,
+        totalContributionsInUSD: Number(results.totalContributionsInUSD),
+        averageUSDContribution: Number(results.averageUSDContribution),
+      },
+      create: {
+        contributionCount: results.contributionCount,
+        uniqueContributors: results.uniqueContributors,
+        totalContributionsInUSD: Number(results.totalContributionsInUSD),
+        averageUSDContribution: Number(results.averageUSDContribution),
+        projectId: project.id,
+      }
+    });
+
+    return handleResponse(res, 200, "project summary", results);
   } catch (err) {
     return handleResponse(res, 500, "error: something went wrong", err);
   }
@@ -65,6 +132,11 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
       break;
     default:
       throw("error: unsupported voting strategy");
+  }
+
+  // cache results
+  for (const projectId of projectIds) {
+    cache.set(`${chainId}-${roundId}-${projectId}`, results);
   }
 
   return results;

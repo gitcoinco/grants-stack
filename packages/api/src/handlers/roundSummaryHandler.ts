@@ -17,6 +17,7 @@ import NodeCache from "node-cache";
 
 const prisma = new PrismaClient();
 
+// Schedule cache invalidation every 10 minutes
 const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
 
 /**
@@ -33,8 +34,14 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 400, "error: missing parameter chainId or roundId");
   }
 
+  // Load from internal cache if available
+  const summaryFromCache = cache.get(`${chainId}-${roundId}`);
+  if (summaryFromCache) {
+    return handleResponse(res, 200, "round summary (cache)", summaryFromCache);
+  }
+
   try {
-    // INIT
+    // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
     const chainIdVerbose = getChainVerbose(chainId);
@@ -54,7 +61,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
 
     const results = await getRoundSummary(chainId as ChainId, roundId);
 
-    // upload to db via prisma
+    // upload summary to db
     await prisma.summary.upsert({
       where: {
           roundId: round.id,
@@ -77,7 +84,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(
       res,
       200,
-      "fetched round summary successfully",
+      "round summary",
       results
     );
   } catch (err) {
@@ -98,11 +105,6 @@ export const getRoundSummary = async (
 ): Promise<QFContributionSummary> => {
   let results;
 
-  const summaryFromCache = cache.get(`${chainId}-${roundId}`);
-  if (summaryFromCache) {
-    return summaryFromCache as QFContributionSummary;
-  }
-  
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
@@ -124,6 +126,7 @@ export const getRoundSummary = async (
       throw "error: unsupported voting strategy";
   }
 
+  // cache results
   cache.set(`${chainId}-${roundId}`, results);
 
   return results;

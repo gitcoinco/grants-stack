@@ -21,8 +21,21 @@ model Round {
   matches            Match[]
   isSaturated        Boolean        @default(false)
   summary            Summary?
+  projects           Project[]
 
   @@map("round")
+}
+
+model Project {
+  id             Int             @id @default(autoincrement())
+  chainId        ChainId
+  round          Round           @relation(fields: [roundId], references: [id])
+  roundId        Int
+  projectId      String          @unique
+  projectSummary ProjectSummary?
+
+  @@unique([roundId], name: "projectIdentifier")
+  @@map("project")
 }
 
 model Match {
@@ -47,8 +60,21 @@ model Summary {
   round                   Round @relation(fields: [roundId], references: id)
   roundId                 Int
 
-  @@unique([roundId], name: "roundIdentifier")
+  @@unique([roundId], name: "summaryIdentifier")
   @@map("summary")
+}
+
+model ProjectSummary {
+  id                      Int     @id @default(autoincrement())
+  contributionCount       Float
+  uniqueContributors      Int
+  totalContributionsInUSD Float
+  averageUSDContribution  Float
+  project                 Project @relation(fields: [projectId], references: id)
+  projectId               Int
+
+  @@unique([projectId], name: "projectSummaryIdentifier")
+  @@map("projectSummary")
 }
 
 // ========= //
