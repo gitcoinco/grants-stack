@@ -93,7 +93,7 @@ const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
 
 // Docker Registry
 
-const registry = new aws.ecr.Repository("registry", {
+const registry = new aws.ecr.Repository("grants", {
     imageScanningConfiguration: {
         scanOnPush: true,
     },
