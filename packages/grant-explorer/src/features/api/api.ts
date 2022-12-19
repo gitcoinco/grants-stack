@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 
 export function useRoundSummary({
   chainId,
@@ -11,12 +11,12 @@ export function useRoundSummary({
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useMemo(() => {
     setLoading(true);
     const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}`;
     fetch(url,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -56,13 +56,13 @@ export function useProjectSummary({
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useMemo(() => {
     setLoading(true);
     const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}/${new URLSearchParams({projectId})}`;
     fetch(
       url,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
