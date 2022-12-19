@@ -53,7 +53,7 @@ const nat_ip = new aws.ec2.Eip("nat_ip", {
 
 const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
     allocationId: nat_ip.id,
-    subnetId: private_subnet.id,
+    subnetId: [private_subnet.id],
     tags: {
         App: "Grants",
     },
