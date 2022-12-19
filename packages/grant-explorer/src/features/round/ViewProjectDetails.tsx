@@ -21,7 +21,8 @@ import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
-import { useQuery } from "@tanstack/react-query";
+import { getProjectSummary } from "../api/api";
+import useSWR from "swr";
 import Banner from "../common/Banner";
 
 enum VerifiedCredentialState {
@@ -363,29 +364,30 @@ function Sidebar(props: {
 }
 
 function ProjectStats() {
-  const query = useQuery({
-    queryKey: ["projectStats"],
-    queryFn: () => {
-      return {
-        fundingReceived: 986,
-        contributors: 83,
-        timeRemaining: 20,
-      };
+  const { data, error, isLoading } = useSWR(
+    {
+      chainId: 5,
+      roundId: "0xaf32b481c708cc9be8d58bf438f05d3d993111cc",
+      projectId:
+        "0x0cc5d43d808e9e7e490197924e7450f4433218d801fd16abfc31d54799b79f3d-0xaf32b481c708cc9be8d58bf438f05d3d993111cc",
     },
-  });
+    getProjectSummary
+  );
+
+  console.log(data, isLoading);
 
   return (
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
-        <h3>${query.data?.fundingReceived ?? "-"}</h3>
+        <h3>${data?.data.totalContributionsInUSD ?? "-"}</h3>
         <p>funding recieved in current round</p>
       </div>
       <div>
-        <h3>{query.data?.contributors ?? "-"}</h3>
+        <h3>{data?.data.uniqueContributors ?? "-"}</h3>
         <p>contributors</p>
       </div>
       <div>
-        <h3>{query.data?.timeRemaining ?? "-"}</h3>
+        <h3>20</h3>
         <p>days to go</p>
       </div>
     </div>

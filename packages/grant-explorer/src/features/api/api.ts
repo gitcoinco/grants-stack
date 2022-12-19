@@ -14,14 +14,13 @@ export function useRoundSummary({
   useMemo(() => {
     setLoading(true);
     const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}`;
-    fetch(url,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((resp) => {
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
         if (resp.ok) {
           return resp.json();
         } else {
@@ -43,6 +42,45 @@ export function useRoundSummary({
   };
 }
 
+// TODO: import this type from API package
+export type QFContributionSummary = {
+  contributionCount: number;
+  uniqueContributors: number;
+  totalContributionsInUSD?: string;
+  averageUSDContribution?: string;
+  // FIXME: specify this type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  projects?: any;
+};
+
+export function getProjectSummary({
+  chainId,
+  roundId,
+  projectId,
+}: {
+  chainId: string;
+  roundId: string;
+  projectId: string;
+}): Promise<{
+  data: QFContributionSummary;
+  success: boolean;
+  message: string;
+}> {
+  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}/${projectId}`;
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((resp) => {
+    if (resp.ok) {
+      return resp.json();
+    } else {
+      throw resp;
+    }
+  });
+}
+
 export function useProjectSummary({
   chainId,
   roundId,
@@ -58,16 +96,15 @@ export function useProjectSummary({
 
   useMemo(() => {
     setLoading(true);
-    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}/${new URLSearchParams({projectId})}`;
-    fetch(
-      url,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    const url = `${
+      process.env.REACT_APP_GRANTS_API_ENDPOINT
+    }/summary/${chainId}/${roundId}/${new URLSearchParams({ projectId })}`;
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((resp) => {
         if (resp.ok) {
           return resp.json();
