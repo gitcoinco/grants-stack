@@ -3,6 +3,8 @@
 
 /***************/
 
+import {BigNumber} from "ethers";
+
 export enum ChainId {
   MAINNET = "1",
   GOERLI = "5",
@@ -34,15 +36,10 @@ export type RoundMetadata = {
   totalPot: number;
 };
 
-export type CalculateParam = {
-  chainId: ChainId;
-  roundId: string;
-};
 
-export type RoundStats = {
-  uniqueContributorCount: number,
-  contributionsCount: number,
-  totalContributionsInUSD: number;
+export type ProjectSummary = {
+  contributors: string[];
+  contributions: [];
 }
 
 export type HandleResponseObject = {
@@ -55,6 +52,7 @@ export type HandleResponseObject = {
 /* = LinearQF = */
 /****************/
 
+// TODO: REMOVE
 export type QFContribution = {
   projectId: string;
   amount: number;
@@ -64,6 +62,12 @@ export type QFContribution = {
   token: string;
 };
 
+export type RoundProject = {
+  id: string;
+  payoutAddress: string;
+};
+
+// TODO: REMOVE
 export type QFContributionsByProjectId = {
   [projectId: string]: {
     contributions: {
@@ -80,3 +84,18 @@ export type DenominationResponse = {
   message: string | Error;
 }
 
+// TODO: rename to QFContribution
+export type QFVote = {
+  amount: BigNumber;
+  token: string;
+  contributor: string;
+  projectId: string;
+};
+
+export type QFContributionSummary = {
+  contributionCount: number;
+  uniqueContributors: number;
+  totalContributionsInUSD?: string;
+  averageUSDContribution?: string;
+  projects?: any;
+};

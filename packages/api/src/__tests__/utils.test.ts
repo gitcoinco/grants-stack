@@ -1,17 +1,24 @@
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
 
 enableFetchMocks();
-
+import * as utils from "../utils";
 import { ChainId } from "../types";
 import {
   denominateAs,
   fetchFromGraphQL,
   fetchFromIPFS,
+  fetchRoundMetadata,
+  getChainName,
   getChainVerbose,
   getGraphQLEndpoint,
   getPriceForToken,
   getStartAndEndTokenPrices,
+  getStrategyName,
+  getUSDCAddress,
+  groupBy,
 } from "../utils";
+import { mockRoundMetadata } from "../test-utils";
+import { faker } from "@faker-js/faker";
 
 const fetchMock = fetch as FetchMock;
 
@@ -37,6 +44,26 @@ describe("getGraphQLEndpoint", () => {
   it("returns the default graphQL endpoint for invalid chainID", () => {
     expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
       "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs"
+    );
+  });
+});
+
+describe("getUSDCAddress", () => {
+  it("returns the right USDC address based on the chainID", () => {
+    expect(getUSDCAddress(ChainId.OPTIMISM_MAINNET)).toEqual(
+      "0x7f5c764cbc14f9669b88837ca1490cca17c31607"
+    );
+    expect(getUSDCAddress(ChainId.FANTOM_MAINNET)).toEqual(
+      "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+    );
+    expect(getUSDCAddress(ChainId.MAINNET)).toEqual(
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    );
+  });
+
+  it("returns default 0x0 address for chainId which is not supported", () => {
+    expect(getUSDCAddress(ChainId.LOCAL_ROUND_LAB)).toEqual(
+      "0x0000000000000000000000000000000000000000"
     );
   });
 });
@@ -175,16 +202,79 @@ describe("fetchFromGraphQL", () => {
       })
     );
 
-    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, `programs { id }`);
+    await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, "");
 
     expect(fetchMock).toHaveBeenCalledWith(
       `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
-      expect.anything()
+      {
+        body: '{"query":"","variables":{}}',
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }
     );
   });
 });
 
-describe("fetch prices for token", function () {
+describe("fetchRoundMetadata", () => {
+  it("returns valid round metadata in expected format", async () => {
+    const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
+    const chainId = ChainId.MAINNET;
+    const roundId = faker.finance.ethereumAddress.toString();
+
+    jest.spyOn(utils, "fetchFromGraphQL").mockResolvedValueOnce({
+      data: {
+        rounds: [
+          {
+            votingStrategy: roundMetadata.votingStrategy,
+            roundStartTime: roundMetadata.roundStartTime,
+            roundEndTime: roundMetadata.roundEndTime,
+            token: roundMetadata.token,
+            roundMetaPtr: {
+              protocol: "1",
+              pointer: faker.finance.ethereumAddress.toString(),
+            },
+          },
+        ],
+      },
+    });
+
+    jest.spyOn(utils, "fetchFromIPFS").mockResolvedValueOnce({
+      matchingFunds: {
+        matchingFundsAvailable: roundMetadata.totalPot,
+      },
+    });
+
+    const metadata = await fetchRoundMetadata(chainId, roundId);
+
+    expect(metadata).toEqual(roundMetadata);
+  });
+});
+
+describe("getChainName", () => {
+  it("returns the chain name based on the chainId", () => {
+    expect(getChainName(ChainId.MAINNET)).toEqual({
+      chainName: "ethereum",
+      error: false,
+    });
+    expect(getChainName(ChainId.OPTIMISM_MAINNET)).toEqual({
+      chainName: "optimistic-ethereum",
+      error: false,
+    });
+    expect(getChainName(ChainId.FANTOM_MAINNET)).toEqual({
+      chainName: "fantom",
+      error: false,
+    });
+  });
+
+  it("returns error when unsupported chainId is passed", () => {
+    expect(getChainName(ChainId.LOCAL_ROUND_LAB)).toEqual({
+      chainName: undefined,
+      error: true,
+    });
+  });
+});
+
+describe("getPriceForToken", function () {
   beforeEach(() => {
     fetchMock.resetMocks();
   });
@@ -212,14 +302,6 @@ describe("fetch prices for token", function () {
       }
     );
   });
-});
-
-describe("fetchRoundMetadata", () => {
-  // TODO:
-});
-
-describe("handleResponse", () => {
-  // TODO:
 });
 
 describe("getStartAndEndTokenPrices", () => {
@@ -306,5 +388,35 @@ describe("denominateAs", () => {
       ChainId.OPTIMISM_MAINNET
     );
     expect(convertedAmount.amount).toEqual(amount);
+  });
+});
+
+describe("getStrategyName", () => {
+  it("returns LINEAR_QUADRATIC_FUNDING if strategyName is quadraticFunding", () => {
+    expect(getStrategyName("quadraticFunding")).toEqual(
+      "LINEAR_QUADRATIC_FUNDING"
+    );
+  });
+
+  it("returns input string if strategyName", () => {
+    expect(getStrategyName("hello")).toEqual("hello");
+  });
+});
+
+describe("groupBy", () => {
+  it("groups array of objects by a given property", () => {
+    const pets = [
+      { type: "Dog", name: faker.animal.dog },
+      { type: "Cat", name: faker.animal.cat },
+      { type: "Dog", name: faker.animal.dog },
+      { type: "Cat", name: faker.animal.cat },
+      { type: "Cat", name: faker.animal.cat },
+    ];
+
+    const grouped = groupBy(pets, (pet: any) => pet.type);
+
+    expect(grouped.size).toEqual(2);
+    expect(grouped.get("Dog").length).toEqual(2);
+    expect(grouped.get("Cat").length).toEqual(3);
   });
 });

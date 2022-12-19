@@ -26,7 +26,7 @@ export default function NotFoundPage() {
               <a href="https://discord.com/invite/gitcoin">Discord.</a>
             </p>
 
-            <Link to="/">
+            <Link to="/" data-testid={"not-found-go-back-home"}>
               <Button
                 $variant="outline"
                 type="button"

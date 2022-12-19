@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
+import { ChainId, payoutTokens } from "../api/utils";
 import {
   Button,
   BasicCard,
@@ -22,6 +22,7 @@ import { useBallot } from "../../context/BallotContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
+import { useRoundSummary } from "../api/api";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -31,6 +32,13 @@ export default function ViewRound() {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round, isLoading } = useRoundById(chainId!, roundId!);
+
+  const roundStats = useRoundSummary({
+    chainId: chainId as ChainId,
+    roundId: roundId as string,
+  });
+
+  console.log("roundSummary", roundStats);
 
   const currentTime = new Date();
 
@@ -122,12 +130,17 @@ function AfterRoundStart(props: {
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
     const projects = round?.approvedProjects;
     const exactMatches = projects?.filter(
-      (project) => project.projectMetadata.title.toLocaleLowerCase() === query.toLocaleLowerCase()
+      (project) =>
+        project.projectMetadata.title.toLocaleLowerCase() ===
+        query.toLocaleLowerCase()
     );
     const nonExactMatches = projects?.filter(
       (project) =>
-        project.projectMetadata.title.toLocaleLowerCase().includes(query.toLocaleLowerCase()) &&
-        project.projectMetadata.title.toLocaleLowerCase() !== query.toLocaleLowerCase()
+        project.projectMetadata.title
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()) &&
+        project.projectMetadata.title.toLocaleLowerCase() !==
+          query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -146,8 +159,7 @@ function AfterRoundStart(props: {
         <main>
           <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
           <p className="text-1xl mb-4">
-            Matching funds available:
-            &nbsp;
+            Matching funds available: &nbsp;
             {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
             &nbsp;
             {matchingFundPayoutTokenName}
@@ -155,13 +167,13 @@ function AfterRoundStart(props: {
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <hr className="mt-4 mb-8"/>
+          <hr className="mt-4 mb-8" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
               All Projects ({projects ? projects.length : 0})
             </p>
             <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3"/>
+              <Search className="absolute h-4 w-4 mt-3 ml-3" />
               <Input
                 className="w-full lg:w-64 h-8 rounded-full pl-10"
                 type="text"

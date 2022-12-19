@@ -3,6 +3,7 @@ import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.sv
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useBallot } from "../../context/BallotContext";
+import CustomerSupport from "./CustomerSupport";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -16,7 +17,11 @@ export default function Navbar(props: NavbarProps) {
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <Link to="#" className="flex-shrink-0 flex items-center">
+            <Link
+              to="#"
+              className="flex-shrink-0 flex items-center"
+              data-testid={"home-link"}
+            >
               <GitcoinLogo className="block h-8 w-auto" />
               <div className="hidden lg:block md:block">
                 <span className="mx-6 text-grey-400">|</span>
@@ -30,6 +35,7 @@ export default function Navbar(props: NavbarProps) {
               roundUrlPath={props.roundUrlPath}
             />
             <ConnectButton />
+            <CustomerSupport />
           </div>
         </div>
       </div>
@@ -40,7 +46,7 @@ export default function Navbar(props: NavbarProps) {
 export function Shortlist(props: { count: number; roundUrlPath: string }) {
   return (
     <span className="relative inline-block">
-      <Link to={`${props.roundUrlPath}/ballot`}>
+      <Link to={`${props.roundUrlPath}/ballot`} data-testid={"ballot"}>
         <svg
           width="24"
           height="24"

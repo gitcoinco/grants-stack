@@ -6,7 +6,7 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, LightningBoltIcon, ShieldCheckIcon } from "@heroicons/react/solid";
+import { ChevronLeftIcon, GlobeAltIcon, InformationCircleIcon, BoltIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "../common/styles";
@@ -63,7 +63,7 @@ export default function ViewProjectDetails() {
           {!isLoading && projectToRender && (
             <>
               <Header projectMetadata={projectToRender.projectMetadata} />
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <div className="grow">
                   <div>
                     <ProjectTitle
@@ -191,10 +191,10 @@ function AboutProject(props: { projectToRender: Project }) {
   };
 
   return (
-    <div className="grid grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
       {projectRecipient && 
         (<span className="flex items-center mt-4 gap-1">
-          <LightningBoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
           <DetailSummary text={`${projectRecipient}`} testID="project-recipient" sm={true} />
         </span>)
       }
@@ -312,7 +312,7 @@ function Sidebar(props: {
   addToShortlist: () => void;
 }) {
   return (
-    <div className="ml-6">
+    <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
       <BallotSelectionToggle
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
