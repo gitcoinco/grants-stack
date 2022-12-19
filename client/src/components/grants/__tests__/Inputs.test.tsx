@@ -43,7 +43,7 @@ describe("<TextInputAddress />", () => {
 
       render(<Wrapped />);
 
-      const addressInputContainer = screen.getByTestId("addressInputWrapper");
+      const addressInputContainer = screen.getByTestId("address-input-wrapper");
       const addressInputEl = addressInputContainer.querySelector(
         "input"
       ) as Element;

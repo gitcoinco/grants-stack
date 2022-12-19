@@ -265,7 +265,7 @@ export default function Form({
               /* Radio for safe or multi-sig */
               return (
                 <Fragment key={input.id}>
-                  <div className="relative mt-2" data-testid="walletType">
+                  <div className="relative mt-2" data-testid="wallet-type">
                     <Stack>
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
@@ -393,6 +393,7 @@ export default function Form({
             <div
               className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
               role="alert"
+              data-testid="review-wallet-address"
             >
               <div className="text-gitcoin-yellow-500">
                 <ExclamationTriangleIcon height={25} width={25} />

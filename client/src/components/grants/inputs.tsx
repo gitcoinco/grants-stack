@@ -145,7 +145,7 @@ export function TextInputAddress({
   return (
     <div
       className="relative mt-6 w-full sm:w-1/2"
-      data-testid="addressInputWrapper"
+      data-testid="address-input-wrapper"
     >
       <div className="flex">
         <div className="grow">

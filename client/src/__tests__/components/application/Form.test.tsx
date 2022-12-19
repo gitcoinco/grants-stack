@@ -1,12 +1,12 @@
 import "@testing-library/jest-dom";
-import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { Store } from "redux";
+import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import { renderWrapped } from "../../../utils/test_utils";
 import { Metadata, Round } from "../../../types/index";
+import { renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
-import { web3ChainIDLoaded } from "../../../actions/web3";
 
 const projectsMetadata: Metadata[] = [
   {
@@ -122,13 +122,12 @@ describe("<Form />", () => {
       });
     });
 
-    test("should validate address type", async () => {
+    test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
       const returnValue = {
-        isContract: false,
-        isSafe: false,
+        isContract: true,
+        isSafe: true,
         resolved: true,
       };
-
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -141,8 +140,8 @@ describe("<Form />", () => {
         store
       );
 
-      const addressInputWrapper = screen.getByTestId("addressInputWrapper");
-      const walletTypeWrapper = screen.getByTestId("walletType");
+      const addressInputWrapper = screen.getByTestId("address-input-wrapper");
+      const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
         'input[value="Yes"]'
       ) as Element;
@@ -153,24 +152,71 @@ describe("<Form />", () => {
       act(() => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
-          target: { value: "0x34aa3f359a9d614239015126635ce7732c18fdf3" },
+          // NOTE: should we use the prefix? eth:0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E
+          target: { value: "0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E" },
         });
       });
 
       await waitFor(() =>
         expect(
-          screen.getByText("Review your payout wallet address.")
+          screen
+            .getByTestId("address-input-wrapper")
+            .querySelector("input.invalid-feedback")?.firstChild
+        ).toBeUndefined()
+      );
+    });
+
+    // ✅
+    test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
+      const returnValue = {
+        isContract: true,
+        isSafe: false,
+        resolved: true,
+      };
+      jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+
+      renderWrapped(
+        <Form
+          roundApplication={roundApplicationMetadata}
+          round={round}
+          onSubmit={jest.fn()}
+          showErrorModal={false}
+        />,
+        store
+      );
+      const addressInputWrapper = screen.getByTestId("address-input-wrapper");
+      const walletTypeWrapper = screen.getByTestId("wallet-type");
+      const isSafeOption = walletTypeWrapper.querySelector(
+        'input[value="No"]'
+      ) as Element;
+      const addressInput = addressInputWrapper.querySelector(
+        "input"
+      ) as Element;
+
+      act(() => {
+        fireEvent.click(isSafeOption);
+        fireEvent.change(addressInput, {
+          target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            // eslint-disable-next-line max-len
+            "It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address."
+          )
         ).toBeInTheDocument()
       );
     });
 
-    test("should validate address type", async () => {
+    // ✅
+    test("checks if wallet address is a multi-sig on current chain when YES is selected and IS NOT a safe", async () => {
       const returnValue = {
-        isContract: true,
+        isContract: false,
         isSafe: true,
         resolved: true,
       };
-
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -183,9 +229,53 @@ describe("<Form />", () => {
         store
       );
 
-      const addressInputWrapper = screen.getByTestId("addressInputWrapper");
-      const walletTypeWrapper = screen.getByTestId("walletType");
-      const isNotSafeOption = walletTypeWrapper.querySelector(
+      const addressInputWrapper = screen.getByTestId("address-input-wrapper");
+      const walletTypeWrapper = screen.getByTestId("wallet-type");
+      const isSafeOption = walletTypeWrapper.querySelector(
+        'input[value="Yes"]'
+      ) as Element;
+      const addressInput = addressInputWrapper.querySelector(
+        "input"
+      ) as Element;
+
+      act(() => {
+        fireEvent.click(isSafeOption);
+        fireEvent.change(addressInput, {
+          target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            // eslint-disable-next-line max-len
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Goerli network. Please update your payout wallet address before proceeding."
+          )
+        ).toBeInTheDocument()
+      );
+    });
+
+    // todo:
+    test("checks if wallet address is a multi-sig on current chain when NO is selected and IS NOT a safe", async () => {
+      const returnValue = {
+        isContract: false,
+        isSafe: false,
+        resolved: true,
+      };
+      jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+
+      renderWrapped(
+        <Form
+          roundApplication={roundApplicationMetadata}
+          round={round}
+          onSubmit={jest.fn()}
+          showErrorModal={false}
+        />,
+        store
+      );
+      const addressInputWrapper = screen.getByTestId("address-input-wrapper");
+      const walletTypeWrapper = screen.getByTestId("wallet-type");
+      const isSafeOption = walletTypeWrapper.querySelector(
         'input[value="No"]'
       ) as Element;
       const addressInput = addressInputWrapper.querySelector(
@@ -193,16 +283,18 @@ describe("<Form />", () => {
       ) as Element;
 
       act(() => {
-        fireEvent.click(isNotSafeOption);
+        fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
-          target: { value: "0xaEea165460F734F25B7dcD081A78c22fC23A3862" },
+          target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
         });
       });
 
       await waitFor(() =>
         expect(
-          screen.getByText("Review your payout wallet address.")
-        ).toBeInTheDocument()
+          screen
+            .getByTestId("address-input-wrapper")
+            .querySelector("input.invalid-feedback")
+        ).toBeNull()
       );
     });
   });
