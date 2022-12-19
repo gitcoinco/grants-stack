@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
 }
 
 generator docs {
   provider = "node node_modules/prisma-docs-generator"
-  output = "./docs"
+  output   = "./docs"
 }
 
 datasource db {
@@ -18,23 +18,37 @@ model Round {
   chainId            ChainId
   roundId            String         @unique
   votingStrategyName VotingStrategy
-  payouts            Payout[]
+  matches            Match[]
   isSaturated        Boolean        @default(false)
+  summary            Summary?
 
   @@map("round")
 }
 
-model Payout {
-  id                 Int            @id @default(autoincrement())
+model Match {
+  id                 Int    @id @default(autoincrement())
   projectId          String
   amount             Float
   sumOfContributions Float
   contributionCount  Int
-  round              Round          @relation(fields: [roundId], references: [id])
+  round              Round  @relation(fields: [roundId], references: [id])
   roundId            Int
 
-  @@unique([projectId, roundId], name: "payoutIdentifier")
-  @@map("payout")
+  @@unique([projectId, roundId], name: "matchIdentifier")
+  @@map("match")
+}
+
+model Summary {
+  id                      Int   @id @default(autoincrement())
+  contributionCount       Float
+  uniqueContributors      Int
+  totalContributionsInUSD Float
+  averageUSDContribution  Float
+  round                   Round @relation(fields: [roundId], references: id)
+  roundId                 Int
+
+  @@unique([roundId], name: "roundIdentifier")
+  @@map("summary")
 }
 
 // ========= //
@@ -47,7 +61,6 @@ enum ChainId {
   FANTOM_TESTNET
   LOCAL_ROUND_LAB
 }
-
 
 enum VotingStrategy {
   LINEAR_QUADRATIC_FUNDING
