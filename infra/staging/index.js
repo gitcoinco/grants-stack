@@ -140,6 +140,8 @@ const api = new aws.ecs.TaskDefinition("api", {
     family: "api",
     networkMode: "awsvpc",
     requiresCompatibilities: ["FARGATE"],
+    cpu: 10,
+    memory: 512,
     containerDefinitions: JSON.stringify([
         {
             name: "api",
@@ -172,9 +174,9 @@ const grant = new aws.lb.LoadBalancer("grants", {
     enableDeletionProtection: true,
 });
 
-// const grant_target = new aws.lb.TargetGroup("grants", {
-//     port: 80,
-//     protocol: "HTTP",
-//     vpcId: vpc.id,
-// });
+const grant_target = new aws.lb.TargetGroup("grants", {
+    port: 80,
+    protocol: "HTTP",
+    vpcId: vpc.id,
+});
 
