@@ -142,6 +142,7 @@ const api = new aws.ecs.TaskDefinition("api", {
     requiresCompatibilities: ["FARGATE"],
     cpu: "1024",
     memory: "2048",
+    executionRoleArn: "arn:aws:iam::515520736917:role/ecsTaskExecutionRole",
     containerDefinitions: JSON.stringify([
         {
             name: "api",
@@ -166,10 +167,25 @@ const api_service = new aws.ecs.Service("api", {
 });
 
 // Load Balancer
+const secgrp = new aws.ec2.SecurityGroup("grants", {
+    description: "gitcoin",
+    vpcId: vpc.id,
+    ingress: [
+        { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
+        { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
+    ],
+    egress: [{
+        protocol: "-1",
+        fromPort: 0,
+        toPort: 0,
+        cidrBlocks: ["0.0.0.0/0"],
+    }],
+});
+
 const grant = new aws.lb.LoadBalancer("grants", {
     internal: false,
     loadBalancerType: "application",
-    securityGroups: [],
+    securityGroups: [secgrp.id],
     subnets: [private_subnet, private_subnet_two],
     enableDeletionProtection: true,
 });
