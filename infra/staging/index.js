@@ -181,7 +181,10 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
-            portMappings: [],
+            portMappings: [{
+                containerPort: 8080,
+                hostPort: 8080,
+            }],
             environment: [
                 {
                     name: "DATABASE_URL", 
