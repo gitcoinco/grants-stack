@@ -2,3 +2,4 @@
 /node_modules/
 prisma/docs/
 coverage
+src/hotfixes/*.json

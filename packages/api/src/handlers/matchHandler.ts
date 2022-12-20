@@ -13,6 +13,7 @@ import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticF
 import {formatUnits} from "ethers/lib/utils";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import NodeCache from "node-cache";
+import { hotfixForRounds } from  "../hotfixes/index";
 
 const prisma = new PrismaClient();
 
@@ -64,10 +65,13 @@ export const matchHandler = async (req: Request, res: Response) => {
 
     switch (votingStrategy.strategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
-        const contributions = await fetchQFContributionsForRound(
+        let contributions = await fetchQFContributionsForRound(
           chainId as ChainId,
           votingStrategy.id
         );
+
+        contributions = await hotfixForRounds(roundId, contributions);
+
         results = await matchQFContributions(
           chainId as ChainId,
           metadata,
