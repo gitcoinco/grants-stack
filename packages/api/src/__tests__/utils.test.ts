@@ -25,25 +25,25 @@ const fetchMock = fetch as FetchMock;
 describe("getGraphQLEndpoint", () => {
   it("returns the right graphQL endpoint based on chainID", () => {
     expect(getGraphQLEndpoint(ChainId.OPTIMISM_MAINNET)).toEqual(
-     process.env.SUBGRAPH_OPTIMISM_MAINNET_API
+     `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_MAINNET)).toEqual(
-      process.env.SUBGRAPH_FANTOM_MAINNET_API
+      `${process.env.SUBGRAPH_FANTOM_MAINNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_TESTNET)).toEqual(
-      process.env.SUBGRAPH_FANTOM_TESTNET_API
+      `${process.env.SUBGRAPH_FANTOM_TESTNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.GOERLI)).toEqual(
-      process.env.SUBGRAPH_GOERLI_API
+      `${process.env.SUBGRAPH_GOERLI_API}`
     );
   });
 
   it("returns the default graphQL endpoint for invalid chainID", () => {
     expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
-      process.env.SUBGRAPH_DUMMY_API
+      `${process.env.SUBGRAPH_DUMMY_API}`
     );
   });
 });
