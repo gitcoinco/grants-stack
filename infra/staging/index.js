@@ -91,7 +91,7 @@ const db_secgrp = new aws.ec2.SecurityGroup("db_secgrp", {
     }],
 });
 
-const postgresql = new aws.rds.Instance("grants-database", {
+const postgresql = new aws.rds.Instance("grantsdatabase", {
     allocatedStorage: 50,
     engine: "postgres",
     instanceClass: "db.t3.medium",
