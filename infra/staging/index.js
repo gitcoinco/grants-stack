@@ -159,6 +159,8 @@ const api_service = new aws.ecs.Service("api", {
         containerName: "api",
         containerPort: 8080,
     }],
+}, {
+    dependsOn: [grant_target]
 });
 
 // Load Balancer
