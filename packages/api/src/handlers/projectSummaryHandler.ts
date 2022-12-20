@@ -11,13 +11,14 @@ import {
   fetchQFContributionsForProjects,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
-import {PrismaClient, VotingStrategy} from "@prisma/client";
+import { PrismaClient, VotingStrategy } from "@prisma/client";
 import NodeCache from "node-cache";
 
 const prisma = new PrismaClient();
 
 // Schedule cache invalidation every 10 minutes
 const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
+let updatedAt: Date;
 
 /**
  * projectSummaryHandler is a function that handles HTTP requests
@@ -34,16 +35,19 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 400, "error: missing parameter chainId, roundId, or projectId");
   }
 
+  // check if force query is set
+  const forceQuery = req.query.force === "true";
+
   // Load from internal cache if available
-  const projectSummaryFromCache = cache.get(`${chainId}-${roundId}-${projectId}`);
-  if (projectSummaryFromCache) {
-    return handleResponse(res, 200, "project summary (cache)", projectSummaryFromCache);
+  const projectSummaryFromCache = cache.get(`${chainId}-${roundId}-${projectId}-summary`);
+  if (projectSummaryFromCache && !forceQuery) {
+    return handleResponse(res, 200, `project summary`, {...projectSummaryFromCache, updatedAt});
   }
 
   try {
     // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
-    const { votingStrategy } = metadata;
+    const {votingStrategy} = metadata;
     const chainIdVerbose = getChainVerbose(chainId);
     const round = await prisma.round.upsert({
       where: {
@@ -72,13 +76,12 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
         chainId: chainIdVerbose,
         projectId: projectId,
       }
-
     });
 
     const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId]);
 
     // upload to project summary to db
-    await prisma.projectSummary.upsert({
+    const projectSummary = await prisma.projectSummary.upsert({
       where: {
         projectId: project.id,
       },
@@ -97,7 +100,9 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
       }
     });
 
-    return handleResponse(res, 200, "project summary", results);
+    updatedAt = projectSummary.updatedAt;
+
+    return handleResponse(res, 200, `project summary`, {...results, updatedAt});
   } catch (err) {
     return handleResponse(res, 500, "error: something went wrong", err);
   }
@@ -117,7 +122,7 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
-  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+  let {id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
   strategyName = getStrategyName(strategyName);
 
@@ -128,15 +133,15 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
       const contributions = await fetchQFContributionsForProjects(chainId, votingStrategyId, projectIds);
 
       // fetch round stats      
-      results =  await summarizeQFContributions(chainId, contributions);
+      results = await summarizeQFContributions(chainId, contributions);
+      updatedAt = new Date();
+      // cache results
+      for (const projectId of projectIds) {
+        cache.set(`${chainId}-${roundId}-${projectId}-summary`, {...results, updatedAt});
+      }
       break;
     default:
       throw("error: unsupported voting strategy");
-  }
-
-  // cache results
-  for (const projectId of projectIds) {
-    cache.set(`${chainId}-${roundId}-${projectId}`, results);
   }
 
   return results;

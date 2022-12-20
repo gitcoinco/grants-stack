@@ -12,13 +12,14 @@ import {
   fetchQFContributionsForRound,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
-import { PrismaClient, VotingStrategy } from "@prisma/client";
+import {PrismaClient, VotingStrategy} from "@prisma/client";
 import NodeCache from "node-cache";
 
 const prisma = new PrismaClient();
 
 // Schedule cache invalidation every 10 minutes
 const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
+let updatedAt: Date;
 
 /**
  * roundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
@@ -34,16 +35,19 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 400, "error: missing parameter chainId or roundId");
   }
 
+  // check if force query is set
+  const forceQuery = req.query.force === "true";
+
   // Load from internal cache if available
-  const summaryFromCache = cache.get(`${chainId}-${roundId}`);
-  if (summaryFromCache) {
-    return handleResponse(res, 200, "round summary (cache)", summaryFromCache);
+  const summaryFromCache = cache.get(`${chainId}-${roundId}-summary`);
+  if (summaryFromCache && !forceQuery) {
+    return handleResponse(res, 200, "round summary", summaryFromCache);
   }
 
   try {
     // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
-    const { votingStrategy } = metadata;
+    const {votingStrategy} = metadata;
     const chainIdVerbose = getChainVerbose(chainId);
     const round = await prisma.round.upsert({
       where: {
@@ -62,9 +66,9 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     const results = await getRoundSummary(chainId as ChainId, roundId);
 
     // upload summary to db
-    await prisma.summary.upsert({
+    await prisma.roundSummary.upsert({
       where: {
-          roundId: round.id,
+        roundId: round.id,
       },
       update: {
         contributionCount: results.contributionCount,
@@ -81,11 +85,13 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
       }
     });
 
+    updatedAt = round.updatedAt;
+
     return handleResponse(
       res,
       200,
       "round summary",
-      results
+      {...results, updatedAt}
     );
   } catch (err) {
     return handleResponse(res, 500, "error: something went wrong", err);
@@ -108,7 +114,7 @@ export const getRoundSummary = async (
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
-  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+  let {id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
   strategyName = getStrategyName(strategyName);
 
@@ -117,17 +123,15 @@ export const getRoundSummary = async (
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch contributions
       const contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
-
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
-
+      // cache results
+      updatedAt = new Date();
+      cache.set(`${chainId}-${roundId}-summary`, {...results, updatedAt});
       break;
     default:
       throw "error: unsupported voting strategy";
   }
-
-  // cache results
-  cache.set(`${chainId}-${roundId}`, results);
 
   return results;
 };
