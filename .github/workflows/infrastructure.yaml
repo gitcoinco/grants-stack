@@ -105,7 +105,6 @@ jobs:
 
       - name: Run Pulumi Up
         uses: pulumi/actions@v3
-        if: inputs.pulumi_deploy     
         with:
           command: up
           stack-name: ${{ secrets.PULUMI_STACK }}
