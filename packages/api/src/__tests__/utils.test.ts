@@ -73,6 +73,7 @@ describe("getChainVerbose", () => {
     expect(getChainVerbose(ChainId.OPTIMISM_MAINNET)).toEqual(
       "OPTIMISM_MAINNET"
     );
+    expect(getChainVerbose(ChainId.MAINNET)).toEqual("MAINNET");
     expect(getChainVerbose(ChainId.FANTOM_MAINNET)).toEqual("FANTOM_MAINNET");
     expect(getChainVerbose(ChainId.FANTOM_TESTNET)).toEqual("FANTOM_TESTNET");
     expect(getChainVerbose(ChainId.GOERLI)).toEqual("GOERLI");

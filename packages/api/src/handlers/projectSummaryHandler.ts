@@ -2,8 +2,8 @@ import {
   ChainId,
 } from "../types";
 import {
-  fetchRoundMetadata, getChainVerbose,
-  getStrategyName,
+  fetchRoundMetadata,
+  getChainVerbose,
   handleResponse,
 } from "../utils";
 import { Request, Response } from "express";
@@ -13,6 +13,7 @@ import {
 } from "../votingStrategies/linearQuadraticFunding";
 import { PrismaClient, VotingStrategy } from "@prisma/client";
 import NodeCache from "node-cache";
+import { hotfixForRounds } from "../hotfixes";
 
 const prisma = new PrismaClient();
 
@@ -49,10 +50,10 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
 
-    const strategyName = getStrategyName(votingStrategy.strategyName);
+    const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
     // throw error if voting strategy is not supported
-    if (strategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
+    if (votingStrategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
       throw "error: unsupported voting strategy";
     }
 
@@ -67,7 +68,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
       create: {
         chainId: chainIdVerbose,
         roundId,
-        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+        votingStrategyName: votingStrategyName,
       },
     });
 
@@ -132,15 +133,15 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
 
   let {id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
-  strategyName = getStrategyName(strategyName);
-
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch votes
-      const contributions = await fetchQFContributionsForProjects(chainId, votingStrategyId, projectIds);
+      let contributions = await fetchQFContributionsForProjects(chainId, votingStrategyId, projectIds);
 
-      // fetch round stats      
+      contributions = await hotfixForRounds(roundId, contributions, projectIds);
+
+      // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
       updatedAt = new Date();
       // cache results

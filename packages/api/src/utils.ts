@@ -70,6 +70,9 @@ export const getUSDCAddress = (chainId: ChainId) => {
  */
 export const getChainVerbose = (id: string) => {
   switch (id) {
+    case ChainId.MAINNET:
+      return "MAINNET";
+
     case ChainId.OPTIMISM_MAINNET:
       return "OPTIMISM_MAINNET";
 
@@ -177,11 +180,12 @@ export const fetchRoundMetadata = async (
   // fetch round metadata
   const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+  const strategyName = getStrategyName(data?.votingStrategy.strategyName);
 
   const metadata: RoundMetadata = {
     votingStrategy: {
       id: data?.votingStrategy.id,
-      strategyName: data?.votingStrategy.strategyName,
+      strategyName: strategyName,
     },
     roundStartTime: data?.roundStartTime,
     roundEndTime: data?.roundEndTime,

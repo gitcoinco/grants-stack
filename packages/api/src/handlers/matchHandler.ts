@@ -48,6 +48,8 @@ export const matchHandler = async (req: Request, res: Response) => {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
 
+    const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
+
     const chainIdVerbose = getChainVerbose(chainId);
     const round = await prisma.round.upsert({
       where: {
@@ -59,11 +61,11 @@ export const matchHandler = async (req: Request, res: Response) => {
       create: {
         chainId: chainIdVerbose,
         roundId,
-        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+        votingStrategyName: votingStrategyName,
       },
     });
 
-    switch (votingStrategy.strategyName) {
+    switch (votingStrategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
         let contributions = await fetchQFContributionsForRound(
           chainId as ChainId,
@@ -119,6 +121,7 @@ export const matchHandler = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
+    console.log(error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ChainId" ADD VALUE 'MAINNET';

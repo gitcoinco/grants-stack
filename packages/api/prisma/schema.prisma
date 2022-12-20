@@ -96,6 +96,7 @@ enum ChainId {
   FANTOM_MAINNET
   FANTOM_TESTNET
   LOCAL_ROUND_LAB
+  MAINNET
 }
 
 enum VotingStrategy {

@@ -1,17 +1,29 @@
 import {QFContribution} from "../types";
 import fetch from 'node-fetch';
-import { ethers } from "ethers";
-const fs = require('fs');
+import { BigNumber, ethers } from "ethers";
 
-export const addMissingUNICEFContributions = async (contributions: QFContribution[]): Promise<QFContribution[]> => {
+export const addMissingUNICEFContributions = async (contributions: QFContribution[], projectIds?: string[]): Promise<QFContribution[]> => {
 
-  const missingContributions = await fetchMissingContributions();
+  console.log("Contributions", contributions.length);
+
+  let missingContributions = await fetchMissingContributions();
+
+  if (projectIds) {
+    missingContributions = missingContributions.filter((contribution: QFContribution) =>
+      projectIds.includes(contribution.projectId)
+    )
+  }
+
   contributions.push(...missingContributions);
+
+  console.log("Missing Contributions", missingContributions.length);
+
+  console.log("Total Contributions", contributions.length);
 
   return contributions;
 }
 
-const abi = [ 
+const abi = [
   "function vote(bytes[] encodedVotes) payable",
 ];
 
@@ -61,22 +73,18 @@ const fetchMissingContributions = async () : Promise<QFContribution[]> => {
       const contribution: QFContribution = {
         contributor: from,
         token: decodedVote[0],
-        amount: decodedVote[1].toString(),
+        amount: BigNumber.from(decodedVote[1].toString()),
         projectId: decodedVote[2]
       };
 
-      contributions.push(contribution);      
-      
+      contributions.push(contribution);
+
     });
     } catch(e) {
       console.log("Skipping txn which is not vote:", txn.hash)
     }
- 
+
   });
- 
-  fs.writeFile("./unicef-optimism-contribution.json", JSON.stringify(contributions), () => {
-    console.log("written to file");
-  })
 
   return contributions;
 }
