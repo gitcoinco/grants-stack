@@ -159,8 +159,6 @@ const api_service = new aws.ecs.Service("api", {
         containerName: "api",
         containerPort: 8080,
     }],
-}, {
-    dependsOn: [grant_target]
 });
 
 // Load Balancer
@@ -172,9 +170,9 @@ const grant = new aws.lb.LoadBalancer("grants", {
     enableDeletionProtection: true,
 });
 
-const grant_target = new aws.lb.TargetGroup("grants", {
-    port: 80,
-    protocol: "HTTP",
-    vpcId: vpc.id,
-});
+// const grant_target = new aws.lb.TargetGroup("grants", {
+//     port: 80,
+//     protocol: "HTTP",
+//     vpcId: vpc.id,
+// });
 
