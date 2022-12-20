@@ -154,4 +154,25 @@ const api_service = new aws.ecs.Service("api", {
     cluster: grantsEcs.id,
     taskDefinition: api.arn,
     desiredCount: 1,
+    loadBalancers: [{
+        targetGroupArn: grant_target.arn,
+        containerName: "api",
+        containerPort: 8080,
+    }],
 });
+
+// Load Balancer
+const grant = new aws.lb.LoadBalancer("grants", {
+    internal: false,
+    loadBalancerType: "application",
+    securityGroups: [],
+    subnets: [private_subnet],
+    enableDeletionProtection: true,
+});
+
+const grant_target = new aws.lb.TargetGroup("grants", {
+    port: 80,
+    protocol: "HTTP",
+    vpcId: vpc.id,
+});
+
