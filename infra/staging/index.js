@@ -32,7 +32,7 @@ const public_subnet = new aws.ec2.Subnet("public", {
 });
 
 const private_subnet = new aws.ec2.Subnet("private", {
-    cidrBlock: "10.0.2.0/24",
+    cidrBlock: "10.0.5.0/24",
     vpcId: vpc.id,
     availabilityZone: "us-west-2a",
     tags: {
