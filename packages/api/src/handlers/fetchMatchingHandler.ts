@@ -31,7 +31,7 @@ const prisma = new PrismaClient();
         // fetch matches for a given project in the round
         results = await prisma.match.findFirst({
           where: {
-            roundId: round.id,
+            roundId: roundId,
             projectId: projectId,
           },
         });
@@ -39,7 +39,7 @@ const prisma = new PrismaClient();
         // fetch matches for all projects in the round
         results = await prisma.match.findMany({
           where: {
-            roundId: round.id,
+            roundId: roundId,
           },
         });
       }
