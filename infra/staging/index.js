@@ -34,6 +34,17 @@ const public_subnet = new aws.ec2.Subnet("public", {
 const private_subnet = new aws.ec2.Subnet("private", {
     cidrBlock: "10.0.2.0/24",
     vpcId: vpc.id,
+    availabilityZone: "us-west-2a",
+    tags: {
+        Name: "Private",
+        App: "Grants",
+    },
+});
+
+const private_subnet_two = new aws.ec2.Subnet("private", {
+    cidrBlock: "10.0.3.0/24",
+    vpcId: vpc.id,
+    availabilityZone: "us-west-2b",
     tags: {
         Name: "Private",
         App: "Grants",
@@ -63,7 +74,7 @@ const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
 
 // Database
 let dbSubnetGroup = new aws.rds.SubnetGroup("rds-subnet-group", {
-    subnetIds: [private_subnet.id]
+    subnetIds: [private_subnet.id, private_subnet_two.id]
 });
 
 const db_secgrp = new aws.ec2.SecurityGroup("db_secgrp", {
