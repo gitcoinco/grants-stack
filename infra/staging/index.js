@@ -58,7 +58,7 @@ const gw = new aws.ec2.InternetGateway("gw", {
     },
 });
 
-const nat_ip = new aws.ec2.Eip("nat_ip", {
+const nat_ip = new aws.ec2.Eip("nat_ip_new", {
     vpc: true,
 });
 
