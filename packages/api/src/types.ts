@@ -76,7 +76,7 @@ export type QFContribution = {
 export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
-  totalContributionsInUSD?: string;
-  averageUSDContribution?: string;
+  totalContributionsInUSD?: number;
+  averageUSDContribution?: number;
   projects?: any;
 };

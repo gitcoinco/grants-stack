@@ -27,8 +27,8 @@ export const summarizeQFContributions = async (
   const summary: QFContributionSummary = {
     contributionCount: 0,
     uniqueContributors: 0,
-    totalContributionsInUSD: "0",
-    averageUSDContribution: "0",
+    totalContributionsInUSD: 0,
+    averageUSDContribution: 0,
   };
 
   if (contributions.length == 0) {
@@ -80,12 +80,12 @@ export const summarizeQFContributions = async (
     return;
   });
 
-  summary.totalContributionsInUSD = totalContributionsInUSD.toString();
+  summary.totalContributionsInUSD = totalContributionsInUSD;
   summary.contributionCount = contributions.length;
   summary.uniqueContributors = summaryContributions.contributors.length;
   summary.averageUSDContribution = (
     Number(summary.totalContributionsInUSD) / summary.uniqueContributors
-  ).toString();
+  );
 
   return summary;
 };

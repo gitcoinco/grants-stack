@@ -47,11 +47,10 @@ model Match {
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
   projectId               String
-  amountInUSD             Float
+  matchAmountInUSD        Float
   totalContributionsInUSD Float
-  contributionCount       Int
-  matchPercentage         Float
-  amountInToken           Float
+  matchPoolPercentage     Float
+  matchAmountInToken      Float
   round                   Round    @relation(fields: [roundId], references: [roundId])
   roundId                 String
 
@@ -63,7 +62,7 @@ model RoundSummary {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
-  contributionCount       Float
+  contributionCount       Int
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
@@ -78,7 +77,7 @@ model ProjectSummary {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
-  contributionCount       Float
+  contributionCount       Int
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
