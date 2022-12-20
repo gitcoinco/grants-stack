@@ -128,7 +128,7 @@ const secgrp = new aws.ec2.SecurityGroup("grants", {
     }],
 });
 
-const grant = new aws.lb.LoadBalancer("grants", {
+const grant_lb = new aws.lb.LoadBalancer("grants", {
     internal: false,
     loadBalancerType: "application",
     securityGroups: [secgrp.id],
@@ -137,9 +137,36 @@ const grant = new aws.lb.LoadBalancer("grants", {
 });
 
 const grant_target = new aws.lb.TargetGroup("grants", {
+    targetType: "ip",
     port: 80,
     protocol: "HTTP",
     vpcId: vpc.id,
+});
+
+const listener = new aws.lb.Listener("grants", {
+    loadBalancerArn: grant_lb.arn,
+    port: 80,
+    protocol: "HTTP",
+    defaultActions: [{
+        type: "redirect",
+        redirect: {
+            port: "443",
+            protocol: "HTTPS",
+            statusCode: "HTTP_301",
+        },
+    }],
+});
+
+const listener_https = new aws.lb.Listener("grants", {
+    loadBalancerArn: grant_lb.arn,
+    port: 443,
+    protocol: "HTTPS",
+    defaultActions: [
+        {
+        type: "forward",
+        targetGroupArn: grant_target.arn,
+        },
+    ],
 });
 
 // Fargate Instance
