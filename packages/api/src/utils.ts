@@ -1,10 +1,11 @@
+import { VotingStrategy } from "@prisma/client";
 import { Response } from "express";
 import fetch from "node-fetch";
 import {
   ChainId,
   ChainName,
   RoundMetadata,
-  DenominationResponse,
+  DenominationResponse
 } from "./types";
 
 /**
@@ -36,6 +37,38 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
   }
 };
 
+
+/**
+ * Returns USDC address based on chain Id.
+ * Useful when you need to convert amount from a given token
+ * to USDC (stable coin)
+ *
+ * @param chainId ChainId
+ * @returns string
+ */
+export const getUSDCAddress = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET:
+      return "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
+
+    case ChainId.FANTOM_MAINNET:
+      return "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
+
+    case ChainId.MAINNET:
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+
+    default:
+      return "0x0000000000000000000000000000000000000000";
+  }
+};
+
+
+/**
+ * Returns the chain name given the id
+ *
+ * @param id string
+ * @returns string
+ */
 export const getChainVerbose = (id: string) => {
   switch (id) {
     case ChainId.OPTIMISM_MAINNET:
@@ -161,6 +194,16 @@ export const fetchRoundMetadata = async (
   return metadata;
 };
 
+/**
+ * Generic function which handles how response is sent
+ * for any API implemented in this service
+ *
+ * @param res Response
+ * @param code number
+ * @param message string
+ * @param body any
+ * @returns res.json
+ */
 export const handleResponse = (
   res: Response,
   code: number,
@@ -180,11 +223,16 @@ export const handleResponse = (
   });
 };
 
+/**
+ * Util function to get chainName for coingecko API calls
+ *
+ * @param chainId
+ * @returns { string, boolean}
+ */
 export const getChainName = (chainId: ChainId) => {
   let error = true;
   let chainName;
 
-  // TODO: Export this to constants
   const coingeckoSupportedChainNames: Record<number, string> = {
     [ChainId.MAINNET]: "ethereum",
     [ChainId.OPTIMISM_MAINNET]: "optimistic-ethereum",
@@ -224,14 +272,16 @@ export async function getStartAndEndTokenPrices(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
       );
     }
+    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`,
+      url,
       {
         headers: {
           Accept: "application/json",
         },
       }
     );
+    // TODO: Log to sentry
     const data = await res.json();
 
     if (data.error || data.status) {
@@ -288,4 +338,93 @@ export async function denominateAs(
       message: err,
     } as DenominationResponse;
   }
+}
+
+
+/**
+ * This is temporary util function to support backward
+ * compatibility with older subgraph version
+ *
+ * TODO: remove after re-indexing mainnet subgraph
+ *
+ * @param strategyName string
+ * @returns string
+ */
+export const getStrategyName = (strategyName: string) => {
+  if (strategyName === "quadraticFunding") {
+    return VotingStrategy.LINEAR_QUADRATIC_FUNDING
+  }
+  return strategyName;
+}
+
+
+/**
+ * fetchTokenPrices is an async function that retrieves the current prices
+ * of the tokens in tokenAddresses in USD.
+ * If the native token of the chain with id chainId is included in
+ * tokenAddresses, its price is also included in the returned data.
+ *
+ * @param {ChainId} chainId - The id of the chain to retrieve the native token's price from.
+ * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
+ * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
+ */
+export const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
+  let data: any = {};
+  try {
+    const { chainName } = getChainName(chainId);
+
+    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
+      ","
+    )}&vs_currencies=usd`;
+
+    const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const tokenPrices = await resTokenPriceEndpoint.json();
+    data = { ...data, ...tokenPrices };
+
+    if (
+      tokenAddresses.includes("0x0000000000000000000000000000000000000000") &&
+      chainName
+    ) {
+      const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
+      const resNativePriceEndpoint = await fetch(nativePriceEndpoint, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const nativeTokenPrice = (await resNativePriceEndpoint.json())[chainName];
+      data = {
+        ...data,
+        "0x0000000000000000000000000000000000000000": nativeTokenPrice,
+      };
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return data;
+};
+
+/**
+ * Util function to group objects by property
+ * @param list 
+ * @param keyGetter 
+ * @returns 
+ */
+export function groupBy(list: any[], keyGetter:any) {
+  const map = new Map();
+  list.forEach((item) => {
+    const key = keyGetter(item);
+    const collection = map.get(key);
+    if (!collection) {
+        map.set(key, [item]);
+    } else {
+        collection.push(item);
+    }
+  });
+  return map;
 }

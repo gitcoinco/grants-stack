@@ -14,6 +14,9 @@ export default function ThankYou() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId/:txHash/thankyou");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
+  // scroll to top of window on load
+  window.scrollTo(0,0)
+
   const { chainId, roundId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
