@@ -25,25 +25,25 @@ const fetchMock = fetch as FetchMock;
 describe("getGraphQLEndpoint", () => {
   it("returns the right graphQL endpoint based on chainID", () => {
     expect(getGraphQLEndpoint(ChainId.OPTIMISM_MAINNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet"
+     process.env.SUBGRAPH_OPTIMISM_MAINNET_API
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_MAINNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet"
+      process.env.SUBGRAPH_FANTOM_MAINNET_API
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_TESTNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet"
+      process.env.SUBGRAPH_FANTOM_TESTNET_API
     );
 
     expect(getGraphQLEndpoint(ChainId.GOERLI)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet"
+      process.env.SUBGRAPH_GOERLI_API
     );
   });
 
   it("returns the default graphQL endpoint for invalid chainID", () => {
     expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs"
+      process.env.SUBGRAPH_DUMMY_API
     );
   });
 });
@@ -155,7 +155,7 @@ describe("fetchFromGraphQL", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.SUBGRAPH_GOERLI_API}`,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -190,7 +190,7 @@ describe("fetchFromGraphQL", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.SUBGRAPH_GOERLI_API}`,
       params
     );
   });
@@ -205,7 +205,7 @@ describe("fetchFromGraphQL", () => {
     await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, "");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
+      `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`,
       {
         body: '{"query":"","variables":{}}',
         headers: { "Content-Type": "application/json" },

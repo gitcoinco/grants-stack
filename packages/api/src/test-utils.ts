@@ -1,4 +1,4 @@
-import { QFContributionSummary, QFVote, RoundMetadata } from "./types";
+import { QFContributionSummary, QFContribution, RoundMetadata } from "./types";
 import { faker } from '@faker-js/faker';
 import { BigNumber } from "ethers";
 
@@ -20,7 +20,7 @@ export const mockQFContributionSummary: QFContributionSummary = {
   averageUSDContribution: faker.datatype.number().toString(),
 };
 
-export const mockQFVote: QFVote = {
+export const mockQFVote: QFContribution = {
   amount: BigNumber.from("1"),
   token: faker.finance.ethereumAddress.toString(),
   contributor: faker.finance.ethereumAddress.toString(),

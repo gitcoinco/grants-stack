@@ -1,6 +1,6 @@
 import {
   ChainId,
-  QFVote, Results,
+  QFContribution, Results,
   RoundMetadata,
 } from "../types";
 import {Request, Response} from "express";
@@ -124,7 +124,7 @@ export const matchHandler = async (req: Request, res: Response) => {
 export const matchQFContributions = async (
   chainId: ChainId,
   metadata: RoundMetadata,
-  contributions: QFVote[]
+  contributions: QFContribution[]
 ) => {
   const {totalPot, roundStartTime, roundEndTime, token} = metadata;
   const contributionAddresses = new Set<string>();
