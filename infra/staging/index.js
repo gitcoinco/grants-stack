@@ -162,6 +162,12 @@ const api_service = new aws.ecs.Service("api", {
     networkConfiguration: {
         subnets: [private_subnet.id]
     },
+    environment: [
+        {
+            name: "DATABASE_URL", 
+            value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${postgresql.endpoint}/${dbName}`
+        }
+    ],
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
         containerName: "api",
