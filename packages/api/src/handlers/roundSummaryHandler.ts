@@ -42,7 +42,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
   // Load from internal cache if available
   const summaryFromCache = cache.get(`${chainId}-${roundId}-summary`);
   if (summaryFromCache && !forceQuery) {
-    return handleResponse(res, 200, "round summary", summaryFromCache);
+    return handleResponse(res, 200, `round summary: ${roundId}`, summaryFromCache);
   }
 
   try {
@@ -99,7 +99,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(
       res,
       200,
-      "round summary",
+      `round summary: ${roundId}`,
       {...results, updatedAt}
     );
   } catch (err) {
