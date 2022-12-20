@@ -42,7 +42,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
   // Load from internal cache if available
   const projectSummaryFromCache = cache.get(`${chainId}-${roundId}-${projectId}-summary`);
   if (projectSummaryFromCache && !forceQuery) {
-    return handleResponse(res, 200, `project summary`, {...projectSummaryFromCache, updatedAt});
+    return handleResponse(res, 200, `project summary ${projectId}`, {...projectSummaryFromCache, updatedAt});
   }
 
   try {
@@ -111,7 +111,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
 
     updatedAt = projectSummary.updatedAt;
 
-    return handleResponse(res, 200, `project summary`, {...results, updatedAt});
+    return handleResponse(res, 200, `project summary: ${projectId}`, {...results, updatedAt});
   } catch (err) {
     return handleResponse(res, 500, "error: something went wrong", err);
   }

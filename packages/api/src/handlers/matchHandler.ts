@@ -39,7 +39,7 @@ export const matchHandler = async (req: Request, res: Response) => {
   // Load from internal cache if available
   const matchFromCache = cache.get(`${chainId}-${roundId}-match`);
   if (matchFromCache && !forceQuery) {
-    return handleResponse(res, 200, "round match ", {...matchFromCache, updatedAt});
+    return handleResponse(res, 200, `round match: ${roundId}`, {...matchFromCache, updatedAt});
   }
 
   let results: Results | undefined;
@@ -107,13 +107,13 @@ export const matchHandler = async (req: Request, res: Response) => {
             },
           },
           update: {
-            amount: projectMatch.match,
+            amountInUSD: projectMatch.amountInUSD,
           },
           create: {
-            amount: projectMatch.match,
+            amountInUSD: projectMatch.amountInUSD,
             projectId: projectMatch.projectId,
             contributionCount: Number(projectMatch.contributionCount),
-            sumOfContributions: Number(projectMatch.sumOfContributions),
+            totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
             roundId: roundId,
           },
         });
@@ -125,7 +125,7 @@ export const matchHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 500, "error: something went wrong");
   }
 
-  return handleResponse(res, 200, "match calculations", {...results, updatedAt});
+  return handleResponse(res, 200, `round match: ${roundId}`, {...results, updatedAt});
 };
 
 export const matchQFContributions = async (
@@ -198,12 +198,13 @@ export const matchQFContributions = async (
     const match = Math.pow(sumOfSquares, 2) - sumOfContributions;
 
     matchResults.push({
-      projectId,
-      match,
-      sumOfContributions,
-      contributionCount,
+      projectId: projectId,
+      amountInUSD: match,
+      totalContributionsInUSD: sumOfContributions,
+      contributionCount: contributionCount,
     });
     totalMatch += isNaN(match) ? 0 : match; // TODO: what should happen when match is NaN?
+    // TODO: Error out if NaN
   }
 
   const potTokenPrice: any = await fetchAverageTokenPrices(
@@ -217,7 +218,7 @@ export const matchQFContributions = async (
 
   if (isSaturated) {
     matchResults.forEach((result) => {
-      result.match *= (totalPot * potTokenPrice[token]) / totalMatch;
+      result.amountInUSD *= (totalPot * potTokenPrice[token]) / totalMatch;
     });
   }
 
