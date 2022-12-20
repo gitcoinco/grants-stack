@@ -158,11 +158,11 @@ const api_service = new aws.ecs.Service("api", {
     cluster: grantsEcs.id,
     taskDefinition: api.arn,
     desiredCount: 1,
-    loadBalancers: [{
-        targetGroupArn: grant_target.arn,
-        containerName: "api",
-        containerPort: 8080,
-    }],
+    // loadBalancers: [{
+    //     targetGroupArn: grant_target.arn,
+    //     containerName: "api",
+    //     containerPort: 8080,
+    // }],
 });
 
 // Load Balancer
