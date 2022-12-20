@@ -3,8 +3,8 @@ import {
   QFContributionSummary,
 } from "../types";
 import {
-  fetchRoundMetadata, getChainVerbose,
-  getStrategyName,
+  fetchRoundMetadata,
+  getChainVerbose,
   handleResponse,
 } from "../utils";
 import { Request, Response } from "express";
@@ -14,6 +14,7 @@ import {
 } from "../votingStrategies/linearQuadraticFunding";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import NodeCache from "node-cache";
+import { hotfixForRounds } from "../hotfixes";
 
 const prisma = new PrismaClient();
 
@@ -49,10 +50,14 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
     const chainIdVerbose = getChainVerbose(chainId);
+
+    const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
+
     // throw error if voting strategy is not supported
-    if (votingStrategy.strategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
+    if (votingStrategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
       throw "error: unsupported voting strategy";
     }
+
     const round = await prisma.round.upsert({
       where: {
         roundId: roundId,
@@ -63,7 +68,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
       create: {
         chainId: chainIdVerbose,
         roundId,
-        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+        votingStrategyName: votingStrategyName,
       },
     });
 
@@ -98,6 +103,8 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
       {...results, updatedAt}
     );
   } catch (err) {
+    console.log(err);
+
     return handleResponse(res, 500, "error: something went wrong", err);
   }
 };
@@ -120,13 +127,14 @@ export const getRoundSummary = async (
 
   let {id: votingStrategyId, strategyName} = metadata.votingStrategy;
 
-  strategyName = getStrategyName(strategyName);
-
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch contributions
-      const contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
+      let contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
+
+      contributions = await hotfixForRounds(roundId, contributions);
+
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
       // cache results

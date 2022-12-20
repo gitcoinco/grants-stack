@@ -11,7 +11,7 @@ export enum ChainId {
   OPTIMISM_MAINNET = "10",
   FANTOM_MAINNET = "250",
   FANTOM_TESTNET = "4002",
-  LOCAL_ROUND_LAB = "3", // TODO: remove this later
+  LOCAL_ROUND_LAB = "3",
 }
 
 export type Results = {
@@ -52,28 +52,10 @@ export type HandleResponseObject = {
 /* = LinearQF = */
 /****************/
 
-// TODO: REMOVE
-export type QFContribution = {
-  projectId: string;
-  amount: number;
-  convertedAmount: number;
-  contributor: string;
-  timestamp?: number;
-  token: string;
-};
 
 export type RoundProject = {
   id: string;
   payoutAddress: string;
-};
-
-// TODO: REMOVE
-export type QFContributionsByProjectId = {
-  [projectId: string]: {
-    contributions: {
-      [contributor: string]: QFContribution;
-    };
-  };
 };
 
 export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
@@ -84,8 +66,7 @@ export type DenominationResponse = {
   message: string | Error;
 }
 
-// TODO: rename to QFContribution
-export type QFVote = {
+export type QFContribution = {
   amount: BigNumber;
   token: string;
   contributor: string;

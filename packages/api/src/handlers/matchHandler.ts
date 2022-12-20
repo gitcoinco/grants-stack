@@ -1,6 +1,6 @@
 import {
   ChainId,
-  QFVote, Results,
+  QFContribution, Results,
   RoundMetadata,
 } from "../types";
 import {Request, Response} from "express";
@@ -13,6 +13,7 @@ import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticF
 import {formatUnits} from "ethers/lib/utils";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import NodeCache from "node-cache";
+import { hotfixForRounds } from  "../hotfixes/index";
 
 const prisma = new PrismaClient();
 
@@ -47,6 +48,8 @@ export const matchHandler = async (req: Request, res: Response) => {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
 
+    const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
+
     const chainIdVerbose = getChainVerbose(chainId);
     const round = await prisma.round.upsert({
       where: {
@@ -58,16 +61,19 @@ export const matchHandler = async (req: Request, res: Response) => {
       create: {
         chainId: chainIdVerbose,
         roundId,
-        votingStrategyName: <VotingStrategy>votingStrategy.strategyName,
+        votingStrategyName: votingStrategyName,
       },
     });
 
-    switch (votingStrategy.strategyName) {
+    switch (votingStrategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
-        const contributions = await fetchQFContributionsForRound(
+        let contributions = await fetchQFContributionsForRound(
           chainId as ChainId,
           votingStrategy.id
         );
+
+        contributions = await hotfixForRounds(roundId, contributions);
+
         results = await matchQFContributions(
           chainId as ChainId,
           metadata,
@@ -115,6 +121,7 @@ export const matchHandler = async (req: Request, res: Response) => {
     }
 
   } catch (error) {
+    console.log(error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 
@@ -124,7 +131,7 @@ export const matchHandler = async (req: Request, res: Response) => {
 export const matchQFContributions = async (
   chainId: ChainId,
   metadata: RoundMetadata,
-  contributions: QFVote[]
+  contributions: QFContribution[]
 ) => {
   const {totalPot, roundStartTime, roundEndTime, token} = metadata;
   const contributionAddresses = new Set<string>();
