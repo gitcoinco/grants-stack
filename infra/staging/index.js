@@ -140,14 +140,14 @@ const api = new aws.ecs.TaskDefinition("api", {
     family: "api",
     networkMode: "awsvpc",
     requiresCompatibilities: ["FARGATE"],
-    cpu: "10",
-    memory: "512",
+    cpu: "1024",
+    memory: "2048",
     containerDefinitions: JSON.stringify([
         {
             name: "api",
             image: apiImage,
-            cpu: 10,
-            memory: 512,
+            cpu: 1024,
+            memory: 2048,
             essential: true,
             portMappings: [],
         },
