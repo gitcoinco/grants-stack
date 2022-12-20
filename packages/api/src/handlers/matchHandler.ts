@@ -107,15 +107,14 @@ export const matchHandler = async (req: Request, res: Response) => {
             },
           },
           update: {
-            amountInUSD: projectMatch.amountInUSD,
+            matchAmountInUSD: projectMatch.matchAmountInUSD,
           },
           create: {
-            amountInUSD: projectMatch.amountInUSD,
+            matchAmountInUSD: projectMatch.matchAmountInUSD,
             projectId: projectMatch.projectId,
-            contributionCount: Number(projectMatch.contributionCount),
             totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
-            matchPercentage: Number(projectMatch.matchPercentage),
-            amountInToken: Number(projectMatch.amountInToken),
+            matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
+            matchAmountInToken: Number(projectMatch.matchAmountInToken),
             roundId: roundId,
           },
         });
@@ -136,7 +135,6 @@ export const matchQFContributions = async (
   contributions: QFContribution[]
 ) => {
   const {totalPot, roundStartTime, roundEndTime, token} = metadata;
-  const contributionAddresses = new Set<string>();
 
   let isSaturated: boolean;
 
@@ -157,7 +155,6 @@ export const matchQFContributions = async (
       contributionsByProject[projectId] = {
         contributions: contribution ? {[contributor]: contribution} : {},
       };
-      contributionAddresses.add(contributor);
     }
 
     if (!contributionsByProject[projectId].contributions[contributor]) {
@@ -182,7 +179,6 @@ export const matchQFContributions = async (
   for (const projectId in contributionsByProject) {
     let sumOfSquares = 0;
     let sumOfContributions = 0;
-    let contributionCount = 0;
 
     Object.values(contributionsByProject[projectId].contributions).forEach(
       (contribution: any) => {
@@ -192,7 +188,6 @@ export const matchQFContributions = async (
           const convertedAmount = Number(formatUnits(amount)) * prices[token];
           sumOfSquares += Math.sqrt(convertedAmount);
           sumOfContributions += convertedAmount;
-          contributionCount++;
         }
       }
     );
@@ -201,19 +196,18 @@ export const matchQFContributions = async (
 
     matchResults.push({
       projectId: projectId,
-      amountInUSD: matchInUSD,
+      matchAmountInUSD: matchInUSD,
       totalContributionsInUSD: sumOfContributions,
-      contributionCount: contributionCount,
-      matchPercentage: 0, // init to zero
-      amountInToken: 0,
+      matchPoolPercentage: 0, // init to zero
+      matchAmountInToken: 0,
     });
     totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
     // TODO: Error out if NaN
   }
 
   for (const matchResult of matchResults) {
-    matchResult.matchPercentage = matchResult.amountInUSD / totalMatchInUSD;
-    matchResult.amountInToken = matchResult.matchPercentage * totalPot;
+    matchResult.matchPoolPercentage = matchResult.matchAmountInUSD / totalMatchInUSD;
+    matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
   }
   
   const potTokenPrice: any = await fetchAverageTokenPrices(
@@ -228,7 +222,7 @@ export const matchQFContributions = async (
   // NOTE: Investigate how this may affect matching token and percentage calculations
   if (isSaturated) {
     matchResults.forEach((result) => {
-      result.amountInUSD *= (totalPot * potTokenPrice[token]) / totalMatchInUSD;
+      result.matchAmountInUSD *= (totalPot * potTokenPrice[token]) / totalMatchInUSD;
     });
   }
 

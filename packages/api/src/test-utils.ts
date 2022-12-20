@@ -16,8 +16,8 @@ export const mockRoundMetadata: RoundMetadata = {
 export const mockQFContributionSummary: QFContributionSummary = {
   contributionCount: faker.datatype.number(),
   uniqueContributors: faker.datatype.number(),
-  totalContributionsInUSD: faker.datatype.number().toString(),
-  averageUSDContribution: faker.datatype.number().toString(),
+  totalContributionsInUSD: faker.datatype.number(),
+  averageUSDContribution: faker.datatype.number(),
 };
 
 export const mockQFVote: QFContribution = {
