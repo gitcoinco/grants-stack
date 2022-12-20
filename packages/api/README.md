@@ -37,14 +37,13 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 ### Endpoints
 
-| endpoint            | request method | body                                        | params                              |
-|---------------------|----------------|---------------------------------------------|-------------------------------------|
-| /calculate          | POST           | { "chainId" : string, "roundId" : string }  |                  -                  |
-| /fetch-matching     | GET            |                     -                       | roundId: string, projectId?: string |
-| /convert-price      | GET            |                     -                       | contract: string, chainId: string   |
-| /round-stats        | GET            |                     -                       | roundId: string, chainId: string    |
-| /project-stats      | GET            |                     -                       | roundId: string, chainId: string, projectID:string   |
-
+| Description                               | endpoint                                 | request method | Query Params / Body                       |
+|-------------------------------------------|------------------------------------------|----------------|-------------------------------------------|
+| fetched stored results of match endpoint  | /fetch-matching                          | GET            | roundId="ROUND_ID"&projectId="PROJECT_ID" |
+| fetch current token price conversion rate | /convert-price/:chainName/:tokenContract | GET            |                                           |
+| fetch round stats                         | /summary/:chainId/:roundId               | POST           |                                           |
+| fetch project in round stats              | /summary/:chainId/:roundId/:projectId    | POST           |                                           |
+| trigger matching calculations for round   | /match/:chainId/:roundId                 | POST           |                                           |
 
 
 ### Development
@@ -54,6 +53,9 @@ This package consists of
 - an express node server
 - prisma (ORM) for defining schema and CRUD queries
 - posgres DB
+
+
+#### Running Via Docker
 
 To run this application locally:
 
@@ -74,3 +76,32 @@ npm run prisma:docs     # view generated docs
 ```
 
 The doc app will run on `http://localhost:5858/`
+
+#### Running Locally
+
+1. Install postgres and have it running
+
+2. Install all dependencies 
+```
+yarn install
+```
+
+3. Generate the `.env` file by cloning `env.sample`
+
+4. Set `POSTGRES_HOST` as `localhost` in the env 
+
+5. Run node server
+```
+npm run dev
+```
+The node server will run on `http://localhost:8000/`
+
+
+### Making DB changes 
+
+Anytime changes the `prisma.schema` file is updated.
+Create the migration file for those changes by running
+
+```
+yarn prisma:migrate
+```
