@@ -96,6 +96,7 @@ const postgresql = new aws.rds.Instance("grantsdatabase", {
     engine: "postgres",
     instanceClass: "db.t3.medium",
     name: "grants-database",
+    dbName: "grants",
     password: dbPassword,
     username: dbUsername,
     skipFinalSnapshot: true,
