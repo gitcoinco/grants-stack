@@ -1,6 +1,6 @@
 import {Response} from "express";
 import {faker} from '@faker-js/faker';
-import {HandleResponseObject, QFContributionSummary, QFVote, RoundMetadata} from "../../types";
+import {HandleResponseObject, QFContributionSummary, QFContribution, RoundMetadata} from "../../types";
 import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
@@ -147,10 +147,10 @@ describe("projectSummaryHandler", () => {
   //   const roundMetadata: RoundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
   //   jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
   //
-  //   const qfVote: QFVote = JSON.parse(JSON.stringify(mockQFVote));
-  //   const anotherQFVote: QFVote = JSON.parse(JSON.stringify(mockQFVote));
+  //   const qfContribution: QFContribution = JSON.parse(JSON.stringify(mockQFVote));
+  //   const anotherQFVote: QFContribution = JSON.parse(JSON.stringify(mockQFVote));
   //
-  //   jest.spyOn(linearQuadraticFunding, 'fetchQFContributionsForProjects').mockResolvedValueOnce([qfVote, anotherQFVote]);
+  //   jest.spyOn(linearQuadraticFunding, 'fetchQFContributionsForProjects').mockResolvedValueOnce([qfContribution, anotherQFVote]);
   //
   //   const summary: QFContributionSummary = JSON.parse(JSON.stringify(mockQFContributionSummary));
   //   jest.spyOn(linearQuadraticFunding, 'summarizeQFContributions').mockResolvedValueOnce(summary);

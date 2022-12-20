@@ -135,8 +135,8 @@ describe("roundSummaryHandler", () => {
   //   const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
   //   jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
   //
-  //   const qfVote = JSON.parse(JSON.stringify(mockQFVote));
-  //   jest.spyOn(linearQuadraticFunding, 'fetchQFContributionsForRound').mockResolvedValueOnce([qfVote]);
+  //   const qfContribution = JSON.parse(JSON.stringify(mockQFVote));
+  //   jest.spyOn(linearQuadraticFunding, 'fetchQFContributionsForRound').mockResolvedValueOnce([qfContribution]);
   //
   //   const summary = JSON.parse(JSON.stringify(mockQFContributionSummary));
   //   jest.spyOn(linearQuadraticFunding, 'summarizeQFContributions').mockResolvedValueOnce(summary);

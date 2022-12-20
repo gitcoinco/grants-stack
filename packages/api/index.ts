@@ -11,7 +11,6 @@ Sentry.init({
 
 dotenv.config();
 
-// TODO: include necessary middlewares for prod deploy
 
 const app: Express = express();
 

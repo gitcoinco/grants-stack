@@ -15,25 +15,24 @@ import {
  * @returns the subgraph endpoint
  */
 export const getGraphQLEndpoint = (chainId: ChainId) => {
-  // TODO: the urls should be environment variables
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet";
+      return `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`;
 
     case ChainId.FANTOM_MAINNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet";
+      return `${process.env.SUBGRAPH_FANTOM_MAINNET_API}`;
 
     case ChainId.FANTOM_TESTNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet";
+      return `${process.env.SUBGRAPH_FANTOM_TESTNET_API}`;
 
     case ChainId.MAINNET:
-      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+      return `${process.env.SUBGRAPH_MAINNET_API}`;
 
     case ChainId.GOERLI:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet";
+      return `${process.env.SUBGRAPH_GOERLI_API}`;
 
     default:
-      return "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs";
+      return `${process.env.SUBGRAPH_DUMMY_API}`;
   }
 };
 
@@ -71,6 +70,9 @@ export const getUSDCAddress = (chainId: ChainId) => {
  */
 export const getChainVerbose = (id: string) => {
   switch (id) {
+    case ChainId.MAINNET:
+      return "MAINNET";
+
     case ChainId.OPTIMISM_MAINNET:
       return "OPTIMISM_MAINNET";
 
@@ -90,7 +92,6 @@ export const getChainVerbose = (id: string) => {
 
 /**
  * Fetch data from IPFS
- * TODO: include support for fetching abitrary data e.g images
  *
  * @param cid - the unique content identifier that points to the data
  */
@@ -179,11 +180,12 @@ export const fetchRoundMetadata = async (
   // fetch round metadata
   const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+  const strategyName = getStrategyName(data?.votingStrategy.strategyName);
 
   const metadata: RoundMetadata = {
     votingStrategy: {
       id: data?.votingStrategy.id,
-      strategyName: data?.votingStrategy.strategyName,
+      strategyName: strategyName,
     },
     roundStartTime: data?.roundStartTime,
     roundEndTime: data?.roundEndTime,
