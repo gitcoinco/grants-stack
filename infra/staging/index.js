@@ -31,6 +31,15 @@ const public_subnet = new aws.ec2.Subnet("public", {
     },
 });
 
+const public_subnet_two = new aws.ec2.Subnet("public-two", {
+    cidrBlock: "10.0.3.0/24",
+    vpcId: vpc.id,
+    tags: {
+        Name: "Public",
+        App: "Grants",
+    },
+});
+
 const private_subnet = new aws.ec2.Subnet("private", {
     cidrBlock: "10.0.5.0/24",
     vpcId: vpc.id,
@@ -71,6 +80,58 @@ const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
 }, {
     dependsOn: [gw.gw],
 });
+
+const public_route_table = new aws.ec2.RouteTable('public', {
+    routes: [
+      {
+        cidrBlock: '0.0.0.0/0',
+        gatewayId: gw.id
+      }
+    ],
+    vpcId: vpc.id
+  });
+
+const publicRouteTableAssociation = new aws.ec2.RouteTableAssociation(
+    'public-association',
+    {
+        routeTableId: public_route_table.id,
+        subnetId: public_subnet.id
+    }
+);
+
+const publicRouteTableAssociationTwo = new aws.ec2.RouteTableAssociation(
+    'public-association-two',
+    {
+        routeTableId: public_route_table.id,
+        subnetId: public_subnet_two.id
+    }
+);
+
+const private_route_table = new aws.ec2.RouteTable('private', {
+    routes: [
+      {
+        cidrBlock: '0.0.0.0/0',
+        gatewayId: nat_gateway.id
+      }
+    ],
+    vpcId: vpc.id
+  });
+
+const privateRouteTableAssociation = new aws.ec2.RouteTableAssociation(
+    'private-association',
+    {
+        routeTableId: private_route_table.id,
+        subnetId: private_subnet.id
+    }
+);
+
+const privateRouteTableAssociationTwo = new aws.ec2.RouteTableAssociation(
+    'private-association-two',
+    {
+        routeTableId: private_route_table.id,
+        subnetId: private_subnet_two.id
+    }
+);
 
 // Database
 let dbSubnetGroup = new aws.rds.SubnetGroup("rds-subnet-group", {
