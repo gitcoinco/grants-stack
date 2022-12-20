@@ -13,7 +13,7 @@ import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticF
 import {formatUnits} from "ethers/lib/utils";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import NodeCache from "node-cache";
-import { hotfixForRounds } from  "../hotfixes/index";
+import {hotfixForRounds} from "../hotfixes/index";
 
 const prisma = new PrismaClient();
 
@@ -79,7 +79,7 @@ export const matchHandler = async (req: Request, res: Response) => {
           metadata,
           contributions
         );
-        // cache the match
+        // cache the matchInUSD
         updatedAt = new Date();
         // update the cache
         cache.set(`${chainId}-${roundId}-match`, {...results, updatedAt});
@@ -114,6 +114,8 @@ export const matchHandler = async (req: Request, res: Response) => {
             projectId: projectMatch.projectId,
             contributionCount: Number(projectMatch.contributionCount),
             totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
+            matchPercentage: Number(projectMatch.matchPercentage),
+            amountInToken: Number(projectMatch.amountInToken),
             roundId: roundId,
           },
         });
@@ -176,7 +178,7 @@ export const matchQFContributions = async (
   );
 
   const matchResults = [];
-  let totalMatch = 0;
+  let totalMatchInUSD = 0;
   for (const projectId in contributionsByProject) {
     let sumOfSquares = 0;
     let sumOfContributions = 0;
@@ -195,18 +197,25 @@ export const matchQFContributions = async (
       }
     );
 
-    const match = Math.pow(sumOfSquares, 2) - sumOfContributions;
+    const matchInUSD = Math.pow(sumOfSquares, 2) - sumOfContributions;
 
     matchResults.push({
       projectId: projectId,
-      amountInUSD: match,
+      amountInUSD: matchInUSD,
       totalContributionsInUSD: sumOfContributions,
       contributionCount: contributionCount,
+      matchPercentage: 0, // init to zero
+      amountInToken: 0,
     });
-    totalMatch += isNaN(match) ? 0 : match; // TODO: what should happen when match is NaN?
+    totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
     // TODO: Error out if NaN
   }
 
+  for (const matchResult of matchResults) {
+    matchResult.matchPercentage = matchResult.amountInUSD / totalMatchInUSD;
+    matchResult.amountInToken = matchResult.matchPercentage * totalPot;
+  }
+  
   const potTokenPrice: any = await fetchAverageTokenPrices(
     chainId,
     [token],
@@ -214,11 +223,12 @@ export const matchQFContributions = async (
     roundEndTime
   );
 
-  isSaturated = totalMatch > totalPot * potTokenPrice[token];
+  isSaturated = totalMatchInUSD > totalPot * potTokenPrice[token];
 
+  // NOTE: Investigate how this may affect matching token and percentage calculations
   if (isSaturated) {
     matchResults.forEach((result) => {
-      result.amountInUSD *= (totalPot * potTokenPrice[token]) / totalMatch;
+      result.amountInUSD *= (totalPot * potTokenPrice[token]) / totalMatchInUSD;
     });
   }
 

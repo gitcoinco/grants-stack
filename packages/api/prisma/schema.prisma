@@ -50,6 +50,8 @@ model Match {
   amountInUSD             Float
   totalContributionsInUSD Float
   contributionCount       Int
+  matchPercentage         Float
+  amountInToken           Float
   round                   Round    @relation(fields: [roundId], references: [roundId])
   roundId                 String
 
