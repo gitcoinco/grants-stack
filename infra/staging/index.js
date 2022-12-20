@@ -147,20 +147,6 @@ const listener = new aws.lb.Listener("grants", {
     loadBalancerArn: grant_lb.arn,
     port: 80,
     protocol: "HTTP",
-    defaultActions: [{
-        type: "redirect",
-        redirect: {
-            port: "443",
-            protocol: "HTTPS",
-            statusCode: "HTTP_301",
-        },
-    }],
-});
-
-const listener_https = new aws.lb.Listener("grants_https", {
-    loadBalancerArn: grant_lb.arn,
-    port: 443,
-    protocol: "HTTPS",
     defaultActions: [
         {
         type: "forward",
@@ -168,6 +154,18 @@ const listener_https = new aws.lb.Listener("grants_https", {
         },
     ],
 });
+
+// const listener_https = new aws.lb.Listener("grants_https", {
+//     loadBalancerArn: grant_lb.arn,
+//     port: 443,
+//     protocol: "HTTPS",
+//     defaultActions: [
+//         {
+//         type: "forward",
+//         targetGroupArn: grant_target.arn,
+//         },
+//     ],
+// });
 
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
