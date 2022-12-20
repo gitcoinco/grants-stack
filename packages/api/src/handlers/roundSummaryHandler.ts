@@ -72,7 +72,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     // upload summary to db
     await prisma.roundSummary.upsert({
       where: {
-        roundId: round.id,
+        roundId: roundId,
       },
       update: {
         contributionCount: results.contributionCount,
@@ -85,7 +85,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
         uniqueContributors: results.uniqueContributors,
         totalContributionsInUSD: Number(results.totalContributionsInUSD),
         averageUSDContribution: Number(results.averageUSDContribution),
-        roundId: round.id,
+        roundId: roundId,
       }
     });
 

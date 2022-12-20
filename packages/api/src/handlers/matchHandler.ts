@@ -96,8 +96,8 @@ export const matchHandler = async (req: Request, res: Response) => {
         const match = await prisma.match.upsert({
           where: {
             matchIdentifier: {
-              projectId: projectMatch.projectId,
-              roundId: round.id,
+              roundId: roundId,
+              projectId: projectMatch.projectId
             },
           },
           update: {
@@ -108,7 +108,7 @@ export const matchHandler = async (req: Request, res: Response) => {
             projectId: projectMatch.projectId,
             contributionCount: Number(projectMatch.contributionCount),
             sumOfContributions: Number(projectMatch.sumOfContributions),
-            roundId: round.id,
+            roundId: roundId,
           },
         });
       }

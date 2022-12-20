@@ -33,8 +33,8 @@ model Project {
   createdAt      DateTime        @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime        @updatedAt @db.Timestamptz(3)
   chainId        ChainId
-  round          Round           @relation(fields: [roundId], references: [id])
-  roundId        Int
+  round          Round           @relation(fields: [roundId], references: [roundId])
+  roundId        String
   projectId      String          @unique
   projectSummary ProjectSummary?
 
@@ -50,8 +50,8 @@ model Match {
   amount             Float
   sumOfContributions Float
   contributionCount  Int
-  round              Round    @relation(fields: [roundId], references: [id])
-  roundId            Int
+  round              Round    @relation(fields: [roundId], references: [roundId])
+  roundId            String
 
   @@unique([projectId, roundId], name: "matchIdentifier")
   @@map("match")
@@ -65,8 +65,8 @@ model RoundSummary {
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
-  round                   Round    @relation(fields: [roundId], references: id)
-  roundId                 Int
+  round                   Round    @relation(fields: [roundId], references: [roundId])
+  roundId                 String
 
   @@unique([roundId], name: "roundSummaryIdentifier")
   @@map("roundSummary")
@@ -80,8 +80,8 @@ model ProjectSummary {
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
-  project                 Project  @relation(fields: [projectId], references: id)
-  projectId               Int
+  project                 Project  @relation(fields: [projectId], references: [projectId])
+  projectId               String
 
   @@unique([projectId], name: "projectSummaryIdentifier")
   @@map("projectSummary")

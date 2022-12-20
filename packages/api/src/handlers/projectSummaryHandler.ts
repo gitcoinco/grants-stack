@@ -70,13 +70,13 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     // Initialize project if it doesn't exist
     const project = await prisma.project.upsert({
       where: {
-        roundId: round.id,
+        roundId: roundId,
       },
       update: {
         projectId,
       },
       create: {
-        roundId: round.id,
+        roundId: roundId,
         chainId: chainIdVerbose,
         projectId: projectId,
       }
@@ -87,7 +87,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     // upload to project summary to db
     const projectSummary = await prisma.projectSummary.upsert({
       where: {
-        projectId: project.id,
+        projectId: projectId,
       },
       update: {
         contributionCount: results.contributionCount,
@@ -100,7 +100,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
         uniqueContributors: results.uniqueContributors,
         totalContributionsInUSD: Number(results.totalContributionsInUSD),
         averageUSDContribution: Number(results.averageUSDContribution),
-        projectId: project.id,
+        projectId: projectId,
       }
     });
 
