@@ -157,7 +157,7 @@ const listener = new aws.lb.Listener("grants", {
     }],
 });
 
-const listener_https = new aws.lb.Listener("grants", {
+const listener_https = new aws.lb.Listener("grants_https", {
     loadBalancerArn: grant_lb.arn,
     port: 443,
     protocol: "HTTPS",
