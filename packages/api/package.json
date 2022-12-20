@@ -10,8 +10,8 @@
     "test": "jest --setupFiles dotenv/config",
     "build": "npx tsc",
     "start": "node bin/index.js",
-    "start:dev": "nodemon bin/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
+    "start:dev": "nodemon index.ts",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q index.ts\"",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:generate": "npx prisma generate",
     "prisma:docs": "npx prisma-docs-generator serve"

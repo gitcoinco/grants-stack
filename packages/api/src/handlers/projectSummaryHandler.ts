@@ -48,10 +48,14 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
     // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
+
+    const strategyName = getStrategyName(votingStrategy.strategyName);
+
     // throw error if voting strategy is not supported
-    if (votingStrategy.strategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
+    if (strategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
       throw "error: unsupported voting strategy";
     }
+
     const chainIdVerbose = getChainVerbose(chainId);
     const round = await prisma.round.upsert({
       where: {
