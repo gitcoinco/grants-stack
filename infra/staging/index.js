@@ -165,6 +165,7 @@ const postgresql = new aws.rds.Instance("grantsdatabase", {
 });
 
 export const rdsEndpoint = postgresql.endpoint;
+export const rdsConnectionUrl = pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${rdsEndpoint}/${dbName}`
 
 // Docker Registry
 
@@ -254,6 +255,8 @@ const grantsEcsProvider = new aws.ecs.ClusterCapacityProviders("fargateCapacityP
     }],
 });
 
+
+
 const api = new aws.ecs.TaskDefinition("api", {
     family: "api",
     networkMode: "awsvpc",
@@ -276,7 +279,7 @@ const api = new aws.ecs.TaskDefinition("api", {
             environment: [
                 {
                     name: "DATABASE_URL", 
-                    value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${rdsEndpoint}/${dbName}`
+                    value: rdsConnectionUrl
                 }
             ],
         },
