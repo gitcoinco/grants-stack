@@ -161,12 +161,12 @@ const api_service = new aws.ecs.Service("api", {
     desiredCount: 1,
     networkConfiguration: {
         subnets: [private_subnet.id]
-    }
-    // loadBalancers: [{
-    //     targetGroupArn: grant_target.arn,
-    //     containerName: "api",
-    //     containerPort: 8080,
-    // }],
+    },
+    loadBalancers: [{
+        targetGroupArn: grant_target.arn,
+        containerName: "api",
+        containerPort: 8080,
+    }],
 });
 
 // Load Balancer
