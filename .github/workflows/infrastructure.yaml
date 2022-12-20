@@ -11,6 +11,9 @@ on:
         description: "Environment to deploy to"
         default: "staging"
         type: string
+  push:
+    branches:
+      - main
 
 jobs:
   
