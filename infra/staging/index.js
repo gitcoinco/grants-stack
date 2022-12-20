@@ -164,6 +164,8 @@ const postgresql = new aws.rds.Instance("grantsdatabase", {
     vpcSecurityGroupIds: [db_secgrp.id],
 });
 
+export const rdsEndpoint = postgresql.endpoint;
+
 // Docker Registry
 
 const registry = new aws.ecr.Repository("grants", {
@@ -274,7 +276,7 @@ const api = new aws.ecs.TaskDefinition("api", {
             environment: [
                 {
                     name: "DATABASE_URL", 
-                    value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${postgresql.endpoint}/${dbName}`
+                    value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${rdsEndpoint}/${dbName}`
                 }
             ],
         },
