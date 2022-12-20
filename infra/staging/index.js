@@ -138,6 +138,8 @@ const grantsEcsProvider = new aws.ecs.ClusterCapacityProviders("fargateCapacityP
 
 const api = new aws.ecs.TaskDefinition("api", {
     family: "api",
+    networkMode: "awsvpc",
+    requiresCompatibilities: ["FARGATE"],
     containerDefinitions: JSON.stringify([
         {
             name: "api",
@@ -166,7 +168,7 @@ const grant = new aws.lb.LoadBalancer("grants", {
     internal: false,
     loadBalancerType: "application",
     securityGroups: [],
-    subnets: [private_subnet],
+    subnets: [private_subnet, private_subnet_two],
     enableDeletionProtection: true,
 });
 
