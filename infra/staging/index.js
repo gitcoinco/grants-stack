@@ -8,6 +8,15 @@ let dbName = `${process.env["DB_NAME"]}`;
 let dbUrl = `${process.env["DB_URL"]}`;
 let apiImage = `${process.env["ECR_REGISTRY"]}/${process.env["ECR_REPOSITORY"]}:${process.env["API_IMAGE_TAG"]}`
 
+let SUBGRAPH_MAINNET_API = `${process.env["SUBGRAPH_MAINNET_API"]}`
+let SUBGRAPH_GOERLI_API = `${process.env["SUBGRAPH_GOERLI_API"]}`
+let SUBGRAPH_OPTIMISM_MAINNET_API = `${process.env["SUBGRAPH_OPTIMISM_MAINNET_API"]}`
+let SUBGRAPH_FANTOM_TESTNET_API = `${process.env["SUBGRAPH_FANTOM_TESTNET_API"]}`
+let SUBGRAPH_FANTOM_MAINNET_API = `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}`
+let SUBGRAPH_DUMMY_API = `${process.env["SUBGRAPH_DUMMY_API"]}`
+let SENTRY_DSN = `${process.env["SENTRY_DSN"]}`
+let OPTIMISM_ETHERSCAN_API = `${process.env["OPTIMISM_ETHERSCAN_API"]}`
+
 // KMS Key
 const grantsKey = new aws.kms.Key("grantsKey", {
     description: "grants kms key",
@@ -285,35 +294,35 @@ const api = new aws.ecs.TaskDefinition("api", {
                 },
                 {
                     name: "SUBGRAPH_MAINNET_API",
-                    value: `${process.env["SUBGRAPH_MAINNET_API"]}`
+                    value: SUBGRAPH_MAINNET_API
                 },
                 {
                     name: "SUBGRAPH_GOERLI_API",
-                    value: `${process.env["SUBGRAPH_GOERLI_API"]}`
+                    value: SUBGRAPH_GOERLI_API
                 },
                 {
                     name: "SUBGRAPH_OPTIMISM_MAINNET_API",
-                    value: `${process.env["SUBGRAPH_OPTIMISM_MAINNET_API"]}`
+                    value: SUBGRAPH_OPTIMISM_MAINNET_API
                 },
                 {
                     name: "SUBGRAPH_FANTOM_TESTNET_API",
-                    value: `${process.env["SUBGRAPH_FANTOM_TESTNET_API"]}`
+                    value: SUBGRAPH_FANTOM_TESTNET_API
                 },
                 {
                     name: "SUBGRAPH_FANTOM_MAINNET_API",
-                    value: `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}`
+                    value: SUBGRAPH_FANTOM_MAINNET_API
                 },
                 {
                     name: "SUBGRAPH_DUMMY_API",
-                    value: `${process.env["SUBGRAPH_DUMMY_API"]}`
+                    value: SUBGRAPH_DUMMY_API
                 },
                 {
                     name: "SENTRY_DSN",
-                    value: `${process.env["SENTRY_DSN"]}`
+                    value: SENTRY_DSN
                 },
                 {
                     name: "OPTIMISM_ETHERSCAN_API",
-                    value: `${process.env["OPTIMISM_ETHERSCAN_API"]}`
+                    value: OPTIMISM_ETHERSCAN_API
                 }
             ],
         },
