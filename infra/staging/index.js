@@ -276,6 +276,10 @@ const api = new aws.ecs.TaskDefinition("api", {
             }],
             environment: [
                 {
+                    name: "PORT", 
+                    value: "8080"
+                },
+                {
                     name: "DATABASE_URL", 
                     value: dbUrl
                 },
