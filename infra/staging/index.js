@@ -287,7 +287,7 @@ const api_service = new aws.ecs.Service("api", {
     desiredCount: 1,
     networkConfiguration: {
         subnets: [private_subnet.id],
-        assignPublicIp: true,
+        assignPublicIp: false,
     },
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
