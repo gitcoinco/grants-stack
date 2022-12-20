@@ -5,6 +5,7 @@ import * as aws from "@pulumi/aws";
 let dbUsername = `${process.env["DB_USER"]}`;
 let dbPassword = pulumi.secret(`${process.env["DB_PASSWORD"]}`);
 let dbName = `${process.env["DB_NAME"]}`;
+let dbUrl = `${process.env["DB_URL"]}`;
 let apiImage = `${process.env["ECR_REGISTRY"]}/${process.env["ECR_REPOSITORY"]}:${process.env["API_IMAGE_TAG"]}`
 
 // KMS Key
@@ -164,9 +165,6 @@ const postgresql = new aws.rds.Instance("grantsdatabase", {
     vpcSecurityGroupIds: [db_secgrp.id],
 });
 
-export const rdsEndpoint = postgresql.endpoint;
-export const rdsConnectionUrl = pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${rdsEndpoint}/${dbName}`
-
 // Docker Registry
 
 const registry = new aws.ecr.Repository("grants", {
@@ -279,7 +277,7 @@ const api = new aws.ecs.TaskDefinition("api", {
             environment: [
                 {
                     name: "DATABASE_URL", 
-                    value: rdsConnectionUrl
+                    value: dbUrl
                 }
             ],
         },

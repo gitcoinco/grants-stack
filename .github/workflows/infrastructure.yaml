@@ -68,6 +68,7 @@ jobs:
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
       API_IMAGE_TAG: ${{ needs.build.outputs.dockerTag }}
+      DB_URL: ${{ secrets.DB_URL }}
 
     steps:
       - name: Checkout code
