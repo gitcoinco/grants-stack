@@ -278,6 +278,38 @@ const api = new aws.ecs.TaskDefinition("api", {
                 {
                     name: "DATABASE_URL", 
                     value: dbUrl
+                },
+                {
+                    name: "SUBGRAPH_MAINNET_API",
+                    value: `${process.env["SUBGRAPH_MAINNET_API"]}`
+                },
+                {
+                    name: "SUBGRAPH_GOERLI_API",
+                    value: `${process.env["SUBGRAPH_GOERLI_API"]}`
+                },
+                {
+                    name: "SUBGRAPH_OPTIMISM_MAINNET_API",
+                    value: `${process.env["SUBGRAPH_OPTIMISM_MAINNET_API"]}`
+                },
+                {
+                    name: "SUBGRAPH_FANTOM_TESTNET_API",
+                    value: `${process.env["SUBGRAPH_FANTOM_TESTNET_API"]}`
+                },
+                {
+                    name: "SUBGRAPH_FANTOM_MAINNET_API",
+                    value: `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}`
+                },
+                {
+                    name: "SUBGRAPH_DUMMY_API",
+                    value: `${process.env["SUBGRAPH_DUMMY_API"]}`
+                },
+                {
+                    name: "SENTRY_DSN",
+                    value: `${process.env["SENTRY_DSN"]}`
+                },
+                {
+                    name: "OPTIMISM_ETHERSCAN_API",
+                    value: `${process.env["OPTIMISM_ETHERSCAN_API"]}`
                 }
             ],
         },
