@@ -95,7 +95,6 @@ const postgresql = new aws.rds.Instance("grantsdatabase", {
     allocatedStorage: 50,
     engine: "postgres",
     instanceClass: "db.t3.medium",
-    name: "grants-database",
     dbName: "grants",
     password: dbPassword,
     username: dbUsername,
@@ -149,4 +148,10 @@ const api = new aws.ecs.TaskDefinition("api", {
             portMappings: [],
         },
     ]),
+});
+
+const api_service = new aws.ecs.Service("api", {
+    cluster: grantsEcs.id,
+    taskDefinition: api.arn,
+    desiredCount: 1,
 });
