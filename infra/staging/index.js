@@ -112,6 +112,36 @@ const registry = new aws.ecr.Repository("grants", {
     imageTagMutability: "MUTABLE",
 });
 
+// Load Balancer
+const secgrp = new aws.ec2.SecurityGroup("grants", {
+    description: "gitcoin",
+    vpcId: vpc.id,
+    ingress: [
+        { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
+        { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
+    ],
+    egress: [{
+        protocol: "-1",
+        fromPort: 0,
+        toPort: 0,
+        cidrBlocks: ["0.0.0.0/0"],
+    }],
+});
+
+const grant = new aws.lb.LoadBalancer("grants", {
+    internal: false,
+    loadBalancerType: "application",
+    securityGroups: [secgrp.id],
+    subnets: [private_subnet, private_subnet_two],
+    enableDeletionProtection: true,
+});
+
+const grant_target = new aws.lb.TargetGroup("grants", {
+    port: 80,
+    protocol: "HTTP",
+    vpcId: vpc.id,
+});
+
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
 
@@ -147,10 +177,17 @@ const api = new aws.ecs.TaskDefinition("api", {
         {
             name: "api",
             image: apiImage,
+            command: ["sh -c \"yarn prisma:migrate && yarn dev\""],
             cpu: 1024,
             memory: 2048,
             essential: true,
             portMappings: [],
+            environment: [
+                {
+                    name: "DATABASE_URL", 
+                    value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${postgresql.endpoint}/${dbName}`
+                }
+            ],
         },
     ]),
 });
@@ -162,46 +199,9 @@ const api_service = new aws.ecs.Service("api", {
     networkConfiguration: {
         subnets: [private_subnet.id]
     },
-    environment: [
-        {
-            name: "DATABASE_URL", 
-            value: pulumi.interpolate`psql://${dbUsername}:${dbPassword}@${postgresql.endpoint}/${dbName}`
-        }
-    ],
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
         containerName: "api",
         containerPort: 8080,
     }],
 });
-
-// Load Balancer
-const secgrp = new aws.ec2.SecurityGroup("grants", {
-    description: "gitcoin",
-    vpcId: vpc.id,
-    ingress: [
-        { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
-        { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
-    ],
-    egress: [{
-        protocol: "-1",
-        fromPort: 0,
-        toPort: 0,
-        cidrBlocks: ["0.0.0.0/0"],
-    }],
-});
-
-const grant = new aws.lb.LoadBalancer("grants", {
-    internal: false,
-    loadBalancerType: "application",
-    securityGroups: [secgrp.id],
-    subnets: [private_subnet, private_subnet_two],
-    enableDeletionProtection: true,
-});
-
-const grant_target = new aws.lb.TargetGroup("grants", {
-    port: 80,
-    protocol: "HTTP",
-    vpcId: vpc.id,
-});
-
