@@ -90,10 +90,7 @@ export const matchHandler = async (req: Request, res: Response) => {
       for (const projectMatch of results.distribution) {
         const match = await prisma.match.upsert({
           where: {
-            matchIdentifier: {
-              roundId: roundId,
-              projectId: projectMatch.projectId
-            },
+            projectId: projectMatch.projectId,
           },
           update: {
             matchAmountInUSD: projectMatch.matchAmountInUSD,
