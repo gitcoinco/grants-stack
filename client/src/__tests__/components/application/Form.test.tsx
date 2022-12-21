@@ -155,14 +155,14 @@ describe("<Form />", () => {
           // NOTE: should we use the prefix? eth:0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E
           target: { value: "0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E" },
         });
-        // 
+        //
       });
 
       await waitFor(() =>
         expect(
           screen
             .getByTestId("address-input-wrapper")
-            .querySelector("input.invalid-feedback")
+            .querySelector("input.border")
         ).toBeNull()
       );
     });
@@ -294,7 +294,7 @@ describe("<Form />", () => {
         expect(
           screen
             .getByTestId("address-input-wrapper")
-            .querySelector("input.invalid-feedback")
+            .querySelector("input.border")
         ).toBeNull()
       );
     });
