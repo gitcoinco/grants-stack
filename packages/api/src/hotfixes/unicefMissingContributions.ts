@@ -5,9 +5,7 @@ import {fetchPayoutAddressToProjectIdMapping} from "../utils";
 import {getAddress} from "ethers/lib/utils";
 
 export const addMissingUNICEFContributions = async (contributions: QFContribution[], projectIds?: string[]): Promise<QFContribution[]> => {
-
-  console.log("Contributions", contributions.length);
-
+  console.log("Injecting missing UNICEF contributions");
   let missingContributions = await fetchMissingContributions();
 
   if (projectIds) {
@@ -17,10 +15,6 @@ export const addMissingUNICEFContributions = async (contributions: QFContributio
   }
 
   contributions.push(...missingContributions);
-
-  console.log("Missing Contributions", missingContributions.length);
-
-  console.log("Total Contributions", contributions.length);
 
   return contributions;
 }
@@ -58,8 +52,6 @@ const fetchMissingContributions = async (): Promise<QFContribution[]> => {
 
   const data = await response.json();
   const result = data.result;
-
-  console.log("Total txn count:", result.length);
 
   // fetch projectId -> payoutAddress mapping
   const projectsMetaPtr: MetaPtr = {

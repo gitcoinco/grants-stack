@@ -153,14 +153,20 @@ export const fetchQFContributionsForRound = async (
     // TODO: remove update to projectID after contract upgrade
     const projectId = projectPayoutToIdMapping.get(payoutAddress);
 
-    votes.push({
-      amount: BigNumber.from(vote.amount),
-      token: vote.token,
-      contributor: vote.from,
-      projectId: projectId!,
-      projectPayoutAddress: payoutAddress,
-    });
+    if (projectId && payoutAddress) {
 
+      votes.push({
+        amount: BigNumber.from(vote.amount),
+        token: vote.token,
+        contributor: vote.from,
+        projectId: projectId,
+        projectPayoutAddress: payoutAddress,
+      });
+
+
+    } else {
+      console.error("vote has invalid project 'id' or payout 'to' address", vote);
+    }
     lastID = vote.id;
   });
 
@@ -207,13 +213,20 @@ export const fetchQFContributionsForRound = async (
       // TODO: remove update to projectID after contract upgrade
       const projectId = projectPayoutToIdMapping.get(payoutAddress);
 
-      votes.push({
-        amount: BigNumber.from(vote.amount),
-        token: vote.token,
-        contributor: vote.from,
-        projectId: projectId!,
-        projectPayoutAddress: payoutAddress,
-      });
+      if (projectId && payoutAddress) {
+
+        votes.push({
+          amount: BigNumber.from(vote.amount),
+          token: vote.token,
+          contributor: vote.from,
+          projectId: projectId,
+          projectPayoutAddress: payoutAddress,
+        });
+
+
+      } else {
+        console.error("vote has invalid project 'id' or payout 'to' address", vote);
+      }
       lastID = vote.id;
     });
   }
