@@ -135,7 +135,10 @@ export default function ViewRoundPage() {
               <Tab.Group vertical>
                 <div className="flex flex-row">
                   <div className="w-24 basis-1/6 border-r">
-                    <Tab.List className="flex flex-col h-max">
+                    <Tab.List
+                      className="flex flex-col h-max"
+                      data-testid="side-nav-bar"
+                    >
                       <Tab className={({ selected }) => tabStyles(selected)}>
                         {({ selected }) => (
                           <div
@@ -146,7 +149,12 @@ export default function ViewRoundPage() {
                             }
                           >
                             <InboxIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5">Grant Applications</span>
+                            <span
+                              className="mt-0.5"
+                              data-testid="grant-applications"
+                            >
+                              Grant Applications
+                            </span>
                           </div>
                         )}
                       </Tab>
@@ -160,7 +168,9 @@ export default function ViewRoundPage() {
                             }
                           >
                             <ChartBarIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5">Round Stats</span>
+                            <span className="mt-0.5" data-testid="round-stats">
+                              Round Stats
+                            </span>
                           </div>
                         )}
                       </Tab>
@@ -174,7 +184,12 @@ export default function ViewRoundPage() {
                             }
                           >
                             <DocumentReportIcon className="h-6 w-6 mr-2" />
-                            <span className="mt-0.5">Funding Admin</span>
+                            <span
+                              className="mt-0.5"
+                              data-testid="funding-admin"
+                            >
+                              Funding Admin
+                            </span>
                           </div>
                         )}
                       </Tab>
