@@ -12,7 +12,7 @@ import {getMockReq} from '@jest-mock/express'
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS)
 
-describe("projectSummaryHandler", () => {
+describe("updateProjectSummaryHandler", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

@@ -13,7 +13,7 @@ const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS)
 
 
-describe("roundSummaryHandler", () => {
+describe("updateRoundSummaryHandler", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
