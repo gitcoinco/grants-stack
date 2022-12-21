@@ -74,6 +74,7 @@ export type QFContribution = {
   token: string;
   contributor: string;
   projectId: string;
+  projectPayoutAddress: string;
 };
 
 export type QFVotedEvent = {

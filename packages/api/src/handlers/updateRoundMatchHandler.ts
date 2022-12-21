@@ -86,8 +86,6 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
         });
       }
 
-      console.log(results.distribution);
-
       // save the distribution results to the db
       // TODO: figure out if there is a better way to batch transactions
       for (const projectMatch of results.distribution) {
@@ -97,6 +95,9 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
           },
           update: {
             matchAmountInUSD: projectMatch.matchAmountInUSD,
+            totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
+            matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
+            matchAmountInToken: Number(projectMatch.matchAmountInToken),
           },
           create: {
             matchAmountInUSD: projectMatch.matchAmountInUSD,
@@ -104,8 +105,8 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
             totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
             matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
             matchAmountInToken: Number(projectMatch.matchAmountInToken),
-            roundId: roundId,
             projectPayoutAddress: projectMatch.projectPayoutAddress,
+            roundId: round.roundId,
           },
         });
       }
@@ -132,7 +133,6 @@ export const matchQFContributions = async (
     [projectId: string]: any;
   } = {};
 
-  // projectPayoutAddress
   const projectIdToPayoutMapping = await fetchProjectIdToPayoutAddressMapping(
     metadata.projectsMetaPtr
   );

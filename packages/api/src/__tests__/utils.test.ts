@@ -226,6 +226,10 @@ describe("fetchRoundMetadata", () => {
       data: {
         rounds: [
           {
+            projectsMetaPtr: {
+              "pointer": "QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ",
+              "protocol": 1
+            },
             votingStrategy: roundMetadata.votingStrategy,
             roundStartTime: roundMetadata.roundStartTime,
             roundEndTime: roundMetadata.roundEndTime,

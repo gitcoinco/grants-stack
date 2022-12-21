@@ -1,6 +1,8 @@
-import {QFContribution} from "../types";
+import {MetaPtr, QFContribution} from "../types";
 import fetch from 'node-fetch';
-import { BigNumber, ethers } from "ethers";
+import {BigNumber, ethers} from "ethers";
+import {fetchPayoutAddressToProjectIdMapping} from "../utils";
+import {getAddress} from "ethers/lib/utils";
 
 export const addMissingUNICEFContributions = async (contributions: QFContribution[], projectIds?: string[]): Promise<QFContribution[]> => {
 
@@ -30,7 +32,7 @@ const abi = [
 
 const iface = new ethers.utils.Interface(abi);
 
-const fetchMissingContributions = async () : Promise<QFContribution[]> => {
+const fetchMissingContributions = async (): Promise<QFContribution[]> => {
 
   type Transaction = {
     from: string;
@@ -59,6 +61,13 @@ const fetchMissingContributions = async () : Promise<QFContribution[]> => {
 
   console.log("Total txn count:", result.length);
 
+  // fetch projectId -> payoutAddress mapping
+  const projectsMetaPtr: MetaPtr = {
+    pointer: "bafkreica324tot55eqxnvock5gdo4etklzf4hz5oa3tmb4zvaerigbclfu",
+    protocol: 1
+  };
+  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(projectsMetaPtr);
+
   result.forEach((txn: Transaction) => {
     try {
 
@@ -71,22 +80,26 @@ const fetchMissingContributions = async () : Promise<QFContribution[]> => {
 
       encodedVotes.forEach((encodedVote: string) => {
 
-      const decodedVote = ethers.utils.defaultAbiCoder.decode(
-        ["address", "uint256", "address"], // [token, amount, to]
-        encodedVote
-      )
+        const decodedVote = ethers.utils.defaultAbiCoder.decode(
+          ["address", "uint256", "address"], // [token, amount, to]
+          encodedVote
+        )
 
-      const contribution: QFContribution = {
-        contributor: from,
-        token: decodedVote[0],
-        amount: BigNumber.from(decodedVote[1].toString()),
-        projectId: decodedVote[2]
-      };
+        const payoutAddress = getAddress(decodedVote[2]);
+        const projectId = projectPayoutToIdMapping.get(payoutAddress);
 
-      contributions.push(contribution);
+        const contribution: QFContribution = {
+          contributor: from,
+          token: decodedVote[0],
+          amount: BigNumber.from(decodedVote[1].toString()),
+          projectId: projectId!, // TODO: This should be the project id when it is ready
+          projectPayoutAddress: payoutAddress
+        };
 
-    });
-    } catch(e) {
+        contributions.push(contribution);
+
+      });
+    } catch (e) {
       console.log("Skipping txn which is not vote:", txn.hash)
     }
 

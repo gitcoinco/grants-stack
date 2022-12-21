@@ -565,16 +565,15 @@ export const fetchProjectIdToPayoutAddressMapping = async (
 
   let projects : ProjectMetaPtr[] = await fetchFromIPFS(pointer);
 
-  projects = projects.filter(project => project.status == "APPROVED");
-
-  projects.map(project => {
-    // project.id format ->  applicationId-roundId
-    const projectId = project.id.split("-")[0];
-
-    const payoutAddress = getAddress(project.payoutAddress);
-
-    projectToPayoutMap.set(projectId, payoutAddress);
-  })
+  for (const project of projects) {
+    console.log({project})
+    // check to make sure the project doesn't already exist in the map
+    if (project.status === "APPROVED") {
+      const projectId = project.id.split("-")[0];
+      const payoutAddress = getAddress(project.payoutAddress);
+      projectToPayoutMap.set(projectId, payoutAddress);
+    }
+  }
 
   return projectToPayoutMap;
 };
