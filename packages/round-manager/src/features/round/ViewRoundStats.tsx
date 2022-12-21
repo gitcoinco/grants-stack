@@ -10,8 +10,8 @@ export default function ViewRoundStats(props: {
   }
 
   return (
-    <div>
-      <h2>Round Stats</h2>
+    <div className="flex flex-center flex-col mx-auto mt-3">
+      <p className="text-xl">Round Stats</p>
     </div>
   );
 }

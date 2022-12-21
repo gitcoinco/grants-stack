@@ -7,6 +7,9 @@ import {
   CalendarIcon,
   ChevronRightIcon,
   ClockIcon,
+  InboxIcon,
+  ChartBarIcon,
+  DocumentReportIcon,
 } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
 import ApplicationsReceived from "./ApplicationsReceived";
@@ -135,22 +138,43 @@ export default function ViewRoundPage() {
                     <Tab.List className="flex flex-col h-max">
                       <Tab className={({ selected }) => tabStyles(selected)}>
                         {({ selected }) => (
-                          <div className={selected ? "text-violet-500" : ""}>
-                            Grant Applications
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <InboxIcon className="h-6 w-6 mr-2" />
+                            <span className="mt-0.5">Grant Applications</span>
                           </div>
                         )}
                       </Tab>
                       <Tab className={({ selected }) => tabStyles(selected)}>
                         {({ selected }) => (
-                          <div className={selected ? "text-violet-500" : ""}>
-                            Round Stats
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <ChartBarIcon className="h-6 w-6 mr-2" />
+                            <span className="mt-0.5">Round Stats</span>
                           </div>
                         )}
                       </Tab>
                       <Tab className={({ selected }) => tabStyles(selected)}>
                         {({ selected }) => (
-                          <div className={selected ? "text-violet-500" : ""}>
-                            Funding Admin
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <DocumentReportIcon className="h-6 w-6 mr-2" />
+                            <span className="mt-0.5">Funding Admin</span>
                           </div>
                         )}
                       </Tab>
