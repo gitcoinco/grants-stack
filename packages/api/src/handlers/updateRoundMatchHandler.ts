@@ -6,6 +6,7 @@ import {
 import {Request, Response} from "express";
 import {
   fetchAverageTokenPrices,
+  fetchProjectIdToPayoutAddressMapping,
   fetchRoundMetadata, getChainVerbose,
   handleResponse,
 } from "../utils";
@@ -85,6 +86,8 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
         });
       }
 
+      console.log(results.distribution);
+
       // save the distribution results to the db
       // TODO: figure out if there is a better way to batch transactions
       for (const projectMatch of results.distribution) {
@@ -102,6 +105,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
             matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
             matchAmountInToken: Number(projectMatch.matchAmountInToken),
             roundId: roundId,
+            projectPayoutAddress: projectMatch.projectPayoutAddress,
           },
         });
       }
@@ -119,7 +123,7 @@ export const matchQFContributions = async (
   chainId: ChainId,
   metadata: RoundMetadata,
   contributions: QFContribution[]
-) => {
+) : Promise<Results> => {
   const {totalPot, roundStartTime, roundEndTime, token} = metadata;
 
   let isSaturated: boolean;
@@ -128,7 +132,13 @@ export const matchQFContributions = async (
     [projectId: string]: any;
   } = {};
 
+  // projectPayoutAddress
+  const projectIdToPayoutMapping = await fetchProjectIdToPayoutAddressMapping(
+    metadata.projectsMetaPtr
+  );
+
   let contributionTokens: string[] = [];
+
   // group contributions by project
   for (const contribution of contributions) {
     const {projectId, amount, token, contributor} = contribution;
@@ -180,12 +190,15 @@ export const matchQFContributions = async (
 
     const matchInUSD = Math.pow(sumOfSquares, 2) - sumOfContributions;
 
+    const projectPayoutAddress = projectIdToPayoutMapping.get(projectId)!;
+
     matchResults.push({
       projectId: projectId,
       matchAmountInUSD: matchInUSD,
       totalContributionsInUSD: sumOfContributions,
       matchPoolPercentage: 0, // init to zero
       matchAmountInToken: 0,
+      projectPayoutAddress: projectPayoutAddress,
     });
     totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
     // TODO: Error out if NaN
@@ -214,6 +227,6 @@ export const matchQFContributions = async (
 
   return {
     distribution: matchResults,
-    isSaturated,
+    isSaturated: isSaturated,
   };
 };

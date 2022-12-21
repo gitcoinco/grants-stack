@@ -34,6 +34,7 @@ export type RoundMetadata = {
     id: string;
     strategyName: string;
   };
+  projectsMetaPtr: MetaPtr;
   roundStartTime: number;
   roundEndTime: number;
   token: string;
@@ -91,9 +92,10 @@ export type QFContributionSummary = {
 };
 
 export type QFDistribution = {
-  projectId: string,
-  matchAmountInUSD: number,
-  totalContributionsInUSD: number,
-  matchPoolPercentage: number,
-  matchAmountInToken: number,
+  projectId: string;
+  matchAmountInUSD: number;
+  totalContributionsInUSD: number;
+  matchPoolPercentage: number;
+  matchAmountInToken: number;
+  projectPayoutAddress: string;
 }
