@@ -32,6 +32,12 @@ const iface = new ethers.utils.Interface(abi);
 
 const fetchMissingContributions = async () : Promise<QFContribution[]> => {
 
+  type Transaction = {
+    from: string;
+    input: string;
+    hash: string;
+  }
+
   const API_KEY = process.env.OPTIMISM_ETHERSCAN_API;
   const CONTRACT = "0xdf75054cd67217aee44b4f9e4ebc651c00330938";
   const START_BLOCK = "0";
@@ -46,14 +52,14 @@ const fetchMissingContributions = async () : Promise<QFContribution[]> => {
 
   const response = await fetch(url);
 
-  const contributions: any = [];
+  const contributions: QFContribution[] = [];
 
   const data = await response.json();
   const result = data.result;
 
   console.log("Total txn count:", result.length);
 
-  result.forEach((txn: any) => {
+  result.forEach((txn: Transaction) => {
     try {
 
       const from = txn.from;
@@ -63,7 +69,7 @@ const fetchMissingContributions = async () : Promise<QFContribution[]> => {
 
       const encodedVotes = decodedInput.encodedVotes;
 
-      encodedVotes.forEach((encodedVote: any) => {
+      encodedVotes.forEach((encodedVote: string) => {
 
       const decodedVote = ethers.utils.defaultAbiCoder.decode(
         ["address", "uint256", "address"], // [token, amount, to]

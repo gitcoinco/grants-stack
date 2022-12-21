@@ -34,7 +34,7 @@ describe("updateRoundSummaryHandler", () => {
   });
   const res = {
     send: jest.fn(),
-    json: (object: any) => {
+    json: (object) => {
       return object
     }
   } as unknown as Response;

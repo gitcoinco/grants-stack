@@ -406,6 +406,9 @@ describe("getStrategyName", () => {
 
 describe("groupBy", () => {
   it("groups array of objects by a given property", () => {
+
+    type Pet = { type: string; name: string };
+
     const pets = [
       { type: "Dog", name: faker.animal.dog },
       { type: "Cat", name: faker.animal.cat },
@@ -414,7 +417,7 @@ describe("groupBy", () => {
       { type: "Cat", name: faker.animal.cat },
     ];
 
-    const grouped = groupBy(pets, (pet: any) => pet.type);
+    const grouped = groupBy(pets, (pet: Pet) => pet.type);
 
     expect(grouped.size).toEqual(2);
     expect(grouped.get("Dog").length).toEqual(2);
