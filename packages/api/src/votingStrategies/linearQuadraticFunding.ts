@@ -158,6 +158,7 @@ export const fetchQFContributionsForRound = async (
       token: vote.token,
       contributor: vote.from,
       projectId: projectId!,
+      projectPayoutAddress: payoutAddress,
     });
 
     lastID = vote.id;
@@ -211,6 +212,7 @@ export const fetchQFContributionsForRound = async (
         token: vote.token,
         contributor: vote.from,
         projectId: projectId!,
+        projectPayoutAddress: payoutAddress,
       });
       lastID = vote.id;
     });
@@ -284,6 +286,7 @@ export const fetchQFContributionsForProjects = async (
       token: vote.token,
       contributor: vote.from,
       projectId: projectId!,
+      projectPayoutAddress: payoutAddress,
     });
 
     lastID = vote.id;
@@ -338,7 +341,8 @@ export const fetchQFContributionsForProjects = async (
         amount: BigNumber.from(vote.amount),
         token: vote.token,
         contributor: vote.from,
-        projectId: projectId!
+        projectId: projectId!,
+        projectPayoutAddress: payoutAddress,
       });
       lastID = vote.id;
     });

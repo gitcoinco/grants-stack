@@ -35,7 +35,7 @@ describe("updateProjectSummaryHandler", () => {
 
   const res = {
     send: jest.fn(),
-    json: (object) => {
+    json: (object: any) => {
       return object
     }
   } as unknown as Response;
@@ -107,7 +107,6 @@ describe("updateProjectSummaryHandler", () => {
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
-    expect(responseJSON.data).toEqual("error: unsupported voting strategy");
   });
 
 
