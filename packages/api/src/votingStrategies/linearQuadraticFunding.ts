@@ -11,6 +11,7 @@ import {
   fetchFromGraphQL,
   fetchCurrentTokenPrices,
   fetchFromIPFS,
+  fetchPayoutAddressToProjectIdMapping,
 } from "../utils";
 
 
@@ -344,43 +345,4 @@ export const fetchQFContributionsForProjects = async (
   }
 
   return votes;
-};
-
-
-/**
- * fetchPayoutAddressToProjectIdMapping is a temporary solution to retrieve
- * the payout address to project id mapping
- *
- * @param {ChainId} chainId - The id of the chain to fetch the votes from.
- * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
- * @return {Promise<Map<string, string>>} - An map of project payout address to project id
- */
-export const fetchPayoutAddressToProjectIdMapping = async (
-  projectsMetaPtr: MetaPtr
-): Promise<Map<string, string>> => {
-
-  type ProjectMetaPtr = {
-    id: string,
-    status: string,
-    payoutAddress: string
-  };
-
-  const pointer = projectsMetaPtr.pointer;
-
-  const payoutToProjectMap: Map<string, string>= new Map();
-
-  let projects : ProjectMetaPtr[] = await fetchFromIPFS(pointer);
-
-  projects = projects.filter(project => project.status == "APPROVED");
-
-  projects.map(project => {
-    // project.id format ->  applicationId-roundId
-    const projectId = project.id.split("-")[0];
-
-    const payoutAddress = getAddress(project.payoutAddress);
-
-    payoutToProjectMap.set(payoutAddress, projectId);
-  })
-
-  return payoutToProjectMap;
 };

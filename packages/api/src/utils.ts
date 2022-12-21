@@ -1,11 +1,13 @@
 import { VotingStrategy } from "@prisma/client";
+import { getAddress } from "ethers/lib/utils";
 import { Response } from "express";
 import fetch from "node-fetch";
 import {
   ChainId,
   ChainName,
   RoundMetadata,
-  DenominationResponse
+  DenominationResponse,
+  MetaPtr
 } from "./types";
 
 /**
@@ -169,6 +171,10 @@ export const fetchRoundMetadata = async (
           protocol
           pointer
         }
+        projectsMetaPtr {
+          protocol
+          pointer
+        }
       }
     }
   `;
@@ -182,11 +188,14 @@ export const fetchRoundMetadata = async (
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
   const strategyName = getStrategyName(data?.votingStrategy.strategyName);
 
+  const projectsMetaPtr: MetaPtr = data?.projectsMetaPtr;
+
   const metadata: RoundMetadata = {
     votingStrategy: {
       id: data?.votingStrategy.id,
       strategyName: strategyName,
     },
+    projectsMetaPtr: projectsMetaPtr,
     roundStartTime: data?.roundStartTime,
     roundEndTime: data?.roundEndTime,
     token: data?.token,
@@ -413,9 +422,9 @@ export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: 
 
 /**
  * Util function to group objects by property
- * @param list 
- * @param keyGetter 
- * @returns 
+ * @param list
+ * @param keyGetter
+ * @returns
  */
 export function groupBy(list: any[], keyGetter:any) {
   const map = new Map();
@@ -495,3 +504,77 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
   }
 
 }
+
+/**
+ * Generates mapping from payout address to projectId
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<Map<string, string>>} - An map of project payout address to project id
+ */
+export const fetchPayoutAddressToProjectIdMapping = async (
+  projectsMetaPtr: MetaPtr
+): Promise<Map<string, string>> => {
+
+  type ProjectMetaPtr = {
+    id: string,
+    status: string,
+    payoutAddress: string
+  };
+
+  const pointer = projectsMetaPtr.pointer;
+
+  const payoutToProjectMap: Map<string, string>= new Map();
+
+  let projects : ProjectMetaPtr[] = await fetchFromIPFS(pointer);
+
+  projects = projects.filter(project => project.status == "APPROVED");
+
+  projects.map(project => {
+    // project.id format ->  applicationId-roundId
+    const projectId = project.id.split("-")[0];
+
+    const payoutAddress = getAddress(project.payoutAddress);
+
+    payoutToProjectMap.set(payoutAddress, projectId);
+  })
+
+  return payoutToProjectMap;
+};
+
+/**
+ * Generates mapping from projectId to payout address
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<Map<string, string>>} - An map of project id to project payout address
+ */
+export const fetchProjectIdToPayoutAddressMapping = async (
+  projectsMetaPtr: MetaPtr
+): Promise<Map<string, string>> => {
+
+  type ProjectMetaPtr = {
+    id: string,
+    status: string,
+    payoutAddress: string
+  };
+
+  const pointer = projectsMetaPtr.pointer;
+
+  const projectToPayoutMap: Map<string, string>= new Map();
+
+  let projects : ProjectMetaPtr[] = await fetchFromIPFS(pointer);
+
+  projects = projects.filter(project => project.status == "APPROVED");
+
+  projects.map(project => {
+    // project.id format ->  applicationId-roundId
+    const projectId = project.id.split("-")[0];
+
+    const payoutAddress = getAddress(project.payoutAddress);
+
+    projectToPayoutMap.set(projectId, payoutAddress);
+  })
+
+  return projectToPayoutMap;
+};

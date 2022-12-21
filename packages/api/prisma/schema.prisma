@@ -53,6 +53,7 @@ model Match {
   matchAmountInToken      Float
   round                   Round    @relation(fields: [roundId], references: [roundId])
   roundId                 String
+  projectPayoutAddress    String
 
   @@map("match")
 }

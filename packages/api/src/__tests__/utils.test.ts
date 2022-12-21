@@ -424,3 +424,12 @@ describe("groupBy", () => {
     expect(grouped.get("Cat").length).toEqual(3);
   });
 });
+
+
+describe("fetchPayoutAddressToProjectIdMapping", () => {
+  // TODO
+});
+
+describe("fetchProjectIdToPayoutAddressMapping", () => {
+  // TODO
+});
