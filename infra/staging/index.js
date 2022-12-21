@@ -275,7 +275,6 @@ const api = new aws.ecs.TaskDefinition("api", {
         {
             name: "api",
             image: apiImage,
-            command: ["yarn start"],
             cpu: 1024,
             memory: 2048,
             essential: true,
