@@ -46,7 +46,7 @@ model Match {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
-  projectId               String
+  projectId               String   @unique
   matchAmountInUSD        Float
   totalContributionsInUSD Float
   matchPoolPercentage     Float
@@ -54,7 +54,6 @@ model Match {
   round                   Round    @relation(fields: [roundId], references: [roundId])
   roundId                 String
 
-  @@unique([projectId, roundId], name: "matchIdentifier")
   @@map("match")
 }
 
