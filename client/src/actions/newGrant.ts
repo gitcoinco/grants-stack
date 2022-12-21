@@ -9,8 +9,6 @@ import { NewGrant, Status } from "../reducers/newGrant";
 import PinataClient from "../services/pinata";
 import { Project } from "../types/index";
 import { getProjectURIComponents } from "../utils/utils";
-import { unloadAll as unloadAllMetadata } from "./grantsMetadata";
-import { unloadProjects } from "./projects";
 
 export const NEW_GRANT_STATUS = "NEW_GRANT_STATUS";
 export interface NewGrantStatus {
@@ -153,12 +151,6 @@ export const publishGrant =
 
     dispatch(grantStatus(Status.TransactionInitiated));
     const txStatus = await projectTx.wait();
-
-    // unload projects before changing the status
-    // so that if the component redirects to the dashboard
-    // we are sure to reload the updated or created project
-    dispatch(unloadAllMetadata());
-    dispatch(unloadProjects());
 
     if (txStatus.status) {
       dispatch(grantStatus(Status.Completed));
