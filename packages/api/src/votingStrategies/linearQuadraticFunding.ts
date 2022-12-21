@@ -1,13 +1,15 @@
 import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, getAddress } from "ethers/lib/utils";
 import {
   ChainId,
   QFContributionSummary,
   QFContribution,
+  MetaPtr,
 } from "../types";
 import {
   fetchFromGraphQL,
   fetchCurrentTokenPrices,
+  fetchFromIPFS,
 } from "../utils";
 
 
@@ -92,8 +94,8 @@ export const summarizeQFContributions = async (
 
 
 /**
- * fetchContributionsForRound is an async function that retrieves a 
- * list of all votes made in a round identified by 
+ * fetchContributionsForRound is an async function that retrieves a
+ * list of all votes made in a round identified by
  * the votingStrategyId parameter.
  * The function uses pagination to retrieve all votes from the GraphQL API and returns them as an array of QFContribution objects.
  *
@@ -122,6 +124,10 @@ export const fetchQFContributionsForRound = async (
           roundStartTime
           roundEndTime
           token
+          projectsMetaPtr {
+            pointer
+            protocol
+          }
         }
 
       }
@@ -132,15 +138,26 @@ export const fetchQFContributionsForRound = async (
   // fetch from graphql
   const response = await fetchFromGraphQL(chainId, query, variables);
 
+  // fetch projectId -> payoutAddress mapping
+  const projectsMetaPtr: MetaPtr = response.data?.votingStrategies[0]?.round.projectsMetaPtr;
+  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(projectsMetaPtr);
+
   const votes: QFContribution[] = [];
 
   response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+
+    const payoutAddress = getAddress(vote.to);
+
+    // TODO: remove update to projectID after contract upgrade
+    const projectId = projectPayoutToIdMapping.get(payoutAddress);
+
     votes.push({
       amount: BigNumber.from(vote.amount),
       token: vote.token,
       contributor: vote.from,
-      projectId: vote.to, // TODO: update to projectID after contract upgrade
+      projectId: projectId!,
     });
+
     lastID = vote.id;
   });
 
@@ -181,11 +198,17 @@ export const fetchQFContributionsForRound = async (
 
     // Add the new votes to the list of votes
     response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+
+      const payoutAddress = getAddress(vote.to);
+
+      // TODO: remove update to projectID after contract upgrade
+      const projectId = projectPayoutToIdMapping.get(payoutAddress);
+
       votes.push({
         amount: BigNumber.from(vote.amount),
         token: vote.token,
         contributor: vote.from,
-        projectId: vote.to, // TODO: update to projectID after contract upgrade
+        projectId: projectId!,
       });
       lastID = vote.id;
     });
@@ -195,7 +218,8 @@ export const fetchQFContributionsForRound = async (
 };
 
 /**
- * fetchContributionsForProject is a function that fetches a list of contributions for a given project from a GraphQL API.
+ * fetchContributionsForProject is a function that fetches a list of contributions for
+ * a given project from a GraphQL API.
  *
  * @param {ChainId} chainId - The ID of the chain to fetch data from.
  * @param {string} votingStrategyId - The ID of the voting strategy to fetch data for.
@@ -226,6 +250,10 @@ export const fetchQFContributionsForProjects = async (
           roundStartTime
           roundEndTime
           token
+          projectsMetaPtr {
+            pointer
+            protocol
+          }
         }
 
       }
@@ -236,15 +264,26 @@ export const fetchQFContributionsForProjects = async (
   // fetch from graphql
   const response = await fetchFromGraphQL(chainId, query, variables);
 
+  // fetch projectId -> payoutAddress mapping
+  const projectsMetaPtr: MetaPtr = response.data?.votingStrategies[0]?.round.projectsMetaPtr;
+  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(projectsMetaPtr);
+
   const votes: QFContribution[] = [];
 
   response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+
+    const payoutAddress = getAddress(vote.to);
+
+    // TODO: remove update to projectID after contract upgrade
+    const projectId = projectPayoutToIdMapping.get(payoutAddress);
+
     votes.push({
       amount: BigNumber.from(vote.amount),
       token: vote.token,
       contributor: vote.from,
-      projectId: vote.to, // TODO: update to projectID after contract upgrade
+      projectId: projectId!,
     });
+
     lastID = vote.id;
   });
 
@@ -287,11 +326,17 @@ export const fetchQFContributionsForProjects = async (
 
     // Add the new votes to the list of votes
     response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+
+      const payoutAddress = getAddress(vote.to);
+
+      // TODO: remove update to projectID after contract upgrade
+      const projectId = projectPayoutToIdMapping.get(payoutAddress);
+
       votes.push({
         amount: BigNumber.from(vote.amount),
         token: vote.token,
         contributor: vote.from,
-        projectId: vote.to, // TODO: update to projectID after contract upgrade
+        projectId: projectId!
       });
       lastID = vote.id;
     });
@@ -300,3 +345,41 @@ export const fetchQFContributionsForProjects = async (
   return votes;
 };
 
+
+/**
+ * fetchPayoutAddressToProjectIdMapping is a temporary solution to retrieve
+ * the payout address to project id mapping
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<Map<string, string>>} - An map of project payout address to project id
+ */
+export const fetchPayoutAddressToProjectIdMapping = async (
+  projectsMetaPtr: MetaPtr
+): Promise<Map<string, string>> => {
+
+  type ProjectMetaPtr = {
+    id: string,
+    status: string,
+    payoutAddress: string
+  };
+
+  const pointer = projectsMetaPtr.pointer;
+
+  const payoutToProjectMap: Map<string, string>= new Map();
+
+  let projects : ProjectMetaPtr[] = await fetchFromIPFS(pointer);
+
+  projects = projects.filter(project => project.status == "APPROVED");
+
+  projects.map(project => {
+    // project.id format ->  applicationId-roundId
+    const projectId = project.id.split("-")[0];
+
+    const payoutAddress = getAddress(project.payoutAddress);
+
+    payoutToProjectMap.set(payoutAddress, projectId);
+  })
+
+  return payoutToProjectMap;
+};
