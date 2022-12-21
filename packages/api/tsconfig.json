@@ -14,7 +14,10 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "sourceRoot": "src"
+    "sourceRoot": "src",
+    "types": [
+      "jest"
+    ]
   },
   "files": [
     "index.ts"

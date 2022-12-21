@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import {
   ChainId,
   QFContribution,
@@ -5,7 +6,6 @@ import {
   QFDistributionResults,
   RoundMetadata,
 } from "../types";
-import { Request, Response } from "express";
 import {
   fetchAverageTokenPrices,
   fetchProjectIdToPayoutAddressMapping,

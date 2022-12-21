@@ -1,11 +1,26 @@
+import { BigNumber } from "ethers";
+import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended";
+import { faker } from "@faker-js/faker";
+import { PrismaClient } from "@prisma/client";
+
 import {
+  MetaPtr,
   QFContributionSummary,
   QFContribution,
   RoundMetadata,
-  MetaPtr,
 } from "./types";
-import { faker } from "@faker-js/faker";
-import { BigNumber } from "ethers";
+import prisma from "./handlers/client";
+
+jest.mock("./handlers/client", () => ({
+  __esModule: true,
+  default: mockDeep<PrismaClient>(),
+}));
+
+beforeEach(() => {
+  mockReset(prismaMock);
+});
+
+export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
 export const mockProjectMetaPtr: MetaPtr = {
   protocol: 1,
