@@ -26,7 +26,7 @@ export const getProjectMatchDataHandler = async (req: Request, res: Response) =>
   const cachedRoundMatchData = cache.get(`cache_/data/round/match/${chainId}/${roundId}`) as Results;
   // TODO: also check data round cache
   if (cachedRoundMatchData) {
-    const cachedProjectMatch = cachedRoundMatchData.distribution.filter((match: any) => match.projectId === projectId)[0];
+    const cachedProjectMatch = cachedRoundMatchData.distribution.filter((match) => match.projectId === projectId)[0];
     return handleResponse(res, 200, `${req.originalUrl}`, cachedProjectMatch);
   }
 

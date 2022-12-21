@@ -99,7 +99,7 @@ export const fetchFromIPFS = async (cid: string) => {
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
-    (resp: any) => {
+    (resp) => {
       if (resp.ok) {
         return resp.json();
       }
@@ -130,7 +130,7 @@ export const fetchFromGraphQL = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, variables }),
-  }).then((resp: any) => {
+  }).then(resp => {
     if (resp.ok) {
       return resp.json();
     }
@@ -198,19 +198,19 @@ export const fetchRoundMetadata = async (
 
 /**
  * Generic function which handles how response is sent
- * for any API implemented in this service
+ * for an API implemented in this service
  *
  * @param res Response
  * @param code number
  * @param message string
- * @param body any
+ * @param body? string|object
  * @returns res.json
  */
 export const handleResponse = (
   res: Response,
   code: number,
   message: string,
-  body?: any
+  body?: string|object
 ) => {
   let success: boolean = false;
 

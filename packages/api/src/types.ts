@@ -19,7 +19,7 @@ export type MetaPtr = {
 };
 
 export type Results = {
-  distribution: any;
+  distribution: QFDistribution[];
   isSaturated?: boolean;
 };
 
@@ -75,10 +75,25 @@ export type QFContribution = {
   projectId: string;
 };
 
+export type QFVotedEvent = {
+  to: string;
+  amount: string;
+  token: string;
+  from: string;
+  id: string;
+}
+
 export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
   totalContributionsInUSD?: number;
   averageUSDContribution?: number;
-  projects?: any;
 };
+
+export type QFDistribution = {
+  projectId: string,
+  matchAmountInUSD: number,
+  totalContributionsInUSD: number,
+  matchPoolPercentage: number,
+  matchAmountInToken: number,
+}

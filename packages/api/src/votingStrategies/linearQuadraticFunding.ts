@@ -5,6 +5,7 @@ import {
   QFContributionSummary,
   QFContribution,
   MetaPtr,
+  QFVotedEvent,
 } from "../types";
 import {
   fetchFromGraphQL,
@@ -144,7 +145,7 @@ export const fetchQFContributionsForRound = async (
 
   const votes: QFContribution[] = [];
 
-  response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+  response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
 
     const payoutAddress = getAddress(vote.to);
 
@@ -197,7 +198,7 @@ export const fetchQFContributionsForRound = async (
     }
 
     // Add the new votes to the list of votes
-    response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+    response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
 
       const payoutAddress = getAddress(vote.to);
 
@@ -270,7 +271,7 @@ export const fetchQFContributionsForProjects = async (
 
   const votes: QFContribution[] = [];
 
-  response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+  response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
 
     const payoutAddress = getAddress(vote.to);
 
@@ -325,7 +326,7 @@ export const fetchQFContributionsForProjects = async (
     }
 
     // Add the new votes to the list of votes
-    response.data?.votingStrategies[0]?.votes.map((vote: any) => {
+    response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
 
       const payoutAddress = getAddress(vote.to);
 

@@ -93,8 +93,7 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
     );
   } catch (err) {
     console.log(err);
-
-    return handleResponse(res, 500, "error: something went wrong", err);
+    return handleResponse(res, 500, "error: something went wrong");
   }
 };
 
@@ -110,7 +109,7 @@ export const getRoundSummary = async (
   roundId: string,
   req: Request,
 ): Promise<QFContributionSummary> => {
-  let results;
+  let results: QFContributionSummary;
 
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);

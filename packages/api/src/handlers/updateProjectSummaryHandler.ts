@@ -1,5 +1,5 @@
 import {
-  ChainId,
+  ChainId, QFContributionSummary,
 } from "../types";
 import {
   fetchRoundMetadata,
@@ -102,7 +102,8 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
 
     return handleResponse(res, 200, `${req.originalUrl}`, {...results, updatedAt});
   } catch (err) {
-    return handleResponse(res, 500, "error: something went wrong", err);
+    console.error(err);
+    return handleResponse(res, 500, "error: something went wrong");
   }
 };
 
@@ -112,10 +113,10 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
  * @param {ChainId} chainId - The ID of the chain to fetch data from.
  * @param {string} roundId - The ID of the round to fetch data for.
  * @param {string[]} projectIds - An array of project IDs to filter the summary data by.
- * @returns {Promise<any>} A promise that resolves to an array of objects containing the summary data.
+ * @returns {Promise<QFContributionSummary>} A promise that resolves to an array of objects containing the summary data.
  */
-export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[], req: Request): Promise<any> => {
-  let results: any = [];
+export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[], req: Request): Promise<QFContributionSummary> => {
+  let results: QFContributionSummary;
 
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
