@@ -5,6 +5,7 @@ import {
   ProjectsState,
   Status,
 } from "../../reducers/projects";
+import { addressFrom } from "../../utils/test_utils";
 
 describe("projects reducer", () => {
   let state: ProjectsState;
@@ -24,10 +25,18 @@ describe("projects reducer", () => {
       ...state,
       applications: {
         "1": [
-          { roundID: "0x1234", status: "PENDING" as AppStatus, chainId: 1 },
+          {
+            roundID: addressFrom(1),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
         ],
         "2": [
-          { roundID: "0x4567", status: "PENDING" as AppStatus, chainId: 1 },
+          {
+            roundID: addressFrom(2),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
         ],
       },
     };
@@ -38,7 +47,13 @@ describe("projects reducer", () => {
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1234", status: "PENDING", chainId: 1 }],
+      "1": [
+        {
+          roundID: addressFrom(1),
+          status: "PENDING",
+          chainId: 1,
+        },
+      ],
       "2": [],
     });
   });
@@ -48,7 +63,11 @@ describe("projects reducer", () => {
       ...state,
       applications: {
         "1": [
-          { roundID: "0x1234", status: "PENDING" as AppStatus, chainId: 1 },
+          {
+            roundID: addressFrom(1),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
         ],
       },
     };
@@ -58,7 +77,7 @@ describe("projects reducer", () => {
       projectID: "2",
       applications: [
         {
-          roundID: "0x3456",
+          roundID: addressFrom(2),
           status: "APPROVED",
           chainId: 1,
         },
@@ -66,8 +85,20 @@ describe("projects reducer", () => {
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1234", status: "PENDING", chainId: 1 }],
-      "2": [{ roundID: "0x3456", status: "APPROVED", chainId: 1 }],
+      "1": [
+        {
+          roundID: addressFrom(1),
+          status: "PENDING",
+          chainId: 1,
+        },
+      ],
+      "2": [
+        {
+          roundID: addressFrom(2),
+          status: "APPROVED",
+          chainId: 1,
+        },
+      ],
     });
   });
 
