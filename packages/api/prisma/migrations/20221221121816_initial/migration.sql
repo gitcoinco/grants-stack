@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ChainId" AS ENUM ('GOERLI', 'OPTIMISM_MAINNET', 'FANTOM_MAINNET', 'FANTOM_TESTNET', 'LOCAL_ROUND_LAB');
+CREATE TYPE "ChainId" AS ENUM ('GOERLI', 'OPTIMISM_MAINNET', 'FANTOM_MAINNET', 'FANTOM_TESTNET', 'LOCAL_ROUND_LAB', 'MAINNET');
 
 -- CreateEnum
 CREATE TYPE "VotingStrategy" AS ENUM ('LINEAR_QUADRATIC_FUNDING', 'QUADRATIC_VOTING');
@@ -35,10 +35,12 @@ CREATE TABLE "match" (
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
     "projectId" TEXT NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
-    "sumOfContributions" DOUBLE PRECISION NOT NULL,
-    "contributionCount" INTEGER NOT NULL,
+    "matchAmountInUSD" DOUBLE PRECISION NOT NULL,
+    "totalContributionsInUSD" DOUBLE PRECISION NOT NULL,
+    "matchPoolPercentage" DOUBLE PRECISION NOT NULL,
+    "matchAmountInToken" DOUBLE PRECISION NOT NULL,
     "roundId" TEXT NOT NULL,
+    "projectPayoutAddress" TEXT NOT NULL,
 
     CONSTRAINT "match_pkey" PRIMARY KEY ("id")
 );
@@ -48,7 +50,7 @@ CREATE TABLE "roundSummary" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
-    "contributionCount" DOUBLE PRECISION NOT NULL,
+    "contributionCount" INTEGER NOT NULL,
     "uniqueContributors" INTEGER NOT NULL,
     "totalContributionsInUSD" DOUBLE PRECISION NOT NULL,
     "averageUSDContribution" DOUBLE PRECISION NOT NULL,
@@ -62,7 +64,7 @@ CREATE TABLE "projectSummary" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
-    "contributionCount" DOUBLE PRECISION NOT NULL,
+    "contributionCount" INTEGER NOT NULL,
     "uniqueContributors" INTEGER NOT NULL,
     "totalContributionsInUSD" DOUBLE PRECISION NOT NULL,
     "averageUSDContribution" DOUBLE PRECISION NOT NULL,
@@ -81,7 +83,7 @@ CREATE UNIQUE INDEX "project_projectId_key" ON "project"("projectId");
 CREATE UNIQUE INDEX "project_roundId_key" ON "project"("roundId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "match_projectId_roundId_key" ON "match"("projectId", "roundId");
+CREATE UNIQUE INDEX "match_projectId_key" ON "match"("projectId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roundSummary_roundId_key" ON "roundSummary"("roundId");
