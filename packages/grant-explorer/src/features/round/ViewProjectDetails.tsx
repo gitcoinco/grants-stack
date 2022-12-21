@@ -23,6 +23,14 @@ import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
 import useSWR from "swr";
+import moment from "moment";
+import {
+  formatDistanceStrict,
+  formatDistanceToNow,
+  formatDistanceToNowStrict,
+  formatDuration,
+  intervalToDuration,
+} from "date-fns";
 import Banner from "../common/Banner";
 
 enum VerifiedCredentialState {
@@ -364,22 +372,29 @@ function Sidebar(props: {
 }
 
 function ProjectStats() {
-  const { data, error, isLoading } = useSWR(
+  const { chainId, roundId, applicationId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
+  const project = round?.approvedProjects?.find(
+    (project) => project.grantApplicationId === applicationId
+  );
+  const { data } = useSWR(
     {
-      chainId: 5,
-      roundId: "0xaf32b481c708cc9be8d58bf438f05d3d993111cc",
-      projectId:
-        "0x0cc5d43d808e9e7e490197924e7450f4433218d801fd16abfc31d54799b79f3d-0xaf32b481c708cc9be8d58bf438f05d3d993111cc",
+      chainId,
+      roundId,
+      projectId: project?.recipient,
     },
     getProjectSummary
   );
 
-  console.log(data, isLoading);
+  const timeRemaining = round?.roundEndTime
+    ? formatDistanceToNowStrict(round.roundEndTime)
+    : null;
 
   return (
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
-        <h3>${data?.data.totalContributionsInUSD ?? "-"}</h3>
+        <h3>${data?.data.totalContributionsInUSD?.toFixed() ?? "-"}</h3>
         <p>funding recieved in current round</p>
       </div>
       <div>
@@ -387,8 +402,17 @@ function ProjectStats() {
         <p>contributors</p>
       </div>
       <div>
-        <h3>20</h3>
-        <p>days to go</p>
+        {(round?.roundEndTime ?? 0) > new Date() ? (
+          <>
+            <h3>{timeRemaining ?? "-"}</h3>
+            <p>to go</p>
+          </>
+        ) : (
+          <>
+            <p>Round ended</p>
+            <h3>{timeRemaining}</h3>
+          </>
+        )}
       </div>
     </div>
   );

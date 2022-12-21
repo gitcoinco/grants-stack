@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import { useMemo, useState } from "react";
 
 export function useRoundSummary({
   chainId,
@@ -46,7 +46,7 @@ export function useRoundSummary({
 export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
-  totalContributionsInUSD?: string;
+  totalContributionsInUSD?: number;
   averageUSDContribution?: string;
   // FIXME: specify this type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,9 +66,9 @@ export function getProjectSummary({
   success: boolean;
   message: string;
 }> {
-  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}/${projectId}`;
+  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/update/summary/project/${chainId}/${roundId}/${projectId}`;
   return fetch(url, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
