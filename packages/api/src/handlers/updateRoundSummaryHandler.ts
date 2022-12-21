@@ -127,6 +127,7 @@ export const getRoundSummary = async (
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
+
       // cache results
       updatedAt = new Date();
 

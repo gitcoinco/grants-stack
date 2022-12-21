@@ -1,6 +1,5 @@
 /***************/
 /* = General = */
-
 /***************/
 
 import {BigNumber} from "ethers";
@@ -13,6 +12,11 @@ export enum ChainId {
   FANTOM_TESTNET = "4002",
   LOCAL_ROUND_LAB = "3",
 }
+
+export type MetaPtr = {
+  protocol: number;
+  pointer: string;
+};
 
 export type Results = {
   distribution: any;
@@ -42,6 +46,10 @@ export type ProjectSummary = {
   contributions: [];
 }
 
+export type Map = {
+  [id: string]: string;
+}
+
 export type HandleResponseObject = {
   success: boolean;
   message: string;
@@ -51,12 +59,6 @@ export type HandleResponseObject = {
 /****************/
 /* = LinearQF = */
 /****************/
-
-
-export type RoundProject = {
-  id: string;
-  payoutAddress: string;
-};
 
 export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
 
