@@ -279,13 +279,13 @@ const api = new aws.ecs.TaskDefinition("api", {
             memory: 2048,
             essential: true,
             portMappings: [{
-                containerPort: 8080,
-                hostPort: 8080,
+                containerPort: 80,
+                hostPort: 80,
             }],
             environment: [
                 {
                     name: "PORT", 
-                    value: "8080"
+                    value: "80"
                 },
                 {
                     name: "DATABASE_URL", 
@@ -339,6 +339,6 @@ const api_service = new aws.ecs.Service("api", {
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
         containerName: "api",
-        containerPort: 8080,
+        containerPort: 80,
     }],
 });
