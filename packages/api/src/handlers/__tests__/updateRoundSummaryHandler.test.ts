@@ -4,7 +4,7 @@ import {HandleResponseObject, QFContributionSummary} from "../../types";
 import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
-import {roundSummaryHandler} from "../../handlers/roundSummaryHandler";
+import {updateRoundSummaryHandler} from "../updateRoundSummaryHandler";
 import {mockRoundMetadata, mockQFContributionSummary, mockQFVote} from "../../test-utils";
 
 import {getMockReq} from '@jest-mock/express'
@@ -13,7 +13,7 @@ const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS)
 
 
-describe("roundSummaryHandler", () => {
+describe("updateRoundSummaryHandler", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -43,7 +43,7 @@ describe("roundSummaryHandler", () => {
   it("returns error when invoked no params", async () => {
     const req = getMockReq({params: {}})
 
-    const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId or roundId");
@@ -57,7 +57,7 @@ describe("roundSummaryHandler", () => {
       }
     })
 
-    const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId or roundId");
@@ -71,7 +71,7 @@ describe("roundSummaryHandler", () => {
       }
     });
 
-    const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId or roundId");
@@ -86,7 +86,7 @@ describe("roundSummaryHandler", () => {
     roundMetadata.votingStrategy.strategyName = faker.name.firstName();
 
     jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
-    const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
@@ -96,7 +96,7 @@ describe("roundSummaryHandler", () => {
 
   it("returns error when exception occurs ", async () => {
 
-    const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
@@ -118,7 +118,7 @@ describe("roundSummaryHandler", () => {
   //     averageUSDContribution: 0,
   //   };
   //
-  //   const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+  //   const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
   //
   //
   //   expect(responseJSON.success).toBeTruthy();
@@ -141,7 +141,7 @@ describe("roundSummaryHandler", () => {
   //   const summary = JSON.parse(JSON.stringify(mockQFContributionSummary));
   //   jest.spyOn(linearQuadraticFunding, 'summarizeQFContributions').mockResolvedValueOnce(summary);
   //
-  //   const responseJSON = await roundSummaryHandler(req, res) as unknown as HandleResponseObject;
+  //   const responseJSON = await updateRoundSummaryHandler(req, res) as unknown as HandleResponseObject;
   //
   //   expect(responseJSON.success).toBeTruthy();
   //   expect(responseJSON.message).toEqual("fetched round summary successfully");

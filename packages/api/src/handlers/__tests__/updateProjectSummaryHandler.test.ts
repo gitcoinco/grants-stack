@@ -4,7 +4,7 @@ import {HandleResponseObject, QFContributionSummary, QFContribution, RoundMetada
 import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
-import {projectSummaryHandler} from "../../handlers/projectSummaryHandler";
+import {updateProjectSummaryHandler} from "../updateProjectSummaryHandler";
 import {mockRoundMetadata, mockQFContributionSummary, mockQFVote} from "../../test-utils";
 
 import {getMockReq} from '@jest-mock/express'
@@ -12,7 +12,7 @@ import {getMockReq} from '@jest-mock/express'
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS)
 
-describe("projectSummaryHandler", () => {
+describe("updateProjectSummaryHandler", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -44,7 +44,7 @@ describe("projectSummaryHandler", () => {
   it("returns error when invoked no params", async () => {
     const req = getMockReq({params: {}})
 
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId, roundId, or projectId");
@@ -58,7 +58,7 @@ describe("projectSummaryHandler", () => {
       }
     })
 
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId, roundId, or projectId");
@@ -74,7 +74,7 @@ describe("projectSummaryHandler", () => {
       }
     })
 
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId, roundId, or projectId");
@@ -88,7 +88,7 @@ describe("projectSummaryHandler", () => {
       }
     });
 
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: missing parameter chainId, roundId, or projectId");
@@ -103,7 +103,7 @@ describe("projectSummaryHandler", () => {
     roundMetadata.votingStrategy.strategyName = faker.name.firstName();
 
     jest.spyOn(utils, 'fetchRoundMetadata').mockResolvedValueOnce(roundMetadata);
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
@@ -113,7 +113,7 @@ describe("projectSummaryHandler", () => {
 
   it("returns error when exception occurs ", async () => {
 
-    const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+    const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
@@ -134,7 +134,7 @@ describe("projectSummaryHandler", () => {
   //     averageUSDContribution: "0",
   //   };
   //
-  //   const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+  //   const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
   //
   //   expect(responseJSON.success).toBeTruthy();
   //   expect(responseJSON.message).toEqual("fetched project summary successfully");
@@ -155,7 +155,7 @@ describe("projectSummaryHandler", () => {
   //   const summary: QFContributionSummary = JSON.parse(JSON.stringify(mockQFContributionSummary));
   //   jest.spyOn(linearQuadraticFunding, 'summarizeQFContributions').mockResolvedValueOnce(summary);
   //
-  //   const responseJSON = await projectSummaryHandler(req, res) as unknown as HandleResponseObject;
+  //   const responseJSON = await updateProjectSummaryHandler(req, res) as unknown as HandleResponseObject;
   //
   //   expect(responseJSON.success).toBeTruthy();
   //   expect(responseJSON.message).toEqual("fetched project summary successfully");

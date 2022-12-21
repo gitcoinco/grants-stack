@@ -1,24 +1,28 @@
 import {Request, Response, Router} from "express";
-import {fetchMatchingHandler} from "./handlers/fetchMatchingHandler";
-import {convertPriceHandler} from "./handlers/convertPriceHandler";
-import {roundSummaryHandler} from "./handlers/roundSummaryHandler";
-import {projectSummaryHandler} from "./handlers/projectSummaryHandler";
-import {matchHandler} from "./handlers/matchHandler";
+import {updateRoundSummaryHandler} from "./handlers/updateRoundSummaryHandler";
+import {updateProjectSummaryHandler} from "./handlers/updateProjectSummaryHandler";
+import {updateRoundMatchHandler} from "./handlers/updateRoundMatchHandler";
+import {getProjectMatchDataHandler} from "./handlers/getProjectMatchDataHandler";
+import {cacheMiddleware} from "./middleware/cacheMiddleware";
+import {getRoundMatchDataHandler} from "./handlers/getRoundMatchDataHandler";
+import {getProjectSummaryDataHandler} from "./handlers/getProjectSummaryDataHandler";
+import {getRoundSummaryDataHandler} from "./handlers/getRoundSummaryDataHandler";
 
 const router = Router();
+
+router.use(cacheMiddleware);
 
 router.get("/", (req: Request, res: Response) => {
   res.json({ test: "it works" });
 });
 
-router.get("/fetch-matching", fetchMatchingHandler);
+router.post("/update/summary/round/:chainId/:roundId", updateRoundSummaryHandler);
+router.post("/update/summary/project/:chainId/:roundId/:projectId", updateProjectSummaryHandler);
+router.post("/update/match/round/:chainId/:roundId", updateRoundMatchHandler);
 
-router.get("/convert-price/:chainName/:tokenContract", convertPriceHandler);
-
-router.post("/summary/:chainId/:roundId", roundSummaryHandler);
-
-router.post("/summary/:chainId/:roundId/:projectId", projectSummaryHandler);
-
-router.post("/match/:chainId/:roundId", matchHandler);
+router.get("/data/match/project/:chainId/:roundId/:projectId", getProjectMatchDataHandler);
+router.get("/data/match/round/:chainId/:roundId", getRoundMatchDataHandler);
+router.get("/data/summary/project/:chainId/:roundId/:projectId", getProjectSummaryDataHandler);
+router.get("/data/summary/round/:chainId/:roundId", getRoundSummaryDataHandler);
 
 export default router;
