@@ -7,6 +7,8 @@ let dbPassword = pulumi.secret(`${process.env["DB_PASSWORD"]}`);
 let dbName = `${process.env["DB_NAME"]}`;
 let dbUrl = `${process.env["DB_URL"]}`;
 let apiImage = `${process.env["ECR_REGISTRY"]}/${process.env["ECR_REPOSITORY"]}:${process.env["API_IMAGE_TAG"]}`
+let domain = `${process.env["DOMAIN"]}`
+let route53Zone = `${process.env["ROUTE_53_ZONE"]}`;
 
 let SUBGRAPH_MAINNET_API = `${process.env["SUBGRAPH_MAINNET_API"]}`
 let SUBGRAPH_GOERLI_API = `${process.env["SUBGRAPH_GOERLI_API"]}`
@@ -16,6 +18,7 @@ let SUBGRAPH_FANTOM_MAINNET_API = `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}
 let SUBGRAPH_DUMMY_API = `${process.env["SUBGRAPH_DUMMY_API"]}`
 let SENTRY_DSN = `${process.env["SENTRY_DSN"]}`
 let OPTIMISM_ETHERSCAN_API = `${process.env["OPTIMISM_ETHERSCAN_API"]}`
+
 
 // KMS Key
 const grantsKey = new aws.kms.Key("grantsKey", {
@@ -183,7 +186,31 @@ const registry = new aws.ecr.Repository("grants", {
     imageTagMutability: "MUTABLE",
 });
 
+// Certificate and Records
+
+const certificate = new aws.acm.Certificate("cert", {
+    domainName: domain,
+    tags: {
+      Environment: "staging",
+    },
+    validationMethod: "DNS",
+  });
+
+const certificateValidationDomain = new aws.route53.Record(`${domain}-validation`, {
+    name: certificate.domainValidationOptions[0].resourceRecordName,
+    zoneId: route53Zone,
+    type: certificate.domainValidationOptions[0].resourceRecordType,
+    records: [certificate.domainValidationOptions[0].resourceRecordValue],
+    ttl: 600,
+});
+
+const certificateValidation = new aws.acm.CertificateValidation("certificateValidation", {
+    certificateArn: certificate.arn,
+    validationRecordFqdns: [certificateValidationDomain.fqdn],
+  });
+
 // Load Balancer
+
 const secgrp = new aws.ec2.SecurityGroup("grants", {
     description: "gitcoin",
     vpcId: vpc.id,
