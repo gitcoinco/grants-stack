@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
 
 let updatedAt: Date;
 
-export const matchHandler = async (req: Request, res: Response) => {
+export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
 
   // check if params are valid

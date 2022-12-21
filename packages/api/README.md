@@ -37,13 +37,15 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 
 ### Endpoints
 
-| Description                               | endpoint                                 | request method | Query Params / Body                       |
-|-------------------------------------------|------------------------------------------|----------------|-------------------------------------------|
-| fetched stored results of match endpoint  | /fetch-matching                          | GET            | roundId="ROUND_ID"&projectId="PROJECT_ID" |
-| fetch current token price conversion rate | /convert-price/:chainName/:tokenContract | GET            |                                           |
-| fetch round stats                         | /summary/:chainId/:roundId               | POST           |                                           |
-| fetch project in round stats              | /summary/:chainId/:roundId/:projectId    | POST           |                                           |
-| trigger matching calculations for round   | /match/:chainId/:roundId                 | POST           |                                           |
+| Description                               | endpoint                                                             | request method | Query Params / Body                       |
+|-------------------------------------------|---------------------------------------------------------------------|----------------|-------------------------------------------|
+| Update round summary data                 | /update/summary/round/:chainId/:roundId                             | POST           |                                           |
+| Update project summary data               | /update/summary/project/:chainId/:roundId/:projectId                | POST           |                                           |
+| Update round match data                   | /update/match/round/:chainId/:roundId                               | POST           |                                           |
+| Get project match data                    | /data/match/project/:chainId/:roundId/:projectId                    | GET            |                                           |
+| Get round match data                      | /data/match/round/:chainId/:roundId                                 | GET            |                                           |
+| Get project summary data                  | /data/summary/project/:chainId/:roundId/:projectId                  | GET            |                                           |
+| Get round summary data                    | /data/summary/round/:chainId/:roundId                               | GET            |                                           |
 
 
 ### Development

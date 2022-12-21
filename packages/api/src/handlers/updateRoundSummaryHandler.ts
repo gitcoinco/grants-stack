@@ -21,13 +21,13 @@ const prisma = new PrismaClient();
 let updatedAt: Date;
 
 /**
- * roundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
+ * updateRoundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
  *
  * @param {Request} req - The incoming HTTP request.
  * @param {Response} res - The HTTP response that will be sent.
  * @returns {void}
  */
-export const roundSummaryHandler = async (req: Request, res: Response) => {
+export const updateRoundSummaryHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
 
   if (!chainId || !roundId) {

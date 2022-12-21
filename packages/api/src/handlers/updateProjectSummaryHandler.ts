@@ -20,14 +20,14 @@ const prisma = new PrismaClient();
 let updatedAt: Date;
 
 /**
- * projectSummaryHandler is a function that handles HTTP requests
+ * updateProjectSummaryHandler is a function that handles HTTP requests
  * for summary information for a given round and project.
  *
  * @param {Request} req - The incoming HTTP request.
  * @param {Response} res - The HTTP response that will be sent.
  * @returns {void}
  */
-export const projectSummaryHandler = async (req: Request, res: Response) => {
+export const updateProjectSummaryHandler = async (req: Request, res: Response) => {
   const {chainId, roundId, projectId} = req.params;
 
   if (!chainId || !roundId || !projectId) {
