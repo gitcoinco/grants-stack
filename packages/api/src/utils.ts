@@ -9,6 +9,7 @@ import {
   DenominationResponse,
   MetaPtr
 } from "./types";
+import {cache} from "./cacheConfig";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -151,8 +152,18 @@ export const fetchFromGraphQL = async (
  */
 export const fetchRoundMetadata = async (
   chainId: ChainId,
-  roundId: string
+  roundId: string,
+  force?: boolean
 ): Promise<RoundMetadata> => {
+
+  // try to get the data from cache
+  const key = `cache_metadata_${chainId}_${roundId}`;
+  const cachedMetadata: any = cache.get(key);
+  if (cachedMetadata && !force) {
+
+    return cachedMetadata;
+  }
+
   const variables = {roundId};
 
   const query = `
@@ -201,6 +212,9 @@ export const fetchRoundMetadata = async (
     token: data?.token,
     totalPot: totalPot,
   };
+
+  // cache the round metadata
+  cache.set(key, metadata);
 
   return metadata;
 };

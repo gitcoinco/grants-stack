@@ -14,11 +14,7 @@ import {
 } from "../votingStrategies/linearQuadraticFunding";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import {hotfixForRounds} from "../hotfixes";
-import {cache} from "../middleware/cacheMiddleware";
-
-const prisma = new PrismaClient();
-
-let updatedAt: Date;
+import {cache} from "../cacheConfig";
 
 /**
  * updateRoundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
@@ -35,7 +31,6 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
   }
 
   try {
-    // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
     const chainIdVerbose = getChainVerbose(chainId);
@@ -47,52 +42,72 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
       throw "error: unsupported voting strategy";
     }
 
-    const round = await prisma.round.upsert({
-      where: {
+    const results = await getRoundSummary(chainId as ChainId, roundId);
+
+    try {
+      const prisma = new PrismaClient();
+      // Initialize round if it doesn't exist
+      const round = await prisma.round.upsert({
+        where: {
+          roundId: roundId,
+        },
+        update: {
+          chainId: chainIdVerbose,
+        },
+        create: {
+          chainId: chainIdVerbose,
+          roundId,
+          votingStrategyName: votingStrategyName,
+        },
+      });
+
+      // upload summary to db
+      const roundSummary = await prisma.roundSummary.upsert({
+        where: {
+          roundId: roundId,
+        },
+        update: {
+          contributionCount: results.contributionCount,
+          uniqueContributors: results.uniqueContributors,
+          totalContributionsInUSD: Number(results.totalContributionsInUSD),
+          averageUSDContribution: Number(results.averageUSDContribution),
+        },
+        create: {
+          contributionCount: results.contributionCount,
+          uniqueContributors: results.uniqueContributors,
+          totalContributionsInUSD: Number(results.totalContributionsInUSD),
+          averageUSDContribution: Number(results.averageUSDContribution),
+          roundId: roundId,
+        }
+      });
+
+      cache.set(`cache_${req.originalUrl}`, roundSummary);
+
+      return handleResponse(
+        res,
+        200,
+        `${req.originalUrl}`,
+        roundSummary
+      );
+    } catch (error) {
+      console.error(error);
+      const dbFailResults = {
+        id: null,
+        createdAt: null,
+        updatedAt: new Date(),
+        ...results,
         roundId: roundId,
-      },
-      update: {
-        chainId: chainIdVerbose,
-      },
-      create: {
-        chainId: chainIdVerbose,
-        roundId,
-        votingStrategyName: votingStrategyName,
-      },
-    });
-
-    const results = await getRoundSummary(chainId as ChainId, roundId, req);
-
-    // upload summary to db
-    await prisma.roundSummary.upsert({
-      where: {
-        roundId: roundId,
-      },
-      update: {
-        contributionCount: results.contributionCount,
-        uniqueContributors: results.uniqueContributors,
-        totalContributionsInUSD: Number(results.totalContributionsInUSD),
-        averageUSDContribution: Number(results.averageUSDContribution),
-      },
-      create: {
-        contributionCount: results.contributionCount,
-        uniqueContributors: results.uniqueContributors,
-        totalContributionsInUSD: Number(results.totalContributionsInUSD),
-        averageUSDContribution: Number(results.averageUSDContribution),
-        roundId: roundId,
-      }
-    });
-
-    updatedAt = round.updatedAt;
-
-    return handleResponse(
-      res,
-      200,
-      `${req.originalUrl}`,
-      {...results, updatedAt}
-    );
-  } catch (err) {
-    console.log(err);
+      };
+      cache.set(`cache_${req.originalUrl}`, dbFailResults);
+      return handleResponse(
+        res,
+        200,
+        `${req.originalUrl}`,
+        dbFailResults
+      );
+    }
+  } catch (error) {
+    console.error(error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };
@@ -107,7 +122,6 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
 export const getRoundSummary = async (
   chainId: ChainId,
   roundId: string,
-  req: Request,
 ): Promise<QFContributionSummary> => {
   let results: QFContributionSummary;
 
@@ -126,11 +140,6 @@ export const getRoundSummary = async (
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
-
-      // cache results
-      updatedAt = new Date();
-
-      cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
       break;
     default:
       throw "error: unsupported voting strategy";

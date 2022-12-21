@@ -13,11 +13,7 @@ import {
 } from "../votingStrategies/linearQuadraticFunding";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
 import {hotfixForRounds} from "../hotfixes";
-import {cache} from "../middleware/cacheMiddleware";
-
-const prisma = new PrismaClient();
-
-let updatedAt: Date;
+import {cache} from "../cacheConfig";
 
 /**
  * updateProjectSummaryHandler is a function that handles HTTP requests
@@ -35,9 +31,9 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
   }
 
   try {
-    // Initialize round if it doesn't exist
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
+    const chainIdVerbose = getChainVerbose(chainId);
 
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
@@ -46,63 +42,82 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
       throw "error: unsupported voting strategy";
     }
 
-    const chainIdVerbose = getChainVerbose(chainId);
-    const round = await prisma.round.upsert({
-      where: {
+    const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId]);
+
+    try {
+      const prisma = new PrismaClient();
+      // Initialize round if it doesn't exist
+      const round = await prisma.round.upsert({
+        where: {
+          roundId: roundId,
+        },
+        update: {
+          chainId: chainIdVerbose,
+        },
+        create: {
+          chainId: chainIdVerbose,
+          roundId,
+          votingStrategyName: votingStrategyName,
+        },
+      });
+
+      // Initialize project if it doesn't exist
+      const project = await prisma.project.upsert({
+        where: {
+          roundId: roundId,
+        },
+        update: {
+          projectId,
+        },
+        create: {
+          roundId: roundId,
+          chainId: chainIdVerbose,
+          projectId: projectId,
+        }
+      });
+
+      // upload to project summary to db
+      const projectSummary = await prisma.projectSummary.upsert({
+        where: {
+          projectId: projectId,
+        },
+        update: {
+          contributionCount: results.contributionCount,
+          uniqueContributors: results.uniqueContributors,
+          totalContributionsInUSD: Number(results.totalContributionsInUSD),
+          averageUSDContribution: Number(results.averageUSDContribution),
+        },
+        create: {
+          contributionCount: results.contributionCount,
+          uniqueContributors: results.uniqueContributors,
+          totalContributionsInUSD: Number(results.totalContributionsInUSD),
+          averageUSDContribution: Number(results.averageUSDContribution),
+          projectId: projectId,
+        }
+      });
+
+      cache.set(`cache_${req.originalUrl}`, projectSummary);
+
+      return handleResponse(res, 200, `${req.originalUrl}`, projectSummary);
+    } catch (error) {
+      console.error(error);
+      const dbFailResults = {
+        id: null,
+        createdAt: null,
+        updatedAt: new Date(),
+        ...results,
         roundId: roundId,
-      },
-      update: {
-        chainId: chainIdVerbose,
-      },
-      create: {
-        chainId: chainIdVerbose,
-        roundId,
-        votingStrategyName: votingStrategyName,
-      },
-    });
-
-    // Initialize project if it doesn't exist
-    const project = await prisma.project.upsert({
-      where: {
-        roundId: roundId,
-      },
-      update: {
-        projectId,
-      },
-      create: {
-        roundId: roundId,
-        chainId: chainIdVerbose,
-        projectId: projectId,
-      }
-    });
-
-    const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId], req);
-
-    // upload to project summary to db
-    const projectSummary = await prisma.projectSummary.upsert({
-      where: {
-        projectId: projectId,
-      },
-      update: {
-        contributionCount: results.contributionCount,
-        uniqueContributors: results.uniqueContributors,
-        totalContributionsInUSD: Number(results.totalContributionsInUSD),
-        averageUSDContribution: Number(results.averageUSDContribution),
-      },
-      create: {
-        contributionCount: results.contributionCount,
-        uniqueContributors: results.uniqueContributors,
-        totalContributionsInUSD: Number(results.totalContributionsInUSD),
-        averageUSDContribution: Number(results.averageUSDContribution),
-        projectId: projectId,
-      }
-    });
-
-    updatedAt = projectSummary.updatedAt;
-
-    return handleResponse(res, 200, `${req.originalUrl}`, {...results, updatedAt});
-  } catch (err) {
-    console.error(err);
+      };
+      cache.set(`cache_${req.originalUrl}`, dbFailResults);
+      return handleResponse(
+        res,
+        200,
+        `${req.originalUrl}`,
+        dbFailResults
+      );
+    }
+  } catch (error) {
+    console.error(error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };
@@ -115,7 +130,7 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
  * @param {string[]} projectIds - An array of project IDs to filter the summary data by.
  * @returns {Promise<QFContributionSummary>} A promise that resolves to an array of objects containing the summary data.
  */
-export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[], req: Request): Promise<QFContributionSummary> => {
+export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[]): Promise<QFContributionSummary> => {
   let results: QFContributionSummary;
 
   // fetch metadata
@@ -133,11 +148,7 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);
-      updatedAt = new Date();
-      // cache results
-      for (const projectId of projectIds) {
-        cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
-      }
+
       break;
     default:
       throw("error: unsupported voting strategy");
