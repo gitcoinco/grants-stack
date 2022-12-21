@@ -102,7 +102,7 @@ describe("View Round", () => {
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
 
-  it("displays Copy to Clipboard", () => {
+  it("displays Round application button", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -116,7 +116,7 @@ describe("View Round", () => {
         )
       )
     );
-    expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
+    expect(screen.getByText("Round Application")).toBeInTheDocument();
   });
 
   it("displays copy when there are no applicants for a given round", () => {

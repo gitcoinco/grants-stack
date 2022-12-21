@@ -116,18 +116,6 @@ export default function ViewRoundPage() {
                   startTime={formatDate(round?.roundStartTime)}
                   endTime={formatDate(round?.roundEndTime)}
                 />
-                <div className="flex justify-end grow relative">
-                  <div className="text-right absolute bottom-0">
-                    <p className="text-xs mb-1">
-                      Copy link to round application
-                    </p>
-                    <CopyToClipboardButton
-                      textToCopy={`https://grantshub.gitcoin.co/#/chains/${chain.id}/rounds/${id}`}
-                      styles="text-xs p-2"
-                      iconStyle="h-4 w-4 mr-1"
-                    />
-                  </div>
-                </div>
               </div>
             </header>
 
@@ -201,6 +189,8 @@ export default function ViewRoundPage() {
                         applications={applications}
                         isRoundsFetched={isRoundsFetched}
                         fetchRoundStatus={fetchRoundStatus}
+                        chainId={`${chain.id}`}
+                        roundId={id}
                       />
                     </Tab.Panel>
                     <Tab.Panel>
@@ -231,6 +221,8 @@ function GrantApplications(props: {
   applications: GrantApplication[] | undefined;
   isRoundsFetched: boolean;
   fetchRoundStatus: ProgressStatus;
+  chainId: string;
+  roundId: string | undefined;
 }) {
   const pendingApplications =
     props.applications?.filter(
@@ -266,49 +258,64 @@ function GrantApplications(props: {
         <div>
           <div>
             <Tab.Group>
-              <Tab.List className="border-b mb-6 flex items-center justify-between">
-                <div className="space-x-8">
-                  <Tab className={({ selected }) => tabStyles(selected)}>
-                    {({ selected }) => (
-                      <div className={selected ? "text-violet-500" : ""}>
-                        Received
-                        <TabApplicationCounter
-                          className={selected ? "bg-violet-100" : "bg-grey-150"}
-                          data-testid="received-application-counter"
-                        >
-                          {pendingApplications?.length || 0}
-                        </TabApplicationCounter>
-                      </div>
-                    )}
-                  </Tab>
-                  <Tab className={({ selected }) => tabStyles(selected)}>
-                    {({ selected }) => (
-                      <div className={selected ? "text-violet-500" : ""}>
-                        Approved
-                        <TabApplicationCounter
-                          className={selected ? "bg-violet-100" : "bg-grey-150"}
-                          data-testid="approved-application-counter"
-                        >
-                          {approvedApplications?.length || 0}
-                        </TabApplicationCounter>
-                      </div>
-                    )}
-                  </Tab>
-                  <Tab className={({ selected }) => tabStyles(selected)}>
-                    {({ selected }) => (
-                      <div className={selected ? "text-violet-500" : ""}>
-                        Rejected
-                        <TabApplicationCounter
-                          className={selected ? "bg-violet-100" : "bg-grey-150"}
-                          data-testid="rejected-application-counter"
-                        >
-                          {rejectedApplications?.length || 0}
-                        </TabApplicationCounter>
-                      </div>
-                    )}
-                  </Tab>
+              <div className="justify-end grow relative">
+                <Tab.List className="border-b mb-6 flex items-center justify-between">
+                  <div className="space-x-8">
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Received
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="received-application-counter"
+                          >
+                            {pendingApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Approved
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="approved-application-counter"
+                          >
+                            {approvedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                    <Tab className={({ selected }) => tabStyles(selected)}>
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Rejected
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="rejected-application-counter"
+                          >
+                            {rejectedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                  </div>
+                </Tab.List>
+                <div className="text-right absolute ml-24 bottom-4 left-3/4">
+                  <CopyToClipboardButton
+                    textToCopy={`https://grantshub.gitcoin.co/#/chains/${props.chainId}/rounds/${props.roundId}`}
+                    styles="text-xs p-2"
+                    iconStyle="h-4 w-4 mr-1"
+                  />
                 </div>
-              </Tab.List>
+              </div>
               <Tab.Panels>
                 <Tab.Panel>
                   <ApplicationsReceived />

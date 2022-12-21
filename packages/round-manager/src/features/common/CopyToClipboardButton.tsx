@@ -25,7 +25,7 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
       }}
     >
       <ClipboardCopyIcon className={props.iconStyle} aria-hidden="true" />
-      {active ? "Copied to clipboard" : "Copy to clipboard"}
+      {active ? "Link Copied" : "Round Application"}
     </Button>
   );
 }
