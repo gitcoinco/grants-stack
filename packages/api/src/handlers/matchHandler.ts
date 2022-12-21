@@ -12,20 +12,15 @@ import {
 import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticFunding";
 import {formatUnits} from "ethers/lib/utils";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
-import NodeCache from "node-cache";
 import {hotfixForRounds} from "../hotfixes/index";
+import {cache} from "../middleware/cacheMiddleware";
 
 const prisma = new PrismaClient();
 
-// Schedule cache invalidation every 10 minutes
-const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
 let updatedAt: Date;
 
 export const matchHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
-
-  // check if force query is set
-  const forceQuery = req.query.force === "true";
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -34,12 +29,6 @@ export const matchHandler = async (req: Request, res: Response) => {
       400,
       "error: missing parameter chainId or roundId"
     );
-  }
-
-  // Load from internal cache if available
-  const matchFromCache = cache.get(`${chainId}-${roundId}-match`);
-  if (matchFromCache && !forceQuery) {
-    return handleResponse(res, 200, `round match: ${roundId}`, {...matchFromCache, updatedAt});
   }
 
   let results: Results | undefined;
@@ -82,7 +71,7 @@ export const matchHandler = async (req: Request, res: Response) => {
         // cache the matchInUSD
         updatedAt = new Date();
         // update the cache
-        cache.set(`${chainId}-${roundId}-match`, {...results, updatedAt});
+        cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
 
         break;
     }
@@ -126,7 +115,7 @@ export const matchHandler = async (req: Request, res: Response) => {
     return handleResponse(res, 500, "error: something went wrong");
   }
 
-  return handleResponse(res, 200, `round match: ${roundId}`, {...results, updatedAt});
+  return handleResponse(res, 200, `${req.originalUrl}`, {...results, updatedAt});
 };
 
 export const matchQFContributions = async (

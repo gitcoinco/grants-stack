@@ -6,19 +6,17 @@ import {
   getChainVerbose,
   handleResponse,
 } from "../utils";
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 import {
   fetchQFContributionsForProjects,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
-import { PrismaClient, VotingStrategy } from "@prisma/client";
-import NodeCache from "node-cache";
-import { hotfixForRounds } from "../hotfixes";
+import {PrismaClient, VotingStrategy} from "@prisma/client";
+import {hotfixForRounds} from "../hotfixes";
+import {cache} from "../middleware/cacheMiddleware";
 
 const prisma = new PrismaClient();
 
-// Schedule cache invalidation every 10 minutes
-const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
 let updatedAt: Date;
 
 /**
@@ -34,15 +32,6 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
 
   if (!chainId || !roundId || !projectId) {
     return handleResponse(res, 400, "error: missing parameter chainId, roundId, or projectId");
-  }
-
-  // check if force query is set
-  const forceQuery = req.query.force === "true";
-
-  // Load from internal cache if available
-  const projectSummaryFromCache = cache.get(`${chainId}-${roundId}-${projectId}-summary`);
-  if (projectSummaryFromCache && !forceQuery) {
-    return handleResponse(res, 200, `project summary ${projectId}`, {...projectSummaryFromCache, updatedAt});
   }
 
   try {
@@ -87,7 +76,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
       }
     });
 
-    const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId]);
+    const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId], req);
 
     // upload to project summary to db
     const projectSummary = await prisma.projectSummary.upsert({
@@ -111,7 +100,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
 
     updatedAt = projectSummary.updatedAt;
 
-    return handleResponse(res, 200, `project summary: ${projectId}`, {...results, updatedAt});
+    return handleResponse(res, 200, `${req.originalUrl}`, {...results, updatedAt});
   } catch (err) {
     return handleResponse(res, 500, "error: something went wrong", err);
   }
@@ -125,7 +114,7 @@ export const projectSummaryHandler = async (req: Request, res: Response) => {
  * @param {string[]} projectIds - An array of project IDs to filter the summary data by.
  * @returns {Promise<any>} A promise that resolves to an array of objects containing the summary data.
  */
-export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[]): Promise<any> => {
+export const getProjectsSummary = async (chainId: ChainId, roundId: string, projectIds: string[], req: Request): Promise<any> => {
   let results: any = [];
 
   // fetch metadata
@@ -146,7 +135,7 @@ export const getProjectsSummary = async (chainId: ChainId, roundId: string, proj
       updatedAt = new Date();
       // cache results
       for (const projectId of projectIds) {
-        cache.set(`${chainId}-${roundId}-${projectId}-summary`, {...results, updatedAt});
+        cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
       }
       break;
     default:
