@@ -245,14 +245,16 @@ const listener = new aws.lb.Listener("grants", {
     loadBalancerArn: grant_lb.arn,
     port: 80,
     protocol: "HTTP",
-    defaultAction: {
-        type: "redirect",
-        redirect: {
-        protocol: "HTTPS",
-        port: "443",
-        statusCode: "HTTP_301",
+    defaultActions: [
+        {
+            type: "redirect",
+            redirect: {
+                protocol: "HTTPS",
+                port: "443",
+                statusCode: "HTTP_301",
+            },
         },
-    },
+    ]
 });
 
 const listener_https = new aws.lb.Listener("grants_https", {
