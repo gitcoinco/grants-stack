@@ -23,14 +23,7 @@ import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
 import useSWR from "swr";
-import moment from "moment";
-import {
-  formatDistanceStrict,
-  formatDistanceToNow,
-  formatDistanceToNowStrict,
-  formatDuration,
-  intervalToDuration,
-} from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import Banner from "../common/Banner";
 
 enum VerifiedCredentialState {
