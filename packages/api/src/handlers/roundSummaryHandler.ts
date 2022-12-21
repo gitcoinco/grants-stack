@@ -7,19 +7,17 @@ import {
   getChainVerbose,
   handleResponse,
 } from "../utils";
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 import {
   fetchQFContributionsForRound,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
-import NodeCache from "node-cache";
-import { hotfixForRounds } from "../hotfixes";
+import {hotfixForRounds} from "../hotfixes";
+import {cache} from "../middleware/cacheMiddleware";
 
 const prisma = new PrismaClient();
 
-// Schedule cache invalidation every 10 minutes
-const cache = new NodeCache({stdTTL: 60 * 10, checkperiod: 60 * 10});
 let updatedAt: Date;
 
 /**
@@ -30,19 +28,10 @@ let updatedAt: Date;
  * @returns {void}
  */
 export const roundSummaryHandler = async (req: Request, res: Response) => {
-  const { chainId, roundId } = req.params;
+  const {chainId, roundId} = req.params;
 
   if (!chainId || !roundId) {
     return handleResponse(res, 400, "error: missing parameter chainId or roundId");
-  }
-
-  // check if force query is set
-  const forceQuery = req.query.force === "true";
-
-  // Load from internal cache if available
-  const summaryFromCache = cache.get(`${chainId}-${roundId}-summary`);
-  if (summaryFromCache && !forceQuery) {
-    return handleResponse(res, 200, `round summary: ${roundId}`, summaryFromCache);
   }
 
   try {
@@ -72,7 +61,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
       },
     });
 
-    const results = await getRoundSummary(chainId as ChainId, roundId);
+    const results = await getRoundSummary(chainId as ChainId, roundId, req);
 
     // upload summary to db
     await prisma.roundSummary.upsert({
@@ -99,7 +88,7 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
     return handleResponse(
       res,
       200,
-      `round summary: ${roundId}`,
+      `${req.originalUrl}`,
       {...results, updatedAt}
     );
   } catch (err) {
@@ -118,7 +107,8 @@ export const roundSummaryHandler = async (req: Request, res: Response) => {
  */
 export const getRoundSummary = async (
   chainId: ChainId,
-  roundId: string
+  roundId: string,
+  req: Request,
 ): Promise<QFContributionSummary> => {
   let results;
 
@@ -139,7 +129,8 @@ export const getRoundSummary = async (
       results = await summarizeQFContributions(chainId, contributions);
       // cache results
       updatedAt = new Date();
-      cache.set(`${chainId}-${roundId}-summary`, {...results, updatedAt});
+
+      cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
       break;
     default:
       throw "error: unsupported voting strategy";
