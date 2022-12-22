@@ -1,16 +1,14 @@
 import express, { Express } from "express";
 import cors from 'cors';
 import dotenv from "dotenv";
-import routes from "./src/routes";
 import * as Sentry from "@sentry/node";
-
+import routes from "./src/controllers/v1/routes";
 
 Sentry.init({
   dsn: `${process.env.SENTRY_DSN}`,
 });
 
 dotenv.config();
-
 
 const app: Express = express();
 
@@ -23,7 +21,7 @@ app.use(cors(options));
 app.use(Sentry.Handlers.requestHandler());
 app.use(express.json());
 
-app.use(routes);
+app.use("/api/v1", routes);
 
 app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
@@ -32,6 +30,20 @@ app.get("/debug-sentry", function mainHandler(req, res) {
 app.use(Sentry.Handlers.errorHandler());
 
 const port = process.env.PORT;
-app.listen(port, () => {
-  console.log(`⚡️[server]: running on : ${port}`);
+const server = app.listen(port, () => {
+  console.log(
+    `
+     ▄▀  █ ▀█▀ ▄▀▀ ▄▀▄ █ █▄ █   ▄▀  █▀▄ ▄▀▄ █▄ █ ▀█▀ ▄▀▀   ▄▀▄ █▀▄ █
+     ▀▄█ █  █  ▀▄▄ ▀▄▀ █ █ ▀█   ▀▄█ █▀▄ █▀█ █ ▀█  █  ▄██   █▀█ █▀  █
+    `
+  );
+  console.log(`🟢️ [server]: running on : ${port}`);
 });
+
+process.on('SIGINT', () => {
+  console.log('😵 SIGINT signal received: closing HTTP server')
+  server.close(() => {
+    console.log('🔴 HTTP server closed')
+  })
+})
+
