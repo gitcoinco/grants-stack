@@ -143,8 +143,8 @@ export async function getRoundById(
       ownedBy: round.program.id,
       approvedProjects: approvedProjectsWithMetadata,
     };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("getRoundById", error);
     throw Error("Unable to fetch round");
   }
 }
@@ -245,8 +245,8 @@ export async function getProjectOwners(
           ethers.utils.getAddress(account.account.address)
       ) || []
     );
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.log("getProjectOwners", error);
     throw Error("Unable to fetch project owners");
   }
 }

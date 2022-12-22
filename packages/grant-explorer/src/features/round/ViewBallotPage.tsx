@@ -1032,7 +1032,7 @@ export default function ViewBallot() {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
       );
-      console.error(error);
+      console.error("handleSubmitDonation - roundId", roundId , error);
     }
   }
 }
