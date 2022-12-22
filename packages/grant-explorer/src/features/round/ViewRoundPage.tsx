@@ -23,6 +23,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { useRoundSummary } from "../api/api";
+import Banner from "../common/Banner";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -46,6 +47,8 @@ export default function ViewRound() {
 
   const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
 
+  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
+
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (
@@ -65,6 +68,7 @@ export default function ViewRound() {
               round={round}
               chainId={chainId}
               roundId={roundId}
+              isAfterRoundEndDate={isAfterRoundEndDate}
             />
           )}
         </>
@@ -106,6 +110,7 @@ function AfterRoundStart(props: {
   round: Round;
   chainId: string;
   roundId: string;
+  isAfterRoundEndDate?: boolean;
 }) {
   const { round, chainId, roundId } = props;
 
@@ -155,8 +160,13 @@ function AfterRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      {props.isAfterRoundEndDate && (
+        <div>
+          <Banner />
+        </div>       
+      )}
       <div className="lg:mx-20 px-4 py-7 h-screen">
-        <main>
+         <main>
           <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
