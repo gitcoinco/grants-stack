@@ -142,7 +142,7 @@ const _createProgram = async ({
     );
   } catch (error) {
     datadogLogs.logger.error(`error: _createProgram - ${error}`);
-    console.error("Error while creating program: ", error);
+    console.error("_createProgram: ", error);
   }
 };
 export const useCreateProgram = () => {
@@ -198,6 +198,7 @@ async function storeDocument(
     return IpfsHash;
   } catch (error) {
     datadogLogs.logger.error(`error: storeDocument - ${error}`);
+    console.error(`storeDocument`, error);
     dispatch({
       type: ActionType.SET_STORING_STATUS,
       payload: { IPFSCurrentStatus: ProgressStatus.IS_ERROR },
@@ -232,6 +233,7 @@ async function deployContract(
     return transactionBlockNumber;
   } catch (error) {
     datadogLogs.logger.error(`error: deployContract - ${error}`);
+    console.error(`deployContract`, error);
     dispatch({
       type: ActionType.SET_DEPLOYMENT_STATUS,
       payload: { contractDeploymentStatus: ProgressStatus.IS_ERROR },
@@ -269,6 +271,7 @@ async function waitForSubgraphToUpdate(
     datadogLogs.logger.error(
       `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
     );
+    console.error(`waitForSubgraphToUpdate`, error);
     dispatch({
       type: ActionType.SET_INDEXING_STATUS,
       payload: { indexingStatus: ProgressStatus.IS_ERROR },

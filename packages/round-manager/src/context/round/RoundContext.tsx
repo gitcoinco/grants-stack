@@ -56,6 +56,8 @@ const fetchRounds = async (
     });
   } catch (error) {
     datadogLogs.logger.error(`error: fetchRounds ${error}`);
+    console.error("fetchRounds", error);
+
     dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,
@@ -85,6 +87,7 @@ const fetchRoundById = async (
     });
   } catch (error) {
     datadogLogs.logger.error(`error: fetchRoundById ${error}`);
+    console.error("fetchRoundById", error);
     dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
     dispatch({
       type: ActionType.SET_FETCH_ROUNDS_STATUS,

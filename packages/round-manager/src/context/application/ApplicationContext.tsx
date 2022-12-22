@@ -140,6 +140,7 @@ function fetchApplicationById(
     })
     .catch((error) => {
       datadogLogs.logger.error(`error: fetchApplicationById - ${error}`);
+      console.error("fetchApplicationById", error);
       dispatch({ type: ActionType.SET_ERROR_GET_APPLICATION, payload: error });
     })
     .finally(() => dispatch({ type: ActionType.SET_LOADING, payload: false }));
@@ -164,6 +165,7 @@ const fetchApplicationsByRoundId = async (
       datadogLogs.logger.error(
         `error: fetchApplicationsByRoundId - ${error} roundId - ${roundId}`
       );
+      console.error(`fetchApplicationByRoundId roundId - ${roundId}`, error);
       dispatch({
         type: ActionType.SET_ERROR_GET_ROUND_APPLICATIONS,
         payload: error,

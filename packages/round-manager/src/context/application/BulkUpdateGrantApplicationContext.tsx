@@ -149,7 +149,7 @@ async function _bulkUpdateGrantApplication({
     await waitForSubgraphToUpdate(signer, transactionBlockNumber, context);
   } catch (error) {
     datadogLogs.logger.error(`error: _bulkUpdateGrantApplication - ${error}`);
-    console.error("Error while bulk updating applications: ", error);
+    console.error("_bulkUpdateGrantApplication: ", error);
   }
 }
 
@@ -212,6 +212,7 @@ const storeDocument = async ({
     return ipfsHash;
   } catch (error) {
     datadogLogs.logger.error(`error: storeDocument - ${error}`);
+    console.error("storeDocument", error)
     setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -246,6 +247,7 @@ const updateContract = async ({
     return transactionBlockNumber;
   } catch (error) {
     datadogLogs.logger.error(`error: updateContract - ${error}`);
+    console.error(`updateContract roundId: ${roundId}`, error)
     setContractUpdatingStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -274,6 +276,7 @@ async function waitForSubgraphToUpdate(
     datadogLogs.logger.error(
       `error: waitForSubgraphToUpdate - ${error}. Data - ${transactionBlockNumber}`
     );
+    console.error("waitForSubgraphToUpdate", error);
     setIndexingStatus(ProgressStatus.IS_ERROR);
     throw error;
   }

@@ -29,8 +29,8 @@ export const deployMerklePayoutStrategyContract = async (
     console.log("✅ Merkle Payout Strategy address: ", payoutContractAddress);
 
     return { payoutContractAddress };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("deployMerklePayoutStrategyContract", error);
     throw new Error("Unable to deploy merkle payout strategy contract");
   }
 };

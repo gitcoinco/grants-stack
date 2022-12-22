@@ -93,8 +93,8 @@ export default function CreateProgram() {
         data.name,
         data.operators.map((op) => op.wallet)
       );
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error("CreateProgram", error);
     }
   };
 

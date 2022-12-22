@@ -185,7 +185,7 @@ const _createRound = async ({
       `error: _createRound ${error}. Data : ${createRoundData}`
     );
 
-    console.error("Error while creating round: ", error);
+    console.error("_createRound", error);
   }
 };
 
@@ -278,9 +278,11 @@ async function storeDocuments(
       roundMetadataIpfsHash,
       applicationSchemaIpfsHash,
     };
-  } catch (e) {
+  } catch (error) {
+    console.error("storeDocuments", error);
+
     setStoringStatus(ProgressStatus.IS_ERROR);
-    throw e;
+    throw error;
   }
 }
 
@@ -296,9 +298,10 @@ async function handleDeployVotingContract(
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
     return votingContractAddress;
-  } catch (e) {
+  } catch (error) {
+    console.error("handleDeployVotingContract", error);
     setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw e;
+    throw error;
   }
 }
 
@@ -314,9 +317,10 @@ async function handleDeployPayoutContract(
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
     return payoutContractAddress;
-  } catch (e) {
+  } catch (error) {
+    console.error("handleDeployPayoutContract", error);
     setDeploymentStatus(ProgressStatus.IS_ERROR);
-    throw e;
+    throw error;
   }
 }
 
@@ -335,10 +339,10 @@ async function handleDeployRoundContract(
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
 
     return transactionBlockNumber;
-  } catch (e) {
+  } catch (error) {
+    console.error("handleDeployRoundContract", error);
     setDeploymentStatus(ProgressStatus.IS_ERROR);
-
-    throw e;
+    throw error;
   }
 }
 
@@ -354,8 +358,9 @@ async function waitForSubgraphToUpdate(
     await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
 
     setIndexingStatus(ProgressStatus.IS_SUCCESS);
-  } catch (e) {
+  } catch (error) {
+    console.error("waitForSubgraphToUpdate", error);
     setIndexingStatus(ProgressStatus.IS_ERROR);
-    throw e;
+    throw error;
   }
 }

@@ -202,7 +202,7 @@ export default function ViewApplicationPage() {
       datadogLogs.logger.error(
         `error: handleReview - ${error}, roundId - ${roundId}`
       );
-      console.error(error);
+      console.error("handleReview", error);
     }
   };
 
@@ -288,7 +288,7 @@ export default function ViewApplicationPage() {
               };
             } catch (error) {
               datadogLogs.logger.error(`error: decryptAnswers - ${error}`);
-              console.error(error);
+              console.error("decryptAnswers", error);
 
               _answerBlock = {
                 ..._answerBlock,
