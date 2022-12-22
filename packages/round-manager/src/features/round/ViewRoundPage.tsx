@@ -98,16 +98,9 @@ export default function ViewRoundPage() {
               </div>
               <div className="flex flex-row mb-4 mt-4 items-center">
                 <RoundName round={round} />
-                <div className="ml-6">
-                  <ViewGrantsExplorerButton
-                    iconStyle="h-4 w-4 mr-2"
-                    chainId={`${chain.id}`}
-                    roundId={id}
-                  />
-                </div>
               </div>
 
-              <div className="flex flex-row flex-wrap">
+              <div className="flex flex-row flex-wrap relative">
                 <ApplicationOpenDateRange
                   startTime={formatDate(round?.applicationsStartTime)}
                   endTime={formatDate(round?.applicationsEndTime)}
@@ -116,6 +109,13 @@ export default function ViewRoundPage() {
                   startTime={formatDate(round?.roundStartTime)}
                   endTime={formatDate(round?.roundEndTime)}
                 />
+                <div className="ml-32 absolute left-3/4">
+                  <ViewGrantsExplorerButton
+                    iconStyle="h-4 w-4 mr-2"
+                    chainId={`${chain.id}`}
+                    roundId={id}
+                  />
+                </div>
               </div>
             </header>
 
