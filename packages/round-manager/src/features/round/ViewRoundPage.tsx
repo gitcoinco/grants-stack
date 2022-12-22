@@ -7,6 +7,9 @@ import {
   CalendarIcon,
   ChevronRightIcon,
   ClockIcon,
+  InboxIcon,
+  ChartBarIcon,
+  DocumentReportIcon,
 } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
 import ApplicationsReceived from "./ApplicationsReceived";
@@ -21,9 +24,16 @@ import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import { useRoundById } from "../../context/round/RoundContext";
 import { Spinner } from "../common/Spinner";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
-import { ApplicationStatus, ProgressStatus, Round } from "../api/types";
+import {
+  ApplicationStatus,
+  GrantApplication,
+  ProgressStatus,
+  Round,
+} from "../api/types";
 import { Button } from "../common/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
+import ViewFundingAdmin from "./ViewFundingAdmin";
+import ViewRoundStats from "./ViewRoundStats";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -38,40 +48,17 @@ export default function ViewRoundPage() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications } = useApplicationByRoundId(id!);
 
-  const pendingApplications =
-    applications?.filter(
-      (a) => a.status === ApplicationStatus.PENDING.toString()
-    ) || [];
-  const approvedApplications =
-    applications?.filter(
-      (a) => a.status === ApplicationStatus.APPROVED.toString()
-    ) || [];
-  const rejectedApplications =
-    applications?.filter(
-      (a) => a.status === ApplicationStatus.REJECTED.toString()
-    ) || [];
-
   const formatDate: (date: Date | undefined) => string | undefined = (
     date: Date | undefined
   ) => date?.toLocaleDateString();
 
-  const TabApplicationCounter = tw.div`
-      rounded-md
-      ml-2
-      w-8
-      h-5
-      float-right
-      font-sm
-      font-normal
-  `;
+  const [roundExists, setRoundExists] = useState(true);
+  const [hasAccess, setHasAccess] = useState(true);
 
   const tabStyles = (selected: boolean) =>
     selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
+      ? "border-violet-500 whitespace-nowrap py-4 px-1 font-bold text-sm outline-none"
       : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
-
-  const [roundExists, setRoundExists] = useState(true);
-  const [hasAccess, setHasAccess] = useState(true);
 
   useEffect(() => {
     if (isRoundsFetched) {
@@ -145,101 +132,205 @@ export default function ViewRoundPage() {
             </header>
 
             <main className="px-3 md:px-20 pt-6">
-              {isRoundsFetched && (
-                <div>
-                  <p className="text-bold text-md font-semibold mb-2">
-                    Grant Applications
-                  </p>
-                  <div>
-                    <Tab.Group>
-                      <Tab.List className="border-b mb-6 flex items-center justify-between">
-                        <div className="space-x-8">
-                          <Tab
-                            className={({ selected }) => tabStyles(selected)}
+              <Tab.Group vertical>
+                <div className="flex flex-row">
+                  <div className="w-24 basis-1/6 border-r">
+                    <Tab.List
+                      className="flex flex-col h-max"
+                      data-testid="side-nav-bar"
+                    >
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
                           >
-                            {({ selected }) => (
-                              <div
-                                className={selected ? "text-violet-500" : ""}
-                              >
-                                Received
-                                <TabApplicationCounter
-                                  className={
-                                    selected ? "bg-violet-100" : "bg-grey-150"
-                                  }
-                                  data-testid="received-application-counter"
-                                >
-                                  {pendingApplications?.length || 0}
-                                </TabApplicationCounter>
-                              </div>
-                            )}
-                          </Tab>
-                          <Tab
-                            className={({ selected }) => tabStyles(selected)}
+                            <InboxIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="grant-applications"
+                            >
+                              Grant Applications
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
                           >
-                            {({ selected }) => (
-                              <div
-                                className={selected ? "text-violet-500" : ""}
-                              >
-                                Approved
-                                <TabApplicationCounter
-                                  className={
-                                    selected ? "bg-violet-100" : "bg-grey-150"
-                                  }
-                                  data-testid="approved-application-counter"
-                                >
-                                  {approvedApplications?.length || 0}
-                                </TabApplicationCounter>
-                              </div>
-                            )}
-                          </Tab>
-                          <Tab
-                            className={({ selected }) => tabStyles(selected)}
+                            <ChartBarIcon className="h-6 w-6 mr-2" />
+                            <span className="mt-0.5" data-testid="round-stats">
+                              Round Stats
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
                           >
-                            {({ selected }) => (
-                              <div
-                                className={selected ? "text-violet-500" : ""}
-                              >
-                                Rejected
-                                <TabApplicationCounter
-                                  className={
-                                    selected ? "bg-violet-100" : "bg-grey-150"
-                                  }
-                                  data-testid="rejected-application-counter"
-                                >
-                                  {rejectedApplications?.length || 0}
-                                </TabApplicationCounter>
-                              </div>
-                            )}
-                          </Tab>
-                        </div>
-                      </Tab.List>
-                      <Tab.Panels>
-                        <Tab.Panel>
-                          <ApplicationsReceived />
-                        </Tab.Panel>
-                        <Tab.Panel>
-                          <ApplicationsApproved />
-                        </Tab.Panel>
-                        <Tab.Panel>
-                          <ApplicationsRejected />
-                        </Tab.Panel>
-                      </Tab.Panels>
-                    </Tab.Group>
+                            <DocumentReportIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="funding-admin"
+                            >
+                              Funding Admin
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                    </Tab.List>
                   </div>
+                  <Tab.Panels className="basis-5/6 ml-6">
+                    <Tab.Panel>
+                      <GrantApplications
+                        applications={applications}
+                        isRoundsFetched={isRoundsFetched}
+                        fetchRoundStatus={fetchRoundStatus}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewRoundStats
+                        roundStats=""
+                        isRoundStatsFetched={true}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewFundingAdmin
+                        fundingData=""
+                        isFundingDataFetched={true}
+                      />
+                    </Tab.Panel>
+                  </Tab.Panels>
                 </div>
-              )}
-
-              <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-                  <Spinner text="We're fetching your Round." />
-                )}
-              </div>
+              </Tab.Group>
             </main>
           </div>
           <Footer />
         </>
       )}
     </>
+  );
+}
+
+function GrantApplications(props: {
+  applications: GrantApplication[] | undefined;
+  isRoundsFetched: boolean;
+  fetchRoundStatus: ProgressStatus;
+}) {
+  const pendingApplications =
+    props.applications?.filter(
+      (a) => a.status === ApplicationStatus.PENDING.toString()
+    ) || [];
+  const approvedApplications =
+    props.applications?.filter(
+      (a) => a.status === ApplicationStatus.APPROVED.toString()
+    ) || [];
+  const rejectedApplications =
+    props.applications?.filter(
+      (a) => a.status === ApplicationStatus.REJECTED.toString()
+    ) || [];
+
+  const TabApplicationCounter = tw.div`
+  rounded-md
+  ml-2
+  w-8
+  h-5
+  float-right
+  font-sm
+  font-normal
+`;
+
+  const tabStyles = (selected: boolean) =>
+    selected
+      ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
+      : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
+
+  return (
+    <div>
+      {props.isRoundsFetched && (
+        <div>
+          <div>
+            <Tab.Group>
+              <Tab.List className="border-b mb-6 flex items-center justify-between">
+                <div className="space-x-8">
+                  <Tab className={({ selected }) => tabStyles(selected)}>
+                    {({ selected }) => (
+                      <div className={selected ? "text-violet-500" : ""}>
+                        Received
+                        <TabApplicationCounter
+                          className={selected ? "bg-violet-100" : "bg-grey-150"}
+                          data-testid="received-application-counter"
+                        >
+                          {pendingApplications?.length || 0}
+                        </TabApplicationCounter>
+                      </div>
+                    )}
+                  </Tab>
+                  <Tab className={({ selected }) => tabStyles(selected)}>
+                    {({ selected }) => (
+                      <div className={selected ? "text-violet-500" : ""}>
+                        Approved
+                        <TabApplicationCounter
+                          className={selected ? "bg-violet-100" : "bg-grey-150"}
+                          data-testid="approved-application-counter"
+                        >
+                          {approvedApplications?.length || 0}
+                        </TabApplicationCounter>
+                      </div>
+                    )}
+                  </Tab>
+                  <Tab className={({ selected }) => tabStyles(selected)}>
+                    {({ selected }) => (
+                      <div className={selected ? "text-violet-500" : ""}>
+                        Rejected
+                        <TabApplicationCounter
+                          className={selected ? "bg-violet-100" : "bg-grey-150"}
+                          data-testid="rejected-application-counter"
+                        >
+                          {rejectedApplications?.length || 0}
+                        </TabApplicationCounter>
+                      </div>
+                    )}
+                  </Tab>
+                </div>
+              </Tab.List>
+              <Tab.Panels>
+                <Tab.Panel>
+                  <ApplicationsReceived />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <ApplicationsApproved />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <ApplicationsRejected />
+                </Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
+          </div>
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
+        {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+          <Spinner text="We're fetching your Round." />
+        )}
+      </div>
+    </div>
   );
 }
 
