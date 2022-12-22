@@ -3,7 +3,7 @@ import {
   handleResponse,
 } from "../utils";
 import {PrismaClient} from "@prisma/client";
-import {cache} from "../middleware/cacheMiddleware";
+import {cache} from "../cacheConfig";
 
 const prisma = new PrismaClient();
 
@@ -19,20 +19,25 @@ export const getRoundSummaryDataHandler = async (req: Request, res: Response) =>
     );
   }
 
-  // if not in cache, fetch summary from database whose roundId and projectId match
-  const summary = await prisma.roundSummary.findUnique({
-    where: {
-      roundId: roundId,
+  try {
+    // if not in cache, fetch summary from database whose roundId and projectId match
+    const summary = await prisma.roundSummary.findUnique({
+      where: {
+        roundId: roundId,
+      }
+    });
+
+    cache.set(`${req.originalUrl}`, summary);
+
+    // if match is not in database, return error
+    if (!summary) {
+      return handleResponse(res, 404, "error: summary data not found");
     }
-  });
 
-  cache.set(`${req.originalUrl}`, summary);
-
-  // if match is not in database, return error
-  if (!summary) {
-    return handleResponse(res, 404, "error: summary data not found");
+    // if match is in database, return match
+    return handleResponse(res, 200, `${req.originalUrl}`, summary);
+  } catch (error) {
+    console.error(error);
+    return handleResponse(res, 500, "error: something went wrong");
   }
-
-  // if match is in database, return match
-  return handleResponse(res, 200, `${req.originalUrl}`, summary);
 };

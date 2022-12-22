@@ -13,12 +13,8 @@ import {
 import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticFunding";
 import {formatUnits} from "ethers/lib/utils";
 import {PrismaClient, VotingStrategy} from "@prisma/client";
-import {hotfixForRounds} from "../hotfixes/index";
-import {cache} from "../middleware/cacheMiddleware";
-
-const prisma = new PrismaClient();
-
-let updatedAt: Date;
+import {hotfixForRounds} from "../hotfixes";
+import {cache} from "../cacheConfig";
 
 export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
@@ -33,6 +29,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   }
 
   let results: Results | undefined;
+  const matches = [];
 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
@@ -41,19 +38,6 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
     const chainIdVerbose = getChainVerbose(chainId);
-    const round = await prisma.round.upsert({
-      where: {
-        roundId: roundId,
-      },
-      update: {
-        chainId: chainIdVerbose,
-      },
-      create: {
-        chainId: chainIdVerbose,
-        roundId,
-        votingStrategyName: votingStrategyName,
-      },
-    });
 
     switch (votingStrategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
@@ -69,55 +53,93 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
           metadata,
           contributions
         );
-        // cache the matchInUSD
-        updatedAt = new Date();
-        // update the cache
-        cache.set(`cache_${req.originalUrl}`, {...results, updatedAt});
 
         break;
     }
 
     if (results) {
-      // update result is round saturation has changed
-      if (round.isSaturated != results.isSaturated) {
-        await prisma.round.update({
-          where: {id: round.id},
-          data: {isSaturated: results.isSaturated},
-        });
-      }
+      try {
+        const prisma = new PrismaClient();
 
-      // save the distribution results to the db
-      // TODO: figure out if there is a better way to batch transactions
-      for (const projectMatch of results.distribution) {
-        const match = await prisma.match.upsert({
+        const round = await prisma.round.upsert({
           where: {
-            projectId: projectMatch.projectId,
+            roundId: roundId,
           },
           update: {
-            matchAmountInUSD: projectMatch.matchAmountInUSD,
-            totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
-            matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-            matchAmountInToken: Number(projectMatch.matchAmountInToken),
+            chainId: chainIdVerbose,
           },
           create: {
-            matchAmountInUSD: projectMatch.matchAmountInUSD,
-            projectId: projectMatch.projectId,
-            totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
-            matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-            matchAmountInToken: Number(projectMatch.matchAmountInToken),
-            projectPayoutAddress: projectMatch.projectPayoutAddress,
-            roundId: round.roundId,
+            chainId: chainIdVerbose,
+            roundId,
+            votingStrategyName: votingStrategyName,
           },
         });
-      }
-    }
 
+        // update result if round saturation has changed
+        if (round.isSaturated != results.isSaturated) {
+          await prisma.round.update({
+            where: {id: round.id},
+            data: {isSaturated: results.isSaturated},
+          });
+        }
+
+        // save the distribution results to the db
+        // TODO: figure out if there is a better way to batch transactions
+        for (const projectMatch of results.distribution) {
+          const match = await prisma.match.upsert({
+            where: {
+              projectId: projectMatch.projectId,
+            },
+            update: {
+              matchAmountInUSD: projectMatch.matchAmountInUSD,
+              totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
+              matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
+              matchAmountInToken: Number(projectMatch.matchAmountInToken),
+            },
+            create: {
+              matchAmountInUSD: projectMatch.matchAmountInUSD,
+              projectId: projectMatch.projectId,
+              totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
+              matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
+              matchAmountInToken: Number(projectMatch.matchAmountInToken),
+              projectPayoutAddress: projectMatch.projectPayoutAddress,
+              roundId: round.roundId,
+            },
+          });
+          matches.push(match);
+        }
+        cache.set(`cache_${req.originalUrl}`, matches);
+        return handleResponse(res, 200, `${req.originalUrl}`, matches);
+      } catch
+        (error) {
+        console.error(error);
+
+        results.distribution = results.distribution.map((dist: any) => {
+          return {
+            id: null,
+            createdAt: null,
+            updatedAt: new Date(),
+            ...dist,
+            roundId: roundId,
+          };
+        });
+        const dbFailResults = results.distribution;
+
+        cache.set(`cache_${req.originalUrl}`, dbFailResults);
+        return handleResponse(
+          res,
+          200,
+          `${req.originalUrl}`,
+          dbFailResults
+        );
+      }
+    } else {
+      throw "error: no results";
+    }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return handleResponse(res, 500, "error: something went wrong");
   }
-
-  return handleResponse(res, 200, `${req.originalUrl}`, {...results, updatedAt});
 };
 
 export const matchQFContributions = async (
