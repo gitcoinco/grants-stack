@@ -403,7 +403,7 @@ function ProjectStats() {
         ) : (
           <>
             <p>Round ended</p>
-            <h3>{timeRemaining}</h3>
+            <h3>{timeRemaining} ago</h3>
           </>
         )}
       </div>
