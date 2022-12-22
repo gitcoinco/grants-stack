@@ -319,8 +319,9 @@ export async function getStartAndEndTokenPrices(
     const startPrice = data.prices[0][1];
     const endPrice = data.prices[data.prices.length - 1][1];
     return {startPrice, endPrice};
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    console.error(`getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`, error);
+    throw error;
   }
 }
 
@@ -356,11 +357,16 @@ export async function denominateAs(
       amount: convertedAmount,
       message: `Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`,
     } as DenominationResponse;
-  } catch (err) {
+  } catch (error) {
+    console.error(
+      `denominateAs : token: ${token}, asToken: ${asToken}, chainId: ${chainId}, startTime: ${startTime}, endTime: ${endTime}`,
+      error
+    );
+
     return {
       isSuccess: false,
       amount: amount,
-      message: err,
+      message: error,
     } as DenominationResponse;
   }
 }
@@ -428,8 +434,8 @@ export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: 
         "0x0000000000000000000000000000000000000000": nativeTokenPrice,
       };
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("fetchCurrentTokenPrices", error);
   }
   return data;
 };
@@ -495,7 +501,7 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
           const averagePrice = (startPrice + endPrice) / 2;
           averageTokenPrices[address] = averagePrice;
         } catch (error) {
-          // TODO: log error
+          console.error("fetchAverageTokenPrices", error);
         }
       } else {
         const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
@@ -514,6 +520,7 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
     }
     return averageTokenPrices;
   } catch (error) {
+    console.error("fetchAverageTokenPrices", error);
     return {error};
   }
 
