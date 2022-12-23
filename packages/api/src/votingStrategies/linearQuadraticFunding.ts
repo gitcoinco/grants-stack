@@ -14,7 +14,6 @@ import {
   fetchPayoutAddressToProjectIdMapping,
 } from "../utils";
 
-
 /**
  * summarizeRound is an async function that summarizes a round of voting by counting the number of contributions, the number of unique contributors, the total amount of contributions in USD, and the average contribution in USD.
  *
@@ -87,13 +86,11 @@ export const summarizeQFContributions = async (
   summary.totalContributionsInUSD = totalContributionsInUSD;
   summary.contributionCount = contributions.length;
   summary.uniqueContributors = summaryContributions.contributors.length;
-  summary.averageUSDContribution = (
-    Number(summary.totalContributionsInUSD) / summary.uniqueContributors
-  );
+  summary.averageUSDContribution =
+    Number(summary.totalContributionsInUSD) / summary.uniqueContributors;
 
   return summary;
 };
-
 
 /**
  * fetchContributionsForRound is an async function that retrieves a
@@ -141,20 +138,21 @@ export const fetchQFContributionsForRound = async (
   const response = await fetchFromGraphQL(chainId, query, variables);
 
   // fetch projectId -> payoutAddress mapping
-  const projectsMetaPtr: MetaPtr = response.data?.votingStrategies[0]?.round.projectsMetaPtr;
-  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(projectsMetaPtr);
+  const projectsMetaPtr: MetaPtr =
+    response.data?.votingStrategies[0]?.round.projectsMetaPtr;
+  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(
+    projectsMetaPtr
+  );
 
   const votes: QFContribution[] = [];
 
   response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-
     const payoutAddress = getAddress(vote.to);
 
     // TODO: remove update to projectID after contract upgrade
     const projectId = projectPayoutToIdMapping.get(payoutAddress);
 
     if (projectId && payoutAddress) {
-
       votes.push({
         amount: BigNumber.from(vote.amount),
         token: vote.token,
@@ -162,10 +160,12 @@ export const fetchQFContributionsForRound = async (
         projectId: projectId,
         projectPayoutAddress: payoutAddress,
       });
-
-
     } else {
-      console.error("vote has invalid project 'id' or payout 'to' address", vote);
+      // DEBUG - keep disabled unless debugging because its not async
+      // console.error(
+      //   "vote has invalid project 'id' or payout 'to' address",
+      //   vote
+      // );
     }
     lastID = vote.id;
   });
@@ -207,14 +207,12 @@ export const fetchQFContributionsForRound = async (
 
     // Add the new votes to the list of votes
     response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-
       const payoutAddress = getAddress(vote.to);
 
       // TODO: remove update to projectID after contract upgrade
       const projectId = projectPayoutToIdMapping.get(payoutAddress);
 
       if (projectId && payoutAddress) {
-
         votes.push({
           amount: BigNumber.from(vote.amount),
           token: vote.token,
@@ -222,10 +220,12 @@ export const fetchQFContributionsForRound = async (
           projectId: projectId,
           projectPayoutAddress: payoutAddress,
         });
-
-
       } else {
-        console.error("vote has invalid project 'id' or payout 'to' address", vote);
+        // DEBUG - keep disabled unless debugging because its not async
+        // console.error(
+        //   "vote has invalid project 'id' or payout 'to' address",
+        //   vote
+        // );
       }
       lastID = vote.id;
     });
@@ -246,7 +246,7 @@ export const fetchQFContributionsForRound = async (
 export const fetchQFContributionsForProjects = async (
   chainId: ChainId,
   votingStrategyId: string,
-  projectIds: string[],
+  projectIds: string[]
 ): Promise<QFContribution[]> => {
   let lastID: string = "";
   const query = `
@@ -282,13 +282,15 @@ export const fetchQFContributionsForProjects = async (
   const response = await fetchFromGraphQL(chainId, query, variables);
 
   // fetch projectId -> payoutAddress mapping
-  const projectsMetaPtr: MetaPtr = response.data?.votingStrategies[0]?.round.projectsMetaPtr;
-  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(projectsMetaPtr);
+  const projectsMetaPtr: MetaPtr =
+    response.data?.votingStrategies[0]?.round.projectsMetaPtr;
+  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(
+    projectsMetaPtr
+  );
 
   const votes: QFContribution[] = [];
 
   response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-
     const payoutAddress = getAddress(vote.to);
 
     // TODO: remove update to projectID after contract upgrade
@@ -344,7 +346,6 @@ export const fetchQFContributionsForProjects = async (
 
     // Add the new votes to the list of votes
     response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-
       const payoutAddress = getAddress(vote.to);
 
       // TODO: remove update to projectID after contract upgrade

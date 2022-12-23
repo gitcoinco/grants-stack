@@ -25,7 +25,7 @@ const fetchMock = fetch as FetchMock;
 describe("getGraphQLEndpoint", () => {
   it("returns the right graphQL endpoint based on chainID", () => {
     expect(getGraphQLEndpoint(ChainId.OPTIMISM_MAINNET)).toEqual(
-     `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
+      `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_MAINNET)).toEqual(
@@ -227,8 +227,8 @@ describe("fetchRoundMetadata", () => {
         rounds: [
           {
             projectsMetaPtr: {
-              "pointer": "QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ",
-              "protocol": 1
+              pointer: "QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ",
+              protocol: 1,
             },
             votingStrategy: roundMetadata.votingStrategy,
             roundStartTime: roundMetadata.roundStartTime,
@@ -410,7 +410,6 @@ describe("getStrategyName", () => {
 
 describe("groupBy", () => {
   it("groups array of objects by a given property", () => {
-
     type Pet = { type: string; name: string };
 
     const pets = [
@@ -428,7 +427,6 @@ describe("groupBy", () => {
     expect(grouped.get("Cat").length).toEqual(3);
   });
 });
-
 
 describe("fetchPayoutAddressToProjectIdMapping", () => {
   // TODO

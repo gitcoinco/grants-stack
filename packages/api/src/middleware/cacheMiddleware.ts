@@ -1,9 +1,13 @@
-import {Request, Response, NextFunction} from "express";
-import {handleResponse} from "../utils";
-import {cache} from "../cacheConfig";
+import { Request, Response, NextFunction } from "express";
+import { handleResponse } from "../utils";
+import { cache } from "../cacheConfig";
 
 // @ts-ignore
-export const cacheMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const cacheMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const key = `cache_${req.originalUrl}`;
   const forceQuery = req.query.force === "true";
   // Try to get the data from cache

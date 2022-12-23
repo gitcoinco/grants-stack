@@ -1,20 +1,14 @@
-import {
-  ChainId,
-  QFContributionSummary,
-} from "../types";
-import {
-  fetchRoundMetadata,
-  handleResponse,
-} from "../utils";
-import {Request, Response} from "express";
+import { ChainId, QFContributionSummary } from "../types";
+import { fetchRoundMetadata, handleResponse } from "../utils";
+import { Request, Response } from "express";
 import {
   fetchQFContributionsForRound,
-  summarizeQFContributions
+  summarizeQFContributions,
 } from "../votingStrategies/linearQuadraticFunding";
-import {VotingStrategy} from "@prisma/client";
-import {hotfixForRounds} from "../hotfixes";
-import {cache} from "../cacheConfig";
-import {db} from "../database";
+import { VotingStrategy } from "@prisma/client";
+import { hotfixForRounds } from "../hotfixes";
+import { cache } from "../cacheConfig";
+import { db } from "../database";
 
 /**
  * updateRoundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
@@ -23,16 +17,23 @@ import {db} from "../database";
  * @param {Response} res - The HTTP response that will be sent.
  * @returns {void}
  */
-export const updateRoundSummaryHandler = async (req: Request, res: Response) => {
-  const {chainId, roundId} = req.params;
+export const updateRoundSummaryHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { chainId, roundId } = req.params;
 
   if (!chainId || !roundId) {
-    return handleResponse(res, 400, "error: missing parameter chainId or roundId");
+    return handleResponse(
+      res,
+      400,
+      "error: missing parameter chainId or roundId"
+    );
   }
 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
-    const {votingStrategy} = metadata;
+    const { votingStrategy } = metadata;
 
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
@@ -43,17 +44,28 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
 
     const results = await getRoundSummary(chainId as ChainId, roundId);
     try {
+      const upsertRoundStatus = await db.upsertRoundSummaryRecord(
+        chainId,
+        roundId,
+        metadata,
+        results
+      );
+      if (upsertRoundStatus.error) {
+        throw upsertRoundStatus.error;
+      }
 
-      await db.upsertRoundSummaryRecord(chainId, roundId, metadata, results);
       const roundSummary = await db.getRoundSummaryRecord(roundId);
+      if (roundSummary.error) {
+        throw roundSummary.error;
+      }
 
-      cache.set(`cache_${req.originalUrl}`, roundSummary);
+      cache.set(`cache_${req.originalUrl}`, roundSummary.result);
 
       return handleResponse(
         res,
         200,
         `${req.originalUrl}`,
-        roundSummary
+        roundSummary.result
       );
     } catch (error) {
       console.error("updateRoundSummaryHandler", error);
@@ -65,12 +77,7 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
         roundId: roundId,
       };
       cache.set(`cache_${req.originalUrl}`, dbFailResults);
-      return handleResponse(
-        res,
-        200,
-        `${req.originalUrl}`,
-        dbFailResults
-      );
+      return handleResponse(res, 200, `${req.originalUrl}`, dbFailResults);
     }
   } catch (error) {
     console.error("updateRoundSummaryHandler", error);
@@ -87,20 +94,23 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
  */
 export const getRoundSummary = async (
   chainId: ChainId,
-  roundId: string,
+  roundId: string
 ): Promise<QFContributionSummary> => {
   let results: QFContributionSummary;
 
   // fetch metadata
   const metadata = await fetchRoundMetadata(chainId, roundId);
 
-  let {id: votingStrategyId, strategyName} = metadata.votingStrategy;
+  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
 
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch contributions
-      let contributions = await fetchQFContributionsForRound(chainId, votingStrategyId);
+      let contributions = await fetchQFContributionsForRound(
+        chainId,
+        votingStrategyId
+      );
 
       contributions = await hotfixForRounds(roundId, contributions);
 
