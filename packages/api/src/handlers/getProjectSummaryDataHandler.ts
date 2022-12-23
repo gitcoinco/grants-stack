@@ -2,8 +2,8 @@ import {Request, Response} from "express";
 import {
   handleResponse,
 } from "../utils";
-import {PrismaClient} from "@prisma/client";
 import {cache} from "../cacheConfig";
+import {db} from "../database";
 
 export const getProjectSummaryDataHandler = async (req: Request, res: Response) => {
   const {chainId, roundId, projectId} = req.params;
@@ -17,13 +17,8 @@ export const getProjectSummaryDataHandler = async (req: Request, res: Response) 
     );
   }
   try {
-    const prisma = new PrismaClient();
-    // if not in cache, fetch summary from database whose roundId and projectId match
-    const summary = await prisma.projectSummary.findUnique({
-      where: {
-        projectId: projectId,
-      },
-    });
+
+    const summary = await db.getProjectSummaryRecord(roundId, projectId);
 
     cache.set(`${req.originalUrl}`, summary);
 
