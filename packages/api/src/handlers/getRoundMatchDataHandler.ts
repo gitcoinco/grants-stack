@@ -2,10 +2,8 @@ import {Request, Response} from "express";
 import {
   handleResponse,
 } from "../utils";
-import {PrismaClient} from "@prisma/client";
 import {cache} from "../cacheConfig";
-
-const prisma = new PrismaClient();
+import {db} from "../database";
 
 export const getRoundMatchDataHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
@@ -20,23 +18,8 @@ export const getRoundMatchDataHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    // get round to check if saturated
-    const round = await prisma.round.findUnique({
-      where: {
-        roundId: roundId,
-      },
-      // include only the fields we need
-      select: {
-        isSaturated: true,
-      }
-    });
 
-    // if not in cache, fetch match from database
-    const match = await prisma.match.findMany({
-      where: {
-        roundId: roundId,
-      },
-    });
+    const match = await db.getRoundMatchRecord(roundId);
 
     cache.set(`${req.originalUrl}`, match);
 

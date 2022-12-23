@@ -3,7 +3,6 @@ import {
 } from "../types";
 import {
   fetchRoundMetadata,
-  getChainVerbose,
   handleResponse,
 } from "../utils";
 import {Request, Response} from "express";
@@ -11,9 +10,10 @@ import {
   fetchQFContributionsForProjects,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
-import {PrismaClient, VotingStrategy} from "@prisma/client";
+import {VotingStrategy} from "@prisma/client";
 import {hotfixForRounds} from "../hotfixes";
 import {cache} from "../cacheConfig";
+import {db} from "../database";
 
 /**
  * updateProjectSummaryHandler is a function that handles HTTP requests
@@ -33,8 +33,6 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
-    const chainIdVerbose = getChainVerbose(chainId);
-
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
     // throw error if voting strategy is not supported
@@ -45,60 +43,13 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
     const results = await getProjectsSummary(chainId as ChainId, roundId, [projectId]);
 
     try {
-      const prisma = new PrismaClient();
-      // Initialize round if it doesn't exist
-      const round = await prisma.round.upsert({
-        where: {
-          roundId: roundId,
-        },
-        update: {
-          chainId: chainIdVerbose,
-        },
-        create: {
-          chainId: chainIdVerbose,
-          roundId,
-          votingStrategyName: votingStrategyName,
-        },
-      });
 
-      // Initialize project if it doesn't exist
-      const project = await prisma.project.upsert({
-        where: {
-          roundId: roundId,
-        },
-        update: {
-          projectId,
-        },
-        create: {
-          roundId: roundId,
-          chainId: chainIdVerbose,
-          projectId: projectId,
-        }
-      });
-
-      // upload to project summary to db
-      const projectSummary = await prisma.projectSummary.upsert({
-        where: {
-          projectId: projectId,
-        },
-        update: {
-          contributionCount: results.contributionCount,
-          uniqueContributors: results.uniqueContributors,
-          totalContributionsInUSD: Number(results.totalContributionsInUSD),
-          averageUSDContribution: Number(results.averageUSDContribution),
-        },
-        create: {
-          contributionCount: results.contributionCount,
-          uniqueContributors: results.uniqueContributors,
-          totalContributionsInUSD: Number(results.totalContributionsInUSD),
-          averageUSDContribution: Number(results.averageUSDContribution),
-          projectId: projectId,
-        }
-      });
+      const projectSummary = await db.upsertProjectSummaryRecord(roundId, chainId, projectId, metadata, results);
 
       cache.set(`cache_${req.originalUrl}`, projectSummary);
 
-      return handleResponse(res, 200, `${req.originalUrl}`, projectSummary);
+      return handleResponse(res, 200, `${req.originalUrl}`, {});
+
     } catch (error) {
       console.error(error);
       const dbFailResults = {

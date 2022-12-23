@@ -4,7 +4,6 @@ import {
 } from "../types";
 import {
   fetchRoundMetadata,
-  getChainVerbose,
   handleResponse,
 } from "../utils";
 import {Request, Response} from "express";
@@ -12,9 +11,10 @@ import {
   fetchQFContributionsForRound,
   summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
-import {PrismaClient, VotingStrategy} from "@prisma/client";
+import {VotingStrategy} from "@prisma/client";
 import {hotfixForRounds} from "../hotfixes";
 import {cache} from "../cacheConfig";
+import {db} from "../database";
 
 /**
  * updateRoundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
@@ -33,7 +33,6 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const {votingStrategy} = metadata;
-    const chainIdVerbose = getChainVerbose(chainId);
 
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
@@ -43,43 +42,10 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
     }
 
     const results = await getRoundSummary(chainId as ChainId, roundId);
-
     try {
-      const prisma = new PrismaClient();
-      // Initialize round if it doesn't exist
-      const round = await prisma.round.upsert({
-        where: {
-          roundId: roundId,
-        },
-        update: {
-          chainId: chainIdVerbose,
-        },
-        create: {
-          chainId: chainIdVerbose,
-          roundId,
-          votingStrategyName: votingStrategyName,
-        },
-      });
 
-      // upload summary to db
-      const roundSummary = await prisma.roundSummary.upsert({
-        where: {
-          roundId: roundId,
-        },
-        update: {
-          contributionCount: results.contributionCount,
-          uniqueContributors: results.uniqueContributors,
-          totalContributionsInUSD: Number(results.totalContributionsInUSD),
-          averageUSDContribution: Number(results.averageUSDContribution),
-        },
-        create: {
-          contributionCount: results.contributionCount,
-          uniqueContributors: results.uniqueContributors,
-          totalContributionsInUSD: Number(results.totalContributionsInUSD),
-          averageUSDContribution: Number(results.averageUSDContribution),
-          roundId: roundId,
-        }
-      });
+      await db.upsertRoundSummaryRecord(chainId, roundId, metadata, results);
+      const roundSummary = await db.getRoundSummaryRecord(roundId);
 
       cache.set(`cache_${req.originalUrl}`, roundSummary);
 

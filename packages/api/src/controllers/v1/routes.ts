@@ -7,6 +7,7 @@ import {getRoundSummaryDataHandler} from "../../handlers/getRoundSummaryDataHand
 import {updateRoundMatchHandler} from "../../handlers/updateRoundMatchHandler";
 import {getProjectMatchDataHandler} from "../../handlers/getProjectMatchDataHandler";
 import {getRoundMatchDataHandler} from "../../handlers/getRoundMatchDataHandler";
+import {getProjectSummariesDataHandler} from "../../handlers/getProjectSummariesDataHandler";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.post("/update/summary/round/:chainId/:roundId", updateRoundSummaryHandler
 router.post("/update/summary/project/:chainId/:roundId/:projectId", updateProjectSummaryHandler);
 router.get("/data/summary/project/:chainId/:roundId/:projectId", getProjectSummaryDataHandler);
 router.get("/data/summary/round/:chainId/:roundId", getRoundSummaryDataHandler);
+router.get("/data/summary/projects/:chainId/:roundId", getProjectSummariesDataHandler);
 
 router.post("/update/match/round/:chainId/:roundId", updateRoundMatchHandler);
 router.get("/data/match/project/:chainId/:roundId/:projectId", getProjectMatchDataHandler);

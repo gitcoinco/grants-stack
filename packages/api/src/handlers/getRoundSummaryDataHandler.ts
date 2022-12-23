@@ -4,6 +4,7 @@ import {
 } from "../utils";
 import {PrismaClient} from "@prisma/client";
 import {cache} from "../cacheConfig";
+import {db} from "../database";
 
 const prisma = new PrismaClient();
 
@@ -21,11 +22,7 @@ export const getRoundSummaryDataHandler = async (req: Request, res: Response) =>
 
   try {
     // if not in cache, fetch summary from database whose roundId and projectId match
-    const summary = await prisma.roundSummary.findUnique({
-      where: {
-        roundId: roundId,
-      }
-    });
+    const summary = await db.getRoundSummaryRecord(roundId);
 
     cache.set(`${req.originalUrl}`, summary);
 

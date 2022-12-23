@@ -12,9 +12,10 @@ import {
 } from "../utils";
 import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticFunding";
 import {formatUnits} from "ethers/lib/utils";
-import {PrismaClient, VotingStrategy} from "@prisma/client";
+import {VotingStrategy} from "@prisma/client";
 import {hotfixForRounds} from "../hotfixes";
 import {cache} from "../cacheConfig";
+import {db} from "../database";
 
 export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   const {chainId, roundId} = req.params;
@@ -29,7 +30,6 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   }
 
   let results: Results | undefined;
-  const matches = [];
 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
@@ -59,57 +59,29 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
 
     if (results) {
       try {
-        const prisma = new PrismaClient();
-
-        const round = await prisma.round.upsert({
-          where: {
+        await db.upsertRoundRecord(
+          roundId,
+          {
+            isSaturated: results.isSaturated,
+          },
+          {
+            chainId: chainIdVerbose,
             roundId: roundId,
-          },
-          update: {
-            chainId: chainIdVerbose,
-          },
-          create: {
-            chainId: chainIdVerbose,
-            roundId,
             votingStrategyName: votingStrategyName,
-          },
-        });
-
-        // update result if round saturation has changed
-        if (round.isSaturated != results.isSaturated) {
-          await prisma.round.update({
-            where: {id: round.id},
-            data: {isSaturated: results.isSaturated},
-          });
-        }
+            isSaturated: results.isSaturated,
+          }
+        )
 
         // save the distribution results to the db
         // TODO: figure out if there is a better way to batch transactions
         for (const projectMatch of results.distribution) {
-          const match = await prisma.match.upsert({
-            where: {
-              projectId: projectMatch.projectId,
-            },
-            update: {
-              matchAmountInUSD: projectMatch.matchAmountInUSD,
-              totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
-              matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-              matchAmountInToken: Number(projectMatch.matchAmountInToken),
-            },
-            create: {
-              matchAmountInUSD: projectMatch.matchAmountInUSD,
-              projectId: projectMatch.projectId,
-              totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
-              matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-              matchAmountInToken: Number(projectMatch.matchAmountInToken),
-              projectPayoutAddress: projectMatch.projectPayoutAddress,
-              roundId: round.roundId,
-            },
-          });
-          matches.push(match);
+          await db.upsertProjectMatchRecord(chainId, roundId, metadata, projectMatch)
         }
-        cache.set(`cache_${req.originalUrl}`, matches);
-        return handleResponse(res, 200, `${req.originalUrl}`, matches);
+
+        const match = await db.getRoundMatchRecord(roundId);
+
+        cache.set(`cache_${req.originalUrl}`, match);
+        return handleResponse(res, 200, `${req.originalUrl}`, match);
       } catch
         (error) {
         console.error(error);
