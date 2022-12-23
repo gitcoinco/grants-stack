@@ -44,11 +44,13 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
 
     try {
 
-      const projectSummary = await db.upsertProjectSummaryRecord(roundId, chainId, projectId, metadata, results);
+      await db.upsertProjectSummaryRecord(roundId, chainId, projectId, metadata, results);
+
+      const projectSummary = await db.getProjectSummaryRecord(roundId, projectId);
 
       cache.set(`cache_${req.originalUrl}`, projectSummary);
 
-      return handleResponse(res, 200, `${req.originalUrl}`, {});
+      return handleResponse(res, 200, `${req.originalUrl}`, projectSummary);
 
     } catch (error) {
       console.error(error);
