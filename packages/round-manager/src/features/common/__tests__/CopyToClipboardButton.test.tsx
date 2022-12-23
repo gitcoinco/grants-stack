@@ -21,7 +21,7 @@ describe("<CopyToClipboardButton />", () => {
   it("should display Copy to clipboard when not clicked ", () => {
     renderWrapped(<CopyToClipboardButton textToCopy={textToCopy} />);
 
-    expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
+    expect(screen.getByText("Round Application")).toBeInTheDocument();
   });
 
   it("should display Copied to clipboard when clicked", () => {
@@ -29,7 +29,7 @@ describe("<CopyToClipboardButton />", () => {
     const copyButton = screen.getByRole("button");
     fireEvent.click(copyButton);
 
-    expect(screen.getByText("Copied to clipboard")).toBeInTheDocument();
+    expect(screen.getByText("Link Copied")).toBeInTheDocument();
   });
 
   it("should copy value to clipboard when clicked", () => {

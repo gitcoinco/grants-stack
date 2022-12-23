@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
 }
 
 generator docs {
   provider = "node node_modules/prisma-docs-generator"
-  output = "./docs"
+  output   = "./docs"
 }
 
 datasource db {
@@ -15,25 +15,77 @@ datasource db {
 
 model Round {
   id                 Int            @id @default(autoincrement())
+  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime       @updatedAt @db.Timestamptz(3)
   chainId            ChainId
   roundId            String         @unique
   votingStrategyName VotingStrategy
-  payouts            Payout[]
+  matches            Match[]
   isSaturated        Boolean        @default(false)
+  RoundSummary       RoundSummary?
+  projects           Project[]
 
   @@map("round")
 }
 
-model Payout {
-  id                 Int            @id @default(autoincrement())
-  projectId          String
-  amount             Float
-  token              String
-  round              Round          @relation(fields: [roundId], references: [id])
-  roundId            Int
+model Project {
+  id             Int             @id @default(autoincrement())
+  createdAt      DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime        @updatedAt @db.Timestamptz(3)
+  chainId        ChainId
+  round          Round           @relation(fields: [roundId], references: [roundId])
+  roundId        String
+  projectId      String          @unique
+  projectSummary ProjectSummary?
 
-  @@unique([projectId, roundId], name: "payoutIdentifier")
-  @@map("payout")
+  @@unique([roundId], name: "projectIdentifier")
+  @@map("project")
+}
+
+model Match {
+  id                      Int      @id @default(autoincrement())
+  createdAt               DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  projectId               String   @unique
+  matchAmountInUSD        Float
+  totalContributionsInUSD Float
+  matchPoolPercentage     Float
+  matchAmountInToken      Float
+  round                   Round    @relation(fields: [roundId], references: [roundId])
+  roundId                 String
+  projectPayoutAddress    String
+
+  @@map("match")
+}
+
+model RoundSummary {
+  id                      Int      @id @default(autoincrement())
+  createdAt               DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  contributionCount       Int
+  uniqueContributors      Int
+  totalContributionsInUSD Float
+  averageUSDContribution  Float
+  round                   Round    @relation(fields: [roundId], references: [roundId])
+  roundId                 String
+
+  @@unique([roundId], name: "roundSummaryIdentifier")
+  @@map("roundSummary")
+}
+
+model ProjectSummary {
+  id                      Int      @id @default(autoincrement())
+  createdAt               DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  contributionCount       Int
+  uniqueContributors      Int
+  totalContributionsInUSD Float
+  averageUSDContribution  Float
+  project                 Project  @relation(fields: [projectId], references: [projectId])
+  projectId               String
+
+  @@unique([projectId], name: "projectSummaryIdentifier")
+  @@map("projectSummary")
 }
 
 // ========= //
@@ -45,8 +97,8 @@ enum ChainId {
   FANTOM_MAINNET
   FANTOM_TESTNET
   LOCAL_ROUND_LAB
+  MAINNET
 }
-
 
 enum VotingStrategy {
   LINEAR_QUADRATIC_FUNDING

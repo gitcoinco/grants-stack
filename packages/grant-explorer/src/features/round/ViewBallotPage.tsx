@@ -33,6 +33,7 @@ import { useQFDonation } from "../../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Footer from "../common/Footer";
+import Banner from "../common/Banner";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -63,6 +64,9 @@ export default function ViewBallot() {
       return Number((acc + parseFloat(donation.amount)).toFixed(decimalPlaces));
     }, 0);
   }, [donations]);
+
+  const currentTime = new Date();
+  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
   const [fixedDonation, setFixedDonation] = useState<number>();
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
@@ -173,6 +177,11 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      {isAfterRoundEndDate && (
+        <div>
+          <Banner />
+        </div>       
+      )}
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
@@ -1032,7 +1041,7 @@ export default function ViewBallot() {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
       );
-      console.error(error);
+      console.error("handleSubmitDonation - roundId", roundId , error);
     }
   }
 }

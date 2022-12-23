@@ -149,7 +149,7 @@ export class Lit {
       return decryptedString;
     } catch (error) {
       datadogLogs.logger.error(`error: decryptString - ${error}`);
-      console.error(error);
+      console.error("decryptString", error);
       return "N/A";
     }
   }

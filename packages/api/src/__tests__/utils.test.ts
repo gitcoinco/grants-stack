@@ -25,25 +25,25 @@ const fetchMock = fetch as FetchMock;
 describe("getGraphQLEndpoint", () => {
   it("returns the right graphQL endpoint based on chainID", () => {
     expect(getGraphQLEndpoint(ChainId.OPTIMISM_MAINNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet"
+     `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_MAINNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet"
+      `${process.env.SUBGRAPH_FANTOM_MAINNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.FANTOM_TESTNET)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet"
+      `${process.env.SUBGRAPH_FANTOM_TESTNET_API}`
     );
 
     expect(getGraphQLEndpoint(ChainId.GOERLI)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet"
+      `${process.env.SUBGRAPH_GOERLI_API}`
     );
   });
 
   it("returns the default graphQL endpoint for invalid chainID", () => {
     expect(getGraphQLEndpoint("999" as ChainId)).toEqual(
-      "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs"
+      `${process.env.SUBGRAPH_DUMMY_API}`
     );
   });
 });
@@ -73,6 +73,7 @@ describe("getChainVerbose", () => {
     expect(getChainVerbose(ChainId.OPTIMISM_MAINNET)).toEqual(
       "OPTIMISM_MAINNET"
     );
+    expect(getChainVerbose(ChainId.MAINNET)).toEqual("MAINNET");
     expect(getChainVerbose(ChainId.FANTOM_MAINNET)).toEqual("FANTOM_MAINNET");
     expect(getChainVerbose(ChainId.FANTOM_TESTNET)).toEqual("FANTOM_TESTNET");
     expect(getChainVerbose(ChainId.GOERLI)).toEqual("GOERLI");
@@ -155,7 +156,7 @@ describe("fetchFromGraphQL", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.SUBGRAPH_GOERLI_API}`,
       params
     );
     expect(res.data.programs[0]).toEqual({
@@ -190,7 +191,7 @@ describe("fetchFromGraphQL", () => {
     };
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`,
+      `${process.env.SUBGRAPH_GOERLI_API}`,
       params
     );
   });
@@ -205,7 +206,7 @@ describe("fetchFromGraphQL", () => {
     await fetchFromGraphQL(ChainId.OPTIMISM_MAINNET, "");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`,
+      `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`,
       {
         body: '{"query":"","variables":{}}',
         headers: { "Content-Type": "application/json" },
@@ -225,6 +226,10 @@ describe("fetchRoundMetadata", () => {
       data: {
         rounds: [
           {
+            projectsMetaPtr: {
+              "pointer": "QmW2WQi7j6c7UgJTarActp7tDNikE4B2qXtFCfLPdsgaTQ",
+              "protocol": 1
+            },
             votingStrategy: roundMetadata.votingStrategy,
             roundStartTime: roundMetadata.roundStartTime,
             roundEndTime: roundMetadata.roundEndTime,
@@ -405,6 +410,9 @@ describe("getStrategyName", () => {
 
 describe("groupBy", () => {
   it("groups array of objects by a given property", () => {
+
+    type Pet = { type: string; name: string };
+
     const pets = [
       { type: "Dog", name: faker.animal.dog },
       { type: "Cat", name: faker.animal.cat },
@@ -413,10 +421,19 @@ describe("groupBy", () => {
       { type: "Cat", name: faker.animal.cat },
     ];
 
-    const grouped = groupBy(pets, (pet: any) => pet.type);
+    const grouped = groupBy(pets, (pet: Pet) => pet.type);
 
     expect(grouped.size).toEqual(2);
     expect(grouped.get("Dog").length).toEqual(2);
     expect(grouped.get("Cat").length).toEqual(3);
   });
+});
+
+
+describe("fetchPayoutAddressToProjectIdMapping", () => {
+  // TODO
+});
+
+describe("fetchProjectIdToPayoutAddressMapping", () => {
+  // TODO
 });

@@ -7,6 +7,8 @@ let dbPassword = pulumi.secret(`${process.env["DB_PASSWORD"]}`);
 let dbName = `${process.env["DB_NAME"]}`;
 let dbUrl = `${process.env["DB_URL"]}`;
 let apiImage = `${process.env["ECR_REGISTRY"]}/${process.env["ECR_REPOSITORY"]}:${process.env["API_IMAGE_TAG"]}`
+let domain = `${process.env["DOMAIN"]}`
+let route53Zone = `${process.env["ROUTE_53_ZONE"]}`;
 
 let SUBGRAPH_MAINNET_API = `${process.env["SUBGRAPH_MAINNET_API"]}`
 let SUBGRAPH_GOERLI_API = `${process.env["SUBGRAPH_GOERLI_API"]}`
@@ -16,6 +18,7 @@ let SUBGRAPH_FANTOM_MAINNET_API = `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}
 let SUBGRAPH_DUMMY_API = `${process.env["SUBGRAPH_DUMMY_API"]}`
 let SENTRY_DSN = `${process.env["SENTRY_DSN"]}`
 let OPTIMISM_ETHERSCAN_API = `${process.env["OPTIMISM_ETHERSCAN_API"]}`
+
 
 // KMS Key
 const grantsKey = new aws.kms.Key("grantsKey", {
@@ -183,7 +186,31 @@ const registry = new aws.ecr.Repository("grants", {
     imageTagMutability: "MUTABLE",
 });
 
+// Certificate and Records
+
+const certificate = new aws.acm.Certificate("cert", {
+    domainName: domain,
+    tags: {
+      Environment: "staging",
+    },
+    validationMethod: "DNS",
+  });
+
+const certificateValidationDomain = new aws.route53.Record(`${domain}-validation`, {
+    name: certificate.domainValidationOptions[0].resourceRecordName,
+    zoneId: route53Zone,
+    type: certificate.domainValidationOptions[0].resourceRecordType,
+    records: [certificate.domainValidationOptions[0].resourceRecordValue],
+    ttl: 600,
+});
+
+const certificateValidation = new aws.acm.CertificateValidation("certificateValidation", {
+    certificateArn: certificate.arn,
+    validationRecordFqdns: [certificateValidationDomain.fqdn],
+  });
+
 // Load Balancer
+
 const secgrp = new aws.ec2.SecurityGroup("grants", {
     description: "gitcoin",
     vpcId: vpc.id,
@@ -220,23 +247,28 @@ const listener = new aws.lb.Listener("grants", {
     protocol: "HTTP",
     defaultActions: [
         {
+            type: "redirect",
+            redirect: {
+                protocol: "HTTPS",
+                port: "443",
+                statusCode: "HTTP_301",
+            },
+        },
+    ]
+});
+
+const listener_https = new aws.lb.Listener("grants_https", {
+    loadBalancerArn: grant_lb.arn,
+    port: 443,
+    certificateArn: certificateValidation.certificateArn,
+    protocol: "HTTPS",
+    defaultActions: [
+        {
         type: "forward",
         targetGroupArn: grant_target.arn,
         },
     ],
 });
-
-// const listener_https = new aws.lb.Listener("grants_https", {
-//     loadBalancerArn: grant_lb.arn,
-//     port: 443,
-//     protocol: "HTTPS",
-//     defaultActions: [
-//         {
-//         type: "forward",
-//         targetGroupArn: grant_target.arn,
-//         },
-//     ],
-// });
 
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
@@ -275,18 +307,17 @@ const api = new aws.ecs.TaskDefinition("api", {
         {
             name: "api",
             image: apiImage,
-            command: ["sh -c \"yarn prisma:migrate && yarn dev\""],
             cpu: 1024,
             memory: 2048,
             essential: true,
             portMappings: [{
-                containerPort: 8080,
-                hostPort: 8080,
+                containerPort: 80,
+                hostPort: 80,
             }],
             environment: [
                 {
                     name: "PORT", 
-                    value: "8080"
+                    value: "80"
                 },
                 {
                     name: "DATABASE_URL", 
@@ -340,6 +371,6 @@ const api_service = new aws.ecs.Service("api", {
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
         containerName: "api",
-        containerPort: 8080,
+        containerPort: 80,
     }],
 });

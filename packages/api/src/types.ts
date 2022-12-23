@@ -1,6 +1,5 @@
 /***************/
 /* = General = */
-
 /***************/
 
 import {BigNumber} from "ethers";
@@ -11,11 +10,16 @@ export enum ChainId {
   OPTIMISM_MAINNET = "10",
   FANTOM_MAINNET = "250",
   FANTOM_TESTNET = "4002",
-  LOCAL_ROUND_LAB = "3", // TODO: remove this later
+  LOCAL_ROUND_LAB = "3",
 }
 
+export type MetaPtr = {
+  protocol: number;
+  pointer: string;
+};
+
 export type Results = {
-  distribution: ProjectMatch[];
+  distribution: QFDistribution[];
   isSaturated?: boolean;
 };
 
@@ -30,6 +34,7 @@ export type RoundMetadata = {
     id: string;
     strategyName: string;
   };
+  projectsMetaPtr: MetaPtr;
   roundStartTime: number;
   roundEndTime: number;
   token: string;
@@ -42,6 +47,10 @@ export type ProjectSummary = {
   contributions: [];
 }
 
+export type Map = {
+  [id: string]: string;
+}
+
 export type HandleResponseObject = {
   success: boolean;
   message: string;
@@ -52,30 +61,6 @@ export type HandleResponseObject = {
 /* = LinearQF = */
 /****************/
 
-// TODO: REMOVE
-export type QFContribution = {
-  projectId: string;
-  amount: number;
-  convertedAmount: number;
-  contributor: string;
-  timestamp?: number;
-  token: string;
-};
-
-export type RoundProject = {
-  id: string;
-  payoutAddress: string;
-};
-
-// TODO: REMOVE
-export type QFContributionsByProjectId = {
-  [projectId: string]: {
-    contributions: {
-      [contributor: string]: QFContribution;
-    };
-  };
-};
-
 export type ChainName = "ethereum" | "optimistic-ethereum" | "fantom";
 
 export type DenominationResponse = {
@@ -84,18 +69,34 @@ export type DenominationResponse = {
   message: string | Error;
 }
 
-// TODO: rename to QFContribution
-export type QFVote = {
+export type QFContribution = {
   amount: BigNumber;
   token: string;
   contributor: string;
   projectId: string;
+  projectPayoutAddress: string;
 };
+
+export type QFVotedEvent = {
+  to: string;
+  amount: string;
+  token: string;
+  from: string;
+  id: string;
+}
 
 export type QFContributionSummary = {
   contributionCount: number;
   uniqueContributors: number;
-  totalContributionsInUSD?: string;
-  averageUSDContribution?: string;
-  projects?: any;
+  totalContributionsInUSD?: number;
+  averageUSDContribution?: number;
 };
+
+export type QFDistribution = {
+  projectId: string;
+  matchAmountInUSD: number;
+  totalContributionsInUSD: number;
+  matchPoolPercentage: number;
+  matchAmountInToken: number;
+  projectPayoutAddress: string;
+}

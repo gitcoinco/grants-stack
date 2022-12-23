@@ -69,6 +69,16 @@ jobs:
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
       API_IMAGE_TAG: ${{ needs.build.outputs.dockerTag }}
       DB_URL: ${{ secrets.DB_URL }}
+      DOMAIN: ${{ secrets.DOMAIN }}
+      ROUTE_53_ZONE: ${{ secrets.ROUTE_53_ZONE }}
+      SUBGRAPH_MAINNET_API: ${{ secrets.SUBGRAPH_MAINNET_API }}
+      SUBGRAPH_GOERLI_API: ${{ secrets.SUBGRAPH_GOERLI_API }}
+      SUBGRAPH_OPTIMISM_MAINNET_API: ${{ secrets.SUBGRAPH_OPTIMISM_MAINNET_API }}
+      SUBGRAPH_FANTOM_TESTNET_API: ${{ secrets.SUBGRAPH_FANTOM_TESTNET_API }}
+      SUBGRAPH_FANTOM_MAINNET_API: ${{ secrets.SUBGRAPH_FANTOM_MAINNET_API }}
+      SUBGRAPH_DUMMY_API: ${{ secrets.SUBGRAPH_DUMMY_API }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      OPTIMISM_ETHERSCAN_API: ${{ secrets.OPTIMISM_ETHERSCAN_API }}
 
     steps:
       - name: Checkout code

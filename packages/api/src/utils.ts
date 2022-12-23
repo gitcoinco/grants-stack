@@ -1,12 +1,15 @@
-import { VotingStrategy } from "@prisma/client";
-import { Response } from "express";
+import {VotingStrategy} from "@prisma/client";
+import {getAddress} from "ethers/lib/utils";
+import {Response} from "express";
 import fetch from "node-fetch";
 import {
   ChainId,
   ChainName,
   RoundMetadata,
-  DenominationResponse
+  DenominationResponse,
+  MetaPtr
 } from "./types";
+import {cache} from "./cacheConfig";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -15,25 +18,24 @@ import {
  * @returns the subgraph endpoint
  */
 export const getGraphQLEndpoint = (chainId: ChainId) => {
-  // TODO: the urls should be environment variables
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-optimism-mainnet";
+      return `${process.env.SUBGRAPH_OPTIMISM_MAINNET_API}`;
 
     case ChainId.FANTOM_MAINNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-mainnet";
+      return `${process.env.SUBGRAPH_FANTOM_MAINNET_API}`;
 
     case ChainId.FANTOM_TESTNET:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-fantom-testnet";
+      return `${process.env.SUBGRAPH_FANTOM_TESTNET_API}`;
 
     case ChainId.MAINNET:
-      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+      return `${process.env.SUBGRAPH_MAINNET_API}`;
 
     case ChainId.GOERLI:
-      return "https://api.thegraph.com/subgraphs/name/gitcoinco/grants-round-goerli-testnet";
+      return `${process.env.SUBGRAPH_GOERLI_API}`;
 
     default:
-      return "https://api.thegraph.com/subgraphs/name/thelostone-mc/round-labs";
+      return `${process.env.SUBGRAPH_DUMMY_API}`;
   }
 };
 
@@ -71,6 +73,9 @@ export const getUSDCAddress = (chainId: ChainId) => {
  */
 export const getChainVerbose = (id: string) => {
   switch (id) {
+    case ChainId.MAINNET:
+      return "MAINNET";
+
     case ChainId.OPTIMISM_MAINNET:
       return "OPTIMISM_MAINNET";
 
@@ -90,7 +95,6 @@ export const getChainVerbose = (id: string) => {
 
 /**
  * Fetch data from IPFS
- * TODO: include support for fetching abitrary data e.g images
  *
  * @param cid - the unique content identifier that points to the data
  */
@@ -98,7 +102,7 @@ export const fetchFromIPFS = async (cid: string) => {
   const REACT_APP_PINATA_GATEWAY = "gitcoin.mypinata.cloud";
 
   return fetch(`https://${REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`).then(
-    (resp: any) => {
+    (resp) => {
       if (resp.ok) {
         return resp.json();
       }
@@ -128,8 +132,8 @@ export const fetchFromGraphQL = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ query, variables }),
-  }).then((resp: any) => {
+    body: JSON.stringify({query, variables}),
+  }).then(resp => {
     if (resp.ok) {
       return resp.json();
     }
@@ -148,9 +152,19 @@ export const fetchFromGraphQL = async (
  */
 export const fetchRoundMetadata = async (
   chainId: ChainId,
-  roundId: string
+  roundId: string,
+  force?: boolean
 ): Promise<RoundMetadata> => {
-  const variables = { roundId };
+
+  // try to get the data from cache
+  const key = `cache_metadata_${chainId}_${roundId}`;
+  const cachedMetadata: any = cache.get(key);
+  if (cachedMetadata && !force) {
+
+    return cachedMetadata;
+  }
+
+  const variables = {roundId};
 
   const query = `
     query GetMetadata($roundId: String) {
@@ -168,6 +182,10 @@ export const fetchRoundMetadata = async (
           protocol
           pointer
         }
+        projectsMetaPtr {
+          protocol
+          pointer
+        }
       }
     }
   `;
@@ -179,36 +197,43 @@ export const fetchRoundMetadata = async (
   // fetch round metadata
   const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+  const strategyName = getStrategyName(data?.votingStrategy.strategyName);
+
+  const projectsMetaPtr: MetaPtr = data?.projectsMetaPtr;
 
   const metadata: RoundMetadata = {
     votingStrategy: {
       id: data?.votingStrategy.id,
-      strategyName: data?.votingStrategy.strategyName,
+      strategyName: strategyName,
     },
+    projectsMetaPtr: projectsMetaPtr,
     roundStartTime: data?.roundStartTime,
     roundEndTime: data?.roundEndTime,
     token: data?.token,
     totalPot: totalPot,
   };
 
+  // cache the round metadata
+  cache.set(key, metadata);
+
   return metadata;
 };
 
 /**
  * Generic function which handles how response is sent
- * for any API implemented in this service
+ * for an API implemented in this service
  *
  * @param res Response
  * @param code number
  * @param message string
- * @param body any
+ * @param body? string|object
  * @returns res.json
  */
 export const handleResponse = (
   res: Response,
   code: number,
   message: string,
-  body?: any
+  body?: string | object
 ) => {
   let success: boolean = false;
 
@@ -243,7 +268,7 @@ export const getChainName = (chainId: ChainId) => {
     chainName = coingeckoSupportedChainNames[chainId];
     error = false;
   }
-  return { chainName, error };
+  return {chainName, error};
 };
 
 export async function getPriceForToken(contract: string, chain: ChainName) {
@@ -266,7 +291,7 @@ export async function getStartAndEndTokenPrices(
   endTime: number
 ): Promise<{ startPrice: number; endPrice: number }> {
   try {
-    const { chainName, error } = getChainName(chainId);
+    const {chainName, error} = getChainName(chainId);
     if (error) {
       throw new Error(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
@@ -293,9 +318,10 @@ export async function getStartAndEndTokenPrices(
     //       We should consider storing this information in the future.
     const startPrice = data.prices[0][1];
     const endPrice = data.prices[data.prices.length - 1][1];
-    return { startPrice, endPrice };
-  } catch (err) {
-    throw err;
+    return {startPrice, endPrice};
+  } catch (error) {
+    console.error(`getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`, error);
+    throw error;
   }
 }
 
@@ -331,11 +357,16 @@ export async function denominateAs(
       amount: convertedAmount,
       message: `Successfully converted ${amount} ${token} to ${convertedAmount} ${asToken}`,
     } as DenominationResponse;
-  } catch (err) {
+  } catch (error) {
+    console.error(
+      `denominateAs : token: ${token}, asToken: ${asToken}, chainId: ${chainId}, startTime: ${startTime}, endTime: ${endTime}`,
+      error
+    );
+
     return {
       isSuccess: false,
       amount: amount,
-      message: err,
+      message: error,
     } as DenominationResponse;
   }
 }
@@ -368,10 +399,10 @@ export const getStrategyName = (strategyName: string) => {
  * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
  * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
  */
-export const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
+export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
   let data: any = {};
   try {
-    const { chainName } = getChainName(chainId);
+    const {chainName} = getChainName(chainId);
 
     const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
       ","
@@ -384,7 +415,7 @@ export const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[
     });
 
     const tokenPrices = await resTokenPriceEndpoint.json();
-    data = { ...data, ...tokenPrices };
+    data = {...data, ...tokenPrices};
 
     if (
       tokenAddresses.includes("0x0000000000000000000000000000000000000000") &&
@@ -403,28 +434,164 @@ export const fetchTokenPrices = async (chainId: ChainId, tokenAddresses: string[
         "0x0000000000000000000000000000000000000000": nativeTokenPrice,
       };
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error("fetchCurrentTokenPrices", error);
   }
   return data;
 };
 
 /**
  * Util function to group objects by property
- * @param list 
- * @param keyGetter 
- * @returns 
+ * @param list
+ * @param keyGetter
+ * @returns
  */
-export function groupBy(list: any[], keyGetter:any) {
+export function groupBy(list: any[], keyGetter: any) {
   const map = new Map();
   list.forEach((item) => {
     const key = keyGetter(item);
     const collection = map.get(key);
     if (!collection) {
-        map.set(key, [item]);
+      map.set(key, [item]);
     } else {
-        collection.push(item);
+      collection.push(item);
     }
   });
   return map;
 }
+
+export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: string[], startTime: number, endTime: number) => {
+
+  try {
+    const {chainName, error} = getChainName(chainId);
+
+    if (error) {
+      throw error;
+    }
+
+    const averageTokenPrices: {
+      [address: string]: number;
+    } = {};
+
+    for (let address of tokenAddresses) {
+      averageTokenPrices[address] = 0;
+      if (address !== "0x0000000000000000000000000000000000000000") {
+        try {
+          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`
+          const resTokenPriceEndpoint = await fetch(
+            tokenPriceEndpoint,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              }
+            });
+          const tokenPriceData = await resTokenPriceEndpoint.json();
+
+          const {prices, error} = tokenPriceData;
+
+          if (error) {
+            averageTokenPrices[address] = -1;
+            throw new Error(`${address} is not found on coingecko`);
+          }
+
+          const startPrice = prices[0][1];
+          const endPrice = prices[prices.length - 1][1];
+
+          const averagePrice = (startPrice + endPrice) / 2;
+          averageTokenPrices[address] = averagePrice;
+        } catch (error) {
+          console.error("fetchAverageTokenPrices", error);
+        }
+      } else {
+        const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
+        const resNativePriceEndpoint = await fetch(nativePriceEndpoint, {
+          headers: {
+            method: "GET",
+            Accept: "application/json",
+          },
+        });
+
+        const nativePriceData = await resNativePriceEndpoint.json();
+        const {usd} = nativePriceData[chainName!];
+        averageTokenPrices[address] = usd;
+      }
+
+    }
+    return averageTokenPrices;
+  } catch (error) {
+    console.error("fetchAverageTokenPrices", error);
+    return {error};
+  }
+
+}
+
+/**
+ * Generates mapping from payout address to projectId
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<Map<string, string>>} - An map of project payout address to project id
+ */
+export const fetchPayoutAddressToProjectIdMapping = async (
+  projectsMetaPtr: MetaPtr
+): Promise<Map<string, string>> => {
+
+  type ProjectMetaPtr = {
+    id: string,
+    status: string,
+    payoutAddress: string
+  };
+
+  const pointer = projectsMetaPtr.pointer;
+
+  const payoutToProjectMap: Map<string, string> = new Map();
+
+  let projects: ProjectMetaPtr[] = await fetchFromIPFS(pointer);
+
+  projects = projects.filter(project => project.status === "APPROVED");
+
+  for (const project of projects) {
+    // project.id format ->  applicationId-roundId
+    const projectId = project.id.split("-")[0];
+    const payoutAddress = getAddress(project.payoutAddress);
+    payoutToProjectMap.set(payoutAddress, projectId);
+  }
+
+  return payoutToProjectMap;
+};
+
+/**
+ * Generates mapping from projectId to payout address
+ *
+ * @param {ChainId} chainId - The id of the chain to fetch the votes from.
+ * @param {string} votingStrategyId - The id of the voting strategy to retrieve votes for.
+ * @return {Promise<Map<string, string>>} - An map of project id to project payout address
+ */
+export const fetchProjectIdToPayoutAddressMapping = async (
+  projectsMetaPtr: MetaPtr
+): Promise<Map<string, string>> => {
+
+  type ProjectMetaPtr = {
+    id: string,
+    status: string,
+    payoutAddress: string
+  };
+
+  const pointer = projectsMetaPtr.pointer;
+
+  const projectToPayoutMap: Map<string, string> = new Map();
+
+  let projects: ProjectMetaPtr[] = await fetchFromIPFS(pointer);
+
+  projects = projects.filter(project => project.status === "APPROVED");
+
+  for (const project of projects) {
+    // project.id format ->  applicationId-roundId
+    const projectId = project.id.split("-")[0];
+    const payoutAddress = getAddress(project.payoutAddress);
+    projectToPayoutMap.set(projectId, payoutAddress);
+  }
+
+  return projectToPayoutMap;
+};

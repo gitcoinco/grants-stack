@@ -3,15 +3,26 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import routes from "./src/routes";
 import * as Sentry from "@sentry/node";
+import {
+  ReportingObserver as ReportingObserverIntegration,
+  CaptureConsole as CaptureConsoleIntegration
+} from "@sentry/integrations";
 
 
 Sentry.init({
   dsn: `${process.env.SENTRY_DSN}`,
+  integrations: [
+    new ReportingObserverIntegration(),
+    new CaptureConsoleIntegration(
+      {
+        levels: ['error', 'warn']
+      }
+    )
+  ],
 });
 
 dotenv.config();
 
-// TODO: include necessary middlewares for prod deploy
 
 const app: Express = express();
 

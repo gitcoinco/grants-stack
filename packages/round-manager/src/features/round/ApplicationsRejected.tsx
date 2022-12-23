@@ -157,7 +157,7 @@ export default function ApplicationsRejected() {
       setOpenProgressModal(false);
     } catch (error) {
       datadogLogs.logger.error(`error: handleBulkReview - ${error}, id: ${id}`);
-      console.error(error);
+      console.error("handleBulkReview", error);
     }
   };
 

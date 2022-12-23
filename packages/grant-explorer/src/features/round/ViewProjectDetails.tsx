@@ -15,6 +15,7 @@ import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
+import Banner from "../common/Banner";
 
 enum VerifiedCredentialState {
   VALID,
@@ -41,6 +42,9 @@ export default function ViewProjectDetails() {
     (project) => project.grantApplicationId === applicationId
   );
 
+  const currentTime = new Date();
+  const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
+
   const [shortlist, finalBallot, handleAddProjectsToShortlist, handleRemoveProjectsFromShortlist, , handleRemoveProjectsFromFinalBallot, ] = useBallot();
   const isAddedToShortlist = shortlist.some(
     (project) => project.grantApplicationId === applicationId
@@ -52,6 +56,11 @@ export default function ViewProjectDetails() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      {isAfterRoundEndDate && (
+        <div>
+          <Banner />
+        </div>       
+      )}
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
           <div className="flex flex-row items-center gap-3 text-sm">
