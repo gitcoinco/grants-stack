@@ -42,18 +42,18 @@ model Project {
 }
 
 model Match {
-  id                      Int      @id @default(autoincrement())
-  createdAt               DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt               DateTime @updatedAt @db.Timestamptz(3)
-  projectId               String   @unique
-  matchAmountInUSD        Float
-  totalContributionsInUSD Float
-  matchPoolPercentage     Float
-  matchAmountInToken      Float
-  round                   Round    @relation(fields: [roundId], references: [roundId])
-  roundId                 String
-  projectPayoutAddress    String
-
+  id                        Int      @id @default(autoincrement())
+  createdAt                 DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime @updatedAt @db.Timestamptz(3)
+  projectId                 String   @unique
+  matchAmountInUSD          Float
+  totalContributionsInUSD   Float
+  matchPoolPercentage       Float
+  matchAmountInToken        Float
+  round                     Round    @relation(fields: [roundId], references: [roundId])
+  roundId                   String
+  projectPayoutAddress      String
+  uniqueContributorsCount   Int?
   @@map("match")
 }
 
