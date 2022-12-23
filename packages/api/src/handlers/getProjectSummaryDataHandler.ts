@@ -30,7 +30,7 @@ export const getProjectSummaryDataHandler = async (req: Request, res: Response) 
     return handleResponse(res, 200, `${req.originalUrl}`, summary);
 
   } catch (error) {
-    console.error(error);
+    console.error("getProjectSummaryDataHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 

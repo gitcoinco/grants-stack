@@ -53,7 +53,7 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
       return handleResponse(res, 200, `${req.originalUrl}`, projectSummary);
 
     } catch (error) {
-      console.error(error);
+      console.error("updateProjectSummaryHandler", error);
       const dbFailResults = {
         id: null,
         createdAt: null,
@@ -70,7 +70,7 @@ export const updateProjectSummaryHandler = async (req: Request, res: Response) =
       );
     }
   } catch (error) {
-    console.error(error);
+    console.error("updateProjectSummaryHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };

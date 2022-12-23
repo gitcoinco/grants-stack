@@ -3,9 +3,22 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import * as Sentry from "@sentry/node";
 import routes from "./src/controllers/v1/routes";
+import {
+  ReportingObserver as ReportingObserverIntegration,
+  CaptureConsole as CaptureConsoleIntegration
+} from "@sentry/integrations";
+
 
 Sentry.init({
   dsn: `${process.env.SENTRY_DSN}`,
+  integrations: [
+    new ReportingObserverIntegration(),
+    new CaptureConsoleIntegration(
+      {
+        levels: ['error', 'warn']
+      }
+    )
+  ],
 });
 
 dotenv.config();

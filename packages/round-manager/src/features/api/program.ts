@@ -69,7 +69,7 @@ export async function listPrograms(
     return programs;
   } catch (error) {
     datadogLogs.logger.error(`error: listPrograms - ${error}`);
-    console.log("error", error);
+    console.error("listPrograms", error);
     throw Error("Unable to fetch programs");
   }
 }
@@ -126,7 +126,7 @@ export async function getProgramById(
     };
   } catch (error) {
     datadogLogs.logger.error(`error: getProgramById - ${error}`);
-    console.log("error", error);
+    console.error("getProgramById", error);
     throw Error("Unable to fetch program");
   }
 }
@@ -179,7 +179,7 @@ export async function deployProgramContract({
     };
   } catch (error) {
     datadogLogs.logger.error(`error: deployProgramContract - ${error}`);
-    console.log("error", error);
+    console.error("deployProgramContract", error);
     throw new Error("Unable to create program");
   }
 }

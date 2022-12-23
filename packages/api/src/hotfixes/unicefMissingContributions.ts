@@ -91,7 +91,7 @@ const fetchMissingContributions = async (): Promise<QFContribution[]> => {
         contributions.push(contribution);
 
       });
-    } catch (e) {
+    } catch (error) {
       console.log("Skipping txn which is not vote:", txn.hash)
     }
 

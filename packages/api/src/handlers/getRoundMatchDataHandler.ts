@@ -31,7 +31,7 @@ export const getRoundMatchDataHandler = async (req: Request, res: Response) => {
     // if match is in database, return match
     return handleResponse(res, 200, `${req.originalUrl}`, match);
   } catch (error) {
-    console.error(error);
+    console.error("getRoundMatchDataHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };

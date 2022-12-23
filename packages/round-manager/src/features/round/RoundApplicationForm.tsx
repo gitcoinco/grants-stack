@@ -201,7 +201,7 @@ export function RoundApplicationForm(props: {
       datadogLogs.logger.error(
         `error: RoundApplcationForm next - ${error}, programId - ${programId}`
       );
-      console.error(error);
+      console.error("RoundApplcationForm", error);
     }
   };
 

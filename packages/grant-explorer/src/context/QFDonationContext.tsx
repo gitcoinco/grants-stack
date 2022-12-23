@@ -225,6 +225,7 @@ async function approveTokenForDonation(
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
     );
+    console.error(`approveTokenForDonation - amount ${amount} ${token.name}`, error);
     setTokenApprovalStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -260,6 +261,7 @@ async function vote(
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
     );
+    console.error(`approveTokenForDonation - roundId ${roundId}, token ${token.name}`, error);
     setVoteStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -287,6 +289,12 @@ async function waitForSubgraphToUpdate(
     datadogLogs.logger.error(
       `error: waitForSubgraphToUpdate - ${error}. Data - ${txBlockNumber}`
     );
+
+    console.error(
+      `waitForSubgraphToUpdate. TxnBlockNumber - ${txBlockNumber}`,
+      error
+    );
+
     setIndexingStatus(ProgressStatus.IS_ERROR);
     throw error;
   }

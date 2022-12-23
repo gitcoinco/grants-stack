@@ -94,9 +94,9 @@ export const getApplicationById = async (
       );
 
     return grantApplicationsFromContract[0];
-  } catch (err) {
-    console.error("error", err);
-    throw err;
+  } catch (error) {
+    console.error("getApplicationById", error);
+    throw error;
   }
 };
 
@@ -166,9 +166,9 @@ export const getApplicationsByRoundId = async (
         : grantApplications;
 
     return grantApplicationsFromContract;
-  } catch (err) {
-    console.error("error", err);
-    throw err;
+  } catch (error) {
+    console.error("getApplicationsByRoundId", error);
+    throw error;
   }
 };
 

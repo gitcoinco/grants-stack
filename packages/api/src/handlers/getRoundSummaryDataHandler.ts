@@ -34,7 +34,7 @@ export const getRoundSummaryDataHandler = async (req: Request, res: Response) =>
     // if match is in database, return match
     return handleResponse(res, 200, `${req.originalUrl}`, summary);
   } catch (error) {
-    console.error(error);
+    console.error("getRoundSummaryDataHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };

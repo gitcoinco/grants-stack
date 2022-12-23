@@ -84,7 +84,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
         return handleResponse(res, 200, `${req.originalUrl}`, match);
       } catch
         (error) {
-        console.error(error);
+        console.error("updateRoundMatchHandler", error);
 
         results.distribution = results.distribution.map((dist: any) => {
           return {
@@ -109,7 +109,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
       throw "error: no results";
     }
   } catch (error) {
-    console.error(error);
+    console.error("updateRoundMatchHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };
