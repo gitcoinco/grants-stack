@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import {
@@ -102,7 +102,7 @@ describe("View Round", () => {
     expect(screen.getByText("Access Denied!")).toBeInTheDocument();
   });
 
-  it("displays Copy to Clipboard", () => {
+  it("displays Round application button", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
@@ -116,7 +116,7 @@ describe("View Round", () => {
         )
       )
     );
-    expect(screen.getByText("Copy to clipboard")).toBeInTheDocument();
+    expect(screen.getByText("Round Application")).toBeInTheDocument();
   });
 
   it("displays copy when there are no applicants for a given round", () => {
@@ -138,6 +138,30 @@ describe("View Round", () => {
       )
     );
     expect(screen.getByText("No Applications")).toBeInTheDocument();
+  });
+
+  it("displays side navigation bar in the round page", () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+    expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
+    expect(screen.getByText("Grant Applications")).toBeInTheDocument();
+    expect(screen.getByText("Round Stats")).toBeInTheDocument();
+    expect(screen.getByText("Funding Admin")).toBeInTheDocument();
   });
 
   it("indicates how many of each kind of application there are", () => {
@@ -211,5 +235,28 @@ describe("View Round", () => {
     const roundExplorer = screen.getByTestId("round-explorer");
 
     expect(roundExplorer).toBeInTheDocument();
+  });
+
+  it("displays funding admin page", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
+    const fundingAdminTab = screen.getByTestId("funding-admin");
+    fireEvent.click(fundingAdminTab);
+    expect(screen.getByText("No Information Available")).toBeInTheDocument();
   });
 });

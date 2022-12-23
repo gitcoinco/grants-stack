@@ -1,5 +1,5 @@
 import { Button } from "./styles";
-import { ClipboardCopyIcon } from "@heroicons/react/solid";
+import { LinkIcon } from "@heroicons/react/solid";
 import { useState } from "react";
 
 type CopyToClipboardType = {
@@ -24,8 +24,8 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
         await navigator.clipboard.writeText(props.textToCopy);
       }}
     >
-      <ClipboardCopyIcon className={props.iconStyle} aria-hidden="true" />
-      {active ? "Copied to clipboard" : "Copy to clipboard"}
+      <LinkIcon className={props.iconStyle} aria-hidden="true" />
+      {active ? "Link Copied" : "Round Application"}
     </Button>
   );
 }

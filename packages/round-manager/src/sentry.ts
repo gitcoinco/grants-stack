@@ -17,7 +17,6 @@ export const initSentry = () => {
         }
       )
     ],
-  
     tracesSampleRate: 1.0,
   });
 };
