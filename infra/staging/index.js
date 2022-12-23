@@ -276,11 +276,11 @@ const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
 const grantsEcs = new aws.ecs.Cluster("grants", {configuration: {
     executeCommandConfiguration: {
         kmsKeyId: grantsKey.arn,
-        logging: "OVERRIDE",
-        logConfiguration: {
-            cloudWatchEncryptionEnabled: true,
-            cloudWatchLogGroupName: FargateLogGroup.name,
-        },
+        logging: "DEFAULT",
+        // logConfiguration: {
+        //     cloudWatchEncryptionEnabled: true,
+        //     cloudWatchLogGroupName: FargateLogGroup.name,
+        // },
     },
 }});
 
