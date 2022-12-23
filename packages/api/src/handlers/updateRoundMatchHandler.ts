@@ -102,7 +102,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
       } catch (error) {
         console.error(error);
 
-        results.distribution = results.distribution.map((dist: any) => {
+        results.distribution = results.distribution.map(dist => {
           return {
             id: null,
             createdAt: null,
@@ -181,9 +181,14 @@ export const matchQFContributions = async (
     let sumOfSquares = 0;
     let sumOfContributions = 0;
 
-    Object.values(contributionsByProject[projectId].contributions).forEach(
-      (contribution: any) => {
-        const { amount, token } = contribution;
+    const uniqueContributors = new Set();
+
+    const contributions: QFContribution[] = Object.values(contributionsByProject[projectId].contributions);
+    contributions.forEach(contribution => {
+        const { amount, token, contributor } = contribution;
+
+        uniqueContributors.add(contributor);
+
         // If token is not in prices list, skip it -- LOOK INTO THIS
         if (prices[token] > 0) {
           const convertedAmount = Number(formatUnits(amount)) * prices[token];
@@ -204,6 +209,7 @@ export const matchQFContributions = async (
       matchPoolPercentage: 0, // init to zero
       matchAmountInToken: 0,
       projectPayoutAddress: projectPayoutAddress,
+      uniqueContributorsCount: uniqueContributors.size,
     });
     totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
     // TODO: Error out if NaN
