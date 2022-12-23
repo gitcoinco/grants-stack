@@ -201,6 +201,7 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundingAdmin
+                        round={round}
                         fundingData=""
                         isFundingDataFetched={true}
                       />
