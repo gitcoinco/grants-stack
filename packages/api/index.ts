@@ -1,23 +1,20 @@
 import express, { Express } from "express";
-import cors from 'cors';
+import cors from "cors";
 import dotenv from "dotenv";
 import * as Sentry from "@sentry/node";
 import routes from "./src/controllers/v1/routes";
 import {
   ReportingObserver as ReportingObserverIntegration,
-  CaptureConsole as CaptureConsoleIntegration
+  CaptureConsole as CaptureConsoleIntegration,
 } from "@sentry/integrations";
-
 
 Sentry.init({
   dsn: `${process.env.SENTRY_DSN}`,
   integrations: [
     new ReportingObserverIntegration(),
-    new CaptureConsoleIntegration(
-      {
-        levels: ['error', 'warn']
-      }
-    )
+    new CaptureConsoleIntegration({
+      levels: ["error", "warn"],
+    }),
   ],
 });
 
@@ -27,7 +24,7 @@ const app: Express = express();
 
 // TODO: Add allowed origins to env
 const options: cors.CorsOptions = {
-  origin: ['http://localhost:3000']
+  origin: ["http://localhost:3000"],
 };
 app.use(cors(options));
 
@@ -53,10 +50,9 @@ const server = app.listen(port, () => {
   console.log(`🟢️ [server]: running on : ${port}`);
 });
 
-process.on('SIGINT', () => {
-  console.log('😵 SIGINT signal received: closing HTTP server')
+process.on("SIGINT", () => {
+  console.log("😵 SIGINT signal received: closing HTTP server");
   server.close(() => {
-    console.log('🔴 HTTP server closed')
-  })
-})
-
+    console.log("🔴 HTTP server closed");
+  });
+});

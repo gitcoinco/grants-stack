@@ -1,24 +1,27 @@
 import {
   ChainId,
-  QFContribution, Results,
+  QFContribution,
+  QFDistribution,
+  QFDistributionResults,
   RoundMetadata,
 } from "../types";
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import {
   fetchAverageTokenPrices,
   fetchProjectIdToPayoutAddressMapping,
-  fetchRoundMetadata, getChainVerbose,
+  fetchRoundMetadata,
+  getChainVerbose,
   handleResponse,
 } from "../utils";
-import {fetchQFContributionsForRound} from "../votingStrategies/linearQuadraticFunding";
-import {formatUnits} from "ethers/lib/utils";
-import {VotingStrategy} from "@prisma/client";
-import {hotfixForRounds} from "../hotfixes";
-import {cache} from "../cacheConfig";
-import {db} from "../database";
+import { fetchQFContributionsForRound } from "../votingStrategies/linearQuadraticFunding";
+import { formatUnits } from "ethers/lib/utils";
+import { VotingStrategy } from "@prisma/client";
+import { hotfixForRounds } from "../hotfixes";
+import { cache } from "../cacheConfig";
+import { db } from "../database";
 
 export const updateRoundMatchHandler = async (req: Request, res: Response) => {
-  const {chainId, roundId} = req.params;
+  const { chainId, roundId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -29,11 +32,11 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
     );
   }
 
-  let results: Results | undefined;
+  let results: QFDistributionResults | undefined;
 
   try {
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
-    const {votingStrategy} = metadata;
+    const { votingStrategy } = metadata;
 
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
 
@@ -59,7 +62,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
 
     if (results) {
       try {
-        await db.upsertRoundRecord(
+        const upsetRecordStatus = await db.upsertRoundRecord(
           roundId,
           {
             isSaturated: results.isSaturated,
@@ -70,21 +73,34 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
             votingStrategyName: votingStrategyName,
             isSaturated: results.isSaturated,
           }
-        )
+        );
+        if (upsetRecordStatus.error) {
+          throw upsetRecordStatus.error;
+        }
 
         // save the distribution results to the db
         // TODO: figure out if there is a better way to batch transactions
         for (const projectMatch of results.distribution) {
-          await db.upsertProjectMatchRecord(chainId, roundId, metadata, projectMatch)
+          const upsertMatchStatus = await db.upsertProjectMatchRecord(
+            chainId,
+            roundId,
+            metadata,
+            projectMatch
+          );
+          if (upsetRecordStatus.error) {
+            throw upsertMatchStatus.error;
+          }
         }
 
         const match = await db.getRoundMatchRecord(roundId);
+        if (match.error) {
+          throw match.error;
+        }
 
-        cache.set(`cache_${req.originalUrl}`, match);
-        return handleResponse(res, 200, `${req.originalUrl}`, match);
-      } catch
-        (error) {
-        console.error("updateRoundMatchHandler", error);
+        cache.set(`cache_${req.originalUrl}`, match.result);
+        return handleResponse(res, 200, `${req.originalUrl}`, match.result);
+      } catch (error) {
+        console.error(error);
 
         results.distribution = results.distribution.map((dist: any) => {
           return {
@@ -98,12 +114,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
         const dbFailResults = results.distribution;
 
         cache.set(`cache_${req.originalUrl}`, dbFailResults);
-        return handleResponse(
-          res,
-          200,
-          `${req.originalUrl}`,
-          dbFailResults
-        );
+        return handleResponse(res, 200, `${req.originalUrl}`, dbFailResults);
       }
     } else {
       throw "error: no results";
@@ -118,8 +129,8 @@ export const matchQFContributions = async (
   chainId: ChainId,
   metadata: RoundMetadata,
   contributions: QFContribution[]
-) : Promise<Results> => {
-  const {totalPot, roundStartTime, roundEndTime, token} = metadata;
+): Promise<QFDistributionResults> => {
+  const { totalPot, roundStartTime, roundEndTime, token } = metadata;
 
   let isSaturated: boolean;
 
@@ -135,7 +146,7 @@ export const matchQFContributions = async (
 
   // group contributions by project
   for (const contribution of contributions) {
-    const {projectId, amount, token, contributor} = contribution;
+    const { projectId, amount, token, contributor } = contribution;
 
     if (!contributionTokens.includes(token)) {
       contributionTokens.push(token);
@@ -143,7 +154,7 @@ export const matchQFContributions = async (
 
     if (!contributionsByProject[projectId]) {
       contributionsByProject[projectId] = {
-        contributions: contribution ? {[contributor]: contribution} : {},
+        contributions: contribution ? { [contributor]: contribution } : {},
       };
     }
 
@@ -164,7 +175,7 @@ export const matchQFContributions = async (
     roundEndTime
   );
 
-  const matchResults = [];
+  const matchResults: QFDistribution[] = [];
   let totalMatchInUSD = 0;
   for (const projectId in contributionsByProject) {
     let sumOfSquares = 0;
@@ -172,7 +183,7 @@ export const matchQFContributions = async (
 
     Object.values(contributionsByProject[projectId].contributions).forEach(
       (contribution: any) => {
-        const {amount, token} = contribution;
+        const { amount, token } = contribution;
         // If token is not in prices list, skip it -- LOOK INTO THIS
         if (prices[token] > 0) {
           const convertedAmount = Number(formatUnits(amount)) * prices[token];
@@ -199,10 +210,11 @@ export const matchQFContributions = async (
   }
 
   for (const matchResult of matchResults) {
-    matchResult.matchPoolPercentage = matchResult.matchAmountInUSD / totalMatchInUSD;
+    matchResult.matchPoolPercentage =
+      matchResult.matchAmountInUSD / totalMatchInUSD;
     matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
   }
-  
+
   const potTokenPrice: any = await fetchAverageTokenPrices(
     chainId,
     [token],
@@ -215,7 +227,8 @@ export const matchQFContributions = async (
   // NOTE: Investigate how this may affect matching token and percentage calculations
   if (isSaturated) {
     matchResults.forEach((result) => {
-      result.matchAmountInUSD *= (totalPot * potTokenPrice[token]) / totalMatchInUSD;
+      result.matchAmountInUSD *=
+        (totalPot * potTokenPrice[token]) / totalMatchInUSD;
     });
   }
 
