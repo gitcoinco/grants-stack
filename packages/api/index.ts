@@ -1,22 +1,8 @@
 import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import * as Sentry from "@sentry/node";
 import routes from "./src/controllers/v1/routes";
-import {
-  ReportingObserver as ReportingObserverIntegration,
-  CaptureConsole as CaptureConsoleIntegration,
-} from "@sentry/integrations";
-
-Sentry.init({
-  dsn: `${process.env.SENTRY_DSN}`,
-  integrations: [
-    new ReportingObserverIntegration(),
-    new CaptureConsoleIntegration({
-      levels: ["error", "warn"],
-    }),
-  ],
-});
+import { initSentry } from "./sentry";
 
 dotenv.config();
 
@@ -28,7 +14,8 @@ const options: cors.CorsOptions = {
 };
 app.use(cors(options));
 
-app.use(Sentry.Handlers.requestHandler());
+initSentry(app);
+
 app.use(express.json());
 
 app.use("/api/v1", routes);
@@ -37,7 +24,6 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.use(Sentry.Handlers.errorHandler());
 
 const port = process.env.PORT;
 const server = app.listen(port, () => {
