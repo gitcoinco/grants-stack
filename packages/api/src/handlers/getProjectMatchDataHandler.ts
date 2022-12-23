@@ -47,7 +47,7 @@ export const getProjectMatchDataHandler = async (req: Request, res: Response) =>
     // if match is in database, return match
     return handleResponse(res, 200, `${req.originalUrl}`, match);
   } catch (error) {
-    console.error(error);
+    console.error("getProjectMatchDataHandler", error);
     return handleResponse(res, 500, "error: internal server error");
   }
 };

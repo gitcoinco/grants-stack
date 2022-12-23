@@ -45,8 +45,8 @@ export const deployQFVotingContract = async (
     console.log("✅ Voting Contract address: ", votingContractAddress);
 
     return { votingContractAddress };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("deployQFVotingContract", error);
     throw new Error("Unable to create QF voting contract");
   }
 };

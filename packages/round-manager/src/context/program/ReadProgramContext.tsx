@@ -62,6 +62,8 @@ const fetchProgramsByAddress = async (
     });
   } catch (error) {
     datadogLogs.logger.error(`error: fetchProgramsByAddress ${error}`);
+    console.error(`fetchProgramsByAddress`, error);
+
     dispatch({ type: ActionType.SET_ERROR_LIST_PROGRAMS, payload: error });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -90,6 +92,8 @@ const fetchProgramsById = async (
     });
   } catch (error) {
     datadogLogs.logger.error(`error: fetchProgramsById ${error}`);
+    console.error(`fetchProgramsById`, error);
+
     dispatch({ type: ActionType.SET_ERROR_GET_PROGRAM, payload: error });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,

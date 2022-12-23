@@ -90,7 +90,7 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
         roundSummary
       );
     } catch (error) {
-      console.error(error);
+      console.error("updateRoundSummaryHandler", error);
       const dbFailResults = {
         id: null,
         createdAt: null,
@@ -107,7 +107,7 @@ export const updateRoundSummaryHandler = async (req: Request, res: Response) => 
       );
     }
   } catch (error) {
-    console.error(error);
+    console.error("updateRoundSummaryHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
   }
 };

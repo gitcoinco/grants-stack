@@ -83,8 +83,8 @@ export async function getRoundById(
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
     };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("getRoundById", error);
     throw "Unable to fetch round";
   }
 }
@@ -175,8 +175,8 @@ export async function listRounds(
     }
 
     return { rounds };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("listRounds", error);
     throw new Error("Unable to fetch rounds");
   }
 }
@@ -264,8 +264,8 @@ export async function deployRoundContract(
     return {
       transactionBlockNumber: blockNumber,
     };
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("deployRoundContract", error);
     throw new Error("Unable to create round");
   }
 }

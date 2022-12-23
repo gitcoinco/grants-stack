@@ -18,7 +18,7 @@ export const ipfsApi = api.injectEndpoints({
           return result
 
         } catch (err) {
-          console.log("error", err)
+          console.error("saveToIPFS", err)
           return { error: "Unable to save file to IPFS" }
         }
       },
@@ -32,7 +32,7 @@ export const ipfsApi = api.injectEndpoints({
           return { data }
 
         } catch (err) {
-          console.log("error", err)
+          console.log("readFromIPFS", err)
           return { error: "Unable to fetch file from IPFS" }
         }
       },

@@ -37,6 +37,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@sentry/integrations": "^7.28.0",
     "@sentry/node": "^7.26.0",
     "cors": "^2.8.5",
     "ethers": "^5.7.2",
