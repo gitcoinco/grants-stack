@@ -369,7 +369,7 @@ function Sidebar(props: {
   );
 }
 
-function ProjectStats() {
+export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
