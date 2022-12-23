@@ -23,12 +23,12 @@ export const getProjectSummaryDataHandler = async (
       throw summary.error;
     }
 
-    cache.set(`${req.originalUrl}`, summary.result);
-
     // if match is not in database, return error
     if (!summary.result) {
       return handleResponse(res, 404, "error: summary data not found");
     }
+
+    cache.set(`${req.originalUrl}`, summary.result);
 
     return handleResponse(res, 200, `${req.originalUrl}`, summary.result);
   } catch (error) {
