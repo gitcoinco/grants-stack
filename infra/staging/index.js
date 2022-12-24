@@ -239,6 +239,9 @@ const grant_target = new aws.lb.TargetGroup("grants", {
     port: 80,
     protocol: "HTTP",
     vpcId: vpc.id,
+    healthCheck: {
+        path: "/api/v1"
+    },
 });
 
 const listener = new aws.lb.Listener("grants", {
@@ -310,7 +313,10 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
-            portMappings: [listener_https],
+            portMappings: [{
+                containerPort: 80,
+                hostPort: 80,
+            }],
             environment: [
                 {
                     name: "PORT", 
