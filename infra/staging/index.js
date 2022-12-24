@@ -273,6 +273,17 @@ const listener_https = new aws.lb.Listener("grants_https", {
     ],
 });
 
+const www = new aws.route53.Record("www", {
+    zoneId: route53Zone,
+    name: domain,
+    type: "A",
+    aliases: [{
+        name: listener_https.endpoint.hostname,
+        zoneId: listener_https.loadBalancer.loadBalancer.zoneId,
+        evaluateTargetHealth: true,
+    }]
+});
+
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
 
