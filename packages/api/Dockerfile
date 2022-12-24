@@ -21,4 +21,4 @@ RUN yarn build
 
 EXPOSE 8000
 
-CMD ["npx", "prisma", "migrate", "deploy", "&&", "yarn", "start"]
+CMD ["yarn", "start"]
