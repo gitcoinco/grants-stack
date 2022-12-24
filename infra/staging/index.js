@@ -266,7 +266,6 @@ const listener_https = new aws.lb.Listener("grants_https", {
         {
         type: "forward",
         targetGroupArn: grant_target.arn,
-        port: 8080,
         },
     ],
 });
@@ -315,7 +314,7 @@ const api = new aws.ecs.TaskDefinition("api", {
             environment: [
                 {
                     name: "PORT", 
-                    value: "8080"
+                    value: "80"
                 },
                 {
                     name: "DATABASE_URL", 
@@ -369,6 +368,6 @@ const api_service = new aws.ecs.Service("api", {
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
         containerName: "api",
-        containerPort: 8080,
+        containerPort: 80,
     }],
 });
