@@ -207,6 +207,7 @@ export default function ViewBallot() {
             data-testid="handle-confirmation"
             type="button"
             onClick={handleConfirmation}
+            disabled={isAfterRoundEndDate}
             className="items-center shadow-sm text-sm rounded w-full"
           >
             Submit your donation!
