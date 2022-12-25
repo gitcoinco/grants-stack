@@ -1,15 +1,15 @@
-import {VotingStrategy} from "@prisma/client";
-import {getAddress} from "ethers/lib/utils";
-import {Response} from "express";
+import { VotingStrategy } from "@prisma/client";
+import { getAddress } from "ethers/lib/utils";
+import { Response } from "express";
 import fetch from "node-fetch";
 import {
   ChainId,
   ChainName,
   RoundMetadata,
   DenominationResponse,
-  MetaPtr
+  MetaPtr,
 } from "./types";
-import {cache} from "./cacheConfig";
+import { cache } from "./cacheConfig";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -39,7 +39,6 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
   }
 };
 
-
 /**
  * Returns USDC address based on chain Id.
  * Useful when you need to convert amount from a given token
@@ -63,7 +62,6 @@ export const getUSDCAddress = (chainId: ChainId) => {
       return "0x0000000000000000000000000000000000000000";
   }
 };
-
 
 /**
  * Returns the chain name given the id
@@ -132,8 +130,8 @@ export const fetchFromGraphQL = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({query, variables}),
-  }).then(resp => {
+    body: JSON.stringify({ query, variables }),
+  }).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }
@@ -155,16 +153,14 @@ export const fetchRoundMetadata = async (
   roundId: string,
   force?: boolean
 ): Promise<RoundMetadata> => {
-
   // try to get the data from cache
   const key = `cache_metadata_${chainId}_${roundId}`;
   const cachedMetadata: any = cache.get(key);
   if (cachedMetadata && !force) {
-
     return cachedMetadata;
   }
 
-  const variables = {roundId};
+  const variables = { roundId };
 
   const query = `
     query GetMetadata($roundId: String) {
@@ -233,7 +229,7 @@ export const handleResponse = (
   res: Response,
   code: number,
   message: string,
-  body?: string | object
+  body?: string | object | any
 ) => {
   let success: boolean = false;
 
@@ -268,7 +264,7 @@ export const getChainName = (chainId: ChainId) => {
     chainName = coingeckoSupportedChainNames[chainId];
     error = false;
   }
-  return {chainName, error};
+  return { chainName, error };
 };
 
 export async function getPriceForToken(contract: string, chain: ChainName) {
@@ -291,21 +287,18 @@ export async function getStartAndEndTokenPrices(
   endTime: number
 ): Promise<{ startPrice: number; endPrice: number }> {
   try {
-    const {chainName, error} = getChainName(chainId);
+    const { chainName, error } = getChainName(chainId);
     if (error) {
       throw new Error(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
       );
     }
     const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
-    const res = await fetch(
-      url,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const res = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
     // TODO: Log to sentry
     const data = await res.json();
 
@@ -318,9 +311,12 @@ export async function getStartAndEndTokenPrices(
     //       We should consider storing this information in the future.
     const startPrice = data.prices[0][1];
     const endPrice = data.prices[data.prices.length - 1][1];
-    return {startPrice, endPrice};
+    return { startPrice, endPrice };
   } catch (error) {
-    console.error(`getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`, error);
+    console.error(
+      `getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`,
+      error
+    );
     throw error;
   }
 }
@@ -371,7 +367,6 @@ export async function denominateAs(
   }
 }
 
-
 /**
  * This is temporary util function to support backward
  * compatibility with older subgraph version
@@ -383,11 +378,10 @@ export async function denominateAs(
  */
 export const getStrategyName = (strategyName: string) => {
   if (strategyName === "quadraticFunding") {
-    return VotingStrategy.LINEAR_QUADRATIC_FUNDING
+    return VotingStrategy.LINEAR_QUADRATIC_FUNDING;
   }
   return strategyName;
-}
-
+};
 
 /**
  * fetchTokenPrices is an async function that retrieves the current prices
@@ -399,10 +393,13 @@ export const getStrategyName = (strategyName: string) => {
  * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
  * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
  */
-export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: string[]) => {
+export const fetchCurrentTokenPrices = async (
+  chainId: ChainId,
+  tokenAddresses: string[]
+) => {
   let data: any = {};
   try {
-    const {chainName} = getChainName(chainId);
+    const { chainName } = getChainName(chainId);
 
     const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
       ","
@@ -415,7 +412,7 @@ export const fetchCurrentTokenPrices = async (chainId: ChainId, tokenAddresses: 
     });
 
     const tokenPrices = await resTokenPriceEndpoint.json();
-    data = {...data, ...tokenPrices};
+    data = { ...data, ...tokenPrices };
 
     if (
       tokenAddresses.includes("0x0000000000000000000000000000000000000000") &&
@@ -460,10 +457,14 @@ export function groupBy(list: any[], keyGetter: any) {
   return map;
 }
 
-export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: string[], startTime: number, endTime: number) => {
-
+export const fetchAverageTokenPrices = async (
+  chainId: ChainId,
+  tokenAddresses: string[],
+  startTime: number,
+  endTime: number
+) => {
   try {
-    const {chainName, error} = getChainName(chainId);
+    const { chainName, error } = getChainName(chainId);
 
     if (error) {
       throw error;
@@ -477,18 +478,16 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
       averageTokenPrices[address] = 0;
       if (address !== "0x0000000000000000000000000000000000000000") {
         try {
-          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`
-          const resTokenPriceEndpoint = await fetch(
-            tokenPriceEndpoint,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              }
-            });
+          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
+          const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
           const tokenPriceData = await resTokenPriceEndpoint.json();
 
-          const {prices, error} = tokenPriceData;
+          const { prices, error } = tokenPriceData;
 
           if (error) {
             averageTokenPrices[address] = -1;
@@ -513,18 +512,16 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
         });
 
         const nativePriceData = await resNativePriceEndpoint.json();
-        const {usd} = nativePriceData[chainName!];
+        const { usd } = nativePriceData[chainName!];
         averageTokenPrices[address] = usd;
       }
-
     }
     return averageTokenPrices;
   } catch (error) {
     console.error("fetchAverageTokenPrices", error);
-    return {error};
+    return { error };
   }
-
-}
+};
 
 /**
  * Generates mapping from payout address to projectId
@@ -536,11 +533,10 @@ export const fetchAverageTokenPrices = async (chainId: ChainId, tokenAddresses: 
 export const fetchPayoutAddressToProjectIdMapping = async (
   projectsMetaPtr: MetaPtr
 ): Promise<Map<string, string>> => {
-
   type ProjectMetaPtr = {
-    id: string,
-    status: string,
-    payoutAddress: string
+    id: string;
+    status: string;
+    payoutAddress: string;
   };
 
   const pointer = projectsMetaPtr.pointer;
@@ -549,7 +545,7 @@ export const fetchPayoutAddressToProjectIdMapping = async (
 
   let projects: ProjectMetaPtr[] = await fetchFromIPFS(pointer);
 
-  projects = projects.filter(project => project.status === "APPROVED");
+  projects = projects.filter((project) => project.status === "APPROVED");
 
   for (const project of projects) {
     // project.id format ->  applicationId-roundId
@@ -571,11 +567,10 @@ export const fetchPayoutAddressToProjectIdMapping = async (
 export const fetchProjectIdToPayoutAddressMapping = async (
   projectsMetaPtr: MetaPtr
 ): Promise<Map<string, string>> => {
-
   type ProjectMetaPtr = {
-    id: string,
-    status: string,
-    payoutAddress: string
+    id: string;
+    status: string;
+    payoutAddress: string;
   };
 
   const pointer = projectsMetaPtr.pointer;
@@ -584,7 +579,7 @@ export const fetchProjectIdToPayoutAddressMapping = async (
 
   let projects: ProjectMetaPtr[] = await fetchFromIPFS(pointer);
 
-  projects = projects.filter(project => project.status === "APPROVED");
+  projects = projects.filter((project) => project.status === "APPROVED");
 
   for (const project of projects) {
     // project.id format ->  applicationId-roundId

@@ -239,6 +239,9 @@ const grant_target = new aws.lb.TargetGroup("grants", {
     port: 80,
     protocol: "HTTP",
     vpcId: vpc.id,
+    healthCheck: {
+        path: "/api/v1"
+    },
 });
 
 const listener = new aws.lb.Listener("grants", {
@@ -270,17 +273,28 @@ const listener_https = new aws.lb.Listener("grants_https", {
     ],
 });
 
+const www = new aws.route53.Record("www", {
+    zoneId: route53Zone,
+    name: domain,
+    type: "A",
+    aliases: [{
+        name: listener_https.endpoint.hostname,
+        zoneId: listener_https.loadBalancer.loadBalancer.zoneId,
+        evaluateTargetHealth: true,
+    }]
+});
+
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
 
 const grantsEcs = new aws.ecs.Cluster("grants", {configuration: {
     executeCommandConfiguration: {
         kmsKeyId: grantsKey.arn,
-        logging: "OVERRIDE",
-        logConfiguration: {
-            cloudWatchEncryptionEnabled: true,
-            cloudWatchLogGroupName: FargateLogGroup.name,
-        },
+        logging: "DEFAULT",
+        // logConfiguration: {
+        //     cloudWatchEncryptionEnabled: true,
+        //     cloudWatchLogGroupName: FargateLogGroup.name,
+        // },
     },
 }});
 

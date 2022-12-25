@@ -5,5 +5,5 @@ const CHECK_PERIOD = 60 * 10; // 10 minutes
 
 export const cache = new NodeCache({
   stdTTL: TIME_TO_LIVE,
-  checkperiod: CHECK_PERIOD
+  checkperiod: CHECK_PERIOD,
 });

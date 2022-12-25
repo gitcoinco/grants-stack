@@ -2,7 +2,7 @@
 /* = General = */
 /***************/
 
-import {BigNumber} from "ethers";
+import { BigNumber } from "ethers";
 
 export enum ChainId {
   MAINNET = "1",
@@ -13,20 +13,19 @@ export enum ChainId {
   LOCAL_ROUND_LAB = "3",
 }
 
+export type Result = {
+  error?: any;
+  result: any;
+};
+
 export type MetaPtr = {
   protocol: number;
   pointer: string;
 };
 
-export type Results = {
+export type QFDistributionResults = {
   distribution: QFDistribution[];
   isSaturated?: boolean;
-};
-
-export type ProjectMatch = {
-  projectId: string;
-  amount: number;
-  token: string;
 };
 
 export type RoundMetadata = {
@@ -41,21 +40,15 @@ export type RoundMetadata = {
   totalPot: number;
 };
 
-
-export type ProjectSummary = {
-  contributors: string[];
-  contributions: [];
-}
-
 export type Map = {
   [id: string]: string;
-}
+};
 
 export type HandleResponseObject = {
   success: boolean;
   message: string;
   data: object;
-}
+};
 
 /****************/
 /* = LinearQF = */
@@ -67,7 +60,7 @@ export type DenominationResponse = {
   amount: number;
   isSuccess: boolean;
   message: string | Error;
-}
+};
 
 export type QFContribution = {
   amount: BigNumber;
@@ -83,7 +76,7 @@ export type QFVotedEvent = {
   token: string;
   from: string;
   id: string;
-}
+};
 
 export type QFContributionSummary = {
   contributionCount: number;
@@ -99,4 +92,5 @@ export type QFDistribution = {
   matchPoolPercentage: number;
   matchAmountInToken: number;
   projectPayoutAddress: string;
-}
+  uniqueContributorsCount: number;
+};

@@ -1,15 +1,16 @@
-import {Request, Response} from "express";
-import {
-  handleResponse,
-} from "../utils";
-import {PrismaClient} from "@prisma/client";
-import {cache} from "../cacheConfig";
-import {db} from "../database";
+import { Request, Response } from "express";
+import { handleResponse } from "../utils";
+import { PrismaClient } from "@prisma/client";
+import { cache } from "../cacheConfig";
+import { db } from "../database";
 
 const prisma = new PrismaClient();
 
-export const getRoundSummaryDataHandler = async (req: Request, res: Response) => {
-  const {chainId, roundId} = req.params;
+export const getRoundSummaryDataHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { chainId, roundId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -23,16 +24,19 @@ export const getRoundSummaryDataHandler = async (req: Request, res: Response) =>
   try {
     // if not in cache, fetch summary from database whose roundId and projectId match
     const summary = await db.getRoundSummaryRecord(roundId);
-
-    cache.set(`${req.originalUrl}`, summary);
-
-    // if match is not in database, return error
-    if (!summary) {
-      return handleResponse(res, 404, "error: summary data not found");
+    if (summary.error) {
+      throw summary.error;
     }
 
+    // if match is not in database, return error
+    if (!summary.result) {
+      return handleResponse(res, 404, "summary not found");
+    }
+
+    cache.set(`${req.originalUrl}`, summary.result);
+
     // if match is in database, return match
-    return handleResponse(res, 200, `${req.originalUrl}`, summary);
+    return handleResponse(res, 200, `${req.originalUrl}`, summary.result);
   } catch (error) {
     console.error("getRoundSummaryDataHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
