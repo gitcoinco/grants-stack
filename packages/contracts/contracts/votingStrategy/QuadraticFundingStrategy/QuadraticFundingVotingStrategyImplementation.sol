@@ -19,6 +19,8 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Reentr
 
   using SafeERC20Upgradeable for IERC20Upgradeable;
 
+  string public version = "0.2.0";
+
   // --- Event ---
 
   /// @notice Emitted when a new vote is sent

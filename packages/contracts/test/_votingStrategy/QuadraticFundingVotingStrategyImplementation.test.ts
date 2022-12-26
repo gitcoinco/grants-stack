@@ -19,6 +19,8 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
   const tokensToBeMinted = 1000;
 
+  const VERSION = "0.2.0";
+
   describe('constructor', () => {
 
     it('deploys properly', async () => {
@@ -73,6 +75,10 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         // Invoke init
         await quadraticFundingVotingStrategy.init();
+      });
+
+      it('invoking init once SHOULD set the contract version', async () => {
+        expect(await quadraticFundingVotingStrategy.version()).to.equal(VERSION);
       });
 
       it('invoking init once SHOULD set the round address', async () => {
