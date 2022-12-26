@@ -1,17 +1,13 @@
 import { Spinner } from "../common/Spinner";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import { Round } from "../api/types";
+import { QFDistribution, useRoundMatchData } from "../api/api";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fundingData: any;
-  isFundingDataFetched: boolean;
+  chainId: string;
+  roundId: string | undefined;
 }) {
-  if (props.isFundingDataFetched) {
-    <Spinner text="We're fetching your Round." />;
-  }
-
   const currentTime = new Date();
   const isBeforeRoundEndDate =
     props.round && props.round.roundEndTime >= currentTime;
@@ -21,7 +17,9 @@ export default function ViewFundingAdmin(props: {
   return (
     <div>
       {isBeforeRoundEndDate && <NoInformationContent />}
-      {isAfterRoundEndDate && <InformationContent />}
+      {isAfterRoundEndDate && (
+        <InformationContent chainId={props.chainId} roundId={props.roundId} />
+      )}
     </div>
   );
 }
@@ -50,7 +48,21 @@ function NoInformationMessage() {
   );
 }
 
-function InformationContent() {
+function InformationContent(props: {
+  chainId: string;
+  roundId: string | undefined;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { data, loading } = useRoundMatchData(props.chainId, props.roundId!);
+  return (
+    <div>
+      {loading && <Spinner text="We're fetching the matching data." />}
+      {data && <InformationTable data={data} />}
+    </div>
+  );
+}
+
+function InformationTable(props: { data: QFDistribution[] }) {
   return (
     <div className="mt-8 ml-8">
       <p className="ml-4 font-bold">Finalised Matching Stats</p>
@@ -58,19 +70,17 @@ function InformationContent() {
         <table className="w-full">
           <thead>
             <tr className="text-left">
-              <th>Projects</th>
               <th>Project ID</th>
-              <th>No of Contributions</th>
+              <th>No of Contributors</th>
               <th>Matching %</th>
             </tr>
           </thead>
           <tbody>
-            {sampleFundingData.map((data) => (
-              <tr key={data.projectName}>
-                <td className="py-2">{data.projectName}</td>
+            {props.data.map((data) => (
+              <tr key={data.projectId}>
                 <td className="py-2">{data.projectId}</td>
-                <td className="py-2">{data.contributions}</td>
-                <td className="py-2">{data.matchingPercentage}</td>
+                <td className="py-2">{data.uniqueContributorsCount}</td>
+                <td className="py-2">{data.matchPoolPercentage}</td>
               </tr>
             ))}
           </tbody>
@@ -79,78 +89,3 @@ function InformationContent() {
     </div>
   );
 }
-
-const sampleFundingData = [
-  {
-    projectName: "BETTER",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "Intmax",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-  {
-    projectName: "HyperXP",
-    projectId: "0xbD1C7e67F42DA834247DA8A35ba21e79fa70b10c",
-    contributions: "10",
-    matchingPercentage: "0.3",
-  },
-];

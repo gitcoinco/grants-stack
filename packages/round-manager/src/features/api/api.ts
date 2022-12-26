@@ -17,13 +17,7 @@ export type QFContributionSummary = {
   averageUSDContribution?: number;
 };
 
-export function useRoundSummary({
-  chainId,
-  roundId,
-}: {
-  chainId: string;
-  roundId: string;
-}) {
+export const useRoundSummary = (chainId: string, roundId: string) => {
   const [roundSummary, setRoundSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -57,17 +51,13 @@ export function useRoundSummary({
     error,
     loading,
   };
-}
+};
 
-export function useProjectSummary({
-  chainId,
-  roundId,
-  projectId,
-}: {
-  chainId: string;
-  roundId: string;
-  projectId: string;
-}) {
+export const useProjectSummary = (
+  chainId: string,
+  roundId: string,
+  projectId: string
+) => {
   const [projectSummary, setProjectSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -102,15 +92,9 @@ export function useProjectSummary({
     error,
     loading,
   };
-}
+};
 
-export function useRoundMatchData({
-  chainId,
-  roundId,
-}: {
-  chainId: string;
-  roundId: string;
-}) {
+export const useRoundMatchData = (chainId: string, roundId: string) => {
   const [roundMatchData, setRoundMatchData] = useState<QFDistribution[]>();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -143,4 +127,4 @@ export function useRoundMatchData({
     error,
     loading,
   };
-}
+};

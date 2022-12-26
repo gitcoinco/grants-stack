@@ -202,8 +202,8 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ViewFundingAdmin
                         round={round}
-                        fundingData=""
-                        isFundingDataFetched={true}
+                        chainId={`${chain.id}`}
+                        roundId={id}
                       />
                     </Tab.Panel>
                   </Tab.Panels>
