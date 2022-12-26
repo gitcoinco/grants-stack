@@ -18,5 +18,5 @@ Going forward all upgrades to QFVotingStrategyImplementation will involve doing 
 | goerli         | 0x19a00b35f3aca4d06eab38f588d2e42a14128b52 |          -          | 0xf29a72c2d703c0360b212805db51f494f900821393d77f6c3b31bf38d79f4c26 |
 | mainnet        |                                            |                     |                                                                    |
 | fantom         |                                            |                     |                                                                    |
-| fantom-testnet |                                            |                     |                                                                    |
+| fantom-testnet | 0xd0f50f0c0228760fdbc9cc66564d5a9f06830c9a |          -          | 0x7064339c4cf5660a73b06eede93cd385ac88e98b2656aa88666dd8000ae39005 |
 | optimism       |                                            |                     |                                                                    |

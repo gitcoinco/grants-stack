@@ -97,9 +97,9 @@ These are contracts that are created/deployed for every round created on goerli
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
 | Program                               | 0x86DceaCc03A52b7914b72eB4E10290f72BD99e68 |
-| QFVotingContract                      | 0x1a497D28890EfB320D04F534Fa6318B6A0657619 |
-| MerklePayoutContract                  | 0x4A68275B53165d9209Ec3f535a331A3f0160d6FF |
-| Round                                 | 0xcEF1772Dd6764C95f14c26B25e8f012C072C5F77 |
+| QFVotingContract                      | 0x63C8b4af041Ed202965458e5e41FEE2259516b27 |
+| MerklePayoutContract                  | 0xFc4B47D69A10606682C0087ffCeaAD04145E215d |
+| Round                                 | 0xf6E021E71edF3C443bE779b07DaAC6e7700Ef1Ae |
 
 
 ## Fantom Testnetwork
@@ -111,7 +111,7 @@ These are contracts that are created/deployed once for fantom testnet
 | ProgramFactory                        | 0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92 |
 | ProgramImplementation                 | 0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6 |
 | QuadraticFundingVotingStrategyFactory | 0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2 |
-| QFVotingStrategyImplementation        | 0x4ba9Ed9C90d955FD92687d9aB49deFcCa3C3a959 |
+| QFVotingStrategyImplementation        | 0x84971bD0235334f2a765B3208D3Ad0846E20d71D |
 | RoundFactory                          | 0x00F51ba2Cd201F4bFac0090F450de0992a838762 |
 | RoundImplementation                   | 0x635E69237C0428861EC8c5D8083e9616022c89Ea |
 
