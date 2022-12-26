@@ -1,5 +1,5 @@
 // This script deals with deploying QuadraticFundingVotingStrategyImplementation on a given network
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../../utils/script-utils";
 import * as utils from "../../utils";
@@ -16,14 +16,14 @@ export async function main() {
     chainId: hre.network.config.chainId,
   });
 
-  // Deploy RoundImplementation
+  // Deploy QFImplementation
   const contractFactory = await ethers.getContractFactory(
     "QuadraticFundingVotingStrategyImplementation"
   );
-  const contract = await contractFactory.deploy();
+  const contract = await upgrades.deployProxy(contractFactory);
 
   console.log(
-    `Deploying QuadraticFundingVotingStrategyImplementation to ${contract.address}`
+    `Deploying Upgradable QuadraticFundingVotingStrategyImplementation to ${contract.address}`
   );
   await contract.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");

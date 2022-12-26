@@ -10,6 +10,23 @@ Allows voters to cast multiple weighted votes to grants with one transaction Thi
 
 ## Methods
 
+### VERSION
+
+```solidity
+function VERSION() external view returns (string)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined |
+
 ### init
 
 ```solidity
@@ -48,23 +65,6 @@ Round address
 | Name | Type | Description |
 |---|---|---|
 | _0 | address | undefined |
-
-### version
-
-```solidity
-function version() external view returns (string)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
 
 ### vote
 

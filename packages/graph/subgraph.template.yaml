@@ -175,7 +175,7 @@ templates:
           file: ./abis/legacy/QuadraticFundingVotingStrategyImplementation/V1.json
       eventHandlers:
         - event: Voted(address,uint256,indexed address,indexed address,indexed address)
-          handler: handleVoteLegacyV1
+          handler: handleVote
           receipt: true
 
       file: ./src/legacy/votingStrategy/quadraticFunding/implementationLegacyV1.ts
