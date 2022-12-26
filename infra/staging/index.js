@@ -314,14 +314,6 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
-            logConfiguration: {
-                logDriver: "awslogs",
-                options: {
-                    "awslogs-group": "/ecs/api",
-                    "awslogs-region": "us-west-2",
-                    "awslogs-stream-prefix": "ecs"
-                },
-            },
             portMappings: [{
                 containerPort: 80,
                 hostPort: 80,
