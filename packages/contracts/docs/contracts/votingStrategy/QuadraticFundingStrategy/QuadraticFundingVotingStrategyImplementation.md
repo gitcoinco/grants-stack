@@ -49,6 +49,23 @@ Round address
 |---|---|---|
 | _0 | address | undefined |
 
+### version
+
+```solidity
+function version() external view returns (string)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined |
+
 ### vote
 
 ```solidity
