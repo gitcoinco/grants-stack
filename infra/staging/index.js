@@ -327,6 +327,7 @@ const api = new aws.ecs.TaskDefinition("api", {
             portMappings: [{
                 containerPort: 80,
                 hostPort: 80,
+                protocol: "tcp",
             }],
             environment: [
                 {
