@@ -313,6 +313,14 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
+            logConfiguration: {
+                logDriver: "awslogs",
+                options: {
+                    "awslogs-group": "/ecs/api",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+            },
             portMappings: [{
                 containerPort: 80,
                 hostPort: 80,
@@ -371,6 +379,7 @@ const api_service = new aws.ecs.Service("api", {
     networkConfiguration: {
         subnets: [private_subnet.id],
         assignPublicIp: false,
+        securityGroups: [secgrp.id]
     },
     loadBalancers: [{
         targetGroupArn: grant_target.arn,
