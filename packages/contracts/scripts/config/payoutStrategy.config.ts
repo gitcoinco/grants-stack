@@ -10,7 +10,7 @@ export const PayoutParams: DeployParams = {
     merklePayoutContract: '0xC068C0EAF90533D3817a1782847eAA6719ABB6c7'
   },
   "goerli": {
-    merklePayoutContract: '0x4A68275B53165d9209Ec3f535a331A3f0160d6FF'
+    merklePayoutContract: '0xFc4B47D69A10606682C0087ffCeaAD04145E215d'
   },
   "optimism-mainnet": {
     merklePayoutContract: '0x835A581472Ce6a1f1108d9484567a2162C9959C8'
