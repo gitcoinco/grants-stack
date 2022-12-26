@@ -2,7 +2,7 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
@@ -15,11 +15,11 @@ import "../IVotingStrategy.sol";
  *
  * Emits event upon every transfer.
  */
-contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, ReentrancyGuard, Initializable {
+contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Initializable, ReentrancyGuardUpgradeable {
 
   using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  string public version = "0.2.0";
+  string public constant VERSION = "0.2.0";
 
   // --- Event ---
 

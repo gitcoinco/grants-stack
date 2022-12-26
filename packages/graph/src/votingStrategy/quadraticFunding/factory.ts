@@ -1,5 +1,7 @@
 import { VotingContractCreated as VotingContractCreatedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyFactory";
 import { QuadraticFundingVotingStrategyImplementation as VotingStrategyImplementation } from "../../../generated/templates";
+import { QuadraticFundingVotingStrategyImplementationLegacyV1 as VotingStrategyImplementationLegacyV1 } from "../../../generated/templates";
+
 
 import { VotingStrategy } from "../../../generated/schema";
 import { log } from "@graphprotocol/graph-ts";
@@ -33,4 +35,7 @@ export function handleVotingContractCreated(event: VotingContractCreatedEvent): 
   votingStrategy.save();
 
   VotingStrategyImplementation.create(votingStrategyContractAddress);
+
+  // Legacy
+  VotingStrategyImplementationLegacyV1.create(votingStrategyContractAddress);
 }

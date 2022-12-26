@@ -78,7 +78,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
       });
 
       it('invoking init once SHOULD set the contract version', async () => {
-        expect(await quadraticFundingVotingStrategy.version()).to.equal(VERSION);
+        expect(await quadraticFundingVotingStrategy.VERSION()).to.equal(VERSION);
       });
 
       it('invoking init once SHOULD set the round address', async () => {

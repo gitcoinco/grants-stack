@@ -85,7 +85,7 @@ These are contracts that are created/deployed once for goerli
 | ProgramFactory                        | 0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9 |
 | ProgramImplementation                 | 0x8568133fF3Ef0BD108868278Cb2a516Eaa3B8ABf |
 | QuadraticFundingVotingStrategyFactory | 0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab |
-| QFVotingStrategyImplementation        | 0xfdEAf531f04fd7C6de3938e2069beE83aBadFe08 |
+| QFVotingStrategyImplementation        | 0x64f0f2F6Ed6bF8Db5dc391588120c8328DD8F41a |
 | RoundFactory                          | 0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48 |
 | RoundImplementation                   | 0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A |
 
