@@ -2,13 +2,17 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotProvider, useBallot } from "../BallotContext";
 import { Project } from "../../features/api/types";
 import { makeApprovedProjectData } from "../../test-utils";
-import { loadFinalBallot, loadShortlist, saveFinalBallot, saveShortlist } from "../../features/api/LocalStorage";
+import {
+  loadFinalBallot,
+  loadShortlist,
+  saveFinalBallot,
+  saveShortlist,
+} from "../../features/api/LocalStorage";
 import { initialRoundState, RoundContext } from "../RoundContext";
 
 jest.mock("../../features/api/LocalStorage");
 
 describe("<BallotProvider>", () => {
-
   describe("when ballot is empty", () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -24,7 +28,6 @@ describe("<BallotProvider>", () => {
       expect(screen.queryAllByTestId("shortlist-project")).toHaveLength(0);
       expect(screen.queryAllByTestId("finalBallot-project")).toHaveLength(0);
     });
-
   });
 
   describe("Shortlist", () => {
@@ -75,7 +78,9 @@ describe("<BallotProvider>", () => {
         </RoundContext.Provider>
       );
 
-      expect(screen.getAllByTestId("shortlist-project")).toHaveLength(shortlist.length);
+      expect(screen.getAllByTestId("shortlist-project")).toHaveLength(
+        shortlist.length
+      );
       expect(
         screen.getByText(shortlist[0].projectRegistryId)
       ).toBeInTheDocument();
@@ -175,7 +180,6 @@ describe("<BallotProvider>", () => {
     });
 
     it("removing project from finalBallot adds it to the shortlist", () => {
-
       render(
         <BallotProvider>
           <TestingUseBallotComponent />
@@ -211,7 +215,9 @@ describe("<BallotProvider>", () => {
         </RoundContext.Provider>
       );
 
-      expect(screen.getAllByTestId("finalBallot-project")).toHaveLength(finalBallot.length);
+      expect(screen.getAllByTestId("finalBallot-project")).toHaveLength(
+        finalBallot.length
+      );
       expect(
         screen.getByText(finalBallot[0].projectRegistryId)
       ).toBeInTheDocument();
@@ -248,7 +254,6 @@ describe("<BallotProvider>", () => {
       fireEvent.click(screen.getByTestId("remove-project-from-finalBallot"));
       expect(screen.queryAllByTestId("finalBallot-project")).toHaveLength(0);
     });
-
   });
 });
 
@@ -265,7 +270,6 @@ const TestingUseBallotComponent = () => {
     handleRemoveProjectsFromFinalBallotAndAddToShortlist,
   ] = useBallot();
 
-
   return (
     <>
       {shortlist.map((project, index) => {
@@ -274,18 +278,22 @@ const TestingUseBallotComponent = () => {
             {`Grant Application Id: ${project.grantApplicationId}
             || Project Registry Id: ${project.projectRegistryId}`}
 
-            <span data-testid="shortlist-project-id">{project.projectRegistryId}</span>
+            <span data-testid="shortlist-project-id">
+              {project.projectRegistryId}
+            </span>
           </div>
         );
       })}
 
-      { finalBallot.map((project, index) => {
+      {finalBallot.map((project, index) => {
         return (
           <div key={index} data-testid="finalBallot-project">
             {`Grant Application Id: ${project.grantApplicationId}
             || Project Registry Id: ${project.projectRegistryId}`}
 
-            <span data-testid="finalBallot-project-id">{project.projectRegistryId}</span>
+            <span data-testid="finalBallot-project-id">
+              {project.projectRegistryId}
+            </span>
           </div>
         );
       })}
@@ -313,7 +321,9 @@ const TestingUseBallotComponent = () => {
 
       <button
         data-testid="remove-project-from-finalBallot"
-        onClick={() => handleRemoveProjectsFromFinalBallotAndAddToShortlist([testProject])}
+        onClick={() =>
+          handleRemoveProjectsFromFinalBallotAndAddToShortlist([testProject])
+        }
       >
         Remove Project From Final Ballot
       </button>

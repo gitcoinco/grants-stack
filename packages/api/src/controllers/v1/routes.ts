@@ -11,7 +11,9 @@ import { getProjectSummariesDataHandler } from "../../handlers/getProjectSummari
 
 const router = Router();
 
-router.use(cacheMiddleware);
+if (process.env.NODE_ENV === "production") {
+  router.use(cacheMiddleware);
+}
 
 router.get("/", (req: Request, res: Response) => {
   res.json({ test: "it works" });
@@ -31,7 +33,7 @@ router.get(
   getProjectSummaryDataHandler
 );
 router.get(
-  "/data/summary/round/:chainId/:roundId", 
+  "/data/summary/round/:chainId/:roundId",
   getRoundSummaryDataHandler
 );
 router.get(
@@ -41,7 +43,7 @@ router.get(
 
 // <--- MATCH ROUTES --->
 router.post(
-  "/update/match/round/:chainId/:roundId", 
+  "/update/match/round/:chainId/:roundId",
   updateRoundMatchHandler
 );
 router.get(
@@ -49,7 +51,7 @@ router.get(
   getProjectMatchDataHandler
 );
 router.get(
-  "/data/match/round/:chainId/:roundId", 
+  "/data/match/round/:chainId/:roundId",
   getRoundMatchDataHandler
 );
 

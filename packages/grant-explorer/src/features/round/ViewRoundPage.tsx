@@ -163,10 +163,10 @@ function AfterRoundStart(props: {
       {props.isAfterRoundEndDate && (
         <div>
           <Banner />
-        </div>       
+        </div>
       )}
       <div className="lg:mx-20 px-4 py-7 h-screen">
-         <main>
+        <main>
           <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;

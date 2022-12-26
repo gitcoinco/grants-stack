@@ -1,5 +1,5 @@
-import Navbar, { Shortlist } from "../Navbar";
-import { render, screen } from "@testing-library/react";
+import { Shortlist } from "../Navbar";
+import { screen } from "@testing-library/react";
 import { renderWithContext } from "../../../test-utils";
 import CustomerSupport from "../CustomerSupport";
 
