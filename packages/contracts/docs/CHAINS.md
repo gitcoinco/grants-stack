@@ -85,7 +85,7 @@ These are contracts that are created/deployed once for goerli
 | ProgramFactory                        | 0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9 |
 | ProgramImplementation                 | 0x8568133fF3Ef0BD108868278Cb2a516Eaa3B8ABf |
 | QuadraticFundingVotingStrategyFactory | 0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab |
-| QFVotingStrategyImplementation        | 0x64f0f2F6Ed6bF8Db5dc391588120c8328DD8F41a |
+| QFVotingStrategyImplementation        | 0xcaBE5370293addA85e961bc46fE5ec6D3c6aab28 |
 | RoundFactory                          | 0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48 |
 | RoundImplementation                   | 0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A |
 
@@ -97,9 +97,9 @@ These are contracts that are created/deployed for every round created on goerli
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
 | Program                               | 0x86DceaCc03A52b7914b72eB4E10290f72BD99e68 |
-| QFVotingContract                      | 0x63C8b4af041Ed202965458e5e41FEE2259516b27 |
-| MerklePayoutContract                  | 0xFc4B47D69A10606682C0087ffCeaAD04145E215d |
-| Round                                 | 0xf6E021E71edF3C443bE779b07DaAC6e7700Ef1Ae |
+| QFVotingContract                      | 0xBF539cD4024Ab2140aA864ba2C6A430201b19318 |
+| MerklePayoutContract                  | 0xEC041ea461a59B355671CC1F87c904519375A6FD |
+| Round                                 | 0x84c3445D33488Dc0dd94694F6299ea3b37aB3cB6 |
 
 
 ## Fantom Testnetwork
@@ -111,7 +111,7 @@ These are contracts that are created/deployed once for fantom testnet
 | ProgramFactory                        | 0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92 |
 | ProgramImplementation                 | 0xc76Ea06e2BC6476178e40E2B40bf5C6Bf3c40EF6 |
 | QuadraticFundingVotingStrategyFactory | 0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2 |
-| QFVotingStrategyImplementation        | 0x84971bD0235334f2a765B3208D3Ad0846E20d71D |
+| QFVotingStrategyImplementation        | 0x1eBBf0FC753e03f13Db456A3686523Fc589E4f67 |
 | RoundFactory                          | 0x00F51ba2Cd201F4bFac0090F450de0992a838762 |
 | RoundImplementation                   | 0x635E69237C0428861EC8c5D8083e9616022c89Ea |
 
