@@ -47,6 +47,7 @@ export async function main(quadraticFundingVotingStrategyFactoryContract?: strin
   await updateTx.wait();
 
   console.log("✅ QuadraticFundingVotingStrategyImplementation Contract Linked to QuadraticFundingVotingStrategyFactory contract");
+  console.log("Txn hash", updateTx.hash);
 }
 
 main().catch((error) => {

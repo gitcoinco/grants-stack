@@ -5,18 +5,15 @@ This document keeps record of all the upgrades done for QFVotingStrategyImplemen
 
 ### Version 0.2.0
 
-Note: The older QFVotingStrategyImplementation was not deployed as a Proxy and hence we couldn't upgrade that contract.
-We've now redeployed a fresh QFVotingStrategyImplementation contract and updated the RoundFactory to link to this contract
-Going forward all upgrades to QFVotingStrategyImplementation will involve doing a simple upgrade proxy (AKA no address change during upgrade)
-
-- add projectId to Voted event
-- add new variable for contract version
+- change Voted event signature to include bytes32 projectId 
+- add new constant to keep track of contract version
+- ensure all imports are from contract-upgradable  
 
 
-| network        | Implementation                             | Prev Implementation | Txn                                                                |
-|----------------|--------------------------------------------|---------------------|--------------------------------------------------------------------|
-| goerli         | 0x19a00b35f3aca4d06eab38f588d2e42a14128b52 |          -          | 0xf29a72c2d703c0360b212805db51f494f900821393d77f6c3b31bf38d79f4c26 |
-| mainnet        |                                            |                     |                                                                    |
-| fantom         |                                            |                     |                                                                    |
-| fantom-testnet | 0xd0f50f0c0228760fdbc9cc66564d5a9f06830c9a |          -          | 0x7064339c4cf5660a73b06eede93cd385ac88e98b2656aa88666dd8000ae39005 |
-| optimism       |                                            |                     |                                                                    |
+| network        | Implementation                             | Prev Implementation                        | Link To Factory Txn                                                |
+|----------------|--------------------------------------------|--------------------------------------------|--------------------------------------------------------------------|
+| mainnet        |                                            | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |                                                                    |
+| optimism       |                                            | 0x5987A30F7Cb138c231de96Fe1522Fe4f1e83940D |                                                                    |
+| fantom         |                                            | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |                                                                    |
+| goerli         | 0xcaBE5370293addA85e961bc46fE5ec6D3c6aab28 | 0xfdEAf531f04fd7C6de3938e2069beE83aBadFe08 | 0xa7efaf4e3a1e112b9988b40ecf8d4118d3d85a900cf58cc8cf88f47ad40e92c0 |
+| fantom-testnet | 0x1eBBf0FC753e03f13Db456A3686523Fc589E4f67 | 0x4ba9Ed9C90d955FD92687d9aB49deFcCa3C3a959 | 0x009597d84ef86b1794f590e3c9d70df09bdf88cf8efbebcdef5144cced704981 |
