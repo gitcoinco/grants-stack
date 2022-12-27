@@ -35,7 +35,7 @@ These are contracts that are created/deployed once for optimism mainnet
 | ProgramFactory                        | 0x8918401DD47f1645fF1111D8E513c0404b84d5bB |
 | ProgramImplementation                 | 0x809E751e5C5bB1446e9ab2Ac37c687a35DE53BC6 |
 | QuadraticFundingVotingStrategyFactory | 0xE1F4A28299966686c689223Ee7803258Dbde0942 |
-| QFVotingStrategyImplementation        | 0x5987A30F7Cb138c231de96Fe1522Fe4f1e83940D |
+| QFVotingStrategyImplementation        | 0xB70aCf9654fe304CfE24ee2fA9302a987d22c31e |
 | RoundFactory                          | 0x0f0A4961274A578443089D06AfB9d1fC231A5a4D |
 | RoundImplementation                   | 0xCd5AbD09ee34BA604795F7f69413caf20ee0Ab60 |
 
