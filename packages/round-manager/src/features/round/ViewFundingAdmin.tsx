@@ -1,7 +1,7 @@
 import { Spinner } from "../common/Spinner";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import { Round } from "../api/types";
-import { QFDistribution, useRoundMatchData } from "../api/api";
+import { useRoundMatchData } from "../api/api";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -18,7 +18,11 @@ export default function ViewFundingAdmin(props: {
     <div>
       {isBeforeRoundEndDate && <NoInformationContent />}
       {isAfterRoundEndDate && (
-        <InformationContent chainId={props.chainId} roundId={props.roundId} />
+        <InformationContent
+          round={props.round}
+          chainId={props.chainId}
+          roundId={props.roundId}
+        />
       )}
     </div>
   );
@@ -49,40 +53,71 @@ function NoInformationMessage() {
 }
 
 function InformationContent(props: {
+  round: Round | undefined;
   chainId: string;
   roundId: string | undefined;
 }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, loading } = useRoundMatchData(props.chainId, props.roundId!);
+  // console.log(props.round);
+  const matchingData = data?.map((data) => {
+    const project = props.round?.approvedProjects?.filter(
+      (project) =>
+        project.projectRegistryId.toLowerCase() === data.projectId.toLowerCase()
+    )[0];
+    return {
+      projectName: project?.projectMetadata?.title,
+      projectId: data.projectId,
+      uniqueContributorsCount: data.uniqueContributorsCount,
+      matchPoolPercentage: data.matchPoolPercentage,
+    };
+  });
   return (
     <div>
       {loading && <Spinner text="We're fetching the matching data." />}
-      {data && <InformationTable data={data} />}
+      {data && <InformationTable matchingData={matchingData} />}
     </div>
   );
 }
 
-function InformationTable(props: { data: QFDistribution[] }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function InformationTable(props: { matchingData: any }) {
   return (
     <div className="mt-8 ml-8">
-      <p className="ml-4 font-bold">Finalised Matching Stats</p>
+      <div className="flex flex-row relative">
+        <p className="ml-4 font-bold">Finalised Matching Stats</p>
+        <p className="ml-4 font-bold text-violet-400 absolute left-3/4 ml-32">
+          ({props.matchingData.length}) Projects
+        </p>
+      </div>
       <div className="flex flex-flow mt-2 overflow-y-auto h-72 border-2 px-4 py-4">
-        <table className="w-full">
+        <table className="w-full" data-testid="matching-stats-table">
           <thead>
             <tr className="text-left">
+              <th>Project Name</th>
               <th>Project ID</th>
               <th>No of Contributors</th>
               <th>Matching %</th>
             </tr>
           </thead>
           <tbody>
-            {props.data.map((data) => (
-              <tr key={data.projectId}>
-                <td className="py-2">{data.projectId}</td>
-                <td className="py-2">{data.uniqueContributorsCount}</td>
-                <td className="py-2">{data.matchPoolPercentage}</td>
-              </tr>
-            ))}
+            {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              props.matchingData.map((data: any) => (
+                <tr key={data.projectId}>
+                  <td className="py-2">
+                    {data.projectName.slice(0, 16) + "..."}
+                  </td>
+                  <td className="py-2">
+                    {data.projectId.slice(0, 32) + "..."}
+                  </td>
+                  <td className="py-2">{data.uniqueContributorsCount}</td>
+                  <td className="py-2">
+                    {data.matchPoolPercentage.toFixed(4) * 100 + "%"}
+                  </td>
+                </tr>
+              ))
+            }
           </tbody>
         </table>
       </div>

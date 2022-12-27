@@ -117,11 +117,10 @@ export const useRoundMatchData = (chainId: string, roundId: string) => {
         }
       })
       .then((data) => {
-        setRoundMatchData(data);
+        setRoundMatchData(data.data);
         setLoading(false);
       });
   }, [chainId, roundId]);
-
   return {
     data: roundMatchData,
     error,
