@@ -60,7 +60,7 @@ These are contracts that are created/deployed once for fantom mainnet
 | ProgramFactory                        | 0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB |
 | ProgramImplementation                 | 0x21B0be8253DEdA0d2d8f010d06ED86093d52359b |
 | QuadraticFundingVotingStrategyFactory | 0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38 |
-| QFVotingStrategyImplementation        | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |
+| QFVotingStrategyImplementation        | 0xa71864fAd36439C50924359ECfF23Bb185FFDf21 |
 | RoundFactory                          | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
 | RoundImplementation                   | 0xC2B0d8dAdB88100d8509534BB8B5778d1901037d |
 

@@ -131,6 +131,7 @@ const config: HardhatUserConfig = {
       goerli: process.env.ETHERSCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
       ftmTestnet: process.env.FTMSCAN_API_KEY,
+      opera: process.env.FTMSCAN_API_KEY,
     },
   },
   abiExporter: abiExporter,
