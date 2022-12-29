@@ -1,35 +1,53 @@
 version: '3.8'
 
-services:
-
-  # Load the postgres db
-  postgres:
-    image: postgres:14.1-alpine
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres:/var/lib/postgresql/data
-
-  # Start the server
-  web:
-    image: node:18-slim
-    build:
-      context: ./
-      target: dev
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    env_file: 
-      - .env
-    links:
-      - postgres
-    volumes:
-      - ./src:/src
-      - ./prisma:/prisma
-    command: sh -c "yarn prisma:migrate && yarn dev"
+networks:
+  grants-net:
+    driver: bridge
 
 volumes:
-  postgres: {}
+  grants-pgdata: {}
+
+services:
+  # postgres database
+  postgres:
+    container_name: 'grants-postgres'
+    image: 'postgres:latest'
+    restart: always
+    ports:
+      - '15432:5432'
+    volumes:
+      - 'grants-pgdata:/var/lib/postgresql/data/'
+    environment:
+      - POSTGRES_PASSWORD
+    networks:
+      - grants-net
+
+  # Ephemeral db migration step
+  migration:
+    container_name: 'prisma-migration'
+    image: node:18-slim
+    build:
+      context: .
+    depends_on:
+      - postgres
+    command: yarn prisma:migrate
+    environment:
+      - DATABASE_URL
+    networks:
+      - grants-net
+
+  # express api
+  server:
+    container_name: 'grants-api'
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - migration
+    environment:
+      - DATABASE_URL
+    ports:
+      - "8000:8000"
+    networks:
+      - grants-net

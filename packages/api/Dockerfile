@@ -1,24 +1,17 @@
-FROM node:18-slim as base
+FROM node:18-slim
 
 RUN apt-get update && apt-get install -y openssl libssl-dev
+ENV NODE_OPTIONS=--max_old_space_size=8192
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-COPY prisma/ prisma/
-COPY src/ src/
-
-ENV NODE_OPTIONS=--max_old_space_size=8192
-
-FROM base as dev
-ENV NODE_ENV=development
-
-RUN yarn install
+COPY package.json yarn.lock prisma/ ./
+RUN yarn install --production
 
 COPY . .
 
-RUN yarn build
+RUN yarn prisma:generate
 
-EXPOSE 8000
+EXPOSE 3000
 
 CMD ["yarn", "start"]
