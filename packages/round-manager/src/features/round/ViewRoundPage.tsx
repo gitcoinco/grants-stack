@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import {

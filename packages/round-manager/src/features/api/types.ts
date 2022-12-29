@@ -191,6 +191,13 @@ export interface Round {
   approvedProjects?: ApprovedProject[];
 }
 
+export type MatchingStatsData = {
+  projectName?: string;
+  projectId: string;
+  uniqueContributorsCount: number;
+  matchPoolPercentage: number;
+};
+
 export type ProjectStatus =
   | "PENDING"
   | "APPROVED"

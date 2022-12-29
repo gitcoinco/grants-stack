@@ -1,6 +1,6 @@
 import { Spinner } from "../common/Spinner";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
-import { Round } from "../api/types";
+import { MatchingStatsData, Round } from "../api/types";
 import { useRoundMatchData } from "../api/api";
 
 export default function ViewFundingAdmin(props: {
@@ -59,8 +59,8 @@ function InformationContent(props: {
 }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, loading } = useRoundMatchData(props.chainId, props.roundId!);
-  // console.log(props.round);
-  const matchingData = data?.map((data) => {
+
+  const matchingData: MatchingStatsData[] | undefined = data?.map((data) => {
     const project = props.round?.approvedProjects?.filter(
       (project) =>
         project.projectRegistryId.toLowerCase() === data.projectId.toLowerCase()
@@ -81,13 +81,15 @@ function InformationContent(props: {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function InformationTable(props: { matchingData: any }) {
+function InformationTable(props: {
+  matchingData: MatchingStatsData[] | undefined;
+}) {
   return (
     <div className="mt-8 ml-8">
       <div className="flex flex-row relative">
-        <p className="ml-4 font-bold">Finalised Matching Stats</p>
+        <p className="ml-4 font-bold">Finalized Matching Stats</p>
         <p className="ml-4 font-bold text-violet-400 absolute left-3/4 ml-32">
-          ({props.matchingData.length}) Projects
+          ({props.matchingData?.length}) Projects
         </p>
       </div>
       <div className="flex flex-flow mt-2 overflow-y-auto h-72 border-2 px-4 py-4">
@@ -103,7 +105,7 @@ function InformationTable(props: { matchingData: any }) {
           <tbody>
             {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              props.matchingData.map((data: any) => (
+              props.matchingData?.map((data: any) => (
                 <tr key={data.projectId}>
                   <td className="py-2">
                     {data.projectName.slice(0, 16) + "..."}
