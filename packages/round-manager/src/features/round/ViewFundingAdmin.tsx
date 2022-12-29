@@ -60,6 +60,7 @@ function InformationContent(props: {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, error, loading } = useRoundMatchData(
     props.chainId,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     props.roundId!
   );
 
