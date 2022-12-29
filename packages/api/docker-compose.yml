@@ -14,7 +14,7 @@ services:
     image: 'postgres:latest'
     restart: always
     ports:
-      - '15432:5432'
+      - '5432:5432'
     volumes:
       - 'grants-pgdata:/var/lib/postgresql/data/'
     environment:
@@ -22,7 +22,7 @@ services:
     networks:
       - grants-net
 
-  # Ephemeral db migration step
+  # ephemeral prisma migration step
   migration:
     container_name: 'prisma-migration'
     image: node:18-slim
