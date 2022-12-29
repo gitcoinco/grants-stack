@@ -58,7 +58,10 @@ function InformationContent(props: {
   roundId: string | undefined;
 }) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { data, loading } = useRoundMatchData(props.chainId, props.roundId!);
+  const { data, error, loading } = useRoundMatchData(
+    props.chainId,
+    props.roundId!
+  );
 
   const matchingData: MatchingStatsData[] | undefined = data?.map((data) => {
     const project = props.round?.approvedProjects?.filter(
@@ -75,7 +78,25 @@ function InformationContent(props: {
   return (
     <div>
       {loading && <Spinner text="We're fetching the matching data." />}
-      {data && <InformationTable matchingData={matchingData} />}
+      {!error ? (
+        <InformationTable matchingData={matchingData} />
+      ) : (
+        <ErrorMessage />
+      )}
+    </div>
+  );
+}
+
+function ErrorMessage() {
+  return (
+    <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
+      <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
+        <NoInformationIcon className="w-6 h-6" />
+      </div>
+      <h2 className="mt-8 text-2xl antialiased" data-testid="error-info">
+        Error
+      </h2>
+      <div className="mt-2 text-sm">There was an error fetching the data.</div>
     </div>
   );
 }
@@ -87,7 +108,9 @@ function InformationTable(props: {
   return (
     <div className="mt-8 ml-8">
       <div className="flex flex-row relative">
-        <p className="ml-4 font-bold">Finalized Matching Stats</p>
+        <p className="ml-4 font-bold" data-testid="final-match-stats-title">
+          Finalized Matching Stats
+        </p>
         <p className="ml-4 font-bold text-violet-400 absolute left-3/4 ml-32">
           ({props.matchingData?.length}) Projects
         </p>

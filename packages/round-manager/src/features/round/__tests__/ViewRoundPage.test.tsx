@@ -312,7 +312,7 @@ describe("View Round", () => {
       );
       const fundingAdminTab = screen.getByTestId("funding-admin");
       fireEvent.click(fundingAdminTab);
-      expect(screen.getByText("Finalized Matching Stats")).toBeInTheDocument();
+      expect(screen.getByTestId("final-match-stats-title")).toBeInTheDocument();
       expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     });
   });
