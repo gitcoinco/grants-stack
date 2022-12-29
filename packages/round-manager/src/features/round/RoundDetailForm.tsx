@@ -261,8 +261,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
               <p className="mt-6 mb-4 text-sm">
                 What are the dates for the Applications and Round voting
-                period(s)
+                period(s)?
+                <ApplicationDatesInformation />
               </p>
+
               <p className="text-sm mb-2">
                 <span>Applications</span>
                 <span className="text-right text-violet-400 float-right text-xs mt-1">
@@ -303,6 +305,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           }}
                           isValidDate={disablePastDate}
                           initialViewDate={now}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
                         />
                       )}
                     />
@@ -359,6 +363,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
                           isValidDate={disableBeforeApplicationStartDate}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
                         />
                       )}
                     />
@@ -426,6 +432,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
                           isValidDate={disableBeforeApplicationStartDate}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
                         />
                       )}
                     />
@@ -479,6 +487,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
                           isValidDate={disableBeforeRoundStartDate}
+                          utc={true}
+                          dateFormat={"YYYY-MM-DD"}
                         />
                       )}
                     />
@@ -1185,6 +1195,28 @@ function Support(props: {
       control={props.control}
       supportTypes={supportTypes}
     />
+  );
+}
+
+function ApplicationDatesInformation() {
+  return (
+    <>
+      <InformationCircleIcon
+        data-tip
+        data-background-color="#0E0333"
+        data-for="application-dates-tooltip"
+        className="inline h-4 w-4 ml-2 mr-3 mb-1"
+        data-testid="application-dates-tooltip"
+      />
+      <ReactTooltip
+        id="application-dates-tooltip"
+        place="bottom"
+        type="dark"
+        effect="solid"
+      >
+        <p className="text-xs">All dates are in UTC.</p>
+      </ReactTooltip>
+    </>
   );
 }
 
