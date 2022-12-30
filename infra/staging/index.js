@@ -80,20 +80,6 @@ const gw = new aws.ec2.InternetGateway("gw", {
     },
 });
 
-const nat_ip = new aws.ec2.Eip("nat_ip_new", {
-    vpc: true,
-});
-
-const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
-    allocationId: nat_ip.id,
-    subnetId: private_subnet.id,
-    tags: {
-        App: "Grants",
-    },
-}, {
-    dependsOn: [gw.gw],
-});
-
 const nat_ip_public = new aws.ec2.Eip("nat_ip_public", {
     vpc: true,
 });
