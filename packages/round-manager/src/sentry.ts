@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
 import {
   ReportingObserver as ReportingObserverIntegration,
-  CaptureConsole as CaptureConsoleIntegration
+  CaptureConsole as CaptureConsoleIntegration,
 } from "@sentry/integrations";
 
 export const initSentry = () => {
@@ -11,11 +11,9 @@ export const initSentry = () => {
     integrations: [
       new BrowserTracing(),
       new ReportingObserverIntegration(),
-      new CaptureConsoleIntegration(
-        {
-          levels: ['error', 'warn']
-        }
-      )
+      new CaptureConsoleIntegration({
+        levels: ["error", "warn"],
+      }),
     ],
     tracesSampleRate: 1.0,
   });

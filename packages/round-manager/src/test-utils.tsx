@@ -1,7 +1,11 @@
 import {
+  ApplicationStatus,
+  ApprovedProject,
   GrantApplication,
+  MatchingStatsData,
   Program,
   ProjectCredentials,
+  ProjectMetadata,
   ProjectStatus,
   Round,
 } from "./features/api/types";
@@ -35,6 +39,7 @@ import {
   initialBulkUpdateGrantApplicationState,
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import React from "react";
+import { QFDistribution } from "./features/api/api";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -75,6 +80,50 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     payoutStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [faker.finance.ethereumAddress()],
+    ...overrides,
+  };
+};
+
+export const makeMatchingStatsData = (): MatchingStatsData => {
+  return {
+    projectName: faker.company.name(),
+    projectId: faker.finance.ethereumAddress().toString(),
+    uniqueContributorsCount: faker.datatype.number(),
+    matchPoolPercentage: faker.datatype.number(),
+  };
+};
+
+export const makeQFDistribution = (): QFDistribution => {
+  return {
+    projectId: faker.finance.ethereumAddress().toString(),
+    matchAmountInUSD: faker.datatype.number(),
+    totalContributionsInUSD: faker.datatype.number(),
+    matchPoolPercentage: faker.datatype.number(),
+    matchAmountInToken: faker.datatype.number(),
+    projectPayoutAddress: faker.finance.ethereumAddress(),
+    uniqueContributorsCount: faker.datatype.number(),
+  };
+};
+
+export const makeApprovedProjectData = (
+  overrides?: Partial<ApprovedProject>,
+  projectMetadataOverrides?: Partial<ProjectMetadata>
+): ApprovedProject => {
+  return {
+    grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
+    projectRegistryId: faker.datatype.number().toString(),
+    recipient: faker.finance.ethereumAddress(),
+    projectMetadata: {
+      title: faker.company.name(),
+      description: faker.lorem.sentence(),
+      website: faker.internet.url(),
+      projectTwitter: faker.internet.userName(),
+      projectGithub: faker.internet.userName(),
+      userGithub: faker.internet.userName(),
+      owners: [{ address: faker.finance.ethereumAddress() }],
+      ...projectMetadataOverrides,
+    },
+    status: ApplicationStatus.APPROVED,
     ...overrides,
   };
 };

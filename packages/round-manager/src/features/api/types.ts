@@ -185,7 +185,18 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
+  /**
+   * List of projects approved for the round
+   */
+  approvedProjects?: ApprovedProject[];
 }
+
+export type MatchingStatsData = {
+  projectName?: string;
+  projectId: string;
+  uniqueContributorsCount: number;
+  matchPoolPercentage: number;
+};
 
 export type ProjectStatus =
   | "PENDING"
@@ -197,26 +208,32 @@ export type ProjectStatus =
 export type ProjectCredentials = {
   [key: string]: VerifiableCredential;
 };
-
-export type GrantApplicationId = string;
-
 interface ProjectOwner {
   address: string;
 }
 
-export type Project = {
-  lastUpdated: number; // unix timestamp in milliseconds
-  id: string;
-  owners: ProjectOwner[];
+export type ApprovedProject = {
+  grantApplicationId: GrantApplicationId;
+  projectRegistryId: ProjectRegistryId;
+  recipient: recipient;
+  projectMetadata: ProjectMetadata;
+  status: ApplicationStatus;
+};
+export type GrantApplicationId = string;
+export type ProjectRegistryId = string;
+export type recipient = string;
+
+export type ProjectMetadata = {
   title: string;
   description: string;
   website: string;
   bannerImg?: string;
   logoImg?: string;
-  projectGithub?: string;
   projectTwitter?: string;
-  credentials: ProjectCredentials;
-  metaPtr: MetadataPointer;
+  userGithub?: string;
+  projectGithub?: string;
+  credentials?: ProjectCredentials;
+  owners: ProjectOwner[];
 };
 
 export type RoundProject = {
@@ -280,4 +297,19 @@ export type ProgressStep = {
   name: string;
   description: string;
   status: ProgressStatus;
+};
+
+export type Project = {
+  lastUpdated: number; // unix timestamp in milliseconds
+  id: string;
+  owners: ProjectOwner[];
+  title: string;
+  description: string;
+  website: string;
+  bannerImg?: string;
+  logoImg?: string;
+  projectGithub?: string;
+  projectTwitter?: string;
+  credentials: ProjectCredentials;
+  metaPtr: MetadataPointer;
 };
