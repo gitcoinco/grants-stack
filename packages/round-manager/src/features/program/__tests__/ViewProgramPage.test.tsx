@@ -9,6 +9,7 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
+import { getUTCDate } from "../../api/utils";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -191,12 +192,18 @@ describe("<ViewProgram />", () => {
         )
       );
 
-      const applicationTimePeriod = await screen.findByTestId(
-        "application-time-period"
+      const applicationStartTimePeriod = await screen.findByTestId(
+        "application-start-time-period"
       );
-      expect(applicationTimePeriod.textContent).toEqual(
-        `${stubRound?.applicationsStartTime.toLocaleDateString()} - ${stubRound.applicationsEndTime.toLocaleDateString()}`
+      const applicationEndTimePeriod = await screen.findByTestId(
+        "application-end-time-period"
       );
+
+      const utcApplicationStartTime = getUTCDate(stubRound!.applicationsStartTime);
+      const utcApplicationEndTime = getUTCDate(stubRound!.applicationsEndTime);
+
+      expect(applicationStartTimePeriod.textContent).toEqual(utcApplicationStartTime);
+      expect(applicationEndTimePeriod.textContent).toEqual(utcApplicationEndTime);
     });
 
     it("displays round start and end dates", async () => {
@@ -214,12 +221,18 @@ describe("<ViewProgram />", () => {
         )
       );
 
-      const roundTimePeriodElement = await screen.findByTestId(
-        "round-time-period"
+      const roundStartTimePeriodElement = await screen.findByTestId(
+        "round-start-time-period"
       );
-      expect(roundTimePeriodElement.textContent).toEqual(
-        `${stubRound.roundStartTime.toLocaleDateString()} - ${stubRound.roundEndTime.toLocaleDateString()}`
-      );
+      const roundEndTimePeriodElement = await screen.findByTestId(
+        "round-end-time-period"
+      )
+
+      const utcRoundStartTime = getUTCDate(stubRound!.roundStartTime);
+      const utcRoundEndTime = getUTCDate(stubRound!.roundEndTime);
+
+      expect(roundStartTimePeriodElement.textContent).toEqual(utcRoundStartTime);
+      expect(roundEndTimePeriodElement.textContent).toEqual(utcRoundEndTime);
     });
 
     it("displays create round link", async () => {

@@ -61,8 +61,8 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test --watchAll=false",
-    "test:coverage": "craco test --watchAll=false --coverage",
+    "test": "craco test --watchAll=false --silent",
+    "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --cache",
     "lint:fix": "eslint ./src --fix --cache",
