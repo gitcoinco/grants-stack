@@ -86,6 +86,20 @@ const nat_ip = new aws.ec2.Eip("nat_ip_new", {
 
 const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
     allocationId: nat_ip.id,
+    subnetId: private_subnet.id,
+    tags: {
+        App: "Grants",
+    },
+}, {
+    dependsOn: [gw.gw],
+});
+
+const nat_ip_public = new aws.ec2.Eip("nat_ip_public", {
+    vpc: true,
+});
+
+const nat_gateway_public = new aws.ec2.NatGateway("grants_public_nat", {
+    allocationId: nat_ip.id,
     subnetId: public_subnet.id,
     tags: {
         App: "Grants",
@@ -124,7 +138,7 @@ const private_route_table = new aws.ec2.RouteTable('private', {
     routes: [
       {
         cidrBlock: '0.0.0.0/0',
-        gatewayId: nat_gateway.id
+        gatewayId: nat_gateway_public.id
       }
     ],
     vpcId: vpc.id
