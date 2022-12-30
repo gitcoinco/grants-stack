@@ -232,7 +232,7 @@ const grant_lb = new aws.lb.LoadBalancer("grants", {
     internal: false,
     loadBalancerType: "application",
     securityGroups: [secgrp.id],
-    subnets: [private_subnet, private_subnet_two],
+    subnets: [public_subnet, public_subnet_two],
     enableDeletionProtection: true,
 });
 
