@@ -285,6 +285,8 @@ const grantsEcs = new aws.ecs.Cluster("grants", {configuration: {
         logConfiguration: {
             cloudWatchEncryptionEnabled: true,
             cloudWatchLogGroupName: FargateLogGroup.name,
+            s3BucketName: "datadog-forwarder-forwarderbucket-11uyffbu6qu0r",
+            s3KeyPrefix: "staging-grants-api"
         },
     },
 }});
