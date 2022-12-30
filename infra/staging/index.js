@@ -99,7 +99,7 @@ const nat_ip_public = new aws.ec2.Eip("nat_ip_public", {
 });
 
 const nat_gateway_public = new aws.ec2.NatGateway("grants_public_nat", {
-    allocationId: nat_ip.id,
+    allocationId: nat_ip_public.id,
     subnetId: public_subnet.id,
     tags: {
         App: "Grants",
