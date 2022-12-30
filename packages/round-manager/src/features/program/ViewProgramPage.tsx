@@ -11,7 +11,7 @@ import { Button } from "../common/styles";
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import { abbreviateAddress } from "../api/utils";
+import { abbreviateAddress, getUTCDate, getUTCTime } from "../api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
@@ -80,13 +80,22 @@ export default function ViewProgram() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-grey-400 my-auto">Applications: </span>
-                  <span
-                    className="my-auto"
-                    data-testid="application-time-period"
-                  >
-                    {`${round.applicationsStartTime.toLocaleDateString()} - ${round.applicationsEndTime.toLocaleDateString()}`}
-                  </span>
+                  <span className="text-grey-400 my-auto mr-2">Applications: </span>
+                  <div>
+
+                    <p
+                      className="my-auto text-xs"
+                      data-testid="application-time-period"
+                    >
+                      <span data-testid="application-start-time-period">{getUTCDate(round.applicationsStartTime)}</span>
+                      <span className="mx-1">-</span>
+                      <span data-testid="application-end-time-period">{getUTCDate(round.applicationsEndTime)}</span>
+                    </p>
+                    <p className="text-xs text-grey-400">
+                      <span className="mr-2">({getUTCTime(round.applicationsStartTime)})</span>
+                      <span>({getUTCTime(round.applicationsEndTime)})</span>
+                    </p>
+                  </div>
                 </p>
                 <p className="text-xs flex gap-1 md:ml-8">
                   <svg
@@ -101,9 +110,21 @@ export default function ViewProgram() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-grey-400 my-auto">Round: </span>
+                  <span className="text-grey-400 my-auto mr-2">Round: </span>
                   <span className="my-auto" data-testid="round-time-period">
-                    {`${round.roundStartTime.toLocaleDateString()} - ${round.roundEndTime.toLocaleDateString()}`}
+                    <p
+                      className="my-auto text-xs"
+                      data-testid="round-time-period"
+                    >
+                      <span data-testid="round-start-time-period">{getUTCDate(round.roundStartTime)}</span>
+                      <span className="mx-1">-</span>
+                      <span data-testid="round-end-time-period">{getUTCDate(round.roundEndTime)}</span>
+                    </p>
+
+                    <p className="text-xs text-grey-400">
+                      <span className="mr-2">({getUTCTime(round.roundStartTime)})</span>
+                      <span>({getUTCTime(round.roundEndTime)})</span>
+                    </p>
                   </span>
                 </p>
               </div>
