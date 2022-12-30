@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import {
@@ -201,8 +200,9 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundingAdmin
-                        fundingData=""
-                        isFundingDataFetched={true}
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
                       />
                     </Tab.Panel>
                   </Tab.Panels>

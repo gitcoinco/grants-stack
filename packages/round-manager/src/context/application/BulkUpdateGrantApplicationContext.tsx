@@ -212,7 +212,7 @@ const storeDocument = async ({
     return ipfsHash;
   } catch (error) {
     datadogLogs.logger.error(`error: storeDocument - ${error}`);
-    console.error("storeDocument", error)
+    console.error("storeDocument", error);
     setIPFSCurrentStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -247,7 +247,7 @@ const updateContract = async ({
     return transactionBlockNumber;
   } catch (error) {
     datadogLogs.logger.error(`error: updateContract - ${error}`);
-    console.error(`updateContract roundId: ${roundId}`, error)
+    console.error(`updateContract roundId: ${roundId}`, error);
     setContractUpdatingStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
