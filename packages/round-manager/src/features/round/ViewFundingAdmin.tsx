@@ -3,6 +3,7 @@ import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/out
 import { MatchingStatsData, Round } from "../api/types";
 import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
+import { saveObjectAsJson } from "../api/utils";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -147,6 +148,11 @@ function InformationTable(props: {
       </div>
       <div className="relative mt-4 mb-8">
         <Button
+          onClick={() => {
+            if (props.matchingData) {
+              saveObjectAsJson("matching_data.json", props.matchingData);
+            }
+          }}
           type="button"
           className="absolute right-0"
           data-testid="download-json"
