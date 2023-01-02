@@ -7,9 +7,10 @@ import {
   ChainName,
   RoundMetadata,
   DenominationResponse,
-  MetaPtr,
+  MetaPtr, QFVotedEvent,
 } from "./types";
 import { cache } from "./cacheConfig";
+import { BigNumber } from "ethers";
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -289,9 +290,9 @@ export async function getStartAndEndTokenPrices(
   try {
     const { chainName, error } = getChainName(chainId);
     if (error) {
-      throw new Error(
-        `ChainId ${chainId} is not supported by CoinGecko's API.`
-      );
+      // throw new Error(
+      //   `ChainId ${chainId} is not supported by CoinGecko's API.`
+      // );
     }
     const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
     const res = await fetch(url, {
@@ -313,10 +314,10 @@ export async function getStartAndEndTokenPrices(
     const endPrice = data.prices[data.prices.length - 1][1];
     return { startPrice, endPrice };
   } catch (error) {
-    console.error(
-      `getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`,
-      error
-    );
+    // console.error(
+    //   `getStartAndEndTokenPrices : contract: ${contract}, chainId: ${chainId}`,
+    //   error
+    // );
     throw error;
   }
 }
@@ -583,10 +584,165 @@ export const fetchProjectIdToPayoutAddressMapping = async (
 
   for (const project of projects) {
     // project.id format ->  applicationId-roundId
-    const projectId = project.id.split("-")[0];
+    // console.log(project);
+    const projectId = project.id.toLowerCase();
     const payoutAddress = getAddress(project.payoutAddress);
     projectToPayoutMap.set(projectId, payoutAddress);
   }
 
   return projectToPayoutMap;
 };
+
+export const fetchProjectDataFromGraphByIds = async (chainId: ChainId, roundId: string, projectIds: string[]) => {
+  const projectDataQuery = `
+    query GetProjectDataByRegistryIds($roundId: String, $projectRegistryIds: [String]) {
+      round(id: $roundId) { 
+        projects(where: {
+          id_in: $projectRegistryIds
+        }) {
+          id
+          payoutAddress
+          status
+          project
+        }
+      }
+    }`;
+
+  const projectDataRes = await fetchFromGraphQL(
+    chainId,
+    projectDataQuery,
+    {
+      roundId: roundId,
+      projectRegistryIds: projectIds,
+    }
+  );
+
+  if (projectDataRes.error) {
+    console.error(projectDataRes.error);
+  }
+
+  const projectData = projectDataRes.data?.round?.projects;
+  return projectData;
+}
+
+export type ProjectGraphData = {
+  id: string;
+  payoutAddress: string;
+  status: string;
+  project: string;
+}
+
+export const fetchRoundProjectsFromGraph = async (chainId: ChainId, roundId: string): Promise<ProjectGraphData[]> => {
+  const roundProjectsQuery = `
+    query GetRoundProjects($roundId: String) {
+      round(id: $roundId) { 
+        projects(first: 1000) {
+          id
+          payoutAddress
+          status
+          project
+        }
+      }
+    }`;
+
+  const roundProjectsRes = await fetchFromGraphQL(
+    chainId,
+    roundProjectsQuery,
+    {
+      roundId: roundId,
+    }
+  );
+
+  if (roundProjectsRes.error) {
+    console.error(roundProjectsRes.error);
+  }
+
+  const roundProjects = roundProjectsRes.data?.round?.projects;
+  // set cache
+
+  return roundProjects;
+}
+
+export const fetchVotesForProjectFromGraph = async (chainId: ChainId, roundId: string, projectId: string) => {
+  const votesQuery = `
+    query GetVotesForProject($roundId: String, $projectId: String) {
+      round(id: $roundId) {
+        votes(where: {
+          project: $projectId
+        }) {
+          id
+          voter
+          project
+          amount
+          timestamp
+        }
+      }
+    }`;
+
+  const votesRes = await fetchFromGraphQL(
+    chainId,
+    votesQuery,
+    {
+      roundId: roundId,
+      projectId: projectId,
+    }
+  );
+
+  if (votesRes.error) {
+    console.error(votesRes.error);
+  }
+
+  const votes = votesRes.data?.round?.votes;
+  return votes;
+}
+
+export const fetchVotesForRoundFromGraph = async (chainId: ChainId, roundId: string): Promise<QFVotedEvent[]> => {
+  let lastId = "";
+  let votes: QFVotedEvent[] = [];
+  while(true) {
+    const votesQuery = `
+    query GetVotesForRound($roundId: String, $lastId: String) {
+      round(id: $roundId) {
+        votingStrategy {
+          votes(first: 1000, where: {
+            id_gt: $lastId
+          }) {
+            id
+            amount
+            from
+            projectId
+            to
+            token
+            version
+          }
+        }
+      }
+    }`;
+
+    const votesRes = await fetchFromGraphQL(
+      chainId,
+      votesQuery,
+      {
+        roundId: roundId,
+        lastId: lastId,
+      }
+    );
+
+    if (votesRes.error) {
+      console.error(votesRes.error);
+    }
+
+    if (votesRes.data.round.votingStrategy.votes.length === 0) {
+      break;
+    }
+
+    // coerce to big number
+    votesRes.data.round.votingStrategy.votes.forEach((vote: any) => {
+      vote.amount = BigNumber.from(vote.amount);
+    });
+
+    votes.push(...votesRes.data?.round?.votingStrategy.votes);
+    lastId = votesRes.data.round.votingStrategy.votes[votesRes.data.round.votingStrategy.votes.length - 1].id;
+  }
+  return votes;
+}

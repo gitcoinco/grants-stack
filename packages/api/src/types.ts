@@ -68,15 +68,28 @@ export type QFContribution = {
   contributor: string;
   projectId: string;
   projectPayoutAddress: string;
+  version?: string;
 };
 
 export type QFVotedEvent = {
   to: string;
-  amount: string;
+  amount: BigNumber;
   token: string;
   from: string;
   id: string;
+  projectId: string;
+  version: string;
 };
+
+export type MatchedQFVotes = {
+  to: string;
+  amount: BigNumber;
+  token: string;
+  from: string;
+  id: string;
+  projectId: string;
+  version: string;
+}
 
 export type QFContributionSummary = {
   contributionCount: number;

@@ -157,7 +157,7 @@ export const fetchQFContributionsForRound = async (
         amount: BigNumber.from(vote.amount),
         token: vote.token,
         contributor: vote.from,
-        projectId: projectId,
+        projectId: vote.projectId,//projectId,
         projectPayoutAddress: payoutAddress,
       });
     } else {
@@ -246,121 +246,139 @@ export const fetchQFContributionsForRound = async (
 export const fetchQFContributionsForProjects = async (
   chainId: ChainId,
   votingStrategyId: string,
-  projectIds: string[]
-): Promise<QFContribution[]> => {
+  projectIds: string[],
+  roundId?: string
+): Promise<any> => {
   let lastID: string = "";
-  const query = `
-    query GetContributionsForProject($votingStrategyId: String, $projectIds: [String]) {
-      votingStrategies(where:{
-        id: $votingStrategyId
-      }) {
-        votes(first: 1000, where: {
-          to_in: $projectIds
+  const votes: QFContribution[] = [];
+  const projectDataQuery = `
+    query GetProjectDataByRegistryIds($roundId: String, $projectRegistryIds: [String]) {
+      round(id: $roundId) { 
+        projects(where: {
+          id_in: $projectRegistryIds
         }) {
           id
-          amount
-          token
-          from
-          to
+          payoutAddress
+          status
+          project
         }
-        round {
-          roundStartTime
-          roundEndTime
-          token
-          projectsMetaPtr {
-            pointer
-            protocol
-          }
-        }
-
       }
+    }`;
 
+  const projectDataRes = await fetchFromGraphQL(
+    chainId,
+    projectDataQuery,
+    {
+      roundId: roundId,
+      projectRegistryIds: projectIds,
     }
-  `;
-  const variables = { votingStrategyId, projectIds };
-  // fetch from graphql
-  const response = await fetchFromGraphQL(chainId, query, variables);
-
-  // fetch projectId -> payoutAddress mapping
-  const projectsMetaPtr: MetaPtr =
-    response.data?.votingStrategies[0]?.round.projectsMetaPtr;
-  const projectPayoutToIdMapping = await fetchPayoutAddressToProjectIdMapping(
-    projectsMetaPtr
   );
 
-  const votes: QFContribution[] = [];
+  if (projectDataRes.error) {
+    console.error(projectDataRes.error);
+  }
 
-  response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-    const payoutAddress = getAddress(vote.to);
-
-    // TODO: remove update to projectID after contract upgrade
-    const projectId = projectPayoutToIdMapping.get(payoutAddress);
-
-    votes.push({
-      amount: BigNumber.from(vote.amount),
-      token: vote.token,
-      contributor: vote.from,
-      projectId: projectId!,
-      projectPayoutAddress: payoutAddress,
-    });
-
-    lastID = vote.id;
-  });
-
-  while (true) {
-    const query = `
-      query GetContributionsForProject($votingStrategyId: String, $lastID: String, $projectIds: [String]) {
-        votingStrategies(where:{
-          id: $votingStrategyId
-        }) {
-          votes(first: 1000, where: {
-              id_gt: $lastID
-              to_in: $projectIds
-          }) {
-            id
-            amount
-            token
-            from
-            to
+  if (projectDataRes.data) {
+    for (const projectData of projectDataRes.data.round.projects) {
+      const votesDataQuery = `
+      query GetVotesDataByToAddress($roundId: String, $to: String) {
+        round(id: $roundId) {
+          id
+          votingStrategy {
+            votes(first: 1000, where: {to: $to}) {
+              id
+              to
+              projectId
+              token
+              version
+              from
+              amount
+            }
           }
-          round {
-            roundStartTime
-            roundEndTime
-            token
+        }
+      }`;
+
+      const voteDataRes = await fetchFromGraphQL(
+        chainId,
+        votesDataQuery,
+        {
+          roundId: roundId,
+          to: projectData.payoutAddress.toLowerCase(),
+        });
+
+      if (voteDataRes.error) {
+        console.error(voteDataRes.error);
+      }
+
+      if (voteDataRes.data) {
+        voteDataRes.data.round.votingStrategy.votes.map((vote: QFVotedEvent) => {
+          votes.push({
+            amount: BigNumber.from(vote.amount),
+            token: vote.token,
+            contributor: vote.from,
+            projectId: vote.projectId,
+            projectPayoutAddress: vote.to,
+            version: vote.version,
+          });
+          lastID = vote.id;
+        });
+
+        while (true) {
+          const pagedVotesDataQuery = `
+            query GetVotesDataByToAddress($roundId: String, $to: String $lastID: String) {
+              round(id: $roundId) {
+                id
+                votingStrategy {
+                  votes(first: 1000, where: {
+                    to: $to
+                    id_gt: $lastID
+                }) {
+                    id
+                    to
+                    projectId
+                    token
+                    version
+                    from
+                    amount
+                  }
+                }
+              }
+            }`;
+
+          // Fetch the next page of results from the GraphQL API
+          const response = await fetchFromGraphQL(
+            chainId,
+            pagedVotesDataQuery,
+            {
+              roundId: roundId,
+              to: projectData.payoutAddress.toLowerCase(),
+              lastID: lastID,
+            });
+
+          if (response.error) {
+            console.error(response.error);
+          }
+
+          if (response.data) {
+            // Check if the votes field is empty. If it is, stop paginating
+            if (response.data.round.votingStrategy.votes.length === 0) {
+              break;
+            }
+            response.data.round.votingStrategy.votes.map((vote: QFVotedEvent) => {
+              votes.push({
+                amount: BigNumber.from(vote.amount),
+                token: vote.token,
+                contributor: vote.from,
+                projectId: vote.projectId,
+                projectPayoutAddress: vote.to,
+                version: vote.version,
+              });
+              lastID = vote.id;
+            });
           }
         }
       }
-    `;
-
-    // Fetch the next page of results from the GraphQL API
-    const response = await fetchFromGraphQL(chainId, query, {
-      votingStrategyId,
-      lastID,
-      projectIds,
-    });
-
-    // Check if the votes field is empty. If it is, stop paginating
-    if (response.data?.votingStrategies[0]?.votes.length === 0) {
-      break;
     }
-
-    // Add the new votes to the list of votes
-    response.data?.votingStrategies[0]?.votes.map((vote: QFVotedEvent) => {
-      const payoutAddress = getAddress(vote.to);
-
-      // TODO: remove update to projectID after contract upgrade
-      const projectId = projectPayoutToIdMapping.get(payoutAddress);
-
-      votes.push({
-        amount: BigNumber.from(vote.amount),
-        token: vote.token,
-        contributor: vote.from,
-        projectId: projectId!,
-        projectPayoutAddress: payoutAddress,
-      });
-      lastID = vote.id;
-    });
+    return votes;
   }
-
-  return votes;
 };

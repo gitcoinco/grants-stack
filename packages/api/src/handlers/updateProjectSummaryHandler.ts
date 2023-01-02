@@ -48,8 +48,8 @@ export const updateProjectSummaryHandler = async (
 
     try {
       const upsertProjectSummaryStatus = await db.upsertProjectSummaryRecord(
-        roundId,
         chainId,
+        roundId,
         projectId,
         metadata,
         results
@@ -119,7 +119,8 @@ export const getProjectsSummary = async (
       let contributions = await fetchQFContributionsForProjects(
         chainId,
         votingStrategyId,
-        projectIds
+        projectIds,
+        roundId,
       );
 
       contributions = await hotfixForRounds(roundId, contributions, projectIds);

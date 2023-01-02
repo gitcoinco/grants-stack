@@ -30,7 +30,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error creating round entry", error);
+      // console.error("error creating round entry", error);
       return { error: error, result: false };
     }
   }
@@ -50,7 +50,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error upserting round entry", error);
+      // console.error("error upserting round entry", error);
       return { error: error, result: false };
     }
   }
@@ -71,7 +71,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error creating project", error);
+      // console.error("error creating project", error);
       return { error: error, result: false };
     }
   }
@@ -92,7 +92,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error upserting project", error);
+      // console.error("error upserting project", error);
       return { error: error, result: false };
     }
   }
@@ -156,7 +156,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error upserting project match", error);
+      // console.error("error upserting project match", error);
       return { error: error, result: false };
     }
   }
@@ -299,7 +299,7 @@ export class DatabaseInstance {
       });
       return { result: true };
     } catch (error) {
-      console.error("error upserting project summary", error);
+      // console.error("error upserting project summary", error);
       return { error: error, result: false };
     }
   }
@@ -311,7 +311,7 @@ export class DatabaseInstance {
       });
       return { result };
     } catch (error) {
-      console.error("error getting round match", error);
+      // console.error("error getting round match", error);
       return { error: error, result: null };
     }
   }
@@ -323,7 +323,7 @@ export class DatabaseInstance {
       });
       return { result };
     } catch (error) {
-      console.error("error getting round summary", error);
+      // console.error("error getting round summary", error);
       return { error: error, result: null };
     }
   }
