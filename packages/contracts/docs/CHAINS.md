@@ -11,7 +11,7 @@ These are contracts that are created/deployed once for ethereum mainnet
 | ProgramFactory                        | 0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB |
 | ProgramImplementation                 | 0x21B0be8253DEdA0d2d8f010d06ED86093d52359b |
 | QuadraticFundingVotingStrategyFactory | 0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38 |
-| QFVotingStrategyImplementation        | 0x114885035DAF6f8E09BE55Ed2169d41A512dad45 |
+| QFVotingStrategyImplementation        | 0x5030e1a81330d5098473E8d309E116C2792202eB |
 | RoundFactory                          | 0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe |
 | RoundImplementation                   | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
 
