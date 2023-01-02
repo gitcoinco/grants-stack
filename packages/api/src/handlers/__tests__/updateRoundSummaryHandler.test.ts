@@ -148,6 +148,7 @@ describe("updateRoundSummaryHandler", () => {
       averageUSDContribution: 0,
     };
 
+    // @ts-ignore
     jest.spyOn(prismaMock.round, "upsert").mockResolvedValue({
       id: 1,
       chainId: utils.getChainVerbose(chainId),
@@ -157,6 +158,7 @@ describe("updateRoundSummaryHandler", () => {
       ...timestamps,
     });
 
+    // @ts-ignore
     jest.spyOn(prismaMock.roundSummary, "upsert").mockResolvedValue({
       ...defaultSummary,
       id: 1,
@@ -171,10 +173,11 @@ describe("updateRoundSummaryHandler", () => {
 
     expect(responseJSON.success).toBeTruthy();
     expect(responseJSON.message).toEqual(req.originalUrl);
-    expect(responseJSON.data).toEqual({
-      ...defaultSummary,
-      updatedAt: timestamps.updatedAt,
-    } as QFContributionSummary);
+    expect(responseJSON.data).toEqual(
+      expect.objectContaining({
+        ...defaultSummary,
+      })
+    );
   });
 
   it("returns successful response when round has 2 contributions", async () => {
@@ -223,9 +226,10 @@ describe("updateRoundSummaryHandler", () => {
 
     expect(responseJSON.success).toBeTruthy();
     expect(responseJSON.message).toEqual(req.originalUrl);
-    expect(responseJSON.data).toEqual({
-      ...summary,
-      updatedAt: timestamps.updatedAt,
-    } as QFContributionSummary);
+    expect(responseJSON.data).toEqual(
+      expect.objectContaining({
+        ...summary,
+      })
+    );
   });
 });

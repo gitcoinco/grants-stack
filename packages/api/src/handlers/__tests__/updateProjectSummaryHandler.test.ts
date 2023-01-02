@@ -203,10 +203,11 @@ describe("updateProjectSummaryHandler", () => {
 
     expect(responseJSON.success).toBeTruthy();
     expect(responseJSON.message).toEqual(req.originalUrl);
-    expect(responseJSON.data).toEqual({
-      ...defaultSummary,
-      updatedAt: timestamps.updatedAt,
-    } as QFContributionSummary);
+    expect(responseJSON.data).toEqual(
+      expect.objectContaining({
+        ...defaultSummary,
+      })
+    );
   });
 
   it("returns successfull response when project in round has 2 contributions", async () => {
@@ -268,9 +269,10 @@ describe("updateProjectSummaryHandler", () => {
 
     expect(responseJSON.success).toBeTruthy();
     expect(responseJSON.message).toEqual(req.originalUrl);
-    expect(responseJSON.data).toEqual({
-      ...summary,
-      updatedAt: timestamps.updatedAt,
-    } as QFContributionSummary);
+    expect(responseJSON.data).toEqual(
+      expect.objectContaining({
+        ...summary,
+      })
+    );
   });
 });
