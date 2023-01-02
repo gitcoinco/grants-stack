@@ -2,6 +2,7 @@ import { Spinner } from "../common/Spinner";
 import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
 import { MatchingStatsData, Round } from "../api/types";
 import { useRoundMatchData } from "../api/api";
+import { Button } from "../common/styles";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -79,11 +80,8 @@ function InformationContent(props: {
   return (
     <div>
       {loading && <Spinner text="We're fetching the matching data." />}
-      {!error ? (
-        <InformationTable matchingData={matchingData} />
-      ) : (
-        <ErrorMessage />
-      )}
+      {!error && !loading && <InformationTable matchingData={matchingData} />}
+      {error && <ErrorMessage />}
     </div>
   );
 }
@@ -146,6 +144,15 @@ function InformationTable(props: {
             }
           </tbody>
         </table>
+      </div>
+      <div className="relative mt-4 mb-8">
+        <Button
+          type="button"
+          className="absolute right-0"
+          data-testid="download-json"
+        >
+          Download JSON
+        </Button>
       </div>
     </div>
   );
