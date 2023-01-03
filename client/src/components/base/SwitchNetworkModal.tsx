@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { BaseModal } from "./BaseModal";
 import Button, { ButtonVariants } from "./Button";
 
@@ -8,8 +9,11 @@ function SwitchNetworkModal({
 }: {
   networkName: string;
   onSwitchNetwork: () => void;
+  toggleModal: (status: boolean) => void;
   action?: string;
 }) {
+  const navigate = useNavigate();
+
   return (
     <BaseModal isOpen onClose={() => {}} hideCloseButton>
       <>
@@ -28,14 +32,23 @@ function SwitchNetworkModal({
         </div>
         <div
           data-testid="switch-networks-modal-button"
-          className="w-full justify-center text-center grid grid-cols-1"
+          className="w-full justify-center text-center grid grid-cols-2 gap-3"
         >
+          <Button
+            variant={ButtonVariants.outline}
+            onClick={() => navigate(-1)}
+            styles={["cancel-button"]}
+          >
+            <span className="inline-flex flex-1 justify-center items-center">
+              Cancel
+            </span>
+          </Button>
           <Button
             styles={["p-3", "justify-center"]}
             onClick={onSwitchNetwork}
             variant={ButtonVariants.primary}
           >
-            Switch Networks to Continue
+            Switch Network
           </Button>
         </div>
       </>
