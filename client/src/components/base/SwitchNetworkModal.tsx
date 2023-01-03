@@ -9,7 +9,6 @@ function SwitchNetworkModal({
 }: {
   networkName: string;
   onSwitchNetwork: () => void;
-  toggleModal: (status: boolean) => void;
   action?: string;
 }) {
   const navigate = useNavigate();
