@@ -1,10 +1,10 @@
 specVersion: 0.0.4
 schema:
   file: ./schema.graphql
-# fea
-features:
-  - ipfsOnEthereumContracts
-  - nonDeterministicIpfs
+# TODO: wait until ipfs.cat is supported in studio
+# features:
+  # - ipfsOnEthereumContracts
+  # - nonDeterministicIpfs
 dataSources:
   # ProgramFactory
   - kind: ethereum/contract
