@@ -56,6 +56,10 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   account.round = round.id;
 
   account.save();
+
+  // update timestamp
+  round.updatedAt = event.block.timestamp;
+  round.save();
 }
 
 /**
@@ -81,6 +85,10 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let account = RoundAccount.load(accountId);
   if (account) {
     store.remove("ProgramAccount", account.id);
+   
+    // update timestamp
+    round.updatedAt = event.block.timestamp;
+    round.save();
   }
 }
 
@@ -124,6 +132,11 @@ export function handleNewProjectApplication(
   project.round = round.id;
   project.metaPtr = metaPtr.id;
   project.status = "PENDING";
+
+  // set timestamp
+  project.createdAt = event.block.timestamp;
+  project.updatedAt = event.block.timestamp;
+
   project.save();
 }
 

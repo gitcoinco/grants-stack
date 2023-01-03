@@ -55,6 +55,10 @@ export function handleVote(event: VotedEvent): void {
   vote.to = event.params.grantAddress.toHex();
   vote.projectId = event.params.projectId.toHex();
 
+  // set timestamp
+  vote.createdAt = event.block.timestamp;
+  vote.updatedAt = event.block.timestamp;
+
   vote.version = VERSION;
 
   vote.save();
