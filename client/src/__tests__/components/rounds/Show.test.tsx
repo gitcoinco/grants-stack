@@ -58,14 +58,14 @@ describe("<Show />", () => {
         renderWrapped(<Show />, store);
 
         const element = screen.getByTestId("switch-networks-modal-button");
-        const button = element.firstChild;
+        const button = element.children[1];
 
-        expect(button).toHaveTextContent("Switch Networks to Continue");
+        expect(button).toHaveTextContent("Switch Network");
 
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
           screen.getByTestId("switch-networks-modal-title")
-        ).toHaveTextContent("Switch Networks to Continue");
+        ).toHaveTextContent("Switch Network");
       });
 
       test("does not render when the round's chainId matches the user's chainId", async () => {
