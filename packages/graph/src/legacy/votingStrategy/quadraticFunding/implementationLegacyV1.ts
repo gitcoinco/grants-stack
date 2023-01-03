@@ -47,7 +47,6 @@ export function handleVote(event: VotedEvent): void {
 
   // set timestamp
   vote.createdAt = event.block.timestamp;
-  vote.updatedAt = event.block.timestamp;
   
   // Defaulting projectID to empty string as projectID is not emitted in this ABI
   vote.projectId = ""; 
