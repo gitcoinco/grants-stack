@@ -5,11 +5,12 @@ import {
   Status,
 } from "../../reducers/roundApplication";
 import setupStore from "../../store";
+import { addressFrom } from "../../utils/test_utils";
 
 describe("roundApplication reducer", () => {
   let state: RoundApplicationState;
   let store: ReturnType<typeof setupStore>;
-  const roundAddress: string = "0x1234";
+  const roundAddress: string = addressFrom(1);
 
   beforeEach(() => {
     state = {};
