@@ -5,6 +5,10 @@ import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
 import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
+import { updateRoundDistribution } from "../api/round";
+import { useWallet } from "../common/Auth";
+import { useParams } from "react-router-dom";
+import { ethers } from "ethers";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -172,6 +176,9 @@ function InformationTable(props: {
 }
 
 function FinalizeRound() {
+  const { signer } = useWallet();
+  const { id: roundId } = useParams();
+
   return (
     <div className="w-full pt-12">
       <span>Finalize Round</span>
@@ -293,6 +300,13 @@ function FinalizeRound() {
             <div className="grid justify-items-end">
               <div className="w-fit">
                 <Button
+                  onClick={async () => {
+                    /* TODO: display the warning window here */
+                    /* ABI-encode the distrbution TODO: what is the format of this? */
+                    // let newDistribution = ethers.utils.defaultAbiCoder.encode();
+                    /* Set the distribution in the contract */
+                    // updateRoundDistribution(roundId, signer, newDistribution);
+                  }}
                   type="submit"
                   className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
                 >
