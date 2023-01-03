@@ -2,9 +2,10 @@
   "name": "starter-node-basic",
   "private": true,
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "start:dev": "NODE_ENV=development nodemon -e ts -x tsx -r dotenv-flow/config src/index.ts",
+    "start:prod": "node dist/index.js",
     "lint": "eslint --cache --max-warnings=0 src",
     "test": "jest",
     "build": "tsc",
