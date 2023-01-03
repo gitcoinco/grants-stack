@@ -57,7 +57,6 @@ export function handleVote(event: VotedEvent): void {
 
   // set timestamp
   vote.createdAt = event.block.timestamp;
-  vote.updatedAt = event.block.timestamp;
 
   vote.version = VERSION;
 
