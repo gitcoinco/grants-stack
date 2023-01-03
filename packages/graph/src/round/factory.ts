@@ -80,6 +80,10 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   }
   round.votingStrategy = votingStrategy.id;
 
+  // set timestamp
+  round.createdAt = event.block.timestamp;
+  round.updatedAt = event.block.timestamp;
+
   round.save();
 
   RoundImplementation.create(roundContractAddress);

@@ -20,6 +20,8 @@ type Program @entity {
   accounts: [ProgramAccount!]! @derivedFrom(field: "program")
   rounds: [Round!]! @derivedFrom(field: "program")
   metaPtr: MetaPtr! # id = "metaPtr-{programAddress.toHex()}"
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 # id = program.toHex()-role.toHex()
@@ -60,6 +62,8 @@ type Round @entity {
   roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
   applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
   projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 # id = round.toHex()-role.toHex()
@@ -86,6 +90,8 @@ type RoundProject @entity {
   metaPtr: MetaPtr!
   round: Round!
   payoutAddress: String
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 
@@ -117,5 +123,7 @@ type QFVote @entity {
   to: String!
   projectId: String!
   version: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
   # round: Round!
 }

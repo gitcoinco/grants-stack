@@ -45,6 +45,10 @@ export function handleVote(event: VotedEvent): void {
   vote.from = event.params.voter.toHex();
   vote.to = event.params.grantAddress.toHex();
 
+  // set timestamp
+  vote.createdAt = event.block.timestamp;
+  vote.updatedAt = event.block.timestamp;
+  
   // Defaulting projectID to empty string as projectID is not emitted in this ABI
   vote.projectId = ""; 
   vote.version = VERSION;
