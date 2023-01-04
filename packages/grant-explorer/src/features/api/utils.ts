@@ -38,7 +38,7 @@ export const payoutTokens = [
   {
     name: "ETH",
     chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+    address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["ETH"],
   },
   {
@@ -123,7 +123,7 @@ export const getPayoutTokenOptions = (chainId: string): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+          address: ethers.constants.AddressZero,
           decimal: 18,
           logo: TokenNamesAndLogos["ETH"],
         },

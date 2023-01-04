@@ -60,6 +60,7 @@ describe("handleRoundCreated", () => {
     let votingStrategyEntity = new VotingStrategy(votingStrategy.toHex());
     votingStrategyEntity.strategyName = "LINEAR_QUADRATIC_FUNDING";
     votingStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eC2G";
+    votingStrategyEntity.version = "0.1.0";
     votingStrategyEntity.save();
 
     // Create Program entity

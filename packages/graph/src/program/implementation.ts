@@ -46,6 +46,10 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   account.program = program.id;
 
   account.save();
+
+  // update timestamp
+  program.updatedAt = event.block.timestamp;
+  program.save();
 }
 
 /**
@@ -71,5 +75,9 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let account = ProgramAccount.load(accountId)
   if (account) {
     store.remove('ProgramAccount', account.id);
+    
+    // update timestamp
+    program.updatedAt = event.block.timestamp;
+    program.save();
   }
 }
