@@ -2,6 +2,7 @@ import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { metadataSaved } from "../../actions/projectForm";
 import { GithubLogo, TwitterLogo } from "../../assets";
+import { XCircle } from "../../assets/icons";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { TextInput } from "../grants/inputs";
@@ -99,7 +100,7 @@ export default function VerificationForm({
         <div className="flex bg-danger-background/25 p-4 rounded">
           <img
             className="h-4 mt-1 mx-2"
-            src="./icons/x-circle.svg"
+            src={XCircle}
             alt="error icon"
           />
           <p className="text-danger-text font-normal">{error}</p>
