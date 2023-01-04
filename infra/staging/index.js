@@ -80,13 +80,13 @@ const gw = new aws.ec2.InternetGateway("gw", {
     },
 });
 
-const nat_ip = new aws.ec2.Eip("nat_ip_new", {
+const nat_ip_public = new aws.ec2.Eip("nat_ip_public", {
     vpc: true,
 });
 
-const nat_gateway = new aws.ec2.NatGateway("grants_private_nat", {
-    allocationId: nat_ip.id,
-    subnetId: private_subnet.id,
+const nat_gateway_public = new aws.ec2.NatGateway("grants_public_nat", {
+    allocationId: nat_ip_public.id,
+    subnetId: public_subnet.id,
     tags: {
         App: "Grants",
     },
@@ -124,7 +124,7 @@ const private_route_table = new aws.ec2.RouteTable('private', {
     routes: [
       {
         cidrBlock: '0.0.0.0/0',
-        gatewayId: nat_gateway.id
+        gatewayId: nat_gateway_public.id
       }
     ],
     vpcId: vpc.id
@@ -217,6 +217,8 @@ const secgrp = new aws.ec2.SecurityGroup("grants", {
     ingress: [
         { protocol: "tcp", fromPort: 22, toPort: 22, cidrBlocks: ["0.0.0.0/0"] },
         { protocol: "tcp", fromPort: 80, toPort: 80, cidrBlocks: ["0.0.0.0/0"] },
+        { protocol: "tcp", fromPort: 443, toPort: 443, cidrBlocks: ["0.0.0.0/0"] },
+        { protocol: "tcp", fromPort: 5000, toPort: 5000, cidrBlocks: ["0.0.0.0/0"] },
     ],
     egress: [{
         protocol: "-1",
@@ -230,7 +232,7 @@ const grant_lb = new aws.lb.LoadBalancer("grants", {
     internal: false,
     loadBalancerType: "application",
     securityGroups: [secgrp.id],
-    subnets: [private_subnet, private_subnet_two],
+    subnets: [public_subnet, public_subnet_two],
     enableDeletionProtection: true,
 });
 
@@ -273,28 +275,19 @@ const listener_https = new aws.lb.Listener("grants_https", {
     ],
 });
 
-const www = new aws.route53.Record("www", {
-    zoneId: route53Zone,
-    name: domain,
-    type: "A",
-    aliases: [{
-        name: listener_https.endpoint.hostname,
-        zoneId: listener_https.loadBalancer.loadBalancer.zoneId,
-        evaluateTargetHealth: true,
-    }]
-});
-
 // Fargate Instance
 const FargateLogGroup = new aws.cloudwatch.LogGroup("fargateLogGroup", {});
 
 const grantsEcs = new aws.ecs.Cluster("grants", {configuration: {
     executeCommandConfiguration: {
         kmsKeyId: grantsKey.arn,
-        logging: "DEFAULT",
-        // logConfiguration: {
-        //     cloudWatchEncryptionEnabled: true,
-        //     cloudWatchLogGroupName: FargateLogGroup.name,
-        // },
+        logging: "OVERRIDE",
+        logConfiguration: {
+            cloudWatchEncryptionEnabled: true,
+            cloudWatchLogGroupName: FargateLogGroup.name,
+            s3BucketName: "datadog-forwarder-forwarderbucket-11uyffbu6qu0r",
+            s3KeyPrefix: "staging-grants-api"
+        },
     },
 }});
 
@@ -324,9 +317,11 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
+            command: ["./bin/init.sh"],
             portMappings: [{
                 containerPort: 80,
                 hostPort: 80,
+                protocol: "tcp",
             }],
             environment: [
                 {

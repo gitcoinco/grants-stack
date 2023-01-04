@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY prisma/ prisma/
 COPY src/ src/
+COPY bin/ bin/
 
 ENV NODE_OPTIONS=--max_old_space_size=8192
 

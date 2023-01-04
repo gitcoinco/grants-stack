@@ -1,3 +1,7 @@
+import fetchMock from "jest-fetch-mock";
+
+fetchMock.enableMocks();
+
 import {
   makeApprovedProjectData,
   makeRoundData,
@@ -49,15 +53,19 @@ describe("<ViewProjectDetails/>", () => {
 
     beforeEach(() => {
       jest.clearAllMocks();
-      renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+      renderWithContext(<ViewProjectDetails />, {
+        rounds: [roundWithProjects],
+      });
     });
-    
+
     it("shows project recipient", async () => {
       expect(await screen.getByTestId("project-recipient")).toBeInTheDocument();
     });
 
     it("shows project website", async () => {
-      expect(await screen.findByText(expectedProjectWebsite)).toBeInTheDocument();
+      expect(
+        await screen.findByText(expectedProjectWebsite)
+      ).toBeInTheDocument();
     });
 
     it("shows project twitter", async () => {
@@ -71,6 +79,34 @@ describe("<ViewProjectDetails/>", () => {
     it("shows project github", async () => {
       expect(screen.getByTestId("project-github")).toBeInTheDocument();
     });
+  });
+
+  it("shows project stats", async () => {
+    fetchMock.mockResponse(
+      JSON.stringify({
+        success: true,
+        message:
+          "/update/summary/project/1/0xdf75054cd67217aee44b4f9e4ebc651c00330938/0xd27E1a1a60eBc1B70f4Cae5265092C0f6eDc7F9d",
+        data: {
+          contributionCount: 546,
+          uniqueContributors: 528,
+          totalContributionsInUSD: 400,
+          averageUSDContribution: 0.7,
+          updatedAt: "2022-12-22T14:41:36.002Z",
+        },
+      })
+    );
+    const expectedProject = makeApprovedProjectData({ grantApplicationId });
+    const roundWithProjects = makeRoundData({
+      id: roundId,
+      approvedProjects: [expectedProject],
+    });
+    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    /* Initially shows - when loading */
+    expect(screen.getByText("$-")).toBeInTheDocument();
+    /* Then when the data resolves, displays that */
+    const contributorsCount = await screen.findByText("528");
+    expect(contributorsCount).toBeInTheDocument();
   });
 
   it("shows project description", async () => {
@@ -168,7 +204,9 @@ describe("voting ballot", () => {
       const removeFromBallot = screen.getByTestId("remove-from-shortlist");
       fireEvent.click(removeFromBallot);
       expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
-      expect(screen.queryByTestId("remove-from-shortlist")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("remove-from-shortlist")
+      ).not.toBeInTheDocument();
     }, 3000);
-  })
+  });
 });

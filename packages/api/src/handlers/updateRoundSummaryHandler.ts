@@ -1,11 +1,11 @@
-import { ChainId, QFContributionSummary } from "../types";
-import { fetchRoundMetadata, handleResponse } from "../utils";
 import { Request, Response } from "express";
+import { VotingStrategy } from "@prisma/client";
+import { ChainId, QFContributionSummary, RoundMetadata } from "../types";
+import { fetchRoundMetadata, handleResponse } from "../utils";
 import {
   fetchQFContributionsForRound,
   summarizeQFContributions,
 } from "../votingStrategies/linearQuadraticFunding";
-import { VotingStrategy } from "@prisma/client";
 import { hotfixForRounds } from "../hotfixes";
 import { cache } from "../cacheConfig";
 import { db } from "../database";
@@ -42,7 +42,7 @@ export const updateRoundSummaryHandler = async (
       throw "error: unsupported voting strategy";
     }
 
-    const results = await getRoundSummary(chainId as ChainId, roundId);
+    const results = await getRoundSummary(chainId as ChainId, roundId, metadata);
     try {
       const upsertRoundStatus = await db.upsertRoundSummaryRecord(
         chainId,
@@ -94,14 +94,12 @@ export const updateRoundSummaryHandler = async (
  */
 export const getRoundSummary = async (
   chainId: ChainId,
-  roundId: string
+  roundId: string,
+  roundMetadata: RoundMetadata
 ): Promise<QFContributionSummary> => {
   let results: QFContributionSummary;
 
-  // fetch metadata
-  const metadata = await fetchRoundMetadata(chainId, roundId);
-
-  let { id: votingStrategyId, strategyName } = metadata.votingStrategy;
+  let { id: votingStrategyId, strategyName } = roundMetadata.votingStrategy;
 
   // handle how stats should be derived per voting strategy
   switch (strategyName) {

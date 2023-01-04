@@ -50,6 +50,7 @@
     "react-tooltip": "^4.4.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
+    "swr": "^2.0.0",
     "typescript": "^4.6.0",
     "url": "^0.11.0",
     "util": "^0.12.4",
@@ -60,8 +61,8 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test --watchAll=false",
-    "test:coverage": "craco test --watchAll=false --coverage",
+    "test": "craco test --watchAll=false --silent",
+    "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "format": "prettier . --write",
     "lint": "eslint ./src --cache",

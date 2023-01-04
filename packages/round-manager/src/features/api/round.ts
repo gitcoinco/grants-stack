@@ -1,4 +1,9 @@
-import { Round } from "./types";
+import {
+  ApplicationStatus,
+  ApprovedProject,
+  MetadataPointer,
+  Round,
+} from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import { roundFactoryContract } from "./contracts";
 import { ethers } from "ethers";
@@ -41,6 +46,17 @@ export async function getRoundById(
               applicationsEndTime
               roundStartTime
               roundEndTime
+              projectsMetaPtr {
+                pointer
+              }
+              projects(first: 1000) {
+                id
+                project
+                metaPtr {
+                  protocol
+                  pointer
+                }
+              }
               roles(where: {
                 role: "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5"
               }) {
@@ -55,12 +71,20 @@ export async function getRoundById(
       { roundId }
     );
 
+    const round: RoundResult = res.data.rounds[0];
+
     // fetch round and application metadata from IPFS
     const [roundMetadata, applicationMetadata] = await Promise.all([
       fetchFromIPFS(res.data.rounds[0].roundMetaPtr.pointer),
       fetchFromIPFS(res.data.rounds[0].applicationMetaPtr.pointer),
     ]);
 
+    const approvedProjectsWithMetadata = await loadApprovedProjects(
+      round,
+      chainId
+    );
+
+    console.log("approvedProjectsWithMetadata", approvedProjectsWithMetadata);
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
       (account: { address: string }) => account.address
     );
@@ -82,6 +106,7 @@ export async function getRoundById(
       payoutStrategy: res.data.rounds[0].payoutStrategy,
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
+      approvedProjects: approvedProjectsWithMetadata,
     };
   } catch (error) {
     console.error("getRoundById", error);
@@ -267,5 +292,142 @@ export async function deployRoundContract(
   } catch (error) {
     console.error("deployRoundContract", error);
     throw new Error("Unable to create round");
+  }
+}
+
+/**
+ * Shape of subgraph response of Round
+ */
+interface RoundResult {
+  id: string;
+  program: {
+    id: string;
+  };
+  roundMetaPtr: MetadataPointer;
+  applicationMetaPtr: MetadataPointer;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  roundStartTime: string;
+  roundEndTime: string;
+  token: string;
+  votingStrategy: {
+    id: string;
+  };
+  projectsMetaPtr?: MetadataPointer | null;
+  projects: RoundProjectResult[];
+}
+
+interface RoundProjectResult {
+  id: string;
+  project: string;
+  metaPtr: MetadataPointer;
+}
+
+export type RoundProject = {
+  id: string;
+  status: ApplicationStatus;
+  payoutAddress: string;
+};
+
+type RoundProjects = Array<RoundProject>;
+
+async function loadApprovedProjects(
+  round: RoundResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any
+): Promise<ApprovedProject[]> {
+  console.log("loadingprojects");
+  if (!round.projectsMetaPtr || round.projects.length === 0) {
+    return [];
+  }
+  const allRoundProjects = round.projects;
+
+  // TODO - when subgraph is ready, filter approved projects by project.status instead of through projectsMetaPtr
+  const approvedProjectIds: string[] = await getApprovedProjectIds(
+    round.projectsMetaPtr
+  );
+  const approvedProjects = allRoundProjects.filter((project) =>
+    approvedProjectIds.includes(project.id)
+  );
+  const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
+    approvedProjects.map((project: RoundProjectResult) =>
+      fetchMetadataAndMapProject(project, chainId)
+    );
+  return Promise.all(fetchApprovedProjectMetadata);
+}
+
+async function getApprovedProjectIds(
+  roundProjectStatusesPtr?: MetadataPointer
+): Promise<string[]> {
+  const roundProjectStatuses: RoundProjects = roundProjectStatusesPtr
+    ? await fetchFromIPFS(roundProjectStatusesPtr.pointer)
+    : [];
+  return roundProjectStatuses
+    .filter((project) => project.status === ApplicationStatus.APPROVED)
+    .map((project) => project.id);
+}
+
+async function fetchMetadataAndMapProject(
+  project: RoundProjectResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any
+): Promise<ApprovedProject> {
+  const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
+  // NB: applicationData can be in two formats:
+  // old format: { round, project, ... }
+  // new format: { signature: "...", application: { round, project, ... } }
+  const application = applicationData.application || applicationData;
+  const projectMetadataFromApplication = application.project;
+  const projectRegistryId = `0x${projectMetadataFromApplication.id}`;
+  const projectOwners = await getProjectOwners(chainId, projectRegistryId);
+
+  return {
+    grantApplicationId: project.id,
+    projectRegistryId: project.project,
+    recipient: application.recipient,
+    projectMetadata: {
+      ...projectMetadataFromApplication,
+      owners: projectOwners.map((address: string) => ({ address })),
+    },
+    status: ApplicationStatus.APPROVED,
+  };
+}
+
+export async function getProjectOwners(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chainId: any,
+  projectRegistryId: string
+) {
+  try {
+    // get the subgraph for project owners by $projectRegistryId
+    const res = await graphql_fetch(
+      `
+        query GetProjectOwners($projectRegistryId: String) {
+          projects(where: {
+            id: $projectRegistryId
+          }) {
+            id
+            accounts {
+              account {
+                address
+              }
+            }
+          }
+        }
+      `,
+      chainId,
+      { projectRegistryId },
+      true
+    );
+
+    return (
+      res.data?.projects[0]?.accounts.map(
+        (account: { account: { address: string } }) =>
+          ethers.utils.getAddress(account.account.address)
+      ) || []
+    );
+  } catch (error) {
+    console.log("getProjectOwners", error);
+    throw Error("Unable to fetch project owners");
   }
 }

@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { ChainId, payoutTokens } from "../api/utils";
+import { ChainId, getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
 import {
   Button,
   BasicCard,
@@ -163,11 +163,35 @@ function AfterRoundStart(props: {
       {props.isAfterRoundEndDate && (
         <div>
           <Banner />
-        </div>       
+        </div>
       )}
       <div className="lg:mx-20 px-4 py-7 h-screen">
-         <main>
-          <p className="text-3xl mt-5 mb-6">{round.roundMetadata?.name}</p>
+        <main>
+          <p className="text-3xl my-5">{round.roundMetadata?.name}</p>
+
+          <div className="flex text-grey-400 mb-3">
+            <p className="mr-4 text-sm">
+              <span className="mr-1">Round starts on:</span>
+              <span className="mr-1">
+                {getUTCDate(round.roundStartTime)}
+              </span>
+              <span>
+                {getUTCTime(round.roundStartTime)}
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className="mr-1">Round ends on:</span>
+
+              <span className="mr-1">
+                {getUTCDate(round.roundEndTime)}
+              </span>
+
+              <span>
+                {getUTCTime(round.roundEndTime)}
+              </span>
+            </p>
+          </div>
+
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
             {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
@@ -421,14 +445,24 @@ function PreRoundPage(props: {
           data-testid="application-period"
         >
           Application Period:
-          <span>
-            {" "}
-            &nbsp;
-            {round.applicationsStartTime.toLocaleDateString()}
-            &nbsp;
-            <span>-</span>
-            &nbsp;
-            {round.applicationsEndTime.toLocaleDateString()}
+          <span className="mx-1">
+            <span className="mr-1">
+              {getUTCDate(round.applicationsStartTime)}
+            </span>
+
+            <span className="text-grey-400">
+              ( {getUTCTime(round.applicationsStartTime)} )
+            </span>
+
+            <span className="mx-1">-</span>
+
+            <span className="mr-1">
+              {getUTCDate(round.applicationsEndTime)}
+            </span>
+
+            <span className="text-grey-400">
+              ( {getUTCTime(round.applicationsEndTime)} )
+            </span>
           </span>
         </p>
         <p
@@ -437,13 +471,24 @@ function PreRoundPage(props: {
         >
           Round Period:
           <span>
-            {" "}
-            &nbsp;
-            {round.roundStartTime.toLocaleDateString()}
-            &nbsp;
-            <span>-</span>
-            &nbsp;
-            {round.roundEndTime.toLocaleDateString()}
+
+            <span className="mx-1">
+              {getUTCDate(round.roundStartTime)}
+            </span>
+
+            <span className="text-grey-400">
+              ( {getUTCTime(round.roundStartTime)} )
+            </span>
+
+            <span className="mx-1">-</span>
+
+            <span className="mr-1">
+              {getUTCDate(round.roundEndTime)}
+            </span>
+
+            <span className="text-grey-400">
+              ( {getUTCTime(round.roundEndTime)} )
+            </span>
           </span>
         </p>
         <p
@@ -471,10 +516,13 @@ function PreRoundPage(props: {
         <ul className="list-disc list-inside text-lg text-black font-normal">
           {round.roundMetadata?.eligibility.requirements?.map(element)}
         </ul>
+
         <div className="container mx-auto flex">
           {isBeforeApplicationStartDate && (
             <InactiveButton
-              label={`Applications Open ${round.applicationsStartTime.toLocaleDateString()}`}
+              label={
+                `Applications Open ${getUTCDate(round.applicationsStartTime)}
+              `}
               testid="applications-open-button"
             />
           )}

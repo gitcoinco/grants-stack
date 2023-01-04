@@ -1,12 +1,23 @@
 import { useMemo, useState } from "react";
 
-export function useRoundSummary({
-  chainId,
-  roundId,
-}: {
-  chainId: string;
-  roundId: string;
-}) {
+export type QFDistribution = {
+  projectId: string;
+  matchAmountInUSD: number;
+  totalContributionsInUSD: number;
+  matchPoolPercentage: number;
+  matchAmountInToken: number;
+  projectPayoutAddress: string;
+  uniqueContributorsCount: number;
+};
+
+export type QFContributionSummary = {
+  contributionCount: number;
+  uniqueContributors: number;
+  totalContributionsInUSD?: number;
+  averageUSDContribution?: number;
+};
+
+export const useRoundSummary = (chainId: string, roundId: string) => {
   const [roundSummary, setRoundSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -40,56 +51,13 @@ export function useRoundSummary({
     error,
     loading,
   };
-}
-
-// TODO: import this type from API package
-export type QFContributionSummary = {
-  contributionCount: number;
-  uniqueContributors: number;
-  totalContributionsInUSD?: number;
-  averageUSDContribution?: string;
-  // FIXME: specify this type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  projects?: any;
 };
 
-export function getProjectSummary({
-  chainId,
-  roundId,
-  projectId,
-}: {
-  chainId: string;
-  roundId: string;
-  projectId: string;
-}): Promise<{
-  data: QFContributionSummary;
-  success: boolean;
-  message: string;
-}> {
-  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/update/summary/project/${chainId}/${roundId}/${projectId}`;
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    } else {
-      throw resp;
-    }
-  });
-}
-
-export function useProjectSummary({
-  chainId,
-  roundId,
-  projectId,
-}: {
-  chainId: string;
-  roundId: string;
-  projectId: string;
-}) {
+export const useProjectSummary = (
+  chainId: string,
+  roundId: string,
+  projectId: string
+) => {
   const [projectSummary, setProjectSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -124,4 +92,42 @@ export function useProjectSummary({
     error,
     loading,
   };
-}
+};
+
+export const useRoundMatchData = (chainId: string, roundId: string) => {
+  const [roundMatchData, setRoundMatchData] = useState<QFDistribution[]>();
+  const [error, setError] = useState<Response | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  useMemo(() => {
+    setLoading(true);
+    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/data/match/round/${chainId}/${roundId}`;
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          setError(resp);
+          setLoading(false);
+        }
+      })
+      .then((data) => {
+        if (data.success) {
+          setRoundMatchData(data.data);
+        } else {
+          setError(data.message);
+        }
+        setLoading(false);
+      });
+  }, [chainId, roundId]);
+  return {
+    data: roundMatchData,
+    error,
+    loading,
+  };
+};

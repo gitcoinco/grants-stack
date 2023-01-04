@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import {
@@ -34,6 +33,7 @@ import { Button } from "../common/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import ViewFundingAdmin from "./ViewFundingAdmin";
 import ViewRoundStats from "./ViewRoundStats";
+import { getUTCDate, getUTCTime } from "../api/utils";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -47,10 +47,6 @@ export default function ViewRoundPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications } = useApplicationByRoundId(id!);
-
-  const formatDate: (date: Date | undefined) => string | undefined = (
-    date: Date | undefined
-  ) => date?.toLocaleDateString();
 
   const [roundExists, setRoundExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
@@ -102,12 +98,12 @@ export default function ViewRoundPage() {
 
               <div className="flex flex-row flex-wrap relative">
                 <ApplicationOpenDateRange
-                  startTime={formatDate(round?.applicationsStartTime)}
-                  endTime={formatDate(round?.applicationsEndTime)}
+                  startTime={round?.applicationsStartTime}
+                  endTime={round?.applicationsEndTime}
                 />
                 <RoundOpenDateRange
-                  startTime={formatDate(round?.roundStartTime)}
-                  endTime={formatDate(round?.roundEndTime)}
+                  startTime={round?.roundStartTime}
+                  endTime={round?.roundEndTime}
                 />
                 <div className="ml-32 absolute left-3/4">
                   <ViewGrantsExplorerButton
@@ -201,8 +197,9 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundingAdmin
-                        fundingData=""
-                        isFundingDataFetched={true}
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
                       />
                     </Tab.Panel>
                   </Tab.Panels>
@@ -382,32 +379,54 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
 }
 
 function ApplicationOpenDateRange(props: {
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date;
+  endTime?: Date;
 }) {
+
+  const {startTime, endTime } = props;
+
   return (
     <div className="flex mr-8 lg:mr-36">
       <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-1 text-grey-400">Applications:</p>
-      <p className="text-sm">
-        {props.startTime || "..."}
-        <span className="mx-1">-</span>
-        {props.endTime || "..."}
-      </p>
+      <p className="text-sm mr-2 text-grey-400">Applications:</p>
+
+      <div>
+        <p className="text-sm">
+          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+          <span className="mx-2">-</span>
+          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+        </p>
+        <p className="text-sm text-grey-400">
+          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+          <span className="mx-2">-</span>
+          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+        </p>
+      </div>
     </div>
   );
 }
 
-function RoundOpenDateRange(props: { startTime?: string; endTime?: string }) {
+function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
+  const {startTime, endTime } = props;
+
   return (
     <div className="flex">
       <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
-      <p className="text-sm mr-1 text-grey-400">Round:</p>
-      <p className="text-sm">
-        {props.startTime || "..."}
-        <span className="mx-1">-</span>
-        {props.endTime || "..."}
-      </p>
+      <p className="text-sm mr-2 text-grey-400">Round:</p>
+
+      <div>
+        <p className="text-sm">
+          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+          <span className="mx-2">-</span>
+          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+        </p>
+        <p className="text-sm text-grey-400">
+          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+          <span className="mx-2">-</span>
+          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+        </p>
+      </div>
+
     </div>
   );
 }
