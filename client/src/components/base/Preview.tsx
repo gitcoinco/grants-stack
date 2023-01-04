@@ -16,6 +16,7 @@ import { addAlert } from "../../actions/ui";
 import { grantSteps } from "../../utils/steps";
 import StatusModal from "./StatusModal";
 import ErrorModal from "./ErrorModal";
+import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 
 export default function Preview({
   currentProjectId,
@@ -96,12 +97,8 @@ export default function Preview({
         updatedAt={formatDate(Date.now() / 1000)}
         createdAt={formatDate(Date.now() / 1000)}
         project={project}
-        logoImg={
-          props.metadata?.logoImgData ?? "./assets/default-project-logo.png"
-        }
-        bannerImg={
-          props.metadata?.bannerImgData ?? "./assets/default-project-banner.png"
-        }
+        logoImg={props.metadata?.logoImgData ?? DefaultProjectLogo}
+        bannerImg={props.metadata?.bannerImgData ?? DefaultProjectBanner}
         showApplications={false}
       />
       <div className="flex justify-end">

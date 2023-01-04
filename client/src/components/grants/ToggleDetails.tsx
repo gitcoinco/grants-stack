@@ -1,3 +1,4 @@
+import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { Metadata, Project } from "../../types";
 import { getProjectImage, ImgTypes } from "../../utils/components";
 
@@ -41,7 +42,7 @@ export default function ToggleDetails({
           src={getProjectImage(false, ImgTypes.bannerImg, project)}
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "./assets/default-project-banner.png";
+            e.currentTarget.src = DefaultProjectBanner;
           }}
           alt="project banner"
         />
@@ -56,7 +57,7 @@ export default function ToggleDetails({
             src={getProjectImage(false, ImgTypes.logoImg, project)}
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = "./assets/default-project-logo.png";
+              e.currentTarget.src = DefaultProjectLogo;
             }}
             alt="project logo"
           />
