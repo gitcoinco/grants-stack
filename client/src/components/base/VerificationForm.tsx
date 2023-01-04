@@ -98,11 +98,7 @@ export default function VerificationForm({
       <hr className="my-4" />
       {error && (
         <div className="flex bg-danger-background/25 p-4 rounded">
-          <img
-            className="h-4 mt-1 mx-2"
-            src={XCircle}
-            alt="error icon"
-          />
+          <img className="h-4 mt-1 mx-2" src={XCircle} alt="error icon" />
           <p className="text-danger-text font-normal">{error}</p>
         </div>
       )}
