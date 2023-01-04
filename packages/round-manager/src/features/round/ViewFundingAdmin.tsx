@@ -9,6 +9,8 @@ import { updateRoundDistribution } from "../api/round";
 import { useWallet } from "../common/Auth";
 import { useParams } from "react-router-dom";
 import { ethers } from "ethers";
+import React, { useState } from "react";
+import * as yup from "yup";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -64,6 +66,11 @@ function InformationContent(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  const [useDefault, setUseDefault] = useState(true);
+  const [customMatchingData, setCustomMatchingData] = useState<
+    MatchingStatsData[] | undefined
+  >();
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, error, loading } = useRoundMatchData(
     props.chainId,
@@ -86,14 +93,22 @@ function InformationContent(props: {
       matchPoolPercentage: data.matchPoolPercentage,
     };
   });
+
   return (
     <>
       <div>
         {loading && <Spinner text="We're fetching the matching data." />}
-        {!error && !loading && <InformationTable matchingData={matchingData} />}
         {error && <ErrorMessage />}
       </div>
-      {!error && !loading && <FinalizeRound />}
+      {!error && !loading && (
+        <FinalizeRound
+          matchingData={matchingData}
+          useDefault={useDefault}
+          setUseDefault={setUseDefault}
+          customMatchingData={customMatchingData}
+          setCustomMatchingData={setCustomMatchingData}
+        />
+      )}
     </>
   );
 }
@@ -115,14 +130,21 @@ function ErrorMessage() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function InformationTable(props: {
   matchingData: MatchingStatsData[] | undefined;
+  isCustom?: boolean;
+  customMatchingData?: MatchingStatsData[] | undefined;
+  setCustomMatchingData?: (
+    customMatchingStats: MatchingStatsData[] | undefined
+  ) => void;
 }) {
   return (
-    <div className="mt-8 ml-8">
+    <div className="mt-8">
+      <span className="text-sm">Unfinalized Round</span>
+      <hr className="mt-2 mb-4" />
       <div className="flex flex-row relative">
-        <p className="ml-4 font-bold" data-testid="final-match-stats-title">
-          Finalized Matching Stats
+        <p className="font-bold" data-testid="match-stats-title">
+          {props.isCustom ? "Custom" : "Default"} Matching Stats
         </p>
-        <p className="ml-4 font-bold text-violet-400 absolute left-3/4 ml-32">
+        <p className="font-bold text-violet-400 absolute left-3/4">
           ({props.matchingData?.length}) Projects
         </p>
       </div>
@@ -157,27 +179,79 @@ function InformationTable(props: {
           </tbody>
         </table>
       </div>
-      <div className="relative mt-4 mb-8">
-        <Button
-          onClick={() => {
-            if (props.matchingData) {
-              saveObjectAsJson("matching_data.json", props.matchingData);
-            }
-          }}
-          type="button"
-          className="absolute right-0"
-          data-testid="download-json"
-        >
-          Download JSON
-        </Button>
-      </div>
+      {!props.isCustom ? (
+        <div className="relative mt-4 mb-8 pb-8">
+          <Button
+            onClick={() => {
+              if (props.matchingData) {
+                saveObjectAsJson("matching_data.json", props.matchingData);
+              }
+            }}
+            type="button"
+            className="absolute right-0 bg-gray-200 hover:bg-gray-300 text-gray-900"
+            data-testid="download-json"
+          >
+            {`${"</>"}  Download JSON`}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function FinalizeRound() {
-  const { signer } = useWallet();
-  const { id: roundId } = useParams();
+function FinalizeRound(props: {
+  matchingData: MatchingStatsData[] | undefined;
+  useDefault: boolean;
+  setUseDefault: (useDefault: boolean) => void;
+  customMatchingData: MatchingStatsData[] | undefined;
+  setCustomMatchingData: (
+    customMatchingStats: MatchingStatsData[] | undefined
+  ) => void;
+}) {
+  const matchingDataSchema = yup.array().of(
+    yup.object().shape({
+      projectName: yup.string().required(),
+      projectId: yup.string().required(),
+      uniqueContributorsCount: yup.number().required(),
+      matchPoolPercentage: yup.number().required(),
+    })
+  );
+
+  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const fileList = event.dataTransfer.files;
+    fileList[0].arrayBuffer().then((buffer) => {
+      const decoder = new TextDecoder("utf-8");
+      const jsonString = decoder.decode(buffer);
+      const jsonData = JSON.parse(jsonString);
+      try {
+        matchingDataSchema.validateSync(jsonData);
+        props.setCustomMatchingData(jsonData);
+      } catch (error) {
+        props.setCustomMatchingData(undefined);
+      }
+    });
+  };
+
+  const handleFileInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault();
+    const fileList = event.target.files;
+    if (fileList) {
+      fileList[0].arrayBuffer().then((buffer) => {
+        const decoder = new TextDecoder("utf-8");
+        const jsonString = decoder.decode(buffer);
+        const jsonData = JSON.parse(jsonString);
+        try {
+          matchingDataSchema.validateSync(jsonData);
+          props.setCustomMatchingData(jsonData);
+        } catch (error) {
+          props.setCustomMatchingData(undefined);
+        }
+      });
+    }
+  };
 
   return (
     <div className="w-full pt-12">
@@ -188,114 +262,83 @@ function FinalizeRound() {
           <form className="mt-4 space-y-3 w-full" action="#" method="POST">
             <div className="grid grid-cols-2 space-y-2">
               <div className="w-full pt-2">
-                <RadioGroup data-testid="default-or-upload-radio">
-                  <RadioGroup.Label className="block text-sm">
-                    <p className="text-sm">
-                      <span>
-                        Use default finalized matching stats or upload your own?
-                      </span>
-                    </p>
-                  </RadioGroup.Label>
-                  <div className="flex flex-row gap-4 mt-3">
-                    <RadioGroup.Option value={true}>
-                      {({ checked, active }) => (
-                        <span className="flex items-center text-sm">
-                          <span
-                            className={classNames(
-                              checked
-                                ? "bg-indigo-600 border-transparent"
-                                : "bg-white border-gray-300",
-                              active
-                                ? "ring-2 ring-offset-2 ring-indigo-500"
-                                : "",
-                              "h-4 w-4 rounded-full border flex items-center justify-center"
-                            )}
-                            aria-hidden="true"
-                          >
-                            <span className="rounded-full bg-white w-1.5 h-1.5" />
+                <CustomOrDefaultRadioGroup
+                  useDefault={props.useDefault}
+                  setUseDefault={props.setUseDefault}
+                />
+              </div>
+              {!props.useDefault ? (
+                <div className="w-full pt-2">
+                  <p className="text-sm">
+                    <span>
+                      Upload JSON file with finalized matching percentage
+                    </span>
+                  </p>
+                  <div
+                    className="flex items-center justify-center w-full mt-4"
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={handleFileDrop}
+                    data-testid="drop-zone-test-id"
+                  >
+                    <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
+                      <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 48 48"
+                          stroke="currentColor"
+                          className="mx-auto w-12 h-12 text-gray-400"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
+                          />
+                        </svg>
+                        <p className="pointer-none text-gray-500 ">
+                          <span>
+                            <a
+                              className="text-purple-600 hover:underline"
+                              onClick={() => {
+                                const input =
+                                  document.getElementById("file-input");
+                                if (input) {
+                                  input.click();
+                                }
+                              }}
+                            >
+                              Upload a file
+                            </a>{" "}
+                            or drag and drop
                           </span>
-                          <RadioGroup.Label
-                            as="span"
-                            className="ml-3 block text-sm text-gray-700"
-                            data-testid="use-default-true"
-                          >
-                            Use Default
-                          </RadioGroup.Label>
-                        </span>
-                      )}
-                    </RadioGroup.Option>
-                    <RadioGroup.Option value={false}>
-                      {({ checked, active }) => (
-                        <span className="flex items-center text-sm">
-                          <span
-                            className={classNames(
-                              checked
-                                ? "bg-indigo-600 border-transparent"
-                                : "bg-white border-gray-300",
-                              active
-                                ? "ring-2 ring-offset-2 ring-indigo-500"
-                                : "",
-                              "h-4 w-4 rounded-full border flex items-center justify-center"
-                            )}
-                            aria-hidden="true"
-                          >
-                            <span className="rounded-full bg-white w-1.5 h-1.5" />
-                          </span>
-                          <RadioGroup.Label
-                            as="span"
-                            className="ml-3 block text-sm text-gray-700"
-                            data-testid="upload-own-true"
-                          >
-                            Upload my own JSON
-                          </RadioGroup.Label>
-                        </span>
-                      )}
-                    </RadioGroup.Option>
+                          <br />
+                          JSON up to xMB
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        id="file-input"
+                        onChange={handleFileInputChange}
+                      />
+                    </label>
                   </div>
-                </RadioGroup>
-              </div>
-              <div className="w-full pt-2">
-                <p className="text-sm">
-                  <span>
-                    Upload JSON file with finalized matching percentage
-                  </span>
-                </p>
-                <div className="flex items-center justify-center w-full mt-4">
-                  <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
-                    <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                        stroke="currentColor"
-                        className="mx-auto w-12 h-12 text-gray-400"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
-                        />
-                      </svg>
-                      <p className="pointer-none text-gray-500 ">
-                        <span>
-                          <a
-                            href=""
-                            id=""
-                            className="text-purple-600 hover:underline"
-                          >
-                            Upload a file
-                          </a>{" "}
-                          or drag and drop
-                        </span>
-                        <br />
-                        JSON up to xMB
-                      </p>
-                    </div>
-                    <input type="file" className="hidden" />
-                  </label>
                 </div>
-              </div>
+              ) : null}
+            </div>
+            <div>
+              {props.useDefault ? (
+                <InformationTable matchingData={props.matchingData} />
+              ) : null}
+              {!props.useDefault && props.customMatchingData ? (
+                <InformationTable
+                  matchingData={props.customMatchingData}
+                  isCustom={true}
+                  customMatchingData={props.customMatchingData}
+                  setCustomMatchingData={props.setCustomMatchingData}
+                />
+              ) : null}
             </div>
             <div className="grid justify-items-end">
               <div className="w-fit">
@@ -309,6 +352,7 @@ function FinalizeRound() {
                   }}
                   type="submit"
                   className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
+                  disabled={!props.useDefault && !props.customMatchingData}
                 >
                   Finalize and save to contract
                 </Button>
@@ -323,4 +367,71 @@ function FinalizeRound() {
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
+}
+
+function CustomOrDefaultRadioGroup(props: {
+  useDefault: boolean;
+  setUseDefault: (value: boolean) => void;
+}) {
+  return (
+    <RadioGroup
+      value={props.useDefault}
+      onChange={props.setUseDefault}
+      data-testid="custom-or-default-test-id"
+    >
+      <RadioGroup.Label>
+        Use default finalized matching stats or upload your own?
+      </RadioGroup.Label>
+      <div>
+        <RadioGroup.Option value={true} data-testid="default-radio-test-id">
+          {({ checked, active }) => (
+            <span className="flex items-center text-sm pt-4">
+              <span
+                className={classNames(
+                  checked
+                    ? "bg-indigo-600 border-transparent"
+                    : "bg-white border-gray-300",
+                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                  "h-4 w-4 rounded-full border flex items-center justify-center"
+                )}
+                aria-hidden="true"
+              >
+                <span className="rounded-full bg-white w-1.5 h-1.5" />
+              </span>
+              <RadioGroup.Label
+                as="span"
+                className="ml-3 block text-sm text-gray-700"
+              >
+                Use Default
+              </RadioGroup.Label>
+            </span>
+          )}
+        </RadioGroup.Option>
+        <RadioGroup.Option value={false} data-testid="custom-radio-test-id">
+          {({ checked, active }) => (
+            <span className="flex items-center text-sm pt-4">
+              <span
+                className={classNames(
+                  checked
+                    ? "bg-indigo-600 border-transparent"
+                    : "bg-white border-gray-300",
+                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                  "h-4 w-4 rounded-full border flex items-center justify-center"
+                )}
+                aria-hidden="true"
+              >
+                <span className="rounded-full bg-white w-1.5 h-1.5" />
+              </span>
+              <RadioGroup.Label
+                as="span"
+                className="ml-3 block text-sm text-gray-700"
+              >
+                Upload my own JSON
+              </RadioGroup.Label>
+            </span>
+          )}
+        </RadioGroup.Option>
+      </div>
+    </RadioGroup>
+  );
 }

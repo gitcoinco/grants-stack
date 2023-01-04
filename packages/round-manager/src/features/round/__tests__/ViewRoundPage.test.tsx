@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import {
@@ -312,8 +312,233 @@ describe("View Round", () => {
       );
       const fundingAdminTab = screen.getByTestId("funding-admin");
       fireEvent.click(fundingAdminTab);
-      expect(screen.getByTestId("final-match-stats-title")).toBeInTheDocument();
+      expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
       expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("custom-or-default-test-id")
+      ).toBeInTheDocument();
     });
   });
+
+  it("displays upload field when custom radio button is selected", () => {
+    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      return: {
+        data: [makeQFDistribution(), makeQFDistribution()],
+        error: null,
+        loading: false,
+      },
+    }));
+
+    const roundEndTime = faker.date.recent();
+    const roundStartTime = faker.date.past(1, roundEndTime);
+    const applicationsEndTime = faker.date.past(1, roundStartTime);
+    const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+
+    const approvedProjects = [
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+      makeApprovedProjectData(),
+    ];
+    mockRoundData = makeRoundData({
+      applicationsStartTime,
+      applicationsEndTime,
+      roundStartTime,
+      roundEndTime,
+      approvedProjects,
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            })
+          )
+        )
+      )
+    );
+    const fundingAdminTab = screen.getByTestId("funding-admin");
+    fireEvent.click(fundingAdminTab);
+    expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+    expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
+
+    const customRadioButton = screen.getByTestId("custom-radio-test-id");
+    fireEvent.click(customRadioButton);
+    expect(screen.getByTestId("drop-zone-test-id")).toBeInTheDocument();
+  });
+
+  // it("uploads a json file when dropped in dropzone", async () => {
+  //   (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+  //     return: {
+  //       data: [makeQFDistribution(), makeQFDistribution()],
+  //       error: null,
+  //       loading: false,
+  //     },
+  //   }));
+  //
+  //   // mock file.arrayBuffer
+  //   const mockFile = new File([""], "test.json", { type: "application/json" });
+  //   const mockFileArrayBuffer = jest.fn().mockResolvedValue(new ArrayBuffer(0));
+  //   Object.defineProperty(mockFile, "arrayBuffer", {
+  //     value: mockFileArrayBuffer,
+  //   });
+  //
+  //   // mock the text decoder
+  //   const mockTextDecoder = jest.fn().mockReturnValue({
+  //     decode: jest.fn().mockReturnValue(`
+  //     [
+  //       {
+  //         "projectName":"test",
+  //         "projectId":"0x37ad3db0b0bc56cea1909e6a6f21fd35453ef27f1d9a91e9edde75de10cc9cf8-0xebdb4156203c8b35b7a7c6f320786b98e5ac67c3",
+  //         "uniqueContributorsCount":6202,
+  //         "matchPoolPercentage":0.0560505703204296
+  //        },
+  //        {
+  //         "projectName":"test",
+  //         "projectId":"0x80ce1332dac2fd7b408ea6df4798e0b99fd973d05168d917126af0dcf4f99bc3-0xebdb4156203c8b35b7a7c6f320786b98e5ac67c3",
+  //         "uniqueContributorsCount":4527,
+  //         "matchPoolPercentage":0.04131448208874834}
+  //     ]
+  //     `),
+  //   });
+  //   Object.defineProperty(window, "TextDecoder", {
+  //     value: mockTextDecoder,
+  //   });
+  //
+  //   const roundEndTime = faker.date.recent();
+  //   const roundStartTime = faker.date.past(1, roundEndTime);
+  //   const applicationsEndTime = faker.date.past(1, roundStartTime);
+  //   const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+  //
+  //   const approvedProjects = [
+  //     makeApprovedProjectData(),
+  //     makeApprovedProjectData(),
+  //     makeApprovedProjectData(),
+  //   ];
+  //   mockRoundData = makeRoundData({
+  //     applicationsStartTime,
+  //     applicationsEndTime,
+  //     roundStartTime,
+  //     roundEndTime,
+  //     approvedProjects,
+  //   });
+  //   render(
+  //     wrapWithBulkUpdateGrantApplicationContext(
+  //       wrapWithApplicationContext(
+  //         wrapWithReadProgramContext(
+  //           wrapWithRoundContext(<ViewRoundPage />, {
+  //             data: [mockRoundData],
+  //             fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+  //           })
+  //         )
+  //       )
+  //     )
+  //   );
+  //   const fundingAdminTab = screen.getByTestId("funding-admin");
+  //   fireEvent.click(fundingAdminTab);
+  //   expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
+  //   expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+  //   expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
+  //
+  //   const customRadioButton = screen.getByTestId("custom-radio-test-id");
+  //   fireEvent.click(customRadioButton);
+  //   expect(screen.getByTestId("drop-zone-test-id")).toBeInTheDocument();
+  //
+  //   // test dropzone .json file upload
+  //   const dropzone = screen.getByTestId("drop-zone-test-id");
+  //   fireEvent.drop(dropzone, { dataTransfer: { files: [mockFile] } });
+  //
+  //   expect(mockFile.arrayBuffer).toHaveBeenCalled();
+  //   await waitFor(() => {
+  //     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+  //   });
+  // });
+  //
+  // it("does not upload an invalid json file when dropped in dropzone", async () => {
+  //   (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+  //     return: {
+  //       data: [makeQFDistribution(), makeQFDistribution()],
+  //       error: null,
+  //       loading: false,
+  //     },
+  //   }));
+  //
+  //   // mock file.arrayBuffer
+  //   const mockFile = new File([""], "test.json", { type: "application/json" });
+  //   const mockFileArrayBuffer = jest.fn().mockResolvedValue(new ArrayBuffer(0));
+  //   Object.defineProperty(mockFile, "arrayBuffer", {
+  //     value: mockFileArrayBuffer,
+  //   });
+  //
+  //   // mock the text decoder
+  //   const mockTextDecoder = jest.fn().mockReturnValue({
+  //     decode: jest.fn().mockReturnValue(`
+  //     [
+  //       {
+  //         "bad":"bad",
+  //         "bad":"bad-0xebdb4156203c8b35b7a7c6f320786b98e5ac67c3",
+  //         "bad":6202,
+  //         "bad":0.0560505703204296
+  //       }
+  //     ]
+  //     `),
+  //   });
+  //   Object.defineProperty(window, "TextDecoder", {
+  //     value: mockTextDecoder,
+  //   });
+  //
+  //   const roundEndTime = faker.date.recent();
+  //   const roundStartTime = faker.date.past(1, roundEndTime);
+  //   const applicationsEndTime = faker.date.past(1, roundStartTime);
+  //   const applicationsStartTime = faker.date.past(1, applicationsEndTime);
+  //
+  //   const approvedProjects = [
+  //     makeApprovedProjectData(),
+  //     makeApprovedProjectData(),
+  //     makeApprovedProjectData(),
+  //   ];
+  //   mockRoundData = makeRoundData({
+  //     applicationsStartTime,
+  //     applicationsEndTime,
+  //     roundStartTime,
+  //     roundEndTime,
+  //     approvedProjects,
+  //   });
+  //   render(
+  //     wrapWithBulkUpdateGrantApplicationContext(
+  //       wrapWithApplicationContext(
+  //         wrapWithReadProgramContext(
+  //           wrapWithRoundContext(<ViewRoundPage />, {
+  //             data: [mockRoundData],
+  //             fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+  //           })
+  //         )
+  //       )
+  //     )
+  //   );
+  //   const fundingAdminTab = screen.getByTestId("funding-admin");
+  //   fireEvent.click(fundingAdminTab);
+  //   expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
+  //   expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+  //   expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
+  //
+  //   const customRadioButton = screen.getByTestId("custom-radio-test-id");
+  //   fireEvent.click(customRadioButton);
+  //   expect(screen.getByTestId("drop-zone-test-id")).toBeInTheDocument();
+  //
+  //   // test dropzone .json file upload
+  //   const dropzone = screen.getByTestId("drop-zone-test-id");
+  //   fireEvent.drop(dropzone, { dataTransfer: { files: [mockFile] } });
+  //
+  //   expect(mockFile.arrayBuffer).toHaveBeenCalled();
+  //
+  //   // expect the table to not be rendered
+  //   await waitFor(() => {
+  //     expect(
+  //       screen.queryByTestId("matching-stats-table")
+  //     ).not.toBeInTheDocument();
+  //   });
+  // });
 });
