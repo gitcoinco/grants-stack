@@ -8,7 +8,7 @@ import { WagmiConfig } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
-import TagManager from "react-gtm-module";
+import { initTagmanager } from "./tagmanager";
 
 import { store } from "./app/store";
 import { chains, client as WagmiClient } from "./app/wagmi";
@@ -34,16 +34,8 @@ initSentry();
 // Initialize datadog
 initDatadog();
 
-// Intialize TagManager
-if (process.env.REACT_APP_TAG_MANAGER) {
-  TagManager.initialize({
-    gtmId: `${process.env.REACT_APP_TAG_MANAGER}`,
-    events: {
-      "gtm.start": new Date().getTime(),
-      "event": "gtm.js"
-    }
-  });
-}
+// Initialize tagmanager
+initTagmanager();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -87,7 +79,7 @@ root.render(
                     path="/round/:chainId/:roundId/:txHash/thankyou"
                     element={
                       <QFDonationProvider>
-                        <ThankYou/>
+                        <ThankYou />
                       </QFDonationProvider>
                     }
                   />
