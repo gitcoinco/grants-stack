@@ -1,4 +1,4 @@
 #!/bin/bash
 
-npx prisma migrate deploy
+npx --yes prisma migrate deploy
 yarn start
