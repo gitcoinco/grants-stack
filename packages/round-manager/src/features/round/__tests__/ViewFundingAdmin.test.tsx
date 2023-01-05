@@ -182,7 +182,7 @@ describe("View Funding Admin", () => {
     expect(screen.getByTestId("dropzone")).toBeInTheDocument();
   });
 
-  it("uploads a json file when dropped in dropzone", async () => {
+  it("uploading invalid json file throws error", async () => {
     (useRoundMatchData as jest.Mock).mockImplementation(() => ({
       return: {
         data: [makeQFDistribution(), makeQFDistribution()],
@@ -265,7 +265,7 @@ describe("View Funding Admin", () => {
 
     expect(mockFile.arrayBuffer).toHaveBeenCalled();
     await waitFor(() => {
-      expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+      expect(screen.getByTestId("project-id-mismatch")).toBeInTheDocument();
     });
   });
 

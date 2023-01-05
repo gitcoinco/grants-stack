@@ -1,5 +1,8 @@
 import { Spinner } from "../common/Spinner";
-import { ExclamationCircleIcon as NoInformationIcon } from "@heroicons/react/outline";
+import {
+  ExclamationCircleIcon as NoInformationIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/outline";
 import { MatchingStatsData, Round } from "../api/types";
 import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
@@ -74,12 +77,10 @@ function InformationContent(props: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     props.roundId!
   );
-
   const matchingData: MatchingStatsData[] | undefined = data?.map((data) => {
     const project = props.round?.approvedProjects?.filter(
       (project) =>
-        project.grantApplicationId.toLowerCase() ===
-        data.projectId.toLowerCase()
+        project.projectRegistryId.toLowerCase() === data.projectId.toLowerCase()
     )[0];
     return {
       projectName: project?.projectMetadata?.title
@@ -90,7 +91,6 @@ function InformationContent(props: {
       matchPoolPercentage: data.matchPoolPercentage,
     };
   });
-
   return (
     <>
       <div>
@@ -235,6 +235,7 @@ function FinalizeRound(props: {
               ) : null}
               {!props.useDefault && !props.customMatchingData && (
                 <UploadJSON
+                  matchingData={props.matchingData}
                   setCustomMatchingData={props.setCustomMatchingData}
                 />
               )}
@@ -277,10 +278,17 @@ function classNames(...classes: string[]) {
 }
 
 function UploadJSON(props: {
+  matchingData: MatchingStatsData[] | undefined;
   setCustomMatchingData: (
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+  const [projectIDMismatch, setProjectIDMismatch] = useState(false);
+  const [matchingPerecentMismatch, setMatchingPerecentMismatch] =
+    useState(false);
+
+  const projectIDs = props.matchingData?.map((data) => data.projectId);
+
   const matchingDataSchema = yup.array().of(
     yup.object().shape({
       projectName: yup.string().required(),
@@ -299,7 +307,28 @@ function UploadJSON(props: {
       const jsonData = JSON.parse(jsonString);
       try {
         matchingDataSchema.validateSync(jsonData);
-        props.setCustomMatchingData(jsonData);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
+        const jsonMatchPoolPercentages = jsonData.map(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (data: any) => data.matchPoolPercentage
+        );
+        const idMismatch = !projectIDs?.every((projectID) =>
+          jsonProjectIDs.includes(projectID)
+        );
+        const matchPoolPercentageMismatch = !(
+          jsonMatchPoolPercentages?.reduce(
+            (accumulator: number, currentValue: number) =>
+              accumulator + currentValue,
+            0
+          ) === 1
+        );
+        console.log(idMismatch, matchPoolPercentageMismatch);
+        setProjectIDMismatch(idMismatch);
+        setMatchingPerecentMismatch(matchPoolPercentageMismatch);
+        !idMismatch &&
+          !matchPoolPercentageMismatch &&
+          props.setCustomMatchingData(jsonData);
       } catch (error) {
         props.setCustomMatchingData(undefined);
       }
@@ -318,7 +347,28 @@ function UploadJSON(props: {
         const jsonData = JSON.parse(jsonString);
         try {
           matchingDataSchema.validateSync(jsonData);
-          props.setCustomMatchingData(jsonData);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const jsonProjectIDs = jsonData.map((data: any) => data.projectId);
+          const jsonMatchPoolPercentages = jsonData.map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (data: any) => data.matchPoolPercentage
+          );
+          const idMismatch = !projectIDs?.every((projectID) =>
+            jsonProjectIDs.includes(projectID)
+          );
+          const matchPoolPercentageMismatch = !(
+            jsonMatchPoolPercentages?.reduce(
+              (accumulator: number, currentValue: number) =>
+                accumulator + currentValue,
+              0
+            ) === 1
+          );
+          console.log(idMismatch, matchPoolPercentageMismatch);
+          setProjectIDMismatch(idMismatch);
+          setMatchingPerecentMismatch(matchPoolPercentageMismatch);
+          !idMismatch &&
+            !matchPoolPercentageMismatch &&
+            props.setCustomMatchingData(jsonData);
         } catch (error) {
           props.setCustomMatchingData(undefined);
         }
@@ -326,7 +376,7 @@ function UploadJSON(props: {
     }
   };
   return (
-    <div className="w-full pt-2 mt-8 flex justify-center">
+    <div className="w-full pt-2 mt-8 flex flex-col justify-center items-center">
       <div
         className="flex items-center justify-center w-2/4 mt-4"
         onDragOver={(event) => event.preventDefault()}
@@ -366,6 +416,26 @@ function UploadJSON(props: {
           />
         </label>
       </div>
+      {projectIDMismatch && (
+        <p
+          data-testid="project-id-mismatch"
+          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
+        >
+          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+          <span>
+            The project IDs in the JSON file do not match actual project IDs.
+          </span>
+        </p>
+      )}
+      {matchingPerecentMismatch && (
+        <p
+          data-testid="matching-perecent-mismatch"
+          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
+        >
+          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+          <span>Mathcing percent in the JSON file does not sum up to 1.</span>
+        </p>
+      )}
     </div>
   );
 }
