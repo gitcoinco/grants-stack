@@ -317,13 +317,16 @@ function UploadJSON(props: {
           jsonProjectIDs.includes(projectID)
         );
         const matchPoolPercentageMismatch = !(
-          jsonMatchPoolPercentages?.reduce(
-            (accumulator: number, currentValue: number) =>
-              accumulator + currentValue,
-            0
+          Number(
+            jsonMatchPoolPercentages
+              ?.reduce(
+                (accumulator: number, currentValue: number) =>
+                  accumulator + currentValue,
+                0
+              )
+              .toFixed(4)
           ) === 1
         );
-        console.log(idMismatch, matchPoolPercentageMismatch);
         setProjectIDMismatch(idMismatch);
         setMatchingPerecentMismatch(matchPoolPercentageMismatch);
         !idMismatch &&
@@ -357,13 +360,16 @@ function UploadJSON(props: {
             jsonProjectIDs.includes(projectID)
           );
           const matchPoolPercentageMismatch = !(
-            jsonMatchPoolPercentages?.reduce(
-              (accumulator: number, currentValue: number) =>
-                accumulator + currentValue,
-              0
+            Number(
+              jsonMatchPoolPercentages
+                ?.reduce(
+                  (accumulator: number, currentValue: number) =>
+                    accumulator + currentValue,
+                  0
+                )
+                .toFixed(4)
             ) === 1
           );
-          console.log(idMismatch, matchPoolPercentageMismatch);
           setProjectIDMismatch(idMismatch);
           setMatchingPerecentMismatch(matchPoolPercentageMismatch);
           !idMismatch &&
@@ -433,7 +439,9 @@ function UploadJSON(props: {
           className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm w-2/4"
         >
           <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-          <span>Mathcing percent in the JSON file does not sum up to 1.</span>
+          <span>
+            Matching percent decimal in the JSON file does not add up to 1.
+          </span>
         </p>
       )}
     </div>
