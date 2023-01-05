@@ -9,10 +9,10 @@ dotenv.config();
 const app: Express = express();
 
 // TODO: Add allowed origins to env
-// const options: cors.CorsOptions = {
-//   origin: ["http://localhost:3000"],
-// };
-// app.use(cors(options));
+const options: cors.CorsOptions = {
+  origin: "*",
+};
+app.use(cors(options));
 
 initSentry(app);
 
