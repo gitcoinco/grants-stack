@@ -5,10 +5,6 @@ import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
 import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
-import { updateRoundDistribution } from "../api/round";
-import { useWallet } from "../common/Auth";
-import { useParams } from "react-router-dom";
-import { ethers } from "ethers";
 import React, { useState } from "react";
 import * as yup from "yup";
 
@@ -278,7 +274,7 @@ function FinalizeRound(props: {
                     className="flex items-center justify-center w-full mt-4"
                     onDragOver={(event) => event.preventDefault()}
                     onDrop={handleFileDrop}
-                    data-testid="drop-zone-test-id"
+                    data-testid="dropzone"
                   >
                     <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
                       <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
@@ -298,16 +294,7 @@ function FinalizeRound(props: {
                         </svg>
                         <p className="pointer-none text-gray-500 ">
                           <span>
-                            <a
-                              className="text-purple-600 hover:underline"
-                              onClick={() => {
-                                const input =
-                                  document.getElementById("file-input");
-                                if (input) {
-                                  input.click();
-                                }
-                              }}
-                            >
+                            <a className="text-purple-600 hover:underline">
                               Upload a file
                             </a>{" "}
                             or drag and drop
