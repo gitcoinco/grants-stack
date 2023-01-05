@@ -1,7 +1,7 @@
-import { useEffect, useState, Fragment } from "react";
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
@@ -287,6 +287,7 @@ export default function Form({
                   </div>
                   {/* todo: do we need this tooltip for all networks? */}
                   <TextInputAddress
+                    data-testid="address-input-wrapper"
                     key={input.id}
                     label="Payout Wallet Address"
                     placeholder={input.info}

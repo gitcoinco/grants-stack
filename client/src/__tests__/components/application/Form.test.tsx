@@ -123,11 +123,14 @@ describe("<Form />", () => {
     });
 
     test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
+      // const setState = jest.fn();
       const returnValue = {
         isContract: true,
         isSafe: true,
         resolved: true,
       };
+      // const useStateSpy = jest.spyOn(React, "useState");
+      // useStateSpy.mockImplementation(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -155,7 +158,6 @@ describe("<Form />", () => {
           // NOTE: should we use the prefix? eth:0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E
           target: { value: "0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E" },
         });
-        //
       });
 
       await waitFor(() =>
@@ -169,11 +171,14 @@ describe("<Form />", () => {
 
     // ✅
     test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
+      // const setState = jest.fn();
       const returnValue = {
         isContract: true,
         isSafe: false,
         resolved: true,
       };
+      // const useStateSpy = jest.spyOn(React, "useState");
+      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -213,11 +218,14 @@ describe("<Form />", () => {
 
     // ✅
     test("checks if wallet address is a multi-sig on current chain when YES is selected and IS NOT a safe", async () => {
+      // const setState = jest.fn();
       const returnValue = {
         isContract: false,
         isSafe: true,
         resolved: true,
       };
+      // const useStateSpy = jest.spyOn(React, "useState");
+      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -256,13 +264,16 @@ describe("<Form />", () => {
       );
     });
 
-    // todo:
+    // ✅
     test("checks if wallet address is a multi-sig on current chain when NO is selected and IS NOT a safe", async () => {
+      // const setState = jest.fn();
       const returnValue = {
         isContract: false,
         isSafe: false,
         resolved: true,
       };
+      // const useStateSpy = jest.spyOn(React, "useState");
+      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -297,6 +308,10 @@ describe("<Form />", () => {
             .querySelector("input.border")
         ).toBeNull()
       );
+
+      // await waitFor(() =>
+      //   expect(setState).toHaveBeenCalledWith(returnValue)
+      // );
     });
   });
 });
