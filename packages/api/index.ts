@@ -10,7 +10,7 @@ const app: Express = express();
 
 // TODO: Add allowed origins to env
 const options: cors.CorsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: "*",
 };
 app.use(cors(options));
 

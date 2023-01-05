@@ -5,7 +5,7 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { roundFactoryContract } from "./contracts";
+import { roundFactoryContract, roundImplementationContract } from "./contracts";
 import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -431,3 +431,26 @@ export async function getProjectOwners(
     throw Error("Unable to fetch project owners");
   }
 }
+
+export const updateRoundDistribution = async (
+  roundId: string,
+  signer: Signer,
+  newDistribution: string // TODO:
+): Promise<{ transactionBlockNumber: number }> => {
+  const roundImplementation = new ethers.Contract(
+    roundId,
+    roundImplementationContract.abi,
+    signer
+  );
+
+  const tx = await roundImplementation.updateDistribution(newDistribution);
+
+  const receipt = await tx.wait();
+
+  console.log("✅ Transaction hash: ", tx.hash);
+
+  const blockNumber = receipt.blockNumber;
+  return {
+    transactionBlockNumber: blockNumber,
+  };
+};

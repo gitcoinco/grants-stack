@@ -35,6 +35,10 @@ export function handleProgramCreated(event: ProgramCreatedEvent): void {
       programMetaPtr.getPointer().toString()
     );
     program.metaPtr = metaPtr.id;
+
+    // set timestamp
+    program.createdAt = event.block.timestamp;
+    program.updatedAt = event.block.timestamp;
   }
 
   program.save();

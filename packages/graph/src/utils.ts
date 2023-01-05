@@ -1,4 +1,8 @@
-import { crypto, ipfs, json, JSONValue } from '@graphprotocol/graph-ts'
+// TODO: wait until ipfs.cat is supported in studio
+import { crypto, 
+  // ipfs, 
+  // json, 
+  JSONValue } from '@graphprotocol/graph-ts'
 import { ByteArray } from '@graphprotocol/graph-ts';
 import { MetaPtr } from '../generated/schema';
 
@@ -43,15 +47,17 @@ export function updateMetaPtr(metaPtrId: string, protocol: i32, pointer: string)
  */
 export function fetchMetaPtrData(protocol: number , pointer: string) : JSONValue | null {
 
-  let metaPtrData: JSONValue;
-  if (protocol == 1) {
-    const ipfsData = ipfs.cat(pointer);
+  // TODO: wait until ipfs.cat is supported in studio
 
-    if (!ipfsData) return null;
+  // let metaPtrData: JSONValue;
+  // if (protocol == 1) {
+  //   const ipfsData = ipfs.cat(pointer);
 
-    metaPtrData = json.fromBytes(ipfsData);
-    return metaPtrData;
-  }
+  //   if (!ipfsData) return null;
+
+  //   metaPtrData = json.fromBytes(ipfsData);
+  //   return metaPtrData;
+  // }
 
   return null;
 }
