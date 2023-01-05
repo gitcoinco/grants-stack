@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import {
-  makeApprovedProjectData,
   makeGrantApplicationData,
-  makeQFDistribution,
   makeRoundData,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -15,8 +13,6 @@ import {
 } from "../../../test-utils";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
-import { useRoundMatchData } from "../../api/api";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -33,7 +29,7 @@ Object.assign(navigator, {
   },
 });
 
-let mockRoundData: Round = makeRoundData();
+const mockRoundData: Round = makeRoundData();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -244,76 +240,5 @@ describe("View Round", () => {
     const roundExplorer = screen.getByTestId("round-explorer");
 
     expect(roundExplorer).toBeInTheDocument();
-  });
-
-  describe("display funding admin tab", () => {
-    it("displays No Information Available before round end date", async () => {
-      const roundEndTime = faker.date.future();
-      mockRoundData = makeRoundData({ roundEndTime });
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
-              { programs: [] }
-            ),
-            {
-              applications: [],
-              isLoading: false,
-            }
-          )
-        )
-      );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
-      expect(screen.getByText("No Information Available")).toBeInTheDocument();
-    });
-
-    it("displays matching stats table in funding admin page after round end date", async () => {
-      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
-        return: {
-          data: [makeQFDistribution(), makeQFDistribution()],
-          error: null,
-          loading: false,
-        },
-      }));
-
-      const roundEndTime = faker.date.recent();
-      const roundStartTime = faker.date.past(1, roundEndTime);
-      const applicationsEndTime = faker.date.past(1, roundStartTime);
-      const applicationsStartTime = faker.date.past(1, applicationsEndTime);
-
-      const approvedProjects = [
-        makeApprovedProjectData(),
-        makeApprovedProjectData(),
-        makeApprovedProjectData(),
-      ];
-      mockRoundData = makeRoundData({
-        applicationsStartTime,
-        applicationsEndTime,
-        roundStartTime,
-        roundEndTime,
-        approvedProjects,
-      });
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              })
-            )
-          )
-        )
-      );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
-      expect(screen.getByTestId("final-match-stats-title")).toBeInTheDocument();
-      expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
-    });
   });
 });

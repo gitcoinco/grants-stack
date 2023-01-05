@@ -3,7 +3,7 @@
     <node-interpreter value="project" />
     <node-options value="" />
     <jest-package value="$PROJECT_DIR$/packages/grant-explorer/node_modules/react-scripts" />
-    <working-dir value="$PROJECT_DIR$/packages/grant-explorer" />
+    <working-dir value="$PROJECT_DIR$/packages/round-manager" />
     <envs />
     <scope-kind value="ALL" />
     <method v="2" />
