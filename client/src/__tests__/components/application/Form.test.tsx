@@ -152,7 +152,7 @@ describe("<Form />", () => {
         "input"
       ) as Element;
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
           // NOTE: should we use the prefix? eth:0x5558bCC7E1ebf4A18c3CEdB321F4F9737839172E
@@ -199,7 +199,7 @@ describe("<Form />", () => {
         "input"
       ) as Element;
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
@@ -247,7 +247,7 @@ describe("<Form />", () => {
         "input"
       ) as Element;
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
@@ -294,7 +294,7 @@ describe("<Form />", () => {
         "input"
       ) as Element;
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(isSafeOption);
         fireEvent.change(addressInput, {
           target: { value: "0x34aA3F359A9D614239015126635CE7732c18fDF3" },
