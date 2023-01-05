@@ -7,6 +7,7 @@ import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
 import React, { useState } from "react";
 import * as yup from "yup";
+import { XIcon } from "@heroicons/react/outline";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -134,15 +135,26 @@ function InformationTable(props: {
 }) {
   return (
     <div className="mt-8">
-      <span className="text-sm">Unfinalized Round</span>
       <hr className="mt-2 mb-4" />
       <div className="flex flex-row relative">
         <p className="font-bold" data-testid="match-stats-title">
           {props.isCustom ? "Custom" : "Default"} Matching Stats
         </p>
-        <p className="font-bold text-violet-400 absolute left-3/4">
+        <p className="font-bold text-violet-400 absolute left-3/4 ml-24">
           ({props.matchingData?.length}) Projects
         </p>
+        {props.isCustom && (
+          <span
+            className="absolute right-0 h-6 w-6 text-red-400"
+            onClick={() =>
+              props.setCustomMatchingData &&
+              props.setCustomMatchingData(undefined)
+            }
+            data-testid="cancel-icon"
+          >
+            <XIcon />
+          </span>
+        )}
       </div>
       <div className="flex flex-flow mt-2 overflow-y-auto h-72 border-2 px-4 py-4">
         <table className="w-full" data-testid="matching-stats-table">
@@ -204,6 +216,71 @@ function FinalizeRound(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+  return (
+    <div className="w-full pt-12">
+      <span className="font-bold">Finalize Round</span>
+      <hr className="mt-2 mb-4" />
+      <div className="flex columns-2 pl-8">
+        <div className="w-full pt-2">
+          <form className="mt-4 space-y-3 w-full" action="#" method="POST">
+            <div className="w-full pt-2">
+              <CustomOrDefaultRadioGroup
+                useDefault={props.useDefault}
+                setUseDefault={props.setUseDefault}
+              />
+            </div>
+            <div>
+              {props.useDefault ? (
+                <InformationTable matchingData={props.matchingData} />
+              ) : null}
+              {!props.useDefault && !props.customMatchingData && (
+                <UploadJSON
+                  setCustomMatchingData={props.setCustomMatchingData}
+                />
+              )}
+              {!props.useDefault && props.customMatchingData ? (
+                <InformationTable
+                  matchingData={props.customMatchingData}
+                  isCustom={true}
+                  customMatchingData={props.customMatchingData}
+                  setCustomMatchingData={props.setCustomMatchingData}
+                />
+              ) : null}
+            </div>
+            <div className="grid justify-items-end">
+              <div className="w-fit">
+                <Button
+                  onClick={async () => {
+                    /* TODO: display the warning window here */
+                    /* ABI-encode the distrbution TODO: what is the format of this? */
+                    // let newDistribution = ethers.utils.defaultAbiCoder.encode();
+                    /* Set the distribution in the contract */
+                    // updateRoundDistribution(roundId, signer, newDistribution);
+                  }}
+                  type="submit"
+                  className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
+                  disabled={!props.useDefault && !props.customMatchingData}
+                >
+                  Finalize and save to contract
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function UploadJSON(props: {
+  setCustomMatchingData: (
+    customMatchingStats: MatchingStatsData[] | undefined
+  ) => void;
+}) {
   const matchingDataSchema = yup.array().of(
     yup.object().shape({
       projectName: yup.string().required(),
@@ -248,112 +325,49 @@ function FinalizeRound(props: {
       });
     }
   };
-
   return (
-    <div className="w-full pt-12">
-      <span>Finalize Round</span>
-      <hr className="mt-2 mb-4" />
-      <div className="flex columns-2 pl-8">
-        <div className="w-full pt-2">
-          <form className="mt-4 space-y-3 w-full" action="#" method="POST">
-            <div className="grid grid-cols-2 space-y-2">
-              <div className="w-full pt-2">
-                <CustomOrDefaultRadioGroup
-                  useDefault={props.useDefault}
-                  setUseDefault={props.setUseDefault}
-                />
-              </div>
-              {!props.useDefault ? (
-                <div className="w-full pt-2">
-                  <p className="text-sm">
-                    <span>
-                      Upload JSON file with finalized matching percentage
-                    </span>
-                  </p>
-                  <div
-                    className="flex items-center justify-center w-full mt-4"
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={handleFileDrop}
-                    data-testid="dropzone"
-                  >
-                    <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
-                      <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          stroke="currentColor"
-                          className="mx-auto w-12 h-12 text-gray-400"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
-                          />
-                        </svg>
-                        <p className="pointer-none text-gray-500 ">
-                          <span>
-                            <a className="text-purple-600 hover:underline">
-                              Upload a file
-                            </a>{" "}
-                            or drag and drop
-                          </span>
-                          <br />
-                          JSON up to xMB
-                        </p>
-                      </div>
-                      <input
-                        type="file"
-                        className="hidden"
-                        id="file-input"
-                        onChange={handleFileInputChange}
-                      />
-                    </label>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-            <div>
-              {props.useDefault ? (
-                <InformationTable matchingData={props.matchingData} />
-              ) : null}
-              {!props.useDefault && props.customMatchingData ? (
-                <InformationTable
-                  matchingData={props.customMatchingData}
-                  isCustom={true}
-                  customMatchingData={props.customMatchingData}
-                  setCustomMatchingData={props.setCustomMatchingData}
-                />
-              ) : null}
-            </div>
-            <div className="grid justify-items-end">
-              <div className="w-fit">
-                <Button
-                  onClick={async () => {
-                    /* TODO: display the warning window here */
-                    /* ABI-encode the distrbution TODO: what is the format of this? */
-                    // let newDistribution = ethers.utils.defaultAbiCoder.encode();
-                    /* Set the distribution in the contract */
-                    // updateRoundDistribution(roundId, signer, newDistribution);
-                  }}
-                  type="submit"
-                  className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
-                  disabled={!props.useDefault && !props.customMatchingData}
-                >
-                  Finalize and save to contract
-                </Button>
-              </div>
-            </div>
-          </form>
-        </div>
+    <div className="w-full pt-2 mt-8 flex justify-center">
+      <div
+        className="flex items-center justify-center w-2/4 mt-4"
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={handleFileDrop}
+        data-testid="dropzone"
+      >
+        <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
+          <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 48 48"
+              stroke="currentColor"
+              className="mx-auto w-12 h-12 text-gray-400"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M24 32.5V19.75m0 0l6 6m-6-6l-6 6M13.5 39.5a9 9 0 01-2.82-17.55 10.5 10.5 0 0120.465-4.66 6 6 0 017.517 7.696A7.504 7.504 0 0136 39.5H13.5z"
+              />
+            </svg>
+            <p className="pointer-none text-gray-500 ">
+              <span>
+                <a className="text-purple-600 hover:underline">Upload a file</a>{" "}
+                or drag and drop
+              </span>
+              <br />
+              matching JSON
+            </p>
+          </div>
+          <input
+            type="file"
+            className="hidden"
+            id="file-input"
+            onChange={handleFileInputChange}
+          />
+        </label>
       </div>
     </div>
   );
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
 }
 
 function CustomOrDefaultRadioGroup(props: {
