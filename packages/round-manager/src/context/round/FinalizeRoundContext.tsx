@@ -1,13 +1,18 @@
-import { ProgressStatus, Web3Instance } from "../../features/api/types";
+import {
+  MetadataPointer,
+  ProgressStatus,
+  Web3Instance,
+} from "../../features/api/types";
 import React, { createContext, useContext, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
 import { deployProgramContract } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
+import { ethers } from "ethers";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;
-  contractDeploymentStatus: ProgressStatus;
+  finalizeRoundToContractStatus: ProgressStatus;
 }
 
 interface _finalizeRoundParams {
@@ -31,7 +36,7 @@ type SET_STORING_STATUS_ACTION = {
 type SET_DEPLOYMENT_STATUS_ACTION = {
   type: ActionType.SET_DEPLOYMENT_STATUS;
   payload: {
-    contractDeploymentStatus: ProgressStatus;
+    finalizeRoundToContractStatus: ProgressStatus;
   };
 };
 
@@ -49,7 +54,7 @@ enum ActionType {
 
 export const initialFinalizeRoundState: FinalizeRoundState = {
   IPFSCurrentStatus: ProgressStatus.NOT_STARTED,
-  contractDeploymentStatus: ProgressStatus.NOT_STARTED,
+  finalizeRoundToContractStatus: ProgressStatus.NOT_STARTED,
 };
 
 export const FinalizeRoundContext = createContext<
@@ -63,7 +68,8 @@ const finalizeRoundReducer = (state: FinalizeRoundState, action: Action) => {
     case ActionType.SET_DEPLOYMENT_STATUS:
       return {
         ...state,
-        contractDeploymentStatus: action.payload.contractDeploymentStatus,
+        finalizeRoundToContractStatus:
+          action.payload.finalizeRoundToContractStatus,
       };
     case ActionType.RESET_TO_INITIAL_STATE: {
       return initialFinalizeRoundState;
@@ -140,7 +146,7 @@ export const useFinalizeRound = () => {
   return {
     finalizeRound,
     IPFSCurrentStatus: context.state.IPFSCurrentStatus,
-    contractDeploymentStatus: context.state.contractDeploymentStatus,
+    finalizeRoundToContractStatus: context.state.finalizeRoundToContractStatus,
   };
 };
 
@@ -183,36 +189,52 @@ async function storeDocument(
 // ToDo: add finalize to contract
 async function finalizeToContract(
   dispatch: (action: Action) => void,
-  metadata: { protocol: number; pointer: string },
-  operatorWallets: string[],
+  roundId: string,
+  merkleRoot: string,
+  distributionMetaPtr: { protocol: number; pointer: string },
   signerOrProvider: Web3Instance["provider"]
 ) {
   try {
     dispatch({
       type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IN_PROGRESS },
+      payload: { finalizeRoundToContractStatus: ProgressStatus.IN_PROGRESS },
     });
 
-    const { transactionBlockNumber } = await deployProgramContract({
-      program: { store: metadata, operatorWallets },
+    const encodedDistribution = encodeDistributionParameters(
+      merkleRoot,
+      distributionMetaPtr
+    );
+    const { transactionBlockNumber } = await finalizeRoundToContract({
+      roundId,
+      encodedDistribution,
       // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: signerOrProvider,
     });
 
     dispatch({
       type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IS_SUCCESS },
+      payload: { finalizeRoundToContractStatus: ProgressStatus.IS_SUCCESS },
     });
 
     return transactionBlockNumber;
   } catch (error) {
-    datadogLogs.logger.error(`error: deployContract - ${error}`);
-    console.error(`deployContract`, error);
+    datadogLogs.logger.error(`error: finalizeRoundToContract - ${error}`);
+    console.error(`finalizeRoundToContract`, error);
     dispatch({
       type: ActionType.SET_DEPLOYMENT_STATUS,
-      payload: { contractDeploymentStatus: ProgressStatus.IS_ERROR },
+      payload: { finalizeRoundToContractStatus: ProgressStatus.IS_ERROR },
     });
 
     throw error;
   }
+}
+
+function encodeDistributionParameters(
+  merkleRoot: string,
+  distributionMetaPtr: MetadataPointer
+) {
+  return ethers.utils.defaultAbiCoder.encode(
+    ["bytes32", "MetadataPointer"],
+    [merkleRoot, distributionMetaPtr]
+  );
 }

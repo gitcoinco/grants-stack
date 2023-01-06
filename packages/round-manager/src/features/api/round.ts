@@ -432,25 +432,37 @@ export async function getProjectOwners(
   }
 }
 
-export const updateRoundDistribution = async (
-  roundId: string,
-  signer: Signer,
-  newDistribution: string // TODO:
-): Promise<{ transactionBlockNumber: number }> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signer
-  );
+interface FinalizeRoundToContractProps {
+  roundId: string;
+  encodedDistribution: string;
+  signerOrProvider: Signer;
+}
 
-  const tx = await roundImplementation.updateDistribution(newDistribution);
+export async function finalizeRoundToContract({
+  roundId,
+  encodedDistribution,
+  signerOrProvider,
+}: FinalizeRoundToContractProps) {
+  try {
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider
+    );
 
-  const receipt = await tx.wait();
+    // Finalize round
+    const tx = await roundImplementation.updateDistribution(
+      encodedDistribution
+    );
+    const receipt = await tx.wait();
 
-  console.log("✅ Transaction hash: ", tx.hash);
-
-  const blockNumber = receipt.blockNumber;
-  return {
-    transactionBlockNumber: blockNumber,
-  };
-};
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (error) {
+    console.error("finalizeRoindToContract", error);
+    throw new Error("Unable to finalize Round");
+  }
+}
