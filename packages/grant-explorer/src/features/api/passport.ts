@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 export enum PassportState {
@@ -50,8 +50,9 @@ export function usePassport() {
       });
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (isConnected) {
+      // NOTE: we should cache these results and state
       checkPassport();
     } else {
       setPassportState(PassportState.NOT_CONNECTED);
