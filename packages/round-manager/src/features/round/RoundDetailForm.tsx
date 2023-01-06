@@ -307,6 +307,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           initialViewDate={now}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
                         />
                       )}
                     />
@@ -365,6 +366,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
                         />
                       )}
                     />
@@ -434,6 +436,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           isValidDate={disableBeforeApplicationStartDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
                         />
                       )}
                     />
@@ -489,6 +492,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                           isValidDate={disableBeforeRoundStartDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
+                          timeFormat={"HH:mm UTC"}
                         />
                       )}
                     />
