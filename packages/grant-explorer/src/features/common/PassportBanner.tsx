@@ -4,29 +4,13 @@ import {
   XCircleIcon,
   ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/solid'
-import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { PassportState, usePassport } from "../api/passport";
+import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 
-enum PassportState {
-  NOT_CONNECTED,
-  MATCH_ELIGIBLE,
-  MATCH_INELIGIBLE,
-}
 
 export default function PassportBanner() {
 
-  const [passportState, setPassportState] = useState(PassportState.NOT_CONNECTED);
-
-  const { isConnected } = useAccount();
-
-  useEffect(() => {
-    if (isConnected) {
-      // TODO: Wire in Passport logic
-      setPassportState(PassportState.MATCH_ELIGIBLE);
-    } else {
-      setPassportState(PassportState.NOT_CONNECTED);
-    }
-  }, [isConnected]);
+  const { passportState } = usePassport();
 
   const bannerConfig = {
     [PassportState.NOT_CONNECTED]: {
@@ -74,6 +58,22 @@ export default function PassportBanner() {
           </div>
         </>
       ),
+    },
+    [PassportState.LOADING]: {
+      icon: <PassportLogo className="animate-spin opacity-75"/>,
+      color: "bg-white",
+      body: <div className="opacity-50 pt-1">Loading Passport...</div>,
+      button: null,
+    },
+    [PassportState.INVALID_PASSPORT]: {
+      icon: null,
+      color: "bg-yellow-300",
+      body: "PLACEHOLDER",
+      button: (
+        <>
+          <button className="ml-3 font-medium text-sm underline">goto passport page thing</button>
+        </>
+      )
     }
   };
 
