@@ -37,6 +37,11 @@ initDatadog();
 
 datadogRum.addAction("Init");
 
+const pathname = process.env.REACT_APP_PATHNAME;
+if (pathname && pathname !== window.location.pathname) {
+  window.location.pathname = pathname;
+}
+
 root.render(
   <ErrorBoundary>
     <WagmiConfig client={wagmiClient}>
