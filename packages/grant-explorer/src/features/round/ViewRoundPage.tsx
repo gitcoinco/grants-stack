@@ -23,7 +23,8 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { useRoundSummary } from "../api/api";
-import Banner from "../common/Banner";
+import RoundEndedBanner from "../common/RoundEndedBanner";
+import PassportBanner from "../common/PassportBanner";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -50,7 +51,7 @@ export default function ViewRound() {
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
   return isLoading ? (
-    <Spinner text="We're fetching the Round." />
+    <Spinner text="We're fetching the Round."/>
   ) : (
     <>
       {round && chainId && roundId ? (
@@ -73,7 +74,7 @@ export default function ViewRound() {
           )}
         </>
       ) : (
-        <NotFoundPage />
+        <NotFoundPage/>
       )}
     </>
   );
@@ -88,7 +89,7 @@ function BeforeRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
       <div className="lg:mx-20 px-4 py-7 h-screen">
         <main>
           <PreRoundPage
@@ -100,7 +101,7 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer />
+        <Footer/>
       </div>
     </>
   );
@@ -145,7 +146,7 @@ function AfterRoundStart(props: {
           .toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         project.projectMetadata.title.toLocaleLowerCase() !==
-          query.toLocaleLowerCase()
+        query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -159,10 +160,11 @@ function AfterRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <PassportBanner />
       {props.isAfterRoundEndDate && (
         <div>
-          <Banner />
+          <RoundEndedBanner/>
         </div>
       )}
       <div className="lg:mx-20 px-4 py-7 h-screen">
@@ -201,13 +203,13 @@ function AfterRoundStart(props: {
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <hr className="mt-4 mb-8" />
+          <hr className="mt-4 mb-8"/>
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
               All Projects ({projects ? projects.length : 0})
             </p>
             <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3" />
+              <Search className="absolute h-4 w-4 mt-3 ml-3"/>
               <Input
                 className="w-full lg:w-64 h-8 rounded-full pl-10"
                 type="text"
@@ -225,7 +227,7 @@ function AfterRoundStart(props: {
             />
           )}
         </main>
-        <Footer />
+        <Footer/>
       </div>
     </>
   );
@@ -528,7 +530,7 @@ function PreRoundPage(props: {
           )}
 
           {isDuringApplicationPeriod && (
-            <ApplyButton applicationURL={applicationURL} />
+            <ApplyButton applicationURL={applicationURL}/>
           )}
 
           {isAfterApplicationEndDateAndBeforeRoundStartDate && (
