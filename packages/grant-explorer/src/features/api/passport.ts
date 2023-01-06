@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 export enum PassportState {
@@ -12,7 +12,7 @@ export enum PassportState {
 export function usePassport() {
   const [passport, setPassport] = useState();
   const [error, setError] = useState<Response | undefined>();
-  const { address, isConnected, isDisconnected, status } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [passportState, setPassportState] = useState<PassportState>(PassportState.LOADING);
 
@@ -43,6 +43,7 @@ export function usePassport() {
           } else {
             setPassportState(PassportState.MATCH_INELIGIBLE);
           }
+          setPassport(data);
         } else {
           setPassportState(PassportState.INVALID_PASSPORT);
         }
