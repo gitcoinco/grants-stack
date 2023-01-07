@@ -18,7 +18,7 @@ export default function PassportBanner() {
         className="fill-purple-500 stroke-purple-200 h-7 w-7 relative text-white items-center rounded-full"/>,
       color: "bg-purple-200",
       body: (
-        <div data-testid="banner-not-connected-body">
+        <div data-testid="wallet-not-connected">
           In order to for your donations to be matched, you must first verify your Passport.
         </div>
       ),
@@ -29,7 +29,7 @@ export default function PassportBanner() {
             onClick={() => {
               document.getElementById("connect-wallet-button")?.querySelector("button")?.click();
             }}
-            data-testid="banner-connect-button"
+            data-testid="connect-wallet-button"
           >
             Connect your wallet to verify
           </button>
@@ -41,7 +41,7 @@ export default function PassportBanner() {
         className="fill-teal-400 stroke-teal-100 h-7 w-7 relative text-white items-center rounded-full"/>,
       color: "bg-teal-100",
       body: (
-        <div data-testid="banner-match-eligible-body">
+        <div data-testid="match-eligible">
           Passport score verified. Your donation will be matched!
         </div>
       ),
@@ -49,7 +49,7 @@ export default function PassportBanner() {
         <>
           <button
             className="ml-3 font-medium text-sm underline"
-            data-testid="banner-view-passport-button"
+            data-testid="view-score-button"
           >
             View score
           </button>
@@ -64,7 +64,7 @@ export default function PassportBanner() {
         className="fill-pink-400 stroke-pink-100 h-7 w-7 relative text-white items-center rounded-full"/>,
       color: "bg-pink-100",
       body: (
-        <div data-testid="banner-match-ineligible-body">
+        <div data-testid="match-ineligible">
           Your Passport does not have the score needed to be eligible for donation matching.
         </div>
       ),
@@ -72,7 +72,7 @@ export default function PassportBanner() {
         <>
           <button
             className="ml-3 font-medium text-sm underline"
-            data-testid="banner-view-passport-button"
+            data-testid="view-score-button"
           >
             View score
           </button>
@@ -86,7 +86,7 @@ export default function PassportBanner() {
       icon: <PassportLogo className="animate-spin opacity-75"/>,
       color: "bg-white",
       body: (
-        <div className="opacity-50 pt-1" data-test-id="banner-loading-body">
+        <div className="opacity-50 pt-1" data-testid="loading-passport-score">
           Loading Passport...
         </div>
       ),
@@ -96,19 +96,17 @@ export default function PassportBanner() {
       icon: null,
       color: "bg-yellow-300",
       body: (
-        <div data-testid="banner-invalid-body">
-          PLACEHOLDER
+        <div data-testid="invalid-passport">
+          Invalid Passport. Please verify with a Passport.
         </div>
       ),
       button: (
-        <>
-          <button
-            className="ml-3 font-medium text-sm underline"
-            data-testid="banner-invalid-passport-button"
-          >
-            goto passport page thing
-          </button>
-        </>
+        <button
+          className="ml-3 font-medium text-sm underline"
+          data-testid="visit-passport-button"
+        >
+          Visit Passport
+        </button>
       )
     },
     [PassportState.ERROR]: {
@@ -116,7 +114,7 @@ export default function PassportBanner() {
         className="fill-red-500 stroke-red-200 h-7 w-7 relative text-white items-center rounded-full"/>,
       color: "bg-red-200",
       body: (
-        <div data-testid="banner-error-connected-body">
+        <div data-testid="error-loading-passport">
           An error occurred while loading your Passport. Please try again later.
         </div>
       ),

@@ -1,13 +1,11 @@
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { ExclamationCircleIcon } from '@heroicons/react/24/solid'
 
 export default function RoundEndedBanner() {
   return (
     <div className="bg-pink-100">
       <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8">
         <div className="flex flex-row flex-wrap items-center justify-center">
-          <div className="h-6 w-6 relative rounded-full bg-pink-400">
-            <ExclamationCircleIcon className="h-4 w-4 absolute top-1 left-1 text-white items-center"/>
-          </div>
+          <ExclamationCircleIcon className="fill-red-500 stroke-red-200 h-7 w-7 relative text-white items-center rounded-full"/>
           <span className="ml-3 font-medium text-sm">This round has ended. Thank you for your support!</span>
         </div>
       </div>
