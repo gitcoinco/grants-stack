@@ -7,66 +7,67 @@ const roundId = faker.finance.ethereumAddress();
 const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
-    address: userAddress,
+  address: userAddress,
 };
 
 const mockBalance = {
-    data: {
-        value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
-    },
+  data: {
+    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
+  },
 };
 
 const mockSigner = {
-    data: {},
+  data: {},
 };
 
 const mockNetwork = {
-    chain: {
-        id: 5,
-        name: "Goerli",
+  chain: {
+    id: 5,
+    name: "Goerli",
+  },
+  chains: [
+    {
+      id: 10,
+      name: "Optimism",
     },
-    chains: [
-        {
-            id: 10,
-            name: "Optimism",
-        },
-        {
-            id: 5,
-            name: "Goerli"
-        }
-    ],
+    {
+      id: 5,
+      name: "Goerli",
+    },
+  ],
 };
 
 const useParamsFn = () => ({
-    chainId,
-    roundId,
+  chainId,
+  roundId,
 });
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
-    useAccount: () => mockAccount,
-    useBalance: () => mockBalance,
-    useSigner: () => mockSigner,
-    useNetwork: () => mockNetwork,
+  useAccount: () => mockAccount,
+  useBalance: () => mockBalance,
+  useSigner: () => mockSigner,
+  useNetwork: () => mockNetwork,
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
-    ConnectButton: jest.fn(),
-    ...jest.requireActual("@rainbow-me/rainbowkit"),
+  ConnectButton: jest.fn(),
+  ...jest.requireActual("@rainbow-me/rainbowkit"),
 }));
 jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useParams: useParamsFn,
+  ...jest.requireActual("react-router-dom"),
+  useParams: useParamsFn,
 }));
 
 describe("PassportBanner", () => {
-    describe("renders the correct banner", () => {
-        it("not connected banner", () => {
-            render(<PassportBanner/>);
-            expect(screen.getByTestId("banner-not-connected-body")).toBeInTheDocument();
-            expect(screen.getByTestId("banner-connect-button")).toBeInTheDocument();
-        });
+  describe("renders the correct banner", () => {
+    it("not connected banner", () => {
+      render(<PassportBanner />);
+      expect(
+        screen.getByTestId("banner-not-connected-body")
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("banner-connect-button")).toBeInTheDocument();
     });
-    // TODO: tests
+  });
+  // TODO: tests
 });
-
