@@ -5,6 +5,9 @@ fetchMock.enableMocks();
 import {
   makeApprovedProjectData,
   makeRoundData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
   renderWithContext,
 } from "../../../test-utils";
 import { fireEvent, screen } from "@testing-library/react";
@@ -25,32 +28,6 @@ const mockAccount = {
   address: userAddress,
 };
 
-const mockBalance = {
-  data: {
-    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
-  },
-};
-
-const mockSigner = {
-  data: {},
-};
-
-const mockNetwork = {
-  chain: {
-    id: 5,
-    name: "Goerli",
-  },
-  chains: [
-    {
-      id: 10,
-      name: "Optimism",
-    },
-    {
-      id: 5,
-      name: "Goerli"
-    }
-  ],
-};
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

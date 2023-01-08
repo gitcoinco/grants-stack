@@ -199,11 +199,17 @@ describe("<ViewProgram />", () => {
         "application-end-time-period"
       );
 
-      const utcApplicationStartTime = getUTCDate(stubRound!.applicationsStartTime);
+      const utcApplicationStartTime = getUTCDate(
+        stubRound!.applicationsStartTime
+      );
       const utcApplicationEndTime = getUTCDate(stubRound!.applicationsEndTime);
 
-      expect(applicationStartTimePeriod.textContent).toEqual(utcApplicationStartTime);
-      expect(applicationEndTimePeriod.textContent).toEqual(utcApplicationEndTime);
+      expect(applicationStartTimePeriod.textContent).toEqual(
+        utcApplicationStartTime
+      );
+      expect(applicationEndTimePeriod.textContent).toEqual(
+        utcApplicationEndTime
+      );
     });
 
     it("displays round start and end dates", async () => {
@@ -226,12 +232,14 @@ describe("<ViewProgram />", () => {
       );
       const roundEndTimePeriodElement = await screen.findByTestId(
         "round-end-time-period"
-      )
+      );
 
       const utcRoundStartTime = getUTCDate(stubRound!.roundStartTime);
       const utcRoundEndTime = getUTCDate(stubRound!.roundEndTime);
 
-      expect(roundStartTimePeriodElement.textContent).toEqual(utcRoundStartTime);
+      expect(roundStartTimePeriodElement.textContent).toEqual(
+        utcRoundStartTime
+      );
       expect(roundEndTimePeriodElement.textContent).toEqual(utcRoundEndTime);
     });
 

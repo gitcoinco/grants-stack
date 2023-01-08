@@ -12,8 +12,15 @@ import {
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import { useNavigate } from 'react-router-dom';
 
-export default function PassportBanner() {
+
+export default function PassportBanner(props: {chainId?: string, roundId?: string}) {
+
+  const chainId =props.chainId;
+  const roundId = props.roundId;
+
+  const navigate = useNavigate();
 
   const [, setPassport] = useState<PassportResponse | undefined>();
   const [, setError] = useState<Response | undefined>();
@@ -24,12 +31,15 @@ export default function PassportBanner() {
   );
   useEffect(() => {
     setPassportState(PassportState.LOADING);
-    const PASSPORT_COMMUNITY_ID = "12";
+
+    // TODO: fetch from round metadata
+    const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
     const PASSPORT_THRESHOLD = 0;
 
-    if (isConnected) {
+    if (isConnected && address && PASSPORT_COMMUNITY_ID) {
 
       const callFetchPassport = async () => {
+
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
           const json = await res.json();
@@ -44,11 +54,11 @@ export default function PassportBanner() {
           switch (res.status) {
             case 400: // unregistered/nonexistent passport address
               setPassportState(PassportState.INVALID_PASSPORT);
-              console.log(res.json());
+              console.error("unregistered/nonexistent passport address", res.json());
               break;
             case 401: // invalid API key
               setPassportState(PassportState.ERROR);
-              console.log(res.json());
+              console.error("invalid API key", res.json());
               break;
             default:
               setPassportState(PassportState.ERROR);
@@ -72,6 +82,7 @@ export default function PassportBanner() {
       <button
         className="ml-3 font-medium text-sm underline"
         data-testid="view-score-button"
+        onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
       >
         View score
       </button>
@@ -103,6 +114,7 @@ export default function PassportBanner() {
       <button
         className="ml-3 font-medium text-sm underline"
         data-testid="visit-passport-button"
+        onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
       >
         Visit Passport
       </button>
