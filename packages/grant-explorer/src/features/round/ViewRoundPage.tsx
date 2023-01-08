@@ -161,7 +161,7 @@ function AfterRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
-      <PassportBanner />
+      <PassportBanner chainId={chainId} roundId={roundId} />
       {props.isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner/>

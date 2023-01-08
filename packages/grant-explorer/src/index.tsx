@@ -25,6 +25,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import { BallotProvider } from "./context/BallotContext";
 import ViewBallot from "./features/round/ViewBallotPage";
+import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
 
@@ -82,6 +83,12 @@ root.render(
                         <ThankYou />
                       </QFDonationProvider>
                     }
+                  />
+
+                  {/* Passport Connect */}
+                  <Route
+                    path="/round/:chainId/:roundId/passport/connect"
+                    element={<PassportConnect />}
                   />
 
                   {/* Access Denied */}

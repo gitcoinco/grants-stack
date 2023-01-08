@@ -6,9 +6,15 @@ import {
 } from '@heroicons/react/24/solid'
 import { PassportState, usePassport } from "../api/passport";
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
+import { useNavigate } from 'react-router-dom';
 
 
-export default function PassportBanner() {
+export default function PassportBanner(props: {chainId?: string, roundId?: string}) {
+
+  const chainId =props.chainId;
+  const roundId = props.roundId;
+
+  const navigate = useNavigate();
 
   const { passportState } = usePassport();
 
@@ -50,6 +56,7 @@ export default function PassportBanner() {
           <button
             className="ml-3 font-medium text-sm underline"
             data-testid="view-score-button"
+            onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
           >
             View score
           </button>
@@ -73,6 +80,7 @@ export default function PassportBanner() {
           <button
             className="ml-3 font-medium text-sm underline"
             data-testid="view-score-button"
+            onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
           >
             View score
           </button>
@@ -104,6 +112,7 @@ export default function PassportBanner() {
         <button
           className="ml-3 font-medium text-sm underline"
           data-testid="visit-passport-button"
+          onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
         >
           Visit Passport
         </button>

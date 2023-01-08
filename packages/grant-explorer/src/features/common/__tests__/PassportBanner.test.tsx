@@ -6,6 +6,9 @@ jest.mock("../../../features/api/passport");
 
 describe("PassportBanner", () => {
 
+  const chainId = "5";
+  const roundId = "0x123";
+
   describe("renders the correct banner", () => {
 
     it("WHEN user is not connected to passport THEN it shows the not connected banner", () => {
@@ -14,7 +17,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.NOT_CONNECTED
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("wallet-not-connected")
@@ -30,7 +33,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.MATCH_ELIGIBLE
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("match-eligible")
@@ -46,7 +49,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.MATCH_INELIGIBLE
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("match-ineligible")
@@ -62,7 +65,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.LOADING
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("loading-passport-score")
@@ -76,7 +79,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.INVALID_PASSPORT
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("invalid-passport")
@@ -92,7 +95,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.ERROR
       });
 
-      render(<PassportBanner />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />);
 
       expect(
         screen.getByTestId("error-loading-passport")
