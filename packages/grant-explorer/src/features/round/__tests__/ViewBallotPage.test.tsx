@@ -2,7 +2,7 @@ import ViewBallot from "../ViewBallotPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
-import { makeApprovedProjectData } from "../../../test-utils";
+import { makeApprovedProjectData, mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
 import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
@@ -15,33 +15,6 @@ const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
   address: userAddress,
-};
-
-const mockBalance = {
-  data: {
-    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
-  },
-};
-
-const mockSigner = {
-  data: {},
-};
-
-const mockNetwork = {
-  chain: {
-    id: 5,
-    name: "Goerli",
-  },
-  chains: [
-    {
-      id: 10,
-      name: "Optimism",
-    },
-    {
-      id: 5,
-      name: "Goerli"
-    }
-  ],
 };
 
 const useParamsFn = () => ({

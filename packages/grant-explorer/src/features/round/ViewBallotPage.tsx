@@ -178,7 +178,7 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
-      <PassportBanner/>
+      <PassportBanner chainId={chainId} roundId={roundId}/>
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner/>

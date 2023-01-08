@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
 import ThankYou from "../ThankYou";
 import { RoundProvider } from "../../../context/RoundContext";
+import { mockSigner } from "../../../test-utils";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
@@ -12,10 +13,6 @@ const useParamsFn = () => ({
   roundId: roundId,
   txHash: txHash,
 });
-
-const mockSigner = {
-  data: {},
-};
 
 Object.defineProperty(window, 'scrollTo', { value: () => {}, writable: true });
 
