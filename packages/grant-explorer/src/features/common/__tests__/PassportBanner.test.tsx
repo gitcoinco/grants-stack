@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import PassportBanner from "../PassportBanner";
 import { PassportState, usePassport } from "../../api/passport";
+import { BrowserRouter } from "react-router-dom";
 
 jest.mock("../../../features/api/passport");
 
@@ -17,7 +18,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.NOT_CONNECTED
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("wallet-not-connected")
@@ -33,7 +34,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.MATCH_ELIGIBLE
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("match-eligible")
@@ -49,7 +50,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.MATCH_INELIGIBLE
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("match-ineligible")
@@ -65,7 +66,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.LOADING
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("loading-passport-score")
@@ -79,7 +80,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.INVALID_PASSPORT
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("invalid-passport")
@@ -95,7 +96,7 @@ describe("PassportBanner", () => {
         passportState: PassportState.ERROR
       });
 
-      render(<PassportBanner chainId={chainId} roundId={roundId} />);
+      render(<PassportBanner chainId={chainId} roundId={roundId} />, { wrapper: BrowserRouter });
 
       expect(
         screen.getByTestId("error-loading-passport")
