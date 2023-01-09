@@ -378,28 +378,23 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange(props: {
-  startTime?: Date;
-  endTime?: Date;
-}) {
-
-  const {startTime, endTime } = props;
+function ApplicationOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
+  const { startTime, endTime } = props;
 
   return (
     <div className="flex mr-8 lg:mr-36">
       <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
       <p className="text-sm mr-2 text-grey-400">Applications:</p>
-
       <div>
         <p className="text-sm">
-          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
           <span className="mx-2">-</span>
-          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
         </p>
-        <p className="text-sm text-grey-400">
-          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+        <p className="flex justify-center items-center text-sm text-grey-400">
+          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
           <span className="mx-2">-</span>
-          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
         </p>
       </div>
     </div>
@@ -407,26 +402,24 @@ function ApplicationOpenDateRange(props: {
 }
 
 function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const {startTime, endTime } = props;
+  const { startTime, endTime } = props;
 
   return (
     <div className="flex">
       <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
       <p className="text-sm mr-2 text-grey-400">Round:</p>
-
       <div>
-        <p className="text-sm">
-          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+        <p className="flex justify-center items-center text-sm">
+          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
           <span className="mx-2">-</span>
-          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
         </p>
-        <p className="text-sm text-grey-400">
-          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+        <p className="flex justify-center items-center text-sm text-grey-400">
+          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
           <span className="mx-2">-</span>
-          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
         </p>
       </div>
-
     </div>
   );
 }
