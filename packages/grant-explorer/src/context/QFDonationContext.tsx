@@ -314,11 +314,16 @@ function encodeQFVotes(
     let projectAddress = donation.projectAddress;
     projectAddress = ethers.utils.getAddress(projectAddress);
 
-    const vote = [donationToken.address, amountInUnits, projectAddress];
+    const vote = [
+      donationToken.address,
+      amountInUnits,
+      projectAddress,
+      donation.projectRegistryId
+    ];
 
     encodedVotes.push(
       ethers.utils.defaultAbiCoder.encode(
-        ["address", "uint256", "address"],
+        ["address", "uint256", "address", "bytes32"],
         vote
       )
     );

@@ -17,6 +17,9 @@ const mockSigner = {
   data: {},
 };
 
+Object.defineProperty(window, 'scrollTo', { value: () => {}, writable: true });
+
+
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

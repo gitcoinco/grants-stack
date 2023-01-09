@@ -17,7 +17,7 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "contract IERC20Upgradeable",
+        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -34,10 +34,16 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "address",
         "name": "grantAddress",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "projectId",
+        "type": "bytes32"
       },
       {
         "indexed": true,
@@ -48,6 +54,19 @@
     ],
     "name": "Voted",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -91,7 +110,7 @@
     ],
     "name": "vote",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

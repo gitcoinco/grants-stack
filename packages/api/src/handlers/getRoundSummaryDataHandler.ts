@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { handleResponse } from "../utils";
-import { PrismaClient } from "@prisma/client";
 import { cache } from "../cacheConfig";
 import { db } from "../database";
-
-const prisma = new PrismaClient();
 
 export const getRoundSummaryDataHandler = async (
   req: Request,

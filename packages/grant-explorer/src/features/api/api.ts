@@ -13,7 +13,7 @@ export function useRoundSummary({
 
   useMemo(() => {
     setLoading(true);
-    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/summary/${chainId}/${roundId}`;
+    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/update/summary/round/${chainId}/${roundId}`;
     fetch(url, {
       method: "POST",
       headers: {
@@ -66,9 +66,9 @@ export function getProjectSummary({
   success: boolean;
   message: string;
 }> {
-  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/update/summary/project/${chainId}/${roundId}/${projectId}`;
+  const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/data/summary/project/${chainId}/${roundId}/${projectId}`;
   return fetch(url, {
-    method: "POST",
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
@@ -98,7 +98,7 @@ export function useProjectSummary({
     setLoading(true);
     const url = `${
       process.env.REACT_APP_GRANTS_API_ENDPOINT
-    }/summary/${chainId}/${roundId}/${new URLSearchParams({ projectId })}`;
+    }/update/summary/project/${chainId}/${roundId}/${projectId}`;
     fetch(url, {
       method: "POST",
       headers: {

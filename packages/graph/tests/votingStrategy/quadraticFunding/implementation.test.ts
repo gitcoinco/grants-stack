@@ -1,16 +1,17 @@
-import { test, assert, newMockEvent, createMockedFunction, describe, beforeEach, clearStore, afterEach, logStore } from "matchstick-as/assembly/index";
-import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { test, assert, newMockEvent, describe, beforeEach, clearStore, afterEach } from "matchstick-as/assembly/index";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { handleVote } from "../../../src/votingStrategy/quadraticFunding/implementation";
 import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
 import { QFVote, Round, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../../src/utils";
-
+import { Bytes } from '@graphprotocol/graph-ts'
 
 let token: Address;
 let amount: BigInt;
 let voter: Address;
 let grantAddress: Address;
 let roundAddress: Address;
+let projectId: Bytes;
 
 let newVoteEvent: VotedEvent;
 
@@ -21,6 +22,7 @@ function createNewVotedEvent(
   amount: BigInt,
   voter: Address,
   grantAddress: Address,
+  projectId: Bytes,
   roundAddress: Address,
   votingStrategyAddress: Address
 ): VotedEvent {
@@ -30,14 +32,15 @@ function createNewVotedEvent(
   const amountParam = new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount));
   const voterParam = new ethereum.EventParam("voter", ethereum.Value.fromAddress(voter));
   const grantAddressParam = new ethereum.EventParam("grantAddress", ethereum.Value.fromAddress(grantAddress));
+  const projectIdParam = new ethereum.EventParam("projectId",ethereum.Value.fromBytes(projectId));
   const roundAddressParam = new ethereum.EventParam("roundAddress", ethereum.Value.fromAddress(roundAddress));
 
   newVoteEvent.parameters.push(tokenParam);
   newVoteEvent.parameters.push(amountParam);
   newVoteEvent.parameters.push(voterParam);
   newVoteEvent.parameters.push(grantAddressParam);
+  newVoteEvent.parameters.push(projectIdParam);
   newVoteEvent.parameters.push(roundAddressParam);
-
 
   newVoteEvent.address = votingStrategyAddress;
 
@@ -53,6 +56,7 @@ describe("handleVote", () => {
     voter = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
     grantAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2D");
     roundAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2E");
+    projectId = Bytes.fromHexString("0x72616e646f6d50726f6a6563744964"); // bytes32 projectId
 
     // Create VotingStrategy entity
     votingStrategyAddress = Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2A");
@@ -60,6 +64,7 @@ describe("handleVote", () => {
     const votingStrategyEntity = new VotingStrategy(votingStrategyAddress.toHex());
     votingStrategyEntity.strategyName = "LINEAR_QUADRATIC_FUNDING";
     votingStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eC2G";
+    votingStrategyEntity.version = "0.2.0";
     votingStrategyEntity.save();
 
     // Create Round entity
@@ -74,6 +79,7 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
+
     roundEntity.save();
 
     // Link VotingStrategy to Round entity
@@ -85,6 +91,7 @@ describe("handleVote", () => {
       amount,
       voter,
       grantAddress,
+      projectId,
       roundAddress,
       votingStrategyAddress
     );
@@ -126,6 +133,9 @@ describe("handleVote", () => {
     assert.bigIntEquals(qfVote!.amount, amount);
     assert.stringEquals(qfVote!.from, voter.toHex());
     assert.stringEquals(qfVote!.to, grantAddress.toHex());
+    assert.bytesEquals(Bytes.fromHexString(qfVote!.projectId), projectId);
+    assert.stringEquals(qfVote!.version, "0.2.0");
+
   });
 
   test("QF vote is linked to VotingStrategy when handledVote is called", () => {
@@ -152,6 +162,7 @@ describe("handleVote", () => {
       anotherAmount,
       voter,
       anotherGrantAddress,
+      projectId,
       roundAddress,
       votingStrategyAddress
     );

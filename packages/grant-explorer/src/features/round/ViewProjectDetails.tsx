@@ -24,7 +24,7 @@ import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
 import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
-import Banner from "../common/Banner";
+import RoundEndedBanner from "../common/RoundEndedBanner";
 
 enum VerifiedCredentialState {
   VALID,
@@ -70,33 +70,33 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
       {isAfterRoundEndDate && (
         <div>
-          <Banner />
+          <RoundEndedBanner/>
         </div>
       )}
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
           <div className="flex flex-row items-center gap-3 text-sm">
-            <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
+            <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6"/>
             <Link to={`/round/${chainId}/${roundId}`}>
               <span className="font-normal">Back to Grants</span>
             </Link>
           </div>
           {!isLoading && projectToRender && (
             <>
-              <Header projectMetadata={projectToRender.projectMetadata} />
+              <Header projectMetadata={projectToRender.projectMetadata}/>
               <div className="flex flex-col md:flex-row">
                 <div className="grow">
                   <div>
                     <ProjectTitle
                       projectMetadata={projectToRender.projectMetadata}
                     />
-                    <AboutProject projectToRender={projectToRender} />
+                    <AboutProject projectToRender={projectToRender}/>
                   </div>
                   <div>
-                    <DescriptionTitle />
+                    <DescriptionTitle/>
                     <Detail
                       text={projectToRender.projectMetadata.description}
                       testID="project-metadata"
@@ -119,7 +119,7 @@ export default function ViewProjectDetails() {
             </>
           )}
         </main>
-        <Footer />
+        <Footer/>
       </div>
     </>
   );
@@ -224,7 +224,7 @@ function AboutProject(props: { projectToRender: Project }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
       {projectRecipient && (
         <span className="flex items-center mt-4 gap-1">
-          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <BoltIcon className="h-4 w-4 mr-1 opacity-40"/>
           <DetailSummary
             text={`${projectRecipient}`}
             testID="project-recipient"
@@ -234,7 +234,7 @@ function AboutProject(props: { projectToRender: Project }) {
       )}
       {projectWebsite && (
         <span className="flex items-center mt-4 gap-1">
-          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40"/>
           <a
             href={projectWebsite}
             target="_blank"
@@ -250,7 +250,7 @@ function AboutProject(props: { projectToRender: Project }) {
       )}
       {projectTwitter && (
         <span className="flex items-center mt-4 gap-1">
-          <TwitterIcon className="h-4 w-4 mr-1 opacity-40" />
+          <TwitterIcon className="h-4 w-4 mr-1 opacity-40"/>
           <a
             href={`https://twitter.com/${projectTwitter}`}
             target="_blank"
@@ -267,27 +267,27 @@ function AboutProject(props: { projectToRender: Project }) {
       )}
       {userGithub && (
         <span className="flex items-center mt-4 gap-1">
-          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
+          <GithubIcon className="h-4 w-4 mr-1 opacity-40"/>
           <a
             href={`https://github.com/${userGithub}`}
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
           >
-            <DetailSummary text={`${userGithub}`} testID="user-github" />
+            <DetailSummary text={`${userGithub}`} testID="user-github"/>
           </a>
         </span>
       )}
       {projectGithub && (
         <span className="flex items-center mt-4 gap-1">
-          <GithubIcon className="h-4 w-4 mr-1 opacity-40" />
+          <GithubIcon className="h-4 w-4 mr-1 opacity-40"/>
           <a
             href={`https://github.com/${projectGithub}`}
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
           >
-            <DetailSummary text={`${projectGithub}`} testID="project-github" />
+            <DetailSummary text={`${projectGithub}`} testID="project-github"/>
           </a>
           {getVerifiableCredentialVerificationResultView("github")}
         </span>
@@ -357,14 +357,14 @@ function Sidebar(props: {
 }) {
   return (
     <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
-      <ProjectStats />
+      <ProjectStats/>
       <BallotSelectionToggle
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
         removeFromFinalBallot={props.removeFromFinalBallot}
         addToBallot={props.addToShortlist}
       />
-      <ShortlistTooltip />
+      <ShortlistTooltip/>
     </div>
   );
 }
@@ -494,14 +494,14 @@ function ShortlistTooltip() {
         effect="solid"
       >
         <p className="text-xs">
-          This interactive tool allows you to <br />
-          visualize how you distribute your <br />
-          impact across projects as you make <br />
+          This interactive tool allows you to <br/>
+          visualize how you distribute your <br/>
+          impact across projects as you make <br/>
           your decisions. Adjust as you go and
-          <br />
-          then decide when you're ready to <br />
+          <br/>
+          then decide when you're ready to <br/>
           submit your final choices.
-          <br />
+          <br/>
         </p>
       </ReactTooltip>
       <p className={"text-base font-normal text-black"}>
@@ -557,9 +557,9 @@ async function isVerified(
   ).some((owner) => vcIssuedToAddress(verifiableCredential, owner.address));
 
   return vcHasValidProof &&
-    vcIssuedByValidIAMServer &&
-    providerMatchesProject &&
-    vcIssuedToAtLeastOneProjectOwner
+  vcIssuedByValidIAMServer &&
+  providerMatchesProject &&
+  vcIssuedToAtLeastOneProjectOwner
     ? VerifiedCredentialState.VALID
     : VerifiedCredentialState.INVALID;
 }

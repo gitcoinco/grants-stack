@@ -3,6 +3,8 @@ import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingSt
 import { Round, QFVote, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../utils";
 
+const VERSION = "0.2.0";
+
 /**
  * @dev Handles indexing on Voted event.
  * @param event VotedEvent
@@ -51,6 +53,12 @@ export function handleVote(event: VotedEvent): void {
   vote.amount = event.params.amount;
   vote.from = event.params.voter.toHex();
   vote.to = event.params.grantAddress.toHex();
+  vote.projectId = event.params.projectId.toHex();
+
+  // set timestamp
+  vote.createdAt = event.block.timestamp;
+
+  vote.version = VERSION;
 
   vote.save();
 }

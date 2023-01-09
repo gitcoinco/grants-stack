@@ -8,6 +8,7 @@ export enum ChainId {
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,
 }
+
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.MAINNET]: {
@@ -87,7 +88,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-          address: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+          address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
         },
       ];
@@ -331,5 +332,48 @@ export const generateApplicationSchema = (
   });
 };
 
+/* We can safely suppress the eslint warning here, since JSON.stringify accepts any*/
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function saveObjectAsJson(filename: string, dataObjToWrite: any) {
+  const blob = new Blob([JSON.stringify(dataObjToWrite)], {
+    type: "text/json",
+  });
+  const link = document.createElement("a");
+
+  link.download = filename;
+  link.href = window.URL.createObjectURL(blob);
+  link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+
+  const evt = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+  });
+
+  link.dispatchEvent(evt);
+  link.remove();
+}
+
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
+
+export const prefixZero = (i: number): string => (i < 10) ? ("0" + i) : i.toString();
+
+export const getUTCDate = (date: Date): string => {
+  const utcDate = [
+    prefixZero(date.getUTCDate()),
+    prefixZero(date.getUTCMonth() + 1),
+    prefixZero(date.getUTCFullYear())
+  ];
+
+  return utcDate.join('/');
+}
+
+export const getUTCTime = (date: Date): string => {
+  const utcTime = [
+    prefixZero(date.getUTCHours()),
+    prefixZero(date.getUTCMinutes())
+  ];
+
+  return utcTime.join(':') + " UTC";
+}

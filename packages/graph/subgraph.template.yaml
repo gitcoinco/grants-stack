@@ -1,10 +1,10 @@
 specVersion: 0.0.4
 schema:
   file: ./schema.graphql
-# fea
-features:
-  - ipfsOnEthereumContracts
-  - nonDeterministicIpfs
+# TODO: wait until ipfs.cat is supported in studio
+# features:
+  # - ipfsOnEthereumContracts
+  # - nonDeterministicIpfs
 dataSources:
   # ProgramFactory
   - kind: ethereum/contract
@@ -73,6 +73,11 @@ dataSources:
           file: ./abis/QuadraticFundingVotingStrategyFactory.json
         - name: QuadraticFundingVotingStrategyImplementation
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
+        ####################
+        # == LEGACY ABI == #
+        ####################
+        - name: QuadraticFundingVotingStrategyImplementationLegacyV1
+          file: ./abis/legacy/QuadraticFundingVotingStrategyImplementation/V1.json
       eventHandlers:
         - event: VotingContractCreated(indexed address,indexed address)
           handler: handleVotingContractCreated
@@ -143,8 +148,34 @@ templates:
         - name: QuadraticFundingVotingStrategyImplementation
           file: ./abis/QuadraticFundingVotingStrategyImplementation.json
       eventHandlers:
-        - event: Voted(address,uint256,indexed address,indexed address,indexed address)
+        - event: Voted(address,uint256,indexed address,address,indexed bytes32,indexed address)
           handler: handleVote
           receipt: true
 
       file: ./src/votingStrategy/quadraticFunding/implementation.ts
+
+  ####################
+  # == LEGACY ABI == #
+  ####################
+
+  # QuadraticFundingVotingStrategyImplementation/V1.json
+  - kind: ethereum/contract
+    name: QuadraticFundingVotingStrategyImplementationLegacyV1
+    network: {{ network }}
+    source:
+      abi: QuadraticFundingVotingStrategyImplementationLegacyV1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - QFVote
+      abis:
+        - name: QuadraticFundingVotingStrategyImplementationLegacyV1
+          file: ./abis/legacy/QuadraticFundingVotingStrategyImplementation/V1.json
+      eventHandlers:
+        - event: Voted(address,uint256,indexed address,indexed address,indexed address)
+          handler: handleVote
+          receipt: true
+
+      file: ./src/legacy/votingStrategy/quadraticFunding/implementationLegacyV1.ts

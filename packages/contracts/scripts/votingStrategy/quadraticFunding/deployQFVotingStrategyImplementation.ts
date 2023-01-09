@@ -16,7 +16,7 @@ export async function main() {
     chainId: hre.network.config.chainId,
   });
 
-  // Deploy RoundImplementation
+  // Deploy QFImplementation
   const contractFactory = await ethers.getContractFactory(
     "QuadraticFundingVotingStrategyImplementation"
   );

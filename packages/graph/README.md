@@ -130,6 +130,19 @@ rm -rf generated && rm -rf build &&
     graph deploy --product hosted-service <GITHUB_USER>/<SUBGRAPH_NAME>
 ```
 
+### Running tests locally
+
+```shell
+yarn run test
+```
+Note: If you are using an M1, you would have issues running tests.
+
+- Download m1 version from the latest https://github.com/LimeChain/matchstick/releases
+- Run the tests from the `graph` folder using
+```
+<YOUR_GLOBAL_PATH>/@graphprotocol/graph-cli/node_modules/binary-install-raw/bin/0.2.0/<DOWNLOADED_VERSION>/binary-macos-11-m1`
+```
+
 
 ## How do we fetch off-chain storage
 
