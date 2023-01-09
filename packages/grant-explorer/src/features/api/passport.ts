@@ -14,7 +14,7 @@ type PassportResponse = {
   address?: string;
   score?: string;
   detail?: string;
-}
+};
 
 export function usePassport(): {
   passport: PassportResponse | undefined;
@@ -26,19 +26,22 @@ export function usePassport(): {
   const [error, setError] = useState<Response | undefined>();
   const { address, isConnected } = useAccount();
 
-  const [passportState, setPassportState] = useState<PassportState>(PassportState.LOADING);
+  const [passportState, setPassportState] = useState<PassportState>(
+    PassportState.LOADING
+  );
 
   const PASSPORT_THRESHOLD = 0.0; // TODO: determine passport threshold
+  const PASSPORT_COMMUNITY_ID = 12;
 
   useEffect(() => {
     const checkPassport = () => {
       setPassportState(PassportState.LOADING);
-      const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID}/${address}`;
+      const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${PASSPORT_COMMUNITY_ID}/${address}`;
       fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`
+          Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
         },
       })
         .then((resp) => {
