@@ -23,7 +23,7 @@ export default function PassportConnect() {
 
   function HaveAPassportInstructions() {
     return (
-      <div data-testid="have-a-passport-instructions" className="text-left my-8 text-grey-500">
+      <div data-testid="have-a-passport-instructions" className="text-left mt-8 mb-5 text-grey-500">
         <p className="text-[18px] mb-5 flex">
           <div className="bg-violet-200 w-8 h-8 rounded-full relative mr-4">
             <div className="absolute mt-1 ml-3">1</div>
@@ -51,6 +51,9 @@ export default function PassportConnect() {
           </div>
           <div className="my-auto">If eligible, your donation will be matched.</div>
         </p>
+
+        <PassportButtons hasPassport={true}/>
+
       </div>
     )
   }
@@ -96,6 +99,8 @@ export default function PassportConnect() {
             If eligible, your donation will be matched.
           </div>
         </p>
+
+        <PassportButtons hasPassport={false}/>
       </div>
     )
   }
@@ -135,10 +140,47 @@ export default function PassportConnect() {
     )
   }
 
-  function PassportButtons() {
+  function PassportButtons(props: { hasPassport: boolean }) {
     return (
       <>
-        {/* TODO: Wire in Action Buttons */}
+        <div className="flex justify-center">
+          <p>TODO: ADD Passport score and status</p>
+        </div>
+        <div className="flex gap-4 justify-center">
+          <Button
+            type="button"
+            $variant="outline"
+            onClick={() => console.log('TODO: ADD recalculate score')}
+            className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
+            data-testid="recalculate-score"
+          >
+            Recalculate Score
+          </Button>
+    
+          <Button
+            type="button"
+            $variant="outline"
+            onClick={() => window.open(`https://passport.gitcoin.co/#/dashboard`, '_blank')}
+            className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-grey-500 text-white px-10"
+            data-testid="open-passport"
+          >
+            {props.hasPassport ? "Open Passport" : "Create Passport"}
+          </Button>
+        </div>
+        <div>
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            $variant="outline"
+            onClick={() => navigate(`/round/${chainId}/${roundId}`)}
+            className="mb-8 items-center justify-center shadow-sm text-sm rounded border px-10"
+            data-testid="back-to-browsing-button"
+          >
+            Back to browsing
+          </Button>
+        </div>
+
+        </div>
       </>
     )
   }
@@ -175,18 +217,6 @@ export default function PassportConnect() {
             <div className="mx-6 px-10">
               <ConnectPassportInstructions />
             </div>
-
-            <PassportButtons />
-
-            <Button
-              type="button"
-              $variant="outline"
-              onClick={() => navigate(`/round/${chainId}/${roundId}`)}
-              className="my-8 items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 px-10"
-              data-testid="back-to-browsing-button"
-            >
-              Back to browsing
-            </Button>
 
           </div>
         </main>

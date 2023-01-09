@@ -101,4 +101,18 @@ describe("<PassportConnect/>", () => {
 
   });
 
+  describe("Passport Connect", () => {
+    it("Should show the Open Passport button", async () => {
+      render(<PassportConnect />, { wrapper: BrowserRouter });
+
+      expect(screen.getByTestId("open-passport")).toBeInTheDocument();
+    });
+
+    it("Should show the Recalculate Score button", async () => {
+      render(<PassportConnect />, { wrapper: BrowserRouter });
+
+      expect(screen.getByTestId("recalculate-score")).toBeInTheDocument();
+    });
+  });
+
 });
