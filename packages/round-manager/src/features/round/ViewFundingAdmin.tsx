@@ -9,7 +9,8 @@ import {
   ProgressStep,
   Round,
 } from "../api/types";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { useRoundMatchData } from "../api/api";
@@ -228,6 +229,7 @@ function FinalizeRound(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+  const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const navigate = useNavigate();
@@ -298,7 +300,7 @@ function FinalizeRound(props: {
       <hr className="mt-2 mb-4" />
       <div className="flex columns-2 pl-8">
         <div className="w-full pt-2">
-          <form className="mt-4 space-y-3 w-full" action="#" method="POST">
+          <form className="mt-4 space-y-3 w-full">
             <div className="w-full pt-2">
               <CustomOrDefaultRadioGroup
                 useDefault={props.useDefault}
@@ -327,7 +329,7 @@ function FinalizeRound(props: {
             <div className="grid justify-items-end">
               <div className="w-fit">
                 <Button
-                  onClick={handleFinalizeRound}
+                  onClick={() => setOpenInfoModal(true)}
                   type="submit"
                   className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
                   disabled={!props.useDefault && !props.customMatchingData}
@@ -338,6 +340,13 @@ function FinalizeRound(props: {
             </div>
           </form>
         </div>
+        <InfoModal
+          title={"Heads up!"}
+          body={<InfoModalBody />}
+          isOpen={openInfoModal}
+          setIsOpen={setOpenInfoModal}
+          continueButtonAction={handleFinalizeRound}
+        />
         <ProgressModal
           isOpen={openProgressModal}
           subheading={"Please hold while we update the contract."}
@@ -592,5 +601,19 @@ function CustomOrDefaultRadioGroup(props: {
         </RadioGroup.Option>
       </div>
     </RadioGroup>
+  );
+}
+
+function InfoModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        You have only one chance to finalize distribution for your round.
+        <br />
+        Please make sure that the final distribution is correct.
+        <br />
+        You will not be able to make changes after finalizing.
+      </p>
+    </div>
   );
 }
