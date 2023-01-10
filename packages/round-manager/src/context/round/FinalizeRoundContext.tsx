@@ -1,4 +1,5 @@
 import {
+  MatchingStatsData,
   MetadataPointer,
   ProgressStatus,
   Web3Instance,
@@ -6,7 +7,7 @@ import {
 import React, { createContext, useContext, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
-import { deployProgramContract } from "../../features/api/program";
+import { finalizeRoundToContract } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 
@@ -17,7 +18,8 @@ export interface FinalizeRoundState {
 
 interface _finalizeRoundParams {
   dispatch: Dispatch;
-  encodedDistribution: string;
+  roundId: string;
+  matchingJSON: MatchingStatsData[];
   signerOrProvider: Web3Instance["provider"];
 }
 
@@ -102,25 +104,28 @@ export const FinalizeRoundProvider = ({
 
 const _finalizeRound = async ({
   dispatch,
-  encodedDistribution,
+  roundId,
+  matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
   dispatch({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
-    const IpfsHash = await storeDocument(dispatch, encodedDistribution);
+    const IpfsHash = await storeDocument(dispatch, matchingJSON.toString());
 
-    // TODO: add finalize to contract
-    // const metadata = {
-    //   protocol: 1,
-    //   pointer: IpfsHash,
-    // };
-    // const transactionBlockNumber = await finalizeToContract(
-    //   dispatch,
-    //   encodedDistribution,
-    //   signerOrProvider
-    // );
+    const distributionMetaPtr = {
+      protocol: 1,
+      pointer: IpfsHash,
+    };
+    const merkleRoot = "";
+    const transactionBlockNumber = await finalizeToContract(
+      dispatch,
+      roundId,
+      merkleRoot,
+      distributionMetaPtr,
+      signerOrProvider
+    );
   } catch (error) {
     datadogLogs.logger.error(`error: _createProgram - ${error}`);
     console.error("_createProgram: ", error);
@@ -134,10 +139,14 @@ export const useFinalizeRound = () => {
 
   const { signer: walletSigner } = useWallet();
 
-  const finalizeRound = (encodedDistribution: string) => {
+  const finalizeRound = (
+    matchingJSON: MatchingStatsData[],
+    roundId: string
+  ) => {
     return _finalizeRound({
       dispatch: context.dispatch,
-      encodedDistribution,
+      roundId,
+      matchingJSON,
       // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: walletSigner,
     });
@@ -186,7 +195,6 @@ async function storeDocument(
   }
 }
 
-// ToDo: add finalize to contract
 async function finalizeToContract(
   dispatch: (action: Action) => void,
   roundId: string,
