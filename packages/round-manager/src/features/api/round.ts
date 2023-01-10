@@ -462,7 +462,7 @@ export async function finalizeRoundToContract({
       transactionBlockNumber: blockNumber,
     };
   } catch (error) {
-    console.error("finalizeRoindToContract", error);
+    console.error("finalizeRoundToContract", error);
     throw new Error("Unable to finalize Round");
   }
 }
