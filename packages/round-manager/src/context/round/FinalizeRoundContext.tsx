@@ -19,7 +19,7 @@ export interface FinalizeRoundState {
 interface _finalizeRoundParams {
   dispatch: Dispatch;
   roundId: string;
-  matchingJSON: MatchingStatsData[];
+  matchingJSON: MatchingStatsData[] | undefined;
   signerOrProvider: Web3Instance["provider"];
 }
 
@@ -112,6 +112,10 @@ const _finalizeRound = async ({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
+    if (!matchingJSON) {
+      throw new Error("matchingJSON is undefined");
+    }
+
     const IpfsHash = await storeDocument(dispatch, matchingJSON.toString());
 
     const distributionMetaPtr = {
@@ -127,21 +131,22 @@ const _finalizeRound = async ({
       signerOrProvider
     );
   } catch (error) {
-    datadogLogs.logger.error(`error: _createProgram - ${error}`);
-    console.error("_createProgram: ", error);
+    datadogLogs.logger.error(`error: _finalizeRound - ${error}`);
+    console.error("_finalizeRound: ", error);
   }
 };
+
 export const useFinalizeRound = () => {
   const context = useContext(FinalizeRoundContext);
   if (context === undefined) {
-    throw new Error("useCreateProgram must be used within a ProgramProvider");
+    throw new Error("useFinalizeRound must be used within a RoundProvider");
   }
 
   const { signer: walletSigner } = useWallet();
 
   const finalizeRound = (
-    matchingJSON: MatchingStatsData[],
-    roundId: string
+    roundId: string,
+    matchingJSON: MatchingStatsData[] | undefined
   ) => {
     return _finalizeRound({
       dispatch: context.dispatch,
@@ -161,9 +166,9 @@ export const useFinalizeRound = () => {
 
 async function storeDocument(
   dispatch: (action: Action) => void,
-  programName: string
+  matchingJSON: string
 ) {
-  datadogLogs.logger.info(`storeDocument: programName - ${programName}`);
+  datadogLogs.logger.info(`storeDocument: matchingDistribution`);
 
   dispatch({
     type: ActionType.SET_STORING_STATUS,
@@ -172,9 +177,9 @@ async function storeDocument(
 
   try {
     const IpfsHash: string = await saveToIPFS({
-      content: { name: programName },
+      content: { matchingDistribution: matchingJSON },
       metadata: {
-        name: "program-metadata",
+        name: "matching-distribution",
       },
     });
 
