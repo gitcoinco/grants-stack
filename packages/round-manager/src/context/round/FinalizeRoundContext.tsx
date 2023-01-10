@@ -140,7 +140,9 @@ const _finalizeRound = async ({
 export const useFinalizeRound = () => {
   const context = useContext(FinalizeRoundContext);
   if (context === undefined) {
-    throw new Error("useFinalizeRound must be used within a RoundProvider");
+    throw new Error(
+      "useFinalizeRound must be used within a FinalizeRoundProvider"
+    );
   }
 
   const { signer: walletSigner } = useWallet();
