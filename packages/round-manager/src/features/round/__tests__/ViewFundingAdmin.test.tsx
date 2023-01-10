@@ -8,6 +8,7 @@ import {
   makeRoundData,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithFinalizeRoundContext,
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
@@ -115,10 +116,12 @@ describe("View Funding Admin", () => {
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewRoundPage />, {
-                data: [mockRoundData],
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              })
+              wrapWithFinalizeRoundContext(
+                wrapWithRoundContext(<ViewRoundPage />, {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                })
+              )
             )
           )
         )
@@ -162,11 +165,13 @@ describe("View Funding Admin", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            })
+          wrapWithFinalizeRoundContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              })
+            )
           )
         )
       )
@@ -240,11 +245,13 @@ describe("View Funding Admin", () => {
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
-          wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            })
+          wrapWithFinalizeRoundContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              })
+            )
           )
         )
       )
@@ -325,10 +332,12 @@ describe("View Funding Admin", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewRoundPage />, {
-              data: [mockRoundData],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            })
+            wrapWithFinalizeRoundContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              })
+            )
           )
         )
       )
