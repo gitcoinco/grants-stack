@@ -3,14 +3,24 @@ import {
   ExclamationCircleIcon as NoInformationIcon,
   InformationCircleIcon,
 } from "@heroicons/react/outline";
-import { MatchingStatsData, Round } from "../api/types";
+import {
+  MatchingStatsData,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+} from "../api/types";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import ProgressModal from "../common/ProgressModal";
+import ErrorModal from "../common/ErrorModal";
 import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
 import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { XIcon } from "@heroicons/react/outline";
+import { useFinalizeRound } from "../../context/round/FinalizeRoundContext";
+import { errorModalDelayMs } from "../../constants";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -99,6 +109,7 @@ function InformationContent(props: {
       </div>
       {!error && !loading && (
         <FinalizeRound
+          roundId={props.roundId}
           matchingData={matchingData}
           useDefault={useDefault}
           setUseDefault={setUseDefault}
@@ -208,6 +219,7 @@ function InformationTable(props: {
 }
 
 function FinalizeRound(props: {
+  roundId: string | undefined;
   matchingData: MatchingStatsData[] | undefined;
   useDefault: boolean;
   setUseDefault: (useDefault: boolean) => void;
@@ -216,6 +228,70 @@ function FinalizeRound(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const navigate = useNavigate();
+
+  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+    useFinalizeRound();
+
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
+      finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+    ) {
+      // redirectToFinalizedRoundStats(navigate, 2000);
+      console.log("success");
+    }
+  }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
+
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      finalizeRoundToContractStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+  }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
+
+  const handleFinalizeRound = async () => {
+    try {
+      if (props.roundId !== undefined) {
+        setOpenProgressModal(true);
+        await finalizeRound(
+          props.roundId,
+          props.useDefault ? props.matchingData : props.customMatchingData
+        );
+      }
+    } catch (error) {
+      console.error("FinalizeRound", error);
+    }
+  };
+
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "Storing",
+      description: "The distribution data is being saved in a safe place.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Finalizing",
+      description: `The distribution is being finalized in the contract.`,
+      status: finalizeRoundToContractStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
+
   return (
     <div className="w-full pt-12">
       <span className="font-bold">Finalize Round</span>
@@ -251,13 +327,7 @@ function FinalizeRound(props: {
             <div className="grid justify-items-end">
               <div className="w-fit">
                 <Button
-                  onClick={async () => {
-                    /* TODO: display the warning window here */
-                    /* ABI-encode the distrbution TODO: what is the format of this? */
-                    // let newDistribution = ethers.utils.defaultAbiCoder.encode();
-                    /* Set the distribution in the contract */
-                    // updateRoundDistribution(roundId, signer, newDistribution);
-                  }}
+                  onClick={handleFinalizeRound}
                   type="submit"
                   className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
                   disabled={!props.useDefault && !props.customMatchingData}
@@ -268,6 +338,16 @@ function FinalizeRound(props: {
             </div>
           </form>
         </div>
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we update the contract."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleFinalizeRound}
+        />
       </div>
     </div>
   );
