@@ -11,7 +11,7 @@ import { Status as ProjectStatus } from "../../reducers/projects";
 import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
-import { formatDate } from "../../utils/components";
+import { formatTimeUTC } from "../../utils/components";
 import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
@@ -58,15 +58,15 @@ function Round() {
 
   const renderApplicationDate = () => (
     <>
-      {formatDate(roundData?.applicationsStartTime)} -{" "}
-      {formatDate(roundData?.applicationsEndTime)}
+      {formatTimeUTC(roundData?.applicationsStartTime)} -{" "}
+      {formatTimeUTC(roundData?.applicationsEndTime)}
     </>
   );
 
   const renderRoundDate = () => (
     <>
-      {formatDate(roundData?.roundStartTime)} -{" "}
-      {formatDate(roundData?.roundEndTime)}
+      {formatTimeUTC(roundData?.roundStartTime)} -{" "}
+      {formatTimeUTC(roundData?.roundEndTime)}
     </>
   );
 
