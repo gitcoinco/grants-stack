@@ -116,7 +116,7 @@ const _finalizeRound = async ({
       throw new Error("matchingJSON is undefined");
     }
 
-    const IpfsHash = await storeDocument(dispatch, matchingJSON.toString());
+    const IpfsHash = await storeDocument(dispatch, matchingJSON);
 
     const distributionMetaPtr = {
       protocol: 1,
@@ -130,6 +130,7 @@ const _finalizeRound = async ({
       distributionMetaPtr,
       signerOrProvider
     );
+    console.log("transactionBlockNumber: ", transactionBlockNumber);
   } catch (error) {
     datadogLogs.logger.error(`error: _finalizeRound - ${error}`);
     console.error("_finalizeRound: ", error);
@@ -166,7 +167,7 @@ export const useFinalizeRound = () => {
 
 async function storeDocument(
   dispatch: (action: Action) => void,
-  matchingJSON: string
+  matchingJSON: MatchingStatsData[]
 ) {
   datadogLogs.logger.info(`storeDocument: matchingDistribution`);
 
@@ -213,10 +214,13 @@ async function finalizeToContract(
       payload: { finalizeRoundToContractStatus: ProgressStatus.IN_PROGRESS },
     });
 
+    const merkleRoootInBytes = ethers.utils.formatBytes32String(merkleRoot);
+
     const encodedDistribution = encodeDistributionParameters(
-      merkleRoot,
+      merkleRoootInBytes,
       distributionMetaPtr
     );
+
     const { transactionBlockNumber } = await finalizeRoundToContract({
       roundId,
       encodedDistribution,
@@ -247,7 +251,7 @@ function encodeDistributionParameters(
   distributionMetaPtr: MetadataPointer
 ) {
   return ethers.utils.defaultAbiCoder.encode(
-    ["bytes32", "MetadataPointer"],
+    ["bytes32", "tuple(uint256 protocol, string pointer)"],
     [merkleRoot, distributionMetaPtr]
   );
 }
