@@ -365,4 +365,131 @@ describe("View Funding Admin", () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  describe("finalize state to contract", () => {
+    it("displays the save to contract button", async () => {
+      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+        return: {
+          data: [makeQFDistribution(), makeQFDistribution()],
+          error: null,
+          loading: false,
+        },
+      }));
+      const roundEndTime = faker.date.past();
+      mockRoundData = makeRoundData({ roundEndTime });
+      render(
+        wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithFinalizeRoundContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewRoundPage />, {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        )
+      );
+      const fundingAdminTab = screen.getByTestId("funding-admin");
+      fireEvent.click(fundingAdminTab);
+      expect(
+        screen.getByRole("button", {
+          name: /finalize and save to contract/i,
+        })
+      ).toBeInTheDocument();
+    });
+
+    it("displays a heads-up dialogue when the submit button is pressed", async () => {
+      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+        return: {
+          data: [makeQFDistribution(), makeQFDistribution()],
+          error: null,
+          loading: false,
+        },
+      }));
+      const roundEndTime = faker.date.past();
+      mockRoundData = makeRoundData({ roundEndTime });
+      render(
+        wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithFinalizeRoundContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewRoundPage />, {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        )
+      );
+      const fundingAdminTab = screen.getByTestId("funding-admin");
+      fireEvent.click(fundingAdminTab);
+      const button = screen.getByRole("button", {
+        name: /finalize and save to contract/i,
+      });
+      fireEvent.click(button);
+      expect(
+        screen.getByRole("heading", {
+          name: /heads up!/i,
+        })
+      ).toBeInTheDocument();
+    });
+
+    it("displays a progress window when clicking Continue", async () => {
+      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+        return: {
+          data: [makeQFDistribution(), makeQFDistribution()],
+          error: null,
+          loading: false,
+        },
+      }));
+      const roundEndTime = faker.date.past();
+      mockRoundData = makeRoundData({ roundEndTime });
+      render(
+        wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithFinalizeRoundContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewRoundPage />, {
+                  data: [mockRoundData],
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        )
+      );
+      const fundingAdminTab = screen.getByTestId("funding-admin");
+      fireEvent.click(fundingAdminTab);
+      const finalizeButton = screen.getByRole("button", {
+        name: /finalize and save to contract/i,
+      });
+      fireEvent.click(finalizeButton);
+      const continueButton = screen.getByRole("button", {
+        name: /continue/i,
+      });
+      fireEvent.click(continueButton);
+      const processingHeader = screen.getByRole("heading", {
+        name: /processing\.\.\./i,
+      });
+      expect(processingHeader).toBeInTheDocument();
+    });
+  });
 });
