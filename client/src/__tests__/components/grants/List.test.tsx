@@ -73,7 +73,7 @@ describe("<List />", () => {
 
     test("should not be called if it's already loading", async () => {
       const store = setupStore();
-      store.dispatch({ type: "PROJECTS_LOADING" });
+      store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
 
       renderWrapped(<List />, store);
 
@@ -104,10 +104,13 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        events: {
-          "1:1:1": {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
+        payload: {
+          chainID: 0,
+          events: {
+            "1:1:1": {
+              createdAtBlock: 1111,
+              updatedAtBlock: 1112,
+            },
           },
         },
       });
@@ -134,10 +137,13 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        events: {
-          "1:1:1": {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
+        payload: {
+          chainID: 0,
+          events: {
+            "1:1:1": {
+              createdAtBlock: 1111,
+              updatedAtBlock: 1112,
+            },
           },
         },
       });
@@ -166,10 +172,13 @@ describe("<List />", () => {
 
       store.dispatch({
         type: "PROJECTS_LOADED",
-        events: {
-          "1:1:1": {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
+        payload: {
+          chainID: 0,
+          events: {
+            "1:1:1": {
+              createdAtBlock: 1111,
+              updatedAtBlock: 1112,
+            },
           },
         },
       });
@@ -194,7 +203,10 @@ describe("<List />", () => {
         .calledWith("roundToApply", null)
         .mockReturnValue([null]);
 
-      store.dispatch({ type: "PROJECTS_LOADED", events: {} });
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        payload: { chainID: 0, events: {} },
+      });
 
       renderWrapped(<List />, store);
 
@@ -206,7 +218,7 @@ describe("<List />", () => {
     describe("projects", () => {
       test("should show a loading element", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADING" });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
 
         renderWrapped(<List />, store);
 
@@ -216,7 +228,10 @@ describe("<List />", () => {
 
       test("should show an empty list", async () => {
         const store = setupStore();
-        store.dispatch({ type: "PROJECTS_LOADED", events: {} });
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+          payload: { chainID: 0, events: {} },
+        });
 
         renderWrapped(<List />, store);
 
@@ -230,7 +245,10 @@ describe("<List />", () => {
       test("should show projects", async () => {
         const store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+          payload: { chainID: 0, events: projectEventsMap },
+        });
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
           data: projectsMetadata[0],
@@ -253,7 +271,10 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+          payload: { chainID: 0, events: projectEventsMap },
+        });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -343,7 +364,10 @@ describe("<List />", () => {
       beforeEach(() => {
         store = setupStore();
 
-        store.dispatch({ type: "PROJECTS_LOADED", events: projectEventsMap });
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+          payload: { chainID: 0, events: projectEventsMap },
+        });
 
         store.dispatch({
           type: "GRANT_METADATA_FETCHED",
@@ -372,10 +396,13 @@ describe("<List />", () => {
           store.dispatch({ type: "PROJECTS_UNLOADED" });
           store.dispatch({
             type: "PROJECTS_LOADED",
-            events: {
-              "1:1:1": {
-                createdAtBlock: 1111,
-                updatedAtBlock: 1112,
+            payload: {
+              chainID: 0,
+              events: {
+                "1:1:1": {
+                  createdAtBlock: 1111,
+                  updatedAtBlock: 1112,
+                },
               },
             },
           });
