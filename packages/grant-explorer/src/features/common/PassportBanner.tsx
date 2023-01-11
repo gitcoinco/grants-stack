@@ -4,11 +4,68 @@ import {
   XCircleIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/solid";
-import { PassportState, usePassport } from "../api/passport";
+import {
+  fetchPassport,
+  PassportResponse,
+  PassportState,
+} from "../api/passport";
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 export default function PassportBanner() {
-  const { passportState } = usePassport();
+
+  const [, setPassport] = useState<PassportResponse | undefined>();
+  const [, setError] = useState<Response | undefined>();
+  const { address, isConnected } = useAccount();
+
+  const [passportState, setPassportState] = useState<PassportState>(
+    PassportState.LOADING
+  );
+  useEffect(() => {
+    setPassportState(PassportState.LOADING);
+    const PASSPORT_COMMUNITY_ID = "12";
+    const PASSPORT_THRESHOLD = 0;
+
+    if (isConnected) {
+
+      const callFetchPassport = async () => {
+        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
+        if (res.ok) {
+          const json = await res.json();
+          setPassport(json);
+          setPassportState(
+            json.score >= PASSPORT_THRESHOLD
+              ? PassportState.MATCH_ELIGIBLE
+              : PassportState.MATCH_INELIGIBLE
+          );
+        } else {
+          setError(res);
+          switch (res.status) {
+            case 400: // unregistered/nonexistent passport address
+              setPassportState(PassportState.INVALID_PASSPORT);
+              console.log(res.json());
+              break;
+            case 401: // invalid API key
+              setPassportState(PassportState.ERROR);
+              console.log(res.json());
+              break;
+            default:
+              setPassportState(PassportState.ERROR);
+              console.error("Error fetching passport", res);
+          }
+        }
+      }
+
+      callFetchPassport();
+
+    } else {
+      setPassportState(PassportState.NOT_CONNECTED);
+    }
+
+    // call fetch passport
+    // check passport
+  }, [address, isConnected]);
 
   const ViewScoreButton = () => (
     <>
