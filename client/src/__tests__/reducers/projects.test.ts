@@ -147,7 +147,8 @@ describe("projects reducer", () => {
     });
   });
 
-  it("handles multiple chain loading statuses", async () => {
+  it("handles multiple chain loading states", async () => {
+    // start loading chain 0
     const state1: ProjectsState = projectsReducer(state, {
       type: "PROJECTS_LOADING",
       payload: 0,
@@ -156,6 +157,7 @@ describe("projects reducer", () => {
     expect(state1.status).toEqual(Status.Loading);
     expect(state1.loadingChains.length).toEqual(1);
 
+    // start loading chain 1
     const state2: ProjectsState = projectsReducer(state1, {
       type: "PROJECTS_LOADING",
       payload: 1,
@@ -164,6 +166,7 @@ describe("projects reducer", () => {
     expect(state2.status).toEqual(Status.Loading);
     expect(state2.loadingChains.length).toEqual(2);
 
+    // mark chain 1 as done
     const state3: ProjectsState = projectsReducer(state2, {
       type: "PROJECTS_LOADED",
       payload: {
@@ -175,6 +178,7 @@ describe("projects reducer", () => {
     expect(state3.status).toEqual(Status.Loading);
     expect(state3.loadingChains.length).toEqual(1);
 
+    // mark chain 0 as done
     const state4: ProjectsState = projectsReducer(state3, {
       type: "PROJECTS_LOADED",
       payload: {
