@@ -21,6 +21,7 @@ describe("wraps tested elements with contexts", function () {
     ]);
 
     const view = render(component);
+    // @ts-expect-error Testing-library-extended expect here is not detected by typescript for some reason
     expect(view.getByText("test value")).toBeInTheDocument();
   });
 });
