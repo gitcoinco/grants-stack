@@ -22,6 +22,7 @@ import * as yup from "yup";
 import { XIcon } from "@heroicons/react/outline";
 import { useFinalizeRound } from "../../context/round/FinalizeRoundContext";
 import { errorModalDelayMs } from "../../constants";
+import { fetchMatchingDistribution } from "../api/round";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -81,6 +82,23 @@ function InformationContent(props: {
   const [customMatchingData, setCustomMatchingData] = useState<
     MatchingStatsData[] | undefined
   >();
+
+  const getFinalizedRoundDistriibution = async () => {
+    try {
+      if (props.roundId !== undefined) {
+        const { distributionMetaPtr, matchingDistribution } =
+          await fetchMatchingDistribution(props.roundId);
+        console.log("distributionMetaPtr", distributionMetaPtr);
+        console.log("matchingDistribution", matchingDistribution);
+      }
+    } catch (error) {
+      console.error("FinalizeRound", error);
+    }
+  };
+
+  useEffect(() => {
+    getFinalizedRoundDistriibution();
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, error, loading } = useRoundMatchData(
