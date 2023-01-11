@@ -144,6 +144,19 @@ export const matchQFContributions = async (
 
   let contributionTokens: string[] = [];
 
+  for (const contribution of contributions) {
+    if (!contributionTokens.includes(contribution.token)) {
+      contributionTokens.push(contribution.token);
+    }
+  }
+
+  const prices: any = await fetchAverageTokenPrices(
+    chainId,
+    contributionTokens,
+    roundStartTime,
+    roundEndTime
+  );
+
   // group contributions by project
   for (const contribution of contributions) {
     const { projectId, amount, token, contributor } = contribution;
@@ -161,19 +174,14 @@ export const matchQFContributions = async (
     if (!contributionsByProject[projectId].contributions[contributor]) {
       contributionsByProject[projectId].contributions[contributor] = {
         ...contribution,
+        usdValue: Number(formatUnits(amount)) * prices[token],
       };
     } else {
-      contributionsByProject[projectId].contributions[contributor].amount =
-        amount.add(amount);
+      contributionsByProject[projectId].contributions[contributor].usdValue += Number(
+        formatUnits(amount)
+      ) * prices[token];
     }
   }
-
-  const prices: any = await fetchAverageTokenPrices(
-    chainId,
-    contributionTokens,
-    roundStartTime,
-    roundEndTime
-  );
 
   const matchResults: QFDistribution[] = [];
   let totalMatchInUSD = 0;
@@ -185,15 +193,13 @@ export const matchQFContributions = async (
 
     const contributions: QFContribution[] = Object.values(contributionsByProject[projectId].contributions);
     contributions.forEach(contribution => {
-        const { amount, token, contributor } = contribution;
+        const { contributor, usdValue } = contribution;
 
         uniqueContributors.add(contributor);
 
-        // If token is not in prices list, skip it -- LOOK INTO THIS
-        if (prices[token] > 0) {
-          const convertedAmount = Number(formatUnits(amount)) * prices[token];
-          sumOfSquares += Math.sqrt(convertedAmount);
-          sumOfContributions += convertedAmount;
+        if (usdValue) {
+          sumOfSquares += Math.sqrt(usdValue);
+          sumOfContributions += usdValue;
         }
       }
     );
