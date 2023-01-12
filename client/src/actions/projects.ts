@@ -339,6 +339,10 @@ export const fetchProjectApplications =
         addresses.projectRegistry
       );
 
+      // During the first alpha round, we created applications with the wrong chain id (using the
+      // round chain instead of the project chain). This is a fix to display the applications with
+      // the wrong application id. NOTE: there is a possibility of clash, because the contracts
+      // have the same address on multiple chains.
       const projectApplicationIDWithChain = generateUniqueRoundApplicationID(
         chain.id,
         projectID,
