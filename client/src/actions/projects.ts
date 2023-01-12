@@ -339,10 +339,16 @@ export const fetchProjectApplications =
         addresses.projectRegistry
       );
 
+      const projectApplicationIDWithChain = generateUniqueRoundApplicationID(
+        chain.id,
+        projectID,
+        addresses.projectRegistry
+      );
+
       try {
         const response: any = await graphqlFetch(
-          `query roundProjects($projectID: String) {
-            roundProjects(where: { project: $projectID }) {
+          `query roundProjects($projectID: String, $projectApplicationIDWithChain: String) {
+            roundProjects(where: { project_in: [$projectID, $projectApplicationIDWithChain] }) {
               status
               round {
                 id
@@ -351,7 +357,10 @@ export const fetchProjectApplications =
           }
           `,
           chain.id,
-          { projectID: projectApplicationID },
+          {
+            projectID: projectApplicationID,
+            projectApplicationIDWithChain,
+          },
           reactEnv
         );
 
