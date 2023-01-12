@@ -6,6 +6,7 @@ import { web3ChainIDLoaded } from "../../../actions/web3";
 import Show from "../../../components/rounds/Show";
 import setupStore from "../../../store";
 import {
+  addressFrom,
   buildProjectMetadata,
   buildRound,
   renderWrapped,
@@ -17,7 +18,7 @@ jest.mock("../../../actions/projects");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    roundId: "0x1234",
+    roundId: addressFrom(1),
     chainId: 5,
   }),
 }));
@@ -38,10 +39,16 @@ describe("<Show />", () => {
 
     beforeEach(() => {
       store = setupStore();
-      const round = buildRound({ address: "0x1234" });
+      const round = buildRound({
+        address: addressFrom(1),
+      });
 
       store.dispatch(web3ChainIDLoaded(5));
-      store.dispatch({ type: "ROUNDS_ROUND_LOADED", address: "0x1234", round });
+      store.dispatch({
+        type: "ROUNDS_ROUND_LOADED",
+        address: addressFrom(1),
+        round,
+      });
     });
 
     describe("<SwitchNetworkModal />", () => {
@@ -51,14 +58,14 @@ describe("<Show />", () => {
         renderWrapped(<Show />, store);
 
         const element = screen.getByTestId("switch-networks-modal-button");
-        const button = element.firstChild;
+        const button = element.children[1];
 
-        expect(button).toHaveTextContent("Switch Networks to Continue");
+        expect(button).toHaveTextContent("Switch Network");
 
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
           screen.getByTestId("switch-networks-modal-title")
-        ).toHaveTextContent("Switch Networks to Continue");
+        ).toHaveTextContent("Switch Network");
       });
 
       test("does not render when the round's chainId matches the user's chainId", async () => {

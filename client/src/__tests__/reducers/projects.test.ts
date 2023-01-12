@@ -1,10 +1,11 @@
 import "@testing-library/jest-dom";
 import {
+  AppStatus,
   projectsReducer,
   ProjectsState,
   Status,
-  AppStatus,
 } from "../../reducers/projects";
+import { addressFrom } from "../../utils/test_utils";
 
 describe("projects reducer", () => {
   let state: ProjectsState;
@@ -23,8 +24,20 @@ describe("projects reducer", () => {
     const initialState = {
       ...state,
       applications: {
-        "1": [{ roundID: "0x1234", status: "PENDING" as AppStatus }],
-        "2": [{ roundID: "0x4567", status: "PENDING" as AppStatus }],
+        "1": [
+          {
+            roundID: addressFrom(1),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
+        ],
+        "2": [
+          {
+            roundID: addressFrom(2),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
+        ],
       },
     };
 
@@ -34,7 +47,13 @@ describe("projects reducer", () => {
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1234", status: "PENDING" }],
+      "1": [
+        {
+          roundID: addressFrom(1),
+          status: "PENDING",
+          chainId: 1,
+        },
+      ],
       "2": [],
     });
   });
@@ -43,7 +62,13 @@ describe("projects reducer", () => {
     const initialState = {
       ...state,
       applications: {
-        "1": [{ roundID: "0x1234", status: "PENDING" as AppStatus }],
+        "1": [
+          {
+            roundID: addressFrom(1),
+            status: "PENDING" as AppStatus,
+            chainId: 1,
+          },
+        ],
       },
     };
 
@@ -52,15 +77,28 @@ describe("projects reducer", () => {
       projectID: "2",
       applications: [
         {
-          roundID: "0x3456",
+          roundID: addressFrom(2),
           status: "APPROVED",
+          chainId: 1,
         },
       ],
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1234", status: "PENDING" }],
-      "2": [{ roundID: "0x3456", status: "APPROVED" }],
+      "1": [
+        {
+          roundID: addressFrom(1),
+          status: "PENDING",
+          chainId: 1,
+        },
+      ],
+      "2": [
+        {
+          roundID: addressFrom(2),
+          status: "APPROVED",
+          chainId: 1,
+        },
+      ],
     });
   });
 
@@ -78,14 +116,14 @@ describe("projects reducer", () => {
     const initialState = {
       ...state,
       applications: {
-        "1": [{ roundID: "0x1", status: "PENDING" as AppStatus }],
+        "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
         "2": [
-          { roundID: "0x1", status: "PENDING" as AppStatus },
-          { roundID: "0x2", status: "PENDING" as AppStatus },
-          { roundID: "0x3", status: "PENDING" as AppStatus },
-          { roundID: "0x4", status: "PENDING" as AppStatus },
+          { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+          { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
+          { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
+          { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
         ],
-        "3": [{ roundID: "0x3", status: "PENDING" as AppStatus }],
+        "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
       },
     };
 
@@ -97,14 +135,14 @@ describe("projects reducer", () => {
     });
 
     expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1", status: "PENDING" as AppStatus }],
+      "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
       "2": [
-        { roundID: "0x1", status: "PENDING" as AppStatus },
-        { roundID: "0x2", status: "PENDING" as AppStatus },
-        { roundID: "0x3", status: "APPROVED" as AppStatus },
-        { roundID: "0x4", status: "PENDING" as AppStatus },
+        { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+        { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
+        { roundID: "0x3", status: "APPROVED" as AppStatus, chainId: 1 },
+        { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
       ],
-      "3": [{ roundID: "0x3", status: "PENDING" as AppStatus }],
+      "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
     });
   });
 });

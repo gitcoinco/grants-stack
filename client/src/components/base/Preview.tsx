@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { publishGrant, resetStatus } from "../../actions/newGrant";
+import { unloadAll as unloadAllMetadata } from "../../actions/grantsMetadata";
+import { unloadProjects } from "../../actions/projects";
 import { formReset } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/newGrant";
@@ -59,17 +61,26 @@ export default function Preview({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (props.status !== Status.Completed) return;
+    if (props.status === Status.Completed) {
+      setTimeout(() => {
+        navigate(slugs.grants);
+        localResetStatus();
+        dispatch(
+          addAlert(
+            "success",
+            "Your project has been saved successfully!",
+            undefined
+          )
+        );
+      }, 1500);
+    }
 
-    navigate(slugs.grants);
-    localResetStatus();
-    dispatch(
-      addAlert(
-        "success",
-        "Your project has been saved successfully!",
-        undefined
-      )
-    );
+    return () => {
+      if (props.status === Status.Completed) {
+        dispatch(unloadAllMetadata());
+        dispatch(unloadProjects());
+      }
+    };
   }, [props.status]);
 
   const { credentials } = props;

@@ -3,9 +3,10 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchProjectApplications } from "../../actions/projects";
+import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
-import { FormInputs, Metadata, Project } from "../../types";
+import { CredentialProvider, FormInputs, Metadata, Project } from "../../types";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -52,10 +53,26 @@ export default function Details({
   const canShowApplications =
     props.applications.length !== 0 && showApplications;
 
+  const validTwitterCredential: boolean = useValidateCredential(
+    project?.credentials?.twitter,
+    CredentialProvider.Twitter,
+    project?.projectTwitter
+  );
+
+  const validGithubCredential: boolean = useValidateCredential(
+    project?.credentials?.github,
+    CredentialProvider.Github,
+    project?.projectGithub
+  );
+
   useEffect(() => {
     if (props.projectID) {
       dispatch(
-        fetchProjectApplications(props.projectID, Number(props.chainId))
+        fetchProjectApplications(
+          props.projectID,
+          Number(props.chainId),
+          process.env
+        )
       );
     }
   }, [dispatch, props.projectID, props.chainId]);
@@ -68,7 +85,11 @@ export default function Details({
       <Box>
         {props.applications.map((application) => {
           const roundID = application?.roundID;
-          const cardData = { application, roundID, chainId: props.chainId };
+          const cardData = {
+            application,
+            roundID,
+            chainId: application.chainId,
+          };
           return (
             <Box key={roundID} m={2}>
               <ApplicationCard applicationData={cardData} />
@@ -140,7 +161,7 @@ export default function Details({
                   >
                     {project?.projectTwitter}
                   </a>
-                  {project?.credentials?.twitter && <Verified />}
+                  {validTwitterCredential && <Verified />}
                 </div>
               )}
               {project?.projectGithub && (
@@ -158,7 +179,7 @@ export default function Details({
                   >
                     {project?.projectGithub}
                   </a>
-                  {project?.credentials?.github && <Verified />}
+                  {validGithubCredential && <Verified />}
                 </div>
               )}
             </div>

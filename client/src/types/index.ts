@@ -61,6 +61,10 @@ export type InputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
+  feedback: {
+    type: string;
+    message: string;
+  };
 };
 
 export type AddressInputProps = {
@@ -74,6 +78,10 @@ export type AddressInputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
+  feedback: {
+    type: string;
+    message: string;
+  };
 };
 
 export type ProjectEvents = {
@@ -189,8 +197,6 @@ export interface SignedRoundApplication {
   application: RoundApplication;
 }
 
-export type ProviderID = "ClearTextTwitter" | "ClearTextGithubOrg";
-
 export type ProjectCredentials = {
   github?: VerifiableCredential;
   twitter?: VerifiableCredential;
@@ -220,3 +226,8 @@ export enum ProjectFormStatus {
 export type DynamicFormInputs = {
   [key: string]: string;
 };
+
+export enum CredentialProvider {
+  Twitter = "ClearTextTwitter",
+  Github = "ClearTextGithubOrg",
+}

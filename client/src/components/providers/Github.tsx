@@ -2,21 +2,20 @@
 import { Tooltip } from "@chakra-ui/react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
 import { global } from "../../global";
 // --- Identity tools
 import { RootState } from "../../reducers";
-import { ProviderID } from "../../types";
+import { CredentialProvider } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import { ClientType, fetchVerifiableCredential } from "./identity";
-
-// Each provider is recognised by its ID
-const providerId: ProviderID = "ClearTextGithubOrg";
+import { credentialsSaved } from "../../actions/projectForm";
+import useValidateCredential from "../../hooks/useValidateCredential";
+import VerifiedBadge from "../badges/VerifiedBadge";
 
 function generateUID(length: number) {
   return window
@@ -31,12 +30,10 @@ function generateUID(length: number) {
 
 export default function Github({
   org,
-  verificationComplete,
   verificationError,
   canVerify,
 }: {
   org: string;
-  verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
 }) {
@@ -44,16 +41,19 @@ export default function Github({
     (state: RootState) => ({
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
+      vc: state.projectForm?.credentials?.github,
     }),
     shallowEqual
   );
   const { signer } = global;
+  const dispatch = useDispatch();
   const [GHID, setGHID] = useState("");
-  const [complete, setComplete] = useState(false);
 
-  useEffect(() => {
-    setComplete(false);
-  }, [props.formMetaData.projectGithub, props.formMetaData.userGithub]);
+  const validGithubCredential: boolean = useValidateCredential(
+    props.vc,
+    CredentialProvider.Github,
+    props.formMetaData.projectGithub
+  );
 
   // Fetch Github OAuth2 url from the IAM procedure
   async function handleFetchGithubOAuth(): Promise<void> {
@@ -103,7 +103,7 @@ export default function Github({
       fetchVerifiableCredential(
         process.env.REACT_APP_PASSPORT_IAM_URL || "",
         {
-          type: providerId,
+          type: CredentialProvider.Github,
           version: "0.0.0",
           address: props.account || "",
           org,
@@ -115,8 +115,11 @@ export default function Github({
         signer as { signMessage: (message: string) => Promise<string> }
       )
         .then(async (verified: { credential: any }): Promise<void> => {
-          setComplete(true);
-          verificationComplete(verified.credential);
+          dispatch(
+            credentialsSaved({
+              github: verified.credential!,
+            })
+          );
           verificationError();
         })
         .catch((error) => {
@@ -133,7 +136,7 @@ export default function Github({
               "There was an issue with verifying your GitHub account, please try again.";
           }
           verificationError(errorMessage);
-          datadogRum.addError(error, { provider: providerId });
+          datadogRum.addError(error, { provider: CredentialProvider.Github });
           datadogLogs.logger.error("GitHub verification failed", error);
         });
     }
@@ -155,13 +158,8 @@ export default function Github({
     };
   });
 
-  if (complete) {
-    return (
-      <div className="flex ml-8 mt-14">
-        <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />
-        <p className="text-green-text font-normal">Verified</p>
-      </div>
-    );
+  if (validGithubCredential) {
+    return <VerifiedBadge />;
   }
   return (
     <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>

@@ -3,44 +3,46 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
-import { ProviderID } from "../../types";
+import { CredentialProvider } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import { fetchVerifiableCredential } from "./identity/credentials";
-
-const providerId: ProviderID = "ClearTextTwitter";
+import useValidateCredential from "../../hooks/useValidateCredential";
+import { credentialsSaved } from "../../actions/projectForm";
+import VerifiedBadge from "../badges/VerifiedBadge";
 
 const parseHandle = (provider: string) =>
   provider.replace(/ClearTextTwitter#(.*)$/, "$1");
 
 export default function Twitter({
   handle,
-  verificationComplete,
   verificationError,
   canVerify,
 }: {
   handle: string;
-  verificationComplete: (event: VerifiableCredential) => void;
   verificationError: (providerError?: string) => void;
   canVerify: boolean;
 }) {
-  const [complete, setComplete] = useState(false);
-  const props = useSelector(
-    (state: RootState) => ({
+  const dispatch = useDispatch();
+  const props = useSelector((state: RootState) => {
+    const twitterCredential = state.projectForm?.credentials?.twitter;
+    return {
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
-    }),
-    shallowEqual
-  );
+      vc: twitterCredential,
+    };
+  }, shallowEqual);
 
-  useEffect(() => {
-    setComplete(false);
-  }, [props.formMetaData.projectTwitter]);
+  const validTwitterCredential: boolean = useValidateCredential(
+    props.vc,
+    CredentialProvider.Twitter,
+    props.formMetaData.projectTwitter
+  );
 
   const { signer } = global;
 
@@ -97,7 +99,7 @@ export default function Twitter({
       fetchVerifiableCredential(
         process.env.REACT_APP_PASSPORT_IAM_URL || "",
         {
-          type: providerId,
+          type: CredentialProvider.Twitter,
           version: "0.0.0",
           address: props.account || "",
           proofs: {
@@ -117,8 +119,11 @@ export default function Twitter({
               parseHandle(provider).toLocaleLowerCase() ===
                 handle.toLocaleLowerCase()
             ) {
-              setComplete(true);
-              verificationComplete(verified.credential);
+              dispatch(
+                credentialsSaved({
+                  twitter: verified.credential!,
+                })
+              );
               verificationError();
             } else {
               verificationError(
@@ -134,7 +139,7 @@ export default function Twitter({
             "Couldn't connect to Twitter. Please try verifying again"
           );
           datadogLogs.logger.error("Twitter verification failed", error);
-          datadogRum.addError(error, { provider: providerId });
+          datadogRum.addError(error, { provider: CredentialProvider.Twitter });
         })
         .finally(() => {});
     }
@@ -156,13 +161,8 @@ export default function Twitter({
     };
   });
 
-  if (complete) {
-    return (
-      <div className="flex ml-8 mt-14">
-        <img src="./icons/shield.svg" alt="Shield Logo" className="h-6 mr-2" />
-        <p className="text-green-text font-normal">Verified</p>
-      </div>
-    );
+  if (validTwitterCredential) {
+    return <VerifiedBadge />;
   }
 
   return (
