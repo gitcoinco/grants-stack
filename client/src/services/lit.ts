@@ -9,22 +9,7 @@ const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 // @ts-ignore
 window.Buffer = Buffer;
 
-const client = LitJsSdk
-  ? new LitJsSdk.LitNodeClient({
-      bootstrapUrls: [
-        "https://serrano.litgateway.com:7370",
-        "https://serrano.litgateway.com:7371",
-        "https://serrano.litgateway.com:7372",
-        "https://serrano.litgateway.com:7373",
-        "https://serrano.litgateway.com:7374",
-        "https://serrano.litgateway.com:7375",
-        "https://serrano.litgateway.com:7376",
-        "https://serrano.litgateway.com:7377",
-        "https://serrano.litgateway.com:7378",
-        "https://serrano.litgateway.com:7379",
-      ],
-    })
-  : null;
+const client = LitJsSdk ? new LitJsSdk.LitNodeClient() : null;
 
 const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
