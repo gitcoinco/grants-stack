@@ -38,7 +38,20 @@ export type RoundMetadata = {
   roundEndTime: number;
   token: string;
   totalPot: number;
+  ipfs?: RoundMetadataIPFS;
 };
+
+export type RoundMetadataIPFS = {
+  matchingFunds: {
+    matchingCap: boolean;
+    matchingCapAmount?: number;
+    matchingFundsAvailable: number;
+  };
+  name: string;
+  support: {};
+  eligibility: {};
+  programContractAddress: string
+}
 
 export type Map = {
   [id: string]: string;
@@ -88,6 +101,8 @@ export type QFContributionSummary = {
 
 export type QFDistribution = {
   projectId: string;
+  isProjectSaturated: boolean;
+  originalMatchAmountInUSD: number;
   matchAmountInUSD: number;
   totalContributionsInUSD: number;
   matchPoolPercentage: number;

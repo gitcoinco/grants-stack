@@ -7,7 +7,7 @@ import {
   ChainName,
   RoundMetadata,
   DenominationResponse,
-  MetaPtr,
+  MetaPtr, RoundMetadataIPFS,
 } from "./types";
 import { cache } from "./cacheConfig";
 
@@ -191,8 +191,8 @@ export const fetchRoundMetadata = async (
   const data = response.data?.rounds[0];
 
   // fetch round metadata
-  const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
-  const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+  const roundMetadataFromIPFS: RoundMetadataIPFS = await fetchFromIPFS(data?.roundMetaPtr.pointer);
+  const totalPot = roundMetadataFromIPFS.matchingFunds.matchingFundsAvailable;
   const strategyName = getStrategyName(data?.votingStrategy.strategyName);
 
   const projectsMetaPtr: MetaPtr = data?.projectsMetaPtr;
@@ -207,6 +207,7 @@ export const fetchRoundMetadata = async (
     roundEndTime: data?.roundEndTime,
     token: data?.token,
     totalPot: totalPot,
+    ipfs: roundMetadataFromIPFS,
   };
 
   // cache the round metadata

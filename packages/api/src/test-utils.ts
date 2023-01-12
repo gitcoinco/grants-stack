@@ -37,6 +37,17 @@ export const mockRoundMetadata: RoundMetadata = {
   token: faker.finance.ethereumAddress.toString(),
   totalPot: faker.datatype.number(),
   projectsMetaPtr: mockProjectMetaPtr,
+  ipfs: {
+    matchingFunds: {
+      matchingCap: faker.datatype.boolean(),
+      matchingCapAmount: faker.datatype.number(),
+      matchingFundsAvailable: faker.datatype.number(),
+    },
+    name: faker.lorem.words(),
+    support: {},
+    eligibility: {},
+    programContractAddress: faker.finance.ethereumAddress.toString(),
+  },
 };
 
 export const mockQFContributionSummary: QFContributionSummary = {

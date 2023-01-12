@@ -206,18 +206,41 @@ export const matchQFContributions = async (
 
     const matchInUSD = Math.pow(sumOfSquares, 2) - sumOfContributions;
 
+    let correctedMatchInUSD = matchInUSD;
+
     const projectPayoutAddress = projectIdToPayoutMapping.get(projectId)!;
+
+    // Round saturation check
+    let isProjectSaturated = false;
+    if (metadata.ipfs) {
+      const isMatchingCap = metadata.ipfs.matchingFunds.matchingCap; // We do stupid names
+      const matchingCapPercentage = metadata.ipfs.matchingFunds.matchingCapAmount; // TODO: change name to matchingCapPercentage
+      const matchingCapAmount =
+        isMatchingCap && matchingCapPercentage ?
+          metadata.ipfs.matchingFunds.matchingFundsAvailable * (matchingCapPercentage / 100):
+          metadata.ipfs.matchingFunds.matchingFundsAvailable
+      // convert to usd
+      const matchingCapAmountInUSD = matchingCapAmount * prices[token];
+      // project saturation
+      if (matchInUSD > matchingCapAmountInUSD) {
+        isProjectSaturated = true;
+        correctedMatchInUSD = matchingCapAmountInUSD;
+      }
+    }
 
     matchResults.push({
       projectId: projectId,
-      matchAmountInUSD: matchInUSD,
+      originalMatchAmountInUSD: matchInUSD,
+      matchAmountInUSD: correctedMatchInUSD,
+      isProjectSaturated: isProjectSaturated,
       totalContributionsInUSD: sumOfContributions,
       matchPoolPercentage: 0, // init to zero
       matchAmountInToken: 0,
       projectPayoutAddress: projectPayoutAddress,
       uniqueContributorsCount: uniqueContributors.size,
     });
-    totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
+
+    totalMatchInUSD += isNaN(correctedMatchInUSD) ? 0 : correctedMatchInUSD; // TODO: what should happen when matchInUSD is NaN?
     // TODO: Error out if NaN
   }
 
@@ -239,6 +262,7 @@ export const matchQFContributions = async (
   // NOTE: Investigate how this may affect matching token and percentage calculations
   if (isSaturated) {
     matchResults.forEach((result) => {
+      result.originalMatchAmountInUSD = result.matchAmountInUSD;
       result.matchAmountInUSD *=
         (totalPot * potTokenPrice[token]) / totalMatchInUSD;
     });
