@@ -50,8 +50,8 @@ export type RoundMetadataIPFS = {
   name: string;
   support: {};
   eligibility: {};
-  programContractAddress: string
-}
+  programContractAddress: string;
+};
 
 export type Map = {
   [id: string]: string;

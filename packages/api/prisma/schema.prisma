@@ -47,12 +47,14 @@ model Match {
   updatedAt                 DateTime @updatedAt @db.Timestamptz(3)
   projectId                 String   @unique
   matchAmountInUSD          Float
+  originalMatchAmountInUSD  Float
   totalContributionsInUSD   Float
   matchPoolPercentage       Float
   matchAmountInToken        Float
   round                     Round    @relation(fields: [roundId], references: [roundId])
   roundId                   String
   projectPayoutAddress      String
+  isSaturated               Boolean  @default(false)
   uniqueContributorsCount   Int?
   @@map("match")
 }
