@@ -115,6 +115,7 @@ export class DatabaseInstance {
           matches: {
             create: {
               matchAmountInUSD: projectMatch.matchAmountInUSD,
+              originalMatchAmountInUSD: projectMatch.originalMatchAmountInUSD,
               projectId: projectMatch.projectId,
               totalContributionsInUSD: Number(
                 projectMatch.totalContributionsInUSD
@@ -122,7 +123,7 @@ export class DatabaseInstance {
               matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
               matchAmountInToken: Number(projectMatch.matchAmountInToken),
               projectPayoutAddress: projectMatch.projectPayoutAddress,
-              uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+              uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount)
             },
           },
         },
@@ -132,6 +133,7 @@ export class DatabaseInstance {
               where: { projectId: projectMatch.projectId },
               create: {
                 matchAmountInUSD: projectMatch.matchAmountInUSD,
+                originalMatchAmountInUSD: projectMatch.originalMatchAmountInUSD,
                 projectId: projectMatch.projectId,
                 totalContributionsInUSD: Number(
                   projectMatch.totalContributionsInUSD

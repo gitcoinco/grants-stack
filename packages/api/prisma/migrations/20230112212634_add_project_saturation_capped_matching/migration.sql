@@ -5,5 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE "match" ADD COLUMN     "isSaturated" BOOLEAN NOT NULL DEFAULT false,
+ALTER TABLE "match" ADD COLUMN     "isProjectSaturated" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "originalMatchAmountInUSD" DOUBLE PRECISION NOT NULL;

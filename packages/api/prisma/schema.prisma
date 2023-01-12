@@ -54,8 +54,9 @@ model Match {
   round                     Round    @relation(fields: [roundId], references: [roundId])
   roundId                   String
   projectPayoutAddress      String
-  isSaturated               Boolean  @default(false)
+  isProjectSaturated        Boolean  @default(false)
   uniqueContributorsCount   Int?
+  
   @@map("match")
 }
 

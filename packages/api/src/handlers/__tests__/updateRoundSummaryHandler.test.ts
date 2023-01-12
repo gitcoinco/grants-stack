@@ -2,7 +2,7 @@ import { Response } from "express";
 import { faker } from "@faker-js/faker";
 import { getMockReq } from "@jest-mock/express";
 
-import { HandleResponseObject, QFContributionSummary } from "../../types";
+import { HandleResponseObject } from "../../types";
 import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
@@ -12,7 +12,6 @@ import {
   mockQFVote,
 } from "../../test-utils";
 import {
-  getRoundSummary,
   updateRoundSummaryHandler,
 } from "../updateRoundSummaryHandler";
 import { prismaMock } from "../singleton";
