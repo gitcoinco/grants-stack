@@ -477,29 +477,34 @@ export async function finalizeRoundToContract({
  * @param roundId - the ID of a specific round for detail
  */
 export async function fetchMatchingDistribution(
-  roundId: string
+  roundId: string | undefined,
+  signerOrProvider: Web3Provider
 ): Promise<{
-  distributionMetaPtr: MetadataPointer;
+  distributionMetaPtr: string;
   matchingDistribution: MatchingStatsData[];
 }> {
   try {
+    if (!roundId) {
+      throw new Error("Round ID is required");
+    }
     let matchingDistribution: MatchingStatsData[] = [];
     const roundImplementation = new ethers.Contract(
       roundId,
-      roundImplementationContract.abi
+      roundImplementationContract.abi,
+      signerOrProvider
     );
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
-      payoutStrategyContract.abi
+      payoutStrategyContract.abi,
+      signerOrProvider
     );
-    const distributionMetaPtr = await payoutStrategy.distributionMetaPtr();
+    const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
+    const distributionMetaPtr = distributionMetaPtrRes.pointer;
 
-    if (distributionMetaPtr.pointer !== "0x") {
+    if (distributionMetaPtr !== "") {
       // fetch distribution from IPFS
-      const matchingDistributionRes = await fetchFromIPFS(
-        distributionMetaPtr.pointer
-      );
+      const matchingDistributionRes = await fetchFromIPFS(distributionMetaPtr);
       matchingDistribution = matchingDistributionRes.matchingDistribution;
     }
 

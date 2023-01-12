@@ -4,10 +4,19 @@ import {
   ProgressStatus,
   Web3Instance,
 } from "../../features/api/types";
-import React, { createContext, useContext, useReducer } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
-import { finalizeRoundToContract } from "../../features/api/round";
+import {
+  fetchMatchingDistribution,
+  finalizeRoundToContract,
+} from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 
@@ -257,3 +266,43 @@ function encodeDistributionParameters(
     [merkleRoot, distributionMetaPtr]
   );
 }
+
+export const useMatchingDistribution = (
+  roundId: string | undefined
+): {
+  distributionMetaPtr: string;
+  matchingDistribution: MatchingStatsData[];
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  const { provider: walletProvider } = useWallet();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [matchingData, setMatchingData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const matchingDataRes = await fetchMatchingDistribution(
+          roundId,
+          walletProvider
+        );
+        setMatchingData(matchingDataRes);
+        setIsLoading(false);
+      } catch (error) {
+        setIsError(true);
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return {
+    distributionMetaPtr: matchingData.distributionMetaPtr,
+    matchingDistribution: matchingData.matchingDistribution,
+    isLoading: isLoading,
+    isError: isError,
+  };
+};
