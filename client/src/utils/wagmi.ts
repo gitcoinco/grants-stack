@@ -14,8 +14,8 @@ const ftmTestnetIcon = "../assets/ftm-testnet.png";
 const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
 
 // RPC keys
-const alchemyId = process.env.ALCHEMY_ID;
-const infuraId = process.env.INFURA_ID;
+const alchemyId = process.env.REACT_APP_ALCHEMY_ID;
+const infuraId = process.env.REACT_APP_INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
 
