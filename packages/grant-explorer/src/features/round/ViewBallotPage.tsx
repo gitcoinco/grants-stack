@@ -34,6 +34,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Footer from "../common/Footer";
 import RoundEndedBanner from "../common/RoundEndedBanner";
+import PassportBanner from "../common/PassportBanner";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -177,6 +178,7 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <PassportBanner chainId={chainId} roundId={roundId}/>
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner/>

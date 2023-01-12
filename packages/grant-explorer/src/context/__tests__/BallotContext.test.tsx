@@ -266,7 +266,7 @@ const TestingUseBallotComponent = () => {
     handleAddProjectsToShortlist,
     handleRemoveProjectsFromShortlist,
     handleAddProjectsToFinalBallot,
-    handleRemoveProjectsFromFinalBallot,
+    ,
     handleRemoveProjectsFromFinalBallotAndAddToShortlist,
   ] = useBallot();
 

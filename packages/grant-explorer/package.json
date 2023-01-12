@@ -61,6 +61,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "test-log": "craco test --watchAll=false",
     "test": "craco test --watchAll=false --silent",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
