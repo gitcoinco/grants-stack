@@ -68,6 +68,7 @@ export type QFContribution = {
   contributor: string;
   projectId: string;
   projectPayoutAddress: string;
+  usdValue?: number;
 };
 
 export type QFVotedEvent = {

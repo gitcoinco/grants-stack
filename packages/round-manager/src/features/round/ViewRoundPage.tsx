@@ -53,7 +53,7 @@ export default function ViewRoundPage() {
 
   const tabStyles = (selected: boolean) =>
     selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 font-bold text-sm outline-none"
+      ? "border-violet-500 border-b whitespace-nowrap py-4 px-1 text-sm outline-none"
       : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function ViewRoundPage() {
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
             <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
-              <div className="text-grey-400 font-bold text-sm flex flex-row items-center gap-3">
+              <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
                 <Link to={`/`}>
                   <span>{"My Programs"}</span>
                 </Link>

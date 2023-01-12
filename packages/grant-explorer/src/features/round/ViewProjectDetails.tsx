@@ -26,6 +26,7 @@ import { getProjectSummary } from "../api/api";
 import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
+import PassportBanner from "../common/PassportBanner";
 
 enum VerifiedCredentialState {
   VALID,
@@ -71,7 +72,8 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <PassportBanner/>
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />

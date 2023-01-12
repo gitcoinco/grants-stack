@@ -5,11 +5,15 @@ fetchMock.enableMocks();
 import {
   makeApprovedProjectData,
   makeRoundData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
   renderWithContext,
 } from "../../../test-utils";
 import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
 import { faker } from "@faker-js/faker";
+import { BigNumber, ethers } from "ethers";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
@@ -19,9 +23,22 @@ const useParamsFn = () => ({
   roundId,
   applicationId: grantApplicationId,
 });
+const userAddress = faker.finance.ethereumAddress();
+const mockAccount = {
+  address: userAddress,
+};
 
+jest.mock("../../common/Navbar");
+jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+}));
+
+jest.mock("wagmi", () => ({
+  useAccount: () => mockAccount,
+  useBalance: () => mockBalance,
+  useSigner: () => mockSigner,
+  useNetwork: () => mockNetwork,
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
