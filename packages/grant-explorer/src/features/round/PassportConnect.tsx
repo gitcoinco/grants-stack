@@ -13,6 +13,7 @@ import {
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { backOff } from "exponential-backoff";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
@@ -41,7 +42,6 @@ export default function PassportConnect() {
     }
 
     const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
-
     if (!res) {
       setPassportState(PassportState.ERROR);
       return;
@@ -50,9 +50,8 @@ export default function PassportConnect() {
     if (res.ok) {
       const scoreResponse: PassportResponse = await res.json();
 
-      // TODO: Handle exponential backoff
       if (scoreResponse.status == "PROCESSING") {
-        await callFetchPassport();
+        await backOff(() => callFetchPassport());
         return;
       }
 
@@ -115,7 +114,7 @@ export default function PassportConnect() {
     return (
       <div
         data-testid="have-a-passport-instructions"
-        className="text-left mt-8 mb-5 text-grey-500 max-w-7xl mx-auto"
+        className="text-left mt-8 mb-5 text-grey-500max-w-7xl mx-auto"
       >
         <div className="text-[18px] mb-6 flex">
           <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">

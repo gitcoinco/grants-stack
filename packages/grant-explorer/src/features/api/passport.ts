@@ -1,3 +1,5 @@
+import useSWR from "swr";
+
 export enum PassportState {
   NOT_CONNECTED,
   INVALID_PASSPORT,
@@ -11,16 +13,50 @@ type PassportEvidence = {
   type: string;
   rawScore: string;
   threshold: string;
-}
+};
 
 export type PassportResponse = {
   address?: string;
   score?: string;
-  status?: string
+  status?: string;
   evidence?: PassportEvidence;
   error?: string;
   detail?: string;
 };
+
+type UsePassportHook = {
+  /** Passport for the given address and communityId */
+  passport: PassportResponse | undefined;
+  /** State of the hook
+   * Handles loading, error and other states */
+  state: PassportState;
+  /** Error during fetching of passport score */
+  error: Response | undefined;
+  /** Re-submits the address for passport scoring
+   * Promise resolves when the submission is successful, NOT when the score is updated */
+  recalculateScore: () => Promise<Response>;
+  /**
+   * Refreshes the score without resubmitting for scoring */
+  refreshScore: () => Promise<void>;
+};
+
+function usePassport(address: string, communityId: string): UsePassportHook {
+  const { data, isLoading, error, mutate } = useSWR<PassportResponse>(
+    [address, communityId],
+    ([address, communityId]) =>
+      fetchPassport(address, communityId).then((res) => res.json())
+  );
+
+  return {
+    error,
+    state: PassportState.NOT_CONNECTED,
+    refreshScore: async () => {
+      await mutate();
+    },
+    recalculateScore: () => submitPassport(address, communityId),
+    passport: data,
+  };
+}
 
 /**
  * Endpoint used to fetch the passport score for a given address
