@@ -158,10 +158,15 @@ export default function PassportConnect() {
 
           <div className="flex justify-center gap-5 mb-4">
             <p className="text-gitcoin-grey-500 text-3xl mt-auto">
+              { passportState === PassportState.LOADING &&
+                <span><PassportLogo data-testid="passport-fetching-icon" className="animate-spin w-10"/></span>
+              }
               {
-                passportState === PassportState.LOADING ?
-                  <span><PassportLogo data-testid="passport-fetching-icon" className="animate-spin w-10"/></span>
-                  : <>
+                (
+                  passportState === PassportState.MATCH_ELIGIBLE ||
+                  passportState === PassportState.MATCH_INELIGIBLE
+                )  &&
+                  <>
                     <span data-testid="passport-score">
                       {passport?.evidence?.rawScore && Number(passport?.evidence?.rawScore).toFixed(2) || 0}
                     </span>
@@ -182,14 +187,17 @@ export default function PassportConnect() {
               data-testid="recalculate-score-button"
             >
               <ArrowPathIcon className="h-4 w-4"/>
-              Update score
+              {
+                passportState === PassportState.INVALID_PASSPORT ?
+                "Submit Score" : "Update Score"
+              }
             </Button>
           </div>
 
           {passportState === PassportState.LOADING &&
             <div>
               <p className="text-grey-500 mb-2">Checking eligibility</p>
-              <p>Fetch score from passport!</p>
+              <p>Fetching score from passport!</p>
             </div>
           }
 
