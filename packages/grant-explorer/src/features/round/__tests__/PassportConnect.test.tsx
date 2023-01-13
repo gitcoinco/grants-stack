@@ -8,7 +8,7 @@ import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 
-jest.mock("../../../features/api/passport");
+jest.mock("../../api/passport");
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -34,6 +34,11 @@ const mockAccount = {
 const mockJsonPromise = Promise.resolve({
   score: "1",
   address: userAddress,
+  status: "DONE",
+  evidence: {
+    threshold: "0",
+    rawScore: "1",
+  },
 });
 
 const mockPassportPromise = {
@@ -51,11 +56,98 @@ jest.mock("wagmi", () => ({
 process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = '12';
 
 describe("<PassportConnect/>", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+
+  describe("Navigation Buttons", () => {
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("shows Home and Connect to Passport breadcrumb", async () => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("breadcrumb")).toBeInTheDocument();
+        expect(screen.getByText("Home")).toBeInTheDocument();
+        expect(screen.getByText("Connect to Passport")).toBeInTheDocument();
+      })
+    });
+
+    it("shows back to browsing button on page load", async () => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("back-to-browsing-button")).toBeInTheDocument();
+      });
+    });
+
+    it("shows create a passport button on page load", async () => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("create-passport-button")).toBeInTheDocument();
+      });
+    });
+
+    it("shows need help link on page load", async() => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("need-help-link")).toBeInTheDocument();
+      });
+    });
+
+    it("shows what is passport link on page load", async() => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("what-is-passport-link")).toBeInTheDocument();
+      })
+    });
+
   });
 
-  describe("Passport State", () => {
+  describe("Passport Connect", () => {
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("Should show the Create Passport button", async () => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("create-passport-button")).toBeInTheDocument();
+      });
+    });
+
+    it("Should show the Recalculate Score button", async () => {
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+      await waitFor(() => {
+        expect(screen.getByTestId("recalculate-score-button")).toBeInTheDocument();
+      });
+    });
+
+    it("Clicking the Recalculate Score button invokes submitPassport", async () => {
+      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+      (submitPassport as jest.Mock).mockResolvedValueOnce(jest.fn());
+
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(async () => {
+        fireEvent.click(await screen.findByTestId("recalculate-score-button"));
+
+        expect(submitPassport).toHaveBeenCalled();
+        expect(fetchPassport).toHaveBeenCalled();
+      });
+    });
+
+  });
+});
+
+describe("<PassportConnect/>", () => {
+
+  describe("PassportConnect Passport State", () => {
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -65,6 +157,11 @@ describe("<PassportConnect/>", () => {
       const mockJsonPromise = Promise.resolve({
         score: "-1",
         address: userAddress,
+        status: "DONE",
+        evidence: {
+          threshold: "0",
+          rawScore: "-1",
+        },
       });
 
       const mockPassportPromise = {
@@ -107,78 +204,4 @@ describe("<PassportConnect/>", () => {
       });
     });
   });
-
-  describe("Navigation Buttons", () => {
-
-    it("shows Home and Connect to Passport breadcrumb", () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      expect(screen.getByTestId("breadcrumb")).toBeInTheDocument();
-      expect(screen.getByText("Home")).toBeInTheDocument();
-      expect(screen.getByText("Connect to Passport")).toBeInTheDocument();
-    });
-
-    it("shows back to browsing button on page load", () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      expect(
-        screen.getByTestId("back-to-browsing-button")
-      ).toBeInTheDocument();
-    });
-
-  });
-
-  describe("Passport Instructions", () => {
-
-    it("Should show both tabs Have a Passport and Don't have a Passport on page load", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      expect(screen.getByText("Have a Passport?")).toBeInTheDocument();
-      expect(screen.getByText("Don't have a Passport?")).toBeInTheDocument();
-    });
-
-    it("Should show Passport Instructions on click of Have a Passport tab", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      fireEvent.click(screen.getByText("Have a Passport?"));
-
-      expect(screen.getByText("Connect to Passport")).toBeInTheDocument();
-    });
-
-    it("Should show Passport Instructions on click of Don't have a Passport tab", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      fireEvent.click(screen.getByText("Don't have a Passport?"));
-
-      expect(screen.getByText("Connect your wallet to Passport. You will be taken to a new window to begin verifying your identity.")).toBeInTheDocument();
-    });
-
-  });
-
-  describe("Passport Connect", () => {
-
-    it("Should show the Open Passport button", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      expect(screen.getByTestId("open-passport")).toBeInTheDocument();
-    });
-
-    it("Should show the Recalculate Score button", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      expect(screen.getByTestId("recalculate-score")).toBeInTheDocument();
-    });
-
-    it("Clicking the Recalculate Score button invokes submitPassport", async () => {
-      render(<PassportConnect/>, { wrapper: BrowserRouter });
-
-      (submitPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
-      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
-
-      fireEvent.click(screen.getByTestId("recalculate-score"));
-      expect(submitPassport).toHaveBeenCalled();
-    });
-
-  });
-
 });
