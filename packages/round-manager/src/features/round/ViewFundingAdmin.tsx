@@ -331,7 +331,9 @@ function FinalizeRound(props: {
     <>
       {props.useContractData && (
         <div className="w-full pt-12">
-          <span className="font-bold">Finalized Round</span>
+          <span className="font-bold" data-testid="finalized-round">
+            Finalized Round
+          </span>
           <InformationTable
             useContractData={props.useContractData}
             matchingData={props.matchingDistributionContract}
@@ -340,7 +342,9 @@ function FinalizeRound(props: {
       )}
       {!props.useContractData && (
         <div className="w-full pt-12">
-          <span className="font-bold">Finalize Round</span>
+          <span className="font-bold" data-testid="finalize-round">
+            Finalize Round
+          </span>
           <hr className="mt-2 mb-4" />
           <div className="flex columns-2 pl-8">
             <div className="w-full pt-2">
