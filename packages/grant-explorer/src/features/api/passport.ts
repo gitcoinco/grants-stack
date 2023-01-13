@@ -7,10 +7,18 @@ export enum PassportState {
   ERROR,
 }
 
+type PassportEvidence = {
+  type: string;
+  rawScore: string;
+  threshold: string;
+}
+
 export type PassportResponse = {
-  threshold?: number;
   address?: string;
   score?: string;
+  status?: string
+  evidence?: PassportEvidence;
+  error?: string;
   detail?: string;
 };
 
