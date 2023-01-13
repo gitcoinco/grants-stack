@@ -43,6 +43,12 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
           const json = await res.json();
+
+          if (json.status == "PROCESSING") {
+            await callFetchPassport();
+            return;
+          }
+
           setPassport(json);
           setPassportState(
             json.score >= PASSPORT_THRESHOLD
