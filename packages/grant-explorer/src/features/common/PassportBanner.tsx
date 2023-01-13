@@ -12,12 +12,13 @@ import {
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-
-export default function PassportBanner(props: {chainId?: string, roundId?: string}) {
-
-  const chainId =props.chainId;
+export default function PassportBanner(props: {
+  chainId?: string;
+  roundId?: string;
+}) {
+  const chainId = props.chainId;
   const roundId = props.roundId;
 
   const navigate = useNavigate();
@@ -33,13 +34,12 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
     setPassportState(PassportState.LOADING);
 
     // TODO: fetch from round metadata
-    const PASSPORT_COMMUNITY_ID = process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+    const PASSPORT_COMMUNITY_ID =
+      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
     const PASSPORT_THRESHOLD = 0;
 
     if (isConnected && address && PASSPORT_COMMUNITY_ID) {
-
       const callFetchPassport = async () => {
-
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
           const json = await res.json();
@@ -54,7 +54,10 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
           switch (res.status) {
             case 400: // unregistered/nonexistent passport address
               setPassportState(PassportState.INVALID_PASSPORT);
-              console.error("unregistered/nonexistent passport address", res.json());
+              console.error(
+                "unregistered/nonexistent passport address",
+                res.json()
+              );
               break;
             case 401: // invalid API key
               setPassportState(PassportState.ERROR);
@@ -65,10 +68,9 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
               console.error("Error fetching passport", res);
           }
         }
-      }
+      };
 
       callFetchPassport();
-
     } else {
       setPassportState(PassportState.NOT_CONNECTED);
     }
@@ -82,7 +84,9 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
       <button
         className="ml-3 font-medium text-sm underline"
         data-testid="view-score-button"
-        onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
+        onClick={() =>
+          navigate(`/round/${chainId}/${roundId}/passport/connect`)
+        }
       >
         View score
       </button>
@@ -114,9 +118,11 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
       <button
         className="ml-3 font-medium text-sm underline"
         data-testid="visit-passport-button"
-        onClick={() => navigate(`/round/${chainId}/${roundId}/passport/connect`)}
+        onClick={() =>
+          navigate(`/round/${chainId}/${roundId}/passport/connect`)
+        }
       >
-        Visit Passport
+        Please configure your passport
       </button>
     </>
   );
@@ -160,7 +166,7 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
       icon: null,
       color: "bg-yellow-300",
       testId: "invalid-passport",
-      body: "Invalid Passport. Please verify with a Passport.",
+      body: "Passport score not detected. Please configure your Passport.",
       button: <InvalidPassportButton />,
     },
     [PassportState.ERROR]: {
