@@ -43,6 +43,7 @@ export default function PassportConnect() {
     if (res.ok) {
       const scoreResponse: PassportResponse = await res.json();
 
+      // TODO: Handle exponential backoff
       if (scoreResponse.status == "PROCESSING") {
         await callFetchPassport();
         return;

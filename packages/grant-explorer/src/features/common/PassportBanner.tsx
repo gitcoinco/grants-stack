@@ -44,6 +44,7 @@ export default function PassportBanner(props: {chainId?: string, roundId?: strin
         if (res.ok) {
           const json = await res.json();
 
+          // TODO: Handle exponential backoff
           if (json.status == "PROCESSING") {
             await callFetchPassport();
             return;
