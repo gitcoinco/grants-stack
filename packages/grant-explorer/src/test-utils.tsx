@@ -17,6 +17,7 @@ import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { store } from "./app/store";
 import history from "./history";
+import { BigNumber, ethers } from "ethers";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -115,4 +116,22 @@ export const renderWrapped = (ui: JSX.Element) => {
       </ReduxRouter>
     </Provider>
   );
+};
+
+export const mockBalance = {
+  data: {
+    value: BigNumber.from(ethers.utils.parseUnits("10", 18)),
+  },
+};
+
+export const mockSigner = {
+  data: {},
+};
+
+export const mockNetwork = {
+  chain: { id: 5, name: "Goerli"},
+  chains: [
+    { id: 10, name: "Optimism" },
+    { id: 5, name: "Goerli" },
+  ],
 };
