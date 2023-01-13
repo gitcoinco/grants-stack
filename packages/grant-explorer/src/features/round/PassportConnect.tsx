@@ -272,8 +272,9 @@ export default function PassportConnect() {
               your donation
             </h2>
             <p className="text-xl mb-1">Unlock matching for your donation by verifying your identity</p>
-            <p className="text-xl">Connect your wallet to Passport to check your identity score and maximize your
+            <p className="text-xl mb-1">Connect your wallet to Passport to check your identity score and maximize your
               donation power.</p>
+            <p className="text-xl">Passport is designed to proactively verify users’ identities to protect against Sybil attacks.</p>
 
             <p className="mt-4 mb-10 pb-3">
               {/* TODO: Add URL */}
