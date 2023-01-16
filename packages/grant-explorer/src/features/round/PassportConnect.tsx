@@ -268,12 +268,21 @@ export default function PassportConnect() {
         </div>
 
         <p className="mt-3 pb-3 text-center">
-          {/* TODO: Add URL */}
+          <a
+            data-testid="need-help-link"
+            className="text-md border-b border-black pb-1 mr-4"
+            target="_blank"
+            href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
+            rel="noreferrer"
+          >
+            What is Passport and how does it work?
+          </a>
           <a
             data-testid="need-help-link"
             className="text-md border-b border-black pb-1"
             target="_blank"
-            href="#"
+            href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/how-do-i-create-a-gitcoin-passport"
+            rel="noreferrer"
           >
             Need Help?
           </a>
