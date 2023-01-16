@@ -161,6 +161,10 @@ export const matchQFContributions = async (
   for (const contribution of contributions) {
     const { projectId, amount, token, contributor } = contribution;
 
+    if (!prices[token] || prices[token] < 0) {
+      prices[token] = 0; // if price is not available, set it to 0
+    }
+
     if (!contributionTokens.includes(token)) {
       contributionTokens.push(token);
     }
@@ -222,6 +226,9 @@ export const matchQFContributions = async (
   }
 
   for (const matchResult of matchResults) {
+    if (matchResult.matchAmountInUSD <= 0 || totalMatchInUSD <= 0) {
+      continue; // skip projects with no match
+    }
     matchResult.matchPoolPercentage =
       matchResult.matchAmountInUSD / totalMatchInUSD;
     matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
