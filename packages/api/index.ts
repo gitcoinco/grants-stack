@@ -24,7 +24,6 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-
 const port = process.env.PORT;
 const server = app.listen(port, () => {
   console.log(

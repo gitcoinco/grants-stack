@@ -32,27 +32,18 @@ router.get(
   "/data/summary/project/:chainId/:roundId/:projectId",
   getProjectSummaryDataHandler
 );
-router.get(
-  "/data/summary/round/:chainId/:roundId",
-  getRoundSummaryDataHandler
-);
+router.get("/data/summary/round/:chainId/:roundId", getRoundSummaryDataHandler);
 router.get(
   "/data/summary/projects/:chainId/:roundId",
   getProjectSummariesDataHandler
 );
 
 // <--- MATCH ROUTES --->
-router.post(
-  "/update/match/round/:chainId/:roundId",
-  updateRoundMatchHandler
-);
+router.post("/update/match/round/:chainId/:roundId", updateRoundMatchHandler);
 router.get(
   "/data/match/project/:chainId/:roundId/:projectId",
   getProjectMatchDataHandler
 );
-router.get(
-  "/data/match/round/:chainId/:roundId",
-  getRoundMatchDataHandler
-);
+router.get("/data/match/round/:chainId/:roundId", getRoundMatchDataHandler);
 
 export default router;

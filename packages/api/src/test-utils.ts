@@ -63,4 +63,4 @@ export const mockQFDistribution: QFDistribution = {
   projectPayoutAddress: faker.finance.ethereumAddress.toString(),
   uniqueContributorsCount: faker.datatype.number(),
   totalContributionsInUSD: faker.datatype.number(),
-}
+};

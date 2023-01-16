@@ -38,7 +38,7 @@ export type RoundMetadata = {
   roundEndTime: number;
   token: string;
   totalPot: number;
-  matchingCapPercentage? : number;
+  matchingCapPercentage?: number;
 };
 
 export type Map = {

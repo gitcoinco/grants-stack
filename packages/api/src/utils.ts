@@ -208,7 +208,7 @@ export const fetchRoundMetadata = async (
     roundEndTime: data?.roundEndTime,
     token: data?.token,
     totalPot: totalPot,
-    matchingCapPercentage: matchingCapPercentage
+    matchingCapPercentage: matchingCapPercentage,
   };
 
   // cache the round metadata

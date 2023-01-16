@@ -1,14 +1,10 @@
 import { Request, Response } from "express";
+import { ChainId, QFDistributionResults } from "../types";
+import { fetchRoundMetadata, getChainVerbose, handleResponse } from "../utils";
 import {
-  ChainId,
-  QFDistributionResults,
-} from "../types";
-import {
-  fetchRoundMetadata,
-  getChainVerbose,
-  handleResponse,
-} from "../utils";
-import { fetchQFContributionsForRound, matchQFContributions } from "../votingStrategies/linearQuadraticFunding";
+  fetchQFContributionsForRound,
+  matchQFContributions,
+} from "../votingStrategies/linearQuadraticFunding";
 import { VotingStrategy } from "@prisma/client";
 import { hotfixForRounds } from "../hotfixes";
 import { cache } from "../cacheConfig";
@@ -96,7 +92,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
       } catch (error) {
         console.error(error);
 
-        results.distribution = results.distribution.map(dist => {
+        results.distribution = results.distribution.map((dist) => {
           return {
             id: null,
             createdAt: null,
