@@ -166,7 +166,7 @@ export default function PassportBanner(props: {
       icon: null,
       color: "bg-yellow-300",
       testId: "invalid-passport",
-      body: "Passport score not detected. Please configure your Passport.",
+      body: "Passport score not detected.",
       button: <InvalidPassportButton />,
     },
     [PassportState.ERROR]: {
