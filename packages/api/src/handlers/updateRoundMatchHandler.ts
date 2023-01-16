@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { query, Request, Response } from "express";
 import {
   ChainId,
   QFContribution,
@@ -14,11 +14,12 @@ import {
   handleResponse,
 } from "../utils";
 import { fetchQFContributionsForRound } from "../votingStrategies/linearQuadraticFunding";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { VotingStrategy } from "@prisma/client";
 import { hotfixForRounds } from "../hotfixes";
 import { cache } from "../cacheConfig";
 import { db } from "../database";
+import { BigNumber, FixedNumber } from "ethers";
 
 export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   const { chainId, roundId } = req.params;
@@ -102,7 +103,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
       } catch (error) {
         console.error(error);
 
-        results.distribution = results.distribution.map(dist => {
+        results.distribution = results.distribution.map((dist) => {
           return {
             id: null,
             createdAt: null,
@@ -154,68 +155,70 @@ export const matchQFContributions = async (
   );
 
   const matchPotInUsd = prices[token] * totalPot;
+  const matchPotInToken = parseUnits(totalPot.toFixed(18), 18);
 
-  // const contributionsByProject: {
-  //   [projectId: string]: any;
-  // } = {};
-  // // group contributions by project
-  // for (const contribution of contributions) {
-  //   const { projectId, amount, token, contributor } = contribution;
-  //
-  //   if (!prices[token] || prices[token] < 0) {
-  //     continue; // skip
-  //   }
-  //
-  //   if (!contributionsByProject[projectId]) {
-  //     contributionsByProject[projectId] = {
-  //       contributions: contribution ? { [contributor]: contribution } : {},
-  //     };
-  //   }
-  //
-  //   if (!contributionsByProject[projectId].contributions[contributor]) {
-  //     contributionsByProject[projectId].contributions[contributor] = {
-  //       ...contribution,
-  //       usdValue: Number(formatUnits(amount)) * prices[token],
-  //     };
-  //   } else {
-  //     contributionsByProject[projectId].contributions[contributor].usdValue += Number(
-  //       formatUnits(amount)
-  //     ) * prices[token];
-  //   }
-  // }
+  let roundToken = token;
 
   for (const contribution of contributions) {
     const { projectId, amount, token, contributor } = contribution;
 
     if (!prices[token] || prices[token] < 0) {
       contribution.usdValue = 0;
+      contribution.roundTokenValue = BigNumber.from("0");
     } else {
-      contribution.usdValue = Number(formatUnits(amount)) * prices[token];
+      contribution.usdValue = Number(
+        (Number(formatUnits(amount)) * prices[token]).toFixed(18)
+      );
+      contribution.roundTokenValue = parseUnits(
+        (contribution.usdValue / prices[roundToken]).toFixed(18),
+        18
+      );
     }
+  }
 
+  function sqrtBN(x: BigNumber) {
+    const ONE = BigNumber.from(1);
+    const TWO = BigNumber.from(2);
+    if (x.lte(BigNumber.from(0))) return BigNumber.from(0);
+    let z = x.add(ONE).div(TWO);
+    let y = x;
+    while (z.sub(y).isNegative()) {
+      y = z;
+      z = x.div(z).add(z).div(TWO);
+    }
+    return y;
   }
 
   const calculateQFMatch = (contributions: QFContribution[]) => {
     // Create an empty object to store the project matches
-    const projectMatches: { [projectId: string]: {
-      usdValue: number;
-      isSaturated: boolean;
-      } } = {
-    };
+    const projectMatches: {
+      [projectId: string]: {
+        usdValue: number;
+        roundTokenValue: BigNumber;
+        isSaturated: boolean;
+      };
+    } = {};
 
     // Iterate through each contribution
     for (const contribution of contributions) {
       // Check if the contribution has a usdValue
-      if (contribution.usdValue) {
+      if (contribution.usdValue && contribution.roundTokenValue) {
         // Check if the projectId is already in the projectMatches object
         if (projectMatches[contribution.projectId]) {
           // If it is, add the square-root of the usdValue to the existing match
-          projectMatches[contribution.projectId].usdValue += Math.sqrt(contribution.usdValue);
+          projectMatches[contribution.projectId].usdValue += Math.sqrt(
+            contribution.usdValue
+          );
+          projectMatches[contribution.projectId].roundTokenValue =
+            projectMatches[contribution.projectId].roundTokenValue.add(
+              sqrtBN(contribution.roundTokenValue)
+            );
         } else {
           projectMatches[contribution.projectId] = {
             usdValue: Math.sqrt(contribution.usdValue),
+            roundTokenValue: sqrtBN(contribution.roundTokenValue),
             isSaturated: false,
-          }
+          };
         }
       }
     }
@@ -224,7 +227,12 @@ export const matchQFContributions = async (
     // Iterate through the projectMatches object
     for (const projectId in projectMatches) {
       // Square the project match to get the quadratic funding match
-      projectMatches[projectId].usdValue = Math.pow(projectMatches[projectId].usdValue, 2);
+      projectMatches[projectId].usdValue = Math.pow(
+        projectMatches[projectId].usdValue,
+        2
+      );
+      projectMatches[projectId].roundTokenValue =
+        projectMatches[projectId].roundTokenValue.pow(2);
       totalMatch += projectMatches[projectId].usdValue;
     }
 
@@ -235,224 +243,179 @@ export const matchQFContributions = async (
     }
 
     return projectMatches;
-  }
+  };
 
   const projectMatches = calculateQFMatch(contributions);
-  // console.log("projectMatches", projectMatches)
 
-
-  // normalize the project matches
-  const normalizeProjectMatches = (projectMatches: { [projectId: string]: {
-    usdValue: number;
-    isSaturated: boolean;
-    } }, scale: number, cap: number) => {
+  const normalizeProjectMatches = (
+    projectMatches: {
+      [projectId: string]: {
+        usdValue: number;
+        roundTokenValue: BigNumber;
+        isSaturated: boolean;
+      };
+    },
+    scaleInUsd: number,
+    capInUsd: number,
+    scaleInToken: BigNumber,
+    capInToken: BigNumber
+  ) => {
     for (const projectId in projectMatches) {
-        projectMatches[projectId].usdValue = (projectMatches[projectId].usdValue / scale) * matchPotInUsd;
-        projectMatches[projectId].isSaturated = projectMatches[projectId].usdValue > cap;
+      projectMatches[projectId].usdValue =
+        (projectMatches[projectId].usdValue / scaleInUsd) * matchPotInUsd;
+      projectMatches[projectId].roundTokenValue = BigNumber.from(
+        projectMatches[projectId].roundTokenValue
+          .mul(BigNumber.from("10").pow(BigNumber.from("18")))
+          .div(scaleInToken)
+          .mul(matchPotInToken)
+          .toString()
+          .slice(0, 18)
+      );
+      projectMatches[projectId].isSaturated =
+        projectMatches[projectId].usdValue > capInUsd;
     }
 
     return projectMatches;
-  }
+  };
 
   // sum of all project matches
-  let totalMatch = 0;
+  let totalMatchInUsd = 0;
+  let totalMatchInRoundToken = BigNumber.from("0");
   for (const projectId in projectMatches) {
-    totalMatch += projectMatches[projectId].usdValue;
+    totalMatchInUsd += projectMatches[projectId].usdValue;
+    totalMatchInRoundToken = totalMatchInRoundToken.add(
+      projectMatches[projectId].roundTokenValue
+    );
   }
 
-  const normalizedProjectMatches = normalizeProjectMatches(projectMatches, totalMatch, matchPotInUsd * 0.1);
-  // console.log("normalizedProjectMatches", normalizedProjectMatches)
+  const matchCapInToken = matchPotInToken.div(BigNumber.from("10"));
+
+  const normalizedProjectMatches = normalizeProjectMatches(
+    projectMatches,
+    totalMatchInUsd,
+    matchPotInUsd * 0.1,
+    totalMatchInRoundToken,
+    matchCapInToken
+  );
 
   // cap the matches
-  const capProjectMatches = (projectMatches: { [projectId: string]: {
-    usdValue: number;
-    isSaturated: boolean;
-    } }, cap: number) => {
+  const capProjectMatches = (
+    projectMatches: {
+      [projectId: string]: {
+        usdValue: number;
+        roundTokenValue: BigNumber;
+        isSaturated: boolean;
+      };
+    },
+    cap: number
+  ) => {
     for (const projectId in projectMatches) {
       if (projectMatches[projectId].usdValue > cap) {
         projectMatches[projectId].usdValue = cap;
+        projectMatches[projectId].roundTokenValue = parseUnits(
+          (projectMatches[projectId].usdValue / prices[token]).toFixed(18),
+          18
+        );
       }
     }
     return projectMatches;
-  }
+  };
 
-  const cappedProjectMatches = capProjectMatches(normalizedProjectMatches, matchPotInUsd * 0.1);
-  // console.log("cappedProjectMatches", cappedProjectMatches)
+  const cappedProjectMatches = capProjectMatches(
+    normalizedProjectMatches,
+    matchPotInUsd * 0.1
+  );
 
-  let totalCappedMatch = 0;
+  let totalCappedMatchInUsd = 0;
+  let totalCappedMatchInTokens = BigNumber.from("0");
   for (const projectId in cappedProjectMatches) {
-    totalCappedMatch += cappedProjectMatches[projectId].usdValue;
+    totalCappedMatchInUsd += cappedProjectMatches[projectId].usdValue;
+    totalCappedMatchInTokens = totalCappedMatchInTokens.add(
+      cappedProjectMatches[projectId].roundTokenValue
+    );
   }
 
   // get the remaining match pot
-  const remainingMatchPot = matchPotInUsd - totalCappedMatch;
+  const remainingMatchPotInUsd = matchPotInUsd - totalCappedMatchInUsd;
+  const remainingMatchPotInTokens = matchPotInToken.sub(
+    totalCappedMatchInTokens
+  );
 
-  const distributeRemainingMatchPot: any = (projectMatches: { [projectId: string]: {
-      usdValue: number;
-      isSaturated: boolean;
-    } }, remainingMatchPot: number) => {
-    console.log("remainingMatchPot", remainingMatchPot)
-    if (remainingMatchPot <= 0) {
+  const distributeRemainingMatchPot: any = (
+    projectMatches: {
+      [projectId: string]: {
+        usdValue: number;
+        roundTokenValue: BigNumber;
+        isSaturated: boolean;
+      };
+    },
+    remainingMatchPotInToken: BigNumber
+  ) => {
+    if (remainingMatchPotInToken.lte(parseUnits("100", "wei"))) {
+      // give dust to random project
+      const randomProjectId =
+        Object.keys(projectMatches)[
+          Math.floor(Math.random() * Object.keys(projectMatches).length)
+        ];
+      projectMatches[randomProjectId].roundTokenValue = projectMatches[
+        randomProjectId
+      ].roundTokenValue.add(remainingMatchPotInToken);
       return projectMatches;
     }
-    let unsaturatedTotalMatch = 0;
+
+    let unsaturatedTotalMatchInToken = BigNumber.from("0");
+    let saturatedTotalMatchInToken = BigNumber.from("0");
     for (const projectId in projectMatches) {
       if (!projectMatches[projectId].isSaturated) {
-        unsaturatedTotalMatch += projectMatches[projectId].usdValue;
+        unsaturatedTotalMatchInToken = unsaturatedTotalMatchInToken.add(
+          projectMatches[projectId].roundTokenValue
+        );
+      } else {
+        saturatedTotalMatchInToken = saturatedTotalMatchInToken.add(
+          projectMatches[projectId].roundTokenValue
+        );
       }
     }
 
     for (const projectId in projectMatches) {
       if (!projectMatches[projectId].isSaturated) {
-        projectMatches[projectId].usdValue += (projectMatches[projectId].usdValue / unsaturatedTotalMatch) * remainingMatchPot;
-        remainingMatchPot -= projectMatches[projectId].usdValue;
+        projectMatches[projectId].roundTokenValue = projectMatches[
+          projectId
+        ].roundTokenValue.add(
+          remainingMatchPotInToken.mul(
+            projectMatches[projectId].roundTokenValue.div(
+              unsaturatedTotalMatchInToken
+            )
+          )
+        );
+        remainingMatchPotInToken = remainingMatchPotInToken.sub(
+          projectMatches[projectId].roundTokenValue
+        );
       }
     }
-    return distributeRemainingMatchPot(projectMatches, remainingMatchPot);
-  }
+    return distributeRemainingMatchPot(
+      projectMatches,
+      remainingMatchPotInToken
+    );
+  };
 
-  const distributedProjectMatches = distributeRemainingMatchPot(cappedProjectMatches, remainingMatchPot);
+  const distributedProjectMatches = distributeRemainingMatchPot(
+    cappedProjectMatches,
+    remainingMatchPotInTokens
+  );
 
-  // sum of all project matches
-  let totalDistributedMatch = 0;
+  // assert the total match amount is equal to the match pot
+  let totalMatchInTokens = BigNumber.from("0");
   for (const projectId in distributedProjectMatches) {
-    totalDistributedMatch += distributedProjectMatches[projectId].usdValue;
+    totalMatchInTokens = totalMatchInTokens.add(
+      distributedProjectMatches[projectId].roundTokenValue
+    );
   }
-  console.log("totalDistributedMatch", totalDistributedMatch)
 
-  // console.log("distributedProjectMatches", distributedProjectMatches)
-
-  // distribute the remaining match pot
-  // const distributeRemainingMatchPot = (projectMatches: { [projectId: string]: {
-  //   usdValue: number;
-  //   isSaturated: boolean;
-  //   } }, remainingMatchPot: number) => {
-  //   let unsaturatedTotalMatch = 0;
-  //   for (const projectId in projectMatches) {
-  //     if (!projectMatches[projectId].isSaturated) {
-  //       unsaturatedTotalMatch += projectMatches[projectId].usdValue;
-  //     }
-  //   }
-  //
-  //   for (const projectId in projectMatches) {
-  //     if (!projectMatches[projectId].isSaturated) {
-  //       projectMatches[projectId].usdValue += (projectMatches[projectId].usdValue / unsaturatedTotalMatch) * remainingMatchPot;
-  //     }
-  //   }
-  // }
-
-  // const capProjectMatches = (projectMatches: { [projectId: string]: number }) => {
-  //   for (const projectId in projectMatches) {
-  //     if (projectMatches[projectId] > matchPotInUsd * 0.1) {
-  //       projectMatches[projectId] = matchPotInUsd * 0.1;
-  //       console.log("capped match", projectMatches[projectId])
-  //     }
-  //   }
-  //   return projectMatches;
-  // }
-  //
-  // const cappedProjectMatches = capProjectMatches(normalizedProjectMatches);
-  // console.log("cappedProjectMatches", cappedProjectMatches)
-
-  // // calculate total usd value of all contributions
-  // let totalUsdValue = 0;
-  // for (const projectId in contributionsByProject) {
-  //   const project = contributionsByProject[projectId];
-  //   for (const contributor in project.contributions) {
-  //     const contribution = project.contributions[contributor];
-  //     totalUsdValue += contribution.usdValue;
-  //   }
-  // }
-  //
-  // // calculate the quadratic funding match for each project
-  // let sumOfProjectMatchesInUsd = 0;
-  // for (const projectId in contributionsByProject) {
-  //   const project = contributionsByProject[projectId];
-  //   let sumOfProjectContributionsInUsd = 0;
-  //   let sumOfRootProjectContributionsInUsd = 0;
-  //   for (const contributor in project.contributions) {
-  //     const contribution = project.contributions[contributor];
-  //     sumOfProjectContributionsInUsd += contribution.usdValue;
-  //     sumOfRootProjectContributionsInUsd += Math.sqrt(contribution.usdValue);
-  //   }
-  //   const projectMatchInUsd = Math.pow(sumOfRootProjectContributionsInUsd, 2);
-  //   sumOfProjectMatchesInUsd += projectMatchInUsd;
-  // }
-  //
-  // // normalize the project matches to the total pot
-  // for (const projectId in contributionsByProject) {
-  //   const project = contributionsByProject[projectId];
-  //   for (const contributor in project.contributions) {
-  //     const contribution = project.contributions[contributor];
-  //
-  //   }
-  // }
-
-
-  //
   const matchResults: QFDistribution[] = [];
-  // let totalMatchInUSD = 0;
-  // for (const projectId in contributionsByProject) {
-  //   let sumOfSquares = 0;
-  //   let sumOfContributions = 0;
-  //
-  //   const uniqueContributors = new Set();
-  //
-  //   const contributions: QFContribution[] = Object.values(contributionsByProject[projectId].contributions);
-  //   contributions.forEach(contribution => {
-  //       const { contributor, usdValue } = contribution;
-  //
-  //       uniqueContributors.add(contributor);
-  //
-  //       if (usdValue) {
-  //         sumOfSquares += Math.sqrt(usdValue);
-  //         sumOfContributions += usdValue;
-  //       }
-  //     }
-  //   );
-  //
-  //   const matchInUSD = Math.pow(sumOfSquares, 2) - sumOfContributions;
-  //
-  //   const projectPayoutAddress = projectIdToPayoutMapping.get(projectId)!;
-  //
-  //   matchResults.push({
-  //     projectId: projectId,
-  //     matchAmountInUSD: matchInUSD,
-  //     totalContributionsInUSD: sumOfContributions,
-  //     matchPoolPercentage: 0, // init to zero
-  //     matchAmountInToken: 0,
-  //     projectPayoutAddress: projectPayoutAddress,
-  //     uniqueContributorsCount: uniqueContributors.size,
-  //   });
-  //   totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
-  //   // TODO: Error out if NaN
-  // }
-  //
-  // for (const matchResult of matchResults) {
-  //   matchResult.matchPoolPercentage =
-  //     matchResult.matchAmountInUSD / totalMatchInUSD;
-  //   matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
-  // }
-  //
-  // const potTokenPrice: any = await fetchAverageTokenPrices(
-  //   chainId,
-  //   [token],
-  //   roundStartTime,
-  //   roundEndTime
-  // );
-  //
-  // isSaturated = totalMatchInUSD > totalPot * potTokenPrice[token];
-  //
-  // // NOTE: Investigate how this may affect matching token and percentage calculations
-  // if (isSaturated) {
-  //   matchResults.forEach((result) => {
-  //     result.matchAmountInUSD *=
-  //       (totalPot * potTokenPrice[token]) / totalMatchInUSD;
-  //   });
-  // }
-  //
+
   return {
     distribution: matchResults,
-    isSaturated: true,//isSaturated,
+    isSaturated: true, //isSaturated,
   };
 };
