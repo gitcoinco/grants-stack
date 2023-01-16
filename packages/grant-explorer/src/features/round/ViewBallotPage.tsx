@@ -14,8 +14,8 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronUpDownIcon,
-  InformationCircleIcon,
   EyeIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Button, Input } from "../common/styles";
@@ -35,6 +35,11 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Footer from "../common/Footer";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
+import {
+  fetchPassport,
+  PassportResponse,
+  PassportState,
+} from "../api/passport";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -78,9 +83,8 @@ export default function ViewBallot() {
   const [shortlist, finalBallot] = useBallot();
 
   const { openConnectModal } = useConnectModal();
-
-  const { address } = useAccount();
   const { chain, chains } = useNetwork();
+  const { address, isConnected } = useAccount();
 
   const tokenDetail =
     selectedPayoutToken.address == ethers.constants.AddressZero
@@ -92,6 +96,9 @@ export default function ViewBallot() {
   const [wrongChain, setWrongChain] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [emptyInput, setEmptyInput] = useState(false);
+
+  /* Donate without matching warning modal */
+  const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   const shortlistNotEmpty = shortlist.length > 0;
   const finalBallotNotEmpty = finalBallot.length > 0;
@@ -149,6 +156,68 @@ export default function ViewBallot() {
     txHash,
   ]);
 
+  const [, setPassport] = useState<PassportResponse | undefined>();
+  const [, setError] = useState<Response | undefined>();
+
+  const [passportState, setPassportState] = useState<PassportState>(
+    PassportState.LOADING
+  );
+  useEffect(() => {
+    setPassportState(PassportState.LOADING);
+
+    // TODO: fetch from round metadata
+    const PASSPORT_COMMUNITY_ID =
+      process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
+    const PASSPORT_THRESHOLD = 0;
+
+    if (isConnected && address && PASSPORT_COMMUNITY_ID) {
+      const callFetchPassport = async () => {
+        const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
+        if (res.ok) {
+          const json = await res.json();
+
+          // TODO: Handle exponential backoff
+          if (json.status == "PROCESSING") {
+            await callFetchPassport();
+            return;
+          }
+
+          setPassport(json);
+          setPassportState(
+            json.score >= PASSPORT_THRESHOLD
+              ? PassportState.MATCH_ELIGIBLE
+              : PassportState.MATCH_INELIGIBLE
+          );
+        } else {
+          setError(res);
+          switch (res.status) {
+            case 400: // unregistered/nonexistent passport address
+              setPassportState(PassportState.INVALID_PASSPORT);
+              console.error(
+                "unregistered/nonexistent passport address",
+                res.json()
+              );
+              break;
+            case 401: // invalid API key
+              setPassportState(PassportState.ERROR);
+              console.error("invalid API key", res.json());
+              break;
+            default:
+              setPassportState(PassportState.ERROR);
+              console.error("Error fetching passport", res);
+          }
+        }
+      };
+
+      callFetchPassport();
+    } else {
+      setPassportState(PassportState.NOT_CONNECTED);
+    }
+
+    // call fetch passport
+    // check passport
+  }, [address, isConnected]);
+
   const progressSteps = [
     {
       name: "Approve",
@@ -184,6 +253,7 @@ export default function ViewBallot() {
           <RoundEndedBanner />
         </div>
       )}
+      {}
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
@@ -208,7 +278,19 @@ export default function ViewBallot() {
             $variant="solid"
             data-testid="handle-confirmation"
             type="button"
-            onClick={handleConfirmation}
+            onClick={() => {
+              /* Check if user hasn't connected passport yet, display the warning modal */
+              if (
+                passportState === PassportState.NOT_CONNECTED ||
+                passportState === PassportState.INVALID_PASSPORT
+              ) {
+                setDonateWarningModalOpen(true);
+                return;
+              }
+
+              /* If passport is fine, proceed straight to confirmation */
+              handleConfirmation();
+            }}
             disabled={isAfterRoundEndDate}
             className="items-center shadow-sm text-sm rounded w-full"
           >
@@ -912,10 +994,8 @@ export default function ViewBallot() {
   }
 
   function handleConfirmation() {
-    /* Check if user hasn't connected passport yet */
-
-    // check to ensure user is on right network
     if (Number(chainId) != chain?.id) {
+      // check to ensure user is on right network
       setWrongChain(true);
       return;
     } else {
@@ -987,6 +1067,24 @@ export default function ViewBallot() {
           isOpen={openErrorModal}
           setIsOpen={setOpenErrorModal}
           tryAgainFn={handleSubmitDonation}
+        />
+        {/*Passport not connected warning modal*/}
+        <ErrorModal
+          isOpen={donateWarningModalOpen}
+          setIsOpen={setDonateWarningModalOpen}
+          doneFn={() => {
+            setDonateWarningModalOpen(false);
+            handleConfirmation();
+          }}
+          tryAgainText={"Go to Passport"}
+          doneText={"Donate without matching"}
+          tryAgainFn={() => {
+            navigate(`/round/${chainId}/${roundId}/passport/connect`);
+          }}
+          heading={`Don’t miss out on getting your donations matched!`}
+          subheading={`Verify with Passport to amplify your donations. 
+Note that donations made without Passport verification will not be matched.`}
+          closeOnBackgroundClick={true}
         />
       </>
     );

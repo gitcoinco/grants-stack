@@ -10,6 +10,9 @@ interface ErrorModalProps {
   subheading?: string;
   tryAgainFn?: () => void;
   doneFn?: () => void;
+  tryAgainText?: string;
+  doneText?: string;
+  closeOnBackgroundClick?: boolean;
 }
 
 export default function ErrorModal({
@@ -21,6 +24,9 @@ export default function ErrorModal({
     /**/
   },
   doneFn = () => setIsOpen(false),
+  tryAgainText = "Try Again",
+  doneText = "Done",
+  closeOnBackgroundClick = false,
 }: ErrorModalProps) {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -29,7 +35,9 @@ export default function ErrorModal({
         data-testid="error-modal"
         className="relative z-10"
         onClose={() => {
-          /* Don't close the dialog when clicking the backdrop */
+          if (closeOnBackgroundClick) {
+            setIsOpen(false);
+          }
         }}
       >
         <Transition.Child
@@ -90,7 +98,7 @@ export default function ErrorModal({
                       }}
                       className="mr-4 text-sm"
                     >
-                      Try Again
+                      {tryAgainText}
                     </Button>
                     <Button
                       type="button"
@@ -101,7 +109,7 @@ export default function ErrorModal({
                       data-testid="done"
                       className="text-sm"
                     >
-                      Done
+                      {doneText}
                     </Button>
                   </div>
                 </div>
