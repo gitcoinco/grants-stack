@@ -85,21 +85,21 @@ function InformationContent(props: {
     MatchingStatsData[] | undefined
   >();
   const [useContractData, setUseContractData] = useState(true);
-  const [matchingDistributionContract, setMatchingDistributionContract] =
-    useState<MatchingStatsData[] | undefined>();
 
-  const { distributionMetaPtr, matchingDistribution, isLoading, isError } =
-    useMatchingDistribution(props.roundId);
+  const {
+    distributionMetaPtr,
+    matchingDistributionContract,
+    isLoading,
+    isError,
+  } = useMatchingDistribution(props.roundId);
 
   useEffect(() => {
     if (distributionMetaPtr !== "") {
       setUseContractData(true);
-      setMatchingDistributionContract(matchingDistribution);
     } else {
       setUseContractData(false);
-      setMatchingDistributionContract(undefined);
     }
-  }, [distributionMetaPtr, matchingDistribution]);
+  }, [distributionMetaPtr, matchingDistributionContract]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, error, loading } = useRoundMatchData(

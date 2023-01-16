@@ -271,7 +271,7 @@ export const useMatchingDistribution = (
   roundId: string | undefined
 ): {
   distributionMetaPtr: string;
-  matchingDistribution: MatchingStatsData[];
+  matchingDistributionContract: MatchingStatsData[];
   isLoading: boolean;
   isError: boolean;
 } => {
@@ -301,7 +301,7 @@ export const useMatchingDistribution = (
 
   return {
     distributionMetaPtr: matchingData.distributionMetaPtr,
-    matchingDistribution: matchingData.matchingDistribution,
+    matchingDistributionContract: matchingData.matchingDistribution,
     isLoading: isLoading,
     isError: isError,
   };

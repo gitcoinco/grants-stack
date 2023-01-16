@@ -540,7 +540,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
   });
 });
 
-describe.only("View Funding Admin after distribution data is finalized to contract", () => {
+describe("View Funding Admin after distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
