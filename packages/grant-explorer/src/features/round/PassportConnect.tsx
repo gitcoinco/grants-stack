@@ -322,6 +322,7 @@ export default function PassportConnect() {
                 data-testid="what-is-passport-link"
                 className="text-md border-b border-black pb-1"
                 target="_blank"
+                rel="noreferrer"
                 href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
               >
                 What is Passport and how does it work?
