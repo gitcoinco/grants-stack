@@ -14,6 +14,8 @@ import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProviderByChainId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
+import { addAlert } from "./ui";
+import { chains } from "../utils/wagmi";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -244,29 +246,47 @@ export const extractProjectEvents = (
 export const loadProjects =
   (chainID: number, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const { account } = state.web3;
-    const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
+    try {
+      const state = getState();
+      const { account } = state.web3;
+      const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
 
-    if (project.ids.length === 0) {
-      // No projects found for this address on this chain
-      // This is not necessarily an error now that we fetch on all chains
+      if (project.ids.length === 0) {
+        // No projects found for this address on this chain
+        // This is not necessarily an error now that we fetch on all chains
+        dispatch(projectsLoaded(chainID, {}));
+        return;
+      }
+
+      const projectEventsMap = extractProjectEvents(
+        project.createdEvents,
+        project.updatedEvents,
+        chainID
+      );
+
+      if (withMetaData) {
+        Object.keys(projectEventsMap).forEach(async (id) => {
+          dispatch<any>(fetchGrantData(id));
+        });
+      }
+
+      dispatch(projectsLoaded(chainID, projectEventsMap));
+    } catch (error) {
+      const chainName = chains.find((c) => c.id === chainID)?.name;
+
+      datadogRum.addError(error, { chainID });
+      console.error(chainName, chainID, error);
+
+      dispatch(
+        addAlert(
+          "error",
+          `Failed to load projects from ${chainName}`,
+          "Please try refreshing the page."
+        )
+      );
+
       dispatch(projectsLoaded(chainID, {}));
-      return;
     }
-
-    const projectEventsMap = extractProjectEvents(
-      project.createdEvents,
-      project.updatedEvents,
-      chainID
-    );
-
-    if (withMetaData) {
-      Object.keys(projectEventsMap).forEach(async (id) => {
-        dispatch<any>(fetchGrantData(id));
-      });
-    }
-    dispatch(projectsLoaded(chainID, projectEventsMap));
   };
 
 export const loadAllChainsProjects =
