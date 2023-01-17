@@ -40,6 +40,7 @@ type UsePassportHook = {
   refreshScore: () => Promise<void>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function usePassport(address: string, communityId: string): UsePassportHook {
   const { data, isLoading, error, mutate } = useSWR<PassportResponse>(
     [address, communityId],
