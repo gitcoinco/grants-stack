@@ -15,8 +15,7 @@
     "test:coverage": "craco test --watchAll=false --silent --coverage"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "yarn lint:fix",
-    "*.{js,jsx,ts,tsx,md}": "prettier --write ."
+    "*.{ts,tsx}": "yarn lint:fix"
   },
   "browserslist": {
     "production": [
