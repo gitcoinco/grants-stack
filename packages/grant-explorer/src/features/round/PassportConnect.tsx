@@ -63,7 +63,7 @@ export default function PassportConnect() {
 
       setPassport(scoreResponse);
       setPassportState(
-        scoreResponse.evidence.rawScore >= scoreResponse.evidence.threshold
+        Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
           ? PassportState.MATCH_ELIGIBLE
           : PassportState.MATCH_INELIGIBLE
       );

@@ -41,17 +41,17 @@ export default function PassportBanner(props: {
       const callFetchPassport = async () => {
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
-          const json = await res.json();
+          const scoreResponse = await res.json();
 
           // TODO: Handle exponential backoff
-          if (json.status == "PROCESSING") {
+          if (scoreResponse.status == "PROCESSING") {
             await callFetchPassport();
             return;
           }
 
-          setPassport(json);
+          setPassport(scoreResponse);
           setPassportState(
-            json.evidence.rawScore >= json.evidence.threshold
+            Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
               ? PassportState.MATCH_ELIGIBLE
               : PassportState.MATCH_INELIGIBLE
           );
