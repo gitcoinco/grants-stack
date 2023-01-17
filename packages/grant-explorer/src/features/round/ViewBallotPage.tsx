@@ -33,7 +33,8 @@ import { useQFDonation } from "../../context/QFDonationContext";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Footer from "../common/Footer";
-import Banner from "../common/Banner";
+import RoundEndedBanner from "../common/RoundEndedBanner";
+import PassportBanner from "../common/PassportBanner";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -55,7 +56,7 @@ export default function ViewBallot() {
 
   const totalDonation = useMemo(() => {
     return donations.reduce((acc, donation) => {
-      if(donation.amount == '') {
+      if (donation.amount == '') {
         donation.amount = '0';
       }
 
@@ -176,11 +177,12 @@ export default function ViewBallot() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <PassportBanner chainId={chainId} roundId={roundId}/>
       {isAfterRoundEndDate && (
         <div>
-          <Banner />
-        </div>       
+          <RoundEndedBanner/>
+        </div>
       )}
       <div className="lg:mx-20 h-screen px-4 py-7">
         <main>
@@ -192,7 +194,7 @@ export default function ViewBallot() {
             {!finalBallotNotEmpty && EmptyFinalBallot()}
           </div>
         </main>
-        <Footer />
+        <Footer/>
       </div>
     </>
   );
@@ -201,7 +203,7 @@ export default function ViewBallot() {
     return (
       <>
         <div>
-          <Summary />
+          <Summary/>
           <Button
             $variant="solid"
             data-testid="handle-confirmation"
@@ -217,7 +219,7 @@ export default function ViewBallot() {
               data-testid="emptyInput"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
-              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
               <span>
                 You must enter donations for all final ballot projects
               </span>
@@ -228,7 +230,7 @@ export default function ViewBallot() {
               data-testid="insufficientBalance"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
-              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
               <span>You do not have enough funds for these donations</span>
             </p>
           )}
@@ -237,10 +239,10 @@ export default function ViewBallot() {
               data-testid="wrongChain"
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
-              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+              <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5"/>
               <span>
                 You are on the wrong chain ({chain?.name}) for this round.
-                <br />
+                <br/>
                 Please switch to{" "}
                 {chains.filter((c) => c?.id == Number(chainId))[0]?.name}{" "}
                 network.
@@ -248,7 +250,7 @@ export default function ViewBallot() {
             </p>
           )}
         </div>
-        <PayoutModals />
+        <PayoutModals/>
       </>
     );
   }
@@ -257,7 +259,7 @@ export default function ViewBallot() {
     return (
       <div>
         <div className="flex flex-row items-center gap-3 text-sm">
-          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6 cursor-pointer" />
+          <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6 cursor-pointer"/>
           <Link to={`/round/${chainId}/${roundId}`}>
             <span className="font-normal">Back</span>
           </Link>
@@ -290,9 +292,9 @@ export default function ViewBallot() {
           <div className="flex justify-between border-b-2 pb-2">
             <h2 className="text-xl">Shortlist</h2>
             {shortlistSelect ? (
-              <SelectActive onClick={() => setShortlistSelect(false)} />
+              <SelectActive onClick={() => setShortlistSelect(false)}/>
             ) : (
-              <SelectInactive onClick={() => setShortlistSelect(true)} />
+              <SelectInactive onClick={() => setShortlistSelect(true)}/>
             )}
           </div>
 
@@ -362,7 +364,8 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
+            <div
+              className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
                 className="inline-block"
                 src={
@@ -372,7 +375,8 @@ export default function ViewBallot() {
                 }
                 alt={"Project Logo"}
               />
-              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+              <div
+                className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
                 <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
                   <EyeIcon
                     className="fill-gray-200 w-6 h-6 cursor-pointer"
@@ -454,7 +458,7 @@ export default function ViewBallot() {
                   }}
                   className="w-24"
                 />
-                <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+                <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions}/>
               </div>
               <Button
                 type="button"
@@ -483,7 +487,7 @@ export default function ViewBallot() {
             ))}
           </div>
         </div>
-        <SummaryContainer />
+        <SummaryContainer/>
       </div>
     );
   }
@@ -513,7 +517,8 @@ export default function ViewBallot() {
             ${props.isSelected ? "bg-violet-100" : ""}`}
         >
           <div className="flex">
-            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
+            <div
+              className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
                 className="inline-block"
                 src={
@@ -523,7 +528,8 @@ export default function ViewBallot() {
                 }
                 alt={"Project Logo"}
               />
-              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
+              <div
+                className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
                 <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
                   <EyeIcon
                     className="fill-gray-200 w-6 h-6 cursor-pointer"
@@ -617,7 +623,7 @@ export default function ViewBallot() {
                 }}
                 className="w-24"
               />
-              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions}/>
               <Button
                 type="button"
                 $variant="outline"
@@ -633,7 +639,7 @@ export default function ViewBallot() {
             </p>
           </div>
         </div>
-        <SummaryContainer />
+        <SummaryContainer/>
       </div>
     );
   }
@@ -796,7 +802,8 @@ export default function ViewBallot() {
         <Listbox value={selectedPayoutToken} onChange={setSelectedPayoutToken}>
           {({ open }) => (
             <div>
-              <div className="mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+              <div
+                className="mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 <PayoutTokenButton
                   token={props.payoutTokenOptions.find(
                     (t) => t.address === selectedPayoutToken?.address
@@ -809,7 +816,8 @@ export default function ViewBallot() {
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Options
+                    className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                     {props.payoutTokenOptions.map(
                       (token) =>
                         !token.default && (
@@ -900,7 +908,7 @@ export default function ViewBallot() {
           )}
         </span>
         <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true"/>
         </span>
       </Listbox.Button>
     );
@@ -948,8 +956,6 @@ export default function ViewBallot() {
       setInsufficientBalance(false);
     }
 
-
-
     setOpenConfirmationModal(true);
   }
 
@@ -963,13 +969,13 @@ export default function ViewBallot() {
             setOpenInfoModal(true);
             setOpenConfirmationModal(false);
           }}
-          body={<ConfirmationModalBody />}
+          body={<ConfirmationModalBody/>}
           isOpen={openConfirmationModal}
           setIsOpen={setOpenConfirmationModal}
         />
         <InfoModal
           title={"Heads up!"}
-          body={<InfoModalBody />}
+          body={<InfoModalBody/>}
           isOpen={openInfoModal}
           setIsOpen={setOpenInfoModal}
           continueButtonAction={handleSubmitDonation}
@@ -993,7 +999,7 @@ export default function ViewBallot() {
       <div className="text-sm text-grey-400 gap-16">
         <p className="text-sm">
           Submitting your donation will require signing two transactions
-          <br />
+          <br/>
           if you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
@@ -1013,9 +1019,9 @@ export default function ViewBallot() {
           Donation.
         </p>
         <div className="my-8">
-          <FinalBallotConfirmCount />
+          <FinalBallotConfirmCount/>
         </div>
-        <AdditionalGasFeesNote />
+        <AdditionalGasFeesNote/>
       </>
     );
   }
@@ -1042,7 +1048,7 @@ export default function ViewBallot() {
       datadogLogs.logger.error(
         `error: handleSubmitDonation - ${error}, id: ${roundId}`
       );
-      console.error("handleSubmitDonation - roundId", roundId , error);
+      console.error("handleSubmitDonation - roundId", roundId, error);
     }
   }
 }

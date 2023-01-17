@@ -42,7 +42,11 @@ export const updateRoundSummaryHandler = async (
       throw "error: unsupported voting strategy";
     }
 
-    const results = await getRoundSummary(chainId as ChainId, roundId, metadata);
+    const results = await getRoundSummary(
+      chainId as ChainId,
+      roundId,
+      metadata
+    );
     try {
       const upsertRoundStatus = await db.upsertRoundSummaryRecord(
         chainId,

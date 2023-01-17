@@ -6,12 +6,16 @@ import {
   QFContribution,
   MetaPtr,
   QFVotedEvent,
+  QFDistribution,
+  RoundMetadata,
+  QFDistributionResults,
 } from "../types";
 import {
   fetchFromGraphQL,
   fetchCurrentTokenPrices,
-  fetchFromIPFS,
   fetchPayoutAddressToProjectIdMapping,
+  fetchAverageTokenPrices,
+  fetchProjectIdToPayoutAddressMapping,
 } from "../utils";
 
 /**
@@ -363,4 +367,300 @@ export const fetchQFContributionsForProjects = async (
   }
 
   return votes;
+};
+
+/**
+ *
+ * @param {ChainId} chainId  - The ID of the chain on which the round is running
+ * @param {RoundMetadata} metadata - Round Metadata
+ * @param {QFContribution[]} contributions - Contributions made to the round
+ * @returns
+ */
+export const matchQFContributions = async (
+  chainId: ChainId,
+  metadata: RoundMetadata,
+  contributions: QFContribution[]
+): Promise<QFDistributionResults> => {
+  const {
+    totalPot,
+    roundStartTime,
+    roundEndTime,
+    token,
+    matchingCapPercentage,
+  } = metadata;
+
+  let isSaturated: boolean;
+
+  const contributionsByProject: {
+    [projectId: string]: any;
+  } = {};
+
+  const projectIdToPayoutMapping = await fetchProjectIdToPayoutAddressMapping(
+    metadata.projectsMetaPtr
+  );
+
+  let contributionTokens: string[] = [];
+
+  for (const contribution of contributions) {
+    if (!contributionTokens.includes(contribution.token)) {
+      contributionTokens.push(contribution.token);
+    }
+  }
+
+  const prices: any = await fetchAverageTokenPrices(
+    chainId,
+    contributionTokens,
+    roundStartTime,
+    roundEndTime
+  );
+
+  // group contributions by project
+  for (const contribution of contributions) {
+    const { projectId, amount, token, contributor } = contribution;
+
+    if (!contributionTokens.includes(token)) {
+      contributionTokens.push(token);
+    }
+
+    if (!contributionsByProject[projectId]) {
+      contributionsByProject[projectId] = {
+        contributions: contribution ? { [contributor]: contribution } : {},
+      };
+    }
+
+    if (!contributionsByProject[projectId].contributions[contributor]) {
+      contributionsByProject[projectId].contributions[contributor] = {
+        ...contribution,
+        usdValue: Number(formatUnits(amount)) * prices[token],
+      };
+    } else {
+      contributionsByProject[projectId].contributions[contributor].usdValue +=
+        Number(formatUnits(amount)) * prices[token];
+    }
+  }
+
+  let matchResults: QFDistribution[] = [];
+  let totalMatchInUSD = 0;
+  for (const projectId in contributionsByProject) {
+    let sumOfSquares = 0;
+    let sumOfContributions = 0;
+
+    const uniqueContributors = new Set();
+
+    const contributions: QFContribution[] = Object.values(
+      contributionsByProject[projectId].contributions
+    );
+    contributions.forEach((contribution) => {
+      const { contributor, usdValue } = contribution;
+
+      uniqueContributors.add(contributor);
+
+      if (usdValue) {
+        sumOfSquares += Math.sqrt(usdValue);
+        sumOfContributions += usdValue;
+      }
+    });
+
+    const matchInUSD = Math.pow(sumOfSquares, 2) - sumOfContributions;
+
+    const projectPayoutAddress = projectIdToPayoutMapping.get(projectId)!;
+
+    matchResults.push({
+      projectId: projectId,
+      matchAmountInUSD: matchInUSD,
+      totalContributionsInUSD: sumOfContributions,
+      matchPoolPercentage: 0, // init to zero
+      matchAmountInToken: 0,
+      projectPayoutAddress: projectPayoutAddress,
+      uniqueContributorsCount: uniqueContributors.size,
+    });
+    totalMatchInUSD += isNaN(matchInUSD) ? 0 : matchInUSD; // TODO: what should happen when matchInUSD is NaN?
+    // TODO: Error out if NaN
+  }
+
+  for (const matchResult of matchResults) {
+    // update matching data
+    matchResult.matchPoolPercentage =
+      matchResult.matchAmountInUSD / totalMatchInUSD;
+    matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
+  }
+
+  const potTokenPrice: any = await fetchAverageTokenPrices(
+    chainId,
+    [token],
+    roundStartTime,
+    roundEndTime
+  );
+
+  const totalPotInUSD = totalPot * potTokenPrice[token];
+
+  isSaturated = totalMatchInUSD > totalPotInUSD;
+
+  if (isSaturated) {
+    let totalMatchInUSDAfterNormalising = 0;
+
+    // If match exceeds pot, scale down match to pot size
+    matchResults.forEach((result) => {
+      const updatedMatchAmountInUSD =
+        result.matchAmountInUSD * (totalPotInUSD / totalMatchInUSD);
+
+      // update matching data
+      result.matchAmountInUSD = updatedMatchAmountInUSD;
+      result.matchPoolPercentage = result.matchAmountInUSD / totalPotInUSD;
+      result.matchAmountInToken = result.matchPoolPercentage * totalPot;
+
+      totalMatchInUSDAfterNormalising += updatedMatchAmountInUSD;
+    });
+
+    if (matchingCapPercentage) {
+      const matchingCapInUSD = (totalPotInUSD * matchingCapPercentage) / 100;
+
+      console.log("=========== BEFORE CAPPING ===========");
+      console.log("matchingCapPercentage", matchingCapPercentage);
+      console.log("matchingCapInUSD", matchingCapInUSD);
+
+      console.log("totalMatchInUSD", totalMatchInUSD);
+      console.log(
+        "totalMatchInUSDAfterNormalising",
+        totalMatchInUSDAfterNormalising
+      );
+
+      console.log("totalPot", totalPot);
+      console.log("totalPotInUSD", totalPotInUSD);
+
+      console.log("=====================");
+      matchResults.forEach((match, index) => {
+        console.log(
+          "Before capping. project: ",
+          index,
+          "matchAmountInUSD:",
+          match.matchAmountInUSD
+        );
+      });
+      console.log("=====================");
+
+      matchResults = applyMatchingCap(
+        matchResults,
+        totalPot,
+        totalMatchInUSDAfterNormalising,
+        matchingCapInUSD
+      );
+
+      console.log("=========== AFTER CAPPING =========== ");
+      let _totalMatchAmountInUSD = 0;
+      let _totalMatchAmountInToken = 0;
+      let _totalMatchAmountInPercentage = 0;
+      matchResults.forEach((result) => {
+        _totalMatchAmountInUSD += result.matchAmountInUSD;
+        _totalMatchAmountInToken += result.matchAmountInToken;
+        _totalMatchAmountInPercentage += result.matchPoolPercentage;
+      });
+      console.log("_totalMatchAmountInUSD", _totalMatchAmountInUSD);
+      console.log("_totalMatchAmountInToken", _totalMatchAmountInToken);
+      console.log(
+        "_totalMatchAmountInPercentage",
+        _totalMatchAmountInPercentage
+      );
+
+      console.log("=====================");
+      matchResults.forEach((match, index) => {
+        console.log(
+          "After capping. project: ",
+          index,
+          "matchAmountInUSD:",
+          match.matchAmountInUSD
+        );
+      });
+      console.log("=====================");
+    }
+  }
+
+  return {
+    distribution: matchResults,
+    isSaturated: isSaturated,
+  };
+};
+
+/**
+ * Apply matching cap if project match is greater than the cap.
+ *
+ * @param distribution
+ * @param totalPot
+ * @param totalMatchInUSD
+ * @param matchingCap
+ */
+const applyMatchingCap = (
+  distribution: QFDistribution[],
+  totalPot: number,
+  totalMatchInUSD: number,
+  matchingCapInUSD: number
+): QFDistribution[] => {
+  if (matchingCapInUSD == 0) return distribution;
+
+  let amountLeftInPoolAfterCapping = 0;
+  let totalMatchForProjectWhichHaveNotCapped = 0;
+
+  distribution.forEach((projectMatch) => {
+    if (projectMatch.matchAmountInUSD >= matchingCapInUSD) {
+      // increase amountLeftInPoolAfterCapping by the amount that is over the cap
+      const amountOverCap = projectMatch.matchAmountInUSD - matchingCapInUSD;
+      amountLeftInPoolAfterCapping += amountOverCap;
+
+      // update matching data
+      // update projectMatch to capped amount
+      projectMatch.matchAmountInUSD = matchingCapInUSD;
+      projectMatch.matchPoolPercentage =
+        projectMatch.matchAmountInUSD / totalMatchInUSD;
+      projectMatch.matchAmountInToken =
+        projectMatch.matchPoolPercentage * totalPot;
+    } else {
+      // track project matches which have not been capped
+      totalMatchForProjectWhichHaveNotCapped += projectMatch.matchAmountInUSD;
+    }
+  });
+
+  // If there is any amount left in the pool after capping ->
+  // Distribute it proportionally to the projects which have not been capped
+  if (
+    amountLeftInPoolAfterCapping > 0 &&
+    totalMatchForProjectWhichHaveNotCapped > 0
+  ) {
+    const reminderPercentage =
+      amountLeftInPoolAfterCapping / totalMatchForProjectWhichHaveNotCapped;
+
+    // reset amountLeftInPoolAfterCapping to check if any project's match is more the capAmount after spreading the remainder
+    amountLeftInPoolAfterCapping = 0;
+
+    distribution.forEach((projectMatch) => {
+      if (projectMatch.matchAmountInUSD < matchingCapInUSD) {
+        // distribute the remainder proportionally to the projects which have not been capped
+        projectMatch.matchAmountInUSD +=
+          projectMatch.matchAmountInUSD * reminderPercentage;
+        projectMatch.matchPoolPercentage =
+          projectMatch.matchAmountInUSD / totalMatchInUSD;
+        projectMatch.matchAmountInToken =
+          projectMatch.matchPoolPercentage * totalPot;
+
+        // check if the project's match is more the capAmount after spreading the remainder
+        if (projectMatch.matchAmountInToken < matchingCapInUSD) {
+          // increase amountLeftInPoolAfterCapping by the amount that is over the cap
+          const amountOverCap =
+            projectMatch.matchAmountInUSD - matchingCapInUSD;
+          amountLeftInPoolAfterCapping += amountOverCap;
+        }
+
+        // apply the cap again (recursively)
+        if (amountLeftInPoolAfterCapping > 0) {
+          applyMatchingCap(
+            distribution,
+            totalPot,
+            totalMatchInUSD,
+            matchingCapInUSD
+          );
+        }
+      }
+    });
+  }
+
+  return distribution;
 };

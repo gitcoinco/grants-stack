@@ -122,7 +122,9 @@ export class DatabaseInstance {
               matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
               matchAmountInToken: Number(projectMatch.matchAmountInToken),
               projectPayoutAddress: projectMatch.projectPayoutAddress,
-              uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+              uniqueContributorsCount: Number(
+                projectMatch.uniqueContributorsCount
+              ),
             },
           },
         },
@@ -139,7 +141,9 @@ export class DatabaseInstance {
                 matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
                 matchAmountInToken: Number(projectMatch.matchAmountInToken),
                 projectPayoutAddress: projectMatch.projectPayoutAddress,
-                uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+                uniqueContributorsCount: Number(
+                  projectMatch.uniqueContributorsCount
+                ),
               },
               update: {
                 matchAmountInUSD: projectMatch.matchAmountInUSD,
@@ -148,7 +152,9 @@ export class DatabaseInstance {
                 ),
                 matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
                 matchAmountInToken: Number(projectMatch.matchAmountInToken),
-                uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+                uniqueContributorsCount: Number(
+                  projectMatch.uniqueContributorsCount
+                ),
               },
             },
           },

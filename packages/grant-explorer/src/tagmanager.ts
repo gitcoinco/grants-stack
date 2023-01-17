@@ -1,7 +1,13 @@
-import ReactGA from "react-ga4";
+import TagManager from "react-gtm-module";
 
 export const initTagmanager = () => {
   if (process.env.REACT_APP_TAG_MANAGER) {
-    ReactGA.initialize(`${process.env.REACT_APP_TAG_MANAGER}`);
+    TagManager.initialize({
+      gtmId: `${process.env.REACT_APP_TAG_MANAGER}`,
+      events: {
+        "gtm.start": new Date().getTime(),
+        event: "gtm.js",
+      },
+    });
   }
 };

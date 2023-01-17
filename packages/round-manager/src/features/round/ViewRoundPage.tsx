@@ -53,7 +53,7 @@ export default function ViewRoundPage() {
 
   const tabStyles = (selected: boolean) =>
     selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 font-bold text-sm outline-none"
+      ? "border-violet-500 border-b whitespace-nowrap py-4 px-1 text-sm outline-none"
       : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function ViewRoundPage() {
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
             <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
-              <div className="text-grey-400 font-bold text-sm flex flex-row items-center gap-3">
+              <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
                 <Link to={`/`}>
                   <span>{"My Programs"}</span>
                 </Link>
@@ -378,28 +378,23 @@ function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
   }, 1000);
 }
 
-function ApplicationOpenDateRange(props: {
-  startTime?: Date;
-  endTime?: Date;
-}) {
-
-  const {startTime, endTime } = props;
+function ApplicationOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
+  const { startTime, endTime } = props;
 
   return (
     <div className="flex mr-8 lg:mr-36">
       <CalendarIcon className="h-5 w-5 mr-2 text-grey-400" />
       <p className="text-sm mr-2 text-grey-400">Applications:</p>
-
       <div>
         <p className="text-sm">
-          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
           <span className="mx-2">-</span>
-          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
         </p>
-        <p className="text-sm text-grey-400">
-          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+        <p className="flex justify-center items-center text-sm text-grey-400">
+          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
           <span className="mx-2">-</span>
-          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
         </p>
       </div>
     </div>
@@ -407,26 +402,24 @@ function ApplicationOpenDateRange(props: {
 }
 
 function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
-  const {startTime, endTime } = props;
+  const { startTime, endTime } = props;
 
   return (
     <div className="flex">
       <ClockIcon className="h-5 w-5 mr-2 text-grey-400" />
       <p className="text-sm mr-2 text-grey-400">Round:</p>
-
       <div>
-        <p className="text-sm">
-          <span>{startTime && getUTCDate(startTime) || "..."}</span>
+        <p className="flex justify-center items-center text-sm">
+          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
           <span className="mx-2">-</span>
-          <span>{endTime && getUTCDate(endTime) || "..."}</span>
+          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
         </p>
-        <p className="text-sm text-grey-400">
-          <span>({startTime && getUTCTime(startTime) || "..."})</span>
+        <p className="flex justify-center items-center text-sm text-grey-400">
+          <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
           <span className="mx-2">-</span>
-          <span>({endTime && getUTCTime(endTime) || "..."})</span>
+          <span>({(endTime && getUTCTime(endTime)) || "..."})</span>
         </p>
       </div>
-
     </div>
   );
 }

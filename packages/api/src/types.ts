@@ -38,6 +38,7 @@ export type RoundMetadata = {
   roundEndTime: number;
   token: string;
   totalPot: number;
+  matchingCapPercentage?: number;
 };
 
 export type Map = {
@@ -68,6 +69,7 @@ export type QFContribution = {
   contributor: string;
   projectId: string;
   projectPayoutAddress: string;
+  usdValue?: number;
 };
 
 export type QFVotedEvent = {

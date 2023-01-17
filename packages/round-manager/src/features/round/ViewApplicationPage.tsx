@@ -12,6 +12,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import parse from "html-react-parser";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Navbar from "../common/Navbar";
 import { useWallet } from "../common/Auth";
@@ -456,8 +457,14 @@ export default function ViewApplicationPage() {
                   <hr className="my-6" />
 
                   <h2 className="text-xs mb-2">Description</h2>
+
                   <p className="text-base">
-                    {application?.project?.description}
+                    {parse(
+                      (application?.project?.description || "")
+                        .replace(/\n/g, "<br/><br/>")
+                        .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"),
+                      { trim: true }
+                    )}
                   </p>
 
                   <hr className="my-6" />

@@ -15,11 +15,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "sourceRoot": "src",
-    "types": [
-      "jest"
-    ]
+    "types": ["jest"]
   },
-  "files": [
-    "index.ts"
-  ]
+  "files": ["index.ts"]
 }

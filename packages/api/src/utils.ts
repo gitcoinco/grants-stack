@@ -193,6 +193,7 @@ export const fetchRoundMetadata = async (
   // fetch round metadata
   const roundMetadata = await fetchFromIPFS(data?.roundMetaPtr.pointer);
   const totalPot = roundMetadata.matchingFunds.matchingFundsAvailable;
+  const matchingCapPercentage = roundMetadata.matchingFunds.matchingCapAmount;
   const strategyName = getStrategyName(data?.votingStrategy.strategyName);
 
   const projectsMetaPtr: MetaPtr = data?.projectsMetaPtr;
@@ -207,6 +208,7 @@ export const fetchRoundMetadata = async (
     roundEndTime: data?.roundEndTime,
     token: data?.token,
     totalPot: totalPot,
+    matchingCapPercentage: matchingCapPercentage,
   };
 
   // cache the round metadata
