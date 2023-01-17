@@ -1082,8 +1082,17 @@ export default function ViewBallot() {
             navigate(`/round/${chainId}/${roundId}/passport/connect`);
           }}
           heading={`Don’t miss out on getting your donations matched!`}
-          subheading={`Verify with Passport to amplify your donations. 
-Note that donations made without Passport verification will not be matched.`}
+          subheading={
+            <>
+              <p className={"text-sm text-grey-400 mb-2"}>
+                Verify with Passport to amplify your donations.
+              </p>
+              <p className={"text-sm text-grey-400"}>
+                Note that donations made without Passport verification will not
+                be matched.
+              </p>
+            </>
+          }
           closeOnBackgroundClick={true}
         />
       </>
