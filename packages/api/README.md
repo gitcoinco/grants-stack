@@ -10,7 +10,7 @@ This package is pulumi configured app which offers API / endpoints to:
 This package is meant to be used by the round operators to
 
 - view how the matching funds distributions evolve during the course of a round
-- determine how the funds should be split amongst the projects based on the votes recieved
+- determine how the funds should be split amongst the projects based on the votes received
 
 Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
 

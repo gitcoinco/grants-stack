@@ -401,7 +401,7 @@ export function ProjectStats() {
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
         <h3>${data?.data.totalContributionsInUSD?.toFixed() ?? "-"}</h3>
-        <p>funding recieved in current round</p>
+        <p>funding received in current round</p>
       </div>
       <div>
         <h3>{data?.data.uniqueContributors ?? "-"}</h3>
