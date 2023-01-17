@@ -1,6 +1,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { RootState } from "../reducers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
@@ -151,47 +152,59 @@ const getMetadata = async (
   return ret;
 };
 
-export const fetchGrantData = (id: string) => async (dispatch: Dispatch) => {
-  dispatch(grantMetadataLoadingURI(id));
+export const fetchGrantData =
+  (id: string) => async (dispatch: Dispatch, getState: () => RootState) => {
+    dispatch(grantMetadataLoadingURI(id));
 
-  const { chainId, registryAddress } = getProjectURIComponents(id);
+    const { chainId, registryAddress } = getProjectURIComponents(id);
 
-  const chainID = Number(chainId);
-  const addresses = { projectRegistry: registryAddress };
-  const appProvider = getProviderByChainId(chainID);
+    const chainID = Number(chainId);
+    const addresses = { projectRegistry: registryAddress };
+    const appProvider = getProviderByChainId(chainID);
 
-  let project: ProjectRegistryMetadata;
+    let project: ProjectRegistryMetadata;
 
-  try {
-    project = await getProjectById(id, addresses, appProvider!);
-  } catch (e) {
-    datadogRum.addError(e);
-    console.error("error fetching project by id", e);
-    dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
-    return;
-  }
-
-  if (!project.metadata.protocol) {
-    console.error("project not found");
-    dispatch(grantMetadataFetchingError(id, "project not found"));
-    return;
-  }
-
-  dispatch(grantMetadataLoading(id));
-
-  try {
-    const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-    const item = await getMetadata(id, project, cacheKey);
-
-    if (item === null) {
-      throw new Error();
+    try {
+      project = await getProjectById(id, addresses, appProvider!);
+    } catch (e) {
+      datadogRum.addError(e);
+      console.error("error fetching project by id", e);
+      dispatch(grantMetadataFetchingError(id, "error fetching project by id"));
+      return;
     }
 
-    dispatch(grantMetadataFetched(item));
-  } catch (error) {
-    console.log("item is null");
-    dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
-  }
-};
+    if (!project.metadata.protocol) {
+      console.error("project not found");
+      dispatch(grantMetadataFetchingError(id, "project not found"));
+      return;
+    }
+
+    dispatch(grantMetadataLoading(id));
+
+    try {
+      const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
+      const item = await getMetadata(id, project, cacheKey);
+
+      // fill the createdAt timestamp from the block creation time
+      // for older projects that don't have it
+      if (item && !item.createdAt) {
+        const { projects } = getState();
+        const { createdAtBlock } = projects.events[item.id];
+        if (createdAtBlock) {
+          const block = await appProvider.getBlock(createdAtBlock);
+          item.createdAt = block.timestamp * 100;
+        }
+      }
+
+      if (item === null) {
+        throw new Error();
+      }
+
+      dispatch(grantMetadataFetched(item));
+    } catch (error) {
+      console.log("item is null");
+      dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
+    }
+  };
 
 export const unloadAll = grantsMetadataAllUnloaded;
