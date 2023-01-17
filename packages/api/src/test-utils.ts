@@ -8,6 +8,7 @@ import {
   QFContributionSummary,
   QFContribution,
   RoundMetadata,
+  QFDistribution,
 } from "./types";
 import prisma from "./handlers/client";
 
@@ -52,4 +53,14 @@ export const mockQFVote: QFContribution = {
   contributor: faker.finance.ethereumAddress.toString(),
   projectId: faker.finance.ethereumAddress.toString(),
   projectPayoutAddress: faker.finance.ethereumAddress.toString(),
+};
+
+export const mockQFDistribution: QFDistribution = {
+  projectId: faker.finance.ethereumAddress.toString(),
+  matchAmountInUSD: faker.datatype.number(),
+  matchPoolPercentage: faker.datatype.number(),
+  matchAmountInToken: faker.datatype.number(),
+  projectPayoutAddress: faker.finance.ethereumAddress.toString(),
+  uniqueContributorsCount: faker.datatype.number(),
+  totalContributionsInUSD: faker.datatype.number(),
 };

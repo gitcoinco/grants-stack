@@ -195,7 +195,7 @@ export default function PassportConnect() {
                 </>
               )}
             </p>
-            
+
             <Button
               type="button"
               $variant="outline"
@@ -209,9 +209,9 @@ export default function PassportConnect() {
                 ? "Submit Score"
                 : "Update Score"}
             </Button>
-            
+
           </div>
-         
+
           {passportState === PassportState.LOADING && (
             <div>
               <p className="text-grey-500 mb-2">Checking eligibility</p>
@@ -270,7 +270,7 @@ export default function PassportConnect() {
 
         <p className="mt-3 pb-3 text-center">
           <a
-            data-testid="need-help-link"
+            data-testid="how-it-works-link"
             className="text-md border-b border-black pb-1 mr-4"
             target="_blank"
             href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
