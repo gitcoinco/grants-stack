@@ -174,7 +174,7 @@ export default function PassportConnect() {
                 <span>
                   <PassportLogo
                     data-testid="passport-fetching-icon"
-                    className="animate-spin w-10"
+                    className="animate-spin w-10 opacity-80 mb-1"
                   />
                 </span>
               )}
