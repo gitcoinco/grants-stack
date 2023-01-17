@@ -39,13 +39,14 @@ export default function PassportBanner(props: {
 
     if (isConnected && address && PASSPORT_COMMUNITY_ID) {
       const callFetchPassport = async () => {
+
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
           const scoreResponse = await res.json();
 
-          // TODO: Handle exponential backoff
           if (scoreResponse.status == "PROCESSING") {
-            await callFetchPassport();
+            console.log('processing, calling again in 3000 ms');
+            setTimeout(async () => {await callFetchPassport()}, 3000);
             return;
           }
 

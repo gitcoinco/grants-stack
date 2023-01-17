@@ -13,7 +13,6 @@ import {
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { backOff } from "exponential-backoff";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
@@ -52,7 +51,8 @@ export default function PassportConnect() {
       const scoreResponse: PassportResponse = await res.json();
 
       if (scoreResponse.status == "PROCESSING") {
-        await backOff(() => callFetchPassport());
+        console.log('processing, calling again in 3000 ms');
+        setTimeout(async () => {await callFetchPassport()}, 3000);
         return;
       }
 
