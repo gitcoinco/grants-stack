@@ -3,9 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "license": "AGPL-3.0-only",
-  "engines": {
-    "npm": ">=8.5.5",
-    "node": ">=16.15.0"
+  "scripts": {
+    "build": "craco build",
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src --cache",
+    "lint-staged": "lint-staged",
+    "lint:fix": "eslint ./src --fix --cache",
+    "start": "craco start",
+    "test": "craco test --watchAll=false --silent",
+    "test-log": "craco test --watchAll=false",
+    "test:coverage": "craco test --watchAll=false --silent --coverage"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "yarn lint:fix",
+    "*.{js,jsx,ts,tsx,md}": "prettier --write ."
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "resetMocks": false,
+    "transformIgnorePatterns": [
+      "/round-manager/node_modules/(?!(@spruceid))/"
+    ]
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
@@ -60,31 +91,6 @@
     "wagmi": "^0.6.5",
     "web-vitals": "^2.1.0"
   },
-  "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test-log": "craco test --watchAll=false",
-    "test": "craco test --watchAll=false --silent",
-    "test:coverage": "craco test --watchAll=false --silent --coverage",
-    "eject": "react-scripts eject",
-    "lint": "eslint ./src --cache",
-    "lint:fix": "eslint ./src --fix --cache",
-    "lint-staged": "lint-staged"
-  },
-  "browserslist": {
-    "production": [
-      "chrome >= 67",
-      "edge >= 79",
-      "firefox >= 68",
-      "opera >= 54",
-      "safari >= 14"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
@@ -95,14 +101,8 @@
     "tailwind-styled-components": "^2.1.7",
     "tailwindcss": "^3.0.24"
   },
-  "lint-staged": {
-    "*.{ts,tsx}": "yarn lint:fix",
-    "*.{js,jsx,ts,tsx,md}": "prettier --write ."
-  },
-  "jest": {
-    "resetMocks": false,
-    "transformIgnorePatterns": [
-      "/round-manager/node_modules/(?!(@spruceid))/"
-    ]
+  "engines": {
+    "node": ">=16.15.0",
+    "npm": ">=8.5.5"
   }
 }
