@@ -13,6 +13,7 @@ import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
 
+process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 const userAddress = faker.finance.ethereumAddress();
