@@ -19,6 +19,7 @@ const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
   address: userAddress,
+  isConnected: true,
 };
 
 const useParamsFn = () => ({
@@ -41,6 +42,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: useParamsFn,
+}));
+jest.mock("../../api/passport", () => ({
+  ...jest.requireActual("../../api/passport"),
+  fetchPassport: () => Promise.resolve({ score: 10000000 }),
 }));
 
 describe("View Ballot Page", () => {
