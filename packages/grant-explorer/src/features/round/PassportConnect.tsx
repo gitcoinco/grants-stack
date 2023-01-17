@@ -13,6 +13,7 @@ import {
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { backOff } from "exponential-backoff";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
@@ -50,9 +51,8 @@ export default function PassportConnect() {
     if (res.ok) {
       const scoreResponse: PassportResponse = await res.json();
 
-      // TODO: Handle exponential backoff
       if (scoreResponse.status == "PROCESSING") {
-        await callFetchPassport();
+        await backOff(() => callFetchPassport());
         return;
       }
 
@@ -209,6 +209,7 @@ export default function PassportConnect() {
                 ? "Submit Score"
                 : "Update Score"}
             </Button>
+
           </div>
 
           {passportState === PassportState.LOADING && (
@@ -268,6 +269,15 @@ export default function PassportConnect() {
         </div>
 
         <p className="mt-3 pb-3 text-center">
+          <a
+            data-testid="how-it-works-link"
+            className="text-md border-b border-black pb-1 mr-4"
+            target="_blank"
+            href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
+            rel="noreferrer"
+          >
+            What is Passport and how does it work?
+          </a>
           <a
             data-testid="need-help-link"
             className="text-md border-b border-black pb-1"
