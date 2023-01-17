@@ -642,24 +642,24 @@ const applyMatchingCap = (
           projectMatch.matchPoolPercentage * totalPot;
 
         // check if the project's match is more the capAmount after spreading the remainder
-        if (projectMatch.matchAmountInToken < matchingCapInUSD) {
+        if (projectMatch.matchAmountInUSD > matchingCapInUSD) {
           // increase amountLeftInPoolAfterCapping by the amount that is over the cap
           const amountOverCap =
             projectMatch.matchAmountInUSD - matchingCapInUSD;
           amountLeftInPoolAfterCapping += amountOverCap;
         }
-
-        // apply the cap again (recursively)
-        if (amountLeftInPoolAfterCapping > 0) {
-          applyMatchingCap(
-            distribution,
-            totalPot,
-            totalMatchInUSD,
-            matchingCapInUSD
-          );
-        }
       }
     });
+
+    // apply the cap again (recursively)
+    if (amountLeftInPoolAfterCapping > 0) {
+      applyMatchingCap(
+        distribution,
+        totalPot,
+        totalMatchInUSD,
+        matchingCapInUSD
+      );
+    }
   }
 
   return distribution;
