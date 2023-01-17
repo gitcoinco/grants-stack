@@ -61,6 +61,7 @@ export type InputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
+  tooltip?: ReactNode;
   feedback: {
     type: string;
     message: string;

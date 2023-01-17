@@ -69,6 +69,7 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
+  tooltip,
   feedback,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
@@ -79,7 +80,20 @@ export function TextInput({
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
-            {label}
+            <span>{label}</span>
+            {tooltip && (
+              <Tooltip
+                className="shrink"
+                bg="purple.900"
+                hasArrow
+                label={tooltip}
+              >
+                <InformationCircleIcon
+                  className="w-4 h-4 inline ml-1"
+                  color="gray"
+                />
+              </Tooltip>
+            )}
           </label>
         </div>
         <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>

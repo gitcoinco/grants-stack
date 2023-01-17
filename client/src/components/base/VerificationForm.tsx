@@ -87,6 +87,9 @@ export default function VerificationForm({
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
           required={false}
+          tooltip={`In order to successfully verify,
+          please make sure that you are a public member of the Github organization.
+          Github organization and usernames are case sensitive.`}
           feedback={{ type: "none", message: "" }}
         />
         <Github
