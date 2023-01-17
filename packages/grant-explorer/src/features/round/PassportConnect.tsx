@@ -42,6 +42,7 @@ export default function PassportConnect() {
     }
 
     const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
+
     if (!res) {
       setPassportState(PassportState.ERROR);
       return;
@@ -114,7 +115,7 @@ export default function PassportConnect() {
     return (
       <div
         data-testid="have-a-passport-instructions"
-        className="text-left mt-8 mb-5 text-grey-500max-w-7xl mx-auto"
+        className="text-left mt-8 mb-5 text-grey-500 max-w-7xl mx-auto"
       >
         <div className="text-[18px] mb-6 flex">
           <div className="bg-violet-200 w-24 md:w-8 h-8 rounded-full relative mr-4">
@@ -173,7 +174,7 @@ export default function PassportConnect() {
                 <span>
                   <PassportLogo
                     data-testid="passport-fetching-icon"
-                    className="animate-spin w-10"
+                    className="animate-spin w-10 opacity-80 mb-1"
                   />
                 </span>
               )}
@@ -194,7 +195,7 @@ export default function PassportConnect() {
                 </>
               )}
             </p>
-
+            
             <Button
               type="button"
               $variant="outline"
@@ -208,8 +209,9 @@ export default function PassportConnect() {
                 ? "Submit Score"
                 : "Update Score"}
             </Button>
+            
           </div>
-
+         
           {passportState === PassportState.LOADING && (
             <div>
               <p className="text-grey-500 mb-2">Checking eligibility</p>
@@ -326,12 +328,12 @@ export default function PassportConnect() {
             </p>
 
             <p className="mt-4 mb-10 pb-3">
-              {/* TODO: Add URL */}
               <a
                 data-testid="what-is-passport-link"
                 className="text-md border-b border-black pb-1"
                 target="_blank"
-                href="#"
+                rel="noreferrer"
+                href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
               >
                 What is Passport and how does it work?
               </a>

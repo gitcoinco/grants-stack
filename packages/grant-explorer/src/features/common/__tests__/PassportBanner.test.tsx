@@ -40,6 +40,10 @@ describe("PassportBanner", () => {
       const mockJsonPromise = Promise.resolve({
         score: "1",
         address: userAddress,
+        evidence: {
+          rawScore: 1,
+          threshold: 1,
+        }
       });
 
       const mockFetchPassportPromise = {
@@ -64,6 +68,10 @@ describe("PassportBanner", () => {
       const mockJsonPromise = Promise.resolve({
         score: "-1",
         address: userAddress,
+        evidence: {
+          rawScore: -1,
+          threshold: 1,
+        }
       });
 
       const mockFetchPassportPromise = {
@@ -88,6 +96,10 @@ describe("PassportBanner", () => {
       const mockJsonPromise = Promise.resolve({
         score: "1",
         address: userAddress,
+        evidence: {
+          rawScore: 1,
+          threshold: 1,
+        }
       });
 
       const mockFetchPassportPromise = {
@@ -108,6 +120,10 @@ describe("PassportBanner", () => {
 
       const mockJsonPromise = Promise.resolve({
         address: userAddress,
+        evidence: {
+          rawScore: 1,
+          threshold: 1,
+        }
       });
 
       const mockFetchPassportPromise = {
