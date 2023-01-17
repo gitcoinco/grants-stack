@@ -1,14 +1,7 @@
 describe("linearQuadraticFunding", () => {
+  it("summarizeQFContributions", () => {});
 
-  it("summarizeQFContributions", () => {
+  it("fetchQFContributionsForRound", () => {});
 
-  });
-
-  it("fetchQFContributionsForRound", () => {
-
-  });
-
-  it("fetchQFContributionsForProjects", () => {
-
-  });
+  it("fetchQFContributionsForProjects", () => {});
 });

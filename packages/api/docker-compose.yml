@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   # Load the postgres db
   postgres:
     image: postgres:14.1-alpine
@@ -22,7 +21,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    env_file: 
+    env_file:
       - .env
     links:
       - postgres

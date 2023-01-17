@@ -38,15 +38,15 @@ Indexed data can be queried by the graphs deployed from the [graph](../graph) pa
 ### Endpoints
 
 | Description                             | endpoint                                                   | request method | Query Params / Body      |
-|-----------------------------------------|------------------------------------------------------------|---------------|--------------------------|
-| Update round summary data               | api/v1/update/summary/round/:chainId/:roundId              | POST          | query: force             |
-| Update project summary data             | api/v1/update/summary/project/:chainId/:roundId/:projectId | POST          | query: force             |
-| Update round match data                 | api/v1/update/match/round/:chainId/:roundId                | POST          | query: force             |
-| Get project match data                  | api/v1/data/match/project/:chainId/:roundId/:projectId     | GET           | query: force             |
-| Get round match data                    | api/v1/data/match/round/:chainId/:roundId                  | GET           | query: force             |
-| Get project summary data                | api/v1/data/summary/project/:chainId/:roundId/:projectId   | GET           | query: force             |
-| Get round summary data                  | api/v1/data/summary/round/:chainId/:roundId                | GET           | query: force             |
-| Get multiple project summary data by id | api/v1/data/summary/projects/:chainId/:roundId             | GET           | query: projectIds, force |
+| --------------------------------------- | ---------------------------------------------------------- | -------------- | ------------------------ |
+| Update round summary data               | api/v1/update/summary/round/:chainId/:roundId              | POST           | query: force             |
+| Update project summary data             | api/v1/update/summary/project/:chainId/:roundId/:projectId | POST           | query: force             |
+| Update round match data                 | api/v1/update/match/round/:chainId/:roundId                | POST           | query: force             |
+| Get project match data                  | api/v1/data/match/project/:chainId/:roundId/:projectId     | GET            | query: force             |
+| Get round match data                    | api/v1/data/match/round/:chainId/:roundId                  | GET            | query: force             |
+| Get project summary data                | api/v1/data/summary/project/:chainId/:roundId/:projectId   | GET            | query: force             |
+| Get round summary data                  | api/v1/data/summary/round/:chainId/:roundId                | GET            | query: force             |
+| Get multiple project summary data by id | api/v1/data/summary/projects/:chainId/:roundId             | GET            | query: projectIds, force |
 
 ### Development
 
