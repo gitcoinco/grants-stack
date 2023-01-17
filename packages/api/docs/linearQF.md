@@ -28,7 +28,7 @@ A grant round can optionally have a cap amount which means a project in the roun
 matchingCapInUSD = matchingCapPercent*usdValueOfMatchingPot
 
 forEach Project(i)
-  if (matchAmountInUSD(i) > matchingCapInUSD)
+  if (matchAmountInUSD > matchingCapInUSD)
     AmountOverCap = matchAmountInUSD - matchingCapInUSD
     matchAmountInUSD = matchingCapInUSD
     amountLeftInPoolAfterCapping += AmountOverCap
