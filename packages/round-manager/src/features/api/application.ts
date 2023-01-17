@@ -119,7 +119,8 @@ export const getApplicationsByRoundId = async (
         // (status ? `status: $status` : ``)
         // +
         `
-          }) {
+          }
+          first: 1000) {
             id
             metaPtr {
               protocol
