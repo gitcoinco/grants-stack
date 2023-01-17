@@ -99,6 +99,7 @@
     "jest-localstorage-mock": "^2.4.22",
     "lint-staged": "^13.1.0",
     "postcss": "^8.4.14",
+    "prettier": "^2.8.3",
     "tailwind-styled-components": "^2.1.7",
     "tailwindcss": "^3.0.24"
   },

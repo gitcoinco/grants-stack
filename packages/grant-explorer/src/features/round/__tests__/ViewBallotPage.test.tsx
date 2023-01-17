@@ -2,12 +2,16 @@ import ViewBallot from "../ViewBallotPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
-import { makeApprovedProjectData, mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import {
+  makeApprovedProjectData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+} from "../../../test-utils";
 import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
-import { BigNumber, ethers } from "ethers";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
