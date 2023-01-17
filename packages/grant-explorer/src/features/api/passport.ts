@@ -42,7 +42,7 @@ type UsePassportHook = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function usePassport(address: string, communityId: string): UsePassportHook {
-  const { data, isLoading, error, mutate } = useSWR<PassportResponse>(
+  const { data, error, mutate } = useSWR<PassportResponse>(
     [address, communityId],
     ([address, communityId]) =>
       fetchPassport(address, communityId).then((res) => res.json())

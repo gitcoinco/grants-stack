@@ -36,7 +36,6 @@ export default function PassportBanner(props: {
     // TODO: fetch from round metadata
     const PASSPORT_COMMUNITY_ID =
       process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID;
-    const PASSPORT_THRESHOLD = 0;
 
     if (isConnected && address && PASSPORT_COMMUNITY_ID) {
       const callFetchPassport = async () => {
