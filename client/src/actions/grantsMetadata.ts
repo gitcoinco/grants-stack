@@ -92,17 +92,25 @@ const getProjectById = async (
 
 // This fills the createdAt timestamp from the block creation time
 // for older projects that don't have it
-const ensureCreatedAt = async (
+const ensureMetadataTimestamps = async (
   metadata: Metadata,
   appProvider: ethers.providers.BaseProvider,
-  createdAtBlock: number
+  createdAtBlock?: number,
+  updatedAtBlock?: number
 ) => {
-  if (!metadata.createdAt) {
+  let ret = metadata;
+
+  if (!metadata.createdAt && createdAtBlock) {
     const block = await appProvider.getBlock(createdAtBlock);
-    return { ...metadata, createdAt: block.timestamp * 1000 };
+    ret = { ...ret, createdAt: block.timestamp * 1000 };
   }
 
-  return metadata;
+  if (!metadata.updatedAt && updatedAtBlock) {
+    const block = await appProvider.getBlock(updatedAtBlock);
+    ret = { ...ret, updatedAt: block.timestamp * 1000 };
+  }
+
+  return ret;
 };
 
 const getMetadata = async (
@@ -110,7 +118,8 @@ const getMetadata = async (
   project: any,
   cacheKey: string,
   appProvider: ethers.providers.BaseProvider,
-  createdAtBlock: number
+  createdAtBlock?: number,
+  updatedAtBlock?: number
 ) => {
   const storage = new LocalStorage();
   let metadata: Metadata;
@@ -121,7 +130,7 @@ const getMetadata = async (
       try {
         metadata = JSON.parse(item);
 
-        const ret = await ensureCreatedAt(
+        const ret = await ensureMetadataTimestamps(
           {
             ...metadata,
             protocol: project.metadata.protocol,
@@ -129,7 +138,8 @@ const getMetadata = async (
             id: projectId,
           },
           appProvider,
-          createdAtBlock
+          createdAtBlock,
+          updatedAtBlock
         );
 
         storage.add(cacheKey, JSON.stringify(ret));
@@ -156,10 +166,11 @@ const getMetadata = async (
   }
 
   try {
-    metadata = await ensureCreatedAt(
+    metadata = await ensureMetadataTimestamps(
       JSON.parse(content),
       appProvider,
-      createdAtBlock
+      createdAtBlock,
+      updatedAtBlock
     );
   } catch (e) {
     // FIXME: dispatch JSON error
@@ -210,14 +221,15 @@ export const fetchGrantData =
     try {
       const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
       const { projects } = getState();
-      const { createdAtBlock } = projects.events[id];
+      const { createdAtBlock, updatedAtBlock } = projects.events[id];
 
       const item = await getMetadata(
         id,
         project,
         cacheKey,
         appProvider,
-        createdAtBlock!
+        createdAtBlock,
+        updatedAtBlock
       );
 
       if (item === null) {

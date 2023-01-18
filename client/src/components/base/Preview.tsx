@@ -9,7 +9,6 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/newGrant";
 import { slugs } from "../../routes";
 import { ProjectFormStatus } from "../../types";
-import { formatDate } from "../../utils/components";
 import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import { addAlert } from "../../actions/ui";
@@ -93,8 +92,8 @@ export default function Preview({
     <div>
       {/* TODO: fetch proper "created at" date */}
       <Details
-        updatedAt={formatDate(Date.now() / 1000)}
-        createdAt={formatDate(Date.now() / 1000)}
+        updatedAt={+Date.now()}
+        createdAt={+Date.now()}
         project={project}
         logoImg={
           props.metadata?.logoImgData ?? "./assets/default-project-logo.png"
