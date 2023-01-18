@@ -90,10 +90,27 @@ const getProjectById = async (
   return project;
 };
 
+// This fills the createdAt timestamp from the block creation time
+// for older projects that don't have it
+const ensureCreatedAt = async (
+  metadata: Metadata,
+  appProvider: ethers.providers.BaseProvider,
+  createdAtBlock: number
+) => {
+  if (!metadata.createdAt) {
+    const block = await appProvider.getBlock(createdAtBlock);
+    return { ...metadata, createdAt: block.timestamp * 1000 };
+  }
+
+  return metadata;
+};
+
 const getMetadata = async (
   projectId: string,
   project: any,
-  cacheKey: string
+  cacheKey: string,
+  appProvider: ethers.providers.BaseProvider,
+  createdAtBlock: number
 ) => {
   const storage = new LocalStorage();
   let metadata: Metadata;
@@ -104,12 +121,17 @@ const getMetadata = async (
       try {
         metadata = JSON.parse(item);
 
-        const ret = {
-          ...metadata,
-          protocol: project.metadata.protocol,
-          pointer: project.metadata.pointer,
-          id: projectId,
-        };
+        const ret = await ensureCreatedAt(
+          {
+            ...metadata,
+            protocol: project.metadata.protocol,
+            pointer: project.metadata.pointer,
+            id: projectId,
+          },
+          appProvider,
+          createdAtBlock
+        );
+
         storage.add(cacheKey, JSON.stringify(ret));
         return ret;
       } catch (e) {
@@ -134,7 +156,11 @@ const getMetadata = async (
   }
 
   try {
-    metadata = JSON.parse(content);
+    metadata = await ensureCreatedAt(
+      JSON.parse(content),
+      appProvider,
+      createdAtBlock
+    );
   } catch (e) {
     // FIXME: dispatch JSON error
     datadogRum.addError(e);
@@ -183,18 +209,16 @@ export const fetchGrantData =
 
     try {
       const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
-      const item = await getMetadata(id, project, cacheKey);
+      const { projects } = getState();
+      const { createdAtBlock } = projects.events[id];
 
-      // fill the createdAt timestamp from the block creation time
-      // for older projects that don't have it
-      if (item && !item.createdAt) {
-        const { projects } = getState();
-        const { createdAtBlock } = projects.events[item.id];
-        if (createdAtBlock) {
-          const block = await appProvider.getBlock(createdAtBlock);
-          item.createdAt = block.timestamp * 100;
-        }
-      }
+      const item = await getMetadata(
+        id,
+        project,
+        cacheKey,
+        appProvider,
+        createdAtBlock!
+      );
 
       if (item === null) {
         throw new Error();
