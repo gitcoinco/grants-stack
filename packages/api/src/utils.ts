@@ -11,6 +11,23 @@ import {
 } from "./types";
 import { cache } from "./cacheConfig";
 
+const TESNET_TOKEN_TO_USD_RATE = 1000;
+
+type TokenPriceMapping = {
+  [address: string]: {
+    usd: number
+  };
+}
+
+type AvgTokenPriceMapping = {
+  [address: string]: number;
+}
+
+type TokenStartEndPrice = {
+  startPrice: number;
+  endPrice: number;
+}
+
 /**
  * Fetch subgraph network for provided web3 network
  *
@@ -269,26 +286,22 @@ export const getChainName = (chainId: ChainId) => {
   return { chainName, error };
 };
 
-export async function getPriceForToken(contract: string, chain: ChainName) {
-  return await fetch(
-    `https://api.coingecko.com/api/v3/coins/${chain}/contract/${contract}`,
-    {
-      headers: {
-        Accept: "application/json",
-      },
-    }
-  )
-    .then((res) => res.json())
-    .then((res) => res.market_data.current_price);
-}
-
 export async function getStartAndEndTokenPrices(
   contract: string,
   chainId: ChainId,
   startTime: number,
   endTime: number
-): Promise<{ startPrice: number; endPrice: number }> {
+): Promise<TokenStartEndPrice> {
   try {
+
+    // Avoid coingecko calling for testnet
+    if(isTestnet(chainId)) {
+      return {
+        startPrice: TESNET_TOKEN_TO_USD_RATE,
+        endPrice: TESNET_TOKEN_TO_USD_RATE
+      }
+    };
+
     const { chainName, error } = getChainName(chainId);
     if (error) {
       throw new Error(
@@ -393,14 +406,32 @@ export const getStrategyName = (strategyName: string) => {
  *
  * @param {ChainId} chainId - The id of the chain to retrieve the native token's price from.
  * @param {string[]} tokenAddresses - The addresses of the tokens to retrieve prices for.
- * @return {Promise<any>} - An object containing the token addresses as keys and their prices in USD as values.
+ * @return {Promise<TokenPriceMapping>} - An object containing the token addresses as keys and their prices in USD as values.
  */
 export const fetchCurrentTokenPrices = async (
   chainId: ChainId,
   tokenAddresses: string[]
-) => {
-  let data: any = {};
+): Promise<TokenPriceMapping> => {
+  let tokenPrices: TokenPriceMapping = {};
   try {
+
+    // Avoid coingecko calling for testnet
+    if(isTestnet(chainId)) {
+
+      let testnetTokenPrices: any = {
+        "0x0000000000000000000000000000000000000000":  {
+          usd: TESNET_TOKEN_TO_USD_RATE
+        }
+      };
+
+      tokenAddresses.map(tokenAddress => {
+        testnetTokenPrices[tokenAddress] = {
+          usd: TESNET_TOKEN_TO_USD_RATE
+        };
+      });
+      return testnetTokenPrices;
+    };
+
     const { chainName } = getChainName(chainId);
 
     const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
@@ -413,8 +444,8 @@ export const fetchCurrentTokenPrices = async (
       },
     });
 
-    const tokenPrices = await resTokenPriceEndpoint.json();
-    data = { ...data, ...tokenPrices };
+    const tokenPricesResponse = await resTokenPriceEndpoint.json();
+    tokenPrices = { ...tokenPrices, ...tokenPricesResponse };
 
     if (
       tokenAddresses.includes("0x0000000000000000000000000000000000000000") &&
@@ -428,15 +459,16 @@ export const fetchCurrentTokenPrices = async (
       });
 
       const nativeTokenPrice = (await resNativePriceEndpoint.json())[chainName];
-      data = {
-        ...data,
+      tokenPrices = {
+        ...tokenPrices,
         "0x0000000000000000000000000000000000000000": nativeTokenPrice,
       };
     }
   } catch (error) {
     console.error("fetchCurrentTokenPrices", error);
   }
-  return data;
+
+  return tokenPrices;
 };
 
 /**
@@ -466,15 +498,26 @@ export const fetchAverageTokenPrices = async (
   endTime: number
 ) => {
   try {
+    // Avoid coingecko calling for testnet
+    if(isTestnet(chainId)) {
+      let testnetAverageTokenPrices: any = {
+        "0x0000000000000000000000000000000000000000": TESNET_TOKEN_TO_USD_RATE,
+      };
+
+      tokenAddresses.map(tokenAddress => {
+        testnetAverageTokenPrices[tokenAddress] = TESNET_TOKEN_TO_USD_RATE;
+      });
+
+      return testnetAverageTokenPrices;
+    }
+
     const { chainName, error } = getChainName(chainId);
 
     if (error) {
       throw error;
     }
 
-    const averageTokenPrices: {
-      [address: string]: number;
-    } = {};
+    const averageTokenPrices: AvgTokenPriceMapping = {};
 
     for (let address of tokenAddresses) {
       averageTokenPrices[address] = 0;
@@ -591,4 +634,19 @@ export const fetchProjectIdToPayoutAddressMapping = async (
   }
 
   return projectToPayoutMap;
+};
+
+/**
+ * checks if current ChainId is testnet chain
+ * @param chainId \
+ * @returns boolean
+ */
+export const isTestnet = (chainId: ChainId) => {
+  const testnet = [
+    ChainId.GOERLI,
+    ChainId.FANTOM_TESTNET,
+    ChainId.LOCAL_ROUND_LAB
+  ];
+
+  return testnet.includes(chainId);
 };
