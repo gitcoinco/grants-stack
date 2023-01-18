@@ -176,9 +176,9 @@ export default function ViewBallot() {
         if (res.ok) {
           const json = await res.json();
 
-          // TODO: Handle exponential backoff
           if (json.status == "PROCESSING") {
-            await callFetchPassport();
+            console.log('processing, calling again in 3000 ms');
+            setTimeout(async () => {await callFetchPassport()}, 3000);
             return;
           }
 
