@@ -33,6 +33,7 @@ export type Application = {
 
 export interface ProjectsState {
   status: Status;
+  loadingChains: number[];
   error: string | undefined;
   ids: string[];
   events: ProjectEventsMap;
@@ -43,6 +44,7 @@ export interface ProjectsState {
 
 const initialState: ProjectsState = {
   status: Status.Undefined,
+  loadingChains: [],
   error: undefined,
   ids: [],
   events: {},
@@ -58,19 +60,22 @@ export const projectsReducer = (
       return {
         ...state,
         status: Status.Loading,
+        loadingChains: [...state.loadingChains, action.payload],
         ids: [],
       };
     }
 
     case PROJECTS_LOADED: {
-      const { events } = action;
+      const { chainID, events } = action.payload;
       const ids = Object.keys(events);
+      const loadingChains = state.loadingChains.filter((id) => id !== chainID);
 
       return {
         ...state,
-        status: Status.Loaded,
+        status: loadingChains.length === 0 ? Status.Loaded : state.status,
         ids: [...state.ids, ...ids],
         events: { ...state.events, ...events },
+        loadingChains,
       };
     }
 

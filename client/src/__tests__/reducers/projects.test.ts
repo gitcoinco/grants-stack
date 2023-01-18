@@ -13,6 +13,7 @@ describe("projects reducer", () => {
   beforeEach(() => {
     state = {
       status: Status.Undefined,
+      loadingChains: [],
       error: undefined,
       ids: [],
       events: {},
@@ -144,5 +145,49 @@ describe("projects reducer", () => {
       ],
       "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
     });
+  });
+
+  it("handles multiple chain loading states", async () => {
+    // start loading chain 0
+    const state1: ProjectsState = projectsReducer(state, {
+      type: "PROJECTS_LOADING",
+      payload: 0,
+    });
+
+    expect(state1.status).toEqual(Status.Loading);
+    expect(state1.loadingChains.length).toEqual(1);
+
+    // start loading chain 1
+    const state2: ProjectsState = projectsReducer(state1, {
+      type: "PROJECTS_LOADING",
+      payload: 1,
+    });
+
+    expect(state2.status).toEqual(Status.Loading);
+    expect(state2.loadingChains.length).toEqual(2);
+
+    // mark chain 1 as done
+    const state3: ProjectsState = projectsReducer(state2, {
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 1,
+        events: {},
+      },
+    });
+
+    expect(state3.status).toEqual(Status.Loading);
+    expect(state3.loadingChains.length).toEqual(1);
+
+    // mark chain 0 as done
+    const state4: ProjectsState = projectsReducer(state3, {
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 0,
+        events: {},
+      },
+    });
+
+    expect(state4.status).toEqual(Status.Loaded);
+    expect(state4.loadingChains.length).toEqual(0);
   });
 });
