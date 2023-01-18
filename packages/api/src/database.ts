@@ -131,7 +131,10 @@ export class DatabaseInstance {
         update: {
           matches: {
             upsert: {
-              where: { projectId: projectMatch.projectId },
+              where: {
+                projectId: projectMatch.projectId,
+                roundId: roundId
+              },
               create: {
                 matchAmountInUSD: projectMatch.matchAmountInUSD,
                 projectId: projectMatch.projectId,
