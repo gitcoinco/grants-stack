@@ -432,6 +432,7 @@ export const fetchProjectApplications =
         );
       } catch (error: any) {
         datadogRum.addError(error, { projectID });
+        console.error(error);
         dispatch({
           type: PROJECT_APPLICATIONS_ERROR,
           projectID,

@@ -221,7 +221,7 @@ export const fetchGrantData =
     try {
       const cacheKey = `project-${id}-${project.metadata.protocol}-${project.metadata.pointer}`;
       const { projects } = getState();
-      const { createdAtBlock, updatedAtBlock } = projects.events[id];
+      const { createdAtBlock, updatedAtBlock } = projects.events[id] || {};
 
       const item = await getMetadata(
         id,
@@ -233,12 +233,12 @@ export const fetchGrantData =
       );
 
       if (item === null) {
-        throw new Error();
+        throw new Error("item is null");
       }
 
       dispatch(grantMetadataFetched(item));
     } catch (error) {
-      console.log("item is null");
+      console.error(error);
       dispatch(grantMetadataFetchingError(id, "error fetching metadata"));
     }
   };
