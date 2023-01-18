@@ -418,24 +418,37 @@ export const matchQFContributions = async (
   for (const contribution of contributions) {
     const { projectId, amount, token, contributor } = contribution;
 
-    if (!contributionTokens.includes(token)) {
-      contributionTokens.push(token);
-    }
+    const usdAmount = Number(formatUnits(amount)) * prices[token];
 
+    // check if projectID is already in the mapping
     if (!contributionsByProject[projectId]) {
+
+      // add projectID to mapping along with the contribution
       contributionsByProject[projectId] = {
-        contributions: contribution ? { [contributor]: contribution } : {},
+        contributions: {        // all contributions made to the projectId
+          [contributor]: {      // all contributions made by contributor to the projectId
+            ...contribution,    // list of all contributions made by contributor to the projectId
+            usdValue: usdAmount // total USD amount for all contributions made by contributor to the projectId
+          }
+        },
       };
     }
 
+    // check if contributor has already made contributions to the project
     if (!contributionsByProject[projectId].contributions[contributor]) {
-      contributionsByProject[projectId].contributions[contributor] = {
-        ...contribution,
-        usdValue: Number(formatUnits(amount)) * prices[token],
-      };
+
+      // append contributor to the projectId mapping
+      contributionsByProject[projectId]
+        .contributions[contributor] = {
+          ...contribution,
+          usdValue: usdAmount,
+        };
     } else {
-      contributionsByProject[projectId].contributions[contributor].usdValue +=
-        Number(formatUnits(amount)) * prices[token];
+
+      // update total USD amount as this contributor has already made contributions to the project
+      contributionsByProject[projectId]
+        .contributions[contributor] // all contributions made by contributor to the projectId
+        .usdValue += usdAmount; // total USD amount for all contributions made by contributor to the projectId
     }
   }
 
