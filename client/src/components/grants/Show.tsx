@@ -39,8 +39,6 @@ function Project() {
       grantMetadata?.metadata
     );
 
-    console.warn(grantMetadata);
-
     return {
       id: fullId,
       loading,

@@ -28,16 +28,18 @@ export default function Preview({
   const [submitted, setSubmitted] = useState(false);
   const [show, showModal] = useState(false);
 
-  const props = useSelector(
-    (state: RootState) => ({
+  const props = useSelector((state: RootState) => {
+    const prevMetadata = state.grantsMetadata[currentProjectId || ""];
+
+    return {
+      prevMetadata,
       metadata: state.projectForm.metadata,
       credentials: state.projectForm.credentials,
       status: state.newGrant.status,
       error: state.newGrant.error,
       openErrorModal: state.newGrant.error !== undefined,
-    }),
-    shallowEqual
-  );
+    };
+  }, shallowEqual);
 
   const localResetStatus = () => {
     setSubmitted(false);
@@ -90,10 +92,9 @@ export default function Preview({
 
   return (
     <div>
-      {/* TODO: fetch proper "created at" date */}
       <Details
         updatedAt={+Date.now()}
-        createdAt={+Date.now()}
+        createdAt={props.prevMetadata?.metadata?.createdAt ?? +Date.now()}
         project={project}
         logoImg={
           props.metadata?.logoImgData ?? "./assets/default-project-logo.png"
