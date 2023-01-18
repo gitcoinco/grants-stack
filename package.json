@@ -11,7 +11,7 @@
     "build": "lerna run build --scope=round-manager",
     "compile": "lerna run compile --scope=contracts",
     "test": "lerna run test --ignore=@grants-round/graph",
-    "typecheck": "lerna exec --ignore=@grants-round/graph -- tsc --noEmit",
+    "typecheck": "lerna exec --scope='{grant-explorer,round-manager,api}' -- tsc --noEmit",
     "// contracts script": "====== packages/contract specific ======",
     "hh-test": "lerna run test --scope=contracts",
     "hh-compile": "lerna run compile --scope=contracts",

@@ -50,9 +50,9 @@ export default function PassportConnect() {
     if (res.ok) {
       const scoreResponse: PassportResponse = await res.json();
 
-      // TODO: Handle exponential backoff
       if (scoreResponse.status == "PROCESSING") {
-        await callFetchPassport();
+        console.log('processing, calling again in 3000 ms');
+        setTimeout(async () => {await callFetchPassport()}, 3000);
         return;
       }
 
@@ -63,7 +63,7 @@ export default function PassportConnect() {
 
       setPassport(scoreResponse);
       setPassportState(
-        scoreResponse.evidence.rawScore >= scoreResponse.evidence.threshold
+        Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
           ? PassportState.MATCH_ELIGIBLE
           : PassportState.MATCH_INELIGIBLE
       );
@@ -209,6 +209,7 @@ export default function PassportConnect() {
                 ? "Submit Score"
                 : "Update Score"}
             </Button>
+
           </div>
 
           {passportState === PassportState.LOADING && (
@@ -268,6 +269,15 @@ export default function PassportConnect() {
         </div>
 
         <p className="mt-3 pb-3 text-center">
+          <a
+            data-testid="how-it-works-link"
+            className="text-md border-b border-black pb-1 mr-4"
+            target="_blank"
+            href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
+            rel="noreferrer"
+          >
+            What is Passport and how does it work?
+          </a>
           <a
             data-testid="need-help-link"
             className="text-md border-b border-black pb-1"

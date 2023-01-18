@@ -1,6 +1,5 @@
 import { fetchPassport, submitPassport } from "../passport";
 import { faker } from "@faker-js/faker";
-import { BigNumber, ethers } from "ethers";
 import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
 
 jest.mock("../passport", () => {

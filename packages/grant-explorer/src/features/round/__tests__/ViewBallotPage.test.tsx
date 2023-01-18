@@ -2,19 +2,25 @@ import ViewBallot from "../ViewBallotPage";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BallotContext } from "../../../context/BallotContext";
 import { Project } from "../../api/types";
-import { makeApprovedProjectData, mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import {
+  makeApprovedProjectData,
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+} from "../../../test-utils";
 import { RoundProvider } from "../../../context/RoundContext";
 import { faker } from "@faker-js/faker";
 import { MemoryRouter } from "react-router-dom";
 import { getPayoutTokenOptions } from "../../api/utils";
-import { BigNumber, ethers } from "ethers";
 
+process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID = "12";
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
 const userAddress = faker.finance.ethereumAddress();
 
 const mockAccount = {
   address: userAddress,
+  isConnected: true,
 };
 
 const useParamsFn = () => ({
@@ -37,6 +43,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: useParamsFn,
+}));
+jest.mock("../../api/passport", () => ({
+  ...jest.requireActual("../../api/passport"),
+  fetchPassport: () => Promise.resolve({ score: 10000000 }),
 }));
 
 describe("View Ballot Page", () => {

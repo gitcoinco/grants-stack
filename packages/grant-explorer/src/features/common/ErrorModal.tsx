@@ -7,9 +7,12 @@ interface ErrorModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   heading?: string;
-  subheading?: string;
+  subheading?: string | React.ReactNode;
   tryAgainFn?: () => void;
   doneFn?: () => void;
+  tryAgainText?: string;
+  doneText?: string;
+  closeOnBackgroundClick?: boolean;
 }
 
 export default function ErrorModal({
@@ -21,6 +24,9 @@ export default function ErrorModal({
     /**/
   },
   doneFn = () => setIsOpen(false),
+  tryAgainText = "Try Again",
+  doneText = "Done",
+  closeOnBackgroundClick = false,
 }: ErrorModalProps) {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -29,7 +35,9 @@ export default function ErrorModal({
         data-testid="error-modal"
         className="relative z-10"
         onClose={() => {
-          /* Don't close the dialog when clicking the backdrop */
+          if (closeOnBackgroundClick) {
+            setIsOpen(false);
+          }
         }}
       >
         <Transition.Child
@@ -58,13 +66,17 @@ export default function ErrorModal({
               <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
                 <div className="sm:flex sm:items-start flex-col">
                   <div className="flex flex-row justify-between">
-                    <div className="w-10 h-10 flex items-center justify-center bg-pink-100 rounded-full">
+                    <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 bg-pink-100 rounded-full">
                       <InformationCircleIcon className="w-5 h-5 text-pink-500" />
                     </div>
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                       <Dialog.Title
                         as="h3"
                         className="text-base leading-6 font-semibold text-grey-500"
+                        style={{
+                          fontFamily: "Libre Franklin",
+                          fontSize: 16,
+                        }}
                         data-testid="error-heading"
                       >
                         {heading}
@@ -88,9 +100,9 @@ export default function ErrorModal({
                         tryAgainFn();
                         setIsOpen(false);
                       }}
-                      className="mr-4 text-sm"
+                      className="mr-4 text-sm px-4"
                     >
-                      Try Again
+                      {tryAgainText}
                     </Button>
                     <Button
                       type="button"
@@ -99,9 +111,9 @@ export default function ErrorModal({
                         setIsOpen(false);
                       }}
                       data-testid="done"
-                      className="text-sm"
+                      className="text-sm px-4"
                     >
-                      Done
+                      {doneText}
                     </Button>
                   </div>
                 </div>

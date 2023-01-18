@@ -13,7 +13,6 @@ import {
 import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
 import { faker } from "@faker-js/faker";
-import { BigNumber, ethers } from "ethers";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
