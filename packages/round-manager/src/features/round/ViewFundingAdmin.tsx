@@ -182,23 +182,29 @@ function InformationTable(props: {
             : "Default"}{" "}
           Matching Stats
         </p>
-        <p className="font-bold text-violet-400 absolute left-3/4 ml-24">
-          ({props.matchingData?.length}) Projects
-        </p>
-        {props.isCustom && (
-          <span
-            className="absolute right-0 h-6 w-6 text-red-400"
-            onClick={() =>
-              props.setCustomMatchingData &&
-              props.setCustomMatchingData(undefined)
-            }
-            data-testid="cancel-icon"
-          >
-            <XIcon />
-          </span>
+        {props.isCustom ? (
+          <>
+            <p className="font-bold text-violet-400 absolute right-12 ml-24">
+              ({props.matchingData?.length}) Projects
+            </p>
+            <span
+              className="absolute right-0 h-6 w-6 text-red-400"
+              onClick={() =>
+                props.setCustomMatchingData &&
+                props.setCustomMatchingData(undefined)
+              }
+              data-testid="cancel-icon"
+            >
+              <XIcon />
+            </span>
+          </>
+        ) : (
+          <p className="font-bold text-violet-400 absolute right-0 ml-24">
+            ({props.matchingData?.length}) Projects
+          </p>
         )}
       </div>
-      <div className="flex flex-flow mt-2 overflow-y-auto h-72 border-2 px-4 py-4">
+      <div className="flex flex-flow mt-2 overflow-y-auto max-h-72 border-2 rounded px-4 py-4">
         <table className="w-full" data-testid="matching-stats-table">
           <thead>
             <tr className="text-left">
