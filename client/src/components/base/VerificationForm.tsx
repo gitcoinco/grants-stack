@@ -81,15 +81,15 @@ export default function VerificationForm({
       <div className="flex items-center mb-6">
         <div className="h-12 mr-12 w-12" />
         <TextInput
-          label="Github Oganization"
+          label="Github Organization"
           name="projectGithub"
           placeholder="GitHub org name your project is part of"
           value={props.formMetaData.projectGithub}
           changeHandler={handleInput}
           required={false}
           tooltip={`In order to successfully verify,
-          please make sure that you are a public member of the Github organization.
-          Github organization and usernames are case sensitive.`}
+          please make sure that you are a public member of the GitHub organization.
+          GitHub organization and usernames are case sensitive.`}
           feedback={{ type: "none", message: "" }}
         />
         <Github
