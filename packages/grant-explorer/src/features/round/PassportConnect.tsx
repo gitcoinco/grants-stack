@@ -72,10 +72,6 @@ export default function PassportConnect() {
       switch (res.status) {
         case 400: // unregistered/nonexistent passport address
           setPassportState(PassportState.INVALID_PASSPORT);
-          console.error(
-            "unregistered/nonexistent passport address",
-            res.json()
-          );
           break;
         case 401: // invalid API key
           setPassportState(PassportState.ERROR);
