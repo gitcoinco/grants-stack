@@ -53,8 +53,8 @@ export default function ViewRoundPage() {
 
   const tabStyles = (selected: boolean) =>
     selected
-      ? "border-violet-500 border-b whitespace-nowrap py-4 px-1 text-sm outline-none"
-      : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
+      ? "whitespace-nowrap py-4 px-1 text-sm outline-none"
+      : "text-grey-400 hover:text-gray-700 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   useEffect(() => {
     if (isRoundsFetched) {
