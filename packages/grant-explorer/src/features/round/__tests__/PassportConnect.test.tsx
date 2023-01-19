@@ -200,7 +200,7 @@ describe("<PassportConnect/>", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Ineligible for matching")).toBeInTheDocument();
-        expect(screen.getByText("Please connect to Passport in order continue.")).toBeInTheDocument();
+        expect(screen.getByText("Please create a Gitcoin Passport in order to continue.")).toBeInTheDocument();
       });
     });
   });
