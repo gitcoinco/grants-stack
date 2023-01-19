@@ -122,7 +122,7 @@ export default function PassportConnect() {
             <div className="absolute mt-1 ml-3">1</div>
           </div>
           <div className="my-auto">
-            Create a Passport if you don’t have one already. You will be taken
+            Create a Gitcoin Passport if you don’t have one already. You will be taken
             to a new window to begin verifying your identity.
           </div>
         </div>
@@ -239,7 +239,7 @@ export default function PassportConnect() {
           {passportState === PassportState.NOT_CONNECTED && (
             <div>
               <p className="text-pink-400 mb-2">Ineligible for matching</p>
-              <p>Please connect to Passport in order continue.</p>
+              <p>Please create a Gitcoin Passport in order to continue.</p>
             </div>
           )}
         </div>
@@ -319,7 +319,7 @@ export default function PassportConnect() {
               Unlock matching for your donation by verifying your identity
             </p>
             <p className="text-xl mb-1">
-              Connect your wallet to Passport to check your identity score and
+              Connect your wallet to Gitcoin Passport to check your identity score and
               maximize your donation power.
             </p>
             <p className="text-xl">
@@ -335,7 +335,7 @@ export default function PassportConnect() {
                 rel="noreferrer"
                 href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-passport/common-questions"
               >
-                What is Passport and how does it work?
+                What is Gitcoin Passport and how does it work?
               </a>
             </p>
 
