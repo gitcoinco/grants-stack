@@ -3,8 +3,13 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
 import { ethers } from "ethers";
 import { useEffect } from "react";
-import { AddressInputProps, InputProps, ProjectOption } from "../../types";
 import { getAddressType } from "../../utils/utils";
+import {
+  AddressInputProps,
+  InputProps,
+  TextAreaProps,
+  ProjectOption,
+} from "../../types";
 
 const optionalSpan = (
   <span className="text-gray-400 inset-y-0 right-0">Optional</span>
@@ -72,6 +77,7 @@ export function TextInput({
   changeHandler,
   required,
   encrypted,
+  tooltip,
   feedback,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
@@ -82,7 +88,20 @@ export function TextInput({
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
-            {label}
+            <span>{label}</span>
+            {tooltip && (
+              <Tooltip
+                className="shrink"
+                bg="purple.900"
+                hasArrow
+                label={tooltip}
+              >
+                <InformationCircleIcon
+                  className="w-4 h-4 inline ml-1"
+                  color="gray"
+                />
+              </Tooltip>
+            )}
           </label>
         </div>
         <div className={classNames("shrink ml-2", { "mr-2": encrypted })}>
@@ -263,7 +282,9 @@ export function TextArea({
   required,
   encrypted,
   feedback,
-}: InputProps) {
+  containerClass,
+  rows,
+}: TextAreaProps) {
   let borderClass = "";
   let feedbackColor = "";
 
@@ -274,8 +295,8 @@ export function TextArea({
   }
 
   return (
-    <div className="mt-6 w-full sm:w-1/2 relative">
-      <div className=" flex">
+    <div className={`mt-6 w-full sm:w-1/2 relative ${containerClass}`}>
+      <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
             {label}
@@ -291,6 +312,7 @@ export function TextArea({
         id={name}
         name={name}
         placeholder={placeholder}
+        rows={rows}
         value={value ?? ""}
         disabled={disabled}
         onChange={(e) => changeHandler(e)}

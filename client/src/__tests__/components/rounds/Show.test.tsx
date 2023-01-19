@@ -58,14 +58,14 @@ describe("<Show />", () => {
         renderWrapped(<Show />, store);
 
         const element = screen.getByTestId("switch-networks-modal-button");
-        const button = element.firstChild;
+        const button = element.children[1];
 
-        expect(button).toHaveTextContent("Switch Networks to Continue");
+        expect(button).toHaveTextContent("Switch Network");
 
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
           screen.getByTestId("switch-networks-modal-title")
-        ).toHaveTextContent("Switch Networks to Continue");
+        ).toHaveTextContent("Switch Network");
       });
 
       test("does not render when the round's chainId matches the user's chainId", async () => {
@@ -96,7 +96,7 @@ describe("<Show />", () => {
         (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
         (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
 
-        store.dispatch({ type: "PROJECTS_LOADING" });
+        store.dispatch({ type: "PROJECTS_LOADING", payload: 0 });
 
         renderWrapped(<Show />, store);
 
@@ -119,7 +119,10 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          events: {},
+          payload: {
+            chainID: 0,
+            events: {},
+          },
         });
 
         renderWrapped(<Show />, store);
@@ -134,7 +137,10 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          events: {},
+          payload: {
+            chainID: 0,
+            events: {},
+          },
         });
 
         renderWrapped(<Show />, store);

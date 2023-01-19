@@ -11,6 +11,7 @@ import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
 import ApplicationCard from "./ApplicationCard";
+import markdown from "../../utils/markdown";
 
 function Verified() {
   return (
@@ -224,13 +225,15 @@ export default function Details({
             <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
               Description
             </p>
-            <div className="mb-12 ml-2">
-              {project?.description?.split(/\r?\n/).map((i, x) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <p className="mb-5" key={`i-${x}`}>
-                  {i}
-                </p>
-              ))}
+            <div className="pt-6 mb-12 ml-2 prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base">
+              {project?.description && (
+                <div
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{
+                    __html: markdown.renderToHTML(project.description),
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

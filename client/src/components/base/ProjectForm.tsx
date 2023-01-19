@@ -199,6 +199,8 @@ function ProjectForm({
           value={props.formMetaData.description}
           changeHandler={handleInput}
           required
+          rows={15}
+          containerClass="sm:w-full"
           feedback={
             feedback.find((fb) => fb.title === "description") ?? {
               type: "none",
@@ -206,6 +208,19 @@ function ProjectForm({
             }
           }
         />
+        <div className="pt-2 text-sm text-gray-400">
+          <span>Formatting with </span>
+          <a
+            className="text-gitcoin-violet-400"
+            href="https://www.markdownguide.org/basic-syntax/"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Markdown
+          </a>
+          <span> is supported.</span>
+        </div>
+
         {!formValidation.valid && submitted && (
           <div
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"

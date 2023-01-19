@@ -14,16 +14,22 @@ import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProviderByChainId } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
+import { addAlert } from "./ui";
+import { chains } from "../utils/wagmi";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
+  payload: number;
   type: typeof PROJECTS_LOADING;
 }
 
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
-  events: ProjectEventsMap;
+  payload: {
+    chainID: number;
+    events: ProjectEventsMap;
+  };
 }
 
 export const PROJECTS_ERROR = "PROJECTS_ERROR";
@@ -75,13 +81,20 @@ export type ProjectsActions =
   | ProjectApplicationsErrorAction
   | ProjectApplicationUpdatedAction;
 
-const projectsLoading = () => ({
+export const projectsLoading = (chainID: number): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
+  payload: chainID,
 });
 
-const projectsLoaded = (events: ProjectEventsMap) => ({
+export const projectsLoaded = (
+  chainID: number,
+  events: ProjectEventsMap
+): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
-  events,
+  payload: {
+    chainID,
+    events,
+  },
 });
 
 const projectsUnload = () => ({
@@ -233,36 +246,54 @@ export const extractProjectEvents = (
 export const loadProjects =
   (chainID: number, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const { account } = state.web3;
-    const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
+    try {
+      const state = getState();
+      const { account } = state.web3;
+      const project = await fetchProjectCreatedUpdatedEvents(chainID, account!);
 
-    if (project.ids.length === 0) {
-      // No projects found for this address on this chain
-      // This is not necessarily an error now that we fetch on all chains
-      dispatch(projectsLoaded({}));
-      return;
+      if (project.ids.length === 0) {
+        // No projects found for this address on this chain
+        // This is not necessarily an error now that we fetch on all chains
+        dispatch(projectsLoaded(chainID, {}));
+        return;
+      }
+
+      const projectEventsMap = extractProjectEvents(
+        project.createdEvents,
+        project.updatedEvents,
+        chainID
+      );
+
+      if (withMetaData) {
+        Object.keys(projectEventsMap).forEach(async (id) => {
+          dispatch<any>(fetchGrantData(id));
+        });
+      }
+
+      dispatch(projectsLoaded(chainID, projectEventsMap));
+    } catch (error) {
+      const chainName = chains.find((c) => c.id === chainID)?.name;
+
+      datadogRum.addError(error, { chainID });
+      console.error(chainName, chainID, error);
+
+      dispatch(
+        addAlert(
+          "error",
+          `Failed to load projects from ${chainName}`,
+          "Please try refreshing the page."
+        )
+      );
+
+      dispatch(projectsLoaded(chainID, {}));
     }
-
-    const projectEventsMap = extractProjectEvents(
-      project.createdEvents,
-      project.updatedEvents,
-      chainID
-    );
-
-    if (withMetaData) {
-      Object.keys(projectEventsMap).forEach(async (id) => {
-        dispatch<any>(fetchGrantData(id));
-      });
-    }
-    dispatch(projectsLoaded(projectEventsMap));
   };
 
 export const loadAllChainsProjects =
   (withMetaData?: boolean) => async (dispatch: Dispatch) => {
-    dispatch(projectsLoading());
     const { web3Provider } = global;
     web3Provider?.chains?.forEach((chainID) => {
+      dispatch(projectsLoading(chainID.id));
       dispatch<any>(loadProjects(chainID.id, withMetaData));
     });
   };
@@ -339,10 +370,20 @@ export const fetchProjectApplications =
         addresses.projectRegistry
       );
 
+      // During the first alpha round, we created applications with the wrong chain id (using the
+      // round chain instead of the project chain). This is a fix to display the applications with
+      // the wrong application id. NOTE: there is a possibility of clash, because the contracts
+      // have the same address on multiple chains.
+      const projectApplicationIDWithChain = generateUniqueRoundApplicationID(
+        chain.id,
+        projectID,
+        addresses.projectRegistry
+      );
+
       try {
         const response: any = await graphqlFetch(
-          `query roundProjects($projectID: String) {
-            roundProjects(where: { project: $projectID }) {
+          `query roundProjects($projectID: String, $projectApplicationIDWithChain: String) {
+            roundProjects(where: { project_in: [$projectID, $projectApplicationIDWithChain] }) {
               status
               round {
                 id
@@ -351,7 +392,10 @@ export const fetchProjectApplications =
           }
           `,
           chain.id,
-          { projectID: projectApplicationID },
+          {
+            projectID: projectApplicationID,
+            projectApplicationIDWithChain,
+          },
           reactEnv
         );
 

@@ -12,10 +12,11 @@ import { publicProvider } from "wagmi/providers/public";
 
 const ftmTestnetIcon = "../assets/ftm-testnet.png";
 const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
+const optimismIcon = "../assets/OPIcon.png";
 
 // RPC keys
-const alchemyId = process.env.ALCHEMY_ID;
-const infuraId = process.env.INFURA_ID;
+const alchemyId = process.env.REACT_APP_ALCHEMY_ID;
+const infuraId = process.env.REACT_APP_INFURA_ID;
 
 const chainsAvailable: Chain[] = [];
 
@@ -50,10 +51,29 @@ const fantomMainnet: Chain = {
     symbol: "FTM",
   },
   rpcUrls: {
-    default: "https://rpc.ftm.tools/",
+    default: "https://rpcapi.fantom.network/",
   },
   blockExplorers: {
     default: { name: "ftmscan", url: "https://ftmscan.com" },
+  },
+  testnet: false,
+};
+
+const optimismMainnet: Chain = {
+  id: 10,
+  name: "Optimism",
+  network: "optimism mainnet",
+  iconUrl: optimismIcon,
+  nativeCurrency: {
+    decimals: 18,
+    name: "Optimism",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: `https://opt-mainnet.g.alchemy.com/v2/${alchemyId}`,
+  },
+  blockExplorers: {
+    default: { name: "etherscan", url: "https://optimistic.etherscan.io" },
   },
   testnet: false,
 };
@@ -64,10 +84,10 @@ if (process.env.REACT_APP_LOCALCHAIN) {
 }
 
 if (process.env.REACT_APP_ENV === "production") {
-  chainsAvailable.push(chain.mainnet, fantomMainnet, chain.optimism);
+  chainsAvailable.push(chain.mainnet, fantomMainnet, optimismMainnet);
 } else {
   chainsAvailable.push(
-    chain.optimism,
+    optimismMainnet,
     chain.goerli,
     fantomTestnet,
     fantomMainnet,
