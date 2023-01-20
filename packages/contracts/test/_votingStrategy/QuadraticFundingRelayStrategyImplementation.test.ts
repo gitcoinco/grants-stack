@@ -6,15 +6,15 @@ import { artifacts, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import {
   MockERC20,
-  QuadraticFundingVotingStrategyImplementation,
+  QuadraticFundingRelayStrategyImplementation,
 } from "../../typechain";
 import { Event, Wallet } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 
-describe("QuadraticFundingVotingStrategyImplementation", () => {
+describe.only("QuadraticFundingRelayStrategyImplementation", () => {
   let user: SignerWithAddress;
-  let quadraticFundingVotingStrategy: QuadraticFundingVotingStrategyImplementation;
-  let quadraticFundingVotingStrategyArtifact: Artifact;
+  let quadraticFundingRelayStrategy: QuadraticFundingRelayStrategyImplementation;
+  let quadraticFundingRelayStrategyArtifact: Artifact;
 
   let mockERC20: MockERC20;
   let mockERC20Artifact: Artifact;
@@ -27,12 +27,12 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
     it("deploys properly", async () => {
       [user] = await ethers.getSigners();
 
-      quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact(
-        "QuadraticFundingVotingStrategyImplementation"
+      quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
+        "QuadraticFundingRelayStrategyImplementation"
       );
-      quadraticFundingVotingStrategy = <
-        QuadraticFundingVotingStrategyImplementation
-      >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+      quadraticFundingRelayStrategy = <
+        QuadraticFundingRelayStrategyImplementation
+      >await deployContract(user, quadraticFundingRelayStrategyArtifact, []);
 
       mockERC20Artifact = await artifacts.readArtifact("MockERC20");
       mockERC20 = <MockERC20>(
@@ -41,14 +41,15 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
       // Verify deploy
       expect(
-        isAddress(quadraticFundingVotingStrategy.address),
-        "Failed to deploy QuadraticFundingVotingStrategyImplementation"
-      ).to.be.true;
-      expect(isAddress(mockERC20.address), "Failed to deploy MockERC20").to.be
-        .true;
+        isAddress(quadraticFundingRelayStrategy.address),
+        "Failed to deploy QuadraticFundingRelayStrategyImplementation"
+      ).to.eq(true);
+      expect(isAddress(mockERC20.address), "Failed to deploy MockERC20").to.eq(
+        true
+      );
 
       // Verify default value
-      expect(await quadraticFundingVotingStrategy.roundAddress()).to.equal(
+      expect(await quadraticFundingRelayStrategy.roundAddress()).to.equal(
         AddressZero
       );
     });
@@ -88,31 +89,29 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
         );
 
         // Deploy QuadraticFundingVotingStrategy contract
-        quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact(
-          "QuadraticFundingVotingStrategyImplementation"
+        quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
+          "QuadraticFundingRelayStrategyImplementation"
         );
-        quadraticFundingVotingStrategy = <
-          QuadraticFundingVotingStrategyImplementation
-        >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+        quadraticFundingRelayStrategy = <
+          QuadraticFundingRelayStrategyImplementation
+        >await deployContract(user, quadraticFundingRelayStrategyArtifact, []);
 
         // Invoke init
-        await quadraticFundingVotingStrategy.init();
+        await quadraticFundingRelayStrategy.init();
       });
 
       it("invoking init once SHOULD set the contract version", async () => {
-        expect(await quadraticFundingVotingStrategy.VERSION()).to.equal(
-          VERSION
-        );
+        expect(await quadraticFundingRelayStrategy.VERSION()).to.equal(VERSION);
       });
 
       it("invoking init once SHOULD set the round address", async () => {
-        expect(await quadraticFundingVotingStrategy.roundAddress()).to.equal(
+        expect(await quadraticFundingRelayStrategy.roundAddress()).to.equal(
           user.address
         );
       });
 
       it("invoking init more than once SHOULD revert the transaction ", () => {
-        expect(quadraticFundingVotingStrategy.init()).to.revertedWith(
+        expect(quadraticFundingRelayStrategy.init()).to.revertedWith(
           "init: roundAddress already set"
         );
       });
@@ -129,12 +128,12 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
         );
 
         // Deploy QuadraticFundingVotingStrategyImplementation contract
-        quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact(
+        quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
           "QuadraticFundingVotingStrategyImplementation"
         );
-        quadraticFundingVotingStrategy = <
-          QuadraticFundingVotingStrategyImplementation
-        >await deployContract(user, quadraticFundingVotingStrategyArtifact, []);
+        quadraticFundingRelayStrategy = <
+          QuadraticFundingRelayStrategyImplementation
+        >await deployContract(user, quadraticFundingRelayStrategyArtifact, []);
 
         encodedVotes = [];
 
@@ -165,7 +164,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
       });
 
       it("invoking vote when roundAddress is not set SHOULD revert transaction", async () => {
-        const txn = quadraticFundingVotingStrategy.vote(
+        const txn = quadraticFundingRelayStrategy.vote(
           encodedVotes,
           user.address
         );
@@ -178,9 +177,9 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
         const [_, anotherUser] = await ethers.getSigners();
 
         // Invoke init
-        await quadraticFundingVotingStrategy.connect(anotherUser).init();
+        await quadraticFundingRelayStrategy.connect(anotherUser).init();
 
-        const txn = quadraticFundingVotingStrategy.vote(
+        const txn = quadraticFundingRelayStrategy.vote(
           encodedVotes,
           randomAddress
         );
@@ -191,15 +190,15 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
       it("invoking vote without allowance SHOULD revert transaction ", async () => {
         // Invoke init
-        await quadraticFundingVotingStrategy.init();
+        await quadraticFundingRelayStrategy.init();
 
         const approveTx = await mockERC20.approve(
-          quadraticFundingVotingStrategy.address,
+          quadraticFundingRelayStrategy.address,
           0
         );
         approveTx.wait();
 
-        const txn = quadraticFundingVotingStrategy.vote(
+        const txn = quadraticFundingRelayStrategy.vote(
           encodedVotes,
           user.address
         );
@@ -208,15 +207,15 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
       it("invoking vote not enough allowance SHOULD revert transaction ", async () => {
         // Invoke init
-        await quadraticFundingVotingStrategy.init();
+        await quadraticFundingRelayStrategy.init();
 
         const approveTx = await mockERC20.approve(
-          quadraticFundingVotingStrategy.address,
+          quadraticFundingRelayStrategy.address,
           100
         );
         approveTx.wait();
 
-        const txn = quadraticFundingVotingStrategy.vote(
+        const txn = quadraticFundingRelayStrategy.vote(
           encodedVotes,
           user.address
         );
@@ -226,7 +225,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
       describe("test: vote with ERC20", () => {
         it("invoking vote SHOULD transfer balance from user to grant", async () => {
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
           const beforeVotingUserBalance = await mockERC20.balanceOf(
             user.address
@@ -242,12 +241,12 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           expect(beforeVotingGrant2Balance).to.equal("0");
 
           const approveTx = await mockERC20.approve(
-            quadraticFundingVotingStrategy.address,
+            quadraticFundingRelayStrategy.address,
             totalTokenTransfer
           );
           approveTx.wait();
 
-          const txn = await quadraticFundingVotingStrategy.vote(
+          const txn = await quadraticFundingRelayStrategy.vote(
             encodedVotes,
             user.address
           );
@@ -272,24 +271,24 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
         it("invoking vote SHOULD emit 2 Vote events", async () => {
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
           let votedEvents: Event[] = [];
 
           const approveTx = await mockERC20.approve(
-            quadraticFundingVotingStrategy.address,
+            quadraticFundingRelayStrategy.address,
             totalTokenTransfer
           );
           approveTx.wait();
 
-          const txn = await quadraticFundingVotingStrategy.vote(
+          const txn = await quadraticFundingRelayStrategy.vote(
             encodedVotes,
             user.address
           );
           txn.wait();
 
           // check if vote for first grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             mockERC20.address,
             grant1TokenTransferAmount,
             user.address,
@@ -299,7 +298,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           );
 
           // check if vote for second grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             mockERC20.address,
             grant2TokenTransferAmount,
             user.address,
@@ -337,15 +336,15 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
         ];
 
         beforeEach(async () => {
-          // Deploy QuadraticFundingVotingStrategyImplementation contract
-          quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact(
-            "QuadraticFundingVotingStrategyImplementation"
+          // Deploy QuadraticFundingRelayStrategyImplementation contract
+          quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
+            "QuadraticFundingRelayStrategyImplementation"
           );
-          quadraticFundingVotingStrategy = <
-            QuadraticFundingVotingStrategyImplementation
+          quadraticFundingRelayStrategy = <
+            QuadraticFundingRelayStrategyImplementation
           >await deployContract(
             user,
-            quadraticFundingVotingStrategyArtifact,
+            quadraticFundingRelayStrategyArtifact,
             []
           );
 
@@ -364,9 +363,9 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
         it("invoking vote SHOULD revert if there are insufficent funds", async () => {
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
-          const txn = quadraticFundingVotingStrategy.vote(
+          const txn = quadraticFundingRelayStrategy.vote(
             encodedVotesInNativeToken,
             user.address,
             { value: "100000000000000000" }
@@ -377,7 +376,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
         it("invoking vote SHOULD transfer balance from user to grant", async () => {
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
           const beforeVotingGrant1Balance = await ethers.provider.getBalance(
             grant1.address
@@ -389,7 +388,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           expect(beforeVotingGrant1Balance).to.equal("0");
           expect(beforeVotingGrant2Balance).to.equal("0");
 
-          await quadraticFundingVotingStrategy.vote(
+          await quadraticFundingRelayStrategy.vote(
             encodedVotesInNativeToken,
             user.address,
             { value: "150000000000000000" }
@@ -414,16 +413,16 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           let votedEvents: Event[] = [];
 
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
-          const txn = await quadraticFundingVotingStrategy.vote(
+          const txn = await quadraticFundingRelayStrategy.vote(
             encodedVotesInNativeToken,
             user.address,
             { value: "150000000000000000" }
           );
 
           // check if vote for first grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             nativeTokenAddress,
             grant1NativeTokenTransferAmount,
             user.address,
@@ -433,7 +432,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           );
 
           // check if vote for second grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             nativeTokenAddress,
             grant2NativeTokenTransferAmount,
             user.address,
@@ -458,15 +457,15 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           grant1 = Wallet.createRandom();
           grant2 = Wallet.createRandom();
 
-          // Deploy QuadraticFundingVotingStrategyImplementation contract
-          quadraticFundingVotingStrategyArtifact = await artifacts.readArtifact(
-            "QuadraticFundingVotingStrategyImplementation"
+          // Deploy QuadraticFundingRelayStrategyImplementation contract
+          quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
+            "QuadraticFundingRelayStrategyImplementation"
           );
-          quadraticFundingVotingStrategy = <
-            QuadraticFundingVotingStrategyImplementation
+          quadraticFundingRelayStrategy = <
+            QuadraticFundingRelayStrategyImplementation
           >await deployContract(
             user,
-            quadraticFundingVotingStrategyArtifact,
+            quadraticFundingRelayStrategyArtifact,
             []
           );
 
@@ -506,10 +505,10 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
 
         it("invoking vote SHOULD transfer balance from user to grant", async () => {
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
           const approveTx = await mockERC20.approve(
-            quadraticFundingVotingStrategy.address,
+            quadraticFundingRelayStrategy.address,
             grant2TokenTransferAmount
           );
           approveTx.wait();
@@ -524,11 +523,9 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           expect(beforeVotingGrant1Balance).to.equal("0");
           expect(beforeVotingGrant2Balance).to.equal("0");
 
-          await quadraticFundingVotingStrategy.vote(
-            encodedVotes,
-            user.address,
-            { value: "100000000000000000" }
-          );
+          await quadraticFundingRelayStrategy.vote(encodedVotes, user.address, {
+            value: "100000000000000000",
+          });
 
           const afterVotingGrant1Balance = await ethers.provider.getBalance(
             grant1.address
@@ -547,22 +544,22 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           let votedEvents: Event[] = [];
 
           // Invoke init
-          await quadraticFundingVotingStrategy.init();
+          await quadraticFundingRelayStrategy.init();
 
           const approveTx = await mockERC20.approve(
-            quadraticFundingVotingStrategy.address,
+            quadraticFundingRelayStrategy.address,
             totalTokenTransfer
           );
           approveTx.wait();
 
-          const txn = await quadraticFundingVotingStrategy.vote(
+          const txn = await quadraticFundingRelayStrategy.vote(
             encodedVotes,
             user.address,
             { value: "100000000000000000" }
           );
 
           // check if vote for first grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             nativeTokenAddress,
             grant1NativeTokenTransferAmount,
             user.address,
@@ -572,7 +569,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () => {
           );
 
           // check if vote for second grant fired
-          expect(txn).to.emit(quadraticFundingVotingStrategy, "Voted").withArgs(
+          expect(txn).to.emit(quadraticFundingRelayStrategy, "Voted").withArgs(
             mockERC20.address,
             grant2TokenTransferAmount,
             user.address,
