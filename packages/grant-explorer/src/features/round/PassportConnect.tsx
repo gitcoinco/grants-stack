@@ -56,7 +56,11 @@ export default function PassportConnect() {
         return;
       }
 
-      if (!scoreResponse.score || !scoreResponse.evidence) {
+      if (
+        !scoreResponse.score ||
+        !scoreResponse.evidence ||
+        scoreResponse.status == "ERROR"
+      ) {
         setPassportState(PassportState.ERROR);
         return;
       }
@@ -236,6 +240,13 @@ export default function PassportConnect() {
             <div>
               <p className="text-pink-400 mb-2">Ineligible for matching</p>
               <p>Please connect to Passport in order continue.</p>
+            </div>
+          )}
+
+          {passportState === PassportState.ERROR && (
+            <div>
+              <p className="text-pink-400 mb-2">Error In fetching passport</p>
+              <p>Please try again later.</p>
             </div>
           )}
         </div>

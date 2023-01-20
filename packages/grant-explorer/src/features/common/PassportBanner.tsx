@@ -50,6 +50,12 @@ export default function PassportBanner(props: {
             return;
           }
 
+          if (scoreResponse.status == "ERROR") {
+            // due to error at passport end
+            setPassportState(PassportState.ERROR);
+            return;
+          }
+
           setPassport(scoreResponse);
           setPassportState(
             Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)

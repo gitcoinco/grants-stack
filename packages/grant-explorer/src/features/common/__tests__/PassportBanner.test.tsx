@@ -161,5 +161,33 @@ describe("PassportBanner", () => {
         expect(screen.getByTestId("error-loading-passport")).toBeInTheDocument();
       });
     });
+
+    it("WHEN user is connected to passport and it errors out THEN it shows the error banner", async () => {
+      mockAccount.isConnected = true;
+
+      const mockJsonPromise = Promise.resolve({
+        address: userAddress,
+        status: "ERROR",
+        evidence: {
+          rawScore: 1,
+          threshold: 1,
+        }
+      });
+
+      const mockFetchPassportPromise = {
+        ok: false,
+        json: () => mockJsonPromise,
+        status: 200,
+      } as unknown as Response;
+
+      (fetchPassport as jest.Mock).mockReturnValueOnce(mockFetchPassportPromise)
+
+      render(<PassportBanner/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("error-loading-passport")).toBeInTheDocument();
+      });
+    });
+
   });
 });

@@ -153,6 +153,32 @@ describe("<PassportConnect/>", () => {
       jest.clearAllMocks();
     });
 
+    it("IF passport state return error status THEN it shows error in fetching passport", async () => {
+      const mockJsonPromise = Promise.resolve({
+        score: "-1",
+        address: userAddress,
+        status: "ERROR",
+        evidence: {
+          threshold: "0",
+          rawScore: "-1",
+        },
+      });
+
+      const mockPassportPromise = {
+        ok: true,
+        json: () => mockJsonPromise
+      } as unknown as Response;
+
+      (fetchPassport as jest.Mock).mockResolvedValueOnce(mockPassportPromise);
+
+      render(<PassportConnect/>, { wrapper: BrowserRouter });
+
+      await waitFor(() => {
+        expect(screen.getByText("Error In fetching passport")).toBeInTheDocument();
+        expect(screen.getByText("Please try again later.")).toBeInTheDocument();
+      });
+    });
+
     it("IF passport state is match inelgible THEN it shows ineligible for matching", async () => {
       const mockJsonPromise = Promise.resolve({
         score: "-1",
