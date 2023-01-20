@@ -65,7 +65,10 @@ describe("<Show />", () => {
 
         store.dispatch({
           type: "PROJECTS_LOADED",
-          events: {},
+          payload: {
+            chainID: 1,
+            events: {}
+          },
         });
 
         renderWrapped(<Show />, store);
