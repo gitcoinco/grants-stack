@@ -22,7 +22,7 @@ contract QuadraticFundingRelayStrategyImplementation is
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
-    string public constant VERSION = "0.2.0";
+    string public constant VERSION = "0.1.0";
 
     // --- Event ---
 

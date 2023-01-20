@@ -21,7 +21,7 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
 
   const tokensToBeMinted = 1000;
 
-  const VERSION = "0.2.0";
+  const VERSION = "0.1.0";
 
   describe("constructor", () => {
     it("deploys properly", async () => {
