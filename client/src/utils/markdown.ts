@@ -21,7 +21,7 @@ markdownIt.renderer.rules.link_open = function linkOpen(
   self
 ) {
   tokens[idx].attrPush(["target", "_blank"]);
-  tokens[idx].attrPush(["rel", "nofollow"]);
+  tokens[idx].attrPush(["rel", "nofollow noopener noreferrer"]);
   return defaultLinkOpen(tokens, idx, options, env, self);
 };
 
