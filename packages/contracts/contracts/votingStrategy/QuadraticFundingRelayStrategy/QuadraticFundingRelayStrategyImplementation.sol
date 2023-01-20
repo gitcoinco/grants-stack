@@ -6,8 +6,6 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
-import "hardhat/console.sol";
-
 import "../IVotingStrategy.sol";
 
 /**
@@ -61,8 +59,7 @@ contract QuadraticFundingRelayStrategyImplementation is
         bytes[] calldata encodedVotes,
         address relayerAddress
     ) external payable override nonReentrant isRoundContract {
-        // TODO validate that voterAddress is allowed to vote
-        console.log("Received vote");
+        // TODO validate that voterAddress is allowed to vote?
         /// @dev iterate over multiple donations and transfer funds
         for (uint256 i = 0; i < encodedVotes.length; i++) {
             /// @dev decode encoded vote
@@ -99,7 +96,7 @@ contract QuadraticFundingRelayStrategyImplementation is
                 _voterAddress,
                 _grantAddress,
                 _projectId,
-                relayerAddress
+                msg.sender
             );
         }
     }
