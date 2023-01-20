@@ -11,7 +11,7 @@ import {
 import { Event, Wallet } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 
-describe.only("QuadraticFundingRelayStrategyImplementation", () => {
+describe("QuadraticFundingRelayStrategyImplementation", () => {
   let user: SignerWithAddress;
   let quadraticFundingRelayStrategy: QuadraticFundingRelayStrategyImplementation;
   let quadraticFundingRelayStrategyArtifact: Artifact;
@@ -127,9 +127,9 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
           await deployContract(user, mockERC20Artifact, [tokensToBeMinted])
         );
 
-        // Deploy QuadraticFundingVotingStrategyImplementation contract
+        // Deploy QuadraticFundingRelayStrategyImplementation contract
         quadraticFundingRelayStrategyArtifact = await artifacts.readArtifact(
-          "QuadraticFundingVotingStrategyImplementation"
+          "QuadraticFundingRelayStrategyImplementation"
         );
         quadraticFundingRelayStrategy = <
           QuadraticFundingRelayStrategyImplementation
@@ -140,12 +140,14 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
         // Prepare Votes - only ERC20
         const votes = [
           [
+            user.address,
             mockERC20.address,
             grant1TokenTransferAmount,
             grant1.address,
             formatBytes32String("grant1"),
           ],
           [
+            user.address,
             mockERC20.address,
             grant2TokenTransferAmount,
             grant2.address,
@@ -156,7 +158,7 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
         for (let i = 0; i < votes.length; i++) {
           encodedVotes.push(
             ethers.utils.defaultAbiCoder.encode(
-              ["address", "uint256", "address", "bytes32"],
+              ["address", "address", "uint256", "address", "bytes32"],
               votes[i]
             )
           );
@@ -202,6 +204,7 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
           encodedVotes,
           user.address
         );
+
         await expect(txn).to.revertedWith("ERC20: insufficient allowance");
       });
 
@@ -316,18 +319,22 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
         });
       });
 
-      describe("test: vote with native tokens", () => {
+      describe("test: vote with native tokens", async () => {
+        [user] = await ethers.getSigners();
+
         let encodedVotesInNativeToken: BytesLike[] = [];
 
         // Prepare Votes - only ERC20
         const votesInNativeToken = [
           [
+            user.address,
             nativeTokenAddress,
             grant1NativeTokenTransferAmount,
             grant1.address,
             formatBytes32String("grant1"),
           ],
           [
+            user.address,
             nativeTokenAddress,
             grant2NativeTokenTransferAmount,
             grant2.address,
@@ -354,7 +361,7 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
           for (let i = 0; i < votesInNativeToken.length; i++) {
             encodedVotesInNativeToken.push(
               ethers.utils.defaultAbiCoder.encode(
-                ["address", "uint256", "address", "bytes32"],
+                ["address", "address", "uint256", "address", "bytes32"],
                 votesInNativeToken[i]
               )
             );
@@ -477,12 +484,14 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
           // Prepare Votes - Native Token + ERC20
           const votes = [
             [
+              user.address,
               nativeTokenAddress,
               grant1NativeTokenTransferAmount,
               grant1.address,
               formatBytes32String("grant1"),
             ],
             [
+              user.address,
               mockERC20.address,
               grant2TokenTransferAmount,
               grant2.address,
@@ -496,7 +505,7 @@ describe.only("QuadraticFundingRelayStrategyImplementation", () => {
           for (let i = 0; i < votes.length; i++) {
             encodedVotes.push(
               ethers.utils.defaultAbiCoder.encode(
-                ["address", "uint256", "address", "bytes32"],
+                ["address", "address", "uint256", "address", "bytes32"],
                 votes[i]
               )
             );

@@ -11,7 +11,7 @@ import {
   QuadraticFundingRelayStrategyImplementation,
 } from "../../typechain";
 
-describe.only("QuadraticFundingRelayStrategyFactory", function () {
+describe("QuadraticFundingRelayStrategyFactory", function () {
   let user: SignerWithAddress;
 
   // QuadraticFundingVotingStrategy Factory
