@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+import { useSigner } from "wagmi";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -17,6 +19,8 @@ import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
+import ProjectRegistryABI from "../../contracts/abis/ProjectRegistry.json";
+import { addressesByChainID } from "../../contracts/deployments";
 
 const formattedDate = (timestamp: number | undefined) =>
   new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
@@ -28,6 +32,9 @@ const formattedDate = (timestamp: number | undefined) =>
 function Project() {
   const [updatedAt, setUpdatedAt] = useState("");
   const [createdAt, setCreatedAt] = useState("");
+  const { data: signer } = useSigner();
+  const [owners, setOwners] = useState<string[]>([]);
+  const [signerAddress, setSignerAddress] = useState<null | string>(null);
 
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
@@ -101,6 +108,34 @@ function Project() {
     };
   }, [props.id, props.projectEvents, global, dispatch]);
 
+  // Fetch the project owners
+  useEffect(() => {
+    if (!signer) {
+      return;
+    }
+
+    const fetchOwners = async (chainId: number, projectId: string) => {
+      const addresses = addressesByChainID(chainId);
+
+      const projectRegistry = new ethers.Contract(
+        addresses.projectRegistry,
+        ProjectRegistryABI,
+        signer
+      );
+
+      return projectRegistry.getProjectOwners(projectId);
+    };
+
+    fetchOwners(Number(params.chainId), params.id!).then((newOwners) => {
+      setOwners(newOwners);
+    });
+  }, [props.id, signer, global, dispatch]);
+
+  // Set the signer address
+  useEffect(() => {
+    signer?.getAddress().then((address) => setSignerAddress(address));
+  }, [signer]);
+
   if (
     props.currentProject === undefined &&
     props.loading &&
@@ -127,7 +162,7 @@ function Project() {
                 Project Details
               </h3>
             </Link>
-            {props.id && (
+            {props.id && owners.includes(signerAddress!) && (
               <Link to={createEditPath()} className="sm:w-auto mx-w-full ml-0">
                 <Button
                   variant={ButtonVariants.outline}
