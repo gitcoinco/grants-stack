@@ -8,8 +8,8 @@ import {
   afterEach,
 } from "matchstick-as/assembly/index";
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { handleVote } from "../../../src/votingStrategy/quadraticFunding/implementation";
-import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
+import { handleVote } from "../../../src/votingStrategy/quadraticFundingRelay/implementation";
+import { Voted as VotedEvent } from "../../../generated/QuadraticFundingRelayStrategy/QuadraticFundingRelayStrategyImplementation";
 import { QFVote, Round, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../../src/utils";
 import { Bytes } from "@graphprotocol/graph-ts";
@@ -114,7 +114,6 @@ describe("handleVote", () => {
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
     roundEntity.createdAt = new BigInt(1);
     roundEntity.updatedAt = new BigInt(2);
-
 
     roundEntity.save();
 

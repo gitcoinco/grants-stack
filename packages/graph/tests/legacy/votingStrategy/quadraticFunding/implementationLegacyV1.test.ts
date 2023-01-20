@@ -74,6 +74,9 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
+    roundEntity.createdAt = new BigInt(1);
+    roundEntity.updatedAt = new BigInt(2);
+
 
     roundEntity.save();
 
