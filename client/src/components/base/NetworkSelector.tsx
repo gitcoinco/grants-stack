@@ -15,7 +15,7 @@ export default function NetworkSelector(): JSX.Element {
             <Tag size="lg" colorScheme={colorScheme} borderRadius="full">
               {(chain?.id === 69 || chain?.id === 10) && (
                 <Avatar
-                  src="./assets/optimism-logo.png"
+                  src="./assets/optimism-logo.png" // todo: logo doesn't exist. file unused?
                   size="xs"
                   name="Optimism"
                   ml={-1}

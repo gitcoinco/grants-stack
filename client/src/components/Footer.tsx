@@ -1,4 +1,5 @@
 import { Tooltip } from "@chakra-ui/react";
+import { FooterImg } from "../assets";
 import Code from "./icons/Code";
 import Discord from "./icons/Discord";
 import Github from "./icons/Github";
@@ -11,7 +12,7 @@ export default function Footer() {
       className="flex flex-col items-center justify-between p-6 bg-white dark:bg-gray-900 sm:flex-row"
     >
       <div className="w-72" />
-      <img alt="Built by the Gitcoin Community" src="./assets/footer-img.svg" />
+      <img alt="Built by the Gitcoin Community" src={FooterImg} />
       <div className="flex flex-col -mx-2 items-center md:float-right w-72">
         <ul className="inline-flex justify-end items-center">
           <Tooltip

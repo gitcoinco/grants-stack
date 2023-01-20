@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FourZeroFour } from "../../assets";
 
 function PageNotFound() {
   return (
@@ -31,7 +32,7 @@ function PageNotFound() {
             </Link>
           </div>
         </div>
-        <img alt="404 Page not Found" src="./assets/404.png" />
+        <img alt="404 Page not Found" src={FourZeroFour} />
       </div>
     </div>
   );
