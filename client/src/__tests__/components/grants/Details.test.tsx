@@ -53,8 +53,8 @@ _italic text_
         renderWrapped(
           <Details
             project={project}
-            createdAt={+new Date()}
-            updatedAt={+new Date()}
+            createdAt={new Date().getTime()}
+            updatedAt={new Date().getTime()}
             bannerImg="img"
             logoImg="img"
             showApplications={false}
@@ -102,8 +102,8 @@ _italic text_
         renderWrapped(
           <Details
             project={project}
-            createdAt={+new Date()}
-            updatedAt={+new Date()}
+            createdAt={new Date().getTime()}
+            updatedAt={new Date().getTime()}
             bannerImg="img"
             logoImg="img"
             showApplications={false}
@@ -136,8 +136,8 @@ _italic text_
         renderWrapped(
           <Details
             project={project}
-            createdAt={+new Date()}
-            updatedAt={+new Date()}
+            createdAt={new Date().getTime()}
+            updatedAt={new Date().getTime()}
             bannerImg="img"
             logoImg="img"
             showApplications={false}
@@ -174,8 +174,8 @@ _italic text_
         renderWrapped(
           <Details
             project={project}
-            createdAt={+new Date()}
-            updatedAt={+new Date()}
+            createdAt={new Date().getTime()}
+            updatedAt={new Date().getTime()}
             bannerImg="img"
             logoImg="img"
             showApplications={false}
@@ -212,8 +212,8 @@ _italic text_
         renderWrapped(
           <Details
             project={project}
-            createdAt={+new Date()}
-            updatedAt={+new Date()}
+            createdAt={new Date().getTime()}
+            updatedAt={new Date().getTime()}
             bannerImg="img"
             logoImg="img"
             showApplications={false}
