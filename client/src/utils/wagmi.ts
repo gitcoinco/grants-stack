@@ -9,7 +9,7 @@ import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { FantomFTMLogo, FTMTestnet } from "../assets";
+import { FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
 const ftmTestnetIcon = FTMTestnet;
 const ftmMainnetIcon = FantomFTMLogo;
@@ -63,7 +63,7 @@ const optimismMainnet: Chain = {
   id: 10,
   name: "Optimism",
   network: "optimism mainnet",
-  iconUrl: optimismIcon,
+  iconUrl: OPIcon,
   nativeCurrency: {
     decimals: 18,
     name: "Optimism",
