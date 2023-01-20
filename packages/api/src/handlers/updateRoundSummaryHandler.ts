@@ -21,7 +21,7 @@ export const updateRoundSummaryHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { chainId, roundId } = req.params;
+  let { chainId, roundId } = req.params;
 
   if (!chainId || !roundId) {
     return handleResponse(
@@ -30,8 +30,8 @@ export const updateRoundSummaryHandler = async (
       "error: missing parameter chainId or roundId"
     );
   }
-
   try {
+    roundId = roundId.toLowerCase();
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
 

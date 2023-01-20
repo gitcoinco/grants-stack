@@ -8,7 +8,7 @@ export const getProjectMatchDataHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { chainId, roundId, projectId } = req.params;
+  let { chainId, roundId, projectId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId || !projectId) {
@@ -18,7 +18,9 @@ export const getProjectMatchDataHandler = async (
       "error: missing parameter chainId, roundId, or projectId"
     );
   }
-
+  roundId = roundId.toLowerCase();
+  projectId = projectId.toLowerCase();
+  
   // check if match is cached
   const cachedRoundMatchData = cache.get(
     `cache_/data/round/match/${chainId}/${roundId}`
