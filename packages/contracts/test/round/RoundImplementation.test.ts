@@ -1457,7 +1457,7 @@ describe.only("RoundImplementation", function () {
       });
     });
 
-    describe.only("test: vote", () => {
+    describe("test: vote", () => {
       describe("QuadraticFundingVotingStrategy", () => {
         let votes: [(string | number)[]];
         let encodedVotes: BytesLike[] = [];

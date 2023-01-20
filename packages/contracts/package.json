@@ -33,6 +33,11 @@
     "link-qf-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFunding/linkQFVotingStrategyImplementation.ts --network",
     "create-qf-contract": "yarn hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
     "cast-qf-vote": "yarn hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network",
+    "// relay-deploy-scripts": "echo '//-- Voting relay deploy Script --//'",
+    "deploy-qf-relay-factory": "yarn hardhat run scripts/votingStrategy/quadraticFundingRelay/deployQFRelayStrategyFactory.ts --network",
+    "deploy-qf-relay-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFundingRelay/deployQFRelayStrategyImplementation.ts --network",
+    "link-qf-relay-implementation": "yarn hardhat run scripts/votingStrategy/quadraticFundingRelay/linkQFRelayStrategyImplementation.ts --network",
+    "create-qf-relay-contract": "yarn hardhat run scripts/votingStrategy/quadraticFundingRelay/createQFRelayStrategy.ts --network",
     "// payout-deploy-scripts": "echo '//-- Payout deploy Script --//'",
     "deploy-merkle-contract": "yarn hardhat run scripts/payoutStrategy/deployMerklePayoutStrategy.ts --network"
   },
