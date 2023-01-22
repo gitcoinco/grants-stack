@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Navbar from "./Navbar";
 import { Button } from "./styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
@@ -8,6 +8,8 @@ import Footer from "./Footer";
 export default function NotFoundPage() {
   datadogLogs.logger.info(`====> Route: NotFound`);
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
+  const { chainId, roundId } = useParams();
 
   return (
       <>
@@ -27,8 +29,10 @@ export default function NotFoundPage() {
                   <a href="https://discord.com/invite/gitcoin">Discord.</a>
                 </p>
 
-                <Link to="/" data-testid={"not-found-go-back-home"}
->
+                <Link
+                  to={`/round/${chainId}/${roundId}`}
+                  data-testid={"not-found-go-back-home"}
+                >
                   <Button
                     $variant="outline"
                     type="button"
