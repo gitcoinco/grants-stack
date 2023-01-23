@@ -18,6 +18,7 @@ import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
 import ApplicationCard from "./ApplicationCard";
 import markdown from "../../utils/markdown";
+import { formatDateFromMs } from "../../utils/components";
 
 function Verified() {
   return (
@@ -37,8 +38,8 @@ export default function Details({
   showApplications,
 }: {
   project?: Metadata | FormInputs | Project;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: number;
+  createdAt: number;
   bannerImg: string | Blob;
   logoImg: string | Blob;
   showApplications: boolean;
@@ -194,13 +195,17 @@ export default function Details({
               <div>
                 <p className="flex text-sm m-2 pb-2">
                   <Calendar color={colors["secondary-text"]} />
-                  <span className="ml-1">Created on: {createdAt}</span>
+                  <span className="ml-1">
+                    Created on: {formatDateFromMs(createdAt)}
+                  </span>
                 </p>
               </div>
               <div>
                 <p className="flex text-sm m-2 pb-1">
                   <Calendar color={colors["secondary-text"]} />
-                  <span className="ml-1">Last Edited: {updatedAt}</span>
+                  <span className="ml-1">
+                    Last Edited: {formatDateFromMs(updatedAt)}
+                  </span>
                 </p>
               </div>
               {project?.projectGithub && (

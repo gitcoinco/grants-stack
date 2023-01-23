@@ -34,7 +34,6 @@ function EditProject() {
 
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
-
     const grantMetadata = state.grantsMetadata[fullId];
 
     return {

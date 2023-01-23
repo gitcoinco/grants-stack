@@ -9,7 +9,6 @@ import { RootState } from "../../reducers";
 import { Status } from "../../reducers/newGrant";
 import { slugs } from "../../routes";
 import { ProjectFormStatus } from "../../types";
-import { formatDate } from "../../utils/components";
 import Details from "../grants/Details";
 import Button, { ButtonVariants } from "./Button";
 import { addAlert } from "../../actions/ui";
@@ -30,16 +29,18 @@ export default function Preview({
   const [submitted, setSubmitted] = useState(false);
   const [show, showModal] = useState(false);
 
-  const props = useSelector(
-    (state: RootState) => ({
+  const props = useSelector((state: RootState) => {
+    const prevMetadata = state.grantsMetadata[currentProjectId || ""];
+
+    return {
+      prevMetadata,
       metadata: state.projectForm.metadata,
       credentials: state.projectForm.credentials,
       status: state.newGrant.status,
       error: state.newGrant.error,
       openErrorModal: state.newGrant.error !== undefined,
-    }),
-    shallowEqual
-  );
+    };
+  }, shallowEqual);
 
   const localResetStatus = () => {
     setSubmitted(false);
@@ -92,10 +93,9 @@ export default function Preview({
 
   return (
     <div>
-      {/* TODO: fetch proper "created at" date */}
       <Details
-        updatedAt={formatDate(Date.now() / 1000)}
-        createdAt={formatDate(Date.now() / 1000)}
+        updatedAt={+Date.now()}
+        createdAt={props.prevMetadata?.metadata?.createdAt ?? +Date.now()}
         project={project}
         logoImg={props.metadata?.logoImgData ?? DefaultProjectLogo}
         bannerImg={props.metadata?.bannerImgData ?? DefaultProjectBanner}
