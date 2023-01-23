@@ -67,7 +67,7 @@ describe("<Show />", () => {
           type: "PROJECTS_LOADED",
           payload: {
             chainID: 1,
-            events: {}
+            events: {},
           },
         });
 

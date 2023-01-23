@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import ethers from "ethers";
+import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
@@ -10,38 +9,17 @@ import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import {
-  getProjectURIComponents,
-  getProviderByChainId,
-} from "../../utils/utils";
+import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
 import PageNotFound from "../base/PageNotFound";
 
-const formattedDate = (timestamp: number | undefined) =>
-  new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
 function Project() {
-  const [updatedAt, setUpdatedAt] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
-
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
-
-  let appProvider: ethers.providers.BaseProvider | undefined;
-
-  try {
-    appProvider = getProviderByChainId(Number(params.chainId));
-  } catch (e) {
-    console.log(e);
-  }
 
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
@@ -53,7 +31,7 @@ function Project() {
       : false;
 
     const loadingFailed =
-      grantMetadata && (!appProvider || grantMetadata.status === Status.Error);
+      grantMetadata && grantMetadata.status === Status.Error;
 
     const bannerImg = getProjectImage(
       loading,
@@ -68,7 +46,6 @@ function Project() {
 
     return {
       id: fullId,
-      appProvider,
       loading,
       loadingFailed,
       bannerImg,
@@ -88,34 +65,10 @@ function Project() {
   }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
-    let unloaded = false;
-
-    if (props.appProvider && props.projectEvents !== undefined) {
-      const { createdAtBlock, updatedAtBlock } = props.projectEvents;
-      if (createdAtBlock !== undefined) {
-        props.appProvider.getBlock(createdAtBlock).then((data) => {
-          if (!unloaded) {
-            setCreatedAt(formattedDate(data?.timestamp));
-          }
-        });
-      }
-
-      if (updatedAtBlock !== undefined) {
-        props.appProvider.getBlock(updatedAtBlock).then((data) => {
-          if (!unloaded) {
-            setUpdatedAt(formattedDate(data?.timestamp));
-          }
-        });
-      }
-    } else {
-      // If user reloads Show projects will not exist
+    if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(true));
     }
-
-    return () => {
-      unloaded = true;
-    };
-  }, [props.id, props.appProvider, props.projectEvents, global, dispatch]);
+  }, [props.id, props.projectEvents, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
@@ -167,8 +120,8 @@ function Project() {
           </div>
           <Details
             project={props.currentProject}
-            createdAt={createdAt}
-            updatedAt={updatedAt}
+            createdAt={props.currentProject.createdAt!}
+            updatedAt={props.currentProject.updatedAt!}
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
             showApplications
