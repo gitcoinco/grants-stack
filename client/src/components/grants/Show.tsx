@@ -31,7 +31,7 @@ function Project() {
       : false;
 
     const loadingFailed =
-      grantMetadata && (grantMetadata.status === Status.Error);
+      grantMetadata && grantMetadata.status === Status.Error;
 
     const bannerImg = getProjectImage(
       loading,
