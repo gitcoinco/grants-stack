@@ -28,6 +28,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import { ReadProgramProvider } from "./context/program/ReadProgramContext";
 import { ApplicationProvider } from "./context/application/ApplicationContext";
 import { CreateProgramProvider } from "./context/program/CreateProgramContext";
+import { FinalizeRoundProvider } from "./context/round/FinalizeRoundContext";
 import { RoundProvider } from "./context/round/RoundContext";
 import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
@@ -82,7 +83,9 @@ root.render(
                     <RoundProvider>
                       <ApplicationProvider>
                         <BulkUpdateGrantApplicationProvider>
-                          <ViewRoundPage />
+                          <FinalizeRoundProvider>
+                            <ViewRoundPage />
+                          </FinalizeRoundProvider>
                         </BulkUpdateGrantApplicationProvider>
                       </ApplicationProvider>
                     </RoundProvider>

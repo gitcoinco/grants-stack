@@ -3,14 +3,28 @@ import {
   ExclamationCircleIcon as NoInformationIcon,
   InformationCircleIcon,
 } from "@heroicons/react/outline";
-import { MatchingStatsData, Round } from "../api/types";
+import {
+  MatchingStatsData,
+  ProgressStatus,
+  ProgressStep,
+  Round,
+} from "../api/types";
+import { useNavigate } from "react-router-dom";
+import InfoModal from "../common/InfoModal";
+import ProgressModal from "../common/ProgressModal";
+import ErrorModal from "../common/ErrorModal";
 import { useRoundMatchData } from "../api/api";
 import { Button } from "../common/styles";
 import { saveObjectAsJson } from "../api/utils";
 import { RadioGroup } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { XIcon } from "@heroicons/react/outline";
+import {
+  useFinalizeRound,
+  useMatchingDistribution,
+} from "../../context/round/FinalizeRoundContext";
+import { errorModalDelayMs } from "../../constants";
 
 export default function ViewFundingAdmin(props: {
   round: Round | undefined;
@@ -70,6 +84,22 @@ function InformationContent(props: {
   const [customMatchingData, setCustomMatchingData] = useState<
     MatchingStatsData[] | undefined
   >();
+  const [useContractData, setUseContractData] = useState(true);
+
+  const {
+    distributionMetaPtr,
+    matchingDistributionContract,
+    isLoading,
+    isError,
+  } = useMatchingDistribution(props.roundId);
+
+  useEffect(() => {
+    if (distributionMetaPtr !== "") {
+      setUseContractData(true);
+    } else {
+      setUseContractData(false);
+    }
+  }, [distributionMetaPtr, matchingDistributionContract]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { data, error, loading } = useRoundMatchData(
@@ -94,16 +124,22 @@ function InformationContent(props: {
   return (
     <>
       <div>
-        {loading && <Spinner text="We're fetching the matching data." />}
-        {error && <ErrorMessage />}
+        {(loading || isLoading) && (
+          <Spinner text="We're fetching the matching data." />
+        )}
+        {(error || isError) && <ErrorMessage />}
       </div>
-      {!error && !loading && (
+      {!error && !isError && !loading && !isLoading && (
         <FinalizeRound
+          roundId={props.roundId}
           matchingData={matchingData}
           useDefault={useDefault}
           setUseDefault={setUseDefault}
           customMatchingData={customMatchingData}
           setCustomMatchingData={setCustomMatchingData}
+          useContractData={useContractData}
+          setUseContractData={setUseContractData}
+          matchingDistributionContract={matchingDistributionContract}
         />
       )}
     </>
@@ -126,6 +162,7 @@ function ErrorMessage() {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function InformationTable(props: {
+  useContractData?: boolean;
   matchingData: MatchingStatsData[] | undefined;
   isCustom?: boolean;
   customMatchingData?: MatchingStatsData[] | undefined;
@@ -138,25 +175,36 @@ function InformationTable(props: {
       <hr className="mt-2 mb-4" />
       <div className="flex flex-row relative">
         <p className="font-bold" data-testid="match-stats-title">
-          {props.isCustom ? "Custom" : "Default"} Matching Stats
+          {props.useContractData
+            ? "Finalized"
+            : props.isCustom
+            ? "Custom"
+            : "Default"}{" "}
+          Matching Stats
         </p>
-        <p className="font-bold text-violet-400 absolute left-3/4 ml-24">
-          ({props.matchingData?.length}) Projects
-        </p>
-        {props.isCustom && (
-          <span
-            className="absolute right-0 h-6 w-6 text-red-400"
-            onClick={() =>
-              props.setCustomMatchingData &&
-              props.setCustomMatchingData(undefined)
-            }
-            data-testid="cancel-icon"
-          >
-            <XIcon />
-          </span>
+        {props.isCustom ? (
+          <>
+            <p className="font-bold text-violet-400 absolute right-12 ml-24">
+              ({props.matchingData?.length}) Projects
+            </p>
+            <span
+              className="absolute right-0 h-6 w-6 text-red-400"
+              onClick={() =>
+                props.setCustomMatchingData &&
+                props.setCustomMatchingData(undefined)
+              }
+              data-testid="cancel-icon"
+            >
+              <XIcon />
+            </span>
+          </>
+        ) : (
+          <p className="font-bold text-violet-400 absolute right-0 ml-24">
+            ({props.matchingData?.length}) Projects
+          </p>
         )}
       </div>
-      <div className="flex flex-flow mt-2 overflow-y-auto h-72 border-2 px-4 py-4">
+      <div className="flex flex-flow mt-2 overflow-y-auto max-h-72 border-2 rounded px-4 py-4">
         <table className="w-full" data-testid="matching-stats-table">
           <thead>
             <tr className="text-left">
@@ -208,6 +256,7 @@ function InformationTable(props: {
 }
 
 function FinalizeRound(props: {
+  roundId: string | undefined;
   matchingData: MatchingStatsData[] | undefined;
   useDefault: boolean;
   setUseDefault: (useDefault: boolean) => void;
@@ -215,61 +264,157 @@ function FinalizeRound(props: {
   setCustomMatchingData: (
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
+  useContractData: boolean;
+  setUseContractData: (useContractData: boolean) => void;
+  matchingDistributionContract: MatchingStatsData[] | undefined;
 }) {
+  const [openInfoModal, setOpenInfoModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const navigate = useNavigate();
+
+  const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
+    useFinalizeRound();
+
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
+      finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+    ) {
+      // redirectToFinalizedRoundStats(navigate, 2000);
+      console.log("success");
+    }
+  }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
+
+  useEffect(() => {
+    if (
+      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
+      finalizeRoundToContractStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+  }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
+
+  const handleFinalizeRound = async () => {
+    try {
+      if (props.roundId !== undefined) {
+        setOpenProgressModal(true);
+        await finalizeRound(
+          props.roundId,
+          props.useDefault ? props.matchingData : props.customMatchingData
+        );
+      }
+    } catch (error) {
+      console.error("FinalizeRound", error);
+    }
+  };
+
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "Storing",
+      description: "The distribution data is being saved in a safe place.",
+      status: IPFSCurrentStatus,
+    },
+    {
+      name: "Finalizing",
+      description: `The distribution is being finalized in the contract.`,
+      status: finalizeRoundToContractStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
+
   return (
-    <div className="w-full pt-12">
-      <span className="font-bold">Finalize Round</span>
-      <hr className="mt-2 mb-4" />
-      <div className="flex columns-2 pl-8">
-        <div className="w-full pt-2">
-          <form className="mt-4 space-y-3 w-full" action="#" method="POST">
-            <div className="w-full pt-2">
-              <CustomOrDefaultRadioGroup
-                useDefault={props.useDefault}
-                setUseDefault={props.setUseDefault}
-              />
-            </div>
-            <div>
-              {props.useDefault ? (
-                <InformationTable matchingData={props.matchingData} />
-              ) : null}
-              {!props.useDefault && !props.customMatchingData && (
-                <UploadJSON
-                  matchingData={props.matchingData}
-                  setCustomMatchingData={props.setCustomMatchingData}
-                />
-              )}
-              {!props.useDefault && props.customMatchingData ? (
-                <InformationTable
-                  matchingData={props.customMatchingData}
-                  isCustom={true}
-                  customMatchingData={props.customMatchingData}
-                  setCustomMatchingData={props.setCustomMatchingData}
-                />
-              ) : null}
-            </div>
-            <div className="grid justify-items-end">
-              <div className="w-fit">
-                <Button
-                  onClick={async () => {
-                    /* TODO: display the warning window here */
-                    /* ABI-encode the distrbution TODO: what is the format of this? */
-                    // let newDistribution = ethers.utils.defaultAbiCoder.encode();
-                    /* Set the distribution in the contract */
-                    // updateRoundDistribution(roundId, signer, newDistribution);
-                  }}
-                  type="submit"
-                  className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
-                  disabled={!props.useDefault && !props.customMatchingData}
-                >
-                  Finalize and save to contract
-                </Button>
-              </div>
-            </div>
-          </form>
+    <>
+      {props.useContractData && (
+        <div className="w-full pt-12">
+          <span className="font-bold" data-testid="finalized-round">
+            Finalized Round
+          </span>
+          <InformationTable
+            useContractData={props.useContractData}
+            matchingData={props.matchingDistributionContract}
+          />
         </div>
-      </div>
-    </div>
+      )}
+      {!props.useContractData && (
+        <div className="w-full pt-12">
+          <span className="font-bold" data-testid="finalize-round">
+            Finalize Round
+          </span>
+          <hr className="mt-2 mb-4" />
+          <div className="flex columns-2 pl-8">
+            <div className="w-full pt-2">
+              <form className="mt-4 space-y-3 w-full">
+                <div className="w-full pt-2">
+                  <CustomOrDefaultRadioGroup
+                    useDefault={props.useDefault}
+                    setUseDefault={props.setUseDefault}
+                  />
+                </div>
+                <div>
+                  {props.useDefault ? (
+                    <InformationTable matchingData={props.matchingData} />
+                  ) : null}
+                  {!props.useDefault && !props.customMatchingData && (
+                    <UploadJSON
+                      matchingData={props.matchingData}
+                      setCustomMatchingData={props.setCustomMatchingData}
+                    />
+                  )}
+                  {!props.useDefault && props.customMatchingData ? (
+                    <InformationTable
+                      matchingData={props.customMatchingData}
+                      isCustom={true}
+                      customMatchingData={props.customMatchingData}
+                      setCustomMatchingData={props.setCustomMatchingData}
+                    />
+                  ) : null}
+                </div>
+                <div className="grid justify-items-end">
+                  <div className="w-fit">
+                    <Button
+                      onClick={() => setOpenInfoModal(true)}
+                      type="submit"
+                      className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
+                      disabled={!props.useDefault && !props.customMatchingData}
+                    >
+                      Finalize and save to contract
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <InfoModal
+              title={"Heads up!"}
+              body={<InfoModalBody />}
+              isOpen={openInfoModal}
+              setIsOpen={setOpenInfoModal}
+              continueButtonAction={handleFinalizeRound}
+            />
+            <ProgressModal
+              isOpen={openProgressModal}
+              subheading={"Please hold while we update the contract."}
+              steps={progressSteps}
+            />
+            <ErrorModal
+              isOpen={openErrorModal}
+              setIsOpen={setOpenErrorModal}
+              tryAgainFn={handleFinalizeRound}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -512,5 +657,19 @@ function CustomOrDefaultRadioGroup(props: {
         </RadioGroup.Option>
       </div>
     </RadioGroup>
+  );
+}
+
+function InfoModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        You have only one chance to finalize distribution for your round.
+        <br />
+        Please make sure that the final distribution is correct.
+        <br />
+        You will not be able to make changes after finalizing.
+      </p>
+    </div>
   );
 }

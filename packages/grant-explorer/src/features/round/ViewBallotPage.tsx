@@ -180,6 +180,10 @@ export default function ViewBallot() {
             console.log('processing, calling again in 3000 ms');
             setTimeout(async () => {await callFetchPassport()}, 3000);
             return;
+          } else if (json.status == "ERROR") {
+            // due to error at passport end
+            setPassportState(PassportState.ERROR);
+            return;
           }
 
           setPassport(json);
@@ -193,10 +197,6 @@ export default function ViewBallot() {
           switch (res.status) {
             case 400: // unregistered/nonexistent passport address
               setPassportState(PassportState.INVALID_PASSPORT);
-              console.error(
-                "unregistered/nonexistent passport address",
-                res.json()
-              );
               break;
             case 401: // invalid API key
               setPassportState(PassportState.ERROR);
@@ -281,6 +281,7 @@ export default function ViewBallot() {
             onClick={() => {
               /* Check if user hasn't connected passport yet, display the warning modal */
               if (
+                passportState === PassportState.ERROR ||
                 passportState === PassportState.NOT_CONNECTED ||
                 passportState === PassportState.INVALID_PASSPORT
               ) {

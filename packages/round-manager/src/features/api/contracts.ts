@@ -136,6 +136,11 @@ export const roundImplementationContract: Contract = {
   abi: abi.roundImplementation,
 };
 
+/* PayoutStrategy */
+export const payoutStrategyContract: Contract = {
+  abi: abi.merklePayoutStrategy,
+};
+
 /************************/
 /* == VotingStrategy == */
 /************************/

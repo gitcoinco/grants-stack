@@ -40,6 +40,11 @@ import {
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import React from "react";
 import { QFDistribution } from "./features/api/api";
+import {
+  FinalizeRoundContext,
+  FinalizeRoundState,
+} from "./context/round/FinalizeRoundContext";
+import { initialFinalizeRoundState } from "./context/round/FinalizeRoundContext";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -313,6 +318,23 @@ export const wrapWithApplicationContext = (
     {ui}
   </ApplicationContext.Provider>
 );
+
+export const wrapWithFinalizeRoundContext = (
+  ui: JSX.Element,
+  finalizeRoundStateOverrides: Partial<FinalizeRoundState> = {},
+  dispatch: any = jest.fn()
+) => {
+  return (
+    <FinalizeRoundContext.Provider
+      value={{
+        state: { ...initialFinalizeRoundState, ...finalizeRoundStateOverrides },
+        dispatch,
+      }}
+    >
+      {ui}
+    </FinalizeRoundContext.Provider>
+  );
+};
 
 export const wrapWithReadProgramContext = (
   ui: JSX.Element,
