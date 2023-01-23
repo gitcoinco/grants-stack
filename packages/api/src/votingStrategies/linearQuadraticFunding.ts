@@ -422,33 +422,30 @@ export const matchQFContributions = async (
 
     // check if projectID is already in the mapping
     if (!contributionsByProject[projectId]) {
-
       // add projectID to mapping along with the contribution
       contributionsByProject[projectId] = {
-        contributions: {        // all contributions made to the projectId
-          [contributor]: {      // all contributions made by contributor to the projectId
-            ...contribution,    // list of all contributions made by contributor to the projectId
-            usdValue: usdAmount // total USD amount for all contributions made by contributor to the projectId
-          }
+        contributions: {
+          // all contributions made to the projectId
+          [contributor]: {
+            // all contributions made by contributor to the projectId
+            ...contribution, // list of all contributions made by contributor to the projectId
+            usdValue: usdAmount, // total USD amount for all contributions made by contributor to the projectId
+          },
         },
       };
     }
 
     // check if contributor has already made contributions to the project
     if (!contributionsByProject[projectId].contributions[contributor]) {
-
       // append contributor to the projectId mapping
-      contributionsByProject[projectId]
-        .contributions[contributor] = {
-          ...contribution,
-          usdValue: usdAmount,
-        };
+      contributionsByProject[projectId].contributions[contributor] = {
+        ...contribution,
+        usdValue: usdAmount,
+      };
     } else {
-
       // update total USD amount as this contributor has already made contributions to the project
-      contributionsByProject[projectId]
-        .contributions[contributor] // all contributions made by contributor to the projectId
-        .usdValue += usdAmount; // total USD amount for all contributions made by contributor to the projectId
+      contributionsByProject[projectId].contributions[contributor].usdValue += // all contributions made by contributor to the projectId
+        usdAmount; // total USD amount for all contributions made by contributor to the projectId
     }
   }
 
@@ -605,7 +602,7 @@ export const matchQFContributions = async (
  * @param distribution
  * @param totalPot
  * @param totalMatchInUSD
- * @param matchingCap
+ * @param matchingCapInUSD
  */
 const applyMatchingCap = (
   distribution: QFDistribution[],
