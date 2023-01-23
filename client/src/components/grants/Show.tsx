@@ -21,6 +21,7 @@ import Pencil from "../icons/Pencil";
 import Details from "./Details";
 import ProjectRegistryABI from "../../contracts/abis/ProjectRegistry.json";
 import { addressesByChainID } from "../../contracts/deployments";
+import PageNotFound from "../base/PageNotFound";
 
 const formattedDate = (timestamp: number | undefined) =>
   new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
@@ -40,6 +41,14 @@ function Project() {
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
 
+  let appProvider: ethers.providers.BaseProvider | undefined;
+
+  try {
+    appProvider = getProviderByChainId(Number(params.chainId));
+  } catch (e) {
+    console.log(e);
+  }
+
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
@@ -48,6 +57,10 @@ function Project() {
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
+
+    const loadingFailed =
+      grantMetadata && (!appProvider || grantMetadata.status === Status.Error);
+
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
@@ -61,7 +74,9 @@ function Project() {
 
     return {
       id: fullId,
+      appProvider,
       loading,
+      loadingFailed,
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
@@ -80,11 +95,11 @@ function Project() {
 
   useEffect(() => {
     let unloaded = false;
-    const appProvider = getProviderByChainId(Number(params.chainId));
-    if (props.projectEvents !== undefined) {
+
+    if (props.appProvider && props.projectEvents !== undefined) {
       const { createdAtBlock, updatedAtBlock } = props.projectEvents;
       if (createdAtBlock !== undefined) {
-        appProvider.getBlock(createdAtBlock).then((data) => {
+        props.appProvider.getBlock(createdAtBlock).then((data) => {
           if (!unloaded) {
             setCreatedAt(formattedDate(data?.timestamp));
           }
@@ -92,7 +107,7 @@ function Project() {
       }
 
       if (updatedAtBlock !== undefined) {
-        appProvider.getBlock(updatedAtBlock).then((data) => {
+        props.appProvider.getBlock(updatedAtBlock).then((data) => {
           if (!unloaded) {
             setUpdatedAt(formattedDate(data?.timestamp));
           }
@@ -106,7 +121,7 @@ function Project() {
     return () => {
       unloaded = true;
     };
-  }, [props.id, props.projectEvents, global, dispatch]);
+  }, [props.id, props.appProvider, props.projectEvents, global, dispatch]);
 
   // Fetch the project owners
   useEffect(() => {
@@ -147,6 +162,14 @@ function Project() {
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
     return editPath(chainId, registryAddress, id);
+  }
+
+  if (props.loadingFailed) {
+    return (
+      <div>
+        <PageNotFound />
+      </div>
+    );
   }
 
   return (

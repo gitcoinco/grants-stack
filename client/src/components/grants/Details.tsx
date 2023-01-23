@@ -3,6 +3,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchProjectApplications } from "../../actions/projects";
+import {
+  DefaultProjectBanner,
+  DefaultProjectLogo,
+  GithubLogo,
+  TwitterLogo,
+} from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
@@ -110,7 +116,7 @@ export default function Details({
         }
         onError={(e) => {
           e.currentTarget.onerror = null;
-          e.currentTarget.src = "./assets/default-project-logo.png";
+          e.currentTarget.src = DefaultProjectBanner;
         }}
         alt="project banner"
       />
@@ -124,7 +130,7 @@ export default function Details({
               }
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = "./assets/default-project-logo.png";
+                e.currentTarget.src = DefaultProjectLogo;
               }}
               alt="project logo"
             />
@@ -151,7 +157,7 @@ export default function Details({
                 <div className="flex justify-start items-center m-2 pb-1">
                   <img
                     className="h-3 mr-2 mt-1"
-                    src="./assets/twitter_logo.svg"
+                    src={TwitterLogo}
                     alt="Twitter Logo"
                   />
                   <a
@@ -169,7 +175,7 @@ export default function Details({
                 <div className="flex justify-start items-center m-2">
                   <img
                     className="h-4 mr-2"
-                    src="./assets/github_logo.png"
+                    src={GithubLogo}
                     alt="Github Logo"
                   />
                   <a
@@ -201,7 +207,7 @@ export default function Details({
                 <div className="flex items-center m-2">
                   <img
                     className="h-4 ml-0.5 mr-2 mt-1"
-                    src="./assets/github_logo.png"
+                    src={GithubLogo}
                     alt="Github Logo"
                   />
                   <a

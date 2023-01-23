@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
+import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
@@ -67,7 +68,7 @@ function Card({ projectId }: { projectId: string }) {
               src={props.bannerImg}
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = "./assets/default-project-banner.png";
+                e.currentTarget.src = DefaultProjectBanner;
               }}
               alt="project banner"
             />
@@ -79,7 +80,7 @@ function Card({ projectId }: { projectId: string }) {
                     src={props.logoImg}
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "./assets/default-project-logo.png";
+                      e.currentTarget.src = DefaultProjectLogo;
                     }}
                     alt="project logo"
                   />
