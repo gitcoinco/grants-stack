@@ -127,7 +127,10 @@ function AfterRoundStart(props: {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setProjects(round.approvedProjects);
+      let projects = round?.approvedProjects;
+      // shuffle projects
+      projects = projects?.sort(() => Math.random() - 0.5);
+      setProjects(projects);
     }
   });
 
