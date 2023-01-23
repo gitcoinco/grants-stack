@@ -1,5 +1,4 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import parse from "html-react-parser";
 import { Link, useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
@@ -27,6 +26,7 @@ import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
+import markdown from "../../app/markdown";
 
 enum VerifiedCredentialState {
   VALID,
@@ -73,7 +73,7 @@ export default function ViewProjectDetails() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       {isBeforeRoundEndDate && (
         <PassportBanner />
       )}
@@ -320,15 +320,11 @@ function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
 
 function Detail(props: { text: string; testID: string }) {
   return (
-    <p className="text-base font-normal text-black" data-testid={props.testID}>
-      {" "}
-      {parse(
-        (props.text || "")
-          .replace(/\n/g, "<br/><br/>")
-          .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"),
-        { trim: true }
-      )}{" "}
-    </p>
+    <p
+      dangerouslySetInnerHTML={{ __html: markdown.renderToHTML(props.text) }}
+      className="text-base font-normal text-black"
+      data-testid={props.testID}
+    />
   );
 }
 

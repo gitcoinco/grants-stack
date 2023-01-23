@@ -23,6 +23,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
+import markdown from "../../app/markdown";
 import {
   FinalBallotDonation,
   PayoutToken,
@@ -483,7 +484,9 @@ export default function ViewBallot() {
                 {props.project.projectMetadata.title}
               </p>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {props.project.projectMetadata.description.substring(0, 130)}
+                {markdown
+                  .renderToPlainText(props.project.projectMetadata.description)
+                  .substring(0, 130)}
               </p>
             </div>
           </div>
