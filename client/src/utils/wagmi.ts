@@ -9,10 +9,10 @@ import { chain, configureChains, createClient } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
+import { FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 
-const ftmTestnetIcon = "../assets/ftm-testnet.png";
-const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
-const optimismIcon = "../assets/OPIcon.png";
+const ftmTestnetIcon = FTMTestnet;
+const ftmMainnetIcon = FantomFTMLogo;
 
 // RPC keys
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID;
@@ -63,7 +63,7 @@ const optimismMainnet: Chain = {
   id: 10,
   name: "Optimism",
   network: "optimism mainnet",
-  iconUrl: optimismIcon,
+  iconUrl: OPIcon,
   nativeCurrency: {
     decimals: 18,
     name: "Optimism",

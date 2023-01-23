@@ -54,14 +54,32 @@ describe("<Show />", () => {
     describe("<SwitchNetworkModal />", () => {
       test("renders when the round's chainId does not match the user's chainId", async () => {
         store.dispatch(web3ChainIDLoaded(1));
+        (loadRound as jest.Mock).mockReturnValue({ type: "TEST" });
+        (unloadRounds as jest.Mock).mockReturnValue({ type: "TEST" });
+        (loadAllChainsProjects as jest.Mock).mockReturnValue({ type: "TEST" });
+
+        store.dispatch({
+          type: "GRANT_METADATA_FETCHED",
+          data: buildProjectMetadata({}),
+        });
+
+        store.dispatch({
+          type: "PROJECTS_LOADED",
+          payload: {
+            chainID: 1,
+            events: {},
+          },
+        });
 
         renderWrapped(<Show />, store);
 
+        // const container = screen.getAllByTestId("show-round-container");
         const element = screen.getByTestId("switch-networks-modal-button");
         const button = element.children[1];
 
         expect(button).toHaveTextContent("Switch Network");
 
+        expect(screen.getByText("Apply")).toBeInTheDocument();
         expect(screen.getByTestId("switch-networks-modal")).toBeInTheDocument();
         expect(
           screen.getByTestId("switch-networks-modal-title")

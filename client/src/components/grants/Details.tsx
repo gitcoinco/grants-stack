@@ -3,6 +3,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchProjectApplications } from "../../actions/projects";
+import {
+  DefaultProjectBanner,
+  DefaultProjectLogo,
+  GithubLogo,
+  TwitterLogo,
+} from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
@@ -12,6 +18,7 @@ import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
 import ApplicationCard from "./ApplicationCard";
 import markdown from "../../utils/markdown";
+import { formatDateFromMs } from "../../utils/components";
 
 function Verified() {
   return (
@@ -31,8 +38,8 @@ export default function Details({
   showApplications,
 }: {
   project?: Metadata | FormInputs | Project;
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: number;
+  createdAt: number;
   bannerImg: string | Blob;
   logoImg: string | Blob;
   showApplications: boolean;
@@ -110,7 +117,7 @@ export default function Details({
         }
         onError={(e) => {
           e.currentTarget.onerror = null;
-          e.currentTarget.src = "./assets/default-project-logo.png";
+          e.currentTarget.src = DefaultProjectBanner;
         }}
         alt="project banner"
       />
@@ -124,7 +131,7 @@ export default function Details({
               }
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = "./assets/default-project-logo.png";
+                e.currentTarget.src = DefaultProjectLogo;
               }}
               alt="project logo"
             />
@@ -151,7 +158,7 @@ export default function Details({
                 <div className="flex justify-start items-center m-2 pb-1">
                   <img
                     className="h-3 mr-2 mt-1"
-                    src="./assets/twitter_logo.svg"
+                    src={TwitterLogo}
                     alt="Twitter Logo"
                   />
                   <a
@@ -169,7 +176,7 @@ export default function Details({
                 <div className="flex justify-start items-center m-2">
                   <img
                     className="h-4 mr-2"
-                    src="./assets/github_logo.png"
+                    src={GithubLogo}
                     alt="Github Logo"
                   />
                   <a
@@ -188,20 +195,24 @@ export default function Details({
               <div>
                 <p className="flex text-sm m-2 pb-2">
                   <Calendar color={colors["secondary-text"]} />
-                  <span className="ml-1">Created on: {createdAt}</span>
+                  <span className="ml-1">
+                    Created on: {formatDateFromMs(createdAt)}
+                  </span>
                 </p>
               </div>
               <div>
                 <p className="flex text-sm m-2 pb-1">
                   <Calendar color={colors["secondary-text"]} />
-                  <span className="ml-1">Last Edited: {updatedAt}</span>
+                  <span className="ml-1">
+                    Last Edited: {formatDateFromMs(updatedAt)}
+                  </span>
                 </p>
               </div>
               {project?.projectGithub && (
                 <div className="flex items-center m-2">
                   <img
                     className="h-4 ml-0.5 mr-2 mt-1"
-                    src="./assets/github_logo.png"
+                    src={GithubLogo}
                     alt="Github Logo"
                   />
                   <a

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { checkRoundApplications } from "../../actions/roundApplication";
 import { loadRound } from "../../actions/rounds";
+import { RoundApply } from "../../assets";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/projects";
@@ -202,7 +203,7 @@ function ProjectsList() {
 
               navigate(path);
             }}
-            headerImageUri="/assets/round-apply.svg"
+            headerImageUri={RoundApply}
             toggleModal={() => setToggleModal(ApplicationModalStatus.Closed)}
             hideCloseButton
           >

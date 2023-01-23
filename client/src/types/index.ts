@@ -20,6 +20,7 @@ export interface Metadata {
   projectGithub?: string;
   credentials?: ProjectCredentials;
   createdAt?: number;
+  updatedAt?: number;
 }
 
 export interface Project {

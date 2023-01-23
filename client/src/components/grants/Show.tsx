@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
@@ -9,26 +9,14 @@ import { Status } from "../../reducers/grantsMetadata";
 import { editPath, grantsPath } from "../../routes";
 import colors from "../../styles/colors";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import {
-  getProjectURIComponents,
-  getProviderByChainId,
-} from "../../utils/utils";
+import { getProjectURIComponents } from "../../utils/utils";
 import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
-
-const formattedDate = (timestamp: number | undefined) =>
-  new Date((timestamp ?? 0) * 1000).toLocaleString("en", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+import PageNotFound from "../base/PageNotFound";
 
 function Project() {
-  const [updatedAt, setUpdatedAt] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
-
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
@@ -41,6 +29,10 @@ function Project() {
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
+
+    const loadingFailed =
+      grantMetadata && grantMetadata.status === Status.Error;
+
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
@@ -55,6 +47,7 @@ function Project() {
     return {
       id: fullId,
       loading,
+      loadingFailed,
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
@@ -72,33 +65,9 @@ function Project() {
   }, [dispatch, props.id, props.currentProject]);
 
   useEffect(() => {
-    let unloaded = false;
-    const appProvider = getProviderByChainId(Number(params.chainId));
-    if (props.projectEvents !== undefined) {
-      const { createdAtBlock, updatedAtBlock } = props.projectEvents;
-      if (createdAtBlock !== undefined) {
-        appProvider.getBlock(createdAtBlock).then((data) => {
-          if (!unloaded) {
-            setCreatedAt(formattedDate(data?.timestamp));
-          }
-        });
-      }
-
-      if (updatedAtBlock !== undefined) {
-        appProvider.getBlock(updatedAtBlock).then((data) => {
-          if (!unloaded) {
-            setUpdatedAt(formattedDate(data?.timestamp));
-          }
-        });
-      }
-    } else {
-      // If user reloads Show projects will not exist
+    if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(true));
     }
-
-    return () => {
-      unloaded = true;
-    };
   }, [props.id, props.projectEvents, global, dispatch]);
 
   if (
@@ -112,6 +81,14 @@ function Project() {
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
     return editPath(chainId, registryAddress, id);
+  }
+
+  if (props.loadingFailed) {
+    return (
+      <div>
+        <PageNotFound />
+      </div>
+    );
   }
 
   return (
@@ -143,8 +120,8 @@ function Project() {
           </div>
           <Details
             project={props.currentProject}
-            createdAt={createdAt}
-            updatedAt={updatedAt}
+            createdAt={props.currentProject.createdAt!}
+            updatedAt={props.currentProject.updatedAt!}
             logoImg={props.logoImg}
             bannerImg={props.bannerImg}
             showApplications

@@ -1,3 +1,4 @@
+// todo: unused file?
 export enum ChainLogos {
   ETH = "./assets/ethereum.svg",
 }
