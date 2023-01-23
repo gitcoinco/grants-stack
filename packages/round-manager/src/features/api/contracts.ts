@@ -176,6 +176,43 @@ export const qfVotingStrategyFactoryContract = (
   };
 };
 
+//TODO network rolouts
+/* QuadraticFundingVotingStrategy */
+export const qfRelayStrategyFactoryContract = (
+  chainId: ChainId | undefined
+): Contract => {
+  let address;
+
+  switch (chainId) {
+    case ChainId.MAINNET: {
+      address = "";
+      break;
+    }
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_MAINNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.FANTOM_TESTNET_CHAIN_ID: {
+      address = "";
+      break;
+    }
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      address = "";
+      break;
+    }
+  }
+
+  return {
+    address: address,
+    abi: abi.qfRelayStrategyFactory,
+  };
+};
+
 /************************/
 /* == PayoutStrategy == */
 /************************/

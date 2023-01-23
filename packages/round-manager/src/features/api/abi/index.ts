@@ -4,6 +4,7 @@ import projectRegistry from "./projectRegistry";
 import roundFactory from "./roundFactory";
 import roundImplementation from "./roundImplementation";
 import qfVotingStrategyFactory from "./votingStrategy/qfVotingStrategyFactory";
+import qfRelayStrategyFactory from "./votingStrategy/qfRelayStrategyFactory";
 import merklePayoutStrategy from "./payoutStrategy/merklePayoutStrategy";
 
 const abi = {
@@ -20,6 +21,9 @@ const abi = {
 
   // VotingStrategy
   qfVotingStrategyFactory,
+
+  // VotingRelayStrategy
+  qfRelayStrategyFactory,
 
   // PayoutStrategy
   merklePayoutStrategy,

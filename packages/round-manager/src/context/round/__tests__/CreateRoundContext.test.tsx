@@ -10,6 +10,7 @@ import { deployRoundContract } from "../../../features/api/round";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 import { deployMerklePayoutStrategyContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
 import { deployQFVotingContract } from "../../../features/api/votingStrategy/qfVotingStrategy";
+import { deployQFRelayContract } from "../../../features/api/votingStrategy/qfRelayStrategy";
 
 const mockWallet = {
   address: "0x0",
@@ -20,6 +21,7 @@ const mockWallet = {
   },
 };
 
+jest.mock("../../../features/api/votingStrategy/qfRelayStrategy");
 jest.mock("../../../features/api/votingStrategy/qfVotingStrategy");
 jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
 jest.mock("../../../features/api/round");
@@ -41,6 +43,11 @@ describe("<CreateRoundProvider />", () => {
 
   describe("Set IPFS Status", () => {
     beforeEach(() => {
+      (deployQFRelayContract as jest.Mock).mockReturnValue(
+        new Promise(() => {
+          /* do nothing.*/
+        })
+      );
       (deployQFVotingContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/

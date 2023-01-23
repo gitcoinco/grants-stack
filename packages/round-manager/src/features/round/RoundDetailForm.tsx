@@ -24,7 +24,13 @@ import {
   SelectorIcon,
   InformationCircleIcon,
 } from "@heroicons/react/solid";
-import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
+import {
+  getPayoutTokenOptions,
+  getVotingOptions,
+  PayoutToken,
+  SupportType,
+  VotingOption,
+} from "../api/utils";
 import { useWallet } from "../common/Auth";
 import moment from "moment";
 import ReactTooltip from "react-tooltip";
@@ -77,6 +83,13 @@ const ValidationSchema = yup.object().shape({
           then: yup.string().url().required("You must provide a valid URL."),
         }),
     }),
+    voting: yup
+      .string()
+      .required("You must select a voting strategy for your round.")
+      .notOneOf(
+        ["Choose Voting Strategy"],
+        "You must select a voting strategy for your round."
+      ),
   }),
   applicationsStartTime: yup
     .date()
@@ -151,6 +164,15 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     ...getPayoutTokenOptions(chain.id),
   ];
 
+  const votingOptions: VotingOption[] = [
+    {
+      name: "Choose Voting Strategy",
+      strategy: "",
+      default: true,
+    },
+    ...getVotingOptions(),
+  ];
+
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
@@ -208,6 +230,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
               }
             )}
             control={control}
+          />
+          <VotingStrategyDropdown
+            errors={errors}
+            register={register("roundMetadata.voting")}
+            control={control}
+            votingOptions={votingOptions}
           />
         </div>
       </>
@@ -605,6 +633,36 @@ function PayoutTokenButton(props: {
   );
 }
 
+function VotingStrategyButton(props: {
+  errors: FieldErrors<Round>;
+  voting?: VotingOption;
+}) {
+  const { voting } = props;
+  return (
+    <Listbox.Button
+      className={`relative w-full cursor-default rounded-md border h-10 ${
+        props.errors.token
+          ? "border-red-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+          : "border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      }`}
+      data-testid="voting-strategy-select"
+    >
+      <span className="flex items-center">
+        {voting?.default ? (
+          <span className="ml-3 block truncate text-gray-400">
+            {voting?.name}
+          </span>
+        ) : (
+          <span className="ml-3 block truncate">{voting?.name}</span>
+        )}
+      </span>
+      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+        <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+      </span>
+    </Listbox.Button>
+  );
+}
+
 function ProgramChain(props: { program: Program }) {
   const { program } = props;
   return (
@@ -766,6 +824,106 @@ function PayoutTokenDropdown(props: {
             {props.errors.token && (
               <p className="mt-2 text-xs text-pink-500">
                 {props.errors.token?.message}
+              </p>
+            )}
+          </div>
+        )}
+      </Listbox>
+    </div>
+  );
+}
+
+function VotingStrategyDropdown(props: {
+  register: UseFormRegisterReturn<string>;
+  errors: FieldErrors<Round>;
+  control: Control<Round>;
+  votingOptions: VotingOption[];
+}) {
+  const { field } = useController({
+    name: "votingStrategy",
+    defaultValue: props.votingOptions[0].strategy,
+    control: props.control,
+    rules: {
+      required: true,
+    },
+  });
+  return (
+    <div className="relative col-span-6 sm:col-span-3">
+      <Listbox {...field}>
+        {({ open }) => (
+          <div>
+            <Listbox.Label className="block text-sm">
+              <span>Voting Strategy</span>
+              <span className="text-right text-violet-400 float-right text-xs mt-1">
+                *Required
+              </span>
+            </Listbox.Label>
+            <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+              <VotingStrategyButton
+                errors={props.errors}
+                voting={props.votingOptions.find((t) => t.name === field.value)}
+              />
+              <Transition
+                show={open}
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {props.votingOptions.map(
+                    (votingOption) =>
+                      !votingOption.default && (
+                        <Listbox.Option
+                          key={votingOption.name}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "text-white bg-indigo-600"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={votingOption.strategy}
+                          data-testid="voting-strategy-option"
+                        >
+                          {({ selected, active }) => (
+                            <>
+                              <div className="flex items-center">
+                                <span
+                                  className={classNames(
+                                    selected ? "font-semibold" : "font-normal",
+                                    "ml-3 block truncate"
+                                  )}
+                                >
+                                  {votingOption.name}
+                                </span>
+                              </div>
+
+                              {selected ? (
+                                <span
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      )
+                  )}
+                </Listbox.Options>
+              </Transition>
+            </div>
+            {props.errors.roundMetadata?.voting && (
+              <p className="mt-2 text-xs text-pink-500">
+                {props.errors.roundMetadata?.voting.message}
               </p>
             )}
           </div>
