@@ -1,5 +1,6 @@
 import { Metadata, Project } from "../types";
 import PinataClient from "../services/pinata";
+import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
 
 export enum ImgTypes {
   bannerImg = "bannerImg",
@@ -7,8 +8,8 @@ export enum ImgTypes {
 }
 
 const defaultImgs = {
-  bannerImg: "./assets/default-project-banner.png",
-  logoImg: "./assets/default-project-logo.png",
+  bannerImg: DefaultProjectBanner,
+  logoImg: DefaultProjectLogo,
 };
 
 export const getProjectImage = (

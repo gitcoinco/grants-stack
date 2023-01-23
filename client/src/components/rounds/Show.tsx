@@ -96,25 +96,21 @@ function Round() {
   }, [roundId, props.applicationEnded]);
 
   useEffect(() => {
-    if (!isOnRoundChain) return;
-
     if (roundId !== undefined) {
       dispatch(unloadRounds());
-      dispatch(loadRound(roundId));
+      dispatch(
+        loadRound(roundId, Number(props.roundChainId || props.web3ChainId))
+      );
     }
   }, [dispatch, roundId]);
 
   useEffect(() => {
-    if (!isOnRoundChain) return;
-
     if (props.round) {
       setRoundData(props.round);
     }
   }, [props.round]);
 
   useEffect(() => {
-    if (!isOnRoundChain) return;
-
     if (props.projectsStatus === ProjectStatus.Undefined) {
       dispatch(loadAllChainsProjects(true));
     }
@@ -126,7 +122,7 @@ function Round() {
     }
   };
 
-  if (!isOnRoundChain) {
+  const renderNetworkChangeModal = () => {
     const roundNetworkName = networkPrettyName(props.roundChainId);
     return (
       // eslint-disable-next-line
@@ -135,7 +131,7 @@ function Round() {
         onSwitchNetwork={onSwitchNetwork}
       />
     );
-  }
+  };
 
   if (props.status === Status.Error) {
     return (
@@ -206,7 +202,10 @@ function Round() {
   }
 
   return (
-    <div className="h-full w-full absolute flex flex-col justify-center items-center">
+    <div
+      className="h-full w-full absolute flex flex-col justify-center items-center"
+      data-testid="show-round-container"
+    >
       <div className="w-full lg:w-1/3 sm:w-2/3 px-4 md:mx-0">
         <h2 className="text-center uppercase text-2xl">
           {roundData?.programName}
@@ -281,6 +280,7 @@ function Round() {
           )}
         </div>
       </div>
+      {!isOnRoundChain && renderNetworkChangeModal()}
     </div>
   );
 }

@@ -3,12 +3,8 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
+import { EthDiamondGlyph, FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
 import { chains } from "../contracts/deployments";
-
-const ftmTestnetIcon = "../assets/ftm-testnet.png";
-const ftmMainnetIcon = "../assets/fantom-ftm-logo.png";
-const optimismIcon = "../assets/OPIcon.png";
-const ethIcon = "../assets/eth-diamond-glyph.png";
 
 export function shortAddress(address: string): string {
   try {
@@ -33,12 +29,12 @@ export const networkPrettyNames: { [key: string]: string } = {
 };
 
 export const networkIcon: { [key: string]: string } = {
-  mainnet: ethIcon,
-  goerli: ethIcon,
-  optimisticKovan: optimismIcon,
-  fantomTestnet: ftmTestnetIcon,
-  fantom: ftmMainnetIcon,
-  optimism: optimismIcon,
+  mainnet: EthDiamondGlyph,
+  goerli: EthDiamondGlyph,
+  optimisticKovan: OPIcon,
+  fantomTestnet: FTMTestnet,
+  fantom: FantomFTMLogo,
+  optimism: OPIcon,
 };
 
 export function getNetworkIcon(chainId: number): string {

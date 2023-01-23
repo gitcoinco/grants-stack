@@ -14,6 +14,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
+import PageNotFound from "../base/PageNotFound";
 
 function Project() {
   const dispatch = useDispatch();
@@ -28,6 +29,10 @@ function Project() {
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
       : false;
+
+    const loadingFailed =
+      grantMetadata && (grantMetadata.status === Status.Error);
+
     const bannerImg = getProjectImage(
       loading,
       ImgTypes.bannerImg,
@@ -42,6 +47,7 @@ function Project() {
     return {
       id: fullId,
       loading,
+      loadingFailed,
       bannerImg,
       logoImg,
       currentProject: grantMetadata?.metadata,
@@ -75,6 +81,14 @@ function Project() {
   function createEditPath() {
     const { chainId, registryAddress, id } = getProjectURIComponents(props.id);
     return editPath(chainId, registryAddress, id);
+  }
+
+  if (props.loadingFailed) {
+    return (
+      <div>
+        <PageNotFound />
+      </div>
+    );
   }
 
   return (

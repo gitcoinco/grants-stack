@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { metadataSaved } from "../../actions/projectForm";
+import { GithubLogo, TwitterLogo } from "../../assets";
+import { XCircle } from "../../assets/icons";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { TextInput } from "../grants/inputs";
@@ -41,11 +43,7 @@ export default function VerificationForm({
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text px-4">
       <div className="flex items-center mb-6">
-        <img
-          className="h-12 mr-9"
-          src="./assets/twitter_logo.svg"
-          alt="Twitter Logo"
-        />
+        <img className="h-12 mr-9" src={TwitterLogo} alt="Twitter Logo" />
         <TextInput
           label="Twitter"
           name="projectTwitter"
@@ -63,11 +61,7 @@ export default function VerificationForm({
       </div>
       <hr className="my-4" />
       <div className="flex items-center mb-6">
-        <img
-          className="h-12 mr-12 mt-6"
-          src="./assets/github_logo.png"
-          alt="Github Logo"
-        />
+        <img className="h-12 mr-12 mt-6" src={GithubLogo} alt="Github Logo" />
         <TextInput
           label="Your Github Username"
           name="userGithub"
@@ -104,11 +98,7 @@ export default function VerificationForm({
       <hr className="my-4" />
       {error && (
         <div className="flex bg-danger-background/25 p-4 rounded">
-          <img
-            className="h-4 mt-1 mx-2"
-            src="./icons/x-circle.svg"
-            alt="error icon"
-          />
+          <img className="h-4 mt-1 mx-2" src={XCircle} alt="error icon" />
           <p className="text-danger-text font-normal">{error}</p>
         </div>
       )}
