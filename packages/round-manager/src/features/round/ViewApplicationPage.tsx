@@ -41,7 +41,7 @@ import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
-import markdown from "../../../markdown";
+import markdown from "../../markdown";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 

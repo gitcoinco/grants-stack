@@ -34,7 +34,7 @@ import { useBulkUpdateGrantApplications } from "../../context/application/BulkUp
 import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
-import markdown from "../../../markdown";
+import markdown from "../../markdown";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
