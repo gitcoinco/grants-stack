@@ -1,15 +1,6 @@
-import { useBallot } from "../../context/BallotContext";
-import {
-  FinalBallotDonation,
-  PayoutToken,
-  ProgressStatus,
-  Project,
-  recipient,
-} from "../api/types";
-import { useRoundById } from "../../context/RoundContext";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import DefaultLogoImage from "../../assets/default_logo.png";
+import { datadogLogs } from "@datadog/browser-logs";
+import { Listbox, Transition } from "@headlessui/react";
+import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   CheckIcon,
   ChevronLeftIcon,
@@ -17,29 +8,38 @@ import {
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Button, Input } from "../common/styles";
-import { classNames, getPayoutTokenOptions } from "../api/utils";
-import { Listbox, Transition } from "@headlessui/react";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useAccount, useBalance, useNetwork } from "wagmi";
-import { BigNumber, ethers } from "ethers";
-import ConfirmationModal from "../common/ConfirmationModal";
-import InfoModal from "../common/InfoModal";
-import ProgressModal from "../common/ProgressModal";
-import ErrorModal from "../common/ErrorModal";
-import { modalDelayMs } from "../../constants";
-import { useQFDonation } from "../../context/QFDonationContext";
-import { datadogLogs } from "@datadog/browser-logs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import Footer from "../common/Footer";
-import RoundEndedBanner from "../common/RoundEndedBanner";
-import PassportBanner from "../common/PassportBanner";
+import { BigNumber, ethers } from "ethers";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAccount, useBalance, useNetwork } from "wagmi";
+import DefaultLogoImage from "../../assets/default_logo.png";
+import { modalDelayMs } from "../../constants";
+import { useBallot } from "../../context/BallotContext";
+import { useQFDonation } from "../../context/QFDonationContext";
+import { useRoundById } from "../../context/RoundContext";
 import {
   fetchPassport,
   PassportResponse,
   PassportState,
 } from "../api/passport";
+import {
+  FinalBallotDonation,
+  PayoutToken,
+  ProgressStatus,
+  Project,
+  recipient,
+} from "../api/types";
+import { classNames, getPayoutTokenOptions } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
+import ErrorModal from "../common/ErrorModal";
+import Footer from "../common/Footer";
+import InfoModal from "../common/InfoModal";
+import Navbar from "../common/Navbar";
+import PassportBanner from "../common/PassportBanner";
+import ProgressModal from "../common/ProgressModal";
+import RoundEndedBanner from "../common/RoundEndedBanner";
+import { Button, Input } from "../common/styles";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -177,8 +177,10 @@ export default function ViewBallot() {
           const json = await res.json();
 
           if (json.status == "PROCESSING") {
-            console.log('processing, calling again in 3000 ms');
-            setTimeout(async () => {await callFetchPassport()}, 3000);
+            console.log("processing, calling again in 3000 ms");
+            setTimeout(async () => {
+              await callFetchPassport();
+            }, 3000);
             return;
           } else if (json.status == "ERROR") {
             // due to error at passport end
@@ -297,6 +299,15 @@ export default function ViewBallot() {
           >
             Submit your donation!
           </Button>
+          <p
+            data-testid="emptyInput"
+            className="flex justify-center my-4 text-sm italic"
+          >
+            <span>
+              Your donation to each project must be valued at $1 USD or more to
+              be eligible for matching.
+            </span>
+          </p>
           {emptyInput && (
             <p
               data-testid="emptyInput"
