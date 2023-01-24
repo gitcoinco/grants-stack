@@ -50,6 +50,12 @@ export default function PassportBanner(props: {
             return;
           }
 
+          if (scoreResponse.status == "ERROR") {
+            // due to error at passport end
+            setPassportState(PassportState.ERROR);
+            return;
+          }
+
           setPassport(scoreResponse);
           setPassportState(
             Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
@@ -61,10 +67,6 @@ export default function PassportBanner(props: {
           switch (res.status) {
             case 400: // unregistered/nonexistent passport address
               setPassportState(PassportState.INVALID_PASSPORT);
-              console.error(
-                "unregistered/nonexistent passport address",
-                res.json()
-              );
               break;
             case 401: // invalid API key
               setPassportState(PassportState.ERROR);
@@ -129,7 +131,7 @@ export default function PassportBanner(props: {
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
         }
       >
-        Please configure your passport
+        Please configure your Gitcoin Passport
       </button>
       <svg
         width="16"
@@ -155,7 +157,7 @@ export default function PassportBanner(props: {
       ),
       color: "bg-purple-200",
       testId: "wallet-not-connected",
-      body: "In order to for your donations to be matched, you must first verify your Passport.",
+      body: "In order for your donations to be matched, you must first verify your Gitcoin Passport.",
       button: <ConnectWalletButton />,
     },
     [PassportState.MATCH_ELIGIBLE]: {
@@ -164,7 +166,7 @@ export default function PassportBanner(props: {
       ),
       color: "bg-teal-100",
       testId: "match-eligible",
-      body: "Passport score verified. Your donation will be matched!",
+      body: "Gitcoin Passport score verified. Your donation will be matched!",
       button: <ViewScoreButton />,
     },
     [PassportState.MATCH_INELIGIBLE]: {
@@ -173,7 +175,7 @@ export default function PassportBanner(props: {
       ),
       color: "bg-pink-100",
       testId: "match-ineligible",
-      body: "Your Passport does not have the score needed to be eligible for donation matching.",
+      body: "Your Gitcoin Passport does not have the score needed to be eligible for donation matching.",
       button: <ViewScoreButton />,
     },
     [PassportState.LOADING]: {
@@ -204,7 +206,7 @@ export default function PassportBanner(props: {
       ),
       color: "bg-yellow-100",
       testId: "invalid-passport",
-      body: "Passport score not detected.",
+      body: "Gitcoin Passport score not detected.",
       button: <InvalidPassportButton />,
     },
     [PassportState.ERROR]: {
@@ -213,7 +215,7 @@ export default function PassportBanner(props: {
       ),
       color: "bg-red-200",
       testId: "error-loading-passport",
-      body: "An error occurred while loading your Passport. Please try again later.",
+      body: "An error occurred while loading your Gitcoin Passport. Please try again later.",
       button: null,
     },
   };

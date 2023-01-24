@@ -1,11 +1,16 @@
 import {
   ApplicationStatus,
   ApprovedProject,
+  MatchingStatsData,
   MetadataPointer,
   Round,
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import { roundFactoryContract, roundImplementationContract } from "./contracts";
+import {
+  payoutStrategyContract,
+  roundFactoryContract,
+  roundImplementationContract,
+} from "./contracts";
 import { ethers } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -432,25 +437,80 @@ export async function getProjectOwners(
   }
 }
 
-export const updateRoundDistribution = async (
-  roundId: string,
-  signer: Signer,
-  newDistribution: string // TODO:
-): Promise<{ transactionBlockNumber: number }> => {
-  const roundImplementation = new ethers.Contract(
-    roundId,
-    roundImplementationContract.abi,
-    signer
-  );
+interface FinalizeRoundToContractProps {
+  roundId: string;
+  encodedDistribution: string;
+  signerOrProvider: Signer;
+}
 
-  const tx = await roundImplementation.updateDistribution(newDistribution);
+export async function finalizeRoundToContract({
+  roundId,
+  encodedDistribution,
+  signerOrProvider,
+}: FinalizeRoundToContractProps) {
+  try {
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider
+    );
 
-  const receipt = await tx.wait();
+    // Finalize round
+    const tx = await roundImplementation.updateDistribution(
+      encodedDistribution
+    );
+    const receipt = await tx.wait();
 
-  console.log("✅ Transaction hash: ", tx.hash);
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (error) {
+    console.error("finalizeRoundToContract", error);
+    throw new Error("Unable to finalize Round");
+  }
+}
 
-  const blockNumber = receipt.blockNumber;
-  return {
-    transactionBlockNumber: blockNumber,
-  };
-};
+/**
+ * Fetch finalized matching distribution
+ * @param roundId - the ID of a specific round for detail
+ */
+export async function fetchMatchingDistribution(
+  roundId: string | undefined,
+  signerOrProvider: Web3Provider
+): Promise<{
+  distributionMetaPtr: string;
+  matchingDistribution: MatchingStatsData[];
+}> {
+  try {
+    if (!roundId) {
+      throw new Error("Round ID is required");
+    }
+    let matchingDistribution: MatchingStatsData[] = [];
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider
+    );
+    const payoutStrategyAddress = await roundImplementation.payoutStrategy();
+    const payoutStrategy = new ethers.Contract(
+      payoutStrategyAddress,
+      payoutStrategyContract.abi,
+      signerOrProvider
+    );
+    const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
+    const distributionMetaPtr = distributionMetaPtrRes.pointer;
+
+    if (distributionMetaPtr !== "") {
+      // fetch distribution from IPFS
+      const matchingDistributionRes = await fetchFromIPFS(distributionMetaPtr);
+      matchingDistribution = matchingDistributionRes.matchingDistribution;
+    }
+
+    return { distributionMetaPtr, matchingDistribution };
+  } catch (error) {
+    console.error("fetchMatchingDistribution", error);
+    throw new Error("Unable to fetch matching distribution");
+  }
+}

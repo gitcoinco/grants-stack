@@ -54,6 +54,7 @@ export default function ViewProjectDetails() {
   );
 
   const currentTime = new Date();
+  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
   const [
     shortlist,
@@ -73,7 +74,9 @@ export default function ViewProjectDetails() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
-      <PassportBanner/>
+      {isBeforeRoundEndDate && (
+        <PassportBanner />
+      )}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />

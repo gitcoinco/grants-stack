@@ -11,11 +11,11 @@ import {
   getChainName,
   getChainVerbose,
   getGraphQLEndpoint,
-  getPriceForToken,
   getStartAndEndTokenPrices,
   getStrategyName,
   getUSDCAddress,
   groupBy,
+  isTestnet,
 } from "../utils";
 import { mockRoundMetadata } from "../test-utils";
 import { faker } from "@faker-js/faker";
@@ -279,35 +279,6 @@ describe("getChainName", () => {
   });
 });
 
-describe("getPriceForToken", function () {
-  beforeEach(() => {
-    fetchMock.resetMocks();
-  });
-
-  it("should fetch prices for a certain token on a chain", async function () {
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        market_data: {
-          current_price: "123.0",
-        },
-      })
-    );
-
-    await getPriceForToken(
-      "0x6b175474e89094c44da98b954eedeac495271d0f",
-      "ethereum"
-    );
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `https://api.coingecko.com/api/v3/coins/ethereum/contract/0x6b175474e89094c44da98b954eedeac495271d0f`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
-  });
-});
 
 describe("getStartAndEndTokenPrices", () => {
   it("should fetch start and end token price", async () => {
@@ -434,4 +405,12 @@ describe("fetchPayoutAddressToProjectIdMapping", () => {
 
 describe("fetchProjectIdToPayoutAddressMapping", () => {
   // TODO
+});
+
+describe("getStartAndEndTokenPrices", () => {
+  expect(isTestnet(ChainId.MAINNET)).toBeFalsy();
+  expect(isTestnet(ChainId.FANTOM_MAINNET)).toBeFalsy();
+  expect(isTestnet(ChainId.OPTIMISM_MAINNET)).toBeFalsy();
+  expect(isTestnet(ChainId.FANTOM_TESTNET)).toBeTruthy();
+  expect(isTestnet(ChainId.GOERLI)).toBeTruthy();
 });
