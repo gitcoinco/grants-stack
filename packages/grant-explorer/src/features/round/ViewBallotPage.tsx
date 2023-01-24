@@ -72,6 +72,7 @@ export default function ViewBallot() {
   }, [donations]);
 
   const currentTime = new Date();
+  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
   const [fixedDonation, setFixedDonation] = useState<number>();
@@ -247,7 +248,9 @@ export default function ViewBallot() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <PassportBanner chainId={chainId} roundId={roundId} />
+      {isBeforeRoundEndDate && (
+        <PassportBanner chainId={chainId} roundId={roundId} />
+      )}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />

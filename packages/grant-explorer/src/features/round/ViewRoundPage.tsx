@@ -50,6 +50,8 @@ export default function ViewRound() {
 
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
+  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
+
   return isLoading ? (
     <Spinner text="We're fetching the Round."/>
   ) : (
@@ -69,6 +71,7 @@ export default function ViewRound() {
               round={round}
               chainId={chainId}
               roundId={roundId}
+              isBeforeRoundEndDate={isBeforeRoundEndDate}
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
           )}
@@ -111,6 +114,7 @@ function AfterRoundStart(props: {
   round: Round;
   chainId: string;
   roundId: string;
+  isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
 }) {
   const { round, chainId, roundId } = props;
@@ -161,7 +165,9 @@ function AfterRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
-      <PassportBanner chainId={chainId} roundId={roundId} />
+      {props.isBeforeRoundEndDate && (
+        <PassportBanner chainId={chainId} roundId={roundId} />
+      )}
       {props.isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner/>
