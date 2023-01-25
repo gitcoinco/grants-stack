@@ -389,7 +389,7 @@ export const matchQFContributions = async (
     matchingCapPercentage,
   } = metadata;
 
-  let isSaturated: boolean;
+  // let isSaturated: boolean;
 
   const contributionsByProject: {
     [projectId: string]: any;
@@ -507,90 +507,95 @@ export const matchQFContributions = async (
 
   const totalPotInUSD = totalPot * potTokenPrice[token];
 
-  isSaturated = totalMatchInUSD > totalPotInUSD;
+  // TODO: enable this as a feature
+  // isSaturated = totalMatchInUSD > totalPotInUSD;
 
-  if (isSaturated) {
-    let totalMatchInUSDAfterNormalising = 0;
+  let totalMatchInUSDAfterNormalising = 0;
 
-    // If match exceeds pot, scale down match to pot size
-    matchResults.forEach((result) => {
-      const updatedMatchAmountInUSD =
-        result.matchAmountInUSD * (totalPotInUSD / totalMatchInUSD);
+  // NOTE: Earlier scaling down the match would
+  // happen only when a round is saturated. In this implementation,
+  // the pot is always distributed at 100% even if there aren't enough
+  // donations
 
-      // update matching data
-      result.matchAmountInUSD = updatedMatchAmountInUSD;
-      result.matchPoolPercentage = result.matchAmountInUSD / totalPotInUSD;
-      result.matchAmountInToken = result.matchPoolPercentage * totalPot;
+  // If match exceeds pot, scale down match to pot size
+  matchResults.forEach((result) => {
+    const updatedMatchAmountInUSD =
+      result.matchAmountInUSD * (totalPotInUSD / totalMatchInUSD);
 
-      totalMatchInUSDAfterNormalising += updatedMatchAmountInUSD;
+    // update matching data
+    result.matchAmountInUSD = updatedMatchAmountInUSD;
+    result.matchPoolPercentage = result.matchAmountInUSD / totalPotInUSD;
+    result.matchAmountInToken = result.matchPoolPercentage * totalPot;
+
+    totalMatchInUSDAfterNormalising += updatedMatchAmountInUSD;
+  });
+
+  if (matchingCapPercentage) {
+    const matchingCapInUSD = (totalPotInUSD * matchingCapPercentage) / 100;
+
+    console.log("=========== BEFORE CAPPING ===========");
+    console.log("matchingCapPercentage", matchingCapPercentage);
+    console.log("matchingCapInUSD", matchingCapInUSD);
+
+    console.log("totalMatchInUSD", totalMatchInUSD);
+    console.log(
+      "totalMatchInUSDAfterNormalising",
+      totalMatchInUSDAfterNormalising
+    );
+
+    console.log("totalPot", totalPot);
+    console.log("totalPotInUSD", totalPotInUSD);
+
+    console.log("=====================");
+    matchResults.forEach((match, index) => {
+      console.log(
+        "Before capping. project: ",
+        index,
+        "matchAmountInUSD:",
+        match.matchAmountInUSD
+      );
     });
+    console.log("=====================");
 
-    if (matchingCapPercentage) {
-      const matchingCapInUSD = (totalPotInUSD * matchingCapPercentage) / 100;
+    matchResults = applyMatchingCap(
+      matchResults,
+      totalPot,
+      totalMatchInUSDAfterNormalising,
+      matchingCapInUSD
+    );
 
-      console.log("=========== BEFORE CAPPING ===========");
-      console.log("matchingCapPercentage", matchingCapPercentage);
-      console.log("matchingCapInUSD", matchingCapInUSD);
+    console.log("=========== AFTER CAPPING =========== ");
+    let _totalMatchAmountInUSD = 0;
+    let _totalMatchAmountInToken = 0;
+    let _totalMatchAmountInPercentage = 0;
+    matchResults.forEach((result) => {
+      _totalMatchAmountInUSD += result.matchAmountInUSD;
+      _totalMatchAmountInToken += result.matchAmountInToken;
+      _totalMatchAmountInPercentage += result.matchPoolPercentage;
+    });
+    console.log("_totalMatchAmountInUSD", _totalMatchAmountInUSD);
+    console.log("_totalMatchAmountInToken", _totalMatchAmountInToken);
+    console.log(
+      "_totalMatchAmountInPercentage",
+      _totalMatchAmountInPercentage
+    );
 
-      console.log("totalMatchInUSD", totalMatchInUSD);
+    console.log("=====================");
+    matchResults.forEach((match, index) => {
       console.log(
-        "totalMatchInUSDAfterNormalising",
-        totalMatchInUSDAfterNormalising
+        "After capping. project: ",
+        index,
+        "matchAmountInUSD:",
+        match.matchAmountInUSD
       );
-
-      console.log("totalPot", totalPot);
-      console.log("totalPotInUSD", totalPotInUSD);
-
-      console.log("=====================");
-      matchResults.forEach((match, index) => {
-        console.log(
-          "Before capping. project: ",
-          index,
-          "matchAmountInUSD:",
-          match.matchAmountInUSD
-        );
-      });
-      console.log("=====================");
-
-      matchResults = applyMatchingCap(
-        matchResults,
-        totalPot,
-        totalMatchInUSDAfterNormalising,
-        matchingCapInUSD
-      );
-
-      console.log("=========== AFTER CAPPING =========== ");
-      let _totalMatchAmountInUSD = 0;
-      let _totalMatchAmountInToken = 0;
-      let _totalMatchAmountInPercentage = 0;
-      matchResults.forEach((result) => {
-        _totalMatchAmountInUSD += result.matchAmountInUSD;
-        _totalMatchAmountInToken += result.matchAmountInToken;
-        _totalMatchAmountInPercentage += result.matchPoolPercentage;
-      });
-      console.log("_totalMatchAmountInUSD", _totalMatchAmountInUSD);
-      console.log("_totalMatchAmountInToken", _totalMatchAmountInToken);
-      console.log(
-        "_totalMatchAmountInPercentage",
-        _totalMatchAmountInPercentage
-      );
-
-      console.log("=====================");
-      matchResults.forEach((match, index) => {
-        console.log(
-          "After capping. project: ",
-          index,
-          "matchAmountInUSD:",
-          match.matchAmountInUSD
-        );
-      });
-      console.log("=====================");
-    }
+    });
+    console.log("=====================");
   }
+
 
   return {
     distribution: matchResults,
-    isSaturated: isSaturated,
+    // isSaturated: isSaturated,
   };
 };
 
