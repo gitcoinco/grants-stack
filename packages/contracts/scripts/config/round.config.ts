@@ -32,5 +32,10 @@ export const roundParams: DeployParams = {
     roundFactoryContract: '0x00F51ba2Cd201F4bFac0090F450de0992a838762',
     roundImplementationContract: '0x635E69237C0428861EC8c5D8083e9616022c89Ea',
     roundContract: '0xd3E45c78050a6472e28b9E02AA8596F7868e63d6'
+  },
+  "polygon-mumbai": {
+    roundFactoryContract: '0x36Ca0662fd2af176B10CEA7f2aBa0BB299B6E6c5',
+    roundImplementationContract: '0x22EF50635EFA6Cab76944e478DD99BFbB676c0Ec',
+    roundContract: ''
   }
 };

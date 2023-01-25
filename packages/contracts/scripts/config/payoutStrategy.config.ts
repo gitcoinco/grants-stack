@@ -20,5 +20,8 @@ export const PayoutParams: DeployParams = {
   },
   "fantom-testnet": {
     merklePayoutContract: '0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a'
+  },
+  "polygon-mumbai": {
+    merklePayoutContract: '0xB133482e6c80F93881ef4661ee373a253874389d'
   }
 };

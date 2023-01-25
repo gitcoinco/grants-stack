@@ -13,7 +13,7 @@
     "export-abi": "yarn run hardhat export-abi",
     "clear-abi": "yarn run hardhat clear-abi",
     "lint:sol": "npx hardhat check",
-    "// progam-deploy-scripts": "echo '//-- Program deploy Script --//'",
+    "// program-deploy-scripts": "echo '//-- Program deploy Script --//'",
     "deploy-program-factory": "yarn hardhat run scripts/program/deployProgramFactory.ts --network",
     "deploy-program-implementation": "yarn hardhat run scripts/program/deployProgramImplementation.ts --network",
     "link-program-implementation": "yarn hardhat run scripts/program/linkProgramImplementation.ts --network",

@@ -1,4 +1,4 @@
-import { process } from 'process';
+// import { process } from "process";
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
@@ -21,12 +21,12 @@ const chainIds = {
   // testnet
   goerli: 5,
   "fantom-testnet": 4002,
-  "polygon-mumbai":80001,
+  "polygon-mumbai": 80001,
 
   // mainnet
   mainnet: 1,
   "optimism-mainnet": 10,
-  "fantom-mainnet"  : 250
+  "fantom-mainnet": 250,
 };
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -78,7 +78,7 @@ function createMainnetConfig(
   network: keyof typeof chainIds,
   url?: string
 ): NetworkUserConfig {
-  if(!url) {
+  if (!url) {
     url = `https://${network}.infura.io/v3/${infuraIdKey}`;
   }
   return {
@@ -113,7 +113,10 @@ const config: HardhatUserConfig = {
     // Main Networks
     mainnet: createMainnetConfig("mainnet"),
     "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
-    "fantom-mainnet": createMainnetConfig("fantom-mainnet", "https://rpc.ftm.tools"),
+    "fantom-mainnet": createMainnetConfig(
+      "fantom-mainnet",
+      "https://rpc.ftm.tools"
+    ),
 
     // Test Networks
     goerli: createTestnetConfig("goerli"),
@@ -121,7 +124,7 @@ const config: HardhatUserConfig = {
       "fantom-testnet",
       "https://rpc.testnet.fantom.network/"
     ),
-    mumbai: createTestnetConfig("polygon-mumbai"),
+    "polygon-mumbai": createTestnetConfig("polygon-mumbai"),
     localhost: createTestnetConfig("localhost", "http://localhost:8545"),
   },
   gasReporter: {
@@ -135,7 +138,7 @@ const config: HardhatUserConfig = {
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
       ftmTestnet: process.env.FTMSCAN_API_KEY,
       opera: process.env.FTMSCAN_API_KEY,
-      mumbai: process.env.POLYGONSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
     },
   },
   abiExporter: abiExporter,
