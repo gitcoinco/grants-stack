@@ -1,3 +1,4 @@
+import { process } from 'process';
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
@@ -20,6 +21,7 @@ const chainIds = {
   // testnet
   goerli: 5,
   "fantom-testnet": 4002,
+  "polygon-mumbai":80001,
 
   // mainnet
   mainnet: 1,
@@ -119,6 +121,7 @@ const config: HardhatUserConfig = {
       "fantom-testnet",
       "https://rpc.testnet.fantom.network/"
     ),
+    mumbai: createTestnetConfig("polygon-mumbai"),
     localhost: createTestnetConfig("localhost", "http://localhost:8545"),
   },
   gasReporter: {
@@ -132,6 +135,7 @@ const config: HardhatUserConfig = {
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
       ftmTestnet: process.env.FTMSCAN_API_KEY,
       opera: process.env.FTMSCAN_API_KEY,
+      mumbai: process.env.POLYGONSCAN_API_KEY,
     },
   },
   abiExporter: abiExporter,
