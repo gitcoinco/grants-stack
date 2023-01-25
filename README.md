@@ -104,3 +104,8 @@ Note: Live Deployment should always happen by raising a PR from `main` to `relea
 |---------|------------|-----------------------------------|
 | STAGING | main       | https://rmgitcoin.on.fleek.co/    |
 | LIVE    | release    | https://round-manager.gitcoin.co/ |
+
+
+## Prominent forks
+
+* `grants-round-science` is a fork of `grants-round` intended to finance under-financed software components and scientific publications, following [this whitepaper](https://github.com/vporton/salaries-science/blob/main/financing-science-algorithm.odt?raw=true). It is supported by [a DAO](https://science-dao.vporton.name).
