@@ -36,7 +36,7 @@ export const QFVotingParams: DeployParams = {
   "polygon-mumbai": {
     factory: "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A",
     implementation: "0x54eF677eac9056F7aa5bA7CF5C9e2F4d6072e64c",
-    contract: "",
+    contract: "0x10c5e410A0b28D80144099741ae6FcAE4a77833c",
   }
 };
 

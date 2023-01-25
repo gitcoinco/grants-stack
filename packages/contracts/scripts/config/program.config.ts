@@ -36,6 +36,6 @@ export const programParams: DeployParams = {
   "polygon-mumbai": {
     programFactoryContract: '0xbd2a2C4f3841f39e1112622596A1AE325B26Fe54',
     programImplementationContract: '0xe22FdDa2BD00084e9DeFD15875e70876f8eb3BbC',
-    programContract: ''
+    programContract: '0xc1609903d747644F5607722D52FeD7B69350aC96',
   }
 };
