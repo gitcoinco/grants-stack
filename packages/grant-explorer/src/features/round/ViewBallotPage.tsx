@@ -299,10 +299,7 @@ export default function ViewBallot() {
           >
             Submit your donation!
           </Button>
-          <p
-            data-testid="emptyInput"
-            className="flex justify-center my-4 text-sm italic"
-          >
+          <p className="flex justify-center my-4 text-sm italic">
             <span>
               Your donation to each project must be valued at $1 USD or more to
               be eligible for matching.
