@@ -109,12 +109,15 @@ describe("<Form />", () => {
       store.dispatch(web3ChainIDLoaded(5));
       store.dispatch({
         type: "PROJECTS_LOADED",
-        events: {
-          "1:1:1": {
-            createdAtBlock: 1111,
-            updatedAtBlock: 1112,
+        payload: {
+          chainID: 5,
+          events: {
+            "1:1:1": {
+              createdAtBlock: 1111,
+              updatedAtBlock: 1112,
+            },
           },
-        },
+        }
       });
       store.dispatch({
         type: "GRANT_METADATA_FETCHED",
