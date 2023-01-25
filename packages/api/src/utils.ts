@@ -308,7 +308,8 @@ export async function getStartAndEndTokenPrices(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
       );
     }
-    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
+    let validAddress = getValidTokenAddress(chainId, contract);
+    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${validAddress}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
     const res = await fetch(url, {
       headers: {
         Accept: "application/json",
@@ -432,9 +433,13 @@ export const fetchCurrentTokenPrices = async (
       return testnetTokenPrices;
     };
 
+    let validAddresses = tokenAddresses.map( (tokenAddress) => {
+      getValidTokenAddress(chainId, tokenAddress);
+    });
+
     const { chainName } = getChainName(chainId);
 
-    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
+    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${validAddresses.join(
       ","
     )}&vs_currencies=usd`;
 
@@ -523,9 +528,9 @@ export const fetchAverageTokenPrices = async (
       averageTokenPrices[address] = 0;
       if (address !== "0x0000000000000000000000000000000000000000") {
         try {
-          // TODO:  update this to ensure BUSD price is set to DAI price in averageTokenPrices
-          address = getAlternateTokenAddress(chainId, address);
-          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
+          // get valid address for tokens that are not on coingecko
+          let validAddress = getValidTokenAddress(chainId, address);
+          const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${validAddress}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
           const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
             method: "GET",
             headers: {
@@ -654,21 +659,21 @@ export const isTestnet = (chainId: ChainId) => {
 };
 
 /**
- * Util function to specify alternate address in scenarios where
+ * Util function to specify valid address in scenarios where
  * coingecko doesn't return token price on given chain.
  * Ideally usefully for stable coins
  * 
  * @param chainId
  * @param address 
  * 
- * @returns alternateAddress
+ * @returns validAddress
  */
-export const getAlternateTokenAddress = (chainId: ChainId, address: string) => {
-  let alternateAddress = address;
+export const getValidTokenAddress = (chainId: ChainId, address: string) => {
+  let validAddress = address;
   if (chainId == ChainId.FANTOM_MAINNET) {
     if (address == "0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50") { // BUSD
-      alternateAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e" // DAI
+      validAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e" // DAI
     }
   }
-  return alternateAddress;
+  return validAddress;
 }
