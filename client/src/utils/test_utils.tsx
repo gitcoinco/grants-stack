@@ -1,6 +1,6 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { ChakraProvider } from "@chakra-ui/react";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { ethers } from "ethers";
@@ -100,13 +100,13 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
 
 export const renderWrapped = (ui: React.ReactElement, store = setupStore()) => {
   const wrapped = (
-    <Provider store={store}>
-      <ChakraProvider resetCSS={false}>
+    <ChakraProvider>
+      <Provider store={store}>
         <ReduxRouter store={store} history={history}>
           {ui}
         </ReduxRouter>
-      </ChakraProvider>
-    </Provider>
+      </Provider>
+    </ChakraProvider>
   );
 
   return { store, ...render(wrapped) };

@@ -1,6 +1,9 @@
 import { Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
+import { ethers } from "ethers";
+import { useEffect } from "react";
+import { getAddressType } from "../../utils/utils";
 import {
   AddressInputProps,
   InputProps,
@@ -137,13 +140,32 @@ export function TextInputAddress({
   changeHandler,
   required,
   encrypted,
+  onAddressType,
+  warningHighlight,
   feedback,
 }: AddressInputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
+  const verificationHandler = async () => {
+    if (onAddressType) {
+      if (typeof value === "string" && ethers.utils.isAddress(value)) {
+        const addressType = await getAddressType(value);
+        onAddressType(addressType);
+      } else {
+        onAddressType();
+      }
+    }
+  };
+
+  useEffect(() => {
+    verificationHandler();
+  }, [value]);
 
   return (
-    <div className="relative mt-6 w-full sm:w-1/2">
+    <div
+      className="relative mt-6 w-full sm:w-1/2"
+      data-testid="address-input-wrapper"
+    >
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -173,7 +195,9 @@ export function TextInputAddress({
         placeholder={placeholder}
         disabled={disabled}
         onChange={changeHandler}
-        className={borderClass}
+        className={classNames(borderClass, {
+          "border border-gitcoin-yellow-500": warningHighlight,
+        })}
       />
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
