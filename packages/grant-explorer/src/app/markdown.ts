@@ -25,14 +25,30 @@ markdownIt.renderer.rules.link_open = function linkOpen(
   return defaultLinkOpen(tokens, idx, options, env, self);
 };
 
-export function renderToHTML(value: string) {
-  return sanitize(markdownIt.render(value), {
+/**
+ * Takes a markdown string as input, and ouputs a HTMl string with the markdown
+ * rendered as HTMl elements. Moreover, it also
+ * - sanitizes the input to protect against XSS
+ * - fixes links not opening in new tabs
+ * - is backwards compatible with non-markdown strings, which it just sanitizes
+ * and passes along
+ * @param markdownSourceText
+ */
+export function renderToHTML(markdownSourceText: string) {
+  return sanitize(markdownIt.render(markdownSourceText), {
     ADD_ATTR: ["target"],
   });
 }
 
-export function renderToPlainText(value: string) {
-  return sanitize(renderToHTML(value), {
+/**
+ *  Takes a markdown string as input, and ouputs a plain-text sanitized version,
+ *  stripped of markdown tags such as # and _.
+ *  Useful for displaying markdown-based descriptions in small spaces,
+ *  where formatting is not desirable
+ * @param markdownSourceText
+ */
+export function renderToPlainText(markdownSourceText: string) {
+  return sanitize(renderToHTML(markdownSourceText), {
     USE_PROFILES: { html: false },
   });
 }
