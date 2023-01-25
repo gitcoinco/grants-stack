@@ -7,7 +7,7 @@ export const getRoundSummaryDataHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { chainId, roundId } = req.params;
+  let { chainId, roundId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -19,6 +19,7 @@ export const getRoundSummaryDataHandler = async (
   }
 
   try {
+    roundId = roundId.toLowerCase();
     // if not in cache, fetch summary from database whose roundId and projectId match
     const summary = await db.getRoundSummaryRecord(roundId);
     if (summary.error) {

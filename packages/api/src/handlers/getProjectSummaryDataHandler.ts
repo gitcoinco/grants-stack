@@ -7,7 +7,7 @@ export const getProjectSummaryDataHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { chainId, roundId, projectId } = req.params;
+  let { chainId, roundId, projectId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId || !projectId) {
@@ -18,6 +18,8 @@ export const getProjectSummaryDataHandler = async (
     );
   }
   try {
+    roundId = roundId.toLowerCase();
+    projectId = projectId.toLowerCase();
     const summary = await db.getProjectSummaryRecord(roundId, projectId);
     if (summary.error) {
       throw summary.error;
