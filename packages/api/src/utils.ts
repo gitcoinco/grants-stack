@@ -308,8 +308,7 @@ export async function getStartAndEndTokenPrices(
         `ChainId ${chainId} is not supported by CoinGecko's API.`
       );
     }
-    let validAddress = getValidTokenAddress(chainId, contract);
-    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${validAddress}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
+    const url = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${contract}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
     const res = await fetch(url, {
       headers: {
         Accept: "application/json",
@@ -433,13 +432,9 @@ export const fetchCurrentTokenPrices = async (
       return testnetTokenPrices;
     };
 
-    let validAddresses = tokenAddresses.map( (tokenAddress) => {
-      getValidTokenAddress(chainId, tokenAddress);
-    });
-
     const { chainName } = getChainName(chainId);
 
-    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${validAddresses.join(
+    const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/token_price/${chainName}?contract_addresses=${tokenAddresses.join(
       ","
     )}&vs_currencies=usd`;
 
@@ -529,7 +524,7 @@ export const fetchAverageTokenPrices = async (
       if (address !== "0x0000000000000000000000000000000000000000") {
         try {
           // get valid address for tokens that are not on coingecko
-          let validAddress = getValidTokenAddress(chainId, address);
+          const validAddress = getValidCoinGeckoTokenAddress(chainId, address);
           const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${validAddress}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
           const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
             method: "GET",
@@ -659,7 +654,7 @@ export const isTestnet = (chainId: ChainId) => {
 };
 
 /**
- * Util function to specify valid address in scenarios where
+ * Util function to specify valid coingecko address in scenarios where
  * coingecko doesn't return token price on given chain.
  * Ideally usefully for stable coins
  * 
@@ -668,7 +663,7 @@ export const isTestnet = (chainId: ChainId) => {
  * 
  * @returns validAddress
  */
-export const getValidTokenAddress = (chainId: ChainId, address: string) => {
+export const getValidCoinGeckoTokenAddress = (chainId: ChainId, address: string) => {
   let validAddress = address;
   if (chainId == ChainId.FANTOM_MAINNET) {
     if (address == "0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50") { // BUSD
