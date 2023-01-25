@@ -461,7 +461,9 @@ export default function ViewApplicationPage() {
                   <p
                     dangerouslySetInnerHTML={{
                       __html: markdown.renderToHTML(
-                        application?.project?.description ?? ""
+                        application?.project?.description
+                          .replace(/\n/g, "<br/>")
+                          .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;") ?? ""
                       ),
                     }}
                     className="text-base"

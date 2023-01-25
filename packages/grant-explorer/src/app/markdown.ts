@@ -3,7 +3,7 @@ import { sanitize } from "dompurify";
 
 const markdownIt = new MarkdownIt({
   linkify: true,
-  html: false,
+  html: true,
 });
 
 const defaultLinkOpen =

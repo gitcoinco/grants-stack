@@ -74,9 +74,7 @@ export default function ViewProjectDetails() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      {isBeforeRoundEndDate && (
-        <PassportBanner />
-      )}
+      {isBeforeRoundEndDate && <PassportBanner />}
       {isAfterRoundEndDate && (
         <div>
           <RoundEndedBanner />
@@ -321,7 +319,13 @@ function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
 function Detail(props: { text: string; testID: string }) {
   return (
     <p
-      dangerouslySetInnerHTML={{ __html: markdown.renderToHTML(props.text) }}
+      dangerouslySetInnerHTML={{
+        __html: markdown.renderToHTML(
+          props.text
+            .replace(/\n/g, "<br/>")
+            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+        ),
+      }}
       className="text-base font-normal text-black"
       data-testid={props.testID}
     />
