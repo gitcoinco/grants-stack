@@ -1,3 +1,37 @@
+import { faker } from "@faker-js/faker";
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { render } from "@testing-library/react";
+import { randomInt } from "crypto";
+import React from "react";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import { store } from "./app/store";
+import {
+  ApplicationContext,
+  ApplicationState,
+  initialApplicationState,
+} from "./context/application/ApplicationContext";
+import {
+  BulkUpdateGrantApplicationContext,
+  BulkUpdateGrantApplicationState,
+  initialBulkUpdateGrantApplicationState,
+} from "./context/application/BulkUpdateGrantApplicationContext";
+import {
+  initialReadProgramState,
+  ReadProgramContext,
+  ReadProgramState,
+} from "./context/program/ReadProgramContext";
+import {
+  FinalizeRoundContext,
+  FinalizeRoundState,
+  initialFinalizeRoundState,
+} from "./context/round/FinalizeRoundContext";
+import {
+  initialRoundState,
+  RoundContext,
+  RoundState,
+} from "./context/round/RoundContext";
+import { QFDistribution } from "./features/api/api";
 import {
   ApplicationStatus,
   ApprovedProject,
@@ -9,42 +43,8 @@ import {
   ProjectStatus,
   Round,
 } from "./features/api/types";
-import { randomInt } from "crypto";
-import { faker } from "@faker-js/faker";
-import { render } from "@testing-library/react";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { Provider } from "react-redux";
-import { store } from "./app/store";
-import history from "./history";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
-import {
-  initialReadProgramState,
-  ReadProgramContext,
-  ReadProgramState,
-} from "./context/program/ReadProgramContext";
-import { MemoryRouter } from "react-router-dom";
-import {
-  initialRoundState,
-  RoundContext,
-  RoundState,
-} from "./context/round/RoundContext";
-import {
-  ApplicationContext,
-  ApplicationState,
-  initialApplicationState,
-} from "./context/application/ApplicationContext";
-import {
-  BulkUpdateGrantApplicationContext,
-  BulkUpdateGrantApplicationState,
-  initialBulkUpdateGrantApplicationState,
-} from "./context/application/BulkUpdateGrantApplicationContext";
-import React from "react";
-import { QFDistribution } from "./features/api/api";
-import {
-  FinalizeRoundContext,
-  FinalizeRoundState,
-} from "./context/round/FinalizeRoundContext";
-import { initialFinalizeRoundState } from "./context/round/FinalizeRoundContext";
+import history from "./history";
 
 export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   id: faker.finance.ethereumAddress(),
@@ -321,6 +321,7 @@ export const wrapWithApplicationContext = (
 export const wrapWithFinalizeRoundContext = (
   ui: JSX.Element,
   finalizeRoundStateOverrides: Partial<FinalizeRoundState> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: any = jest.fn()
 ) => {
   return (
