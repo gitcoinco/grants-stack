@@ -523,6 +523,8 @@ export const fetchAverageTokenPrices = async (
       averageTokenPrices[address] = 0;
       if (address !== "0x0000000000000000000000000000000000000000") {
         try {
+          // TODO:  update this to ensure BUSD price is set to DAI price in averageTokenPrices
+          address = getAlternateTokenAddress(chainId, address);
           const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/coins/${chainName}/contract/${address}/market_chart/range?vs_currency=usd&from=${startTime}&to=${endTime}`;
           const resTokenPriceEndpoint = await fetch(tokenPriceEndpoint, {
             method: "GET",
@@ -638,7 +640,7 @@ export const fetchProjectIdToPayoutAddressMapping = async (
 
 /**
  * checks if current ChainId is testnet chain
- * @param chainId \
+ * @param chainId
  * @returns boolean
  */
 export const isTestnet = (chainId: ChainId) => {
@@ -650,3 +652,23 @@ export const isTestnet = (chainId: ChainId) => {
 
   return testnet.includes(chainId);
 };
+
+/**
+ * Util function to specify alternate address in scenarios where
+ * coingecko doesn't return token price on given chain.
+ * Ideally usefully for stable coins
+ * 
+ * @param chainId
+ * @param address 
+ * 
+ * @returns alternateAddress
+ */
+export const getAlternateTokenAddress = (chainId: ChainId, address: string) => {
+  let alternateAddress = address;
+  if (chainId == ChainId.FANTOM_MAINNET) {
+    if (address == "0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50") { // BUSD
+      alternateAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e" // DAI
+    }
+  }
+  return alternateAddress;
+}
