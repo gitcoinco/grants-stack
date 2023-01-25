@@ -117,7 +117,7 @@ describe("<Form />", () => {
               updatedAtBlock: 1112,
             },
           },
-        }
+        },
       });
       store.dispatch({
         type: "GRANT_METADATA_FETCHED",
