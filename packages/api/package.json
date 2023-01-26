@@ -14,7 +14,8 @@
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:generate": "npx prisma generate",
-    "prisma:docs": "npx prisma-docs-generator serve"
+    "prisma:docs": "npx prisma-docs-generator serve",
+    "format": "prettier . --write"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
@@ -32,6 +33,7 @@
     "jest-fetch-mock": "^3.0.3",
     "jest-mock-extended": "^3.0.1",
     "nodemon": "^2.0.20",
+    "prettier": "^2.8.3",
     "prisma": "^4.7.0",
     "prisma-docs-generator": "^0.5.0",
     "ts-jest": "^29.0.3",
@@ -41,6 +43,7 @@
     "@sentry/integrations": "^7.28.0",
     "@sentry/node": "^7.26.0",
     "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
     "ethers": "^5.7.2",
     "express": "^4.17.1",
     "node-cache": "^5.1.2",

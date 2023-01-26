@@ -8,6 +8,7 @@ import { updateRoundMatchHandler } from "../../handlers/updateRoundMatchHandler"
 import { getProjectMatchDataHandler } from "../../handlers/getProjectMatchDataHandler";
 import { getRoundMatchDataHandler } from "../../handlers/getRoundMatchDataHandler";
 import { getProjectSummariesDataHandler } from "../../handlers/getProjectSummariesDataHandler";
+import { updateAllRoundMatchesHandler } from "../../handlers/updateAllRoundMatchesHandler";
 
 const router = Router();
 
@@ -45,5 +46,10 @@ router.get(
   getProjectMatchDataHandler
 );
 router.get("/data/match/round/:chainId/:roundId", getRoundMatchDataHandler);
+
+/** Route that updates the matching of all currently active and recently ended round
+ * - is only meant to be called via cronjob
+ * - includes an authentication mechanism that */
+router.post("/update/match/all", updateAllRoundMatchesHandler);
 
 export default router;

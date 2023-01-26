@@ -6,9 +6,9 @@
 forEach Project(i)
 	forEach ContributionInUSD(j)
 		sqrtOfContribution = math.sqrt(ContributionInUSD)
-		sumOfSqrtOfContribution += sqrtOfContribution 
+		sumOfSqrtOfContribution += sqrtOfContribution
 		sumOfContributions += ContributionInUSD
-	
+
 	matchAmountInUSD(i) = pow(sumOfSqrtOfContribution, 2) - sumOfContributions
 
 sumOfMatchAmountInUSD += matchAmountInUSD(i)
@@ -65,21 +65,21 @@ This means as more contributions come in -> when one 1 project's match increases
 
 matchPot: 100
 
-Project A: 
-Contributions: 1$, 4$, 1$, 9$ 
+Project A:
+Contributions: 1$, 4$, 1$, 9$
 sum of quadratically weighed contributions = 1+2+1+3 = 7
 sum of contributions = 15
 square of the final sum = 49
 match amount = square of the final sum - sum of contributions = 49-15 = 34
 
-B: 
+B:
 Contributions: 1$, 1$, 1$, 1$, 1$, 1$, 4$
 sum of quadratically weighed contributions = 1+1+1+1+1+1+2 = 8
 sum of contributions = 10
 square of the final sum = 64
 match amount = 64-10 = 54
 
-C: 
+C:
 Contributions: 1$, 9$, 1$, 9$, 1$, 9$, 4$
 sum of quadratically weighed contributions = 1,3,1,3,1,3,2 = 14
 sum of contributions = 34
@@ -91,16 +91,16 @@ sum of match amounts = 34+54+162 = 250
 Final match percent (without match cap)
 A: 34/250 = 0.136
 B: 54/250 = 0.216
-C: 162/250 = 0.648 
+C: 162/250 = 0.648
 
 Final match amounts for the given match pot
 A: 100*0.136 = 13.6
 B: 100*0.216 = 21.6
-C: 100*0.648 = 64.8
+C: 100\*0.648 = 64.8
 
-### if match cap is 0.5 
+### if match cap is 0.5
 
-matchingCapInUSD = 0.5*100 = 50
+matchingCapInUSD = 0.5\*100 = 50
 
 C:
 AmountOverCap = 64.8 - 50 = 14.8
