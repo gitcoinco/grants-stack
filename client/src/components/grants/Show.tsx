@@ -1,10 +1,11 @@
-import { ethers } from "ethers";
-import { useSigner } from "wagmi";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { loadAllChainsProjects } from "../../actions/projects";
+import {
+  loadAllChainsProjects,
+  loadProjectOwners,
+} from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
@@ -16,15 +17,9 @@ import Button, { ButtonVariants } from "../base/Button";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
 import Details from "./Details";
-import ProjectRegistryABI from "../../contracts/abis/ProjectRegistry.json";
-import { addressesByChainID } from "../../contracts/deployments";
 import PageNotFound from "../base/PageNotFound";
 
 function Project() {
-  const { data: signer } = useSigner();
-  const [owners, setOwners] = useState<string[]>([]);
-  const [signerAddress, setSignerAddress] = useState<null | string>(null);
-
   const dispatch = useDispatch();
   // FIXME: params.id doesn't change if the location hash is changed manually.
   const params = useParams();
@@ -33,6 +28,7 @@ function Project() {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
     const grantMetadata = state.grantsMetadata[fullId];
+    const owners = state.projects.owners[fullId];
 
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
@@ -58,7 +54,9 @@ function Project() {
       loadingFailed,
       bannerImg,
       logoImg,
+      owners,
       currentProject: grantMetadata?.metadata,
+      signerAddress: state.web3.account,
       projectEvents: state.projects.events[fullId],
     };
   }, shallowEqual);
@@ -76,35 +74,11 @@ function Project() {
     if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(true));
     }
-  }, [props.id, props.projectEvents, global, dispatch]);
 
-  // Fetch the project owners
-  useEffect(() => {
-    if (!signer) {
-      return;
+    if (props.owners === undefined) {
+      dispatch(loadProjectOwners(props.id));
     }
-
-    const fetchOwners = async (chainId: number, projectId: string) => {
-      const addresses = addressesByChainID(chainId);
-
-      const projectRegistry = new ethers.Contract(
-        addresses.projectRegistry,
-        ProjectRegistryABI,
-        signer
-      );
-
-      return projectRegistry.getProjectOwners(projectId);
-    };
-
-    fetchOwners(Number(params.chainId), params.id!).then((newOwners) => {
-      setOwners(newOwners);
-    });
-  }, [props.id, signer, global, dispatch]);
-
-  // Set the signer address
-  useEffect(() => {
-    signer?.getAddress().then((address) => setSignerAddress(address));
-  }, [signer]);
+  }, [props.id, props.projectEvents, global, dispatch]);
 
   if (
     props.currentProject === undefined &&
@@ -140,19 +114,24 @@ function Project() {
                 Project Details
               </h3>
             </Link>
-            {props.id && owners.includes(signerAddress!) && (
-              <Link to={createEditPath()} className="sm:w-auto mx-w-full ml-0">
-                <Button
-                  variant={ButtonVariants.outline}
-                  styles={["sm:w-auto mx-w-full ml-0"]}
+            {props.id &&
+              props.owners &&
+              props.owners.includes(props.signerAddress!) && (
+                <Link
+                  to={createEditPath()}
+                  className="sm:w-auto mx-w-full ml-0"
                 >
-                  <i className="icon mt-1">
-                    <Pencil color={colors["secondary-text"]} />
-                  </i>
-                  &nbsp; Edit
-                </Button>
-              </Link>
-            )}
+                  <Button
+                    variant={ButtonVariants.outline}
+                    styles={["sm:w-auto mx-w-full ml-0"]}
+                  >
+                    <i className="icon mt-1">
+                      <Pencil color={colors["secondary-text"]} />
+                    </i>
+                    &nbsp; Edit
+                  </Button>
+                </Link>
+              )}
           </div>
           <Details
             project={props.currentProject}
