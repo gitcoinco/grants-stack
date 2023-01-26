@@ -29,7 +29,9 @@ let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
 
 const urlParams = new URLSearchParams(window.location.search);
 if (
-  (process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "test") ||
+  (process.env.NODE_ENV !== "production" &&
+    process.env.NODE_ENV !== "test" &&
+    process.env.REACT_APP_ENABLE_REDUX_LOGGER !== "false") ||
   urlParams.get("debug") !== null
 ) {
   middlewares = [...middlewares, logger];
