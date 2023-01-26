@@ -1,8 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
-import { ethers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { global } from "../global";
-import { Metadata, Project } from "../types";
+import { AddressType, Metadata, Project } from "../types";
+import gnosisABI from "../contracts/abis/gnosis.json";
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
@@ -75,4 +76,40 @@ export const getProviderByChainId = (chainId: number) => {
 
   // TODO: Create a more robust RPC here to avoid fails
   return ethers.getDefaultProvider(chainConfig.rpcUrls.default);
+};
+
+export const getAddressType = async (address: string): Promise<AddressType> => {
+  const { web3Provider } = global;
+
+  const returnValue = { resolved: false, isContract: false, isSafe: false };
+
+  if (web3Provider) {
+    const addressCode = await web3Provider.getCode(address);
+
+    returnValue.isContract = addressCode !== "0x";
+
+    if (returnValue.isContract) {
+      try {
+        const safeContract = new ethers.Contract(
+          address,
+          gnosisABI,
+          web3Provider
+        );
+
+        const nonce: BigNumberish = await safeContract.nonce();
+        const nonceString = nonce.toString();
+
+        if (nonceString) {
+          returnValue.isSafe = true;
+        }
+      } catch (error) {
+        console.log("Not a safe address");
+        returnValue.isSafe = false;
+      }
+    }
+
+    returnValue.resolved = true;
+  }
+
+  return returnValue;
 };

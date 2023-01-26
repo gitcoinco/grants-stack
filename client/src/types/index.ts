@@ -51,6 +51,12 @@ export type ChangeHandlers =
   | React.ChangeEvent<HTMLTextAreaElement>
   | React.ChangeEvent<HTMLSelectElement>;
 
+export type AddressType = {
+  resolved: boolean;
+  isContract: boolean;
+  isSafe: boolean;
+};
+
 // Inputs
 export type InputProps = {
   label: string | ReactNode;
@@ -83,6 +89,8 @@ export type AddressInputProps = {
   changeHandler: (event: ChangeHandlers) => void;
   required: boolean;
   encrypted?: boolean;
+  onAddressType?: (value?: AddressType) => void;
+  warningHighlight?: boolean;
   feedback: {
     type: string;
     message: string;

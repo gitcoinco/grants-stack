@@ -1,7 +1,9 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import {
   resetApplicationError,
@@ -9,6 +11,7 @@ import {
 } from "../../actions/roundApplication";
 import { RootState } from "../../reducers";
 import {
+  AddressType,
   ChangeHandlers,
   DynamicFormInputs,
   Metadata,
@@ -53,6 +56,7 @@ export default function Form({
   showErrorModal: boolean;
 }) {
   const dispatch = useDispatch();
+  const { chains } = useNetwork();
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
   const [preview, setPreview] = useState(false);
@@ -65,12 +69,14 @@ export default function Form({
     string | undefined
   >(undefined);
   const [showError, setShowError] = useState(false);
+  const [addressType, setAddressType] = useState<AddressType | undefined>();
   const [feedback, setFeedback] = useState([
     { title: "", type: "none", message: "" },
   ]);
 
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
+    const { chainID } = state.web3;
     let selectedProjectMetadata: Metadata | undefined;
     if (selectedProjectID !== undefined && selectedProjectID !== "") {
       selectedProjectMetadata =
@@ -81,9 +87,11 @@ export default function Form({
       projectIDs: state.projects.ids,
       allProjectMetadata,
       selectedProjectMetadata,
+      chainID,
     };
   }, shallowEqual);
 
+  const chainInfo = chains.find((i) => i.id === props.chainID);
   const schema = roundApplication.applicationSchema;
 
   const validate = async (inputs: DynamicFormInputs) => {
@@ -256,8 +264,8 @@ export default function Form({
             case "RECIPIENT":
               /* Radio for safe or multi-sig */
               return (
-                <>
-                  <div className="relative mt-2">
+                <Fragment key={input.id}>
+                  <div className="relative mt-2" data-testid="wallet-type">
                     <Stack>
                       <Radio
                         label="Is your payout wallet a Gnosis Safe or multi-sig?"
@@ -279,6 +287,7 @@ export default function Form({
                   </div>
                   {/* todo: do we need this tooltip for all networks? */}
                   <TextInputAddress
+                    data-testid="address-input-wrapper"
                     key={input.id}
                     label="Payout Wallet Address"
                     placeholder={input.info}
@@ -289,6 +298,13 @@ export default function Form({
                     disabled={preview}
                     changeHandler={handleInput}
                     required={input.required ?? true}
+                    onAddressType={(v) => setAddressType(v)}
+                    warningHighlight={
+                      addressType &&
+                      ((formInputs.isSafe === "Yes" &&
+                        !addressType.isContract) ||
+                        (formInputs.isSafe === "No" && addressType.isContract))
+                    }
                     feedback={
                       feedback.find((fb) => fb.title === `${input.id}`) ?? {
                         type: "none",
@@ -296,7 +312,7 @@ export default function Form({
                       }
                     }
                   />
-                </>
+                </Fragment>
               );
             case "TEXTAREA":
               return (
@@ -372,6 +388,36 @@ export default function Form({
               );
           }
         })}
+        {addressType &&
+          ((formInputs.isSafe === "Yes" && !addressType.isContract) ||
+            (formInputs.isSafe === "No" && addressType.isContract)) && (
+            <div
+              className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
+              role="alert"
+              data-testid="review-wallet-address"
+            >
+              <div className="text-gitcoin-yellow-500">
+                <ExclamationTriangleIcon height={25} width={25} />
+              </div>
+              <div className="pl-6">
+                <strong className="text-gitcoin-yellow-500 font-medium">
+                  Review your payout wallet address.
+                </strong>
+                <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
+                  <li className="text-black">
+                    {formInputs.isSafe === "Yes" &&
+                      (!addressType.isContract || !addressType.isSafe) &&
+                      // eslint-disable-next-line max-len
+                      `It looks like the payout wallet address you have provided may not be a valid multi-sig on the ${chainInfo?.name} network. Please update your payout wallet address before proceeding.`}
+                    {formInputs.isSafe === "No" &&
+                      (addressType.isSafe || addressType.isContract) &&
+                      // eslint-disable-next-line max-len
+                      `It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.`}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
         {!formValidation.valid && showError && formValidation.errorCount > 0 && (
           <div
             className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
