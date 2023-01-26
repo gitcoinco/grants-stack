@@ -4,7 +4,7 @@ import { cache } from "../cacheConfig";
 import { db } from "../database";
 
 export const getRoundMatchDataHandler = async (req: Request, res: Response) => {
-  const { chainId, roundId } = req.params;
+  let { chainId, roundId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -16,6 +16,7 @@ export const getRoundMatchDataHandler = async (req: Request, res: Response) => {
   }
 
   try {
+    roundId = roundId.toLowerCase();
     const match = await db.getRoundMatchRecord(roundId);
     if (match.error) {
       throw match.error;

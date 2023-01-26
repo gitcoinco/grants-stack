@@ -25,6 +25,7 @@ import Footer from "../common/Footer";
 import { useRoundSummary } from "../api/api";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
+import markdown from "../../app/markdown";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -50,8 +51,10 @@ export default function ViewRound() {
 
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
 
+  const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
+
   return isLoading ? (
-    <Spinner text="We're fetching the Round."/>
+    <Spinner text="We're fetching the Round." />
   ) : (
     <>
       {round && chainId && roundId ? (
@@ -69,12 +72,13 @@ export default function ViewRound() {
               round={round}
               chainId={chainId}
               roundId={roundId}
+              isBeforeRoundEndDate={isBeforeRoundEndDate}
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
           )}
         </>
       ) : (
-        <NotFoundPage/>
+        <NotFoundPage />
       )}
     </>
   );
@@ -89,7 +93,7 @@ function BeforeRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
       <div className="lg:mx-20 px-4 py-7 h-screen">
         <main>
           <PreRoundPage
@@ -101,7 +105,7 @@ function BeforeRoundStart(props: {
             )}
           />
         </main>
-        <Footer/>
+        <Footer />
       </div>
     </>
   );
@@ -111,6 +115,7 @@ function AfterRoundStart(props: {
   round: Round;
   chainId: string;
   roundId: string;
+  isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
 }) {
   const { round, chainId, roundId } = props;
@@ -127,7 +132,10 @@ function AfterRoundStart(props: {
       );
       return () => clearTimeout(timeOutId);
     } else {
-      setProjects(round.approvedProjects);
+      let projects = round?.approvedProjects;
+      // shuffle projects
+      projects = projects?.sort(() => Math.random() - 0.5);
+      setProjects(projects);
     }
   });
 
@@ -146,7 +154,7 @@ function AfterRoundStart(props: {
           .toLocaleLowerCase()
           .includes(query.toLocaleLowerCase()) &&
         project.projectMetadata.title.toLocaleLowerCase() !==
-        query.toLocaleLowerCase()
+          query.toLocaleLowerCase()
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setProjects([...exactMatches!, ...nonExactMatches!]);
@@ -160,11 +168,13 @@ function AfterRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`}/>
-      <PassportBanner chainId={chainId} roundId={roundId} />
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      {props.isBeforeRoundEndDate && (
+        <PassportBanner chainId={chainId} roundId={roundId} />
+      )}
       {props.isAfterRoundEndDate && (
         <div>
-          <RoundEndedBanner/>
+          <RoundEndedBanner />
         </div>
       )}
       <div className="lg:mx-20 px-4 py-7 h-screen">
@@ -174,23 +184,15 @@ function AfterRoundStart(props: {
           <div className="flex text-grey-400 mb-3">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
-              <span className="mr-1">
-                {getUTCDate(round.roundStartTime)}
-              </span>
-              <span>
-                {getUTCTime(round.roundStartTime)}
-              </span>
+              <span className="mr-1">{getUTCDate(round.roundStartTime)}</span>
+              <span>{getUTCTime(round.roundStartTime)}</span>
             </p>
             <p className="text-sm">
               <span className="mr-1">Round ends on:</span>
 
-              <span className="mr-1">
-                {getUTCDate(round.roundEndTime)}
-              </span>
+              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
 
-              <span>
-                {getUTCTime(round.roundEndTime)}
-              </span>
+              <span>{getUTCTime(round.roundEndTime)}</span>
             </p>
           </div>
 
@@ -203,13 +205,13 @@ function AfterRoundStart(props: {
           <p className="text-1xl mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-          <hr className="mt-4 mb-8"/>
+          <hr className="mt-4 mb-8" />
           <div className="flex flex-col lg:flex-row mb-2 w-full justify-between">
             <p className="text-2xl mb-4">
               All Projects ({projects ? projects.length : 0})
             </p>
             <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3"/>
+              <Search className="absolute h-4 w-4 mt-3 ml-3" />
               <Input
                 className="w-full lg:w-64 h-8 rounded-full pl-10"
                 type="text"
@@ -227,7 +229,7 @@ function AfterRoundStart(props: {
             />
           )}
         </main>
-        <Footer/>
+        <Footer />
       </div>
     </>
   );
@@ -276,7 +278,7 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
             by {projectRecipient}
           </CardDescription>
           <CardDescription data-testid="project-description">
-            {project.projectMetadata.description}
+            {markdown.renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
       </Link>
@@ -473,10 +475,7 @@ function PreRoundPage(props: {
         >
           Round Period:
           <span>
-
-            <span className="mx-1">
-              {getUTCDate(round.roundStartTime)}
-            </span>
+            <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
 
             <span className="text-grey-400">
               ( {getUTCTime(round.roundStartTime)} )
@@ -484,9 +483,7 @@ function PreRoundPage(props: {
 
             <span className="mx-1">-</span>
 
-            <span className="mr-1">
-              {getUTCDate(round.roundEndTime)}
-            </span>
+            <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
 
             <span className="text-grey-400">
               ( {getUTCTime(round.roundEndTime)} )
@@ -522,15 +519,16 @@ function PreRoundPage(props: {
         <div className="container mx-auto flex">
           {isBeforeApplicationStartDate && (
             <InactiveButton
-              label={
-                `Applications Open ${getUTCDate(round.applicationsStartTime)}
+              label={`Applications Open ${getUTCDate(
+                round.applicationsStartTime
+              )}
               `}
               testid="applications-open-button"
             />
           )}
 
           {isDuringApplicationPeriod && (
-            <ApplyButton applicationURL={applicationURL}/>
+            <ApplyButton applicationURL={applicationURL} />
           )}
 
           {isAfterApplicationEndDateAndBeforeRoundStartDate && (

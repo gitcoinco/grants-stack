@@ -7,12 +7,16 @@ export const getProjectSummariesDataHandler = async (
   res: Response
 ) => {
   try {
-    const { roundId } = req.params;
-    const { projectIds } = req.query;
+    let { roundId } = req.params;
+    const { projectIdsReq } = req.query;
+
+    roundId = roundId.toLowerCase();
+    let projectIds = String(projectIdsReq).split(",");
+    projectIds = projectIds.map((projectId) => projectId.toLowerCase());
 
     const projects = await db.getProjectSummaryRecordsByIds(
       roundId,
-      String(projectIds).split(",")
+      projectIds
     );
 
     if (projects.error) {

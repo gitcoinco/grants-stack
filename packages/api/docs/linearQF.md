@@ -2,6 +2,7 @@
 
 ## QF Calculation
 
+```javascript
 forEach Project(i)
 	forEach ContributionInUSD(j)
 		sqrtOfContribution = math.sqrt(ContributionInUSD)
@@ -13,6 +14,7 @@ forEach Project(i)
 sumOfMatchAmountInUSD += matchAmountInUSD(i)
 
 matchPercentOfAProject = matchAmountInUSD/sumOfMatchAmountInUSD
+```
 
 ## Matching Cap
 
@@ -25,6 +27,7 @@ A grant round can optionally have a cap amount which means a project in the roun
 
 ## QF Calculation with Matching Cap
 
+```javascript
 matchingCapInUSD = matchingCapPercent*usdValueOfMatchingPot
 
 forEach Project(i)
@@ -51,11 +54,12 @@ if (amountLeftInPoolAfterCapping > 0) {
   if (amountLeftInPoolAfterCapping > 0) {
     // repeat the process
   }
+```
 
 ## Round Saturation
 
 A round is saturated when all the funds have been distributed among the projects.
-This means as more contributions come in -> when one 1 project's match increases, it would mean other project's matches (1 ore more) decrease.
+This means as more contributions come in -> when one 1 project's match increases, it would mean other project's matches (1 or more) decrease.
 
 ## QF Calculation Example
 
@@ -111,7 +115,3 @@ matchAmountInUSD += matchAmountInUSD*reminderPercent = 13.6 + 13.6*0.421 = 19.3
 
 B:
 matchAmountInUSD += matchAmountInUSD*reminderPercent = 21.6 + 21.6*0.421 = 30.7
-
-
-
-

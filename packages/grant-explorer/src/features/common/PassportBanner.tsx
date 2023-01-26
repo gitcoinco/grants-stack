@@ -131,7 +131,7 @@ export default function PassportBanner(props: {
           navigate(`/round/${chainId}/${roundId}/passport/connect`)
         }
       >
-        Please configure your passport
+        Please configure your Gitcoin Passport
       </button>
       <svg
         width="16"
