@@ -104,6 +104,7 @@ export class DatabaseInstance {
     projectMatch: QFDistribution
   ): Promise<Result> {
     try {
+      const projectId = projectMatch.projectId;
       const chainIdVerbose = getChainVerbose(chainId);
       await this.client.round.upsert({
         where: { roundId: roundId },
@@ -115,7 +116,7 @@ export class DatabaseInstance {
           matches: {
             create: {
               matchAmountInUSD: projectMatch.matchAmountInUSD,
-              projectId: projectMatch.projectId,
+              projectId: projectId,
               totalContributionsInUSD: Number(
                 projectMatch.totalContributionsInUSD
               ),
@@ -132,8 +133,7 @@ export class DatabaseInstance {
           matches: {
             upsert: {
               where: {
-                projectId: projectMatch.projectId,
-                roundId: roundId
+                matchIdentifier: { projectId, roundId}
               },
               create: {
                 matchAmountInUSD: projectMatch.matchAmountInUSD,
@@ -359,7 +359,10 @@ export class DatabaseInstance {
     try {
       const result = await this.client.match.findUnique({
         where: {
-          projectId: projectId,
+          matchIdentifier: {
+            projectId,
+            roundId
+          }
         },
       });
       return { result };
