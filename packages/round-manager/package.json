@@ -32,12 +32,14 @@
     "@types/node": "^17.0.25",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
+    "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
-    "html-react-parser": "^3.0.7",
     "history": "^5.3.0",
+    "html-react-parser": "^3.0.7",
     "https-browserify": "^1.0.0",
     "jest-fetch-mock": "^3.0.3",
     "lit-js-sdk": "^1.1.203",
+    "markdown-it": "^13.0.1",
     "moment": "^2.29.3",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
@@ -70,7 +72,7 @@
     "eject": "react-scripts eject",
     "format": "prettier . --write",
     "lint": "eslint ./src --cache",
-    "lint:fix": "eslint ./src --fix --cache",
+    "lint:fix": "eslint ./src --fix",
     "prepare": "cd ../.. && husky install",
     "lint-staged": "lint-staged"
   },
@@ -97,6 +99,8 @@
     "@faker-js/faker": "^7.4.0",
     "@gitcoinco/passport-sdk-types": "^0.1.2",
     "@tailwindcss/line-clamp": "^0.4.0",
+    "@types/dompurify": "^2.4.0",
+    "@types/markdown-it": "^12.2.3",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
     "@types/react-gtm-module": "^2.0.1",
@@ -116,7 +120,9 @@
     "tailwindcss": "^3.0.24"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "yarn lint:fix",
-    "*.{js,jsx,ts,tsx,md}": "prettier --write ."
+    "*.{ts,tsx}": [
+      "yarn lint:fix",
+      "prettier --write ."
+    ]
   }
 }

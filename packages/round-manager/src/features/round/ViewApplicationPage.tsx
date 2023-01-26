@@ -12,7 +12,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import parse from "html-react-parser";
 import ConfirmationModal from "../common/ConfirmationModal";
 import Navbar from "../common/Navbar";
 import { useWallet } from "../common/Auth";
@@ -42,6 +41,7 @@ import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
+import markdown from "../../markdown";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
 
@@ -458,14 +458,16 @@ export default function ViewApplicationPage() {
 
                   <h2 className="text-xs mb-2">Description</h2>
 
-                  <p className="text-base">
-                    {parse(
-                      (application?.project?.description || "")
-                        .replace(/\n/g, "<br/><br/>")
-                        .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"),
-                      { trim: true }
-                    )}
-                  </p>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: markdown.renderToHTML(
+                        application?.project?.description
+                          .replace(/\n/g, "<br/>")
+                          .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;") ?? ""
+                      ),
+                    }}
+                    className="text-base"
+                  ></p>
 
                   <hr className="my-6" />
 
