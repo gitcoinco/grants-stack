@@ -1,4 +1,4 @@
-import { PrismaClient, VotingStrategy, Match } from "@prisma/client";
+import { PrismaClient, VotingStrategy, Match, ChainId } from "@prisma/client";
 import { getChainVerbose } from "./utils";
 import {
   QFContributionSummary,
@@ -15,8 +15,8 @@ export class DatabaseInstance {
   }
 
   async createRoundRecord(
-    roundId: string,
     chainId: string,
+    roundId: string,
     votingStrategyName: VotingStrategy
   ): Promise<Result> {
     try {
@@ -85,7 +85,10 @@ export class DatabaseInstance {
     try {
       await this.client.project.upsert({
         where: {
-          projectId: projectId,
+          projectIdentifier: {
+            projectId: projectId,
+            roundId: roundId,
+          }
         },
         update: update,
         create: create,
@@ -105,61 +108,48 @@ export class DatabaseInstance {
   ): Promise<Result> {
     try {
       const chainIdVerbose = getChainVerbose(chainId);
+
+      const matchData = {
+        matchAmountInUSD: projectMatch.matchAmountInUSD,
+        projectId: projectMatch.projectId,
+        totalContributionsInUSD: Number(
+          projectMatch.totalContributionsInUSD
+        ),
+        matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
+        matchAmountInToken: Number(projectMatch.matchAmountInToken),
+        projectPayoutAddress: projectMatch.projectPayoutAddress,
+        uniqueContributorsCount: Number(
+          projectMatch.uniqueContributorsCount
+        ),
+      }
+
+      const roundData = {
+        roundId: roundId,
+        chainId: chainIdVerbose as ChainId,
+        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        matches: { create: matchData },
+      }
+
+      // upsert with match data
       await this.client.round.upsert({
-        where: { roundId: roundId },
-        create: {
-          roundId: roundId,
-          chainId: chainIdVerbose,
-          votingStrategyName: metadata.votingStrategy
-            .strategyName as VotingStrategy,
-          matches: {
-            create: {
-              matchAmountInUSD: projectMatch.matchAmountInUSD,
-              projectId: projectMatch.projectId,
-              totalContributionsInUSD: Number(
-                projectMatch.totalContributionsInUSD
-              ),
-              matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-              matchAmountInToken: Number(projectMatch.matchAmountInToken),
-              projectPayoutAddress: projectMatch.projectPayoutAddress,
-              uniqueContributorsCount: Number(
-                projectMatch.uniqueContributorsCount
-              ),
-            },
-          },
-        },
-        update: {
-          matches: {
-            upsert: {
-              where: { projectId: projectMatch.projectId },
-              create: {
-                matchAmountInUSD: projectMatch.matchAmountInUSD,
-                projectId: projectMatch.projectId,
-                totalContributionsInUSD: Number(
-                  projectMatch.totalContributionsInUSD
-                ),
-                matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-                matchAmountInToken: Number(projectMatch.matchAmountInToken),
-                projectPayoutAddress: projectMatch.projectPayoutAddress,
-                uniqueContributorsCount: Number(
-                  projectMatch.uniqueContributorsCount
-                ),
-              },
-              update: {
-                matchAmountInUSD: projectMatch.matchAmountInUSD,
-                totalContributionsInUSD: Number(
-                  projectMatch.totalContributionsInUSD
-                ),
-                matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
-                matchAmountInToken: Number(projectMatch.matchAmountInToken),
-                uniqueContributorsCount: Number(
-                  projectMatch.uniqueContributorsCount
-                ),
-              },
-            },
-          },
-        },
-      });
+          where: { roundId: roundId },
+          create: roundData,
+          update: {
+            matches: {
+              upsert: {
+                where: {
+                  matchIdentifier: {
+                    projectId: projectMatch.projectId,
+                    roundId: roundId,
+                  }
+                },
+                create: matchData,
+                update: matchData,
+              }
+            }
+          }
+        }
+      );
       return { result: true };
     } catch (error) {
       console.error("error upserting project match", error);
@@ -175,52 +165,36 @@ export class DatabaseInstance {
   ): Promise<Result> {
     try {
       const chainIdVerbose = getChainVerbose(chainId);
+
+      const roundSummaryData = {
+        contributionCount: summary.contributionCount,
+        uniqueContributors: summary.uniqueContributors,
+        totalContributionsInUSD: Number(summary.totalContributionsInUSD),
+        averageUSDContribution: Number(summary.averageUSDContribution),
+      }
+
+      const roundData = {
+        roundId: roundId,
+        chainId: chainIdVerbose as ChainId,
+        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        roundSummary: { create: roundSummaryData },
+      }
+
+      // upsert with round summary data
       await this.client.round.upsert({
         where: { roundId: roundId },
-        create: {
-          roundId: roundId,
-          chainId: chainIdVerbose,
-          votingStrategyName: metadata.votingStrategy
-            .strategyName as VotingStrategy,
-          roundSummary: {
-            create: {
-              contributionCount: summary.contributionCount,
-              uniqueContributors: summary.uniqueContributors,
-              totalContributionsInUSD: Number(summary.totalContributionsInUSD),
-              averageUSDContribution: Number(summary.averageUSDContribution),
-            },
-          },
-        },
+        create: roundData,
         update: {
-          roundId: roundId,
-          chainId: chainIdVerbose,
-          votingStrategyName: metadata.votingStrategy
-            .strategyName as VotingStrategy,
           roundSummary: {
-            upsert: {
-              create: {
-                contributionCount: summary.contributionCount,
-                uniqueContributors: summary.uniqueContributors,
-                totalContributionsInUSD: Number(
-                  summary.totalContributionsInUSD
-                ),
-                averageUSDContribution: Number(summary.averageUSDContribution),
-              },
-              update: {
-                contributionCount: summary.contributionCount,
-                uniqueContributors: summary.uniqueContributors,
-                totalContributionsInUSD: Number(
-                  summary.totalContributionsInUSD
-                ),
-                averageUSDContribution: Number(summary.averageUSDContribution),
-              },
-            },
-          },
-        },
+            create: roundSummaryData,
+            update: roundSummaryData,
+          }
+        }
       });
+
       return { result: true };
     } catch (error) {
-      console.error("error", error);
+      console.error("error upserting round summary", error);
       return { error: error, result: false };
     }
   }
@@ -234,75 +208,212 @@ export class DatabaseInstance {
   ): Promise<Result> {
     try {
       const chainIdVerbose = getChainVerbose(chainId);
-      await this.client.round.upsert({
+
+      const roundData = {
+        roundId: roundId,
+        chainId: chainIdVerbose as ChainId,
+        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+      }
+
+      const projectSummaryData = {
+        contributionCount: summary.contributionCount,
+        uniqueContributors: summary.uniqueContributors,
+        totalContributionsInUSD: Number(summary.totalContributionsInUSD),
+        averageUSDContribution: Number(summary.averageUSDContribution),
+      }
+
+      const projectData = {
+        roundId: roundId,
+        projectId: projectId,
+        chainId: chainIdVerbose as ChainId,
+        projectSummaries: { create: projectSummaryData },
+      }
+
+      // check if round exists
+      const roundExists = await this.client.round.findUnique({
+        where: { roundId: roundId },
+      });
+
+      // if round doesn't exist, create it
+      if (!roundExists) {
+        await this.client.round.create({
+          data: roundData,
+        });
+      }
+
+      // check if project exists
+      const projectExists = await this.client.project.findUnique({
         where: {
-          roundId: roundId,
-        },
-        update: {
-          chainId: chainIdVerbose,
-          votingStrategyName: metadata.votingStrategy
-            .strategyName as VotingStrategy,
-          projects: {
-            upsert: {
-              where: { projectId: projectId },
-              update: {
-                projectSummary: {
-                  update: {
-                    contributionCount: summary.contributionCount,
-                    uniqueContributors: summary.uniqueContributors,
-                    totalContributionsInUSD: Number(
-                      summary.totalContributionsInUSD
-                    ),
-                    averageUSDContribution: Number(
-                      summary.averageUSDContribution
-                    ),
-                  },
-                },
-              },
-              create: {
-                projectId: projectId,
-                chainId: chainIdVerbose,
-                projectSummary: {
-                  create: {
-                    contributionCount: summary.contributionCount,
-                    uniqueContributors: summary.uniqueContributors,
-                    totalContributionsInUSD: Number(
-                      summary.totalContributionsInUSD
-                    ),
-                    averageUSDContribution: Number(
-                      summary.averageUSDContribution
-                    ),
-                  },
-                },
-              },
-            },
-          },
-        },
-        create: {
-          roundId: roundId,
-          chainId: chainIdVerbose,
-          votingStrategyName: metadata.votingStrategy
-            .strategyName as VotingStrategy,
-          projects: {
-            create: {
-              projectId: projectId,
-              chainId: chainIdVerbose,
-              projectSummary: {
-                create: {
-                  contributionCount: summary.contributionCount,
-                  uniqueContributors: summary.uniqueContributors,
-                  totalContributionsInUSD: Number(
-                    summary.totalContributionsInUSD
-                  ),
-                  averageUSDContribution: Number(
-                    summary.averageUSDContribution
-                  ),
-                },
-              },
-            },
-          },
+          projectIdentifier: {
+            projectId: projectId,
+            roundId: roundId,
+          }
         },
       });
+
+      // if project doesn't exist, create it
+      if (!projectExists) {
+        await this.client.project.create({
+          data: projectData,
+        });
+      }
+
+      // upsert the project summary data
+      await this.client.project.upsert({
+          where: {
+            projectIdentifier: {
+              projectId: projectId,
+              roundId: roundId,
+            }
+          },
+          create: projectData,
+          update: {
+            projectSummaries: {
+              upsert: {
+                where: {
+                  projectSummaryIdentifier: {
+                    projectId: projectId,
+                    roundId: roundId,
+                  }
+                },
+                create: projectSummaryData,
+                update: projectSummaryData,
+              }
+            }
+          }
+        }
+      );
+
+
+      // // upsert the project and round data
+      // await this.client.round.upsert({
+      //   where: { roundId: roundId },
+      //   create: roundData,
+      //   update: {
+      //     projects: {
+      //       upsert: {
+      //         where: {
+      //           projectIdentifier: {
+      //             projectId: projectId,
+      //             roundId: roundId,
+      //           }
+      //         },
+      //         create: projectData,
+      //         update: {
+      //           projectSummaries: {
+      //             upsert: {
+      //               where: {
+      //                 projectSummaryIdentifier: {
+      //                   projectId: projectId,
+      //                   roundId: roundId,
+      //                 }
+      //               },
+      //               create: projectSummaryData,
+      //               update: projectSummaryData,
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // });
+
+
+      // upsert the project and round data
+//       await this.client.project.upsert({
+//           where: {
+//             projectIdentifier: {
+//               projectId: projectId,
+//               roundId: roundId,
+//             }
+//           },
+//           create: projectData,
+//           update: {
+//             projectSummary: {
+//               create: projectSummaryData,
+//               update: projectSummaryData,
+// }
+//           }
+//         }
+//       );
+//
+//       await this.client.round.upsert({
+//           where: { roundId: roundId },
+//           create: roundData,
+//           update: {
+//             projects: {
+//               upsert: {
+//                 where: {
+//                   projectIdentifier: {
+//                     projectId: projectId,
+//                     roundId: roundId,
+//                   }
+//                 },
+//                 create: projectData,
+//                 update: {
+//                   projectSummary: {
+//                     create: projectSummaryData,
+//                     update: projectSummaryData,
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       );
+
+
+      // upsert with project summary data
+
+      // upsert with project summary data through round
+      //     await this.client.round.upsert({
+      //         where: { roundId: roundId },
+      // create: roundData,
+      //         update: {
+      //           projects: {
+      //             upsert: {
+      //               where: {
+      //                 projectIdentifier: {
+      //                   projectId: projectId,
+      //                   roundId: roundId,
+      //                 }
+      //               }
+      //             },
+      //             create: projectData,
+      //             update: {
+      //               projectSummary: {
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     );
+
+      // await this.client.round.upsert({
+      //     where: { roundId: roundId },
+      //     create: roundData,
+      //     update: {
+      //       projects: {
+      //         upsert: {
+      //           where: {
+      //             projectIdentifier: {
+      //               projectId: projectId,
+      //               roundId: roundId,
+      //             }
+      //           },
+      //           create: projectData,
+      //           update: {
+      //             projectSummary: {
+      //               create: projectSummaryData,
+      //               update: projectSummaryData,
+      //
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      // });
+
       return { result: true };
     } catch (error) {
       console.error("error upserting project summary", error);
@@ -340,7 +451,12 @@ export class DatabaseInstance {
   ): Promise<Result> {
     try {
       const result = await this.client.projectSummary.findUnique({
-        where: { projectId },
+        where: {
+          projectSummaryIdentifier: {
+            roundId: roundId,
+            projectId: projectId,
+          }
+        },
       });
       return { result };
     } catch (error) {
@@ -356,7 +472,10 @@ export class DatabaseInstance {
     try {
       const result = await this.client.match.findUnique({
         where: {
-          projectId: projectId,
+          matchIdentifier: {
+            roundId: roundId,
+            projectId: projectId,
+          }
         },
       });
       return { result };
@@ -398,10 +517,15 @@ export class DatabaseInstance {
     }
   }
 
-  async getProjectRecord(projectId: string): Promise<Result> {
+  async getProjectRecord(roundId: string, projectId: string): Promise<Result> {
     try {
       const result = await this.client.project.findUnique({
-        where: { projectId: projectId },
+        where: {
+          projectIdentifier: {
+            projectId: projectId,
+            roundId: roundId,
+          }
+        },
       });
       return { result };
     } catch (error) {

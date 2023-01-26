@@ -29,31 +29,34 @@ model Round {
 }
 
 model Project {
-  id             Int             @id @default(autoincrement())
-  createdAt      DateTime        @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime        @updatedAt @db.Timestamptz(3)
-  chainId        ChainId
-  round          Round           @relation(fields: [roundId], references: [roundId])
-  roundId        String
-  projectId      String          @unique
-  projectSummary ProjectSummary?
+  id               Int              @id @default(autoincrement())
+  createdAt        DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime         @updatedAt @db.Timestamptz(3)
+  chainId          ChainId
+  round            Round            @relation(fields: [roundId], references: [roundId])
+  roundId          String
+  projectId        String
+  projectSummaries ProjectSummary[]
 
+  @@unique([projectId, roundId], name: "projectIdentifier")
   @@map("project")
 }
 
 model Match {
-  id                        Int      @id @default(autoincrement())
-  createdAt                 DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt                 DateTime @updatedAt @db.Timestamptz(3)
-  projectId                 String   @unique
-  matchAmountInUSD          Float
-  totalContributionsInUSD   Float
-  matchPoolPercentage       Float
-  matchAmountInToken        Float
-  round                     Round    @relation(fields: [roundId], references: [roundId])
-  roundId                   String
-  projectPayoutAddress      String
-  uniqueContributorsCount   Int?
+  id                      Int      @id @default(autoincrement())
+  createdAt               DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  projectId               String
+  matchAmountInUSD        Float
+  totalContributionsInUSD Float
+  matchPoolPercentage     Float
+  matchAmountInToken      Float
+  round                   Round    @relation(fields: [roundId], references: [roundId])
+  roundId                 String
+  projectPayoutAddress    String
+  uniqueContributorsCount Int?
+
+  @@unique([roundId, projectId], name: "matchIdentifier")
   @@map("match")
 }
 
@@ -80,10 +83,11 @@ model ProjectSummary {
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
-  project                 Project  @relation(fields: [projectId], references: [projectId])
+  project                 Project  @relation(fields: [projectId, roundId], references: [projectId, roundId])
   projectId               String
+  roundId                 String
 
-  @@unique([projectId], name: "projectSummaryIdentifier")
+  @@unique([projectId, roundId], name: "projectSummaryIdentifier")
   @@map("projectSummary")
 }
 

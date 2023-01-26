@@ -295,12 +295,12 @@ export async function getStartAndEndTokenPrices(
   try {
 
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
+    if (isTestnet(chainId)) {
       return {
         startPrice: TESNET_TOKEN_TO_USD_RATE,
         endPrice: TESNET_TOKEN_TO_USD_RATE
       }
-    };
+    }
 
     const { chainName, error } = getChainName(chainId);
     if (error) {
@@ -416,10 +416,10 @@ export const fetchCurrentTokenPrices = async (
   try {
 
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
+    if (isTestnet(chainId)) {
 
       let testnetTokenPrices: any = {
-        "0x0000000000000000000000000000000000000000":  {
+        "0x0000000000000000000000000000000000000000": {
           usd: TESNET_TOKEN_TO_USD_RATE
         }
       };
@@ -430,7 +430,7 @@ export const fetchCurrentTokenPrices = async (
         };
       });
       return testnetTokenPrices;
-    };
+    }
 
     const { chainName } = getChainName(chainId);
 
@@ -499,7 +499,7 @@ export const fetchAverageTokenPrices = async (
 ) => {
   try {
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
+    if (isTestnet(chainId)) {
       let testnetAverageTokenPrices: any = {
         "0x0000000000000000000000000000000000000000": TESNET_TOKEN_TO_USD_RATE,
       };
@@ -657,10 +657,10 @@ export const isTestnet = (chainId: ChainId) => {
  * Util function to specify valid coingecko address in scenarios where
  * coingecko doesn't return token price on given chain.
  * Ideally usefully for stable coins
- * 
+ *
  * @param chainId
- * @param address 
- * 
+ * @param address
+ *
  * @returns validAddress
  */
 export const getValidCoinGeckoTokenAddress = (chainId: ChainId, address: string) => {
