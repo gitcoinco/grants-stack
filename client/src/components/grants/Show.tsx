@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { fetchGrantData } from "../../actions/grantsMetadata";
-import { loadAllChainsProjects } from "../../actions/projects";
+import {
+  loadAllChainsProjects,
+  loadProjectOwners,
+} from "../../actions/projects";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
@@ -25,6 +28,7 @@ function Project() {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
     const grantMetadata = state.grantsMetadata[fullId];
+    const owners = state.projects.owners[fullId];
 
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
@@ -50,7 +54,9 @@ function Project() {
       loadingFailed,
       bannerImg,
       logoImg,
+      owners,
       currentProject: grantMetadata?.metadata,
+      signerAddress: state.web3.account,
       projectEvents: state.projects.events[fullId],
     };
   }, shallowEqual);
@@ -67,6 +73,10 @@ function Project() {
   useEffect(() => {
     if (props.projectEvents === undefined) {
       dispatch(loadAllChainsProjects(true));
+    }
+
+    if (props.owners === undefined) {
+      dispatch(loadProjectOwners(props.id));
     }
   }, [props.id, props.projectEvents, global, dispatch]);
 
@@ -104,19 +114,24 @@ function Project() {
                 Project Details
               </h3>
             </Link>
-            {props.id && (
-              <Link to={createEditPath()} className="sm:w-auto mx-w-full ml-0">
-                <Button
-                  variant={ButtonVariants.outline}
-                  styles={["sm:w-auto mx-w-full ml-0"]}
+            {props.id &&
+              props.owners &&
+              props.owners.includes(props.signerAddress!) && (
+                <Link
+                  to={createEditPath()}
+                  className="sm:w-auto mx-w-full ml-0"
                 >
-                  <i className="icon mt-1">
-                    <Pencil color={colors["secondary-text"]} />
-                  </i>
-                  &nbsp; Edit
-                </Button>
-              </Link>
-            )}
+                  <Button
+                    variant={ButtonVariants.outline}
+                    styles={["sm:w-auto mx-w-full ml-0"]}
+                  >
+                    <i className="icon mt-1">
+                      <Pencil color={colors["secondary-text"]} />
+                    </i>
+                    &nbsp; Edit
+                  </Button>
+                </Link>
+              )}
           </div>
           <Details
             project={props.currentProject}

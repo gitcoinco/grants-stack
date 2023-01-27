@@ -8,6 +8,7 @@ import {
   PROJECT_APPLICATIONS_LOADED,
   PROJECT_APPLICATIONS_LOADING,
   PROJECT_APPLICATION_UPDATED,
+  PROJECT_OWNERS_LOADED,
 } from "../actions/projects";
 import { ProjectEventsMap } from "../types";
 
@@ -31,22 +32,26 @@ export type Application = {
   chainId: number;
 };
 
+export type ProjectOwners = { [projectID: string]: string[] };
+
 export interface ProjectsState {
   status: Status;
   loadingChains: number[];
   error: string | undefined;
   ids: string[];
   events: ProjectEventsMap;
+  owners: ProjectOwners;
   applications: {
     [projectID: string]: Application[];
   };
 }
 
-const initialState: ProjectsState = {
+export const initialState: ProjectsState = {
   status: Status.Undefined,
   loadingChains: [],
   error: undefined,
   ids: [],
+  owners: {},
   events: {},
   applications: {},
 };
@@ -62,6 +67,16 @@ export const projectsReducer = (
         status: Status.Loading,
         loadingChains: [...state.loadingChains, action.payload],
         ids: [],
+      };
+    }
+
+    case PROJECT_OWNERS_LOADED: {
+      return {
+        ...state,
+        owners: {
+          ...state.owners,
+          [action.payload.projectID]: action.payload.owners,
+        },
       };
     }
 

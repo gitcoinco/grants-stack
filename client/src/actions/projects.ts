@@ -12,10 +12,11 @@ import PinataClient from "../services/pinata";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProviderByChainId } from "../utils/utils";
+import { getProviderByChainId, getProjectURIComponents } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 import { chains } from "../utils/wagmi";
+import { fetchProjectOwners } from "../utils/projects";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -71,6 +72,15 @@ interface ProjectApplicationsErrorAction {
   error: string;
 }
 
+export const PROJECT_OWNERS_LOADED = "PROJECT_OWNERS_LOADED";
+interface ProjectOwnersLoadedAction {
+  type: typeof PROJECT_OWNERS_LOADED;
+  payload: {
+    projectID: string;
+    owners: string[];
+  };
+}
+
 export type ProjectsActions =
   | ProjectsLoadingAction
   | ProjectsLoadedAction
@@ -79,7 +89,8 @@ export type ProjectsActions =
   | ProjectApplicationsLoadingAction
   | ProjectApplicationsLoadedAction
   | ProjectApplicationsErrorAction
-  | ProjectApplicationUpdatedAction;
+  | ProjectApplicationUpdatedAction
+  | ProjectOwnersLoadedAction;
 
 export const projectsLoading = (chainID: number): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
@@ -242,6 +253,23 @@ export const extractProjectEvents = (
 
   return projectEventsMap;
 };
+
+export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
+  type: PROJECT_OWNERS_LOADED,
+  payload: {
+    projectID,
+    owners,
+  },
+});
+
+export const loadProjectOwners =
+  (projectID: string) => async (dispatch: Dispatch) => {
+    const { chainId, id } = getProjectURIComponents(projectID);
+
+    const owners = await fetchProjectOwners(Number(chainId), id);
+
+    dispatch(projectOwnersLoaded(projectID, owners));
+  };
 
 export const loadProjects =
   (chainID: number, withMetaData?: boolean) =>

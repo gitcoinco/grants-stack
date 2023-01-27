@@ -4,6 +4,7 @@ import {
   projectsReducer,
   ProjectsState,
   Status,
+  initialState as initialProjectsState,
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
 
@@ -11,14 +12,7 @@ describe("projects reducer", () => {
   let state: ProjectsState;
 
   beforeEach(() => {
-    state = {
-      status: Status.Undefined,
-      loadingChains: [],
-      error: undefined,
-      ids: [],
-      events: {},
-      applications: {},
-    };
+    state = initialProjectsState;
   });
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
