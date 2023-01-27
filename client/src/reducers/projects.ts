@@ -46,7 +46,7 @@ export interface ProjectsState {
   };
 }
 
-const initialState: ProjectsState = {
+export const initialState: ProjectsState = {
   status: Status.Undefined,
   loadingChains: [],
   error: undefined,
