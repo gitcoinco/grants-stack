@@ -22,7 +22,7 @@ export const updateProjectSummaryHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { chainId, roundId, projectId } = req.params;
+  let { chainId, roundId, projectId } = req.params;
 
   if (!chainId || !roundId || !projectId) {
     return handleResponse(
@@ -33,6 +33,8 @@ export const updateProjectSummaryHandler = async (
   }
 
   try {
+    roundId = roundId.toLowerCase();
+    projectId = projectId.toLowerCase();
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
     const votingStrategyName = votingStrategy.strategyName as VotingStrategy;

@@ -11,7 +11,7 @@ import { cache } from "../cacheConfig";
 import { db } from "../database";
 
 export const updateRoundMatchHandler = async (req: Request, res: Response) => {
-  const { chainId, roundId } = req.params;
+  let { chainId, roundId } = req.params;
 
   // check if params are valid
   if (!chainId || !roundId) {
@@ -25,6 +25,7 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
   let results: QFDistributionResults | undefined;
 
   try {
+    roundId = roundId.toLowerCase();
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
 
