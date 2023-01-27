@@ -4,7 +4,7 @@ import {
   projectsReducer,
   ProjectsState,
   Status,
-  initialState
+  initialState as initialProjectsState,
 } from "../../reducers/projects";
 import { addressFrom } from "../../utils/test_utils";
 
@@ -12,7 +12,7 @@ describe("projects reducer", () => {
   let state: ProjectsState;
 
   beforeEach(() => {
-    state = initialState;
+    state = initialProjectsState;
   });
 
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
