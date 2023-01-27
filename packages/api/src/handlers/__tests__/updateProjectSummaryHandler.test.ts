@@ -3,7 +3,6 @@ import { faker } from "@faker-js/faker";
 import { getMockReq } from "@jest-mock/express";
 import {
   HandleResponseObject,
-  QFContributionSummary,
   QFContribution,
   RoundMetadata,
 } from "../../types";
@@ -17,6 +16,7 @@ import {
 } from "../../test-utils";
 import { updateProjectSummaryHandler } from "../updateProjectSummaryHandler";
 import { prismaMock } from "../singleton";
+import { Project, ProjectSummary, Round } from "@prisma/client";
 
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS);
@@ -171,6 +171,8 @@ describe("updateProjectSummaryHandler", () => {
       uniqueContributors: 0,
       totalContributionsInUSD: 0,
       averageUSDContribution: 0,
+      projectId: projectId,
+      roundId: roundId,
     };
 
     jest.spyOn(prismaMock.round, "upsert").mockResolvedValue({
@@ -180,21 +182,21 @@ describe("updateProjectSummaryHandler", () => {
       votingStrategyName: "LINEAR_QUADRATIC_FUNDING",
       isSaturated: false,
       ...timestamps,
-    });
+    } as Round);
+
     jest.spyOn(prismaMock.project, "upsert").mockResolvedValue({
       id: 1,
       chainId: utils.getChainVerbose(chainId),
       roundId,
       projectId,
       ...timestamps,
-    });
+    } as Project);
 
     jest.spyOn(prismaMock.projectSummary, "upsert").mockResolvedValue({
       ...defaultSummary,
       id: 1,
-      projectId,
       ...timestamps,
-    });
+    } as ProjectSummary);
 
     const responseJSON = (await updateProjectSummaryHandler(
       req,
