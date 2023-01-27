@@ -1,5 +1,5 @@
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { getProviderByChainId } from "../utils/utils";
+import { getProviderByChainId } from "./utils";
 import { addressesByChainID } from "../contracts/deployments";
 import { ethers } from "ethers";
 

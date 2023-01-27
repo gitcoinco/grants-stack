@@ -7,6 +7,10 @@ import {
   renderWrapped,
   buildProjectMetadata,
 } from "../../../utils/test_utils";
+import { fetchProjectOwners } from "../../../utils/projects";
+import { web3AccountLoaded, web3ChainIDLoaded } from "../../../actions/web3";
+import { grantMetadataFetched } from "../../../actions/grantsMetadata";
+
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -31,10 +35,6 @@ jest.mock("../../../utils/projects", () => ({
   ...jest.requireActual("../../../utils/projects"),
   fetchProjectOwners: jest.fn(),
 }));
-
-import { fetchProjectOwners } from "../../../utils/projects";
-import { web3AccountLoaded, web3ChainIDLoaded } from "../../../actions/web3";
-import { grantMetadataFetched } from "../../../actions/grantsMetadata";
 
 describe("<Show />", () => {
   let store: any;
