@@ -44,7 +44,7 @@ describe("<Show />", () => {
     store.dispatch(
       grantMetadataFetched(
         buildProjectMetadata({
-          id: "1:0x0000000000000000000000000000000000000001:1",
+          id: `1:${addressFrom(1)}:1`,
           credentials: {},
         })
       )
