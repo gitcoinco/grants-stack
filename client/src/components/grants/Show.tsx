@@ -27,7 +27,6 @@ function Project() {
   const props = useSelector((state: RootState) => {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
 
-    console.log(state.grantsMetadata, fullId);
     const grantMetadata = state.grantsMetadata[fullId];
     const owners = state.projects.owners[fullId];
 
