@@ -1,7 +1,6 @@
 import {
   applyMiddleware,
   createStore,
-  Dispatch,
   Middleware,
   PreloadedState,
 } from "redux";
@@ -14,7 +13,7 @@ import history from "./history";
 const routerMiddleware = createRouterMiddleware(history);
 const composeEnhancers = composeWithDevTools({});
 
-let middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
+const middlewares: Middleware[] = [thunkMiddleware, routerMiddleware];
 
 const setupStore = (preloadedState?: PreloadedState<RootState>) =>
   createStore(
