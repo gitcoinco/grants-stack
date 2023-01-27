@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
+import { waitFor } from "@testing-library/react";
 import Show from "../../../components/grants/Show";
 import setupStore from "../../../store";
-import { waitFor } from "@testing-library/react";
 import {
   addressFrom,
   renderWrapped,
@@ -10,7 +10,6 @@ import {
 import { fetchProjectOwners } from "../../../utils/projects";
 import { web3AccountLoaded, web3ChainIDLoaded } from "../../../actions/web3";
 import { grantMetadataFetched } from "../../../actions/grantsMetadata";
-
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

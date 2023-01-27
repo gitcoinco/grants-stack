@@ -1,7 +1,8 @@
+/* eslint-disable import/prefer-default-export */
+import { ethers } from "ethers";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { getProviderByChainId } from "./utils";
 import { addressesByChainID } from "../contracts/deployments";
-import { ethers } from "ethers";
 
 export const fetchProjectOwners = (chainID: number, projectID: string) => {
   const addresses = addressesByChainID(chainID);
