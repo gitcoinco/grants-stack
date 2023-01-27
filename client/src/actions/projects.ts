@@ -16,7 +16,7 @@ import { getProviderByChainId, getProjectURIComponents } from "../utils/utils";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
 import { chains } from "../utils/wagmi";
-import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+import { fetchProjectOwners } from "../utils/projects";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -265,17 +265,8 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
-    const chainID = Number(chainId);
-    const addresses = addressesByChainID(chainID);
-    const appProvider = getProviderByChainId(chainID);
 
-    const projectRegistry = new ethers.Contract(
-      addresses.projectRegistry,
-      ProjectRegistryABI,
-      appProvider
-    );
-
-    const owners = await projectRegistry.getProjectOwners(id);
+    const owners = await fetchProjectOwners(Number(chainId), id);
 
     dispatch(projectOwnersLoaded(projectID, owners));
   };
