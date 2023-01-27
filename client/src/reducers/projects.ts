@@ -32,7 +32,7 @@ export type Application = {
   chainId: number;
 };
 
-export type ProjectOwners = { [key: string]: string[] };
+export type ProjectOwners = { [projectID: string]: string[] };
 
 export interface ProjectsState {
   status: Status;
