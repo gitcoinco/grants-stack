@@ -42,58 +42,69 @@ export default function VerificationForm({
 
   return (
     <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text px-4">
-      <div className="flex items-center mb-6">
-        <img className="h-12 mr-9" src={TwitterLogo} alt="Twitter Logo" />
-        <TextInput
-          label="Twitter"
-          name="projectTwitter"
-          placeholder="Your project's Twitter handle"
-          value={props.formMetaData.projectTwitter}
-          changeHandler={handleInput}
-          required={false}
-          feedback={{ type: "none", message: "" }}
-        />
-        <Twitter
-          handle={props.formMetaData.projectTwitter ?? ""}
-          verificationError={(providerError) => setError(providerError)}
-          canVerify={!!props.formMetaData.projectTwitter}
-        />
+      <div className="grid lg:grid-cols-12">
+        <div className="lg:col-span-1 flex items-center justify-center">
+          <img src={TwitterLogo} className="h-7 mt-4" alt="Twitter Logo" />
+        </div>
+        <div className="lg:col-span-11">
+          <div className="row-span-1 flex items-center">
+            <TextInput
+              label="Project Twitter Account"
+              name="projectTwitter"
+              placeholder="Your project's Twitter handle"
+              value={props.formMetaData.projectTwitter}
+              changeHandler={handleInput}
+              required={false}
+              feedback={{ type: "none", message: "" }}
+            />
+            <Twitter
+              handle={props.formMetaData.projectTwitter ?? ""}
+              verificationError={(providerError) => setError(providerError)}
+              canVerify={!!props.formMetaData.projectTwitter}
+            />
+          </div>
+        </div>
       </div>
       <hr className="my-4" />
-      <div className="flex items-center mb-6">
-        <img className="h-12 mr-12 mt-6" src={GithubLogo} alt="Github Logo" />
-        <TextInput
-          label="Your Github Username"
-          name="userGithub"
-          placeholder="GitHub username you use to contribute to the project"
-          value={props.formMetaData.userGithub}
-          changeHandler={handleInput}
-          required={false}
-          feedback={{ type: "none", message: "" }}
-        />
-      </div>
-      <div className="flex items-center mb-6">
-        <div className="h-12 mr-12 w-12" />
-        <TextInput
-          label="Github Organization"
-          name="projectGithub"
-          placeholder="GitHub org name your project is part of"
-          value={props.formMetaData.projectGithub}
-          changeHandler={handleInput}
-          required={false}
-          tooltip={`In order to successfully verify,
+      <div className="grid lg:grid-cols-12">
+        <div className="lg:col-span-1 flex items-center justify-center">
+          <img src={GithubLogo} className="h-8" alt="GitHub Logo" />
+        </div>
+        <div className="lg:col-span-11">
+          <div className="row-span-2 flex items-center">
+            <TextInput
+              label="Your GitHub Username"
+              name="userGithub"
+              placeholder="GitHub username you use to contribute to the project"
+              value={props.formMetaData.userGithub}
+              changeHandler={handleInput}
+              required={false}
+              feedback={{ type: "none", message: "" }}
+            />
+          </div>
+          <div className="row-span-2 flex items-center">
+            <TextInput
+              label="GitHub Organization"
+              name="projectGithub"
+              placeholder="GitHub org name your project is part of"
+              value={props.formMetaData.projectGithub}
+              changeHandler={handleInput}
+              required={false}
+              tooltip={`In order to successfully verify,
           please make sure that you are a public member of the GitHub organization.
           GitHub organization and usernames are case sensitive.`}
-          feedback={{ type: "none", message: "" }}
-        />
-        <Github
-          org={props.formMetaData.projectGithub ?? ""}
-          canVerify={
-            !!props.formMetaData.projectGithub &&
-            !!props.formMetaData.userGithub
-          }
-          verificationError={(providerError) => setError(providerError)}
-        />
+              feedback={{ type: "none", message: "" }}
+            />
+            <Github
+              org={props.formMetaData.projectGithub ?? ""}
+              canVerify={
+                !!props.formMetaData.projectGithub &&
+                !!props.formMetaData.userGithub
+              }
+              verificationError={(providerError) => setError(providerError)}
+            />
+          </div>
+        </div>
       </div>
       <hr className="my-4" />
       {error && (
