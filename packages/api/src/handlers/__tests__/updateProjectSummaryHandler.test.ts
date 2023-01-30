@@ -3,7 +3,6 @@ import { faker } from "@faker-js/faker";
 import { getMockReq } from "@jest-mock/express";
 import {
   HandleResponseObject,
-  QFContributionSummary,
   QFContribution,
   RoundMetadata,
 } from "../../types";
@@ -162,39 +161,14 @@ describe("updateProjectSummaryHandler", () => {
       .spyOn(linearQuadraticFunding, "fetchQFContributionsForProjects")
       .mockResolvedValueOnce([]);
 
-    const timestamps = {
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
     const defaultSummary = {
       contributionCount: 0,
       uniqueContributors: 0,
       totalContributionsInUSD: 0,
       averageUSDContribution: 0,
+      roundId: roundId,
     };
 
-    jest.spyOn(prismaMock.round, "upsert").mockResolvedValue({
-      id: 1,
-      chainId: utils.getChainVerbose(chainId),
-      roundId,
-      votingStrategyName: "LINEAR_QUADRATIC_FUNDING",
-      isSaturated: false,
-      ...timestamps,
-    });
-    jest.spyOn(prismaMock.project, "upsert").mockResolvedValue({
-      id: 1,
-      chainId: utils.getChainVerbose(chainId),
-      roundId,
-      projectId,
-      ...timestamps,
-    });
-
-    jest.spyOn(prismaMock.projectSummary, "upsert").mockResolvedValue({
-      ...defaultSummary,
-      id: 1,
-      projectId,
-      ...timestamps,
-    });
 
     const responseJSON = (await updateProjectSummaryHandler(
       req,
@@ -203,11 +177,10 @@ describe("updateProjectSummaryHandler", () => {
 
     expect(responseJSON.success).toBeTruthy();
     expect(responseJSON.message).toEqual(req.originalUrl);
-    expect(responseJSON.data).toEqual(
-      expect.objectContaining({
-        ...defaultSummary,
-      })
-    );
+    expect(responseJSON.data).toMatchObject({
+      ...defaultSummary,
+    })
+
   });
 
   it("returns successfull response when project in round has 2 contributions", async () => {

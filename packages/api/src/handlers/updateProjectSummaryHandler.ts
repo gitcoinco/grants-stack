@@ -53,8 +53,8 @@ export const updateProjectSummaryHandler = async (
 
     try {
       const upsertProjectSummaryStatus = await db.upsertProjectSummaryRecord(
-        roundId,
         chainId,
+        roundId,
         projectId,
         metadata,
         results
