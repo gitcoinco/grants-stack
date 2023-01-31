@@ -9,6 +9,8 @@ import {
   PROJECT_APPLICATIONS_LOADING,
   PROJECT_APPLICATION_UPDATED,
   PROJECT_OWNERS_LOADED,
+  PROJECT_STATS_LOADED,
+  PROJECT_STATS_LOADING,
 } from "../actions/projects";
 import { ProjectEventsMap } from "../types";
 
@@ -44,6 +46,9 @@ export interface ProjectsState {
   applications: {
     [projectID: string]: Application[];
   };
+  stats: {
+    [projectID: string]: ProjectStats[];
+  };
 }
 
 export const initialState: ProjectsState = {
@@ -54,6 +59,16 @@ export const initialState: ProjectsState = {
   owners: {},
   events: {},
   applications: {},
+  stats: {},
+};
+
+export type ProjectStats = {
+  roundId: string;
+  fundingReceived: number;
+  uniqueContributors: number;
+  avgContribution: number;
+  totalContributions: number;
+  success: boolean;
 };
 
 export const projectsReducer = (
@@ -157,6 +172,28 @@ export const projectsReducer = (
             updatedApplication,
             ...projectApplications.slice(index + 1),
           ],
+        },
+        error: undefined,
+      };
+    }
+
+    case PROJECT_STATS_LOADING: {
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          [action.projectID]: [],
+        },
+        error: undefined,
+      };
+    }
+
+    case PROJECT_STATS_LOADED: {
+      return {
+        ...state,
+        stats: {
+          ...state.stats,
+          [action.projectID]: action.stats,
         },
         error: undefined,
       };
