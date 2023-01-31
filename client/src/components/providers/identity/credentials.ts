@@ -1,8 +1,8 @@
 // --- Types
+import { datadogLogs } from "@datadog/browser-logs";
 import {
   RequestPayload,
   IssuedChallenge,
-  CredentialResponseBody,
   VerifiableCredentialRecord,
 } from "@gitcoinco/passport-sdk-types";
 
@@ -19,18 +19,22 @@ export const fetchChallengeCredential = async (
 ): Promise<IssuedChallenge> => {
   // fetch challenge as a credential from API that fits the version, address and type (this credential has a short ttl)
 
-  const response: { data: CredentialResponseBody } = await axios.post(
-    `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/challenge`,
-    {
-      payload: {
-        address: payload.address,
-        type: payload.type,
-      },
-    }
-  );
-
+  let response;
+  try {
+    response = await axios.post(
+      `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/challenge`,
+      {
+        payload: {
+          address: payload.address,
+          type: payload.type,
+        },
+      }
+    );
+  } catch (error) {
+    datadogLogs.logger.error(`Error fetching challenge credential ${error}`);
+  }
   return {
-    challenge: response.data.credential,
+    challenge: response?.data.credential,
   } as IssuedChallenge;
 };
 
@@ -74,19 +78,25 @@ export const fetchVerifiableCredential = async (
   payload.proofs = { ...payload.proofs, ...{ signature } };
 
   // fetch a credential from the API that fits the version, payload and passes the signature message challenge
-  const response: { data: CredentialResponseBody } = await axios.post(
-    `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/verify`,
-    {
-      payload,
-      challenge,
-    }
-  );
+
+  let response;
+  try {
+    response = await axios.post(
+      `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/verify`,
+      {
+        payload,
+        challenge,
+      }
+    );
+  } catch (error) {
+    datadogLogs.logger.error(`Error fetching verifiable credential ${error}`);
+  }
 
   // return everything that was used to create the credential (along with the credential)
   return {
     signature,
     challenge,
-    record: response.data.record,
-    credential: response.data.credential,
+    record: response?.data.record,
+    credential: response?.data.credential,
   } as VerifiableCredentialRecord;
 };

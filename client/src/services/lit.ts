@@ -5,7 +5,6 @@ import { isJestRunning } from "../utils/utils";
 import { global } from "../global";
 
 const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
-
 // @ts-ignore
 window.Buffer = Buffer;
 
@@ -134,7 +133,6 @@ export default class Lit {
     if (!this.litNodeClient) {
       await this.connect();
     }
-
     // Obtain Auth Signature to verify signer is wallet owner
     const authSig = await LitJsSdk.checkAndSignAuthMessage({
       chain: this.chain,

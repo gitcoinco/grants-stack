@@ -1,3 +1,4 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
@@ -87,24 +88,41 @@ export const publishGrant =
     const pinataClient = new PinataClient();
     dispatch(grantStatus(Status.UploadingImages));
     if (formMetaData?.bannerImgData !== undefined) {
-      const resp = await pinataClient.pinFile(formMetaData.bannerImgData);
-      application.bannerImg = resp.IpfsHash;
+      try {
+        const resp = await pinataClient.pinFile(formMetaData.bannerImgData);
+        application.bannerImg = resp.IpfsHash;
+      } catch {
+        datadogRum.addError("ipfs: error uploading banner image");
+        datadogLogs.logger.error("ipfs: error uploading banner image");
+      }
     }
 
     if (formMetaData?.logoImgData !== undefined) {
-      const resp = await pinataClient.pinFile(formMetaData.logoImgData);
-      application.logoImg = resp.IpfsHash;
+      try {
+        const resp = await pinataClient.pinFile(formMetaData.logoImgData);
+        application.logoImg = resp.IpfsHash;
+      } catch (e) {
+        datadogRum.addError(e);
+        datadogLogs.logger.error("ipfs: error uploading logo image");
+        console.log("ipfs: error uploading logo image", e);
+      }
     }
-
     application.credentials = formCredentials;
     application.createdAt = oldGrantMetadata
       ? oldGrantMetadata.metadata?.createdAt
       : Date.now();
 
     dispatch(grantStatus(Status.UploadingJSON));
-    const resp = await pinataClient.pinJSON(application);
-    const metadataCID = resp.IpfsHash;
+    let resp;
+    try {
+      resp = await pinataClient.pinJSON(application);
+    } catch (e) {
+      datadogRum.addError(e);
+      datadogLogs.logger.error("ipfs: error uploading metadata");
+      console.error("ipfs: error uploading metadata", e);
+    }
 
+    const metadataCID = resp.IpfsHash;
     const { chainID } = state.web3;
     const addresses = addressesByChainID(chainID!);
     const { signer } = global;
@@ -125,6 +143,7 @@ export const publishGrant =
           });
         } catch (e) {
           datadogRum.addError(e);
+          datadogLogs.logger.warn("transaction error");
           dispatch(grantError("transaction error", Status.Error));
           console.error("tx error", e);
           return;
@@ -137,6 +156,7 @@ export const publishGrant =
           });
         } catch (e) {
           datadogRum.addError(e);
+          datadogLogs.logger.warn("transaction error");
           dispatch(grantError("transaction error", Status.Error));
           console.error("tx error", e);
           return;
@@ -144,6 +164,7 @@ export const publishGrant =
       }
     } catch (e) {
       datadogRum.addError(e);
+      datadogLogs.logger.warn("transaction error");
       dispatch(grantError("transaction error", Status.Error));
       console.error("tx error", e);
       return;

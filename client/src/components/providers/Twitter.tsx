@@ -63,25 +63,33 @@ export default function Twitter({
     );
 
     // Fetch data from external API
-    const res = await fetch(
-      `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL?.replace(
-        /\/*?$/,
-        ""
-      )}/twitter/generateAuthUrl`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          callback: process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK,
-        }),
-      }
-    );
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL?.replace(
+          /\/*?$/,
+          ""
+        )}/twitter/generateAuthUrl`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            callback: process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK,
+          }),
+        }
+      );
+      const data = await res.json();
 
-    if (authWindow) {
-      authWindow.location = data.authUrl;
+      if (authWindow) {
+        authWindow.location = data.authUrl;
+      }
+    } catch (error) {
+      verificationError(
+        "Couldn't connect to Twitter. Please try verifying again"
+      );
+      datadogLogs.logger.error("Twitter verification failed");
+      datadogRum.addError(error, { provider: CredentialProvider.Twitter });
     }
   }
 
