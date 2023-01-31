@@ -422,6 +422,10 @@ export const fetchProjectApplications =
               round {
                 id
               }
+              metaPtr {
+                pointer
+                protocol
+              }
             }
           }
           `,
@@ -441,6 +445,7 @@ export const fetchProjectApplications =
             status: rp.status,
             roundID: rp.round.id,
             chainId: chain.id,
+            metaPtr: rp.metaPtr,
           }));
 
           if (applications.length === 0) {
