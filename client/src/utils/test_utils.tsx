@@ -26,9 +26,9 @@ export const buildRound = (round: any): Round => ({
   address: addressFrom(1),
   applicationsStartTime: 1663751953,
   applicationsEndTime: Date.now() / 1000 + 36000,
-  roundStartTime: 3,
-  roundEndTime: 4,
-  token: "test-token",
+  roundStartTime: 1663751953,
+  roundEndTime: Date.now() / 1000 + 36000,
+  token: "0x0000000000000000000000000000000000000000",
   roundMetaPtr: {},
   roundMetadata: {},
   applicationMetaPtr: {},
@@ -98,7 +98,17 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
   ...metadata,
 });
 
-export const renderWrapped = (ui: React.ReactElement, store = setupStore()) => {
+export const buildProjectApplication = (application: any): any => ({
+  chainId: 5,
+  roundID: addressFrom(1),
+  status: "APPROVED",
+  ...application,
+});
+
+export const renderWrapped = (
+  ui: React.ReactElement,
+  store = setupStore()
+): any => {
   const wrapped = (
     <ChakraProvider>
       <Provider store={store}>

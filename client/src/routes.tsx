@@ -68,6 +68,19 @@ export const roundApplicationPath = (chainId: string, roundId: string) => {
   return `/chains/${chainId}/rounds/${roundId}/apply`;
 };
 
+export const roundApplicationPathForProject = (
+  chainId: string,
+  roundId: string,
+  projectId: string
+) => {
+  datadogLogs.logger.info(
+    `====> Route: /round/${chainId}/${roundId}/${projectId}`
+  );
+  datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
+  return `/round/${chainId}/${roundId}/${projectId}`;
+};
+
 export const roundApplicationViewPath = (
   chainId: string,
   roundId: string,

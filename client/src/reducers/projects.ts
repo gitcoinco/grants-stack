@@ -112,13 +112,13 @@ export const projectsReducer = (
     }
 
     case PROJECT_APPLICATIONS_LOADING: {
+      // Remove the project applications key
+      const { [action.projectID]: projectApplications, ...applications } =
+        state.applications;
+
       return {
         ...state,
-        applications: {
-          ...state.applications,
-          [action.projectID]: [],
-        },
-        error: undefined,
+        applications,
       };
     }
 
@@ -127,10 +127,7 @@ export const projectsReducer = (
         ...state,
         applications: {
           ...state.applications,
-          [action.projectID]: [
-            ...(state.applications[action.projectID] ?? []),
-            ...action.applications,
-          ],
+          [action.projectID]: action.applications,
         },
         error: undefined,
       };

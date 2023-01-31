@@ -49,7 +49,6 @@ describe("projects reducer", () => {
           chainId: 1,
         },
       ],
-      "2": [],
     });
   });
 
