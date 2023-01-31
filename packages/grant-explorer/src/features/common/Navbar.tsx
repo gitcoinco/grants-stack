@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -11,6 +11,7 @@ export interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
   const [shortlist] = useBallot();
+  const { chainId, roundId } = useParams();
 
   return (
     <nav className="bg-white fixed w-full z-10">
@@ -18,7 +19,7 @@ export default function Navbar(props: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
-              to="#"
+              to={`/round/${chainId}/${roundId}`}
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
