@@ -416,6 +416,10 @@ export const fetchProjectApplications =
               round {
                 id
               }
+              metaPtr {
+                pointer
+                protocol
+              }
             }
           }
           `,
@@ -431,6 +435,7 @@ export const fetchProjectApplications =
           status: rp.status,
           roundID: rp.round.id,
           chainId: chain.id,
+          metaPtr: rp.metaPtr,
         }));
 
         if (applications.length === 0) {
@@ -459,8 +464,13 @@ export const fetchProjectApplications =
           )
         );
       } catch (error: any) {
-        datadogRum.addError(error, { projectID });
         console.error(error);
+        datadogRum.addError(error, { projectID });
+        datadogLogs.logger.error("fetchProjectApplications() error", {
+          chain,
+          projectID,
+          error,
+        });
         dispatch({
           type: PROJECT_APPLICATIONS_ERROR,
           projectID,

@@ -17,6 +17,7 @@ import Project from "./components/grants/Show";
 import Layout from "./components/Layout";
 import RoundApply from "./components/rounds/Apply";
 import RoundShow from "./components/rounds/Show";
+import ViewApplication from "./components/rounds/ViewApplication";
 import history from "./history";
 import reportWebVitals from "./reportWebVitals";
 import { slugs } from "./routes";
@@ -63,6 +64,10 @@ root.render(
                   <Route
                     path={slugs.roundApplication}
                     element={<RoundApply />}
+                  />
+                  <Route
+                    path={slugs.roundApplicationView}
+                    element={<ViewApplication />}
                   />
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

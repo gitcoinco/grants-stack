@@ -7,5 +7,6 @@ const colors = {
   "tertiary-text": "#E2E0E7",
   "quaternary-text": "#FFFFFF",
   "green-text": "#11BC92",
+  "grey-text": "#0E0333",
 };
 export default colors;

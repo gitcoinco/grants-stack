@@ -1,8 +1,10 @@
-import { Badge, Box, Image, Spinner } from "@chakra-ui/react";
+import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { loadRound } from "../../actions/rounds";
 import { RootState } from "../../reducers";
+import { roundApplicationViewPath } from "../../routes";
 import { RoundSupport } from "../../types";
 import { formatDateFromSecs } from "../../utils/components";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
@@ -132,6 +134,22 @@ export default function ApplicationCard({
               Contact the {props.round?.programName} support team.
             </a>
           </p>
+          <Link
+            to={roundApplicationViewPath(
+              applicationData.chainId,
+              applicationData.roundID,
+              applicationData.application.metaPtr.pointer
+            )}
+          >
+            <Button
+              backgroundColor="purple.100"
+              color="purple.600"
+              className="mt-4 mr-2 mb-2 w-full"
+              fontWeight="normal"
+            >
+              View Application
+            </Button>
+          </Link>
         </Box>
       )}
     </Box>

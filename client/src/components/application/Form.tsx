@@ -49,17 +49,21 @@ export default function Form({
   round,
   onSubmit,
   showErrorModal,
+  readOnly,
+  publishedApplication,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
   onSubmit: () => void;
   showErrorModal: boolean;
+  readOnly?: boolean;
+  publishedApplication?: any;
 }) {
   const dispatch = useDispatch();
   const { chains } = useNetwork();
 
   const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState(readOnly || false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
   const [showProjectDetails] = useState(true);
@@ -93,6 +97,22 @@ export default function Form({
 
   const chainInfo = chains.find((i) => i.id === props.chainID);
   const schema = roundApplication.applicationSchema;
+
+  useEffect(() => {
+    if (publishedApplication === undefined) {
+      return;
+    }
+
+    const inputValues: DynamicFormInputs = {};
+    publishedApplication.application.answers.forEach((answer: any) => {
+      inputValues[answer.questionId] = answer.answer ?? "***";
+    });
+    inputValues[Object.keys(inputValues).length] =
+      publishedApplication.application.recipient;
+    inputValues[Object.keys(inputValues).length] =
+      publishedApplication.application.project.title;
+    setFormInputs(inputValues);
+  }, [publishedApplication]);
 
   const validate = async (inputs: DynamicFormInputs) => {
     try {
@@ -201,12 +221,31 @@ export default function Form({
   }, [props.allProjectMetadata]);
 
   return (
-    <div className="border-0 sm:border sm:border-solid border-tertiary-text rounded text-primary-text p-0 sm:p-4">
+    <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         {schema.map((input) => {
           switch (input.type) {
             case "PROJECT":
-              return (
+              return readOnly ? (
+                <TextInput
+                  key={input.id}
+                  label={input.question}
+                  placeholder={input.info}
+                  name={`${input.id}`}
+                  value={formInputs[`${input.id}`] ?? ""}
+                  disabled={preview}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              ) : (
                 <Fragment key={input.id}>
                   <div className="mt-6 w-full sm:w-1/2 relative">
                     <CustomSelect
@@ -265,26 +304,28 @@ export default function Form({
               /* Radio for safe or multi-sig */
               return (
                 <Fragment key={input.id}>
-                  <div className="relative mt-2" data-testid="wallet-type">
-                    <Stack>
-                      <Radio
-                        label="Is your payout wallet a Gnosis Safe or multi-sig?"
-                        choices={["Yes", "No"]}
-                        changeHandler={handleInput}
-                        name="isSafe"
-                        value={formInputs.isSafe}
-                        info=""
-                        required={input.required ?? true}
-                        disabled={preview}
-                        feedback={
-                          feedback.find((fb) => fb.title === "isSafe") ?? {
-                            type: "none",
-                            message: "",
+                  {!readOnly && (
+                    <div className="relative mt-2" data-testid="wallet-type">
+                      <Stack>
+                        <Radio
+                          label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                          choices={["Yes", "No"]}
+                          changeHandler={handleInput}
+                          name="isSafe"
+                          value={formInputs.isSafe}
+                          info=""
+                          required={input.required ?? true}
+                          disabled={preview}
+                          feedback={
+                            feedback.find((fb) => fb.title === "isSafe") ?? {
+                              type: "none",
+                              message: "",
+                            }
                           }
-                        }
-                      />
-                    </Stack>
-                  </div>
+                        />
+                      </Stack>
+                    </div>
+                  )}
                   {/* todo: do we need this tooltip for all networks? */}
                   <TextInputAddress
                     data-testid="address-input-wrapper"
@@ -438,32 +479,34 @@ export default function Form({
             </ul>
           </div>
         )}
-        <div className="flex justify-end">
-          {!preview ? (
-            <Button
-              variant={ButtonVariants.primary}
-              onClick={() => handlePreviewClick()}
-            >
-              Preview Application
-            </Button>
-          ) : (
-            <div className="flex justify-end">
-              <Button
-                variant={ButtonVariants.outline}
-                onClick={() => setPreview(false)}
-              >
-                Back to Editing
-              </Button>
+        {!readOnly && (
+          <div className="flex justify-end">
+            {!preview ? (
               <Button
                 variant={ButtonVariants.primary}
-                onClick={handleSubmitApplication}
-                disabled={disableSubmit}
+                onClick={() => handlePreviewClick()}
               >
-                Submit
+                Preview Application
               </Button>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="flex justify-end">
+                <Button
+                  variant={ButtonVariants.outline}
+                  onClick={() => setPreview(false)}
+                >
+                  Back to Editing
+                </Button>
+                <Button
+                  variant={ButtonVariants.primary}
+                  onClick={handleSubmitApplication}
+                  disabled={disableSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </form>
       <ErrorModal
         open={showErrorModal}
