@@ -169,15 +169,17 @@ export class DatabaseInstance {
       const roundSummaryData = {
         contributionCount: summary.contributionCount,
         uniqueContributors: summary.uniqueContributors,
-        totalContributionsInUSD: Number(summary.totalContributionsInUSD),
-        averageUSDContribution: Number(summary.averageUSDContribution),
+        totalContributionsInUSD: Number(summary.totalContributionsInUSD) ? Number(summary.totalContributionsInUSD) : 0,
+        averageUSDContribution: Number(summary.averageUSDContribution) ? Number(summary.averageUSDContribution) : 0,
       }
 
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
         votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
-        roundSummary: { create: roundSummaryData },
+        roundSummary: {
+          create: roundSummaryData
+        },
       }
 
       // upsert with round summary data
@@ -186,7 +188,6 @@ export class DatabaseInstance {
         create: roundData,
         update: {
           roundSummary: {
-            create: roundSummaryData,
             update: roundSummaryData,
           }
         }
