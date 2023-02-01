@@ -47,7 +47,7 @@ export async function main(
   await confirmContinue({
     contract: "QuadraticFundingRelayStrategyFactory",
     QFVotingStrategyFactoryContract:
-      quadraticFundingRelayStrategyImplementationContract,
+      quadraticFundingRelayStrategyFactoryContract,
     QFVotingStrategyImplementationContract:
       quadraticFundingRelayStrategyImplementationContract,
     network: network.name,
