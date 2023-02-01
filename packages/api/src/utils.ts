@@ -631,7 +631,7 @@ export const fetchProjectIdToPayoutAddressMapping = async (
   for (const project of projects) {
     // project.id format ->  applicationId-roundId
     const projectId = project.id.split("-")[0];
-    const payoutAddress = getAddress(project.payoutAddress);
+    const payoutAddress = getAddress(project.payoutAddress).toLowerCase();
     projectToPayoutMap.set(projectId, payoutAddress);
   }
 
