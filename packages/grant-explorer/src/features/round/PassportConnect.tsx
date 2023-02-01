@@ -293,7 +293,7 @@ export default function PassportConnect() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
         <header>
           <div
             data-testid="breadcrumb"
