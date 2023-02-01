@@ -94,7 +94,7 @@ function BeforeRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="lg:mx-20 px-4 py-7 h-screen">
+      <div className="px-4 py-7 h-screen bg-gradient-to-r from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
             round={round}
@@ -438,10 +438,10 @@ function PreRoundPage(props: {
     )[0].name;
 
   return (
-    <div className="container mx-auto flex flex-row bg-white">
-      <div className="basis-1/2 mt-20 ">
+    <div className="container mx-auto flex flex-row w-2/3 justify-center mt-20">
+      <div className="text-center ml-8">
         <div className="lg:inline-block md:inline-block"></div>
-        <p className="mb-2 text-xl text-black font-bold">
+        <p className="mb-2 text-2xl text-black font-bold">
           {round.roundMetadata?.name}
         </p>
         <p
@@ -503,20 +503,21 @@ function PreRoundPage(props: {
             {matchingFundPayoutTokenName}
           </span>
         </p>
-        <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
+        <p className="text-lg mt-4 mb-4 my-2 text-black font-normal border-t-2 pt-4 border-b-2 pb-4">
           <span>{round.roundMetadata?.eligibility.description}</span>
         </p>
         <p
-          className="mb-2 text-lg text-black font-bold"
+          className="mb-2 text-2xl text-black font-bold"
           data-testid="round-eligibility"
         >
           Round Eligibility
         </p>
-        <ul className="list-disc list-inside text-lg text-black font-normal">
+        <div className="container justify-center max-w-fit mx-auto">
+        <ul className="list-disc list-inside text-lg text-black text-left font-normal">
           {round.roundMetadata?.eligibility.requirements?.map(element)}
         </ul>
-
-        <div className="container mx-auto flex">
+        </div>
+        <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
           {isBeforeApplicationStartDate && (
             <InactiveButton
               label={`Applications Open ${getUTCDate(
