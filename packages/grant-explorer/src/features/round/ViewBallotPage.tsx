@@ -260,7 +260,7 @@ export default function ViewBallot() {
         </div>
       )}
       {}
-      <div className="lg:mx-20 h-screen px-4 py-7">
+      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
           <div className="flex flex-col md:flex-row gap-4">

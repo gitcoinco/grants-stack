@@ -94,7 +94,7 @@ function BeforeRoundStart(props: {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="px-4 py-7 h-screen bg-gradient-to-r from-[#F0F0F0] to-[#FFFFFF] h-full">
+      <div className="relative top-16 px-4 py-7 h-screen bg-gradient-to-r from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
             round={round}
@@ -177,7 +177,7 @@ function AfterRoundStart(props: {
           <RoundEndedBanner />
         </div>
       )}
-      <div className="lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
         <main>
           <p className="text-3xl my-5">{round.roundMetadata?.name}</p>
 
