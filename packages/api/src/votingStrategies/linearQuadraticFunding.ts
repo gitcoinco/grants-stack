@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { formatUnits, getAddress } from "ethers/lib/utils";
 import {
   ChainId,
@@ -17,6 +17,9 @@ import {
   fetchAverageTokenPrices,
   fetchProjectIdToPayoutAddressMapping, fetchRoundMetadata,
 } from "../utils";
+import {
+  fetchContributorsAboveThreshold
+} from "../sybilProtection/passport";
 
 /**
  * summarizeRound is an async function that summarizes a round of voting by counting the number of contributions, the number of unique contributors, the total amount of contributions in USD, and the average contribution in USD.
@@ -380,6 +383,9 @@ export const matchQFContributions = async (
 
   let matchResults: QFDistribution[] = [];
   let totalMatchInUSD = 0;
+
+  const contributorsWhoShouldBeMatched = await fetchContributorsAboveThreshold();
+
   for (const projectId in contributionsByProject) {
     let sumOfSquares = 0;
     let sumOfContributions = 0;
@@ -394,7 +400,12 @@ export const matchQFContributions = async (
 
       uniqueContributors.add(contributor);
 
-      if (usdValue) {
+      const checksumAddress = ethers.utils.getAddress(contributor)
+
+      if (
+        usdValue &&
+        contributorsWhoShouldBeMatched.includes(checksumAddress)
+      ) {
         sumOfSquares += Math.sqrt(usdValue);
         sumOfContributions += usdValue;
       }

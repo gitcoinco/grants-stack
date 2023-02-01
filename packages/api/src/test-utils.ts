@@ -9,6 +9,7 @@ import {
   QFContribution,
   RoundMetadata,
   QFDistribution,
+  PassportResponse,
 } from "./types";
 import prisma from "./handlers/client";
 
@@ -64,3 +65,35 @@ export const mockQFDistribution: QFDistribution = {
   uniqueContributorsCount: faker.datatype.number(),
   totalContributionsInUSD: faker.datatype.number(),
 };
+
+export const mockPassportAboveThreshold = () : PassportResponse => {
+  return {
+    "address": faker.finance.ethereumAddress(),
+    "score": "25",
+    "status": "DONE",
+    "last_score_timestamp": "2023-01-17T12:27:09.041074+00:00",
+    "evidence": {
+        "type": "ThresholdScoreCheck",
+        "success": true,
+        "rawScore": "25",
+        "threshold": "21.75812"
+    },
+    "error": null
+  };
+}
+
+export const mockPassportBelowThreshold = (): PassportResponse => {
+  return {
+    "address": faker.finance.ethereumAddress(),
+    "score": "5",
+    "status": "DONE",
+    "last_score_timestamp": "2023-01-17T12:27:09.041074+00:00",
+    "evidence": {
+        "type": "ThresholdScoreCheck",
+        "success": false,
+        "rawScore": "5",
+        "threshold": "21.75812"
+    },
+    "error": null
+  };
+}

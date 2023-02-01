@@ -7,7 +7,7 @@
     "node": ">=16.15.0"
   },
   "scripts": {
-    "test": "jest --setupFiles dotenv/config",
+    "test": "jest",
     "build": "npx tsc",
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",
