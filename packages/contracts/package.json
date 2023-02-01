@@ -24,6 +24,7 @@
     "deploy-round-factory": "yarn hardhat run scripts/round/deployRoundFactory.ts --network",
     "link-round-implementation": "yarn hardhat run scripts/round/linkRoundImplementation.ts --network",
     "create-round": "yarn hardhat run scripts/round/createRound.ts --network",
+    "create-relay-round": "yarn hardhat run scripts/round/createRelayRound.ts --network",
     "apply-to-round": "yarn hardhat run scripts/round/applyToRound.ts --network",
     "update-project-metaptr": "yarn hardhat run scripts/round/updateProjectMetaPtr.ts --network",
     "upgrade-round-factory": "yarn hardhat run scripts/round/upgradeRoundFactory.ts --network",

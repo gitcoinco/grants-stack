@@ -45,6 +45,11 @@ if (!deployPrivateKey) {
     "0x0000000000000000000000000000000000000000000000000000000000000001";
 }
 
+const mnemonic: string | undefined = process.env.MNEMONIC;
+if (!mnemonic) {
+  throw new Error("Please set your MNEMONIC in a .env file");
+}
+
 const infuraIdKey = process.env.INFURA_ID as string;
 
 /**
@@ -61,7 +66,11 @@ function createTestnetConfig(
     url = `https://${network}.infura.io/v3/${infuraIdKey}`;
   }
   return {
-    accounts: [deployPrivateKey],
+    accounts: {
+      count: 10,
+      mnemonic,
+      path: "m/44'/60'/0'/0",
+    },
     chainId: chainIds[network],
     allowUnlimitedContractSize: true,
     url,
@@ -124,7 +133,10 @@ const config: HardhatUserConfig = {
       "fantom-testnet",
       "https://rpc.testnet.fantom.network/"
     ),
-    "polygon-mumbai": createTestnetConfig("polygon-mumbai"),
+    "polygon-mumbai": {
+      ...createTestnetConfig("polygon-mumbai"),
+      url: "https://rpc.ankr.com/polygon_mumbai",
+    },
     localhost: createTestnetConfig("localhost", "http://localhost:8545"),
   },
   gasReporter: {
