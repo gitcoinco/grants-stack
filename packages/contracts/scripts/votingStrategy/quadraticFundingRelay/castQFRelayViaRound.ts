@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../../utils/script-utils";
 import { roundParams } from "../../config/round.config";
-import { QFVotingParams } from "../../config/votingStrategy.config";
+import { QFRelayParams } from "../../config/votingStrategy.config";
 import * as utils from "../../utils";
 
 utils.assertEnvironment();
@@ -13,7 +13,7 @@ export async function main() {
   const network = hre.network;
 
   const roundNetworkParams = roundParams[network.name];
-  const votingNetworkParams = QFVotingParams[network.name];
+  const votingNetworkParams = QFRelayParams[network.name];
 
   if (!roundNetworkParams || !votingNetworkParams) {
     throw new Error(`Invalid network ${network.name}`);
@@ -44,7 +44,7 @@ export async function main() {
     chainId: network.config.chainId,
   });
 
-  const tokenAddress = "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D";
+  const tokenAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"; //DummyERC20 Mumbai
 
   const erc20Abi = [
     "constructor(string name_, string symbol_)",
@@ -78,12 +78,14 @@ export async function main() {
       tokenAddress, // token
       1, // amount
       "0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017", // grantAddress
+      ethers.utils.id("projectID"),
     ],
     [
       signers[0].address, //  voter
       tokenAddress, // token
       2, // amount
       "0xB8cEF765721A6da910f14Be93e7684e9a3714123", // grantAddress
+      ethers.utils.id("projectID"),
     ],
   ];
 
@@ -92,7 +94,7 @@ export async function main() {
   for (let i = 0; i < votes.length; i++) {
     encodedVotes.push(
       ethers.utils.defaultAbiCoder.encode(
-        ["address", "address", "uint256", "address"],
+        ["address", "address", "uint256", "address", "bytes32"],
         votes[i]
       )
     );
