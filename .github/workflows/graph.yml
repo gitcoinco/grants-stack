@@ -16,15 +16,21 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          cache: 'yarn'
+          node-version: "16"
+          cache: "yarn"
           cache-dependency-path: packages/graph/yarn.lock
 
-      - name: Install Dependencies
+      - name: Install Dependencies for Round Manager
         run: |
           yarn install
-          cd packages/graph
-          yarn install 
+          cd packages/graph/round
+          yarn install
+
+      - name: Install Dependencies for Project Registry
+        run: |
+          yarn install
+          cd packages/graph/project-registry
+          yarn install
 
       # - name: Setup
       #   run: |
@@ -32,7 +38,7 @@ jobs:
       #     yarn add @graphprotocol/graph-cli
       #     # yarn prepare:goerli
       #     # yarn codegen
-          
+
       # - name: Test
       #   run: |
       #     cd packages/graph
