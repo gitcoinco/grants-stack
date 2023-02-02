@@ -57,6 +57,9 @@ export type VotingOption = {
   name: string;
   strategy: string;
   default?: boolean;
+  chainId: number;
+  address: string;
+  logo?: string;
 };
 
 export type SupportType = {
@@ -180,17 +183,47 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   }
 };
 
-export const getVotingOptions = (): VotingOption[] => {
-  return [
-    {
-      name: "Direct voting",
-      strategy: "QFVoting",
-    },
-    {
-      name: "Relay voting",
-      strategy: "QFRelay",
-    },
-  ];
+export const getVotingOptions = (chainId: ChainId): VotingOption[] => {
+  switch (chainId) {
+    case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
+      return [
+        {
+          name: "Direct voting",
+          strategy: "QFVoting",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A",
+        },
+        {
+          name: "Relay voting",
+          strategy: "QFRelay",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0x0637876724150495d2B4F73A18EA87bCb78E63DB",
+        },
+      ];
+    }
+    case ChainId.MAINNET:
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      return [
+        {
+          name: "Direct voting",
+          strategy: "QFVoting",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "Relay voting",
+          strategy: "QFRelay",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0x0637876724150495d2B4F73A18EA87bCb78E63DB",
+        },
+      ];
+    }
+  }
 };
 
 /**

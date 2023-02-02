@@ -167,10 +167,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const votingOptions: VotingOption[] = [
     {
       name: "Choose Voting Strategy",
+      chainId: chain.id,
       strategy: "",
+      address: "",
       default: true,
     },
-    ...getVotingOptions(),
+    ...getVotingOptions(chain.id),
   ];
 
   const FormStepper = props.stepper;
