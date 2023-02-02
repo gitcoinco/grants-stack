@@ -7,8 +7,10 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,
+  POLYGON_MUMBAI_CHAIN_ID = 80001,
 }
 
+//TODO names and logos
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.MAINNET]: {
@@ -36,6 +38,11 @@ export const CHAINS: Record<number, Program["chain"]> = {
     name: "Fantom Testnet",
     logo: "./logos/fantom-logo.svg",
   },
+  [ChainId.POLYGON_MUMBAI_CHAIN_ID]: {
+    id: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+    name: "Polygon Mumbai",
+    logo: "./logos/fantom-logo.svg",
+  },
 };
 
 export type PayoutToken = {
@@ -50,6 +57,9 @@ export type VotingOption = {
   name: string;
   strategy: string;
   default?: boolean;
+  chainId: number;
+  address: string;
+  logo?: string;
 };
 
 export type SupportType = {
@@ -137,6 +147,16 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         },
       ];
     }
+    case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
+      return [
+        {
+          name: "DERC20",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
       return [
@@ -163,17 +183,47 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   }
 };
 
-export const getVotingOptions = (): VotingOption[] => {
-  return [
-    {
-      name: "Direct voting",
-      strategy: "QFVoting",
-    },
-    {
-      name: "Relay voting",
-      strategy: "QFRelay",
-    },
-  ];
+export const getVotingOptions = (chainId: ChainId): VotingOption[] => {
+  switch (chainId) {
+    case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
+      return [
+        {
+          name: "Direct voting",
+          strategy: "QFVoting",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A",
+        },
+        {
+          name: "Relay voting",
+          strategy: "QFRelay",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0x0637876724150495d2B4F73A18EA87bCb78E63DB",
+        },
+      ];
+    }
+    case ChainId.MAINNET:
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+    case ChainId.GOERLI_CHAIN_ID:
+    default: {
+      return [
+        {
+          name: "Direct voting",
+          strategy: "QFVoting",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+        {
+          name: "Relay voting",
+          strategy: "QFRelay",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0x0637876724150495d2B4F73A18EA87bCb78E63DB",
+        },
+      ];
+    }
+  }
 };
 
 /**
@@ -186,16 +236,14 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.MAINNET:
       return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
-
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-
     case ChainId.FANTOM_MAINNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
-
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
-
+    case ChainId.POLYGON_MUMBAI_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API}`;
     case ChainId.GOERLI_CHAIN_ID:
     default:
       return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
@@ -245,9 +293,11 @@ export const graphql_fetch = async (
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
+  let gateway = "ipfs.io";
+  if (process.env.REACT_APP_PINATA_GATEWAY) {
+    gateway = process.env.REACT_APP_PINATA_GATEWAY;
+  }
+  return fetch(`https://${gateway}/ipfs/${cid}`).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }

@@ -83,13 +83,6 @@ const ValidationSchema = yup.object().shape({
           then: yup.string().url().required("You must provide a valid URL."),
         }),
     }),
-    voting: yup
-      .string()
-      .required("You must select a voting strategy for your round.")
-      .notOneOf(
-        ["Choose Voting Strategy"],
-        "You must select a voting strategy for your round."
-      ),
   }),
   applicationsStartTime: yup
     .date()
@@ -121,6 +114,13 @@ const ValidationSchema = yup.object().shape({
     .notOneOf(
       ["Choose Payout Token"],
       "You must select a payout token for your round."
+    ),
+  votingStrategy: yup
+    .string()
+    .required("You must select a voting strategy for your round.")
+    .notOneOf(
+      ["Choose Voting Strategy"],
+      "You must select a voting strategy for your round."
     ),
 });
 
@@ -167,10 +167,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const votingOptions: VotingOption[] = [
     {
       name: "Choose Voting Strategy",
+      chainId: chain.id,
       strategy: "",
+      address: "",
       default: true,
     },
-    ...getVotingOptions(),
+    ...getVotingOptions(chain.id),
   ];
 
   const FormStepper = props.stepper;
@@ -233,7 +235,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
           />
           <VotingStrategyDropdown
             errors={errors}
-            register={register("roundMetadata.voting")}
+            register={register("votingStrategy")}
             control={control}
             votingOptions={votingOptions}
           />
@@ -921,9 +923,9 @@ function VotingStrategyDropdown(props: {
                 </Listbox.Options>
               </Transition>
             </div>
-            {props.errors.roundMetadata?.voting && (
+            {props.errors.votingStrategy && (
               <p className="mt-2 text-xs text-pink-500">
-                {props.errors.roundMetadata?.voting.message}
+                {props.errors.votingStrategy.message}
               </p>
             )}
           </div>
