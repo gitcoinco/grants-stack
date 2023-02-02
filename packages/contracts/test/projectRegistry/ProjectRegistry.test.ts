@@ -1,11 +1,11 @@
-const hre = require("hardhat");
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { AddressZero } from "@ethersproject/constants";
+import hre from "hardhat";
+import { expect } from "chai";
+import { ethers } from "hardhat";
 
 const testMetadata = { protocol: 1, pointer: "test-metadata" };
 const updatedMetadata = { protocol: 1, pointer: "updated-metadata" };
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const OWNERS_LIST_SENTINEL = "0x0000000000000000000000000000000000000001";
 
 describe("ProjectRegistry", function () {
@@ -113,7 +113,7 @@ describe("ProjectRegistry", function () {
 
   it("does not allow to remove owner 0", async function () {
     const projectID = 0;
-    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, ZERO_ADDRESS)).to.be.revertedWith("PR001");
+    await expect(this.contract.connect(this.owner).removeProjectOwner(projectID, this.owner.address, AddressZero)).to.be.revertedWith("PR001");
   });
 
   it("does not allow to remove owner equal to OWNERS_LIST_SENTINEL", async function () {
