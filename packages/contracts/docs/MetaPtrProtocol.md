@@ -2,7 +2,7 @@
 
 ## Overview
 
-All the contracts in grants-round has metadata which cannot be stored on-chain and instead store a reference to theier metadata on-chain.
+All the contracts in grants-round has metadata which cannot be stored on-chain and instead store a reference to their metadata on-chain.
 This metadata could contain any information which would is not needed to run a program/round (such as round description / list of approved grants / etc)
 
 The contract stores a reference to this metadata in the following format:

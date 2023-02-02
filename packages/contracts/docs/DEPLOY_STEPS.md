@@ -211,7 +211,10 @@ yarn run deploy-round-implementation goerli
 yarn run link-round-implementation goerli
 yarn run create-round goerli
 
-# These scripts would be used tp create a test round
+# Project Registry
+yarn run deploy-project-registry goerli
+
+# These scripts would be used to create a test round
 yarn run create-program goerli
 yarn run create-qf-contract goerli
 yarn run deploy-merkle-contract goerli
