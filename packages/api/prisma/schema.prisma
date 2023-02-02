@@ -24,6 +24,7 @@ model Round {
   isSaturated        Boolean        @default(false)
   roundSummary       RoundSummary?
   projects           Project[]
+  votes              Vote[]
 
   @@map("round")
 }
@@ -37,6 +38,7 @@ model Project {
   roundId          String
   projectId        String
   projectSummaries ProjectSummary[]
+  votes            Vote[]
 
   @@unique([projectId, roundId], name: "projectIdentifier")
   @@map("project")
@@ -89,6 +91,25 @@ model ProjectSummary {
 
   @@unique([projectId, roundId], name: "projectSummaryIdentifier")
   @@map("projectSummary")
+}
+
+model Vote {
+  id               Int      @id @default(autoincrement())
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
+  round            Round    @relation(fields: [roundId], references: [roundId])
+  roundId          String
+  voterAddress     String
+  voterWeight      Float
+  project          Project  @relation(fields: [projectId, roundId], references: [projectId, roundId])
+  projectId        String
+  voteAmountInUSD  Float
+  voteAmountInToken String
+  tokenAddress     String
+  projectPayoutAddress String
+
+  // @@unique([roundId, voterAddress, projectId], name: "voteIdentifier")
+  @@map("vote")
 }
 
 // ========= //

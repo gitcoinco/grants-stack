@@ -108,13 +108,18 @@ export const getRoundSummary = async (
   // handle how stats should be derived per voting strategy
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
+
+      const votes = await db.getVotesForRound(roundId);
+
       // fetch contributions
       let contributions = await fetchQFContributionsForRound(
         chainId,
         votingStrategyId,
       );
 
-      contributions = await hotfixForRounds(roundId, contributions);
+      // TODO: Cache and use
+      await db.createVoteRecords(chainId, roundId, roundMetadata, contributions);
+
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);

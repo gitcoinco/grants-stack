@@ -54,6 +54,7 @@ export const summarizeQFContributions = async (
 
   // Iterate over the array of objects
   contributions.forEach((item: QFContribution) => {
+
     // Get the token
     const token = item.token;
     const contributor = item.contributor;
@@ -121,6 +122,7 @@ export const fetchQFContributionsForRound = async (
   lastID: string = "",
   votes: QFContribution[] = []
 ): Promise<QFContribution[]> => {
+
   const query = `
     query GetContributionsForRound($votingStrategyId: String, $lastID: String) {
       votingStrategies(where:{

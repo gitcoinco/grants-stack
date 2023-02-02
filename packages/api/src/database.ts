@@ -1,6 +1,7 @@
 import { PrismaClient, VotingStrategy, Match, ChainId } from "@prisma/client";
 import { getChainVerbose } from "./utils";
 import {
+  QFContribution,
   QFContributionSummary,
   QFDistribution,
   Result,
@@ -72,6 +73,133 @@ export class DatabaseInstance {
       return { result: true };
     } catch (error) {
       console.error("error creating project", error);
+      return { error: error, result: false };
+    }
+  }
+
+  async createVoteRecord(
+    chainId: string,
+    roundId: string,
+    roundMetadata: RoundMetadata,
+    vote: QFContribution,
+  ): Promise<Result> {
+    try {
+
+      // check if round exists
+      const roundExists = await this.client.round.findUnique({
+        where: { roundId: roundId },
+      });
+
+      // if round doesn't exist, create it
+      if (!roundExists) {
+        await this.createRoundRecord(
+          chainId,
+          roundId,
+          roundMetadata.votingStrategy.strategyName as VotingStrategy
+        );
+      }
+
+      // check if project exists
+      const projectExists = await this.client.project.findUnique({
+        where: {
+          projectIdentifier: {
+            projectId: vote.projectId,
+            roundId: roundId,
+          }
+        },
+      });
+
+      // if project doesn't exist, create it
+      if (!projectExists) {
+        await this.createProjectRecord(
+          chainId,
+          roundId,
+          vote.projectId
+        );
+      }
+
+      const voteData = {
+        roundId: roundId,
+        voterAddress: vote.contributor,
+        voterWeight: 1,
+        projectId: vote.projectId,
+        voteAmountInUSD: vote.usdValue ?? 0,
+        voteAmountInToken: vote.amount.toString() ?? "0",
+      }
+
+      // create vote
+      await this.client.vote.create({
+        data: voteData,
+
+      });
+
+      return { result: true };
+    } catch (error) {
+      console.error("error creating vote", error);
+      return { error: error, result: false };
+
+    }
+  }
+
+  async createVoteRecords(
+    chainId: string,
+    roundId: string,
+    roundMetadata: RoundMetadata,
+    votes: QFContribution[],
+  ) {
+    try {
+
+      const voteData : any = [];
+        for (const vote of votes) {
+
+          // check if round exists
+          const roundExists = await this.client.round.findUnique({
+            where: { roundId: roundId },
+          });
+
+          // if round doesn't exist, create it
+          if (!roundExists) {
+            this.createRoundRecord(
+              chainId,
+              roundId,
+              roundMetadata.votingStrategy.strategyName as VotingStrategy,
+            )
+          }
+
+          // check if project exists
+          const projectExists = await this.client.project.findUnique({
+            where: {
+              projectIdentifier: {
+                projectId: vote.projectId,
+                roundId: roundId,
+              }
+            },
+          });
+
+          // if project doesn't exist, create it
+          if (!projectExists) {
+            this.createProjectRecord(
+              chainId,
+              roundId,
+              vote.projectId,
+            );
+          }
+
+          voteData.push({
+            roundId: roundId,
+            voterAddress: vote.contributor,
+            voterWeight: 1,
+            projectId: vote.projectId,
+            voteAmountInUSD: vote.usdValue ?? 0,
+            voteAmountInToken: vote.amount.toString() ?? "0",
+          });
+        }
+      await this.client.vote.createMany({
+        data: voteData,
+      });
+      return { result: true };
+    } catch (error) {
+      console.error("error creating votes", error);
       return { error: error, result: false };
     }
   }
@@ -186,7 +314,6 @@ export class DatabaseInstance {
         create: roundData,
         update: {
           roundSummary: {
-            create: roundSummaryData,
             update: roundSummaryData,
           }
         }
@@ -400,6 +527,33 @@ export class DatabaseInstance {
       return { result };
     } catch (error) {
       console.error("error getting project", error);
+      return { error: error, result: null };
+    }
+  }
+
+  async getVotesForRound(roundId: string): Promise<Result> {
+    try {
+      const result = await this.client.vote.findMany({
+        where: { roundId: roundId },
+      });
+      return { result };
+    } catch (error) {
+      console.error("error getting votes for round", error);
+      return { error: error, result: null };
+    }
+  }
+
+  async getVotesForProject(roundId: string, projectId: string): Promise<Result> {
+    try {
+      const result = await this.client.vote.findMany({
+        where: {
+            roundId: roundId,
+            projectId: projectId,
+        },
+      });
+      return { result };
+    } catch (error) {
+      console.error("error getting votes for project", error);
       return { error: error, result: null };
     }
   }
