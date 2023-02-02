@@ -1,0 +1,31 @@
+#########################
+# == Helper Entities == #
+#########################
+
+type MetaPtr @entity {
+  id: ID! # id = "metaPtr-{project.id.toHex()}"
+  protocol: BigInt
+  pointer: String
+}
+
+#######################
+# ===== Project ===== #
+#######################
+
+type Project @entity {
+  id: ID!
+  accounts: [AccountProject!]! @derivedFrom(field: "project")
+  metaPtr: MetaPtr
+}
+
+type Account @entity {
+  id: ID!
+  address: String!
+  projects: [AccountProject!]! @derivedFrom(field: "account")
+}
+
+type AccountProject @entity {
+  id: ID! # keccak256(project.id, account.address)
+  account: Account!
+  project: Project!
+}
