@@ -260,18 +260,11 @@ export const graphql_fetch = async (
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  if (!process.env.REACT_APP_PINATA_GATEWAY) {
-    return fetch(`https://nftstorage.link/${cid}`).then((resp) => {
-      if (resp.ok) {
-        return resp.json();
-      }
-
-      return Promise.reject(resp);
-    });
+  let gateway = "ipfs.io";
+  if (process.env.REACT_APP_PINATA_GATEWAY) {
+    gateway = process.env.REACT_APP_PINATA_GATEWAY;
   }
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
+  return fetch(`https://${gateway}/ipfs/${cid}`).then((resp) => {
     if (resp.ok) {
       return resp.json();
     }
