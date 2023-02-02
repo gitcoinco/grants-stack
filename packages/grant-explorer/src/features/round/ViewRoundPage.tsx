@@ -93,8 +93,8 @@ function BeforeRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
+      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} customBackground="bg-[#F0F0F0]" />
+      <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
             round={round}
@@ -438,109 +438,113 @@ function PreRoundPage(props: {
     )[0].name;
 
   return (
-    <div className="container mx-auto flex flex-row bg-white">
-      <div className="basis-1/2 mt-20 ">
-        <div className="lg:inline-block md:inline-block"></div>
-        <p className="mb-2 text-xl text-black font-bold">
-          {round.roundMetadata?.name}
-        </p>
-        <p
-          className="text-lg my-2 text-black font-normal"
-          data-testid="application-period"
-        >
-          Application Period:
-          <span className="mx-1">
-            <span className="mr-1">
-              {getUTCDate(round.applicationsStartTime)}
+    <div  className="mt-20 flex justify-center">
+      <div className="w-max">
+        <div className="text-center">
+          <div className="lg:inline-block md:inline-block"></div>
+          <p className="mb-4 text-2xl text-black font-bold">
+            {round.roundMetadata?.name}
+          </p>
+          <p
+            className="text-lg my-2 font-normal text-grey-400"
+            data-testid="application-period"
+          >
+            Application Period:
+            <span className="mx-1">
+              <span className="mr-1">
+                {getUTCDate(round.applicationsStartTime)}
+              </span>
+
+              <span>
+                ( {getUTCTime(round.applicationsStartTime)} )
+              </span>
+
+              <span className="mx-1">-</span>
+
+              <span className="mr-1">
+                {getUTCDate(round.applicationsEndTime)}
+              </span>
+
+              <span>
+                ( {getUTCTime(round.applicationsEndTime)} )
+              </span>
             </span>
+          </p>
+          <p
+            className="text-lg my-2 font-normal text-grey-400"
+            data-testid="round-period"
+          >
+            Round Period:
+            <span>
+              <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
 
-            <span className="text-grey-400">
-              ( {getUTCTime(round.applicationsStartTime)} )
+              <span>
+                ( {getUTCTime(round.roundStartTime)} )
+              </span>
+
+              <span className="mx-1">-</span>
+
+              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
+
+              <span>
+                ( {getUTCTime(round.roundEndTime)} )
+              </span>
             </span>
-
-            <span className="mx-1">-</span>
-
-            <span className="mr-1">
-              {getUTCDate(round.applicationsEndTime)}
+          </p>
+          <p
+            className="text-lg my-2 text-grey-400 font-normal"
+            data-testid="matching-funds"
+          >
+            Matching Funds Available:
+            <span>
+              {" "}
+              &nbsp;
+              {round.roundMetadata?.matchingFunds?.matchingFundsAvailable}
+              &nbsp;
+              {matchingFundPayoutTokenName}
             </span>
+          </p>
+          <p className="text-lg my-5 text-grey-400 font-normal border-t py-5 border-b">
+            <span>{round.roundMetadata?.eligibility.description}</span>
+          </p>
+          <p
+            className="mb-4 text-2xl text-black font-bold"
+            data-testid="round-eligibility"
+          >
+            Round Eligibility
+          </p>
+          <div className="container justify-center max-w-fit mx-auto">
+          <ul className="list-disc list-inside text-lg text-grey-400 text-left font-normal">
+            {round.roundMetadata?.eligibility.requirements?.map(element)}
+          </ul>
+          </div>
+          <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
+            {isBeforeApplicationStartDate && (
+              <InactiveButton
+                label={`Applications Open ${getUTCDate(
+                  round.applicationsStartTime
+                )}
+                `}
+                testid="applications-open-button"
+              />
+            )}
 
-            <span className="text-grey-400">
-              ( {getUTCTime(round.applicationsEndTime)} )
-            </span>
-          </span>
-        </p>
-        <p
-          className="text-lg my-2 text-black font-normal"
-          data-testid="round-period"
-        >
-          Round Period:
-          <span>
-            <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
+            {isDuringApplicationPeriod && (
+              <ApplyButton applicationURL={applicationURL} />
+            )}
 
-            <span className="text-grey-400">
-              ( {getUTCTime(round.roundStartTime)} )
-            </span>
-
-            <span className="mx-1">-</span>
-
-            <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
-
-            <span className="text-grey-400">
-              ( {getUTCTime(round.roundEndTime)} )
-            </span>
-          </span>
-        </p>
-        <p
-          className="text-lg my-2 text-black font-normal"
-          data-testid="matching-funds"
-        >
-          Matching Funds Available:
-          <span>
-            {" "}
-            &nbsp;
-            {round.roundMetadata?.matchingFunds?.matchingFundsAvailable}
-            &nbsp;
-            {matchingFundPayoutTokenName}
-          </span>
-        </p>
-        <p className="text-lg mt-4 mb-4 my-2 text-black font-normal">
-          <span>{round.roundMetadata?.eligibility.description}</span>
-        </p>
-        <p
-          className="mb-2 text-lg text-black font-bold"
-          data-testid="round-eligibility"
-        >
-          Round Eligibility
-        </p>
-        <ul className="list-disc list-inside text-lg text-black font-normal">
-          {round.roundMetadata?.eligibility.requirements?.map(element)}
-        </ul>
-
-        <div className="container mx-auto flex">
-          {isBeforeApplicationStartDate && (
-            <InactiveButton
-              label={`Applications Open ${getUTCDate(
-                round.applicationsStartTime
-              )}
-              `}
-              testid="applications-open-button"
-            />
-          )}
-
-          {isDuringApplicationPeriod && (
-            <ApplyButton applicationURL={applicationURL} />
-          )}
-
-          {isAfterApplicationEndDateAndBeforeRoundStartDate && (
-            <InactiveButton
-              label="Applications Closed"
-              testid="applications-closed-button"
-            />
-          )}
+            {isAfterApplicationEndDateAndBeforeRoundStartDate && (
+              <InactiveButton
+                label="Applications Closed"
+                testid="applications-closed-button"
+              />
+            )}
+          </div>
         </div>
+        <div className="basis-1/2 right-0"></div>
       </div>
-      <div className="basis-1/2 right-0"></div>
     </div>
+
   );
 }
 
@@ -551,7 +555,7 @@ const ApplyButton = (props: { applicationURL: string }) => {
     <Button
       type="button"
       onClick={() => window.open(applicationURL, "_blank")}
-      className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 bg-violet-100 text-violet-400 md:h-12 hover:bg-violet-200"
+      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded bg-white text-black border-1 md:h-12 border-1 hover:border-violet-400"
       data-testid="apply-button"
     >
       Apply to Grant Round

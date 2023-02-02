@@ -7,6 +7,7 @@ import CustomerSupport from "./CustomerSupport";
 
 export interface NavbarProps {
   roundUrlPath: string;
+  customBackground?: string;
 }
 
 export default function Navbar(props: NavbarProps) {
@@ -14,7 +15,7 @@ export default function Navbar(props: NavbarProps) {
   const { chainId, roundId } = useParams();
 
   return (
-    <nav className="bg-white fixed w-full z-10">
+    <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
           <div className="flex">
