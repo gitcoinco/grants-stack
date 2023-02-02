@@ -19,6 +19,7 @@ import {
   ProgressStatus,
   QuestionOptions,
   Round,
+  VotingStrategy,
 } from "../api/types";
 import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
@@ -192,10 +193,13 @@ export function RoundApplicationForm(props: {
         operatorWallets: props.initialData.program.operatorWallets,
       } as Round;
 
+      const votingStrategy = data.votingStrategy as VotingStrategy;
+
       await createRound({
         roundMetadataWithProgramContractAddress,
         applicationQuestions,
         round,
+        votingStrategy,
       });
     } catch (error) {
       datadogLogs.logger.error(

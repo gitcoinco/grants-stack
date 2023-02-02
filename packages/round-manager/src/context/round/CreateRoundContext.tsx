@@ -2,6 +2,7 @@ import {
   ProgressStatus,
   Round,
   StorageProtocolID,
+  VotingStrategy,
 } from "../../features/api/types";
 import React, {
   createContext,
@@ -17,6 +18,7 @@ import { SchemaQuestion } from "../../features/api/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
 import { deployQFVotingContract } from "../../features/api/votingStrategy/qfVotingStrategy";
+import { deployQFRelayContract } from "../../features/api/votingStrategy/qfRelayStrategy";
 import { deployMerklePayoutStrategyContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
@@ -41,6 +43,7 @@ export type CreateRoundData = {
     applicationSchema: SchemaQuestion[];
   };
   round: Round;
+  votingStrategy: VotingStrategy;
 };
 
 export const initialCreateRoundState: CreateRoundState = {
@@ -130,6 +133,7 @@ const _createRound = async ({
     roundMetadataWithProgramContractAddress,
     applicationQuestions,
     round,
+    votingStrategy,
   } = createRoundData;
   try {
     datadogLogs.logger.info(`_createRound: ${round}`);
@@ -155,7 +159,8 @@ const _createRound = async ({
 
     const votingContractAddress = await handleDeployVotingContract(
       setVotingContractDeploymentStatus,
-      signerOrProvider
+      signerOrProvider,
+      votingStrategy
     );
 
     const payoutContractAddress = await handleDeployPayoutContract(
@@ -288,13 +293,15 @@ async function storeDocuments(
 
 async function handleDeployVotingContract(
   setDeploymentStatus: SetStatusFn,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
+  votingStrategy: VotingStrategy
 ): Promise<string> {
   try {
     setDeploymentStatus(ProgressStatus.IN_PROGRESS);
-    const { votingContractAddress } = await deployQFVotingContract(
-      signerOrProvider
-    );
+    const { votingContractAddress } =
+      votingStrategy === "QFVoting"
+        ? await deployQFVotingContract(signerOrProvider)
+        : await deployQFRelayContract(signerOrProvider);
 
     setDeploymentStatus(ProgressStatus.IS_SUCCESS);
     return votingContractAddress;

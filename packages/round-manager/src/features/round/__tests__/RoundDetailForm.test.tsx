@@ -5,7 +5,12 @@ import { makeProgramData, renderWrapped } from "../../../test-utils";
 import { FormStepper } from "../../common/FormStepper";
 import { RoundDetailForm } from "../RoundDetailForm";
 import { FormContext } from "../../common/FormWizard";
-import { ChainId, CHAINS, getPayoutTokenOptions } from "../../api/utils";
+import {
+  ChainId,
+  CHAINS,
+  getPayoutTokenOptions,
+  getVotingOptions,
+} from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
@@ -392,7 +397,7 @@ describe("<RoundDetailForm />", () => {
     expect(screen.getByTestId("chain-logo")).toBeInTheDocument();
   });
 
-  describe("Quadratic Funding Settings", () => {
+  describe.only("Quadratic Funding Settings", () => {
     it("renders the quadratic funding settings section", () => {
       renderWrapped(<RoundDetailForm stepper={FormStepper} />);
 
@@ -493,6 +498,42 @@ describe("<RoundDetailForm />", () => {
 
       const errors = await screen.findByText(
         "Matching cap amount must be more than zero."
+      );
+      expect(errors).toBeInTheDocument();
+    });
+
+    it("renders voting strategy input", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      const contactInfoInput = await screen.getByLabelText("Voting Strategy");
+      expect(contactInfoInput).toBeInTheDocument();
+    });
+
+    it("renders a dropdown list of voting strategies when voting strategy input is clicked", async () => {
+      const options = getVotingOptions();
+
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      const votingStrategySelection = screen.getByTestId(
+        "voting-strategy-select"
+      );
+      fireEvent.click(votingStrategySelection);
+
+      const selectOptions = await screen.findAllByTestId(
+        "voting-strategy-option"
+      );
+      expect(selectOptions).toHaveLength(options.length);
+    });
+
+    it("shows validation error message when the voting strategy is not selected", async () => {
+      renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+      const votingStrategySelection = screen.getByTestId(
+        "voting-strategy-select"
+      );
+      fireEvent.click(votingStrategySelection);
+
+      fireEvent.click(screen.getByText("Launch"));
+
+      const errors = await screen.findByText(
+        "You must select a voting strategy for your round."
       );
       expect(errors).toBeInTheDocument();
     });

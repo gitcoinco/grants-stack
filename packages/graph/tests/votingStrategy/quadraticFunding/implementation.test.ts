@@ -1,10 +1,18 @@
-import { test, assert, newMockEvent, describe, beforeEach, clearStore, afterEach } from "matchstick-as/assembly/index";
+import {
+  test,
+  assert,
+  newMockEvent,
+  describe,
+  beforeEach,
+  clearStore,
+  afterEach,
+} from "matchstick-as/assembly/index";
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { handleVote } from "../../../src/votingStrategy/quadraticFunding/implementation";
 import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
 import { QFVote, Round, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../../src/utils";
-import { Bytes } from '@graphprotocol/graph-ts'
+import { Bytes } from "@graphprotocol/graph-ts";
 
 let token: Address;
 let amount: BigInt;
@@ -28,12 +36,30 @@ function createNewVotedEvent(
 ): VotedEvent {
   const newVoteEvent = changetype<VotedEvent>(newMockEvent());
 
-  const tokenParam = new ethereum.EventParam("token", ethereum.Value.fromAddress(token));
-  const amountParam = new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount));
-  const voterParam = new ethereum.EventParam("voter", ethereum.Value.fromAddress(voter));
-  const grantAddressParam = new ethereum.EventParam("grantAddress", ethereum.Value.fromAddress(grantAddress));
-  const projectIdParam = new ethereum.EventParam("projectId",ethereum.Value.fromBytes(projectId));
-  const roundAddressParam = new ethereum.EventParam("roundAddress", ethereum.Value.fromAddress(roundAddress));
+  const tokenParam = new ethereum.EventParam(
+    "token",
+    ethereum.Value.fromAddress(token)
+  );
+  const amountParam = new ethereum.EventParam(
+    "amount",
+    ethereum.Value.fromUnsignedBigInt(amount)
+  );
+  const voterParam = new ethereum.EventParam(
+    "voter",
+    ethereum.Value.fromAddress(voter)
+  );
+  const grantAddressParam = new ethereum.EventParam(
+    "grantAddress",
+    ethereum.Value.fromAddress(grantAddress)
+  );
+  const projectIdParam = new ethereum.EventParam(
+    "projectId",
+    ethereum.Value.fromBytes(projectId)
+  );
+  const roundAddressParam = new ethereum.EventParam(
+    "roundAddress",
+    ethereum.Value.fromAddress(roundAddress)
+  );
 
   newVoteEvent.parameters.push(tokenParam);
   newVoteEvent.parameters.push(amountParam);
@@ -48,22 +74,29 @@ function createNewVotedEvent(
 }
 
 describe("handleVote", () => {
-
   beforeEach(() => {
-
     amount = new BigInt(1);
     token = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2A");
     voter = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
-    grantAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2D");
-    roundAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2E");
+    grantAddress = Address.fromString(
+      "0xA16081F360e3847006dB660bae1c6d1b2e17eC2D"
+    );
+    roundAddress = Address.fromString(
+      "0xA16081F360e3847006dB660bae1c6d1b2e17eC2E"
+    );
     projectId = Bytes.fromHexString("0x72616e646f6d50726f6a6563744964"); // bytes32 projectId
 
     // Create VotingStrategy entity
-    votingStrategyAddress = Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2A");
+    votingStrategyAddress = Address.fromString(
+      "0xB16081F360e3847006dB660bae1c6d1b2e17eC2A"
+    );
 
-    const votingStrategyEntity = new VotingStrategy(votingStrategyAddress.toHex());
+    const votingStrategyEntity = new VotingStrategy(
+      votingStrategyAddress.toHex()
+    );
     votingStrategyEntity.strategyName = "LINEAR_QUADRATIC_FUNDING";
-    votingStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eC2G";
+    votingStrategyEntity.strategyAddress =
+      "0xA16081F360e3847006dB660bae1c6d1b2e17eC2G";
     votingStrategyEntity.version = "0.2.0";
     votingStrategyEntity.save();
 
@@ -79,6 +112,9 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
+    roundEntity.createdAt = new BigInt(1);
+    roundEntity.updatedAt = new BigInt(2);
+
 
     roundEntity.save();
 
@@ -95,20 +131,18 @@ describe("handleVote", () => {
       roundAddress,
       votingStrategyAddress
     );
-
-  })
+  });
 
   afterEach(() => {
     clearStore();
-  })
+  });
 
   test("QFVote entity is created when handleVote is called", () => {
-
     handleVote(newVoteEvent);
 
     const id = generateID([
       newVoteEvent.transaction.hash.toHex(),
-      grantAddress.toHex()
+      grantAddress.toHex(),
     ]);
     newVoteEvent.transaction.hash.toHex();
     const qfVote = QFVote.load(id);
@@ -119,12 +153,11 @@ describe("handleVote", () => {
   });
 
   test("init values are set correctly when handleVote is called", () => {
-
     handleVote(newVoteEvent);
 
     const id = generateID([
       newVoteEvent.transaction.hash.toHex(),
-      grantAddress.toHex()
+      grantAddress.toHex(),
     ]);
     const qfVote = QFVote.load(id);
 
@@ -135,16 +168,14 @@ describe("handleVote", () => {
     assert.stringEquals(qfVote!.to, grantAddress.toHex());
     assert.bytesEquals(Bytes.fromHexString(qfVote!.projectId), projectId);
     assert.stringEquals(qfVote!.version, "0.2.0");
-
   });
 
   test("QF vote is linked to VotingStrategy when handledVote is called", () => {
-
     handleVote(newVoteEvent);
 
     const id = generateID([
       newVoteEvent.transaction.hash.toHex(),
-      grantAddress.toHex()
+      grantAddress.toHex(),
     ]);
     const qfVote = QFVote.load(id);
     const votingStrategy = VotingStrategy.load(qfVote!.votingStrategy);
@@ -153,11 +184,12 @@ describe("handleVote", () => {
   });
 
   test("created 2 QF votes when 2 when handledVote is called twice", () => {
-
     const anotherAmount = new BigInt(10);
-    const anotherGrantAddress = Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2A");
+    const anotherGrantAddress = Address.fromString(
+      "0xB16081F360e3847006dB660bae1c6d1b2e17eC2A"
+    );
 
-    const anotherVoteEvent =createNewVotedEvent(
+    const anotherVoteEvent = createNewVotedEvent(
       token,
       anotherAmount,
       voter,
@@ -172,15 +204,14 @@ describe("handleVote", () => {
 
     const id = generateID([
       newVoteEvent.transaction.hash.toHex(),
-      grantAddress.toHex()
+      grantAddress.toHex(),
     ]);
     assert.assertNotNull(QFVote.load(id));
 
     const anotherId = generateID([
       newVoteEvent.transaction.hash.toHex(),
-      grantAddress.toHex()
+      grantAddress.toHex(),
     ]);
     assert.assertNotNull(QFVote.load(anotherId));
   });
-
 });

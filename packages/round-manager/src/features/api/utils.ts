@@ -46,6 +46,12 @@ export type PayoutToken = {
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
 };
 
+export type VotingOption = {
+  name: string;
+  strategy: string;
+  default?: boolean;
+};
+
 export type SupportType = {
   name: string;
   regex: string;
@@ -155,6 +161,19 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
       ];
     }
   }
+};
+
+export const getVotingOptions = (): VotingOption[] => {
+  return [
+    {
+      name: "Direct voting",
+      strategy: "QFVoting",
+    },
+    {
+      name: "Relay voting",
+      strategy: "QFRelay",
+    },
+  ];
 };
 
 /**

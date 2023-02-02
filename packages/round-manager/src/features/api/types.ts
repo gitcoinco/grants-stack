@@ -136,6 +136,7 @@ export interface Round {
       type: string;
       info: string;
     };
+    voting?: string;
   };
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
@@ -313,3 +314,5 @@ export type Project = {
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
 };
+
+export type VotingStrategy = "QFVoting" | "QFRelay";

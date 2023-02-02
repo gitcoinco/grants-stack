@@ -3,8 +3,8 @@ schema:
   file: ./schema.graphql
 # TODO: wait until ipfs.cat is supported in studio
 # features:
-  # - ipfsOnEthereumContracts
-  # - nonDeterministicIpfs
+# - ipfsOnEthereumContracts
+# - nonDeterministicIpfs
 dataSources:
   # ProgramFactory
   - kind: ethereum/contract
@@ -83,6 +83,30 @@ dataSources:
           handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFunding/factory.ts
 
+  # QuadraticFundingVotingStrategyFactory
+  - kind: ethereum/contract
+    name: QuadraticFundingRelayStrategy
+    network: {{ network }}
+    source:
+      address: '{{ QFRelayStrategyFactoryAddress }}'
+      abi: QuadraticFundingRelayStrategyFactory
+      startBlock: {{ startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - VotingStrategy
+      abis:
+        - name: QuadraticFundingRelayStrategyFactory
+          file: ./abis/QuadraticFundingRelayStrategyFactory.json
+        - name: QuadraticFundingRelayStrategyImplementation
+          file: ./abis/QuadraticFundingRelayStrategyImplementation.json
+      eventHandlers:
+        - event: VotingContractCreated(indexed address,indexed address)
+          handler: handleVotingContractCreated
+      file: ./src/votingStrategy/QuadraticFundingRelay/factory.ts
+
 templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
@@ -153,6 +177,28 @@ templates:
           receipt: true
 
       file: ./src/votingStrategy/quadraticFunding/implementation.ts
+
+  # QuadraticFundingRelayStrategyImplementation
+  - kind: ethereum/contract
+    name: QuadraticFundingRelayStrategyImplementation
+    network: {{ network }}
+    source:
+      abi: QuadraticFundingRelayStrategyImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - QFVote
+      abis:
+        - name: QuadraticFundingRelayStrategyImplementation
+          file: ./abis/QuadraticFundingRelayStrategyImplementation.json
+      eventHandlers:
+        - event: Voted(address,uint256,indexed address,address,indexed bytes32,indexed address)
+          handler: handleVote
+          receipt: true
+
+      file: ./src/votingStrategy/quadraticFundingRelay/implementation.ts
 
   ####################
   # == LEGACY ABI == #

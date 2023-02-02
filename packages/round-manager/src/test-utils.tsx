@@ -75,6 +75,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
         matchingCapAmount: 100,
         matchingFundsAvailable: 1000,
       },
+      voting: "QFVoting",
     },
     applicationsStartTime,
     applicationsEndTime,

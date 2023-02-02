@@ -2,5 +2,7 @@
   "network": "hardhat",
   "startBlock": 1,
   "programFactoryAddress": "0x79c2394B20A809EA693a7D64323A8846FF02029c",
+  "QFVotingStrategyFactoryAddress": "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38",
+  "QFRelayStrategyFactoryAddress": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
   "roundFactoryAddress": "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791"
 }
