@@ -1,4 +1,4 @@
-name: package/graph - Build -> Test
+name: package/graph/round - Build -> Test
 on:
   push:
   pull_request:
@@ -18,18 +18,12 @@ jobs:
         with:
           node-version: "16"
           cache: "yarn"
-          cache-dependency-path: packages/graph/yarn.lock
+          cache-dependency-path: packages/graph/round/yarn.lock
 
       - name: Install Dependencies for Round Manager
         run: |
           yarn install
           cd packages/graph/round
-          yarn install
-
-      - name: Install Dependencies for Project Registry
-        run: |
-          yarn install
-          cd packages/graph/project-registry
           yarn install
 
       # - name: Setup
