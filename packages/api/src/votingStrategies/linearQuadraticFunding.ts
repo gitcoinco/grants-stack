@@ -512,10 +512,7 @@ export const matchQFContributions = async (
     });
     console.log("_totalMatchAmountInUSD", _totalMatchAmountInUSD);
     console.log("_totalMatchAmountInToken", _totalMatchAmountInToken);
-    console.log(
-      "_totalMatchAmountInPercentage",
-      _totalMatchAmountInPercentage
-    );
+    console.log("_totalMatchAmountInPercentage", _totalMatchAmountInPercentage);
 
     console.log("=====================");
     matchResults.forEach((match, index) => {
@@ -528,7 +525,6 @@ export const matchQFContributions = async (
     });
     console.log("=====================");
   }
-
 
   return {
     distribution: matchResults,
