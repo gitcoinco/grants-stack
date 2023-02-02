@@ -38,7 +38,12 @@ const testnetChains = () => {
     testnet: true,
   };
 
-  return [chain.polygonMumbai, chain.goerli, fantomTestnet];
+  const polygonMumbai: Chain = {
+    ...chain.polygonMumbai,
+    rpcUrls: { default: "https://rpc.ankr.com/polygon_mumbai" },
+  };
+
+  return [polygonMumbai, chain.goerli, fantomTestnet];
 };
 
 const mainnetChains = () => {
