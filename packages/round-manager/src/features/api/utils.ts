@@ -261,7 +261,7 @@ export const graphql_fetch = async (
  */
 export const fetchFromIPFS = (cid: string) => {
   if (!process.env.REACT_APP_PINATA_GATEWAY) {
-    return fetch(`https://nftstorage.link/ipfs/${cid}`).then((resp) => {
+    return fetch(`https://nftstorage.link/${cid}`).then((resp) => {
       if (resp.ok) {
         return resp.json();
       }
