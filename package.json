@@ -31,21 +31,16 @@
     "// api script": "====== packages/api specific ======",
     "api-build": "turbo run build --filter=api",
     "api-test": "turbo run test --filter=api",
-    "api-start": "pnpm --filter api run start"
+    "api-start": "pnpm --filter api run start",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^17.1.0",
     "@commitlint/cli": "^17.1.2",
-    "husky": "^8.0.1"
+    "@commitlint/config-conventional": "^17.1.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.1.0"
   },
-  "workspaces": [
-    "packages/grant-explorer",
-    "packages/round-manager",
-    "packages/common",
-    "packages/api",
-    "packages/eslint-config-gitcoin"
-  ],
   "dependencies": {
-    "turbo": "^1.7.0"
+    "turbo": "^1.7.2"
   }
 }

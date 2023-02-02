@@ -28,6 +28,9 @@
         "bin"
       ]
     },
+    "graph#test": {
+      "dependsOn": ["pnpm prepare:local", "pnpm codegen", "pnpm build"]
+    },
     "test": {
       "dependsOn": [
         "build"
@@ -35,15 +38,18 @@
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
-      ]
+      ],
+      "outputMode": "new-only"
     },
-    "lint:ci": {},
-    "lint-staged": {},
+    "lint:ci": {
+      "outputMode": "errors-only"
+    },
     "typecheck": {
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
-      ]
+      ],
+      "outputMode": "errors-only"
     }
   }
 }

@@ -6,7 +6,6 @@
   "scripts": {
     "build": "craco build",
     "eject": "react-scripts eject",
-    "lint-staged": "lint-staged",
     "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
@@ -111,7 +110,6 @@
     "@types/react-gtm-module": "^2.0.1",
     "autoprefixer": "^10.4.7",
     "jest-localstorage-mock": "^2.4.22",
-    "lint-staged": "^13.1.0",
     "postcss": "^8.4.14",
     "prettier": "^2.8.3",
     "tailwind-styled-components": "^2.1.7",

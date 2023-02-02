@@ -14,7 +14,6 @@
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "format": "prettier . --write",
-    "lint-staged": "lint-staged",
     "lint:ci": "pnpm lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit"
@@ -111,7 +110,6 @@
     "autoprefixer": "^10.4.7",
     "craco-esbuild": "^0.5.2",
     "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
     "tailwind-styled-components": "2.1.6",

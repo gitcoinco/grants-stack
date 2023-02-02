@@ -264,6 +264,7 @@ export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
 export const graphql_fetch = async (
   query: string,
   chainId: ChainId,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
   fromProjectRegistry = false
 ) => {

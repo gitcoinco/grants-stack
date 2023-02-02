@@ -4,13 +4,13 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:react/jsx-runtime"
+    "plugin:react/jsx-runtime",
   ],
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   root: true,
   rules: {
-    "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }]
+    "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
   },
   overrides: [
     {
@@ -19,20 +19,26 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-unused-vars": [
-          "warn",
-          {
-            varsIgnorePattern: "^_$",
-            destructuredArrayIgnorePattern: "^_$",
-            argsIgnorePattern: "^_$"
-          }
-        ]
-      }
-    }
+        // "@typescript-eslint/no-unused-vars": [
+        //   "warn",
+        //   {
+        //     varsIgnorePattern: "^_$",
+        //     destructuredArrayIgnorePattern: "^_$",
+        //     argsIgnorePattern: "^_$"
+        //   }
+        // ],
+      },
+    },
+    {
+      files: ["**/*.{ts,tsx}"],
+      rules: {
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+      },
+    },
   ],
   settings: {
     react: {
-      version: "detect"
-    }
-  }
+      version: "detect",
+    },
+  },
 };

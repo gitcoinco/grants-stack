@@ -92,7 +92,10 @@ function BeforeRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} customBackground="bg-[#F0F0F0]" />
+      <Navbar
+        roundUrlPath={`/round/${chainId}/${roundId}`}
+        customBackground="bg-[#F0F0F0]"
+      />
       <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
         <main>
           <PreRoundPage
@@ -437,7 +440,7 @@ function PreRoundPage(props: {
     )[0].name;
 
   return (
-    <div  className="mt-20 flex justify-center">
+    <div className="mt-20 flex justify-center">
       <div className="w-max">
         <div className="text-center">
           <div className="lg:inline-block md:inline-block"></div>
@@ -454,9 +457,7 @@ function PreRoundPage(props: {
                 {getUTCDate(round.applicationsStartTime)}
               </span>
 
-              <span>
-                ( {getUTCTime(round.applicationsStartTime)} )
-              </span>
+              <span>( {getUTCTime(round.applicationsStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
@@ -464,9 +465,7 @@ function PreRoundPage(props: {
                 {getUTCDate(round.applicationsEndTime)}
               </span>
 
-              <span>
-                ( {getUTCTime(round.applicationsEndTime)} )
-              </span>
+              <span>( {getUTCTime(round.applicationsEndTime)} )</span>
             </span>
           </p>
           <p
@@ -477,17 +476,13 @@ function PreRoundPage(props: {
             <span>
               <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
 
-              <span>
-                ( {getUTCTime(round.roundStartTime)} )
-              </span>
+              <span>( {getUTCTime(round.roundStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
               <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
 
-              <span>
-                ( {getUTCTime(round.roundEndTime)} )
-              </span>
+              <span>( {getUTCTime(round.roundEndTime)} )</span>
             </span>
           </p>
           <p
@@ -513,9 +508,9 @@ function PreRoundPage(props: {
             Round Eligibility
           </p>
           <div className="container justify-center max-w-fit mx-auto">
-          <ul className="list-disc list-inside text-lg text-grey-400 text-left font-normal">
-            {round.roundMetadata?.eligibility.requirements?.map(element)}
-          </ul>
+            <ul className="list-disc list-inside text-lg text-grey-400 text-left font-normal">
+              {round.roundMetadata?.eligibility.requirements?.map(element)}
+            </ul>
           </div>
           <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
             {isBeforeApplicationStartDate && (
@@ -543,7 +538,6 @@ function PreRoundPage(props: {
         <div className="basis-1/2 right-0"></div>
       </div>
     </div>
-
   );
 }
 
