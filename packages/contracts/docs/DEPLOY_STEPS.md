@@ -11,6 +11,27 @@ All the deploy scripts will expect network param to know which network the contr
 | `fantom-testnet`   |
 | `mainnet`          |
 
+
+### Project Registry
+
+The section here shows how to set up the project registry for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
+
+0. Create an `.env` file
+```sh
+cp ../.env.example ../.env
+```
+
+1. Create an `.env` file and fill out
+    - `INFURA_ID`               : Infura ID for deploying contract
+    - `DEPLOYER_PRIVATE_KEY`    : address which deploys the contract
+    - `ETHERSCAN_API_KEY`       : API key for etherscan verification
+
+2. Deploy the `ProgramRegistry` contract
+```shell
+yarn run deploy-project-registry goerli
+```
+
+
 ### Program Setup
 
 The section here shows how to set up the program for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
@@ -190,7 +211,10 @@ yarn run deploy-round-implementation goerli
 yarn run link-round-implementation goerli
 yarn run create-round goerli
 
-# These scripts would be used tp create a test round
+# Project Registry
+yarn run deploy-project-registry goerli
+
+# These scripts would be used to create a test round
 yarn run create-program goerli
 yarn run create-qf-contract goerli
 yarn run deploy-merkle-contract goerli

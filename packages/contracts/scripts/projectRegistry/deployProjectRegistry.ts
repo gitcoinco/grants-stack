@@ -1,6 +1,6 @@
 import hre, { ethers, upgrades } from "hardhat";
-import { prompt, prettyNum } from "../../lib/utils";
 import { LedgerSigner } from "@anders-t/ethers-ledger";
+import { confirmContinue, prettyNum } from "../../utils/script-utils";
 
 async function main() {
   const network = await ethers.provider.getNetwork();
@@ -8,10 +8,10 @@ async function main() {
   let account;
   let accountAddress;
 
-  if(process.env.USE_HARDWARE_WALLET==="true") {
+  if (process.env.USE_HARDWARE_WALLET === "true") {
     // with hardware wallet
     console.log("Waiting for hardware wallet to connect...");
-    account = new LedgerSigner(ethers.provider);
+    account = new LedgerSigner(hre.ethers.provider as any);
   } else {
     // default without hardware wallet
     account = (await ethers.getSigners())[0];
@@ -20,13 +20,17 @@ async function main() {
   accountAddress = await account.getAddress();
   const balance = await ethers.provider.getBalance(accountAddress);
 
-  console.log(`chainId: ${network.chainId}`);
-  console.log(`network: ${networkName} (from ethers: ${network.name})`);
-  console.log(`account: ${accountAddress}`);
-  console.log(`balance: ${prettyNum(balance.toString())}`);
+  console.log(`This script deploys the ProjectRegistry contract on ${networkName}`);
 
-  await prompt("do you want to deploy the ProjectRegistry contract?");
-  console.log("deploying...");
+  await confirmContinue({
+    contract: "ProjectRegistry",
+    chainId: network.chainId,
+    network: network.name,
+    account: accountAddress,
+    balance: prettyNum(balance.toString())
+  });
+  
+  console.log("Deploying ProjectRegistry...");
 
   const ProjectRegistry = await ethers.getContractFactory("ProjectRegistry", account);
   const instance = await upgrades.deployProxy(ProjectRegistry, []);

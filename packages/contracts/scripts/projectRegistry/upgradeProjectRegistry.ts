@@ -1,6 +1,7 @@
 import { LedgerSigner } from "@anders-t/ethers-ledger";
 import hre, { ethers, upgrades } from "hardhat";
-import { prompt, prettyNum } from "../../lib/utils";
+import { confirmContinue, prettyNum } from "../../utils/script-utils";
+import { projectRegistryParams } from "../config/projectRegistry.config";
 
 const PROXY_ADDRESS = undefined;
 
@@ -10,31 +11,44 @@ async function main() {
   let account;
   let accountAddress;
 
-  if(process.env.USE_HARDWARE_WALLET==="true") {
+
+
+  const networkParams = projectRegistryParams[network.name];
+  if (!networkParams) {
+    throw new Error(`Invalid network ${network.name}`);
+  }
+
+  const PROXY_ADDRESS = networkParams.proxyContactAddress;
+
+  if (!PROXY_ADDRESS) {
+    throw new Error(`error: missing PROXY_ADDRESS`);
+  }
+
+  if(process.env.USE_HARDWARE_WALLET === "true") {
     // with hardware wallet
     console.log("Waiting for hardware wallet to connect...");
-    account = new LedgerSigner(ethers.provider);
+    account = new LedgerSigner(ethers.provider as any);
   } else {
     // default without hardware wallet
     account = (await ethers.getSigners())[0];
   }
+
   accountAddress = await account.getAddress();
 
   const balance = await ethers.provider.getBalance(accountAddress);
 
-  if (PROXY_ADDRESS === undefined) {
-    console.error("set the PROXY_ADDRESS variable");
-    process.exit(1);
-  }
+  console.log(`This script upgrades the ProjectRegistry contract to V2 on ${networkName}`);
 
-  console.log(`chainId: ${network.chainId}`);
-  console.log(`network: ${networkName} (from ethers: ${network.name})`);
-  console.log(`account: ${accountAddress}`);
-  console.log(`balance: ${prettyNum(balance.toString())}`);
-  console.log(`proxy address: ${PROXY_ADDRESS}`);
+  await confirmContinue({
+    contract: "Upgrading ProjectRegistry",
+    chainId: network.chainId,
+    network: network.name,
+    account: accountAddress,
+    balance: prettyNum(balance.toString()),
+    proxyAddress: PROXY_ADDRESS,
+  });
 
-  await prompt("do you want to upgrade the ProjectRegistry contract to V2?");
-  console.log("deploying...");
+  console.log("Upgrading...");
 
   const ProjectRegistryV2 = await ethers.getContractFactory("ProjectRegistryV2", account);
   const upgraded = await upgrades.upgradeProxy(PROXY_ADDRESS, ProjectRegistryV2);
