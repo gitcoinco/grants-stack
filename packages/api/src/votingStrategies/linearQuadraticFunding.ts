@@ -366,9 +366,8 @@ export const matchQFContributions = async (
         },
       };
     }
-
     // check if contributor has already made contributions to the project
-    if (!contributionsByProject[projectId].contributions[contributor]) {
+    else if (!contributionsByProject[projectId].contributions[contributor]) {
       // append contributor to the projectId mapping
       contributionsByProject[projectId].contributions[contributor] = {
         ...contribution,
