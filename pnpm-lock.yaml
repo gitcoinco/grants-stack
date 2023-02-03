@@ -400,7 +400,7 @@ importers:
       '@types/testing-library__jest-dom': ^5.14.5
       '@typescript-eslint/eslint-plugin': ^5.23.0
       '@typescript-eslint/parser': ^5.23.0
-      '@wagmi/core': ^0.5.4
+      '@wagmi/core': 0.5.4
       assert: ^2.0.0
       autoprefixer: ^10.4.7
       axios: ^0.27.2
@@ -18098,13 +18098,13 @@ packages:
     dependencies:
       '@jest/core': 29.3.1
       '@jest/test-result': 29.3.1
-      '@jest/types': 29.3.1
+      '@jest/types': 29.4.1
       chalk: 4.1.2
       exit: 0.1.2
       graceful-fs: 4.2.10
       import-local: 3.1.0
       jest-config: 29.3.1_@types+node@18.11.18
-      jest-util: 29.3.1
+      jest-util: 29.4.1
       jest-validate: 29.3.1
       prompts: 2.4.2
       yargs: 17.6.2
@@ -18867,7 +18867,7 @@ packages:
     resolution: {integrity: sha512-7YOVZaiX7RJLv76ZfHt4nbNEzzTRiMW/IiOG7ZOKmTXmoGBxUDefgMAxQubu6WPVqP5zSzAdZG0FfLcC7HOIFQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@jest/types': 29.3.1
+      '@jest/types': 29.4.1
       '@types/node': 18.11.18
       chalk: 4.1.2
       ci-info: 3.7.1
