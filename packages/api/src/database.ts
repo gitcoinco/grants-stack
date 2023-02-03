@@ -169,8 +169,8 @@ export class DatabaseInstance {
       const roundSummaryData = {
         contributionCount: summary.contributionCount,
         uniqueContributors: summary.uniqueContributors,
-        totalContributionsInUSD: Number(summary.totalContributionsInUSD) ? Number(summary.totalContributionsInUSD) : 0,
-        averageUSDContribution: Number(summary.averageUSDContribution) ? Number(summary.averageUSDContribution) : 0,
+        totalContributionsInUSD: Number(summary.totalContributionsInUSD),
+        averageUSDContribution: Number(summary.averageUSDContribution),
       }
 
       const roundData = {
