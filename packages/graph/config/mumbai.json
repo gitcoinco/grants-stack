@@ -1,0 +1,8 @@
+{
+    "network": "mumbai",
+    "startBlock": 31402729,
+    "programFactoryAddress": "0xbd2a2C4f3841f39e1112622596A1AE325B26Fe54",
+    "QuadraticFundingVotingStrategyFactoryAddress": "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A",
+    "QuadraticFundingRelayStrategyFactoryAddress": "0x36Ca0662fd2af176B10CEA7f2aBa0BB299B6E6c5",
+    "roundFactoryAddress": "0x36Ca0662fd2af176B10CEA7f2aBa0BB299B6E6c5"
+  }
