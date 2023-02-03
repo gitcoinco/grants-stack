@@ -1,9 +1,7 @@
-name: CI
+name: packages/project-registry - Build -> Test
 
 on:
   push:
-    branches:
-      - development
   pull_request:
     branches:
       - "**"
@@ -16,9 +14,11 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 1
+
     - name: Test and Build
       run: |
-        cd client
+        cd packages/project-registry
+
         yarn install
         yarn lint
         yarn test
