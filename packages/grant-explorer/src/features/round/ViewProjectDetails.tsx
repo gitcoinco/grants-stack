@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";

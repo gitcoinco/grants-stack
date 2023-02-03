@@ -14,22 +14,23 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
-          cache-dependency-path: packages/api/yarn.lock
+          cache: 'pnpm'
 
       - name: Install Dependencies
         run: |
-          yarn install
-          cd packages/api
-          yarn install --frozen-lockfile
-          
+          pnpm install
+
       - name: Build the API
         run: |
-          yarn api-build
-          
+          pnpm api-build
+
       - name: Test the API
         env:
           REACT_APP_SUBGRAPH_GOERLI_API: ${{ secrets.REACT_APP_SUBGRAPH_GOERLI_API }}
@@ -37,4 +38,4 @@ jobs:
           REACT_APP_SUBGRAPH_FANTOM_TESTNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API }}
           REACT_APP_SUBGRAPH_FANTOM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API }}
         run: |
-          yarn api-test
+          pnpm api-test

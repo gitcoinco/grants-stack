@@ -5,7 +5,7 @@ import { FormWizard } from "../common/FormWizard";
 import { RoundDetailForm } from "./RoundDetailForm";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";

@@ -51,8 +51,8 @@ export const initialQFDonationState: QFDonationState = {
   },
   txBlockNumber: -1,
   setTxBlockNumber: () => {
-      /**/
-  }
+    /**/
+  },
 };
 
 export type QFDonationParams = {
@@ -83,11 +83,9 @@ export const QFDonationProvider = ({ children }: { children: ReactNode }) => {
   const [indexingStatus, setIndexingStatus] = useState(
     initialQFDonationState.indexingStatus
   );
-  const [txHash, setTxHash] = useState(
-      initialQFDonationState.txHash
-  );
+  const [txHash, setTxHash] = useState(initialQFDonationState.txHash);
   const [txBlockNumber, setTxBlockNumber] = useState(
-      initialQFDonationState.txBlockNumber
+    initialQFDonationState.txBlockNumber
   );
 
   const providerProps: QFDonationState = {
@@ -115,7 +113,13 @@ export const QFDonationContext = createContext<QFDonationState>(
 );
 
 function resetToInitialState(context: QFDonationState) {
-  const { setTokenApprovalStatus, setVoteStatus, setIndexingStatus, setTxHash, setTxBlockNumber } = context;
+  const {
+    setTokenApprovalStatus,
+    setVoteStatus,
+    setIndexingStatus,
+    setTxHash,
+    setTxBlockNumber,
+  } = context;
 
   setTokenApprovalStatus(initialQFDonationState.tokenApprovalStatus);
   setVoteStatus(initialQFDonationState.voteStatus);
@@ -157,7 +161,6 @@ async function _submitDonations({
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, context);
-
   } catch (error) {
     datadogLogs.logger.error(`error: _submitDonations - ${error}`);
     console.error("Error while bulk submitting donations: ", error);
@@ -225,7 +228,10 @@ async function approveTokenForDonation(
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${amount} ${token.name}`
     );
-    console.error(`approveTokenForDonation - amount ${amount} ${token.name}`, error);
+    console.error(
+      `approveTokenForDonation - amount ${amount} ${token.name}`,
+      error
+    );
     setTokenApprovalStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -256,12 +262,14 @@ async function vote(
     setVoteStatus(ProgressStatus.IS_SUCCESS);
     setTxHash(txHash);
     setTxBlockNumber(txBlockNumber);
-
   } catch (error) {
     datadogLogs.logger.error(
       `error: approveTokenForDonation - ${error}. Data - ${vote.toString()}`
     );
-    console.error(`approveTokenForDonation - roundId ${roundId}, token ${token.name}`, error);
+    console.error(
+      `approveTokenForDonation - roundId ${roundId}, token ${token.name}`,
+      error
+    );
     setVoteStatus(ProgressStatus.IS_ERROR);
     throw error;
   }
@@ -318,7 +326,7 @@ function encodeQFVotes(
       donationToken.address,
       amountInUnits,
       projectAddress,
-      donation.projectRegistryId
+      donation.projectRegistryId,
     ];
 
     encodedVotes.push(

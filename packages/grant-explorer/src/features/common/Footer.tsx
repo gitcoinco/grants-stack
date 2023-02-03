@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
         <div className="flex justify-center space-x-8 md:order-1">
           <a href="https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us">
-            <SupportIcon 
+            <SupportIcon
               data-tip
               data-background-color="#0E0333"
               data-for="support-tooltip"
@@ -25,13 +25,11 @@ export default function Footer() {
               type="dark"
               effect="solid"
             >
-              <p className="text-xs">
-                Contact Support
-              </p>
+              <p className="text-xs">Contact Support</p>
             </ReactTooltip>
           </a>
           <a href="https://github.com/gitcoinco/grants-round">
-            <GithubIcon 
+            <GithubIcon
               data-tip
               data-background-color="#0E0333"
               data-for="github-tooltip"
@@ -42,13 +40,11 @@ export default function Footer() {
               type="dark"
               effect="solid"
             >
-              <p className="text-xs">
-                Github
-              </p>
+              <p className="text-xs">Github</p>
             </ReactTooltip>
           </a>
           <a href="https://gitcoin-2.gitbook.io/round/">
-            <GitbookIcon 
+            <GitbookIcon
               data-tip
               data-background-color="#0E0333"
               data-for="gitbook-tooltip"
@@ -59,9 +55,7 @@ export default function Footer() {
               type="dark"
               effect="solid"
             >
-              <p className="text-xs">
-                Gitbook
-              </p>
+              <p className="text-xs">Gitbook</p>
             </ReactTooltip>
           </a>
         </div>

@@ -28,7 +28,7 @@ cp ../.env.example ../.env
 
 2. Deploy the `ProgramRegistry` contract
 ```shell
-yarn run deploy-project-registry goerli
+pnpm run deploy-project-registry goerli
 ```
 
 
@@ -48,12 +48,12 @@ cp ../.env.example ../.env
 
 2. Deploy the `ProgramFactory` contract
 ```shell
-yarn run deploy-program-factory goerli
+pnpm run deploy-program-factory goerli
 ```
 
 3. Deploy the `ProgramImplementation` contract
 ```shell
-yarn run deploy-program-implementation goerli
+pnpm run deploy-program-implementation goerli
 ```
 
 4. Update `program.config.ts` with deployed contracts based on your network
@@ -69,7 +69,7 @@ export const params: DeployParams = {
 
 5. Update `ProgramFactory` to reference the `ProgramImplementation` contract.
 ```shell
-yarn run link-program-implementation goerli
+pnpm run link-program-implementation goerli
 ```
 
 
@@ -85,12 +85,12 @@ The section here shows how to set up voting strategy for the first time on a giv
 
 2. Deploy the `QuadraticFundingVotingStrategyFactory` contract
 ```shell
-yarn run deploy-qf-factory goerli
+pnpm run deploy-qf-factory goerli
 ```
 
 3. Deploy the `QuadraticFundingVotingStrategyImplementation` contract
 ```shell
-yarn run deploy-qf-implementation goerli
+pnpm run deploy-qf-implementation goerli
 ```
 
 4. Update `votingStrategy.config.ts` with deployed contracts based on your network
@@ -107,7 +107,7 @@ export const QFVotingParams: DeployParams = {
 
 5. Update `QuadraticFundingVotingStrategyFactory` to reference the `QuadraticFundingVotingStrategyImplementation` contract
 ```shell
-yarn run link-qf-implementation goerli
+pnpm run link-qf-implementation goerli
 ```
 
 ### PayoutStrategy Setup
@@ -124,7 +124,7 @@ so that round is aware and store a reference to the voting contract during it's 
 
 2. Deploy the `MerklePayoutStrategyFactory` contract
 ```shell
-yarn run deploy-merkle-contract goerli
+pnpm run deploy-merkle-contract goerli
 ```
 
 3. Update `payoutStrategy.config.ts` with deployed contract based on your network
@@ -152,12 +152,12 @@ The section here shows how to set up the round manager for the first time on a g
 
 2. Deploy the `RoundFactory` contract
 ```shell
-yarn run deploy-round-factory goerli
+pnpm run deploy-round-factory goerli
 ```
 
 3. Deploy the `RoundImplementation` contract
 ```shell
-yarn run deploy-round-implementation goerli
+pnpm run deploy-round-implementation goerli
 ```
 
 4. Update `round.config.ts` with deployed contracts based on your network
@@ -174,7 +174,7 @@ export const params: DeployParams = {
 
 5. Update `RoundFactory` to reference the `RoundImplementation` contract
 ```shell
-yarn run link-round-implementation goerli
+pnpm run link-round-implementation goerli
 ```
 
 ### Payout Setup
@@ -184,8 +184,8 @@ yarn run link-round-implementation goerli
 ### Contract Verification on etherscan
 
 ```
-yarn hardhat clean
-yarn hardhat verify --network goerli <CONTRACT_ADDRESS>
+pnpm hardhat clean
+pnpm hardhat verify --network goerli <CONTRACT_ADDRESS>
 ```
 
 ##### Helper Deploy Script
@@ -193,30 +193,30 @@ yarn hardhat verify --network goerli <CONTRACT_ADDRESS>
 ```shell
 
 # Program
-yarn run deploy-program-factory goerli
-yarn run deploy-program-implementation goerli
-yarn run link-program-implementation goerli
+pnpm run deploy-program-factory goerli
+pnpm run deploy-program-implementation goerli
+pnpm run link-program-implementation goerli
 
 # QF
-yarn run deploy-qf-factory goerli
-yarn run deploy-qf-implementation goerli
-yarn run link-qf-implementation goerli
+pnpm run deploy-qf-factory goerli
+pnpm run deploy-qf-implementation goerli
+pnpm run link-qf-implementation goerli
 
 # Payout
-yarn run deploy-merkle-contract goerli
+pnpm run deploy-merkle-contract goerli
 
 # Round
-yarn run deploy-round-factory goerli
-yarn run deploy-round-implementation goerli
-yarn run link-round-implementation goerli
-yarn run create-round goerli
+pnpm run deploy-round-factory goerli
+pnpm run deploy-round-implementation goerli
+pnpm run link-round-implementation goerli
+pnpm run create-round goerli
 
 # Project Registry
-yarn run deploy-project-registry goerli
+pnpm run deploy-project-registry goerli
 
 # These scripts would be used to create a test round
-yarn run create-program goerli
-yarn run create-qf-contract goerli
-yarn run deploy-merkle-contract goerli
-yarn run create-round goerli
+pnpm run create-program goerli
+pnpm run create-qf-contract goerli
+pnpm run deploy-merkle-contract goerli
+pnpm run create-round goerli
 ```

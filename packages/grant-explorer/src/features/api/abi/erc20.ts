@@ -14,7 +14,7 @@ const erc20 = [
   "function symbol() view returns (string)",
   "function totalSupply() view returns (uint256)",
   "function transfer(address to, uint256 amount) returns (bool)",
-  "function transferFrom(address from, address to, uint256 amount) returns (bool)"
+  "function transferFrom(address from, address to, uint256 amount) returns (bool)",
 ];
 
 export default erc20;

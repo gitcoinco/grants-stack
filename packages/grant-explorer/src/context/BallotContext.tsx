@@ -7,7 +7,12 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { loadFinalBallot, loadShortlist, saveFinalBallot, saveShortlist } from "../features/api/LocalStorage";
+import {
+  loadFinalBallot,
+  loadShortlist,
+  saveFinalBallot,
+  saveShortlist,
+} from "../features/api/LocalStorage";
 import { RoundContext } from "./RoundContext";
 
 export interface BallotContextState {
@@ -85,7 +90,9 @@ type UseBallot = [
   handleRemoveProjectsFromShortlist: (projects: Project[]) => void,
   handleAddProjectsToFinalBallot: (projects: Project[]) => void,
   handleRemoveProjectsFromFinalBallot: (projects: Project[]) => void,
-  handleRemoveProjectsFromFinalBallotAndAddToShortlist: (projects: Project[]) => void,
+  handleRemoveProjectsFromFinalBallotAndAddToShortlist: (
+    projects: Project[]
+  ) => void
 ];
 
 export const useBallot = (): UseBallot => {
@@ -100,56 +107,64 @@ export const useBallot = (): UseBallot => {
   const handleAddProjectsToShortlist = (projectsToAdd: Project[]): void => {
     // Add projects to the shortlist if they are not already present
     const newShortlist = projectsToAdd.reduce((acc, projectToAdd) => {
-        const isProjectAlreadyPresent = acc.find(
-            (project) =>
-            project.projectRegistryId === projectToAdd.projectRegistryId
-        );
-        return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
+      const isProjectAlreadyPresent = acc.find(
+        (project) =>
+          project.projectRegistryId === projectToAdd.projectRegistryId
+      );
+      return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
     }, shortlist);
 
     setShortlist(newShortlist);
-    };
+  };
 
-  const handleRemoveProjectsFromShortlist = (projectsToRemove: Project[]): void => {
+  const handleRemoveProjectsFromShortlist = (
+    projectsToRemove: Project[]
+  ): void => {
     // Remove projects from the shortlist if they are present
     const newShortlist = shortlist.filter(
-        (project) =>
+      (project) =>
         !projectsToRemove.find(
-            (projectToRemove) => projectToRemove.projectRegistryId === project.projectRegistryId
+          (projectToRemove) =>
+            projectToRemove.projectRegistryId === project.projectRegistryId
         )
     );
     setShortlist(newShortlist);
-  }
+  };
 
   const handleAddProjectsToFinalBallot = (projectsToAdd: Project[]): void => {
     // Add the projects to the final ballot from the shortlist and remove them from the shortlist
     const newFinalBallot = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyPresent = acc.find(
-          (project) =>
+        (project) =>
           project.projectRegistryId === projectToAdd.projectRegistryId
       );
       return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
     }, finalBallot);
     setFinalBallot(newFinalBallot);
     handleRemoveProjectsFromShortlist(projectsToAdd);
-  }
+  };
 
-  const handleRemoveProjectsFromFinalBallot = (projectsToRemove: Project[]): void => {
+  const handleRemoveProjectsFromFinalBallot = (
+    projectsToRemove: Project[]
+  ): void => {
     // Remove the projects from the final ballot and add them back to the shortlist
     const newFinalBallot = finalBallot.filter(
-        (project) =>
-            !projectsToRemove.find(
-                (projectToRemove) => projectToRemove.projectRegistryId === project.projectRegistryId
-            )
+      (project) =>
+        !projectsToRemove.find(
+          (projectToRemove) =>
+            projectToRemove.projectRegistryId === project.projectRegistryId
+        )
     );
     setFinalBallot(newFinalBallot);
-  }
+  };
 
-  const handleRemoveProjectsFromFinalBallotAndAddToShortlist = (projectsToRemove: Project[]): void => {
+  const handleRemoveProjectsFromFinalBallotAndAddToShortlist = (
+    projectsToRemove: Project[]
+  ): void => {
     // Remove projects from final ballot if they are present and add them back to the shortlist
     handleRemoveProjectsFromFinalBallot(projectsToRemove);
     handleAddProjectsToShortlist(projectsToRemove);
-  }
+  };
 
   return [
     shortlist,

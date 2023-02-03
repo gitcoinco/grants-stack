@@ -14,26 +14,27 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
-          cache-dependency-path: packages/graph/yarn.lock
+          cache: 'pnpm'
 
       - name: Install Dependencies
         run: |
-          yarn install
-          cd packages/graph
-          yarn install 
+          pnpm install
 
       # - name: Setup
       #   run: |
       #     cd packages/graph
-      #     yarn add @graphprotocol/graph-cli
-      #     # yarn prepare:goerli
-      #     # yarn codegen
-          
+      #     pnpm add @graphprotocol/graph-cli
+      #     # pnpm prepare:goerli
+      #     # pnpm codegen
+
       # - name: Test
       #   run: |
       #     cd packages/graph
-      #     yarn test
+      #     pnpm test

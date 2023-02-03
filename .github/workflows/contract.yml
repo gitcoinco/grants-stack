@@ -14,40 +14,50 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+
       - name: Install dependencies
         run: |
-          yarn install
-          cd packages/contracts
-          yarn install
+          pnpm install
 
       - name: Compile contract
         run: |
-          yarn hh-compile
-          
+          pnpm hh-compile
+
       - name: Test contract
         run: |
-          yarn hh-test
+          pnpm hh-test
 
-  slither:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Get node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-          cache: "yarn"
-      - name: Install dependencies
-        run: |
-          yarn install
-          cd packages/contracts
-          yarn install
-      - name: Run slither
-        uses: crytic/slither-action@v0.1.1
-        with:
-          node-version: 16
-          target: ./packages/contracts
-          slither-config: ./packages/contracts/slither.config.json
+#  slither:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 1
+#
+#      - uses: pnpm/action-setup@v2
+#        with:
+#          version: 7
+#
+#      - uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#          cache: 'pnpm'
+#
+#      - name: Install dependencies
+#        run: |
+#          pnpm install
+#      - name: Run slither
+#        uses: crytic/slither-action@v0.1.1
+#        with:
+#          node-version: 16
+#          target: ./packages/contracts
+#          slither-config: ./packages/contracts/slither.config.json

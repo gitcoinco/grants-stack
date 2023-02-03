@@ -14,22 +14,24 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
-          cache-dependency-path: packages/grant-explorer/yarn.lock
+          cache: 'pnpm'
 
       - name: Install Dependencies
         run: |
-          yarn install
-          cd packages/grant-explorer
-          yarn install --frozen-lockfile
+          pnpm install
+
 
       - name: Build Grant Explorer
         run: |
-          yarn re-build
+          pnpm re-build
 
       - name: Test Grant Explorer
         run: |
-          yarn re-test
+          pnpm re-test

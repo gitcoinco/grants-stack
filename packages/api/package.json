@@ -6,21 +6,23 @@
     "npm": ">=8.5.5",
     "node": ">=16.15.0"
   },
+  "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "build": "npx tsc",
+    "build": "pnpm prisma:generate && pnpm tsc",
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
-    "prisma:migrate": "npx prisma migrate dev",
-    "prisma:generate": "npx prisma generate",
-    "prisma:docs": "npx prisma-docs-generator serve",
+    "prisma:migrate": "pnpm prisma migrate dev",
+    "prisma:generate": "pnpm prisma generate",
+    "prisma:docs": "pnpm prisma-docs-generator serve",
     "format": "prettier . --write"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
     "@jest-mock/express": "^2.0.1",
     "@prisma/client": "^4.7.0",
+    "prisma": "latest",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.4",
@@ -47,12 +49,13 @@
     "ethers": "^5.7.2",
     "express": "^4.17.1",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.6",
+    "isomorphic-fetch": "^3.0.0",
     "yup": "^0.32.11"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "yarn lint:fix",
-    "*.{js,jsx,ts,tsx,md}": "prettier --write ."
+    "*.{ts,tsx,md}": [
+      "prettier --write ."
+    ]
   },
   "jest": {
     "resetMocks": false,

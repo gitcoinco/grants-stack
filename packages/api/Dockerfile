@@ -14,11 +14,11 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 FROM base as dev
 ENV NODE_ENV=development
 
-RUN yarn install
+RUN pnpm install
 
 COPY . .
 
-RUN yarn build
+RUN pnpm build
 
 EXPOSE 8000
 

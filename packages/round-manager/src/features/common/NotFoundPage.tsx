@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
 import { datadogLogs } from "@datadog/browser-logs";
 

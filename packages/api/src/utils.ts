@@ -1,7 +1,7 @@
 import { VotingStrategy } from "@prisma/client";
 import { getAddress } from "ethers/lib/utils";
 import { Response } from "express";
-import fetch from "node-fetch";
+import "isomorphic-fetch";
 import {
   ChainId,
   ChainName,
@@ -649,6 +649,7 @@ export const isTestnet = (chainId: ChainId) => {
 
   return testnet.includes(chainId);
 };
+
 
 /**
  * Util function to specify valid coingecko address in scenarios where

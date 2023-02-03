@@ -3,7 +3,7 @@ import { PlusSmIcon } from "@heroicons/react/solid";
 
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg";
 import { ReactComponent as RoundManagerLogo } from "../../assets/round-manager-logo.svg";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export interface NavbarProps {

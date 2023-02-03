@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/solid";
 import { RefreshIcon } from "@heroicons/react/outline";
 
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
