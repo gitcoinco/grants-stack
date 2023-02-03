@@ -293,7 +293,7 @@ export const graphql_fetch = async (
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  let path = `https://{cid}.ipfs.dweb.link/`;
+  let path = `https://${cid}.ipfs.dweb.link/`;
   if (process.env.REACT_APP_PINATA_GATEWAY) {
     path = `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`;
   }
