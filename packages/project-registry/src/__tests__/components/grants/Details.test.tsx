@@ -19,11 +19,6 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
-const verifyCredentialMock = jest.spyOn(
-  PassportVerifier.prototype,
-  "verifyCredential"
-);
-
 describe("<Details />", () => {
   afterEach(() => {
     cleanup();
@@ -96,7 +91,9 @@ _italic text_
         },
       });
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -130,7 +127,9 @@ _italic text_
         },
       });
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -168,7 +167,9 @@ _italic text_
         },
       });
 
-      verifyCredentialMock.mockResolvedValue(true);
+     const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
@@ -205,8 +206,6 @@ _italic text_
           github: githubVC,
         },
       });
-
-      verifyCredentialMock.mockResolvedValue(false);
 
       await act(async () => {
         renderWrapped(
