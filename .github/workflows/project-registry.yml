@@ -26,9 +26,10 @@ jobs:
 
     - name: Test and Build
       run: |
+        pnpm install
+
         cd packages/project-registry
 
-        pnpm install
         pnpm lint
         pnpm test
         pnpm build
