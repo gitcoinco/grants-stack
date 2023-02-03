@@ -19,7 +19,7 @@ jobs:
       run: |
         cd packages/project-registry
 
-        yarn install
-        yarn lint
-        yarn test
-        yarn build
+        pnpm install
+        pnpm lint
+        pnpm test
+        pnpm build
