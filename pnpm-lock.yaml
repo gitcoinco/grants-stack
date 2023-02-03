@@ -4773,6 +4773,12 @@ packages:
     dependencies:
       jest-get-type: 29.2.0
 
+  /@jest/expect-utils/29.4.1:
+    resolution: {integrity: sha512-w6YJMn5DlzmxjO00i9wu2YSozUYRBhIoJ6nQwpMYcBMtiqMGJm1QBzOf6DDgRao8dbtpDoaqLg6iiQTvv0UHhQ==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dependencies:
+      jest-get-type: 29.2.0
+
   /@jest/expect/29.3.1:
     resolution: {integrity: sha512-QivM7GlSHSsIAWzgfyP8dgeExPRZ9BIe2LsdPyEhCGkZkoyA+kGsoIzbKAfZCvvRzfZioKwPtCZIt5SaoxYCvg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -6279,7 +6285,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-remove-scroll: 2.5.4_3stiutgnnbnfnf3uowm5cip22i
-      wagmi: 0.6.8_ftp3pllecu5rnwmmbgmjtk3j44
+      wagmi: 0.6.8_n2cgurg25g7cgftjzlbstkeb2y
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -6307,7 +6313,7 @@ packages:
     dependencies:
       immer: 9.0.18
       react: 18.2.0
-      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
+      react-redux: 8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       reselect: 4.1.7
@@ -8265,7 +8271,7 @@ packages:
       '@walletconnect/ethereum-provider':
         optional: true
     dependencies:
-      '@coinbase/wallet-sdk': 3.6.3_@babel+core@7.20.12
+      '@coinbase/wallet-sdk': 3.6.3
       '@walletconnect/ethereum-provider': 1.8.0
       ethers: 5.7.2
       eventemitter3: 4.0.7
@@ -13569,7 +13575,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -13653,7 +13659,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -14832,9 +14838,9 @@ packages:
     resolution: {integrity: sha512-gGb1yTgU30Q0O/tQq+z30KBWv24ApkMgFUpvKBkyLUBL68Wv8dHdJxTBZFl/iT8K/bqDHvUYRH6IIN3rToopPA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@jest/expect-utils': 29.3.1
+      '@jest/expect-utils': 29.4.1
       jest-get-type: 29.2.0
-      jest-matcher-utils: 29.3.1
+      jest-matcher-utils: 29.4.1
       jest-message-util: 29.4.1
       jest-util: 29.4.1
 
@@ -18249,6 +18255,15 @@ packages:
       jest-get-type: 29.2.0
       pretty-format: 29.4.1
 
+  /jest-diff/29.4.1:
+    resolution: {integrity: sha512-uazdl2g331iY56CEyfbNA0Ut7Mn2ulAG5vUaEHXycf1L6IPyuImIxSz4F0VYBKi7LYIuxOwTZzK3wh5jHzASMw==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dependencies:
+      chalk: 4.1.2
+      diff-sequences: 29.3.1
+      jest-get-type: 29.2.0
+      pretty-format: 29.4.1
+
   /jest-docblock/27.5.1:
     resolution: {integrity: sha512-rl7hlABeTsRYxKiUfpHrQrG4e2obOiTQWfMEH3PxPjOtdsfLQO4ReWSZaQ7DETm4xu07rl4q/h4zcKXyU0/OzQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -18477,6 +18492,15 @@ packages:
     dependencies:
       chalk: 4.1.2
       jest-diff: 29.3.1
+      jest-get-type: 29.2.0
+      pretty-format: 29.4.1
+
+  /jest-matcher-utils/29.4.1:
+    resolution: {integrity: sha512-k5h0u8V4nAEy6lSACepxL/rw78FLDkBnXhZVgFneVpnJONhb2DhZj/Gv4eNe+1XqQ5IhgUcqj745UwH0HJmMnA==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dependencies:
+      chalk: 4.1.2
+      jest-diff: 29.4.1
       jest-get-type: 29.2.0
       pretty-format: 29.4.1
 
@@ -27802,34 +27826,6 @@ packages:
 
   /wagmi/0.6.4_ftp3pllecu5rnwmmbgmjtk3j44:
     resolution: {integrity: sha512-obP1t+nfdfB0Y7eIVPrpWw8tVftF5HHdtwi214En7yubuU5cbV+AMkI8z8Mj0NteHo805frShnss9L1jzMqNuQ==}
-    peerDependencies:
-      ethers: '>=5.5.1'
-      react: '>=17.0.0'
-    dependencies:
-      '@coinbase/wallet-sdk': 3.6.3_@babel+core@7.20.12
-      '@tanstack/query-sync-storage-persister': 4.22.0_7c7prdbk4jtxz56sswerepgrwm
-      '@tanstack/react-query': 4.22.0_biqbaboplfbrettd7655fr4n2y
-      '@tanstack/react-query-persist-client': 4.22.0_tyoxuer7opnajrfhndvdonart4
-      '@wagmi/core': 0.5.8_k4r2eynlbxqovgtks655tfmyqa
-      '@walletconnect/ethereum-provider': 1.8.0
-      ethers: 5.7.2
-      react: 18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@tanstack/query-core'
-      - bufferutil
-      - debug
-      - encoding
-      - immer
-      - react-dom
-      - react-native
-      - supports-color
-      - utf-8-validate
-    dev: false
-
-  /wagmi/0.6.8_ftp3pllecu5rnwmmbgmjtk3j44:
-    resolution: {integrity: sha512-pIOn7I56KPfdPQ1WRIWzWnpC8eJZm1V25Rcn5fbgOJ2eV3kjGNchnIub/ERY1VMKywxkCAfgXfn2D/tqwCJsWw==}
     peerDependencies:
       ethers: '>=5.5.1'
       react: '>=17.0.0'
