@@ -27,7 +27,6 @@ describe("<Github />", () => {
   });
 
   describe("with account already verified", () => {
-    
     test("should show the verification badge after verifying the vc", async () => {
       const store = setupStore();
       const handle = "github-org-handle";
@@ -53,7 +52,7 @@ describe("<Github />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => { }} canVerify />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -87,7 +86,7 @@ describe("<Github />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => { }} canVerify />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -121,7 +120,7 @@ describe("<Github />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => { }} canVerify />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -149,7 +148,7 @@ describe("<Github />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => { }} canVerify />,
+          <Github org={handle} verificationError={() => {}} canVerify />,
           store
         );
       });

@@ -43,7 +43,7 @@ describe("<Twitter />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => { }} canVerify />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -76,7 +76,7 @@ describe("<Twitter />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => { }} canVerify />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -110,7 +110,7 @@ describe("<Twitter />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => { }} canVerify />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });
@@ -138,7 +138,7 @@ describe("<Twitter />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => { }} canVerify />,
+          <Twitter handle={handle} verificationError={() => {}} canVerify />,
           store
         );
       });

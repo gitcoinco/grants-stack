@@ -167,7 +167,7 @@ _italic text_
         },
       });
 
-     const verifyCredentialMock = jest.fn();
+      const verifyCredentialMock = jest.fn();
       verifyCredentialMock.mockReturnValue(true);
       PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
