@@ -10,11 +10,6 @@ import {
 } from "../../../utils/test_utils";
 import { credentialsSaved } from "../../../actions/projectForm";
 
-const verifyCredentialMock = jest.spyOn(
-  PassportVerifier.prototype,
-  "verifyCredential"
-);
-
 const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 describe("<Twitter />", () => {
@@ -42,11 +37,13 @@ describe("<Twitter />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => {}} canVerify />,
+          <Twitter handle={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
@@ -73,11 +70,13 @@ describe("<Twitter />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => {}} canVerify />,
+          <Twitter handle={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
@@ -105,11 +104,13 @@ describe("<Twitter />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => {}} canVerify />,
+          <Twitter handle={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
@@ -137,7 +138,7 @@ describe("<Twitter />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Twitter handle={handle} verificationError={() => {}} canVerify />,
+          <Twitter handle={handle} verificationError={() => { }} canVerify />,
           store
         );
       });

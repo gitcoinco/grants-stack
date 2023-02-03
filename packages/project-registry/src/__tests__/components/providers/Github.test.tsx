@@ -19,11 +19,6 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
-const verifyCredentialMock = jest.spyOn(
-  PassportVerifier.prototype,
-  "verifyCredential"
-);
-
 const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
 
 describe("<Github />", () => {
@@ -32,6 +27,7 @@ describe("<Github />", () => {
   });
 
   describe("with account already verified", () => {
+    
     test("should show the verification badge after verifying the vc", async () => {
       const store = setupStore();
       const handle = "github-org-handle";
@@ -51,15 +47,18 @@ describe("<Github />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => {}} canVerify />,
+          <Github org={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
 
+      // console.log(screen.debug());
       expect(screen.queryByText("Verified")).toBeInTheDocument();
     });
 
@@ -82,11 +81,13 @@ describe("<Github />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => {}} canVerify />,
+          <Github org={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
@@ -114,11 +115,13 @@ describe("<Github />", () => {
         })
       );
 
-      verifyCredentialMock.mockResolvedValue(true);
+      const verifyCredentialMock = jest.fn();
+      verifyCredentialMock.mockReturnValue(true);
+      PassportVerifier.prototype.verifyCredential = verifyCredentialMock;
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => {}} canVerify />,
+          <Github org={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
@@ -146,7 +149,7 @@ describe("<Github />", () => {
 
       await act(async () => {
         renderWrapped(
-          <Github org={handle} verificationError={() => {}} canVerify />,
+          <Github org={handle} verificationError={() => { }} canVerify />,
           store
         );
       });
