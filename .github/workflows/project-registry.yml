@@ -1,4 +1,4 @@
-name: packages/project-registry - Build -> Test
+name: package/project-registry - Build -> Test
 
 on:
   push:
