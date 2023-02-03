@@ -86,7 +86,7 @@ The doc app will run on `http://localhost:5858/`
 2. Install all dependencies
 
 ```
-yarn install
+pnpm install
 ```
 
 3. Generate the `.env` file by cloning `env.sample`
@@ -107,5 +107,5 @@ Anytime changes the `prisma.schema` file is updated.
 Create the migration file for those changes by running
 
 ```
-yarn prisma:migrate
+pnpm prisma:migrate
 ```

@@ -1,9 +1,13 @@
 import { Project } from "../types";
 import { makeApprovedProjectData } from "../../../test-utils";
-import { loadFinalBallot, loadShortlist, saveFinalBallot, saveShortlist } from "../LocalStorage";
+import {
+  loadFinalBallot,
+  loadShortlist,
+  saveFinalBallot,
+  saveShortlist,
+} from "../LocalStorage";
 
 describe("Local Storage", () => {
-
   describe("shortlist local storage", () => {
     beforeEach(() => {
       localStorage.clear();

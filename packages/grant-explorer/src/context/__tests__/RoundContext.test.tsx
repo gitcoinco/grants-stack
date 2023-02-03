@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  useRoundById,
-  RoundProvider,
-} from "../RoundContext";
+import { useRoundById, RoundProvider } from "../RoundContext";
 import { render, screen, waitFor } from "@testing-library/react";
 import { makeRoundData } from "../../test-utils";
 import { getRoundById } from "../../features/api/round";
@@ -27,9 +24,7 @@ describe("<ListRoundProvider />", () => {
 
       render(
         <RoundProvider>
-          <TestingUseRoundByIdComponent
-            expectedRoundId={expectedRoundId}
-          />
+          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
 
@@ -43,9 +38,7 @@ describe("<ListRoundProvider />", () => {
 
       render(
         <RoundProvider>
-          <TestingUseRoundByIdComponent
-            expectedRoundId={expectedRoundId}
-          />
+          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
 
@@ -61,9 +54,7 @@ describe("<ListRoundProvider />", () => {
 
       render(
         <RoundProvider>
-          <TestingUseRoundByIdComponent
-            expectedRoundId={expectedRoundId}
-          />
+          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
 
@@ -81,9 +72,7 @@ describe("<ListRoundProvider />", () => {
 
       render(
         <RoundProvider>
-          <TestingUseRoundByIdComponent
-            expectedRoundId={expectedRoundId}
-          />
+          <TestingUseRoundByIdComponent expectedRoundId={expectedRoundId} />
         </RoundProvider>
       );
 
@@ -98,10 +87,7 @@ describe("<ListRoundProvider />", () => {
   });
 });
 
-
-const TestingUseRoundByIdComponent = (props: {
-  expectedRoundId: string;
-}) => {
+const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, isLoading, getRoundByIdError } = useRoundById(
     "chainID",
     props.expectedRoundId

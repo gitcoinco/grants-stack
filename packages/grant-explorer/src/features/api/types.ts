@@ -37,12 +37,14 @@ export interface IPFSObject {
   /**
    * File content to be saved in IPFS
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   content: object | Blob;
   /**
    * Optional metadata
    */
   metadata?: {
     name?: string;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     keyvalues?: object;
   };
 }

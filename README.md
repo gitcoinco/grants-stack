@@ -5,8 +5,8 @@ This repository contains packages needed for a user to
 - Explore available Rounds
 - Vote for Projects within a Round
 
-Project Maintained via  : `lerna`
-Build Tool              : `yarn`
+Project Maintained via  : `turborepo`
+Package manager         : `pnpm`
 
 ## Directory Structure
 

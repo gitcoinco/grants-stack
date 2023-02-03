@@ -1,5 +1,7 @@
 const webpack = require("webpack");
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
+const CracoEsbuildPlugin = require("craco-esbuild");
+const path = require("path");
 
 const plugins = [
   new webpack.ProvidePlugin({
@@ -77,4 +79,13 @@ module.exports = {
       add: plugins,
     },
   },
+  plugins: [
+    {
+      plugin: CracoEsbuildPlugin,
+      options: {
+        includePaths: [path.join(__dirname, `../common/src`)],
+        skipEsbuildJest: true,
+      },
+    },
+  ],
 };

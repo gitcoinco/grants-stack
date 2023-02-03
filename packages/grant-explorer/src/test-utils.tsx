@@ -129,7 +129,7 @@ export const mockSigner = {
 };
 
 export const mockNetwork = {
-  chain: { id: 5, name: "Goerli"},
+  chain: { id: 5, name: "Goerli" },
   chains: [
     { id: 10, name: "Optimism" },
     { id: 5, name: "Goerli" },

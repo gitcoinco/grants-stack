@@ -16,7 +16,7 @@ import * as yup from "yup";
 
 import { Program, Round } from "../api/types";
 import { FormContext } from "../common/FormWizard";
-import { Input } from "../common/styles";
+import { Input } from "common/src/styles";
 import { FormStepper } from "../common/FormStepper";
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {

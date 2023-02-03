@@ -6,16 +6,19 @@
   "scripts": {
     "build": "craco build",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src --cache",
-    "lint-staged": "lint-staged",
-    "lint:fix": "eslint ./src --fix --cache",
+    "lint:ci": "pnpm lint:fix --max-warnings=0",
+    "lint:fix": "eslint ./src --fix",
+    "typecheck": "tsc --noEmit",
     "start": "craco start",
     "test": "craco test --watchAll=false --silent",
     "test-log": "craco test --watchAll=false",
     "test:coverage": "craco test --watchAll=false --silent --coverage"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "yarn lint:fix"
+    "*.{ts,tsx}": [
+      "prettier --write .",
+      "pnpm lint:fix"
+    ]
   },
   "browserslist": {
     "production": [
@@ -38,7 +41,7 @@
     ]
   },
   "dependencies": {
-    "@craco/craco": "^6.4.3",
+    "@craco/craco": "^7.0.0",
     "@datadog/browser-logs": "^4.19.0",
     "@datadog/browser-rum": "^4.19.0",
     "@gitcoinco/passport-sdk-verifier": "^0.2.2",
@@ -63,11 +66,12 @@
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.2",
     "buffer": "^6.0.3",
+    "common": "workspace:*",
     "crypto-browserify": "^3.12.0",
     "date-fns": "^2.29.3",
     "dompurify": "^2.4.3",
     "ethers": "^5.6.5",
-    "exponential-backoff": "^3.1.0",
+    "history": "^5.3.0",
     "html-react-parser": "^3.0.7",
     "https-browserify": "^1.0.0",
     "ipfs-core": "^0.14.3",
@@ -80,6 +84,11 @@
     "react-datetime": "^3.1.1",
     "react-dom": "^18.1.0",
     "react-gtm-module": "^2.0.11",
+    "redux": "latest",
+    "redux-thunk": "latest",
+    "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "ipfs-core-types": "^0.14.0",
     "react-hook-form": "^7.31.3",
     "react-redux": "^8.0.1",
     "react-router-dom": "6",
@@ -101,11 +110,12 @@
     "@types/react-gtm-module": "^2.0.1",
     "autoprefixer": "^10.4.7",
     "jest-localstorage-mock": "^2.4.22",
-    "lint-staged": "^13.1.0",
     "postcss": "^8.4.14",
     "prettier": "^2.8.3",
     "tailwind-styled-components": "^2.1.7",
-    "tailwindcss": "^3.0.24"
+    "tailwindcss": "^3.0.24",
+    "eslint-config-gitcoin": "workspace:*",
+    "@types/testing-library__jest-dom": "^5.14.5"
   },
   "engines": {
     "node": ">=16.15.0",

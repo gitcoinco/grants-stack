@@ -20,7 +20,7 @@ export const getProjectMatchDataHandler = async (
   }
   roundId = roundId.toLowerCase();
   projectId = projectId.toLowerCase();
-  
+
   // check if match is cached
   const cachedRoundMatchData = cache.get(
     `cache_/data/round/match/${chainId}/${roundId}`

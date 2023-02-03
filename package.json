@@ -7,38 +7,40 @@
     "node": ">=16.15.0"
   },
   "scripts": {
-    "start": "lerna run start --scope=round-manager",
-    "build": "lerna run build --scope=round-manager",
-    "compile": "lerna run compile --scope=contracts",
-    "test": "lerna run test --ignore=@grants-round/graph",
-    "typecheck": "lerna exec --scope='{grant-explorer,round-manager,api}' -- tsc --noEmit",
+    "start": "pnpm --filter round-manager run start",
+    "build": "pnpm turbo build",
+    "compile": "pnpm --filter contracts run compile ",
+    "test": "pnpm run test --ignore=@grants-round/graph",
+    "typecheck": "turbo run typecheck",
     "// contracts script": "====== packages/contract specific ======",
-    "hh-test": "lerna run test --scope=contracts",
-    "hh-compile": "lerna run compile --scope=contracts",
+    "hh-test": "pnpm --filter contracts run test",
+    "hh-compile": "pnpm --filter contracts run compile",
     "// graph script": "====== packages/graph specific ======",
-    "graph-test": "lerna run test --scope=graph",
+    "graph-test": "pnpm --filter graph test",
     "// round manager script": "====== packages/round-manager specific ======",
-    "rm-build": "lerna run build --scope=round-manager",
-    "rm-test": "lerna run test --scope=round-manager",
-    "rm-start": "lerna run start --scope=round-manager",
-    "rm-slither": "lerna run slither --scope=round-manager",
-    "rm-typecheck": "lerna exec --scope=round-manager -- tsc --noEmit",
+    "rm-build": "pnpm --filter round-manager run build",
+    "rm-test": "pnpm --filter round-manager run test",
+    "rm-start": "pnpm --filter round-manager run start",
+    "rm-slither": "pnpm --filter round-manager run slither",
+    "rm-typecheck": "pnpm --filter round-manager exec  -- tsc --noEmit",
     "// grant explorer script": "====== packages/grant-explorer specific ======",
-    "re-build": "lerna run build --scope=grant-explorer",
-    "re-test": "lerna run test --scope=grant-explorer",
-    "re-start": "lerna run start --scope=grant-explorer",
-    "re-slither": "lerna run slither --scope=grant-explorer",
-    "re-typecheck": "lerna exec --scope=grant-explorer -- tsc --noEmit",
+    "re-build": "turbo run build --filter=grant-explorer",
+    "re-test": "turbo run test --filter=grant-explorer",
+    "re-start": "pnpm --filter grant-explorer run start",
+    "re-typecheck": "turbo run typecheck --filter=grant-explorer",
     "// api script": "====== packages/api specific ======",
-    "api-build": "lerna run build --scope=api",
-    "api-test": "lerna run test --scope=api",
-    "api-start": "lerna run start --scope=api"
+    "api-build": "turbo run build --filter=api",
+    "api-test": "turbo run test --filter=api",
+    "api-start": "pnpm --filter api run start",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@testing-library/jest-dom": "^5.16.5",
     "husky": "^8.0.1",
-    "lerna": "^5.5.4"
+    "lint-staged": "^13.1.0"
+  },
+  "dependencies": {
+    "turbo": "^1.7.2"
   }
 }

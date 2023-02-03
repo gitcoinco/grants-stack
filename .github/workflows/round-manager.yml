@@ -14,22 +14,23 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'yarn'
-          cache-dependency-path: packages/round-manager/yarn.lock
+          cache: 'pnpm'
 
       - name: Install Dependencies
         run: |
-          yarn install
-          cd packages/round-manager
-          yarn install --frozen-lockfile
+          pnpm install
 
       - name: Build Round Manager
         run: |
-          yarn rm-build
+          pnpm rm-build
 
       - name: Test Round Manager
         run: |
-          yarn rm-test
+          pnpm rm-test

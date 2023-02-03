@@ -366,9 +366,8 @@ export const matchQFContributions = async (
         },
       };
     }
-
     // check if contributor has already made contributions to the project
-    if (!contributionsByProject[projectId].contributions[contributor]) {
+    else if (!contributionsByProject[projectId].contributions[contributor]) {
       // append contributor to the projectId mapping
       contributionsByProject[projectId].contributions[contributor] = {
         ...contribution,
@@ -512,10 +511,7 @@ export const matchQFContributions = async (
     });
     console.log("_totalMatchAmountInUSD", _totalMatchAmountInUSD);
     console.log("_totalMatchAmountInToken", _totalMatchAmountInToken);
-    console.log(
-      "_totalMatchAmountInPercentage",
-      _totalMatchAmountInPercentage
-    );
+    console.log("_totalMatchAmountInPercentage", _totalMatchAmountInPercentage);
 
     console.log("=====================");
     matchResults.forEach((match, index) => {
@@ -528,7 +524,6 @@ export const matchQFContributions = async (
     });
     console.log("=====================");
   }
-
 
   return {
     distribution: matchResults,

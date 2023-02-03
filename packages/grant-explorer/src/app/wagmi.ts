@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 
-import {Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
@@ -12,9 +12,7 @@ import { createClient, configureChains, chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 
-
 const testnetChains = () => {
-
   /***********************/
   /* == Custom Chains == */
   /***********************/
@@ -24,7 +22,8 @@ const testnetChains = () => {
     id: 4002,
     name: "Fantom Testnet",
     network: "fantom testnet",
-    iconUrl: "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
+    iconUrl:
+      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
     nativeCurrency: {
       decimals: 18,
       name: "Fantom",
@@ -39,14 +38,10 @@ const testnetChains = () => {
     testnet: true,
   };
 
-  return [
-    chain.goerli,
-    fantomTestnet
-  ];
-}
+  return [chain.goerli, fantomTestnet];
+};
 
 const mainnetChains = () => {
-
   /***********************/
   /* == Custom Chains == */
   /***********************/
@@ -56,7 +51,8 @@ const mainnetChains = () => {
     id: 250,
     name: "Fantom",
     network: "fantom mainnet",
-    iconUrl: "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
+    iconUrl:
+      "https://gitcoin.mypinata.cloud/ipfs/bafkreih3k2dxplvtgbdpj43j3cxjpvkkwuoxm2fbvthzlingucv6ncauaa",
     nativeCurrency: {
       decimals: 18,
       name: "Fantom",
@@ -71,17 +67,13 @@ const mainnetChains = () => {
     testnet: false,
   };
 
-  return [
-    chain.mainnet,
-    chain.optimism,
-    fantomMainnet
-  ];
-}
+  return [chain.mainnet, chain.optimism, fantomMainnet];
+};
 
-const allChains: Chain[] = process.env.REACT_APP_ENV === "development" ?
-  [...testnetChains(), ...mainnetChains()] :
-  [...mainnetChains()];
-
+const allChains: Chain[] =
+  process.env.REACT_APP_ENV === "development"
+    ? [...testnetChains(), ...mainnetChains()]
+    : [...mainnetChains()];
 
 export const { chains, provider, webSocketProvider } = configureChains(
   allChains,

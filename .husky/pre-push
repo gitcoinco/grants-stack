@@ -2,5 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # treat warnings as errors to prevent the build passing locally, but failing on CI
-yarn lerna run --scope='{grant-explorer,round-manager,api}' lint:fix -- -- --max-warnings=0
-yarn run typecheck
+turbo run lint:ci
+turbo run typecheck
