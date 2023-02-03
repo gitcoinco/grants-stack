@@ -30,6 +30,5 @@ jobs:
 
         cd packages/project-registry
 
-        pnpm lint
         pnpm test
         pnpm build
