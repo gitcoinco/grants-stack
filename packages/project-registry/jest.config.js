@@ -6,11 +6,10 @@ module.exports = {
   resetMocks: true,
   coverageProvider: "v8",
   verbose: true,
+  modulePathIgnorePatterns: ["<rootDir>/packages/graph"],
   // @rainbow-me/rainbowkit is already an ESM module and
   // it trips Jest when it tries to transform it, this ignores it
-  transformIgnorePatterns: [
-    "/project-registry/node_modules/(?!(@rainbow-me))/",
-  ],
+  transformIgnorePatterns: ["<rootDir>/node_modules/(?!(@rainbow-me))/"],
   moduleNameMapper: {
     "^.+.(css|styl|less|sass|scss|png|jpg|svg|ttf|woff|woff2)$":
       "jest-transform-stub",
