@@ -34,6 +34,7 @@
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.1",
     "@types/react-redux": "^7.1.24",
+    "@types/testing-library__jest-dom": "^5.14.5",
     "@wagmi/core": "^0.5.8",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.7",

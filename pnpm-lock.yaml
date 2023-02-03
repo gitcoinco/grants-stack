@@ -397,6 +397,7 @@ importers:
       '@types/react': ^18.0.5
       '@types/react-dom': ^18.0.1
       '@types/react-redux': ^7.1.24
+      '@types/testing-library__jest-dom': ^5.14.5
       '@typescript-eslint/eslint-plugin': ^5.23.0
       '@typescript-eslint/parser': ^5.23.0
       '@wagmi/core': ^0.5.8
@@ -477,7 +478,7 @@ importers:
       '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
       '@tanstack/query-core': 4.22.0
       '@testing-library/dom': 8.20.0
-      '@testing-library/jest-dom': 5.16.5
+      '@testing-library/jest-dom': 5.16.4
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       '@testing-library/user-event': 13.5.0_yxlyej73nftwmh2fiao7paxmlm
       '@types/jest': 27.5.2
@@ -486,6 +487,7 @@ importers:
       '@types/react': 18.0.27
       '@types/react-dom': 18.0.10
       '@types/react-redux': 7.1.25
+      '@types/testing-library__jest-dom': 5.14.5
       '@wagmi/core': 0.5.8_ethers@5.7.2+react@18.2.0
       assert: 2.0.0
       autoprefixer: 10.4.13_postcss@8.4.21
@@ -511,7 +513,7 @@ importers:
       react-redux: 7.2.9_biqbaboplfbrettd7655fr4n2y
       react-router: 6.7.0_react@18.2.0
       react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
-      react-scripts: 5.0.1_zuhshmesqc5b4gfsrhoit5futa
+      react-scripts: 5.0.1_3b7faz2l3oolxrfcxx2hmklkz4
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       stream-browserify: 3.0.0
@@ -3397,7 +3399,7 @@ packages:
       cosmiconfig-typescript-loader: 1.0.9_bdgp3l2zgaopogaavxusmetvge
       cross-spawn: 7.0.3
       lodash: 4.17.21
-      react-scripts: 5.0.1_zuhshmesqc5b4gfsrhoit5futa
+      react-scripts: 5.0.1_3b7faz2l3oolxrfcxx2hmklkz4
       semver: 7.3.8
       webpack-merge: 4.2.2
     transitivePeerDependencies:
@@ -6252,7 +6254,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-remove-scroll: 2.5.4_3stiutgnnbnfnf3uowm5cip22i
-      wagmi: 0.6.8_n2cgurg25g7cgftjzlbstkeb2y
+      wagmi: 0.6.8_ftp3pllecu5rnwmmbgmjtk3j44
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -7028,6 +7030,21 @@ packages:
       pretty-format: 27.5.1
     dev: false
 
+  /@testing-library/jest-dom/5.16.4:
+    resolution: {integrity: sha512-Gy+IoFutbMQcky0k+bqqumXZ1cTGswLsFqmNLzNdSKkU9KGV2u9oXhukCbbJ9/LRPKiqwxEE8VpV/+YZlfkPUA==}
+    engines: {node: '>=8', npm: '>=6', yarn: '>=1'}
+    dependencies:
+      '@babel/runtime': 7.20.7
+      '@types/testing-library__jest-dom': 5.14.5
+      aria-query: 5.1.3
+      chalk: 3.0.0
+      css: 3.0.0
+      css.escape: 1.5.1
+      dom-accessibility-api: 0.5.15
+      lodash: 4.17.21
+      redent: 3.0.0
+    dev: false
+
   /@testing-library/jest-dom/5.16.5:
     resolution: {integrity: sha512-N5ixQ2qKpi5OLYfwQmUb/5mSV9LneAcaUfp32pn4yCnpb8r/Yz0pXFPck21dIicKmi+ta5WRAknkZCfA8refMA==}
     engines: {node: '>=8', npm: '>=6', yarn: '>=1'}
@@ -7398,7 +7415,7 @@ packages:
     resolution: {integrity: sha512-H2cSxkKgVmqNHXP7TC2L/WUorrZu8ZigyRywfVzv6EyBlxj39n4C00hjXYQWsbwqgElaj/CiAeSRmk5GoaKTgw==}
     dependencies:
       expect: 29.3.1
-      pretty-format: 29.3.1
+      pretty-format: 29.4.1
 
   /@types/js-levenshtein/1.1.1:
     resolution: {integrity: sha512-qC4bCqYGy1y/NP7dDVr7KJarn+PbX1nSpwA7JXdu0HxT3QYjO8MJ+cntENtHFVy2dRAyBV23OZ6MxsW1AM1L8g==}
@@ -8223,7 +8240,7 @@ packages:
       '@walletconnect/ethereum-provider':
         optional: true
     dependencies:
-      '@coinbase/wallet-sdk': 3.6.3
+      '@coinbase/wallet-sdk': 3.6.3_@babel+core@7.20.12
       '@walletconnect/ethereum-provider': 1.8.0
       ethers: 5.7.2
       eventemitter3: 4.0.7
@@ -9525,7 +9542,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: true
@@ -12063,6 +12080,14 @@ packages:
 
   /css.escape/1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
+    dev: false
+
+  /css/3.0.0:
+    resolution: {integrity: sha512-DG9pFfwOrzc+hawpmqX/dHYHJG+Bsdb0klhyi1sDneOgGOXy9wQIC8hzyVp1e4NRYDBdxcylvywPkkXCHAzTyQ==}
+    dependencies:
+      inherits: 2.0.4
+      source-map: 0.6.1
+      source-map-resolve: 0.6.0
     dev: false
 
   /cssdb/7.3.0:
@@ -15188,7 +15213,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -15200,6 +15224,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -16435,7 +16460,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -23258,14 +23283,6 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
 
-  /pretty-format/29.3.1:
-    resolution: {integrity: sha512-FyLnmb1cYJV8biEIiRyzRFvs2lry7PPIvOqKVe1GCUEYg4YGmlx1qG9EJNMxArYm7piII4qb8UV1Pncq5dxmcg==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    dependencies:
-      '@jest/schemas': 29.4.0
-      ansi-styles: 5.2.0
-      react-is: 18.2.0
-
   /pretty-format/29.4.1:
     resolution: {integrity: sha512-dt/Z761JUVsrIKaY215o1xQJBGlSmTx/h4cSqXqjHLnU1+Kt+mavVE7UgqJJO5ukx5HjSswHfmXz4LjS2oIJfg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -24042,6 +24059,103 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-scripts/5.0.1_3b7faz2l3oolxrfcxx2hmklkz4:
+    resolution: {integrity: sha512-8VAmEm/ZAwQzJ+GOMLbBsTdDKOpuZh7RPs0UymvBR2vRk4iZWCskjbFnxqjrzoIvlNNRZ3QJFx6/qDSi6zSnaQ==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      eslint: '*'
+      react: '>= 16'
+      typescript: ^3.2.1 || ^4
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@babel/core': 7.20.12
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.10_unmakpayn7vcxadrrsbqlrpehy
+      '@svgr/webpack': 5.5.0
+      babel-jest: 27.5.1_@babel+core@7.20.12
+      babel-loader: 8.3.0_la66t7xldg4uecmyawueag5wkm
+      babel-plugin-named-asset-import: 0.3.8_@babel+core@7.20.12
+      babel-preset-react-app: 10.0.1
+      bfj: 7.0.2
+      browserslist: 4.21.4
+      camelcase: 6.3.0
+      case-sensitive-paths-webpack-plugin: 2.4.0
+      css-loader: 6.7.3_webpack@5.75.0
+      css-minimizer-webpack-plugin: 3.4.1_webpack@5.75.0
+      dotenv: 10.0.0
+      dotenv-expand: 5.1.0
+      eslint: 8.32.0
+      eslint-config-react-app: 7.0.1_5ttentv7ita2wlsuzuvjw5xvca
+      eslint-webpack-plugin: 3.2.0_ozjdf2ywoi3qlyjpudft42m7aq
+      file-loader: 6.2.0_webpack@5.75.0
+      fs-extra: 10.1.0
+      html-webpack-plugin: 5.5.0_webpack@5.75.0
+      identity-obj-proxy: 3.0.0
+      jest: 27.5.1
+      jest-resolve: 27.5.1
+      jest-watch-typeahead: 1.1.0_jest@27.5.1
+      mini-css-extract-plugin: 2.7.2_webpack@5.75.0
+      postcss: 8.4.21
+      postcss-flexbugs-fixes: 5.0.2_postcss@8.4.21
+      postcss-loader: 6.2.1_6jdsrmfenkuhhw3gx4zvjlznce
+      postcss-normalize: 10.0.1_5kwwozqejd6kse3tlstkrpsc6y
+      postcss-preset-env: 7.8.3_postcss@8.4.21
+      prompts: 2.4.2
+      react: 18.2.0
+      react-app-polyfill: 3.0.0
+      react-dev-utils: 12.0.1_vnlzthkkgymvqpgixgiasjb3ai
+      react-refresh: 0.11.0
+      resolve: 1.22.1
+      resolve-url-loader: 4.0.0
+      sass-loader: 12.6.0_webpack@5.75.0
+      semver: 7.3.8
+      source-map-loader: 3.0.2_webpack@5.75.0
+      style-loader: 3.3.1_webpack@5.75.0
+      tailwindcss: 3.2.4_postcss@8.4.21
+      terser-webpack-plugin: 5.3.6_webpack@5.75.0
+      typescript: 4.9.5
+      webpack: 5.75.0
+      webpack-dev-server: 4.11.1_webpack@5.75.0
+      webpack-manifest-plugin: 4.1.1_webpack@5.75.0
+      workbox-webpack-plugin: 6.5.4_webpack@5.75.0
+    optionalDependencies:
+      fsevents: 2.3.2
+    transitivePeerDependencies:
+      - '@babel/plugin-syntax-flow'
+      - '@babel/plugin-transform-react-jsx'
+      - '@parcel/css'
+      - '@swc/core'
+      - '@types/babel__core'
+      - '@types/webpack'
+      - bufferutil
+      - canvas
+      - clean-css
+      - csso
+      - debug
+      - esbuild
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - fibers
+      - node-notifier
+      - node-sass
+      - rework
+      - rework-visit
+      - sass
+      - sass-embedded
+      - sockjs-client
+      - supports-color
+      - ts-node
+      - type-fest
+      - uglify-js
+      - utf-8-validate
+      - vue-template-compiler
+      - webpack-cli
+      - webpack-hot-middleware
+      - webpack-plugin-serve
+    dev: false
+
   /react-scripts/5.0.1_o77wnou4wwnegu5woljtklrzru:
     resolution: {integrity: sha512-8VAmEm/ZAwQzJ+GOMLbBsTdDKOpuZh7RPs0UymvBR2vRk4iZWCskjbFnxqjrzoIvlNNRZ3QJFx6/qDSi6zSnaQ==}
     engines: {node: '>=14.0.0'}
@@ -24136,102 +24250,6 @@ packages:
       - webpack-cli
       - webpack-hot-middleware
       - webpack-plugin-serve
-
-  /react-scripts/5.0.1_zuhshmesqc5b4gfsrhoit5futa:
-    resolution: {integrity: sha512-8VAmEm/ZAwQzJ+GOMLbBsTdDKOpuZh7RPs0UymvBR2vRk4iZWCskjbFnxqjrzoIvlNNRZ3QJFx6/qDSi6zSnaQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '>= 16'
-      typescript: ^3.2.1 || ^4
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@babel/core': 7.20.12
-      '@pmmmwh/react-refresh-webpack-plugin': 0.5.10_unmakpayn7vcxadrrsbqlrpehy
-      '@svgr/webpack': 5.5.0
-      babel-jest: 27.5.1_@babel+core@7.20.12
-      babel-loader: 8.3.0_la66t7xldg4uecmyawueag5wkm
-      babel-plugin-named-asset-import: 0.3.8_@babel+core@7.20.12
-      babel-preset-react-app: 10.0.1
-      bfj: 7.0.2
-      browserslist: 4.21.4
-      camelcase: 6.3.0
-      case-sensitive-paths-webpack-plugin: 2.4.0
-      css-loader: 6.7.3_webpack@5.75.0
-      css-minimizer-webpack-plugin: 3.4.1_webpack@5.75.0
-      dotenv: 10.0.0
-      dotenv-expand: 5.1.0
-      eslint: 8.32.0
-      eslint-config-react-app: 7.0.1_5ttentv7ita2wlsuzuvjw5xvca
-      eslint-webpack-plugin: 3.2.0_ozjdf2ywoi3qlyjpudft42m7aq
-      file-loader: 6.2.0_webpack@5.75.0
-      fs-extra: 10.1.0
-      html-webpack-plugin: 5.5.0_webpack@5.75.0
-      identity-obj-proxy: 3.0.0
-      jest: 27.5.1
-      jest-resolve: 27.5.1
-      jest-watch-typeahead: 1.1.0_jest@27.5.1
-      mini-css-extract-plugin: 2.7.2_webpack@5.75.0
-      postcss: 8.4.21
-      postcss-flexbugs-fixes: 5.0.2_postcss@8.4.21
-      postcss-loader: 6.2.1_6jdsrmfenkuhhw3gx4zvjlznce
-      postcss-normalize: 10.0.1_5kwwozqejd6kse3tlstkrpsc6y
-      postcss-preset-env: 7.8.3_postcss@8.4.21
-      prompts: 2.4.2
-      react: 18.2.0
-      react-app-polyfill: 3.0.0
-      react-dev-utils: 12.0.1_vnlzthkkgymvqpgixgiasjb3ai
-      react-refresh: 0.11.0
-      resolve: 1.22.1
-      resolve-url-loader: 4.0.0
-      sass-loader: 12.6.0_webpack@5.75.0
-      semver: 7.3.8
-      source-map-loader: 3.0.2_webpack@5.75.0
-      style-loader: 3.3.1_webpack@5.75.0
-      tailwindcss: 3.2.4_postcss@8.4.21
-      terser-webpack-plugin: 5.3.6_webpack@5.75.0
-      typescript: 4.9.5
-      webpack: 5.75.0
-      webpack-dev-server: 4.11.1_webpack@5.75.0
-      webpack-manifest-plugin: 4.1.1_webpack@5.75.0
-      workbox-webpack-plugin: 6.5.4_webpack@5.75.0
-    optionalDependencies:
-      fsevents: 2.3.2
-    transitivePeerDependencies:
-      - '@babel/plugin-syntax-flow'
-      - '@babel/plugin-transform-react-jsx'
-      - '@parcel/css'
-      - '@swc/core'
-      - '@types/babel__core'
-      - '@types/webpack'
-      - bufferutil
-      - canvas
-      - clean-css
-      - csso
-      - debug
-      - esbuild
-      - eslint-import-resolver-typescript
-      - eslint-import-resolver-webpack
-      - fibers
-      - node-notifier
-      - node-sass
-      - rework
-      - rework-visit
-      - sass
-      - sass-embedded
-      - sockjs-client
-      - supports-color
-      - ts-node
-      - type-fest
-      - uglify-js
-      - utf-8-validate
-      - vue-template-compiler
-      - webpack-cli
-      - webpack-hot-middleware
-      - webpack-plugin-serve
-    dev: false
 
   /react-style-singleton/2.2.1_3stiutgnnbnfnf3uowm5cip22i:
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
@@ -25628,6 +25646,14 @@ packages:
       resolve-url: 0.2.1
       source-map-url: 0.4.1
       urix: 0.1.0
+
+  /source-map-resolve/0.6.0:
+    resolution: {integrity: sha512-KXBr9d/fO/bWo97NXsPIAW1bFSBOuCnjbNTBMO7N59hsv5i9yzRDfcYwwt0l04+VqnKC+EwzvJZIP/qkuMgR/w==}
+    deprecated: See https://github.com/lydell/source-map-resolve#deprecated
+    dependencies:
+      atob: 2.1.2
+      decode-uri-component: 0.2.2
+    dev: false
 
   /source-map-support/0.4.18:
     resolution: {integrity: sha512-try0/JqxPLF9nOjvSta7tVondkP5dwgyLDjVoyMDlmjugT2lRZ1OfsrYTkCd2hkDnJTKRbO/Rl3orm8vlsUzbA==}
