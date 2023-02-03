@@ -1,7 +1,7 @@
 @keyframes step-icon-loading {
   from {
-    width: .625rem;
-    height: .625rem;
+    width: 0.625rem;
+    height: 0.625rem;
     opacity: 0.8;
   }
 

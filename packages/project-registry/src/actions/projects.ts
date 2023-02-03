@@ -477,7 +477,7 @@ export const fetchProjectApplications =
           // FIXME: This part can be removed when we are sure that the
           // aplication status returned from the graph is up to date.
           // eslint-disable-next-line
-            const roundAddresses = applications.map(
+          const roundAddresses = applications.map(
             (app: Application) => app.roundID
           );
 

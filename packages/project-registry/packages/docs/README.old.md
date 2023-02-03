@@ -10,7 +10,7 @@ We welcome everyone to contribute to the Grant Hub.
 
 You can join our [Discord](https://discord.gg/w6K2wwHr) (just be sure to select the builder role when you join the discord) to get help and discuss the project with the rest of the community.
 
-You can also familiarize yourself with our near term project roadmap in the Grant Hub  [project backlog](https://github.com/orgs/gitcoinco/projects/7/views/3)
+You can also familiarize yourself with our near term project roadmap in the Grant Hub [project backlog](https://github.com/orgs/gitcoinco/projects/7/views/3)
 
 ## Reviewing Changes
 

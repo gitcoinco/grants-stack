@@ -9,7 +9,7 @@ module.exports = {
     project: "./tsconfig.json",
     ecmaVersion: 12,
     sourceType: "module",
-    tsx: true
+    tsx: true,
   },
   plugins: ["react", "prettier"],
   rules: {
@@ -22,7 +22,7 @@ module.exports = {
     "import/no-cycle": "off",
     "import/no-extraneous-dependencies": "off",
     "react/prop-types": "off",
-    "max-len": ["error", { "code": 150 }],
+    "max-len": ["error", { code: 150 }],
     "no-console": "off",
     "no-restricted-syntax": [
       "error",
@@ -32,7 +32,7 @@ module.exports = {
       "WithStatement",
     ],
     "eol-last": ["error", "always"],
-    "react/require-default-props": "off"
+    "react/require-default-props": "off",
   },
   ignorePatterns: ["node_modules/"],
 };

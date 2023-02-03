@@ -9,11 +9,11 @@ dataSources:
   # ProjectRegistry
   - kind: ethereum/contract
     name: ProjectRegistry
-    network: {{ network }}
+    network: { { network } }
     source:
       address: "{{ projectRegistryAddress }}"
       abi: ProjectRegistry
-      startBlock: {{ startBlock }}
+      startBlock: { { startBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
