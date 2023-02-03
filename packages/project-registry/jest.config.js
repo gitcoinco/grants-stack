@@ -1,4 +1,4 @@
-const esmModules = ["@rainbow-me"];
+const esmModules = ["@rainbow-me", "@spruceid"];
 
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
