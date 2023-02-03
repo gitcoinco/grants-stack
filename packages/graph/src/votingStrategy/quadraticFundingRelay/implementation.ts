@@ -3,7 +3,7 @@ import { Voted as VotedEvent } from "../../../generated/QuadraticFundingRelayStr
 import { Round, QFVote, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../utils";
 
-const VERSION = "0.2.0";
+const VERSION = "0.1.0";
 
 /**
  * @dev Handles indexing on Voted event.

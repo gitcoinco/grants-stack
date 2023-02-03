@@ -97,7 +97,7 @@ describe("handleVote", () => {
     votingStrategyEntity.strategyName = "LINEAR_QUADRATIC_FUNDING";
     votingStrategyEntity.strategyAddress =
       "0xA16081F360e3847006dB660bae1c6d1b2e17eC2G";
-    votingStrategyEntity.version = "0.2.0";
+    votingStrategyEntity.version = "0.1.0";
     votingStrategyEntity.save();
 
     // Create Round entity
@@ -166,7 +166,7 @@ describe("handleVote", () => {
     assert.stringEquals(qfVote!.from, voter.toHex());
     assert.stringEquals(qfVote!.to, grantAddress.toHex());
     assert.bytesEquals(Bytes.fromHexString(qfVote!.projectId), projectId);
-    assert.stringEquals(qfVote!.version, "0.2.0");
+    assert.stringEquals(qfVote!.version, "0.1.0");
   });
 
   test("QF vote is linked to VotingStrategy when handledVote is called", () => {

@@ -83,7 +83,7 @@ dataSources:
           handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFunding/factory.ts
 
-  # QuadraticFundingVotingStrategyFactory
+  # QuadraticFundingRelayStrategyFactory
   - kind: ethereum/contract
     name: QuadraticFundingRelayStrategy
     network: {{ network }}
