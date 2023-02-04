@@ -117,3 +117,40 @@ export type QFDistribution = {
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
 };
+
+export type GraphResponse<T> = {
+  data: T;
+  error?: any;
+}
+
+export type GraphVotingStrategy = {
+  id: string;
+  version: string;
+  strategyName: string;
+  strategyAddress: string;
+}
+
+export type GraphVotingStrategies = {
+  votingStrategies: GraphVotingStrategy[];
+}
+
+export type GraphQFVote = {
+  id: string;
+  amount: string;
+  createdAt: string;
+  from: string;
+  projectId: string;
+  to: string;
+  token: string;
+  version: string;
+  votingStrategy: {
+    id: string;
+    round: {
+      id: string;
+    }
+  };
+}
+
+export type GraphQFVotes = {
+  qfvotes: GraphQFVote[];
+}

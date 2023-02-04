@@ -4,10 +4,10 @@ import { Response } from "express";
 import "isomorphic-fetch";
 import {
   ChainId,
-  ChainName,
   RoundMetadata,
   DenominationResponse,
   MetaPtr,
+  GraphResponse,
 } from "./types";
 import { cache } from "./cacheConfig";
 
@@ -674,3 +674,83 @@ export const getValidCoinGeckoTokenAddress = (
   }
   return validAddress;
 };
+
+// TODO: Docs
+export const fetchGraphQFContributionsForRound = async (
+  chainId: ChainId,
+  votingStrategyId: string,
+  lastID: string = "",
+  lastResponse: GraphResponse<any> = { data: { qfvotes: [] } },
+): Promise<GraphResponse<any>> => {
+
+  const query = `
+    query GetContributionsForRound($votingStrategyId: String, $lastID: String) {
+        qfvotes(
+          first: 1000,
+          where: {
+            id_gt: $lastID,
+            votingStrategy_: {
+              id: $votingStrategyId
+            }
+          }
+        ) {
+          id
+          amount
+          createdAt
+          from
+          projectId
+          to
+          token
+          version
+          votingStrategy {
+            id
+            round {
+              id
+            }
+          }
+        }
+      }
+  `;
+
+  const variables = { votingStrategyId, lastID };
+
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  if (response.error) {
+    console.log("error", response.error);
+  }
+  lastResponse.data.qfvotes = lastResponse.data.qfvotes.concat(response.data.qfvotes);
+  // TODO: Figure out why the heck does the graph return such inconsistent data?
+  // console.log("LAST RESPONSE ID", lastResponse.data.qfvotes[lastResponse.data.qfvotes.length - 1]?.id,
+  //   lastResponse.data.qfvotes.length
+  // );
+  if (response.data?.qfvotes.length === 0 || response.data?.qfvotes.length < 1000 || !response.data?.qfvotes) {
+    return lastResponse;
+  }
+
+  return await fetchGraphQFContributionsForRound(
+    chainId,
+    votingStrategyId,
+    lastResponse.data.qfvotes[lastResponse.data?.qfvotes.length - 1].id,
+    lastResponse
+  );
+
+};
+
+// TODO: docs
+export const fetchGraphVotingStrategies = async (
+  chainId: ChainId,
+): Promise<GraphResponse<any>> => {
+  const query = `
+     query GetVotingStrategies {
+        votingStrategies {
+          id
+          version
+          strategyName
+          strategyAddress
+        }
+     }
+  `
+  const response = await fetchFromGraphQL(chainId, query);
+  return response;
+}

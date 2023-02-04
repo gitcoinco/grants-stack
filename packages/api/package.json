@@ -16,7 +16,8 @@
     "prisma:migrate": "pnpm prisma migrate dev",
     "prisma:generate": "pnpm prisma generate",
     "prisma:docs": "pnpm prisma-docs-generator serve",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

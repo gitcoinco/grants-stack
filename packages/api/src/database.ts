@@ -1,6 +1,8 @@
 import { PrismaClient, VotingStrategy, Match, ChainId } from "@prisma/client";
 import { getChainVerbose } from "./utils";
 import {
+  GraphQFVotes,
+  GraphResponse,
   QFContributionSummary,
   QFDistribution,
   Result,
@@ -12,6 +14,75 @@ export class DatabaseInstance {
 
   constructor() {
     this.client = new PrismaClient();
+  }
+
+  // TODO: createVoteRecord for singular vote, getVotes, methods
+  async createVoteRecords(
+    chainId: string,
+    strategyName: VotingStrategy,
+    data: GraphResponse<GraphQFVotes>,
+  ) {
+    try {
+
+      const voteData : any = [];
+      for (const vote of data.data.qfvotes) {
+
+        // check if round exists
+        const roundExists = await this.client.round.findUnique({
+          where: { roundId: vote.votingStrategy.round.id },
+        });
+
+        // if round doesn't exist, create it
+        if (!roundExists) {
+          this.createRoundRecord(
+            chainId,
+            vote.votingStrategy.round.id,
+            strategyName as VotingStrategy,
+          )
+        }
+
+        // check if project exists
+        const projectExists = await this.client.project.findUnique({
+          where: {
+            projectIdentifier: {
+              projectId: vote.projectId,
+              roundId: vote.votingStrategy.round.id,
+            }
+          },
+        });
+
+        // if project doesn't exist, create it
+        if (!projectExists) {
+          this.createProjectRecord(
+            chainId,
+            vote.votingStrategy.round.id,
+            vote.projectId,
+          );
+        }
+
+        voteData.push({
+          roundId: vote.votingStrategy.round.id,
+          projectId: vote.projectId,
+          graphId: vote.id,
+          voteAmount: vote.amount,
+          voteTimestamp: vote.createdAt,
+          voterAddress: vote.from,
+          voteToAddress: vote.to,
+          voteToken: vote.token,
+          voteVersion: vote.version,
+        });
+
+      }
+
+      await this.client.vote.createMany({
+        data: voteData,
+      });
+
+      return { result: true };
+    } catch (error) {
+      console.error("error creating votes", error);
+      return { error: error, result: false };
+    }
   }
 
   async createRoundRecord(
@@ -99,6 +170,7 @@ export class DatabaseInstance {
       return { error: error, result: false };
     }
   }
+
 
   async upsertProjectMatchRecord(
     chainId: string,
