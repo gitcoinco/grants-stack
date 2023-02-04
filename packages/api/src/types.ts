@@ -51,6 +51,27 @@ export type HandleResponseObject = {
   data: object;
 };
 
+
+/****************/
+/* = Passport = */
+/****************/
+type PassportEvidence = {
+  type: string;
+  rawScore: string;
+  threshold: string;
+  success: boolean;
+};
+
+export type PassportResponse = {
+  address?: string;
+  score?: string;
+  status?: string;
+  last_score_timestamp?: string;
+  evidence?: PassportEvidence;
+  error?: string|null;
+  detail?: string;
+};
+
 /****************/
 /* = LinearQF = */
 /****************/

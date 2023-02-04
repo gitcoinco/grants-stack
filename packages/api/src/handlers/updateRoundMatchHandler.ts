@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { ChainId, QFDistributionResults } from "../types";
 import { fetchRoundMetadata, getChainVerbose, handleResponse } from "../utils";
-import {
-  fetchQFContributionsForRound,
-  matchQFContributions,
-} from "../votingStrategies/linearQuadraticFunding";
+import { fetchQFContributionsForRound, matchQFContributions, } from "../votingStrategies/linearQuadraticFunding";
 import { VotingStrategy } from "@prisma/client";
 import { hotfixForRounds } from "../hotfixes";
 import { cache } from "../cacheConfig";
@@ -35,9 +32,10 @@ export const updateRoundMatchHandler = async (req: Request, res: Response) => {
 
     switch (votingStrategyName) {
       case "LINEAR_QUADRATIC_FUNDING":
+
         let contributions = await fetchQFContributionsForRound(
           chainId as ChainId,
-          votingStrategy.id
+          votingStrategy.id,
         );
 
         contributions = await hotfixForRounds(roundId, contributions);

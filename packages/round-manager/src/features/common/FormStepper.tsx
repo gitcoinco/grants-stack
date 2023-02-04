@@ -1,4 +1,4 @@
-import { Button } from "./styles";
+import { Button } from "common/src/styles";
 
 export interface FormStepperProps {
   currentStep: number;

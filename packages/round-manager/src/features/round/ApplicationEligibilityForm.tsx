@@ -12,7 +12,7 @@ import {
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Round } from "../api/types";
-import { Button, Input } from "../common/styles";
+import { Button, Input } from "common/src/styles";
 import { PlusSmIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

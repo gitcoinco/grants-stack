@@ -1,4 +1,4 @@
-import { Button } from "./styles";
+import { Button } from "common/src/styles";
 import { LinkIcon } from "@heroicons/react/solid";
 import { useState } from "react";
 

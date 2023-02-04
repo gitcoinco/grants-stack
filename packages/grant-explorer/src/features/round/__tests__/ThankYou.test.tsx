@@ -14,8 +14,7 @@ const useParamsFn = () => ({
   txHash: txHash,
 });
 
-Object.defineProperty(window, 'scrollTo', { value: () => {}, writable: true });
-
+Object.defineProperty(window, "scrollTo", { value: () => {}, writable: true });
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");

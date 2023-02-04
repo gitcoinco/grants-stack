@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
@@ -80,7 +80,7 @@ export default function ViewProjectDetails() {
           <RoundEndedBanner />
         </div>
       )}
-      <div className="lg:mx-20 h-screen px-4 py-7">
+      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
           <div className="flex flex-row items-center gap-3 text-sm">
             <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />

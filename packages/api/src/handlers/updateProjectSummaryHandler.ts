@@ -53,8 +53,8 @@ export const updateProjectSummaryHandler = async (
 
     try {
       const upsertProjectSummaryStatus = await db.upsertProjectSummaryRecord(
-        roundId,
         chainId,
+        roundId,
         projectId,
         metadata,
         results
@@ -119,10 +119,13 @@ export const getProjectsSummary = async (
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch votes
+
       let contributions = await fetchQFContributionsForProjects(
         chainId,
+        roundId,
+        roundMetadata,
         votingStrategyId,
-        projectIds
+        projectIds,
       );
 
       contributions = await hotfixForRounds(roundId, contributions, projectIds);

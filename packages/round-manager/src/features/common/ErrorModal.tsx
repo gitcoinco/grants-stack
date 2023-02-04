@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Button } from "./styles";
+import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/outline";
 
 interface ErrorModalProps {

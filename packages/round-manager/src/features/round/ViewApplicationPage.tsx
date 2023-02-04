@@ -15,7 +15,7 @@ import {
 import ConfirmationModal from "../common/ConfirmationModal";
 import Navbar from "../common/Navbar";
 import { useWallet } from "../common/Auth";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import Footer from "../common/Footer";

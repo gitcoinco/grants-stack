@@ -1,4 +1,4 @@
-import { ProjectMetadata } from "../api/types"
+import { ProjectMetadata } from "../api/types";
 import DefaultBannerImage from "../../assets/default_banner.png";
 
 export function ProjectBanner(props: {
@@ -6,9 +6,7 @@ export function ProjectBanner(props: {
   classNameOverride?: string;
 }) {
   const projectBannerImage = props.projectMetadata.bannerImg
-    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${
-      props.projectMetadata.bannerImg
-    }`
+    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.projectMetadata.bannerImg}`
     : DefaultBannerImage;
 
   return (

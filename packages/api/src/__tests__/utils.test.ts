@@ -279,7 +279,6 @@ describe("getChainName", () => {
   });
 });
 
-
 describe("getStartAndEndTokenPrices", () => {
   it("should fetch start and end token price", async () => {
     fetchMock.mockResponseOnce(

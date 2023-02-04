@@ -5,13 +5,13 @@ import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import {
   BasicCard,
-  Button,
   CardContent,
   CardDescription,
   CardHeader,
   CardsContainer,
   CardTitle,
 } from "../common/styles";
+import { Button } from "common/src/styles";
 import {
   ApplicationStatus,
   GrantApplication,

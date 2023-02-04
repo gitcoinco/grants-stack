@@ -96,9 +96,7 @@ export function useProjectSummary({
 
   useMemo(() => {
     setLoading(true);
-    const url = `${
-      process.env.REACT_APP_GRANTS_API_ENDPOINT
-    }/update/summary/project/${chainId}/${roundId}/${projectId}`;
+    const url = `${process.env.REACT_APP_GRANTS_API_ENDPOINT}/update/summary/project/${chainId}/${roundId}/${projectId}`;
     fetch(url, {
       method: "POST",
       headers: {

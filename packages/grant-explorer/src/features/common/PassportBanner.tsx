@@ -39,14 +39,15 @@ export default function PassportBanner(props: {
 
     if (isConnected && address && PASSPORT_COMMUNITY_ID) {
       const callFetchPassport = async () => {
-
         const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
         if (res.ok) {
           const scoreResponse = await res.json();
 
           if (scoreResponse.status == "PROCESSING") {
-            console.log('processing, calling again in 3000 ms');
-            setTimeout(async () => {await callFetchPassport()}, 3000);
+            console.log("processing, calling again in 3000 ms");
+            setTimeout(async () => {
+              await callFetchPassport();
+            }, 3000);
             return;
           }
 
@@ -58,7 +59,8 @@ export default function PassportBanner(props: {
 
           setPassport(scoreResponse);
           setPassportState(
-            Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
+            Number(scoreResponse.evidence.rawScore) >=
+              Number(scoreResponse.evidence.threshold)
               ? PassportState.MATCH_ELIGIBLE
               : PassportState.MATCH_INELIGIBLE
           );
@@ -221,17 +223,19 @@ export default function PassportBanner(props: {
   };
 
   return (
-    <div className={bannerConfig[passportState].color}>
-      <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8">
-        <div className="flex flex-row flex-wrap items-center justify-center">
-          <div className="relative">{bannerConfig[passportState].icon}</div>
-          <span
-            data-testid={bannerConfig[passportState].testId}
-            className="ml-3 font-medium text-sm"
-          >
-            {bannerConfig[passportState].body}
-          </span>
-          {bannerConfig[passportState].button}
+    <div className="relative top-16">
+      <div className={bannerConfig[passportState].color}>
+        <div className="max-w-full py-3 px-3 sm:px-6 lg:px-8 z-0">
+          <div className="flex flex-row flex-wrap items-center justify-center">
+            <div className="relative">{bannerConfig[passportState].icon}</div>
+            <span
+              data-testid={bannerConfig[passportState].testId}
+              className="ml-3 font-medium text-sm"
+            >
+              {bannerConfig[passportState].body}
+            </span>
+            {bannerConfig[passportState].button}
+          </div>
         </div>
       </div>
     </div>

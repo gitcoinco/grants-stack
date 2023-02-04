@@ -1,6 +1,4 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { Listbox, Transition } from "@headlessui/react";
-import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   CheckIcon,
   ChevronLeftIcon,
@@ -8,6 +6,9 @@ import {
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
+import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Button, Input } from "common/src/styles";
+import { Listbox, Transition } from "@headlessui/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { BigNumber, ethers } from "ethers";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
@@ -40,7 +41,6 @@ import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
 import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
-import { Button, Input } from "../common/styles";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -260,7 +260,7 @@ export default function ViewBallot() {
         </div>
       )}
       {}
-      <div className="lg:mx-20 h-screen px-4 py-7">
+      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
           <div className="flex flex-col md:flex-row gap-4">

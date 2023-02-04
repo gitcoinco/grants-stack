@@ -1,7 +1,7 @@
 import { VotingStrategy } from "@prisma/client";
 import { getAddress } from "ethers/lib/utils";
 import { Response } from "express";
-import fetch from "node-fetch";
+import "isomorphic-fetch";
 import {
   ChainId,
   ChainName,
@@ -15,18 +15,18 @@ const TESNET_TOKEN_TO_USD_RATE = 1000;
 
 type TokenPriceMapping = {
   [address: string]: {
-    usd: number
+    usd: number;
   };
-}
+};
 
 type AvgTokenPriceMapping = {
   [address: string]: number;
-}
+};
 
 type TokenStartEndPrice = {
   startPrice: number;
   endPrice: number;
-}
+};
 
 /**
  * Fetch subgraph network for provided web3 network
@@ -293,14 +293,13 @@ export async function getStartAndEndTokenPrices(
   endTime: number
 ): Promise<TokenStartEndPrice> {
   try {
-
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
+    if (isTestnet(chainId)) {
       return {
         startPrice: TESNET_TOKEN_TO_USD_RATE,
-        endPrice: TESNET_TOKEN_TO_USD_RATE
-      }
-    };
+        endPrice: TESNET_TOKEN_TO_USD_RATE,
+      };
+    }
 
     const { chainName, error } = getChainName(chainId);
     if (error) {
@@ -414,23 +413,21 @@ export const fetchCurrentTokenPrices = async (
 ): Promise<TokenPriceMapping> => {
   let tokenPrices: TokenPriceMapping = {};
   try {
-
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
-
+    if (isTestnet(chainId)) {
       let testnetTokenPrices: any = {
-        "0x0000000000000000000000000000000000000000":  {
-          usd: TESNET_TOKEN_TO_USD_RATE
-        }
+        "0x0000000000000000000000000000000000000000": {
+          usd: TESNET_TOKEN_TO_USD_RATE,
+        },
       };
 
-      tokenAddresses.map(tokenAddress => {
+      tokenAddresses.map((tokenAddress) => {
         testnetTokenPrices[tokenAddress] = {
-          usd: TESNET_TOKEN_TO_USD_RATE
+          usd: TESNET_TOKEN_TO_USD_RATE,
         };
       });
       return testnetTokenPrices;
-    };
+    }
 
     const { chainName } = getChainName(chainId);
 
@@ -499,12 +496,12 @@ export const fetchAverageTokenPrices = async (
 ) => {
   try {
     // Avoid coingecko calling for testnet
-    if(isTestnet(chainId)) {
+    if (isTestnet(chainId)) {
       let testnetAverageTokenPrices: any = {
         "0x0000000000000000000000000000000000000000": TESNET_TOKEN_TO_USD_RATE,
       };
 
-      tokenAddresses.map(tokenAddress => {
+      tokenAddresses.map((tokenAddress) => {
         testnetAverageTokenPrices[tokenAddress] = TESNET_TOKEN_TO_USD_RATE;
       });
 
@@ -631,7 +628,7 @@ export const fetchProjectIdToPayoutAddressMapping = async (
   for (const project of projects) {
     // project.id format ->  applicationId-roundId
     const projectId = project.id.split("-")[0];
-    const payoutAddress = getAddress(project.payoutAddress);
+    const payoutAddress = getAddress(project.payoutAddress).toLowerCase();
     projectToPayoutMap.set(projectId, payoutAddress);
   }
 
@@ -647,28 +644,33 @@ export const isTestnet = (chainId: ChainId) => {
   const testnet = [
     ChainId.GOERLI,
     ChainId.FANTOM_TESTNET,
-    ChainId.LOCAL_ROUND_LAB
+    ChainId.LOCAL_ROUND_LAB,
   ];
 
   return testnet.includes(chainId);
 };
 
+
 /**
  * Util function to specify valid coingecko address in scenarios where
  * coingecko doesn't return token price on given chain.
  * Ideally usefully for stable coins
- * 
+ *
  * @param chainId
- * @param address 
- * 
+ * @param address
+ *
  * @returns validAddress
  */
-export const getValidCoinGeckoTokenAddress = (chainId: ChainId, address: string) => {
+export const getValidCoinGeckoTokenAddress = (
+  chainId: ChainId,
+  address: string
+) => {
   let validAddress = address;
   if (chainId == ChainId.FANTOM_MAINNET) {
-    if (address == "0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50") { // BUSD
-      validAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e" // DAI
+    if (address == "0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50") {
+      // BUSD
+      validAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"; // DAI
     }
   }
   return validAddress;
-}
+};

@@ -5,8 +5,11 @@ coverage
 coverage.json
 typechain
 /.eslintcache
+.turbo
 
 # Hardhat files
 cache
 artifacts
 abis/
+/.openzeppelin-grants-round/
+/.openzeppelin-project-registry/

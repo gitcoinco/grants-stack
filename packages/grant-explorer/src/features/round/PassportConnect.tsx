@@ -1,7 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import { Button } from "../common/styles";
+import { Button } from "common/src/styles";
 import Footer from "../common/Footer";
 import { ArrowPathIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import {
@@ -51,8 +51,10 @@ export default function PassportConnect() {
       const scoreResponse: PassportResponse = await res.json();
 
       if (scoreResponse.status == "PROCESSING") {
-        console.log('processing, calling again in 3000 ms');
-        setTimeout(async () => {await callFetchPassport()}, 3000);
+        console.log("processing, calling again in 3000 ms");
+        setTimeout(async () => {
+          await callFetchPassport();
+        }, 3000);
         return;
       }
 
@@ -67,7 +69,8 @@ export default function PassportConnect() {
 
       setPassport(scoreResponse);
       setPassportState(
-        Number(scoreResponse.evidence.rawScore) >= Number(scoreResponse.evidence.threshold)
+        Number(scoreResponse.evidence.rawScore) >=
+          Number(scoreResponse.evidence.threshold)
           ? PassportState.MATCH_ELIGIBLE
           : PassportState.MATCH_INELIGIBLE
       );
@@ -122,8 +125,8 @@ export default function PassportConnect() {
             <div className="absolute mt-1 ml-3">1</div>
           </div>
           <div className="my-auto">
-            Create a Gitcoin Passport if you don’t have one already. You will be taken
-            to a new window to begin verifying your identity.
+            Create a Gitcoin Passport if you don’t have one already. You will be
+            taken to a new window to begin verifying your identity.
           </div>
         </div>
         <div className="text-[18px] mb-6 flex">
@@ -209,7 +212,6 @@ export default function PassportConnect() {
                 ? "Submit Score"
                 : "Update Score"}
             </Button>
-
           </div>
 
           {passportState === PassportState.LOADING && (
@@ -293,7 +295,7 @@ export default function PassportConnect() {
   return (
     <>
       <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
-      <div className="lg:mx-20 px-4 py-7 h-screen">
+      <div className="relative top-16 lg:mx-20 px-4 py-7 h-screen">
         <header>
           <div
             data-testid="breadcrumb"
@@ -317,8 +319,8 @@ export default function PassportConnect() {
               Unlock matching for your donation by verifying your identity
             </p>
             <p className="text-xl mb-1">
-              Connect your wallet to Gitcoin Passport to check your identity score and
-              maximize your donation power.
+              Connect your wallet to Gitcoin Passport to check your identity
+              score and maximize your donation power.
             </p>
             <p className="text-xl">
               Passport is designed to proactively verify users’ identities to
