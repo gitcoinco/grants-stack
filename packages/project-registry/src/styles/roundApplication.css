@@ -1,0 +1,28 @@
+@keyframes step-icon-loading {
+  from {
+    width: 0.625rem;
+    height: 0.625rem;
+    opacity: 0.8;
+  }
+
+  to {
+    width: 1.3rem;
+    height: 1.3rem;
+    opacity: 1;
+  }
+}
+
+.step-icon.step-icon-current .step-icon-outer {
+  overflow: hidden;
+}
+
+.step-icon.step-icon-current .step-icon-outer .step-icon-inner {
+  width: 0.625rem;
+  height: 0.625rem;
+
+  animation-duration: 1s;
+  animation-name: step-icon-loading;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease;
+}

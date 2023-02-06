@@ -1,0 +1,21 @@
+button.base-btn {
+  @apply rounded py-2 px-4 my-2 mx-1 outline-0 flex;
+}
+button.base-btn:disabled {
+  opacity: 0.3;
+}
+.base-btn.primary {
+  @apply text-quaternary-text bg-primary-background dark:bg-primary-background dark:text-primary-text;
+}
+.base-btn.outline {
+  @apply text-secondary-text border-solid border border-tertiary-text;
+}
+.base-btn.danger {
+  @apply text-quaternary-text bg-danger-background;
+}
+.base-btn.danger-outline {
+  @apply text-danger-text border-solid border border-tertiary-text;
+}
+.base-btn.secondary {
+  @apply text-primary-background bg-primary-background/25;
+}
