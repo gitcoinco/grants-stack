@@ -4,22 +4,112 @@
 
 
 
-Defines the abstract contract for payout strategies for a round. Any new payout strategy would be expected to extend this abstract contract. Every IPayoutStrategy contract would be unique to RoundImplementation and would be deployed before creating a round 
+Defines the abstract contract for payout strategies for a round. Any new payout strategy would be expected to extend this abstract contract. Every PayoutStrategyImplementation contract would be unique to RoundImplementation and would be deployed before creating a round. Functions that are marked as `virtual` are expected to be overridden by the implementation contract. - updateDistribution - payout
 
-*- Deployed before creating a round  - init will be invoked during round creation to link the payout    strategy to the round contract   - TODO: add function distribute() to actually distribute the funds  *
+*- Deployed before creating a round  - Funds are transferred to the payout contract from round only during payout*
 
 ## Methods
+
+### LOCK_DURATION
+
+```solidity
+function LOCK_DURATION() external view returns (uint256)
+```
+
+Locking duration
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
+### ROUND_OPERATOR_ROLE
+
+```solidity
+function ROUND_OPERATOR_ROLE() external view returns (bytes32)
+```
+
+round operator role
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes32 | undefined |
+
+### distributionMetaPtr
+
+```solidity
+function distributionMetaPtr() external view returns (uint256 protocol, string pointer)
+```
+
+MetaPtr containing the distribution
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| protocol | uint256 | undefined |
+| pointer | string | undefined |
+
+### endLockingTime
+
+```solidity
+function endLockingTime() external view returns (uint256)
+```
+
+End locking time
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### init
 
 ```solidity
-function init() external nonpayable
+function init(address payable _withdrawFundsAddress) external nonpayable
 ```
 
 Invoked by RoundImplementation on creation to set the round for which the payout strategy is to be used
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _withdrawFundsAddress | address payable | withdraw funds address |
+
+### payout
+
+```solidity
+function payout(bytes[] _encodedPayoutData) external payable
+```
+
+Invoked by RoundImplementation to trigger payout
+
+*- should be invoked by RoundImplementation contract - could be used to trigger payout / enable payout - ideally IPayoutStrategy implementation should emit events after   payout is triggered Modifiers:  - isRoundOperator  - roundHasEnded*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _encodedPayoutData | bytes[] | encoded payout data |
 
 ### roundAddress
 
@@ -27,7 +117,24 @@ Invoked by RoundImplementation on creation to set the round for which the payout
 function roundAddress() external view returns (address)
 ```
 
-Round address
+RoundImplementation address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined |
+
+### tokenAddress
+
+```solidity
+function tokenAddress() external view returns (address)
+```
+
+Token address
 
 
 
@@ -44,9 +151,9 @@ Round address
 function updateDistribution(bytes _encodedDistribution) external nonpayable
 ```
 
-Invoked by RoundImplementation to upload distribution to the payout strategy
+sInvoked by RoundImplementation to upload distribution to the payout strategy
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after    distribution is updated - would be invoked at the end of the round*
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round Modifiers:  - isRoundOperator  - roundHasEnded*
 
 #### Parameters
 
@@ -54,6 +161,54 @@ Invoked by RoundImplementation to upload distribution to the payout strategy
 |---|---|---|
 | _encodedDistribution | bytes | encoded distribution |
 
+### withdrawFunds
+
+```solidity
+function withdrawFunds() external nonpayable
+```
+
+Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
+
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   funds are withdrawn*
+
+
+### withdrawFundsAddress
+
+```solidity
+function withdrawFundsAddress() external view returns (address payable)
+```
+
+Withdraw Funds address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address payable | undefined |
+
+
+
+## Events
+
+### FundsWithdrawn
+
+```solidity
+event FundsWithdrawn(address indexed tokenAddress, uint256 amount)
+```
+
+Emitted when funds are withdrawn from the payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress `indexed` | address | undefined |
+| amount  | uint256 | undefined |
 
 
 
