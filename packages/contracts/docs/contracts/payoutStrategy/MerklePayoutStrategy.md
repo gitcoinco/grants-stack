@@ -6,9 +6,60 @@
 
 Merkle Payout Strategy contract which is deployed once per round and is used to upload the final match distribution.
 
-*- TODO: add function distribute() to actually distribute the funds*
+
 
 ## Methods
+
+### LOCK_DURATION
+
+```solidity
+function LOCK_DURATION() external view returns (uint256)
+```
+
+Locking duration
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
+### ROUND_OPERATOR_ROLE
+
+```solidity
+function ROUND_OPERATOR_ROLE() external view returns (bytes32)
+```
+
+round operator role
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bytes32 | undefined |
+
+### VERSION
+
+```solidity
+function VERSION() external view returns (string)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined |
 
 ### distributionMetaPtr
 
@@ -16,7 +67,7 @@ Merkle Payout Strategy contract which is deployed once per round and is used to 
 function distributionMetaPtr() external view returns (uint256 protocol, string pointer)
 ```
 
-Unix timestamp from when round stops accepting applications
+MetaPtr containing the distribution
 
 
 
@@ -28,16 +79,38 @@ Unix timestamp from when round stops accepting applications
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
 
+### endLockingTime
+
+```solidity
+function endLockingTime() external view returns (uint256)
+```
+
+End locking time
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### init
 
 ```solidity
-function init() external nonpayable
+function init(address payable _withdrawFundsAddress) external nonpayable
 ```
 
 Invoked by RoundImplementation on creation to set the round for which the payout strategy is to be used
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _withdrawFundsAddress | address payable | withdraw funds address |
 
 ### merkleRoot
 
@@ -56,13 +129,46 @@ Unix timestamp from when round can accept applications
 |---|---|---|
 | _0 | bytes32 | undefined |
 
+### payout
+
+```solidity
+function payout(bytes[] encodedDistribution) external payable
+```
+
+Invoked by RoundImplementation to upload distribution to the payout strategy
+
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   payout is complete - would be invoked at the end of the round*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| encodedDistribution | bytes[] | encoded distribution |
+
 ### roundAddress
 
 ```solidity
 function roundAddress() external view returns (address)
 ```
 
-Round address
+RoundImplementation address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined |
+
+### tokenAddress
+
+```solidity
+function tokenAddress() external view returns (address)
+```
+
+Token address
 
 
 
@@ -81,13 +187,41 @@ function updateDistribution(bytes encodedDistribution) external nonpayable
 
 Invoked by RoundImplementation to upload distribution to the payout strategy
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the roune*
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | encodedDistribution | bytes | encoded distribution |
+
+### withdrawFunds
+
+```solidity
+function withdrawFunds() external nonpayable
+```
+
+Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
+
+*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   funds are withdrawn*
+
+
+### withdrawFundsAddress
+
+```solidity
+function withdrawFundsAddress() external view returns (address payable)
+```
+
+Withdraw Funds address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address payable | undefined |
 
 
 
@@ -109,6 +243,23 @@ Emitted when the distribution is updated
 |---|---|---|
 | merkleRoot  | bytes32 | undefined |
 | distributionMetaPtr  | MetaPtr | undefined |
+
+### FundsWithdrawn
+
+```solidity
+event FundsWithdrawn(address indexed tokenAddress, uint256 amount)
+```
+
+Emitted when funds are withdrawn from the payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress `indexed` | address | undefined |
+| amount  | uint256 | undefined |
 
 
 

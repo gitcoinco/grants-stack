@@ -11,6 +11,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "hardhat-abi-exporter";
+import "hardhat-contract-sizer";
 
 dotenv.config();
 
@@ -107,6 +108,9 @@ const dodoc = {
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
+  optimizer: {
+    enabled: true,
+  },
   networks: {
     // Main Networks
     mainnet: createMainnetConfig("mainnet"),
