@@ -44,6 +44,40 @@ round operator role
 |---|---|---|
 | _0 | bytes32 | undefined |
 
+### VERSION
+
+```solidity
+function VERSION() external view returns (string)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined |
+
+### amount
+
+```solidity
+function amount() external view returns (uint256)
+```
+
+Token Amount (excluding protocol fee)
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### applicationMetaPtr
 
 ```solidity
@@ -112,6 +146,23 @@ function applyToRound(bytes32 projectID, MetaPtr newApplicationMetaPtr) external
 |---|---|---|
 | projectID | bytes32 | undefined |
 | newApplicationMetaPtr | MetaPtr | undefined |
+
+### feePercentage
+
+```solidity
+function feePercentage() external view returns (uint256)
+```
+
+Fee percentage
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### getRoleAdmin
 
@@ -223,18 +274,35 @@ function hasRole(bytes32 role, address account) external view returns (bool)
 ### initialize
 
 ```solidity
-function initialize(bytes encodedParameters) external nonpayable
+function initialize(bytes encodedParameters, address payable _protocolTreasury) external nonpayable
 ```
 
 Instantiates a new round
 
-*encodedParameters  - _votingStrategy Deployed voting strategy contract  - _payoutStrategy Deployed payout strategy contract  - _applicationsStartTime Unix timestamp from when round can accept applications  - _applicationsEndTime Unix timestamp from when round stops accepting applications  - _roundStartTime Unix timestamp of the start of the round  - _roundEndTime Unix timestamp of the end of the round  - _token Address of the ERC20 token for accepting matching pool contributions  - _roundMetaPtr MetaPtr to the round metadata  - _applicationMetaPtr MetaPtr to the application form schema  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE*
+*encodedParameters  - _initAddress Related contract / wallet addresses  - _initRoundTime Round timestamps  - _feePercentage Fee percentage  - _amount Amount of tokens in the matching pool  - _token Address of the ERC20/native token for accepting matching pool contributions  - _initMetaPtr Round metaPtrs  - _initRoles Round roles*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
+| _protocolTreasury | address payable | undefined |
+
+### payout
+
+```solidity
+function payout(bytes[] encodedPayoutData) external payable
+```
+
+Payout Funds (only by ROUND_OPERATOR_ROLE)
+
+*- Can be invoked after round has ended  - Fee is sent to protocol treasury*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| encodedPayoutData | bytes[] | encoded payout data |
 
 ### payoutStrategy
 
@@ -270,6 +338,23 @@ MetaPtr to the projects
 |---|---|---|
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
+
+### protocolTreasury
+
+```solidity
+function protocolTreasury() external view returns (address payable)
+```
+
+Address to which fees are sent
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address payable | undefined |
 
 ### renounceRole
 
@@ -382,7 +467,7 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 ### token
 
 ```solidity
-function token() external view returns (contract IERC20)
+function token() external view returns (address)
 ```
 
 Token used to payout match amounts at the end of a round
@@ -394,7 +479,23 @@ Token used to payout match amounts at the end of a round
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | contract IERC20 | undefined |
+| _0 | address | undefined |
+
+### updateAmount
+
+```solidity
+function updateAmount(uint256 newAmount) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newAmount | uint256 | new Amount |
 
 ### updateApplicationMetaPtr
 
@@ -444,13 +545,13 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
 
-### updateDistribution
+### updateFeePercentage
 
 ```solidity
-function updateDistribution(bytes encodedDistribution) external nonpayable
+function updateFeePercentage(uint256 newFeePercentage) external nonpayable
 ```
 
-Invoked by round operator to update distribution on payout contract
+
 
 
 
@@ -458,7 +559,7 @@ Invoked by round operator to update distribution on payout contract
 
 | Name | Type | Description |
 |---|---|---|
-| encodedDistribution | bytes | encoded distribution |
+| newFeePercentage | uint256 | new feePercentage |
 
 ### updateProjectsMetaPtr
 
@@ -561,6 +662,23 @@ Voting Strategy Contract Address
 
 ## Events
 
+### AmountUpdated
+
+```solidity
+event AmountUpdated(uint256 newAmount, uint256 oldAmount)
+```
+
+Emitted when amount is updater
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newAmount  | uint256 | undefined |
+| oldAmount  | uint256 | undefined |
+
 ### ApplicationMetaPtrUpdated
 
 ```solidity
@@ -612,6 +730,22 @@ Emitted when application start time is updated
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
 
+### FeePercentageUpdated
+
+```solidity
+event FeePercentageUpdated(uint256 newFeePercentage)
+```
+
+Emitted when fee percentage is updated
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newFeePercentage  | uint256 | undefined |
+
 ### Initialized
 
 ```solidity
@@ -644,6 +778,23 @@ Emitted when a project has applied to the round
 |---|---|---|
 | project `indexed` | bytes32 | undefined |
 | applicationMetaPtr  | MetaPtr | undefined |
+
+### PayFeeAndEscrowFundsToPayoutContract
+
+```solidity
+event PayFeeAndEscrowFundsToPayoutContract(uint256 amount, uint256 feeAmount)
+```
+
+Emitted when a protocol fee is paid
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| amount  | uint256 | undefined |
+| feeAmount  | uint256 | undefined |
 
 ### ProjectsMetaPtrUpdated
 
