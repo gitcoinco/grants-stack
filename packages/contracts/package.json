@@ -10,9 +10,9 @@
     "build": "pnpm compile",
     "clean": "pnpm hardhat clean",
     "test": "pnpm hardhat test",
-    "coverage": "pnpm hardhat coverage",
-    "export-abi": "pnpm run hardhat export-abi",
-    "clear-abi": "pnpm run hardhat clear-abi",
+    "coverage": "npx hardhat coverage",
+    "export-abi": "npx hardhat export-abi",
+    "clear-abi": "npx hardhat clear-abi",
     "lint:sol": "npx hardhat check",
     "// project-registry-deploy-scripts": "echo '//-- Project Registry deploy Script --//'",
     "deploy-project-registry": "yarn hardhat run scripts/projectRegistry/deployProjectRegistry.ts --network",
@@ -84,6 +84,7 @@
     "@ethersproject/hardware-wallets": "^5.7.0",
     "@ledgerhq/hw-app-eth": "^6.30.5",
     "@openzeppelin/contracts": "^4.6.0",
-    "@openzeppelin/contracts-upgradeable": "^4.6.0"
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "hardhat-contract-sizer": "^2.8.0"
   }
 }

@@ -9,18 +9,15 @@ import "../utils/MetaPtr.sol";
  * @notice Merkle Payout Strategy contract which is deployed once per round
  * and is used to upload the final match distribution.
  *
- * @dev
- *  - TODO: add function distribute() to actually distribute the funds
  */
 contract MerklePayoutStrategy is IPayoutStrategy {
+
+  string public constant VERSION = "0.2.0";
 
   // --- Data ---
 
   /// @notice Unix timestamp from when round can accept applications
   bytes32 public merkleRoot;
-
-  /// @notice Unix timestamp from when round stops accepting applications
-  MetaPtr public distributionMetaPtr;
 
 
   // --- Event ---
@@ -39,11 +36,11 @@ contract MerklePayoutStrategy is IPayoutStrategy {
    * - should be invoked by RoundImplementation contract
    * - ideally IPayoutStrategy implementation should emit events after
    *   distribution is updated
-   * - would be invoked at the end of the roune
+   * - would be invoked at the end of the round
    *
    * @param encodedDistribution encoded distribution
    */
-  function updateDistribution(bytes calldata encodedDistribution) external override isRoundContract {
+  function updateDistribution(bytes calldata encodedDistribution) external override roundHasEnded isRoundOperator {
 
     (bytes32 _merkleRoot, MetaPtr memory _distributionMetaPtr) = abi.decode(
       encodedDistribution,
@@ -56,5 +53,20 @@ contract MerklePayoutStrategy is IPayoutStrategy {
     emit DistributionUpdated(merkleRoot, distributionMetaPtr);
   }
 
-  // TODO: function payout()
+
+   /**
+   * @notice Invoked by RoundImplementation to upload distribution to the
+   * payout strategy
+   *
+   * @dev
+   * - should be invoked by RoundImplementation contract
+   * - ideally IPayoutStrategy implementation should emit events after
+   *   payout is complete
+   * - would be invoked at the end of the round
+   *
+   * @param encodedDistribution encoded distribution
+   */
+  function payout(bytes[] memory encodedDistribution) external override isRoundContract payable {
+    // TODO: Add payout logic
+  }
 }
