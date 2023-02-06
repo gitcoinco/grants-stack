@@ -1,0 +1,35 @@
+name: package/project-registry - Build -> Test
+
+on:
+  push:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 7
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'pnpm'
+
+    - name: Test and Build
+      run: |
+        pnpm install
+
+        cd packages/project-registry
+
+        pnpm lint
+        pnpm test
+        pnpm build
