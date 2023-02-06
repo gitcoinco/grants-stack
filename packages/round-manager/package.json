@@ -110,7 +110,6 @@
     "autoprefixer": "^10.4.7",
     "craco-esbuild": "^0.5.2",
     "husky": "^8.0.1",
-    "jest-environment-jsdom": "27.4.3",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
     "tailwind-styled-components": "2.1.6",
