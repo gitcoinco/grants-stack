@@ -1,4 +1,4 @@
-name: package/graph - Build -> Test
+name: package/graph/project-registry - Build -> Test
 on:
   push:
   pull_request:
@@ -25,6 +25,8 @@ jobs:
 
       - name: Install Dependencies for Project Registry
         run: |
+          pnpm install
+          cd packages/graph/project-registry
           pnpm install
 
       # - name: Setup
