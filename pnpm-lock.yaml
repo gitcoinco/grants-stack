@@ -596,6 +596,7 @@ importers:
       html-react-parser: ^3.0.7
       https-browserify: ^1.0.0
       husky: ^8.0.1
+      jest-environment-jsdom: 27.4.3
       jest-fetch-mock: ^3.0.3
       lit-js-sdk: ^1.1.203
       markdown-it: ^13.0.1
@@ -698,6 +699,7 @@ importers:
       autoprefixer: 10.4.13_postcss@8.4.21
       craco-esbuild: 0.5.2_xgxnkve2gkwyphykbzlgtzhxmi
       husky: 8.0.3
+      jest-environment-jsdom: 27.4.3
       postcss: 8.4.21
       prettier: 2.8.3
       tailwind-styled-components: 2.1.6_biqbaboplfbrettd7655fr4n2y
@@ -6311,7 +6313,7 @@ packages:
     dependencies:
       immer: 9.0.18
       react: 18.2.0
-      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
+      react-redux: 8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       reselect: 4.1.7
@@ -13573,7 +13575,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -13657,7 +13659,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -15242,7 +15244,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -15254,6 +15255,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -16489,7 +16491,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -18293,6 +18295,24 @@ packages:
       jest-get-type: 29.2.0
       jest-util: 29.4.1
       pretty-format: 29.4.1
+
+  /jest-environment-jsdom/27.4.3:
+    resolution: {integrity: sha512-x1AUVz3G14LpEJs7KIFUaTINT2n0unOUmvdAby3s/sldUpJJetOJifHo1O/EUQC5fNBowggwJbVulko18y6OWw==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    dependencies:
+      '@jest/environment': 27.5.1
+      '@jest/fake-timers': 27.5.1
+      '@jest/types': 27.5.1
+      '@types/node': 18.11.18
+      jest-mock: 27.5.1
+      jest-util: 27.5.1
+      jsdom: 16.7.0
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - utf-8-validate
+    dev: true
 
   /jest-environment-jsdom/27.5.1:
     resolution: {integrity: sha512-TFBvkTC1Hnnnrka/fUb56atfDtJ9VMZ94JkjTbggl1PEpwrYtUBKMezB3inLmWqQsXYLcMwNoDQwoBTAvFfsfw==}
