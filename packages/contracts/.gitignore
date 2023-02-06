@@ -12,4 +12,4 @@ cache
 artifacts
 abis/
 /.openzeppelin-grants-round/
-/.openzeppelin-project-registry/
+/.openzeppelin-builder/

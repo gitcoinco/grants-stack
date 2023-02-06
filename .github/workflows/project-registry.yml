@@ -1,4 +1,4 @@
-name: package/project-registry - Build -> Test
+name: package/builder - Build -> Test
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
       run: |
         pnpm install
 
-        cd packages/project-registry
+        cd packages/builder
 
         pnpm lint
         pnpm test
