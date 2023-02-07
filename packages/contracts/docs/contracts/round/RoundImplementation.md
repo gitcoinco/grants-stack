@@ -407,6 +407,23 @@ Unix timestamp of the end of the round
 |---|---|---|
 | _0 | uint256 | undefined |
 
+### roundFactory
+
+```solidity
+function roundFactory() external view returns (contract RoundFactory)
+```
+
+Round Factory Contract Address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract RoundFactory | undefined |
+
 ### roundMetaPtr
 
 ```solidity
@@ -665,10 +682,10 @@ Voting Strategy Contract Address
 ### AmountUpdated
 
 ```solidity
-event AmountUpdated(uint256 newAmount, uint256 oldAmount)
+event AmountUpdated(uint256 newAmount)
 ```
 
-Emitted when amount is updater
+Emitted when amount is updated
 
 
 
@@ -677,7 +694,6 @@ Emitted when amount is updater
 | Name | Type | Description |
 |---|---|---|
 | newAmount  | uint256 | undefined |
-| oldAmount  | uint256 | undefined |
 
 ### ApplicationMetaPtrUpdated
 
