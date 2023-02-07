@@ -1,4 +1,4 @@
-name: package/graph - Build -> Test
+name: package/graph/round - Build -> Test
 on:
   push:
   pull_request:
@@ -23,18 +23,20 @@ jobs:
           node-version: '16'
           cache: 'pnpm'
 
-      - name: Install Dependencies
+      - name: Install Dependencies for Round Manager
         run: |
+          pnpm install
+          cd packages/graph/round
           pnpm install
 
       # - name: Setup
       #   run: |
       #     cd packages/graph
-      #     pnpm add @graphprotocol/graph-cli
-      #     # pnpm prepare:goerli
-      #     # pnpm codegen
+      #     yarn add @graphprotocol/graph-cli
+      #     # yarn prepare:goerli
+      #     # yarn codegen
 
       # - name: Test
       #   run: |
       #     cd packages/graph
-      #     pnpm test
+      #     yarn test
