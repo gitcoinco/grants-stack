@@ -1,6 +1,6 @@
-import { Response } from "express";
 import { faker } from "@faker-js/faker";
 import { getMockReq } from "@jest-mock/express";
+import { Response } from "express";
 import {
   HandleResponseObject,
   QFContribution,
@@ -10,12 +10,16 @@ import * as utils from "../../utils";
 import * as linearQuadraticFunding from "../../votingStrategies/linearQuadraticFunding";
 
 import {
-  mockRoundMetadata,
   mockQFContributionSummary,
   mockQFVote,
+  mockRoundMetadata,
 } from "../../test-utils";
-import { updateProjectSummaryHandler } from "../updateProjectSummaryHandler";
 import { prismaMock } from "../singleton";
+import { updateProjectSummaryHandler } from "../updateProjectSummaryHandler";
+
+import failOnConsole from "jest-fail-on-console";
+
+failOnConsole();
 
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS);
@@ -122,6 +126,7 @@ describe("updateProjectSummaryHandler", () => {
   });
 
   it("returns error when invoked with unsupported votingStrategy", async () => {
+    jest.spyOn(console, "error").mockImplementation();
     // mock fetchRoundMetadata call to return data with random votingStrategy name
     const roundMetadata = JSON.parse(JSON.stringify(mockRoundMetadata));
     roundMetadata.votingStrategy.strategyName = faker.name.firstName();
@@ -134,15 +139,24 @@ describe("updateProjectSummaryHandler", () => {
       res
     )) as unknown as HandleResponseObject;
 
+    expect(console.error).toHaveBeenCalledWith(
+      "updateProjectSummaryHandler",
+      "error: unsupported voting strategy"
+    );
+
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
   });
 
   it("returns error when exception occurs ", async () => {
+    jest.spyOn(console, "error").mockImplementation();
+
     const responseJSON = (await updateProjectSummaryHandler(
       req,
       res
     )) as unknown as HandleResponseObject;
+
+    expect(console.error).toHaveBeenCalled();
 
     expect(responseJSON.success).toBeFalsy();
     expect(responseJSON.message).toEqual("error: something went wrong");
@@ -154,9 +168,7 @@ describe("updateProjectSummaryHandler", () => {
       JSON.stringify(mockRoundMetadata)
     );
 
-    jest
-      .spyOn(utils, "fetchRoundMetadata")
-      .mockResolvedValueOnce(roundMetadata);
+    jest.spyOn(utils, "fetchRoundMetadata").mockResolvedValue(roundMetadata);
     jest
       .spyOn(linearQuadraticFunding, "fetchQFContributionsForProjects")
       .mockResolvedValueOnce([]);
@@ -169,7 +181,6 @@ describe("updateProjectSummaryHandler", () => {
       roundId: roundId,
     };
 
-
     const responseJSON = (await updateProjectSummaryHandler(
       req,
       res
@@ -179,8 +190,7 @@ describe("updateProjectSummaryHandler", () => {
     expect(responseJSON.message).toEqual(req.originalUrl);
     expect(responseJSON.data).toMatchObject({
       ...defaultSummary,
-    })
-
+    });
   });
 
   it("returns successfull response when project in round has 2 contributions", async () => {
