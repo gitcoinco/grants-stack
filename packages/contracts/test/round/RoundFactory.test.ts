@@ -187,7 +187,6 @@ describe("RoundFactory", function () {
         const initAddress = [
           votingStrategy.address, // votingStrategy
           payoutStrategy.address, // payoutStrategy
-          Wallet.createRandom().address, // withdrawFundsAddress
         ];
 
         const initRoundTime = [

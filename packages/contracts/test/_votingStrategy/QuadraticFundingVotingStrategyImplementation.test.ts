@@ -163,7 +163,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
       describe('test: vote with ERC20', () => {
 
-        it("invoking vote SHOULD transfer balance from user to grant", async() => {
+        it("SHOULD transfer balance from user to grant", async() => {
 
           // Invoke init
           await quadraticFundingVotingStrategy.init();
@@ -191,7 +191,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
 
         });
 
-        it("invoking vote SHOULD emit 2 Vote events", async () => {
+        it("SHOULD emit 2 Vote events", async () => {
           // Invoke init
           await quadraticFundingVotingStrategy.init();
 
@@ -262,7 +262,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           }
         })
 
-        it("invoking vote SHOULD revert if there are insufficent funds", async() => {
+        it("SHOULD revert if there are insufficent funds", async() => {
           // Invoke init
           await quadraticFundingVotingStrategy.init();
 
@@ -272,7 +272,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
         });
 
 
-        it("invoking vote SHOULD transfer balance from user to grant", async() => {
+        it("SHOULD transfer balance from user to grant", async() => {
           // Invoke init
           await quadraticFundingVotingStrategy.init();
 
@@ -291,7 +291,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           expect(afterVotingGrant2Balance).to.equal(grant2NativeTokenTransferAmount);
         });
 
-        it("invoking vote SHOULD emit 2 Vote events", async () => {
+        it("SHOULD emit 2 Vote events", async () => {
 
           let votedEvents: Event[] = [];
 
@@ -368,7 +368,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           }
         })
 
-        it("invoking vote SHOULD transfer balance from user to grant", async() => {
+        it("SHOULD transfer balance from user to grant", async() => {
 
           // Invoke init
           await quadraticFundingVotingStrategy.init();
@@ -391,7 +391,7 @@ describe("QuadraticFundingVotingStrategyImplementation", () =>  {
           expect(afterVotingGrant2Balance).to.equal(grant2TokenTransferAmount);
         });
 
-        it("invoking vote SHOULD emit 2 Vote events", async () => {
+        it("SHOULD emit 2 Vote events", async () => {
 
           let votedEvents: Event[] = [];
 

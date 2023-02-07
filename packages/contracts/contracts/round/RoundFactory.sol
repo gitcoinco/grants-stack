@@ -122,7 +122,7 @@ contract RoundFactory is OwnableUpgradeable {
 
     RoundImplementation(clone).initialize(
       encodedParameters,
-      protocolTreasury
+      address(this)
     );
 
     return clone;

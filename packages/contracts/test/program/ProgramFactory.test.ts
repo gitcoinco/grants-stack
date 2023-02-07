@@ -55,18 +55,18 @@ describe("ProgramFactory", function () {
 
     describe('test: updateProgramContract', async () => {
 
-      it("ProgramContract SHOULD have default address after deploy ", async () => {
+      it("SHOULD have default address after deploy ", async () => {
         expect(await programFactory.programContract())
           .to.be.equal(AddressZero);
       });
 
-      it("ProgramContract SHOULD emit ProgramContractUpdated event after invoking updateProgramContract", async () => {
+      it("SHOULD emit ProgramContractUpdated event after invoking updateProgramContract", async () => {
         await expect(programFactory.updateProgramContract(programImplementation.address))
           .to.emit(programFactory, 'ProgramContractUpdated')
           .withArgs(programImplementation.address);
       });
 
-      it("ProgramContract SHOULD have program address after invoking updateProgramContract", async () => {
+      it("SHOULD have program address after invoking updateProgramContract", async () => {
         await programFactory.updateProgramContract(programImplementation.address).then(async () => {
           const programContract = await programFactory.programContract();
           expect(programContract).to.be.equal(programImplementation.address);
