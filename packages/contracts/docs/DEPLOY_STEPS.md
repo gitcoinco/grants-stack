@@ -28,7 +28,7 @@ cp ../.env.example ../.env
 
 2. Deploy the `ProgramRegistry` contract
 ```shell
-pnpm run deploy-project-registry goerli
+pnpm run deploy-builder goerli
 ```
 
 
@@ -212,7 +212,7 @@ pnpm run link-round-implementation goerli
 pnpm run create-round goerli
 
 # Project Registry
-pnpm run deploy-project-registry goerli
+pnpm run deploy-builder goerli
 
 # These scripts would be used to create a test round
 pnpm run create-program goerli

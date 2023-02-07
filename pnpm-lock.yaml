@@ -348,7 +348,7 @@ importers:
       tailwind-styled-components: 2.2.0_biqbaboplfbrettd7655fr4n2y
       tailwindcss: 3.2.4_postcss@8.4.21
 
-  packages/project-registry:
+  packages/builder:
     specifiers:
       '@babel/core': '>=7.11.0 <8.0.0'
       '@babel/eslint-parser': ^7.17.0
