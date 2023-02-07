@@ -43,9 +43,6 @@ abstract contract IPayoutStrategy {
   /// @notice Token address
   address public tokenAddress;
 
-  /// @notice Withdraw Funds address
-  address payable public withdrawFundsAddress;
-
   /// MetaPtr containing the distribution
   MetaPtr public distributionMetaPtr;
 
@@ -95,14 +92,10 @@ abstract contract IPayoutStrategy {
    * @notice Invoked by RoundImplementation on creation to
    * set the round for which the payout strategy is to be used
    *
-   * @param _withdrawFundsAddress withdraw funds address
    */
-  function init(address payable _withdrawFundsAddress) external {
+  function init() external {
     require(roundAddress == address(0x0), "init: roundAddress already set");
     roundAddress = msg.sender;
-
-    // set the withdraw funds address
-    withdrawFundsAddress = _withdrawFundsAddress;
 
     // set the end locking time
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
@@ -148,12 +141,9 @@ abstract contract IPayoutStrategy {
    * @notice Invoked by RoundImplementation to withdraw funds to
    * withdrawFundsAddress from the payout contract
    *
-   * @dev
-   * - should be invoked by RoundImplementation contract
-   * - ideally IPayoutStrategy implementation should emit events after
-   *   funds are withdrawn
+   * @param withdrawFundsAddress withdraw funds address
    */
-  function withdrawFunds() external virtual isRoundOperator timelockHasEnded {
+  function withdrawFunds(address payable withdrawFundsAddress) external virtual isRoundOperator timelockHasEnded {
 
     uint balance = _getTokenBalance();
 
