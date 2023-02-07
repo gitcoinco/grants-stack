@@ -82,18 +82,13 @@ End locking time
 ### init
 
 ```solidity
-function init(address payable _withdrawFundsAddress) external nonpayable
+function init() external nonpayable
 ```
 
 Invoked by RoundImplementation on creation to set the round for which the payout strategy is to be used
 
 
 
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _withdrawFundsAddress | address payable | withdraw funds address |
 
 ### payout
 
@@ -164,30 +159,18 @@ sInvoked by RoundImplementation to upload distribution to the payout strategy
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds() external nonpayable
+function withdrawFunds(address payable withdrawFundsAddress) external nonpayable
 ```
 
 Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   funds are withdrawn*
 
 
-### withdrawFundsAddress
-
-```solidity
-function withdrawFundsAddress() external view returns (address payable)
-```
-
-Withdraw Funds address
-
-
-
-
-#### Returns
+#### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address payable | undefined |
+| withdrawFundsAddress | address payable | withdraw funds address |
 
 
 

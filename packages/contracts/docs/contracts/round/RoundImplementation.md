@@ -147,13 +147,13 @@ function applyToRound(bytes32 projectID, MetaPtr newApplicationMetaPtr) external
 | projectID | bytes32 | undefined |
 | newApplicationMetaPtr | MetaPtr | undefined |
 
-### feePercentage
+### bonusProtocolFeePercentage
 
 ```solidity
-function feePercentage() external view returns (uint256)
+function bonusProtocolFeePercentage() external view returns (uint8)
 ```
 
-Fee percentage
+Bonus protocol fee percentage set by the round operator
 
 
 
@@ -162,7 +162,7 @@ Fee percentage
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | uint8 | undefined |
 
 ### getRoleAdmin
 
@@ -274,7 +274,7 @@ function hasRole(bytes32 role, address account) external view returns (bool)
 ### initialize
 
 ```solidity
-function initialize(bytes encodedParameters, address payable _protocolTreasury) external nonpayable
+function initialize(bytes encodedParameters, address _roundFactory) external nonpayable
 ```
 
 Instantiates a new round
@@ -286,7 +286,7 @@ Instantiates a new round
 | Name | Type | Description |
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
-| _protocolTreasury | address payable | undefined |
+| _roundFactory | address | undefined |
 
 ### payout
 
@@ -294,9 +294,9 @@ Instantiates a new round
 function payout(bytes[] encodedPayoutData) external payable
 ```
 
-Payout Funds (only by ROUND_OPERATOR_ROLE)
+Pay Protocol Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
 
-*- Can be invoked after round has ended  - Fee is sent to protocol treasury*
+
 
 #### Parameters
 
@@ -338,23 +338,6 @@ MetaPtr to the projects
 |---|---|---|
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
-
-### protocolTreasury
-
-```solidity
-function protocolTreasury() external view returns (address payable)
-```
-
-Address to which fees are sent
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address payable | undefined |
 
 ### renounceRole
 
@@ -406,6 +389,23 @@ Unix timestamp of the end of the round
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | undefined |
+
+### roundFactory
+
+```solidity
+function roundFactory() external view returns (contract RoundFactory)
+```
+
+Round Factory Contract Address
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract RoundFactory | undefined |
 
 ### roundMetaPtr
 
@@ -545,10 +545,10 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
 
-### updateFeePercentage
+### updateBonusProtocolFeePercentage
 
 ```solidity
-function updateFeePercentage(uint256 newFeePercentage) external nonpayable
+function updateBonusProtocolFeePercentage(uint8 newBonusProtocolFeePercenatage) external nonpayable
 ```
 
 
@@ -559,7 +559,7 @@ function updateFeePercentage(uint256 newFeePercentage) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| newFeePercentage | uint256 | new feePercentage |
+| newBonusProtocolFeePercenatage | uint8 | new bonusProtocolFeePercenatage |
 
 ### updateProjectsMetaPtr
 
@@ -633,7 +633,7 @@ function vote(bytes[] encodedVotes) external payable
 
 Invoked by voter to cast votes
 
-*value is to handle native token voting*
+
 
 #### Parameters
 
@@ -665,10 +665,10 @@ Voting Strategy Contract Address
 ### AmountUpdated
 
 ```solidity
-event AmountUpdated(uint256 newAmount, uint256 oldAmount)
+event AmountUpdated(uint256 newAmount)
 ```
 
-Emitted when amount is updater
+Emitted when amount is updated
 
 
 
@@ -677,7 +677,6 @@ Emitted when amount is updater
 | Name | Type | Description |
 |---|---|---|
 | newAmount  | uint256 | undefined |
-| oldAmount  | uint256 | undefined |
 
 ### ApplicationMetaPtrUpdated
 
@@ -730,10 +729,10 @@ Emitted when application start time is updated
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
 
-### FeePercentageUpdated
+### BonusProtocolFeePercentageUpdated
 
 ```solidity
-event FeePercentageUpdated(uint256 newFeePercentage)
+event BonusProtocolFeePercentageUpdated(uint256 newFeePercentage)
 ```
 
 Emitted when fee percentage is updated
