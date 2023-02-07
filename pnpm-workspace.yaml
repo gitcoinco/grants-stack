@@ -6,4 +6,4 @@ packages:
   - 'packages/grant-explorer'
   - 'packages/contracts'
   - 'packages/graph'
-  - 'packages/project-registry'
+  - 'packages/builder'

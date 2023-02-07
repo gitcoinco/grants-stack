@@ -11,5 +11,3 @@ typechain
 cache
 artifacts
 abis/
-/.openzeppelin-grants-round/
-/.openzeppelin-project-registry/

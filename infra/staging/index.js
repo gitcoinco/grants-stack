@@ -17,6 +17,7 @@ let SUBGRAPH_FANTOM_TESTNET_API = `${process.env["SUBGRAPH_FANTOM_TESTNET_API"]}
 let SUBGRAPH_FANTOM_MAINNET_API = `${process.env["SUBGRAPH_FANTOM_MAINNET_API"]}`
 let SUBGRAPH_DUMMY_API = `${process.env["SUBGRAPH_DUMMY_API"]}`
 let SENTRY_DSN = `${process.env["SENTRY_DSN"]}`
+let SENTRY_RELEASE = `${process.env["SENTRY_RELEASE"]}`
 let OPTIMISM_ETHERSCAN_API = `${process.env["OPTIMISM_ETHERSCAN_API"]}`
 
 
@@ -359,6 +360,10 @@ const api = new aws.ecs.TaskDefinition("api", {
                 {
                     name: "SENTRY_DSN",
                     value: SENTRY_DSN
+                },
+                {
+                    name: "SENTRY_RELEASE",
+                    value: SENTRY_RELEASE
                 },
                 {
                     name: "OPTIMISM_ETHERSCAN_API",

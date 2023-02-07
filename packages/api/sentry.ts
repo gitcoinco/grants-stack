@@ -18,6 +18,7 @@ export const initSentry = (app: Express) => {
     ],
 
     tracesSampleRate: 1.0,
+    release: process.env.SENTRY_RELEASE,
   });
 
   app.use(Sentry.Handlers.requestHandler());
