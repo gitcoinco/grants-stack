@@ -39,7 +39,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   event AmountUpdated(uint256 newAmount);
 
   /// @notice Emitted when fee percentage is updated
-  event FeePercentageUpdated(uint256 newFeePercentage);
+  event BonusProtocolFeePercentageUpdated(uint256 newFeePercentage);
 
   /// @notice Emitted when the round metaPtr is updated
   event RoundMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
@@ -95,11 +95,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Payout Strategy Contract Address
   IPayoutStrategy public payoutStrategy;
 
-  /// @notice Address to which fees are sent
-  address payable public protocolTreasury;
-
-  /// @notice Fee percentage
-  uint256 public feePercentage;
+  /// @notice Bonus protocol fee percentage set by the round operator
+  uint8 public bonusProtocolFeePercentage;
 
   /// @notice Unix timestamp from when round can accept applications
   uint256 public applicationsStartTime;
@@ -169,13 +166,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
    */
   function initialize(
     bytes calldata encodedParameters,
-    address payable _protocolTreasury
+    address _roundFactory
   ) external initializer {
     // Decode _encodedParameters
     (
       InitAddress memory _initAddress,
       InitRoundTime memory _initRoundTime,
-      uint256 _feePercentage,
+      uint8 _bonusProtocolFeePercentage,
       uint256 _amount,
       address _token,
       InitMetaPtr memory _initMetaPtr,
@@ -184,7 +181,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       encodedParameters, (
       (InitAddress),
       (InitRoundTime),
-      uint256,
+      uint8,
       uint256,
       address,
       (InitMetaPtr),
@@ -198,7 +195,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     );
     require(
       _initRoundTime.applicationsEndTime > _initRoundTime.applicationsStartTime,
-      "applications end should be after application start"
+      "applications end should be after applications start"
     );
     require(
       _initRoundTime.roundEndTime >= _initRoundTime.applicationsEndTime,
@@ -210,12 +207,11 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     );
     require(
       _initRoundTime.roundStartTime >= _initRoundTime.applicationsStartTime,
-      "round start should be after application start"
+      "round start should be after applications start"
     );
 
-    roundFactory = RoundFactory(msg.sender);
+    roundFactory = RoundFactory(_roundFactory);
 
-    protocolTreasury = _protocolTreasury;
     votingStrategy = _initAddress.votingStrategy;
     payoutStrategy = _initAddress.payoutStrategy;
     applicationsStartTime = _initRoundTime.applicationsStartTime;
@@ -231,7 +227,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     payoutStrategy.init(_initAddress.withdrawFundsAddress);
 
     amount = _amount;
-    feePercentage = _feePercentage;
+    bonusProtocolFeePercentage = _bonusProtocolFeePercentage;
     roundMetaPtr = _initMetaPtr.roundMetaPtr;
     applicationMetaPtr = _initMetaPtr.applicationMetaPtr;
 
@@ -255,15 +251,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     emit AmountUpdated(newAmount);
   }
 
-  // @notice Update feePercentage (only by ROUND_OPERATOR_ROLE)
-  /// @param newFeePercentage new feePercentage
-  function updateFeePercentage(uint256 newFeePercentage) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
+  // @notice Update bonusProtocolFeePercenatage (only by ROUND_OPERATOR_ROLE)
+  /// @param newBonusProtocolFeePercenatage new bonusProtocolFeePercenatage
+  function updateBonusProtocolFeePercentage(uint8 newBonusProtocolFeePercenatage) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(roundFactory.protocolFeePercentage() <= newFeePercentage, "fee is lower than protocol fee");
+    bonusProtocolFeePercentage = newBonusProtocolFeePercenatage;
 
-    feePercentage = newFeePercentage;
-
-    emit FeePercentageUpdated(newFeePercentage);
+    emit BonusProtocolFeePercentageUpdated(bonusProtocolFeePercentage);
   }
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
@@ -303,7 +297,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     // slither-disable-next-line timestamp
     require(newRoundEndTime >= block.timestamp, "time has already passed");
     require(newRoundEndTime > roundStartTime, "should be after round start");
-    require(newRoundEndTime >= applicationsEndTime, "should be after application end");
+    require(newRoundEndTime >= applicationsEndTime, "should be after applications end");
 
     emit RoundEndTimeUpdated(roundEndTime, newRoundEndTime);
 
@@ -316,7 +310,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     // slither-disable-next-line timestamp
     require(newApplicationsStartTime >= block.timestamp, "time has already passed");
     require(newApplicationsStartTime <= roundStartTime, "should be before round start");
-    require(newApplicationsStartTime < applicationsEndTime, "should be before application end");
+    require(newApplicationsStartTime < applicationsEndTime, "should be before applications end");
 
     emit ApplicationsStartTimeUpdated(applicationsStartTime, newApplicationsStartTime);
 
@@ -328,7 +322,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function updateApplicationsEndTime(uint256 newApplicationsEndTime) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
     // slither-disable-next-line timestamp
     require(newApplicationsEndTime >= block.timestamp, "time has already passed");
-    require(newApplicationsEndTime > applicationsStartTime, "should be after application start");
+    require(newApplicationsEndTime > applicationsStartTime, "should be after applications start");
     require(newApplicationsEndTime <= roundEndTime, "should be before round end");
 
     emit ApplicationsEndTimeUpdated(applicationsEndTime, newApplicationsEndTime);
@@ -353,7 +347,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     require(
       applicationsStartTime <= block.timestamp  &&
       block.timestamp <= applicationsEndTime,
-      "application period over"
+      "applications period over"
     );
     emit NewProjectApplication(projectID, newApplicationMetaPtr);
   }
@@ -380,12 +374,17 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function payout(bytes[] memory encodedPayoutData) external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
     uint256 fundsInContract = _getTokenBalance();
-    uint256 feeAmount = (amount * feePercentage / 100);
+    // total fee = protocol fee + bonus protocol fee
+    uint8 totalFeePercentage = roundFactory.protocolFeePercentage() + bonusProtocolFeePercentage;
+    uint256 feeAmount = (amount * totalFeePercentage / 100);
+
+    // total amount to be present in the contract
     uint256 expectedAmount = amount + feeAmount;
 
     require(fundsInContract >= expectedAmount, "not enough funds");
 
     // deduct fee
+    address payable protocolTreasury = roundFactory.protocolTreasury();
     _transferAmount(protocolTreasury, feeAmount);
 
     // transfer funds to payout contract

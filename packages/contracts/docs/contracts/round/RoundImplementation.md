@@ -147,13 +147,13 @@ function applyToRound(bytes32 projectID, MetaPtr newApplicationMetaPtr) external
 | projectID | bytes32 | undefined |
 | newApplicationMetaPtr | MetaPtr | undefined |
 
-### feePercentage
+### bonusProtocolFeePercentage
 
 ```solidity
-function feePercentage() external view returns (uint256)
+function bonusProtocolFeePercentage() external view returns (uint8)
 ```
 
-Fee percentage
+Bonus protocol fee percentage set by the round operator
 
 
 
@@ -162,7 +162,7 @@ Fee percentage
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | uint8 | undefined |
 
 ### getRoleAdmin
 
@@ -274,7 +274,7 @@ function hasRole(bytes32 role, address account) external view returns (bool)
 ### initialize
 
 ```solidity
-function initialize(bytes encodedParameters, address payable _protocolTreasury) external nonpayable
+function initialize(bytes encodedParameters, address _roundFactory) external nonpayable
 ```
 
 Instantiates a new round
@@ -286,7 +286,7 @@ Instantiates a new round
 | Name | Type | Description |
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
-| _protocolTreasury | address payable | undefined |
+| _roundFactory | address | undefined |
 
 ### payout
 
@@ -338,23 +338,6 @@ MetaPtr to the projects
 |---|---|---|
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
-
-### protocolTreasury
-
-```solidity
-function protocolTreasury() external view returns (address payable)
-```
-
-Address to which fees are sent
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address payable | undefined |
 
 ### renounceRole
 
@@ -562,10 +545,10 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
 
-### updateFeePercentage
+### updateBonusProtocolFeePercentage
 
 ```solidity
-function updateFeePercentage(uint256 newFeePercentage) external nonpayable
+function updateBonusProtocolFeePercentage(uint8 newBonusProtocolFeePercenatage) external nonpayable
 ```
 
 
@@ -576,7 +559,7 @@ function updateFeePercentage(uint256 newFeePercentage) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| newFeePercentage | uint256 | new feePercentage |
+| newBonusProtocolFeePercenatage | uint8 | new bonusProtocolFeePercenatage |
 
 ### updateProjectsMetaPtr
 
@@ -746,10 +729,10 @@ Emitted when application start time is updated
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
 
-### FeePercentageUpdated
+### BonusProtocolFeePercentageUpdated
 
 ```solidity
-event FeePercentageUpdated(uint256 newFeePercentage)
+event BonusProtocolFeePercentageUpdated(uint256 newFeePercentage)
 ```
 
 Emitted when fee percentage is updated
