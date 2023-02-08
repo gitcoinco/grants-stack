@@ -51,7 +51,6 @@ export type HandleResponseObject = {
   data: object;
 };
 
-
 /****************/
 /* = Passport = */
 /****************/
@@ -68,7 +67,7 @@ export type PassportResponse = {
   status?: string;
   last_score_timestamp?: string;
   evidence?: PassportEvidence;
-  error?: string|null;
+  error?: string | null;
   detail?: string;
 };
 
@@ -118,21 +117,69 @@ export type QFDistribution = {
   uniqueContributorsCount: number;
 };
 
+/****************/
+/* =  Graph  =  */
+/****************/
+
 export type GraphResponse<T> = {
   data: T;
   error?: any;
-}
+};
+
+export type GraphPrograms = {
+  programs: GraphProgram[];
+};
+
+export type GraphProgram = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  rounds: GraphRound[];
+};
+
+export type GraphRound = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  applicationsStartTime: string;
+  applicationsEndTime: string;
+  roundStartTime: string;
+  roundEndTime: string;
+  payoutStrategy: string;
+  token: string;
+  votingStrategy: GraphVotingStrategy;
+  program: GraphProgram;
+};
+
+export type GraphRounds = {
+  rounds: GraphRound[];
+};
 
 export type GraphVotingStrategy = {
   id: string;
-  version: string;
-  strategyName: string;
   strategyAddress: string;
-}
+  strategyName: string;
+  version: string;
+  round: GraphRound;
+};
 
 export type GraphVotingStrategies = {
   votingStrategies: GraphVotingStrategy[];
-}
+};
+
+export type GraphRoundProject = {
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+  payoutAddress: string;
+  project: string;
+  status: string;
+  round: GraphRound;
+};
+
+export type GraphRoundProjects = {
+  roundProjects: GraphRoundProject[];
+};
 
 export type GraphQFVote = {
   id: string;
@@ -143,14 +190,23 @@ export type GraphQFVote = {
   to: string;
   token: string;
   version: string;
-  votingStrategy: {
-    id: string;
-    round: {
-      id: string;
-    }
-  };
-}
+  votingStrategy: GraphVotingStrategy;
+};
 
 export type GraphQFVotes = {
   qfvotes: GraphQFVote[];
-}
+};
+
+export type GraphBlock = {
+  number: number;
+  timestamp: number;
+  hash: string;
+};
+
+export type GraphMeta = {
+  _meta: {
+    block: GraphBlock;
+    hasIndexingErrors: boolean;
+    deployment: string;
+  };
+};

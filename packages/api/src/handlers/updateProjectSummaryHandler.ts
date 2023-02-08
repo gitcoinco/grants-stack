@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { VotingStrategy } from "@prisma/client";
+import { VotingStrategyName } from "@prisma/client";
 import { ChainId, QFContributionSummary, RoundMetadata } from "../types";
 import { fetchRoundMetadata, handleResponse } from "../utils";
 import {
@@ -37,10 +37,11 @@ export const updateProjectSummaryHandler = async (
     projectId = projectId.toLowerCase();
     const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
     const { votingStrategy } = metadata;
-    const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
+    const votingStrategyName =
+      votingStrategy.strategyName as VotingStrategyName;
 
     // throw error if voting strategy is not supported
-    if (votingStrategyName !== VotingStrategy.LINEAR_QUADRATIC_FUNDING) {
+    if (votingStrategyName !== VotingStrategyName.LINEAR_QUADRATIC_FUNDING) {
       throw "error: unsupported voting strategy";
     }
 
@@ -125,7 +126,7 @@ export const getProjectsSummary = async (
         roundId,
         roundMetadata,
         votingStrategyId,
-        projectIds,
+        projectIds
       );
 
       contributions = await hotfixForRounds(roundId, contributions, projectIds);

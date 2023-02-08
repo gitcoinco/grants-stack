@@ -1,12 +1,11 @@
-import { PrismaClient, VotingStrategy, Match, ChainId } from "@prisma/client";
-import { getChainVerbose } from "./utils";
+import { PrismaClient, Prisma } from "@prisma/client";
 import {
-  GraphQFVotes,
-  GraphResponse,
-  QFContributionSummary,
-  QFDistribution,
-  Result,
-  RoundMetadata,
+  GraphProgram,
+  GraphRoundProject,
+  GraphRound,
+  GraphVotingStrategy,
+  GraphQFVote,
+  ChainId,
 } from "./types";
 
 export class DatabaseInstance {
@@ -16,95 +15,187 @@ export class DatabaseInstance {
     this.client = new PrismaClient();
   }
 
-  // TODO: createVoteRecord for singular vote, getVotes, methods
-  async createVoteRecords(
-    chainId: string,
-    strategyName: VotingStrategy,
-    data: GraphResponse<GraphQFVotes>,
+  ///////////////////////////
+  //    CREATE RECORDS     //
+  ///////////////////////////
+
+  async createProgramRecords(chainId: ChainId, data: GraphProgram[]) {
+    try {
+      const programs: Array<Prisma.ProgramCreateManyInput> = [];
+      for (const program of data) {
+        programs.push({
+          programId: program.id,
+          chainId: chainId,
+          programCreatedAt: program.createdAt,
+          programUpdatedAt: program.updatedAt,
+        });
+      }
+
+      await this.client.program.createMany({
+        data: programs,
+        skipDuplicates: true,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async createRoundRecords(chainId: ChainId, data: GraphRound[]) {
+    try {
+      const rounds: Array<Prisma.RoundCreateManyInput> = [];
+      for (const round of data) {
+        rounds.push({
+          chainId: chainId,
+          programId: round.program.id,
+          roundId: round.id,
+          roundCreatedAt: round.createdAt,
+          roundUpdatedAt: round.updatedAt,
+          applicationsStartTime: round.applicationsStartTime,
+          applicationsEndTime: round.applicationsEndTime,
+          roundStartTime: round.roundStartTime,
+          roundEndTime: round.roundEndTime,
+          roundToken: round.token,
+          payoutStrategy: round.payoutStrategy,
+        });
+      }
+
+      await this.client.round.createMany({
+        data: rounds,
+        skipDuplicates: true,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async createVotingStrategyRecords(
+    chainId: ChainId,
+    data: GraphVotingStrategy[]
   ) {
     try {
-
-      const voteData : any = [];
-      for (const vote of data.data.qfvotes) {
-
-        // check if round exists
-        const roundExists = await this.client.round.findUnique({
-          where: { roundId: vote.votingStrategy.round.id },
+      const votingStrategies: Array<Prisma.VotingStrategyCreateManyInput> = [];
+      for (const votingStrategy of data) {
+        votingStrategies.push({
+          chainId: chainId,
+          roundId: votingStrategy.round.id,
+          strategyVersion: votingStrategy.version,
+          strategyName: votingStrategy.strategyName,
+          strategyAddress: votingStrategy.strategyAddress,
+          strategyId: votingStrategy.id,
         });
+      }
 
-        // if round doesn't exist, create it
-        if (!roundExists) {
-          this.createRoundRecord(
-            chainId,
-            vote.votingStrategy.round.id,
-            strategyName as VotingStrategy,
-          )
-        }
+      await this.client.votingStrategy.createMany({
+        data: votingStrategies,
+        skipDuplicates: true,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-        // check if project exists
-        const projectExists = await this.client.project.findUnique({
-          where: {
-            projectIdentifier: {
-              projectId: vote.projectId,
-              roundId: vote.votingStrategy.round.id,
-            }
-          },
+  async createProjectRecords(chainId: ChainId, data: GraphRoundProject[]) {
+    try {
+      const projects: Array<Prisma.ProjectCreateManyInput> = [];
+      for (const project of data) {
+        projects.push({
+          chainId: chainId,
+          roundId: project.round.id,
+          projectId: project.project,
+          projectCreatedAt: project.createdAt,
+          projectUpdatedAt: project.updatedAt,
+          projectPayoutAddress: project.payoutAddress,
+          projectStatus: project.status,
         });
+      }
 
-        // if project doesn't exist, create it
-        if (!projectExists) {
-          this.createProjectRecord(
-            chainId,
-            vote.votingStrategy.round.id,
-            vote.projectId,
-          );
-        }
+      await this.client.project.createMany({
+        data: projects,
+        skipDuplicates: true,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-        voteData.push({
+  async createQFVoteRecords(chainId: ChainId, data: GraphQFVote[]) {
+    try {
+      const qfVotes: Array<Prisma.VoteCreateManyInput> = [];
+      for (const vote of data) {
+        qfVotes.push({
+          chainId: chainId,
           roundId: vote.votingStrategy.round.id,
           projectId: vote.projectId,
-          graphId: vote.id,
-          voteAmount: vote.amount,
-          voteTimestamp: vote.createdAt,
+          voteStrategyId: vote.votingStrategy.id,
           voterAddress: vote.from,
-          voteToAddress: vote.to,
+          voteCreatedAt: vote.createdAt,
+          voteAmount: vote.amount,
           voteToken: vote.token,
           voteVersion: vote.version,
+          voteId: vote.id,
+          voteToAddress: vote.to,
         });
-
       }
 
       await this.client.vote.createMany({
-        data: voteData,
+        data: qfVotes,
+        skipDuplicates: true,
       });
-
-      return { result: true };
-    } catch (error) {
-      console.error("error creating votes", error);
-      return { error: error, result: false };
+    } catch (e) {
+      console.error(e);
     }
   }
 
-  async createRoundRecord(
-    chainId: string,
-    roundId: string,
-    votingStrategyName: VotingStrategy
-  ): Promise<Result> {
+  ///////////////////////////
+  //     READ RECORDS      //
+  ///////////////////////////
+
+  async getPrograms(chainId: ChainId) {
     try {
-      const chainIdVerbose = getChainVerbose(chainId);
-      await this.client.round.create({
-        data: {
-          chainId: chainIdVerbose,
-          roundId,
-          votingStrategyName: votingStrategyName,
+      const programs = await this.client.program.findMany({
+        where: {
+          chainId: chainId,
         },
       });
-      return { result: true };
-    } catch (error) {
-      console.error("error creating round entry", error);
-      return { error: error, result: false };
+      return programs;
+    } catch (e) {
+      console.error(e);
+      return null;
     }
   }
+
+  async getRounds(chainId: ChainId) {
+    try {
+      const rounds = await this.client.round.findMany({
+        where: {
+          chainId: chainId,
+        },
+      });
+      return rounds;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  async getVotingStrategies(chainId: ChainId) {
+    try {
+      const votingStrategies = await this.client.votingStrategy.findMany({
+        where: {
+          chainId: chainId,
+        },
+      });
+      return votingStrategies;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  //////////////
+  // OLD CODE //
+  //////////////
+  // (here be the demons) //
 
   async upsertRoundRecord(
     roundId: string,
@@ -159,7 +250,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
         update: update,
         create: create,
@@ -170,7 +261,6 @@ export class DatabaseInstance {
       return { error: error, result: false };
     }
   }
-
 
   async upsertProjectMatchRecord(
     chainId: string,
@@ -184,44 +274,40 @@ export class DatabaseInstance {
       const matchData = {
         matchAmountInUSD: projectMatch.matchAmountInUSD,
         projectId: projectMatch.projectId,
-        totalContributionsInUSD: Number(
-          projectMatch.totalContributionsInUSD
-        ),
+        totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
         matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
         matchAmountInToken: Number(projectMatch.matchAmountInToken),
         projectPayoutAddress: projectMatch.projectPayoutAddress,
-        uniqueContributorsCount: Number(
-          projectMatch.uniqueContributorsCount
-        ),
-      }
+        uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+      };
 
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
         matches: { create: matchData },
-      }
+      };
 
       // upsert with match data
       await this.client.round.upsert({
-          where: { roundId: roundId },
-          create: roundData,
-          update: {
-            matches: {
-              upsert: {
-                where: {
-                  matchIdentifier: {
-                    projectId: projectMatch.projectId,
-                    roundId: roundId,
-                  }
+        where: { roundId: roundId },
+        create: roundData,
+        update: {
+          matches: {
+            upsert: {
+              where: {
+                matchIdentifier: {
+                  projectId: projectMatch.projectId,
+                  roundId: roundId,
                 },
-                create: matchData,
-                update: matchData,
-              }
-            }
-          }
-        }
-      );
+              },
+              create: matchData,
+              update: matchData,
+            },
+          },
+        },
+      });
       return { result: true };
     } catch (error) {
       console.error("error upserting project match", error);
@@ -243,14 +329,15 @@ export class DatabaseInstance {
         uniqueContributors: summary.uniqueContributors,
         totalContributionsInUSD: Number(summary.totalContributionsInUSD),
         averageUSDContribution: Number(summary.averageUSDContribution),
-      }
+      };
 
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
         roundSummary: { create: roundSummaryData },
-      }
+      };
 
       // upsert with round summary data
       await this.client.round.upsert({
@@ -260,8 +347,8 @@ export class DatabaseInstance {
           roundSummary: {
             create: roundSummaryData,
             update: roundSummaryData,
-          }
-        }
+          },
+        },
       });
 
       return { result: true };
@@ -284,22 +371,23 @@ export class DatabaseInstance {
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
-      }
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
+      };
 
       const projectSummaryData = {
         contributionCount: summary.contributionCount,
         uniqueContributors: summary.uniqueContributors,
         totalContributionsInUSD: Number(summary.totalContributionsInUSD),
         averageUSDContribution: Number(summary.averageUSDContribution),
-      }
+      };
 
       const projectData = {
         roundId: roundId,
         projectId: projectId,
         chainId: chainIdVerbose as ChainId,
         projectSummaries: { create: projectSummaryData },
-      }
+      };
 
       // check if round exists
       const roundExists = await this.client.round.findUnique({
@@ -319,7 +407,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
       });
 
@@ -332,29 +420,28 @@ export class DatabaseInstance {
 
       // upsert the project summary data
       await this.client.project.upsert({
-          where: {
-            projectIdentifier: {
-              projectId: projectId,
-              roundId: roundId,
-            }
+        where: {
+          projectIdentifier: {
+            projectId: projectId,
+            roundId: roundId,
           },
-          create: projectData,
-          update: {
-            projectSummaries: {
-              upsert: {
-                where: {
-                  projectSummaryIdentifier: {
-                    projectId: projectId,
-                    roundId: roundId,
-                  }
+        },
+        create: projectData,
+        update: {
+          projectSummaries: {
+            upsert: {
+              where: {
+                projectSummaryIdentifier: {
+                  projectId: projectId,
+                  roundId: roundId,
                 },
-                create: projectSummaryData,
-                update: projectSummaryData,
-              }
-            }
-          }
-        }
-      );
+              },
+              create: projectSummaryData,
+              update: projectSummaryData,
+            },
+          },
+        },
+      });
 
       return { result: true };
     } catch (error) {
@@ -397,7 +484,7 @@ export class DatabaseInstance {
           projectSummaryIdentifier: {
             roundId: roundId,
             projectId: projectId,
-          }
+          },
         },
       });
       return { result };
@@ -417,7 +504,7 @@ export class DatabaseInstance {
           matchIdentifier: {
             roundId: roundId,
             projectId: projectId,
-          }
+          },
         },
       });
       return { result };
@@ -466,7 +553,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
       });
       return { result };

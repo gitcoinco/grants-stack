@@ -13,47 +13,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Round {
-  id                 Int            @id @default(autoincrement())
-  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt          DateTime       @updatedAt @db.Timestamptz(3)
-  chainId            ChainId
-  roundId            String         @unique
-  votingStrategyName VotingStrategy
-  matches            Match[]
-  isSaturated        Boolean        @default(false)
-  roundSummary       RoundSummary?
-  projects           Project[]
-  votes              Vote[]
+model Program {
+  id               Int      @id @default(autoincrement())
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
+  chainId          String
+  programId        String
+  programCreatedAt String
+  programUpdatedAt String
+  rounds           Round[]
 
+  @@unique([chainId, programId], name: "programIdentifier")
+  @@map("program")
+}
+
+model Round {
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(3)
+  chainId               String
+  program               Program   @relation(fields: [chainId, programId], references: [chainId, programId])
+  programId             String
+  roundId               String
+  roundCreatedAt        String
+  roundUpdatedAt        String
+  applicationsStartTime String
+  applicationsEndTime   String
+  roundStartTime        String
+  roundEndTime          String
+  payoutStrategy        String
+  roundToken            String
+  projects              Project[]
+  matches               Match[]
+  roundSummary          RoundSummary[]
+
+  @@unique([chainId, roundId], name: "roundIdentifier")
   @@map("round")
 }
 
-model Project {
-  id               Int              @id @default(autoincrement())
-  createdAt        DateTime         @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime         @updatedAt @db.Timestamptz(3)
-  chainId          ChainId
-  round            Round            @relation(fields: [roundId], references: [roundId])
-  roundId          String
-  projectId        String
-  projectSummaries ProjectSummary[]
-  votes            Vote[]
+model VotingStrategy {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+  roundId         String
+  chainId         String
+  strategyAddress String
+  strategyName    String
+  strategyVersion String
+  strategyId      String
+  // Round           Round?
 
-  @@unique([projectId, roundId], name: "projectIdentifier")
+  @@unique([chainId, roundId], name: "votingStrategyIdentifier")
+  @@map("votingStrategy")
+}
+
+model Project {
+  id                   Int      @id @default(autoincrement())
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  chainId              String
+  round                Round    @relation(fields: [chainId, roundId], references: [chainId, roundId])
+  roundId              String
+  projectId            String
+  projectCreatedAt     String
+  projectUpdatedAt     String
+  projectStatus        String
+  projectPayoutAddress String?
+  projectSummary       ProjectSummary[]
+
+  @@unique([projectId, roundId, chainId], name: "projectIdentifier")
   @@map("project")
+}
+
+model Vote {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  chainId        String
+  roundId        String
+  projectId      String
+  voteId         String
+  voteAmount     String
+  voteCreatedAt  String
+  voterAddress   String
+  voteToAddress  String
+  voteToken      String
+  voteVersion    String
+  voteStrategyId String
+
+  @@unique([roundId, projectId, voteId], name: "voteIdentifier")
+  @@map("vote")
 }
 
 model Match {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  chainId                 String
   projectId               String
   matchAmountInUSD        Float
   totalContributionsInUSD Float
   matchPoolPercentage     Float
   matchAmountInToken      Float
-  round                   Round    @relation(fields: [roundId], references: [roundId])
+  round                   Round    @relation(fields: [chainId, roundId], references: [chainId, roundId])
   roundId                 String
   projectPayoutAddress    String
   uniqueContributorsCount Int?
@@ -66,11 +128,12 @@ model RoundSummary {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  chainId                 String
   contributionCount       Int
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
-  round                   Round    @relation(fields: [roundId], references: [roundId])
+  round                   Round    @relation(fields: [chainId, roundId], references: [chainId, roundId])
   roundId                 String
 
   @@unique([roundId], name: "roundSummaryIdentifier")
@@ -81,51 +144,15 @@ model ProjectSummary {
   id                      Int      @id @default(autoincrement())
   createdAt               DateTime @default(now()) @db.Timestamptz(3)
   updatedAt               DateTime @updatedAt @db.Timestamptz(3)
+  chainId                 String
   contributionCount       Int
   uniqueContributors      Int
   totalContributionsInUSD Float
   averageUSDContribution  Float
-  project                 Project  @relation(fields: [projectId, roundId], references: [projectId, roundId])
+  project                 Project  @relation(fields: [projectId, roundId, chainId], references: [projectId, roundId, chainId])
   projectId               String
   roundId                 String
 
   @@unique([projectId, roundId], name: "projectSummaryIdentifier")
   @@map("projectSummary")
-}
-
-model Vote {
-  id               Int      @id @default(autoincrement())
-  createdAt        DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
-  round            Round    @relation(fields: [roundId], references: [roundId])
-  roundId          String
-  project          Project  @relation(fields: [projectId, roundId], references: [projectId, roundId])
-  projectId        String
-  graphId          String
-  voteAmount       String
-  voteTimestamp    String
-  voterAddress     String
-  voteToAddress    String
-  voteToken        String
-  voteVersion      String
-
-  @@unique([roundId, projectId, graphId], name: "voteIdentifier")
-  @@map("vote")
-}
-
-// ========= //
-// = ENUMS = //
-// ========= //
-enum ChainId {
-  GOERLI
-  OPTIMISM_MAINNET
-  FANTOM_MAINNET
-  FANTOM_TESTNET
-  LOCAL_ROUND_LAB
-  MAINNET
-}
-
-enum VotingStrategy {
-  LINEAR_QUADRATIC_FUNDING
-  QUADRATIC_VOTING
 }

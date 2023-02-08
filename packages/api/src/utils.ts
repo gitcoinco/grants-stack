@@ -1,13 +1,18 @@
-import { VotingStrategy } from "@prisma/client";
 import { getAddress } from "ethers/lib/utils";
 import { Response } from "express";
 import "isomorphic-fetch";
 import {
   ChainId,
-  RoundMetadata,
   DenominationResponse,
-  MetaPtr,
+  GraphMeta,
+  GraphPrograms,
+  GraphQFVotes,
   GraphResponse,
+  GraphRoundProjects,
+  GraphRounds,
+  GraphVotingStrategies,
+  MetaPtr,
+  RoundMetadata,
 } from "./types";
 import { cache } from "./cacheConfig";
 
@@ -392,7 +397,7 @@ export async function denominateAs(
  */
 export const getStrategyName = (strategyName: string) => {
   if (strategyName === "quadraticFunding") {
-    return VotingStrategy.LINEAR_QUADRATIC_FUNDING;
+    return "LINEAR_QUADRATIC_FUNDING";
   }
   return strategyName;
 };
@@ -650,7 +655,6 @@ export const isTestnet = (chainId: ChainId) => {
   return testnet.includes(chainId);
 };
 
-
 /**
  * Util function to specify valid coingecko address in scenarios where
  * coingecko doesn't return token price on given chain.
@@ -676,13 +680,12 @@ export const getValidCoinGeckoTokenAddress = (
 };
 
 // TODO: Docs
-export const fetchGraphQFContributionsForRound = async (
+export const fetchGraphQFContributionsOfVotingStrategy = async (
   chainId: ChainId,
   votingStrategyId: string,
   lastID: string = "",
-  lastResponse: GraphResponse<any> = { data: { qfvotes: [] } },
+  lastResponse: GraphResponse<any> = { data: { qfvotes: [] } }
 ): Promise<GraphResponse<any>> => {
-
   const query = `
     query GetContributionsForRound($votingStrategyId: String, $lastID: String) {
         qfvotes(
@@ -719,38 +722,247 @@ export const fetchGraphQFContributionsForRound = async (
   if (response.error) {
     console.log("error", response.error);
   }
-  lastResponse.data.qfvotes = lastResponse.data.qfvotes.concat(response.data.qfvotes);
+  lastResponse.data.qfvotes = lastResponse.data.qfvotes.concat(
+    response.data.qfvotes
+  );
   // TODO: Figure out why the heck does the graph return such inconsistent data?
-  // console.log("LAST RESPONSE ID", lastResponse.data.qfvotes[lastResponse.data.qfvotes.length - 1]?.id,
-  //   lastResponse.data.qfvotes.length
-  // );
-  if (response.data?.qfvotes.length === 0 || response.data?.qfvotes.length < 1000 || !response.data?.qfvotes) {
+  if (
+    response.data?.qfvotes.length === 0 ||
+    response.data?.qfvotes.length < 1000 ||
+    !response.data?.qfvotes
+  ) {
     return lastResponse;
   }
 
-  return await fetchGraphQFContributionsForRound(
+  return await fetchGraphQFContributionsOfVotingStrategy(
     chainId,
     votingStrategyId,
     lastResponse.data.qfvotes[lastResponse.data?.qfvotes.length - 1].id,
     lastResponse
   );
-
 };
 
-// TODO: docs
-export const fetchGraphVotingStrategies = async (
+export const fetchGraphPrograms = async (
   chainId: ChainId,
-): Promise<GraphResponse<any>> => {
+  blockNumber: number
+): Promise<GraphResponse<GraphPrograms>> => {
+  // TODO: Pagination
+  const variables = { blockNumber };
   const query = `
-     query GetVotingStrategies {
-        votingStrategies {
+     query GetPrograms($blockNumber: Int) {
+        programs(
+          block: {number: $blockNumber}
+        ) {
           id
-          version
-          strategyName
-          strategyAddress
+          createdAt
+          updatedAt
         }
      }
-  `
+  `;
+  const response = await fetchFromGraphQL(chainId, query, variables);
+  return response;
+};
+
+export const fetchGraphProgramRounds = async (
+  chainId: ChainId,
+  programIds: string[],
+  blockNumber: number
+): Promise<GraphResponse<GraphRounds>> => {
+  // TODO: Pagination
+  const variables = { programIds, blockNumber };
+  const query = `
+     query GetRounds($programIds: [String], $blockNumber: Int) {
+        rounds(
+          first: 1000,
+          block: {number: $blockNumber}, 
+          where: {program_in: $programIds}
+        ) {
+          id
+          createdAt
+          updatedAt
+          applicationsStartTime
+          applicationsEndTime
+          payoutStrategy
+          roundEndTime
+          roundStartTime
+          token
+          program {
+            id
+          }
+        }
+     }
+  `;
+  const response = await fetchFromGraphQL(chainId, query, variables);
+  return response;
+};
+
+export const fetchGraphRoundVotingStrategy = async (
+  chainId: ChainId,
+  roundIds: string[],
+  blockNumber: number
+): Promise<GraphResponse<GraphVotingStrategies>> => {
+  // TODO: Pagination
+  const variables = { roundIds, blockNumber };
+  const query = `
+     query GetVotingStrategies($roundIds: [String], $blockNumber: Int) {
+        votingStrategies(
+          first: 1000,
+          block: {number: $blockNumber}, 
+          where: {round_: {id_in: $roundIds}
+        }) {
+          id
+          strategyName
+          strategyAddress
+          version
+          round {
+            id
+          }
+        }
+     }
+  `;
+  const response = await fetchFromGraphQL(chainId, query, variables);
+  return response;
+};
+
+export const fetchGraphRoundProjects = async (
+  chainId: ChainId,
+  roundId: string,
+  blockNumber: number,
+  lastID: string = "",
+  lastResponse: GraphResponse<GraphRoundProjects> = {
+    data: { roundProjects: [] },
+  }
+): Promise<GraphResponse<GraphRoundProjects>> => {
+  const variables = { roundId, lastID, blockNumber };
+  const query = `
+     query GetRoundProjects($roundId: String, $lastID: String, $blockNumber: Int) {
+        roundProjects(
+          first: 1000,
+          block: {number: $blockNumber}
+          where: {
+            round_: {
+              id: $roundId
+            }
+            id_gt: $lastID
+          }
+        ) {
+          id
+          project
+          createdAt
+          updatedAt
+          status
+          payoutAddress
+          round {
+            id
+          }
+        }
+     }
+  `;
+  const response = await fetchFromGraphQL(chainId, query, variables);
+  if (response.error) {
+    console.log("error", response.error);
+  }
+  lastResponse.data.roundProjects = lastResponse.data.roundProjects.concat(
+    response.data.roundProjects
+  );
+  // base case
+  if (
+    response.data?.roundProjects.length === 0 ||
+    response.data?.roundProjects.length < 1000 ||
+    !response.data?.roundProjects
+  ) {
+    return lastResponse;
+  }
+  return await fetchGraphRoundProjects(
+    chainId,
+    roundId,
+    blockNumber,
+    lastResponse.data.roundProjects[lastResponse.data?.roundProjects.length - 1]
+      .id,
+    lastResponse
+  );
+};
+
+export const fetchGraphQFVotes = async (
+  chainId: ChainId,
+  votingStrategyId: string,
+  blockNumber: number,
+  lastID: string = "",
+  lastResponse: GraphResponse<GraphQFVotes> = { data: { qfvotes: [] } }
+): Promise<GraphResponse<GraphQFVotes>> => {
+  const variables = { votingStrategyId, lastID, blockNumber };
+  const query = `
+    query GetQFVotes($votingStrategyId: String, $lastID: String, $blockNumber: Int) {
+        qfvotes(
+          first: 1000,
+          block: {number: $blockNumber}
+          where: {
+            id_gt: $lastID,
+            votingStrategy_: {
+              id: $votingStrategyId
+            }
+          }
+        ) {
+          id
+          amount
+          createdAt
+          from
+          projectId
+          to
+          token
+          version
+          votingStrategy {
+            id
+            round {
+              id
+            }
+          }
+        }
+      }
+  `;
+
+  const response = await fetchFromGraphQL(chainId, query, variables);
+
+  if (response.error) {
+    console.log("error", response.error);
+  }
+  lastResponse.data.qfvotes = lastResponse.data.qfvotes.concat(
+    response.data.qfvotes
+  );
+  // TODO: Figure out why the heck does the graph return such inconsistent data?
+  if (
+    response.data?.qfvotes.length === 0 ||
+    response.data?.qfvotes.length < 1000 ||
+    !response.data?.qfvotes
+  ) {
+    return lastResponse;
+  }
+
+  return await fetchGraphQFVotes(
+    chainId,
+    votingStrategyId,
+    blockNumber,
+    lastResponse.data.qfvotes[lastResponse.data?.qfvotes.length - 1].id,
+    lastResponse
+  );
+};
+
+export const fetchGraphMeta = async (
+  chainId: ChainId
+): Promise<GraphResponse<GraphMeta>> => {
+  const query = `
+    query GetMeta {
+      _meta {
+      block {
+        number
+        timestamp
+        hash
+      }
+      hasIndexingErrors
+      deployment
+      }
+    }
+  `;
   const response = await fetchFromGraphQL(chainId, query);
   return response;
-}
+};
