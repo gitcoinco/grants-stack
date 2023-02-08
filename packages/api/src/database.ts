@@ -177,7 +177,9 @@ export class DatabaseInstance {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
         votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
-        roundSummary: { create: roundSummaryData },
+        roundSummary: {
+          create: roundSummaryData
+        },
       }
 
       // upsert with round summary data
@@ -186,7 +188,6 @@ export class DatabaseInstance {
         create: roundData,
         update: {
           roundSummary: {
-            create: roundSummaryData,
             update: roundSummaryData,
           }
         }
