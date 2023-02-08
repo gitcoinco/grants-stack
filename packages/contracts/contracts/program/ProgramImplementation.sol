@@ -13,71 +13,70 @@ import "../utils/MetaPtr.sol";
  * PROGRAM_OPERATOR deployed via the ProgramFactory
  */
 contract ProgramImplementation is AccessControlEnumerable, Initializable {
+    //
+    // --- Types ---
+    //
+    using Address for address;
 
-  // --- Libraries ---
-  using Address for address;
+    //
+    // --- State variables ---
+    //
+    /// @notice URL pointing for program metadata (for off-chain use)
+    MetaPtr public metaPtr;
 
-  // --- Roles ---
+    /// @notice program operator role
+    bytes32 public constant PROGRAM_OPERATOR_ROLE = keccak256("PROGRAM_OPERATOR");
 
-  /// @notice program operator role
-  bytes32 public constant PROGRAM_OPERATOR_ROLE = keccak256("PROGRAM_OPERATOR");
+    //
+    // --- Errors ---
+    //
+    /// @notice Emitted when a team metadata pointer is updated
+    event MetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
-  // --- Events ---
+    //
+    // --- Functions ---
+    //
+    /// @notice Instantiates a new program
+    /// @dev The encoded parameters should be the following:
+    ///  - _metaPtr URL pointing to the program metadata
+    ///  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
+    ///  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
+    /// @param encodedParameters Encoded parameters for program creation
+    function initialize(
+      bytes calldata encodedParameters
+    ) external initializer {
+    
+      // Decode _encodedParameters
+      (
+        MetaPtr memory _metaPtr,
+        address[] memory _adminRoles,
+        address[] memory _programOperators
+      ) = abi.decode(
+        encodedParameters, (
+        MetaPtr,
+        address[],
+        address[]
+      ));
 
-  /// @notice Emitted when a team metadata pointer is updated
-  event MetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
+      // Emit MetaPtrUpdated event for indexing
+      emit MetaPtrUpdated(metaPtr, _metaPtr);
+      metaPtr = _metaPtr;
 
-  // --- Data ---
+      // Assigning default admin role
+      for (uint256 i = 0; i < _adminRoles.length; ++i) {
+        _grantRole(DEFAULT_ADMIN_ROLE, _adminRoles[i]);
+      }
 
-  /// @notice URL pointing for program metadata (for off-chain use)
-  MetaPtr public metaPtr;
-
-
-  // --- Core methods ---
-
-  /**
-   * @notice Instantiates a new program
-   * @param encodedParameters Encoded parameters for program creation
-   * @dev encodedParameters
-   *  - _metaPtr URL pointing to the program metadata
-   *  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE
-   *  - _programOperators Addresses to be granted PROGRAM_OPERATOR_ROLE
-   */
-  function initialize(
-    bytes calldata encodedParameters
-  ) external initializer {
-  
-    // Decode _encodedParameters
-    (
-      MetaPtr memory _metaPtr,
-      address[] memory _adminRoles,
-      address[] memory _programOperators
-    ) = abi.decode(
-      encodedParameters, (
-      MetaPtr,
-      address[],
-      address[]
-    ));
-
-    // Emit MetaPtrUpdated event for indexing
-    emit MetaPtrUpdated(metaPtr, _metaPtr);
-    metaPtr = _metaPtr;
-
-    // Assigning default admin role
-    for (uint256 i = 0; i < _adminRoles.length; ++i) {
-      _grantRole(DEFAULT_ADMIN_ROLE, _adminRoles[i]);
+      // Assigning program operators
+      for (uint256 i = 0; i < _programOperators.length; ++i) {
+        _grantRole(PROGRAM_OPERATOR_ROLE, _programOperators[i]);
+      }
     }
 
-    // Assigning program operators
-    for (uint256 i = 0; i < _programOperators.length; ++i) {
-      _grantRole(PROGRAM_OPERATOR_ROLE, _programOperators[i]);
+    /// @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
+    /// @param newMetaPtr new metaPtr
+    function updateMetaPtr(MetaPtr memory newMetaPtr) external onlyRole(PROGRAM_OPERATOR_ROLE) {
+      emit MetaPtrUpdated(metaPtr, newMetaPtr);
+      metaPtr = newMetaPtr;
     }
-  }
-
-  // @notice Update metaPtr (only by PROGRAM_OPERATOR_ROLE)
-  /// @param newMetaPtr new metaPtr
-  function updateMetaPtr(MetaPtr memory newMetaPtr) external onlyRole(PROGRAM_OPERATOR_ROLE) {
-    emit MetaPtrUpdated(metaPtr, newMetaPtr);
-    metaPtr = newMetaPtr;
-  }
 }

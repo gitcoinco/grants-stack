@@ -4,12 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../utils/MetaPtr.sol";
 
-/**
- * @title ProjectRegistry
- */
+/// @title ProjectRegistry
+/// @notice Explain to an end user what this does
 contract ProjectRegistry is Initializable {
-    // Types
-
+    //
+    // --- Type declarations ---
+    //
     // The project structs contains the minimal data we need for a project
     struct Project {
         uint256 id;
@@ -34,8 +34,9 @@ contract ProjectRegistry is Initializable {
         mapping(address => address) list;
     }
 
-    // State variables
-
+    //
+    // --- State variables ---
+    //
     // Used as sentinel value in the owners linked list.
     address constant OWNERS_LIST_SENTINEL = address(0x1);
 
@@ -48,33 +49,31 @@ contract ProjectRegistry is Initializable {
     // The mapping projects owners, from projectID to OwnerList
     mapping(uint256 => OwnerList) public projectsOwners;
 
-    // Events
-
+    //
+    // --- Events ---
+    //
     event ProjectCreated(uint256 indexed projectID, address indexed owner);
     event MetadataUpdated(uint256 indexed projectID, MetaPtr metaPtr);
     event OwnerAdded(uint256 indexed projectID, address indexed owner);
     event OwnerRemoved(uint256 indexed projectID, address indexed owner);
 
-    // Modifiers
-
+    //
+    // --- Modifiers ---
+    //
     modifier onlyProjectOwner(uint256 projectID) {
         require(projectsOwners[projectID].list[msg.sender] != address(0), "PR000");
         _;
     }
 
-    /**
-     * @notice Initializes the contract after an upgrade
-     * @dev In future deploys of the implementation, an higher version should be passed to reinitializer
-     */
-    function initialize() public reinitializer(1) {
-    }
+    //
+    // --- Functions ---
+    //
+    /// @notice Initializes the contract after an upgrade
+    /// @dev In future deploys of the implementation, an higher version should be passed to reinitializer
+    function initialize() public reinitializer(1) {}
 
-    // External functions
-
-    /**
-     * @notice Creates a new project with a metadata pointer
-     * @param metadata the metadata pointer
-     */
+    /// @notice Creates a new project with a metadata pointer
+    /// @param metadata the metadata pointer
     function createProject(MetaPtr calldata metadata) external {
         uint256 projectID = projectsCount++;
 
@@ -88,21 +87,17 @@ contract ProjectRegistry is Initializable {
         emit MetadataUpdated(projectID, metadata);
     }
 
-    /**
-     * @notice Updates Metadata for singe project
-     * @param projectID ID of previously created project
-     * @param metadata Updated pointer to external metadata
-     */
+    /// @notice Updates Metadata for singe project
+    /// @param projectID ID of previously created project
+    /// @param metadata Updated pointer to external metadata
     function updateProjectMetadata(uint256 projectID, MetaPtr calldata metadata) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
         emit MetadataUpdated(projectID, metadata);
     }
 
-    /**
-     * @notice Associate a new owner with a project
-     * @param projectID ID of previously created project
-     * @param newOwner address of new project owner
-     */
+    /// @notice Associate a new owner with a project
+    /// @param projectID ID of previously created project
+    /// @param newOwner address of new project owner
     function addProjectOwner(uint256 projectID, address newOwner) external onlyProjectOwner(projectID) {
         require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "PR001");
 
@@ -117,12 +112,10 @@ contract ProjectRegistry is Initializable {
         emit OwnerAdded(projectID, newOwner);
     }
 
-    /**
-     * @notice Disassociate an existing owner from a project
-     * @param projectID ID of previously created project
-     * @param prevOwner Address of previous owner in OwnerList
-     * @param owner Address of new Owner
-     */
+    /// @notice Disassociate an existing owner from a project
+    /// @param projectID ID of previously created project
+    /// @param prevOwner Address of previous owner in OwnerList
+    /// @param owner Address of new Owner
     function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
         require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "PR001");
 
@@ -138,22 +131,16 @@ contract ProjectRegistry is Initializable {
         emit OwnerRemoved(projectID, owner);
     }
 
-    // Public functions
-
-    /**
-     * @notice Retrieve count of existing project owners
-     * @param projectID ID of project 
-     * @return Count of owners for given project
-     */
+    /// @notice Retrieve count of existing project owners
+    /// @param projectID ID of project 
+    /// @return Count of owners for given project
     function projectOwnersCount(uint256 projectID) external view returns(uint256) {
         return projectsOwners[projectID].count;
     }
 
-    /**
-     * @notice Retrieve list of project owners 
-     * @param projectID ID of project 
-     * @return List of current owners of given project
-     */
+    /// @notice Retrieve list of project owners 
+    /// @param projectID ID of project 
+    /// @return List of current owners of given project
     function getProjectOwners(uint256 projectID) external view returns(address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
 
@@ -175,12 +162,8 @@ contract ProjectRegistry is Initializable {
         return list;
     }
 
-    // Internal functions
-
-    /**
-     * @notice Create initial OwnerList for passed project
-     * @param projectID ID of project
-     */
+    /// @notice Create initial OwnerList for passed project
+    /// @param projectID ID of project
     function initProjectOwners(uint256 projectID) internal {
         OwnerList storage owners = projectsOwners[projectID];
 
@@ -188,7 +171,4 @@ contract ProjectRegistry is Initializable {
         owners.list[msg.sender] = OWNERS_LIST_SENTINEL;
         owners.count = 1;
     }
-
-    // Private functions
-    // ...
 }

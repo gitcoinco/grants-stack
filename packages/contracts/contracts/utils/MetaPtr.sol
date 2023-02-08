@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 
 struct MetaPtr {
-
   /// @notice Protocol ID corresponding to a specific protocol.
   /// More info at https://github.com/gitcoinco/grants-round/tree/main/packages/contracts/docs/MetaPtrProtocol.md
   uint256 protocol;

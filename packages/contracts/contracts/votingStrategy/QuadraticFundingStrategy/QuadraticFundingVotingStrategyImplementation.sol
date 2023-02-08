@@ -8,96 +8,91 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 
 import "../IVotingStrategy.sol";
 
-/**
- * Allows voters to cast multiple weighted votes to grants with one transaction
- * This is inspired from BulkCheckout documented over at:
- * https://github.com/gitcoinco/BulkTransactions/blob/master/contracts/BulkCheckout.sol
- *
- * Emits event upon every transfer.
- */
+/// @title QuadraticFundingVotingStrategyImplementation
+/// @notice Allows voters to cast multiple weighted votes to grants with one transaction This is inspired from BulkCheckout documented over at: https://github.com/gitcoinco/BulkTransactions/blob/master/contracts/BulkCheckout.sol
 contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Initializable, ReentrancyGuardUpgradeable {
+    //
+    // --- Type declarations ---
+    //
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
-  using SafeERC20Upgradeable for IERC20Upgradeable;
+    //
+    // --- State variables ---
+    //
+    string public constant VERSION = "0.2.0";
 
-  string public constant VERSION = "0.2.0";
+    //
+    // --- Events ---
+    //
+    /// @notice Emitted when a new vote is sent
+    event Voted(
+      address token,                    // voting token
+      uint256 amount,                   // voting amount
+      address indexed voter,            // voter address
+      address grantAddress,             // grant address
+      bytes32 indexed projectId,        // project id
+      address indexed roundAddress      // round address
+    );
 
-  // --- Event ---
+    //
+    // --- Functions ---
+    //
+    function initialize() external initializer {}
 
-  /// @notice Emitted when a new vote is sent
-  event Voted(
-    address token,                    // voting token
-    uint256 amount,                   // voting amount
-    address indexed voter,            // voter address
-    address grantAddress,             // grant address
-    bytes32 indexed projectId,        // project id
-    address indexed roundAddress      // round address
-  );
+    /// @notice Invoked by RoundImplementation which allows a voted to cast weighted votes to multiple grants during a round
+    /// @dev
+    /// - more voters -> higher the gas
+    /// - this would be triggered when a voter casts their vote via grant explorer
+    /// - can be invoked by the round
+    /// - supports ERC20 and Native token transfer
+    ///
+    /// @param encodedVotes encoded list of votes
+    /// @param voterAddress voter address
+    function vote(bytes[] calldata encodedVotes, address voterAddress) external override payable nonReentrant isRoundContract {
 
-  // --- Core methods ---
+      /// @dev iterate over multiple donations and transfer funds
+      for (uint256 i = 0; i < encodedVotes.length; i++) {
 
-  function initialize() external initializer {
-    // empty initializer
-  }
+        /// @dev decode encoded vote
+        (
+          address _token,
+          uint256 _amount,
+          address _grantAddress,
+          bytes32 _projectId
+        ) = abi.decode(encodedVotes[i], (
+          address,
+          uint256,
+          address,
+          bytes32
+        ));
 
-  /**
-   * @notice Invoked by RoundImplementation which allows
-   * a voted to cast weighted votes to multiple grants during a round
-   *
-   * @dev
-   * - more voters -> higher the gas
-   * - this would be triggered when a voter casts their vote via grant explorer
-   * - can be invoked by the round
-   * - supports ERC20 and Native token transfer
-   *
-   * @param encodedVotes encoded list of votes
-   * @param voterAddress voter address
-   */
-  function vote(bytes[] calldata encodedVotes, address voterAddress) external override payable nonReentrant isRoundContract {
+        if (_token == address(0)) {
+          /// @dev native token transfer to grant address
+          // slither-disable-next-line reentrancy-events
+          AddressUpgradeable.sendValue(payable(_grantAddress), _amount);
+        } else {
 
-    /// @dev iterate over multiple donations and transfer funds
-    for (uint256 i = 0; i < encodedVotes.length; i++) {
+          /// @dev erc20 transfer to grant address
+          // slither-disable-next-line arbitrary-send-erc20,reentrancy-events,
+          SafeERC20Upgradeable.safeTransferFrom(
+            IERC20Upgradeable(_token),
+            voterAddress,
+            _grantAddress,
+            _amount
+          );
 
-      /// @dev decode encoded vote
-      (
-        address _token,
-        uint256 _amount,
-        address _grantAddress,
-        bytes32 _projectId
-      ) = abi.decode(encodedVotes[i], (
-        address,
-        uint256,
-        address,
-        bytes32
-      ));
+        }
 
-      if (_token == address(0)) {
-        /// @dev native token transfer to grant address
-        // slither-disable-next-line reentrancy-events
-        AddressUpgradeable.sendValue(payable(_grantAddress), _amount);
-      } else {
-
-        /// @dev erc20 transfer to grant address
-        // slither-disable-next-line arbitrary-send-erc20,reentrancy-events,
-        SafeERC20Upgradeable.safeTransferFrom(
-          IERC20Upgradeable(_token),
+        /// @dev emit event for transfer
+        emit Voted(
+          _token,
+          _amount,
           voterAddress,
           _grantAddress,
-          _amount
+          _projectId,
+          msg.sender
         );
-
       }
 
-      /// @dev emit event for transfer
-      emit Voted(
-        _token,
-        _amount,
-        voterAddress,
-        _grantAddress,
-        _projectId,
-        msg.sender
-      );
-
     }
-
-  }
 }
