@@ -1,10 +1,50 @@
-# grants-round/contracts
+# Allo Contracts
 
-This project is built using [hardhat](https://hardhat.org).
-All the contracts required to run / manage a round can be found here.
-If you come across any vulnerabilties, do create an issue / raise a PR to help improve the contracts. ^_^
+Allo Protocol is a set of smart contracts that enable the democratic allocation
+and distribution of funds through the power of [Quadratic
+Funding](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3243656). It is the
+former smart contract back-end for cGrants, Gitcoin's quadratic funding grant
+product. This new iteration is more flexible and more modular. It powers
+Gitcoin's three products,
+[Builder](https://github.com/gitcoinco/grants-round/tree/main/packages/builder),
+[Explorer](https://github.com/gitcoinco/grants-round/tree/main/packages/grant-explorer),
+and
+[Manager](https://github.com/gitcoinco/grants-round/tree/main/packages/round-manager),
+and empowers anyone to build on top of a permissionless ecosystem of grants.
 
-## Directory Structure
+Read more about the [release of this
+protocol](https://go.gitcoin.co/blog/introduction-to-grants-protocol) and [the
+latest Alpha
+test](https://go.gitcoin.co/blog/announcing-the-gitcoin-alpha-tests).
+
+For the latest documentation, please visit
+[docs.alloprotocol.com](docs.alloprotocol.com)
+
+## Useful Links
+
+The following links will be helpful to you in working with Allo, whether you are
+contributing to the protocol or building on top of it.
+
+- [Official Documentation]()
+- [Quick Start Guide]()
+
+### Updates
+
+- [Official Website]()
+- [Twitter]()
+- [Mailing List]()
+
+### Getting Involved
+
+To get involved, visit the [Contributing](#contribute) section below. Also, join
+our [Discord](https://discord.gg/gitcoin) and head to the #grants-round channel.
+
+## System Architecture
+
+<!-- Provide an architectural diagram of the protocol that someone can use to get
+familiar with the system -->
+
+### Directory Structure
 
 ```
 .
@@ -32,63 +72,39 @@ If you come across any vulnerabilties, do create an issue / raise a PR to help i
 └── README.md
 ```
 
+## Contribute
 
-## Terminology
+<!-- Welcome message, encouraging contribution -->
+We welcome everyone to contribute to Allo. Please review the [contribution
+guidelines]() before proceeding.
 
-- **Program Operators**: wallets that have the permission to create & manage the program
-- **Program**: maintained by Program Operators which together form a team
-- **Round Operators**: wallets that have the permission to create & manage the round
-- **Round**: created by a Program and deal with everything relating to running a round
-- **Voter** : wallet who cast a vote to a grant during the round
+You can join our [Discord](https://discord.gg/gitcoin) to get help and discuss
+the project with the rest of the community.
 
-## General Setup
+You can also familiarize yourself with our near term project roadmap in the
+[project backlog](https://github.com/orgs/gitcoinco/projects/7).
 
-These steps would have to be done per chain but there are intended to be deployed only once
+### Setup
 
-**Program**
-1. Deploy `ProgramFactory`
-2. Deploy `ProgramImplementation`
-3. Link `ProgramImplementation` to ProgramFactory contract 
+<!-- Summary and link to the Setup instructions -->
+Instructions are provided in the [`SETUP.md`](./SETUP.md) for getting the
+codebase up and running on your local machine.
 
-**Round**
-1. Deploying all voting strategy (contracts under `votingStrategy/`)
-2. Deploy `RoundFactory`
-3. Deploy `RoundImplementation`
-4. Link `RoundImplementation` to `RoundFactory` contract
+### Submit a Bug Report
 
+<!-- Instructions on how to submit a bug report. GH Issue for bugs, bug bounty
+program for security vulnerabilties. -->
 
-## Program Setup
+For non-security-critical bugs, you can open a [public
+issue](https://github.com/gitcoinco/grants-round/issues/new?assignees=&labels=bug&template=bug.md&title=)
+on this repository, but please follow our issue guidelines for doing so.
 
-1. To create a program, you would not deploy a contract but instead, rely on the create function on the `ProgramFactory` to create a clone of the already deployed `ProgramImplementation` contract
-2. Any interaction in terms of updating parameters etc can be performed against the `ProgramImplementation` contract itself
+### Submit a Feature Request
 
+<!-- How to submit a feature request -->
+To request a feature be added to the protocol, please open a [public issue](https://github.com/gitcoinco/grants-round/issues/new?assignees=&labels=&template=feature_request.md&title=), but please follow our issue guidelines for doing so.
 
-The ProgramFactory enables us to have upgradable contracts on ProgramImplementation
+## [License](../../LICENSE)
 
-
-## Round Setup
-
-1. To create a round, you would not deploy a contract but instead, rely on the create function on the `RoundFactory` to create a new `RoundImplementation` contract.
-2. The user would have to choose a voting strategy like `QuadraticFundingVotingStrategy` (already deployed via instruction mention in DEPLOY_STEPS.md)
-3. Any interaction in terms of updating parameters etc can be performed against the `RoundImplementation` contract itself
-
-
-The `RoundFactory` enables us to have upgradable contracts on `RoundImplementation`.
-
-
-## Deploy Steps
-
-To know how the contracts should be setup, refer [DEPLOY_STEPS.md](docs/DEPLOY_STEPS.md)
-
-
-## Chain Deployment List
-
-To know the addresses are deployed on which network. refer [CHAINS.md](docs/CHAINS.md)
-
-## Development
-
-To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
-
-## Contract Documentation
-
-The contract documentation has been generated using [primitive-dodoc](https://github.com/primitivefinance/primitive-dodoc) and can be found over at [docs/contracts](docs/contracts/)
+All code is licensed under GNU AGPL.
+<!-- Link to the license -->
