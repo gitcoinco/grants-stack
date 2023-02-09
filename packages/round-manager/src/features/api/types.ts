@@ -110,6 +110,13 @@ export type QuestionOptions = {
   inputType: InputType;
 };
 
+export type ProjectRequirements = {
+  twitter: boolean;
+  twitterVerification: boolean;
+  github: boolean;
+  githubVerification: boolean;
+}
+
 export interface ApplicationMetadata {
   questions?: QuestionOptions[];
 }
