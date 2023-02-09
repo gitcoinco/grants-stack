@@ -38,6 +38,14 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   /// @notice Emitted when batch payout is triggered
   event BatchPayoutTriggered(address indexed sender);
 
+  // --- Types ---
+  struct Distribution {
+    uint256 index;
+    address _grantee;
+    uint256 amount;
+    bytes32[] merkleProof;
+  }
+
 
   function initialize() external initializer {
     // empty initializer
@@ -86,13 +94,13 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   function batchPayout(Distribution[] calldata _distributions) external override isRoundContract payable { 
 
     for (uint256 i = 0; i < _distributions.length; ++i) {
-        distribute(_distributions[i]);
+        _distribute(_distributions[i]);
     }
 
     emit BatchPayoutTriggered(msg.sender);
   }
 
-  function distribute(Distribution calldata _distribution) public {
+  function _distribute(Distribution calldata _distribution) internal {
 
     uint256 _index = _distribution.index;
     address _grantee = _distribution._grantee;
