@@ -339,4 +339,56 @@ describe("<Form />", () => {
       // );
     });
   });
+
+  describe("projectRequirements", () => {
+    it("prevents appliying when requirements are not met", async () => {
+      const store = setupStore();
+
+      store.dispatch(web3ChainIDLoaded(5));
+      store.dispatch({
+        type: "PROJECTS_LOADED",
+        payload: {
+          chainID: 5,
+          events: {
+            "1:1:1": {
+              createdAtBlock: 1111,
+              updatedAtBlock: 1112,
+            },
+          },
+        },
+      });
+
+      store.dispatch({
+        type: "GRANT_METADATA_FETCHED",
+        data: { ...projectsMetadata[0], projectGithub: "mygithub" },
+      });
+
+      renderWrapped(
+        <Form
+          roundApplication={{
+            ...roundApplicationMetadata,
+            projectRequirements: {
+              twitter: true,
+              github: true,
+            },
+          }}
+          round={round}
+          onSubmit={jest.fn()}
+          showErrorModal={false}
+        />,
+        store
+      );
+
+      const selectProject = screen.getByLabelText("Project");
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
+      expect(
+        screen.getByText("Project Twitter is required.")
+      ).toBeInTheDocument();
+
+      expect(
+        screen.queryByText("Project Github is required.")
+      ).not.toBeInTheDocument();
+    });
+  });
 });
