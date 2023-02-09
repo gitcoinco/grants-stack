@@ -4,14 +4,10 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
 import "../utils/MetaPtr.sol";
 
-
-/**
- * @notice Program which would managed by a group of 
- * PROGRAM_OPERATOR deployed via the ProgramFactory
- */
+/// @title ProgramImplementation
+/// @notice Program which would managed by a group of PROGRAM_OPERATOR deployed via the ProgramFactory
 contract ProgramImplementation is AccessControlEnumerable, Initializable {
     //
     // --- Types ---

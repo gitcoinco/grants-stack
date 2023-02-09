@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../utils/MetaPtr.sol";
 
 /// @title ProjectRegistry
-/// @notice Explain to an end user what this does
+/// @notice This contract is used to register projects and their owners
 contract ProjectRegistry is Initializable {
     //
     // --- Type declarations ---
