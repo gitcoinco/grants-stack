@@ -33,6 +33,14 @@ const roundApplicationMetadata = {
   applicationSchema: [
     {
       id: 0,
+      question: "Project",
+      type: "PROJECT",
+      required: true,
+      info: "",
+      choices: [],
+    },
+    {
+      id: 1,
       question: "Recipient Address",
       type: "RECIPIENT",
       required: true,
@@ -146,6 +154,9 @@ describe("<Form />", () => {
         store
       );
 
+      const selectProject = screen.getByLabelText("Project");
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -193,6 +204,10 @@ describe("<Form />", () => {
         />,
         store
       );
+
+      const selectProject = screen.getByLabelText("Project");
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -241,6 +256,9 @@ describe("<Form />", () => {
         store
       );
 
+      const selectProject = screen.getByLabelText("Project");
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -288,6 +306,10 @@ describe("<Form />", () => {
         />,
         store
       );
+
+      const selectProject = screen.getByLabelText("Project");
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
