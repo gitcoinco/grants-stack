@@ -39,6 +39,19 @@ const validation = {
   errorCount: 0,
 };
 
+const projectQuestion = {
+  question: "Select a project you would like to apply for funding:",
+  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  required: true,
+};
+
+const recipientAddressQuestion = {
+  question: "Recipient Address",
+  type: "RECIPIENT",
+  required: true,
+  info: "Address that will receive funds",
+};
+
 enum ValidationStatus {
   Invalid,
   Valid,
@@ -96,7 +109,14 @@ export default function Form({
   }, shallowEqual);
 
   const chainInfo = chains.find((i) => i.id === props.chainID);
-  const schema = roundApplication.applicationSchema;
+  const schema = [
+    { ...projectQuestion, id: roundApplication.projectQuestionId! },
+    {
+      ...recipientAddressQuestion,
+      id: roundApplication.recipientQuestionId!,
+    },
+    ...roundApplication.applicationSchema,
+  ];
 
   useEffect(() => {
     if (publishedApplication === undefined) {
@@ -224,6 +244,13 @@ export default function Form({
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         {schema.map((input) => {
+          if (
+            input.type !== "PROJECT" &&
+            !formInputs[roundApplication.projectQuestionId!]
+          ) {
+            return null;
+          }
+
           switch (input.type) {
             case "PROJECT":
               return readOnly ? (
@@ -270,13 +297,16 @@ export default function Form({
                       showProjectDetails={showProjectDetails}
                     />
                   </div>
-                  <div>
-                    <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
-                      To complete your application to {round.roundMetadata.name}
-                      , a little more info is needed:
-                    </p>
-                    <hr className="w-1/2" />
-                  </div>
+                  {formInputs[input.id] && (
+                    <div>
+                      <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
+                        To complete your application to{" "}
+                        {round.roundMetadata.name}, a little more info is
+                        needed:
+                      </p>
+                      <hr className="w-1/2" />
+                    </div>
+                  )}
                 </Fragment>
               );
             case "TEXT":
