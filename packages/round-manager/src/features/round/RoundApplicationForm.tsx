@@ -1,3 +1,13 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import { Switch } from "@headlessui/react";
+import {
+  CheckIcon,
+  InformationCircleIcon,
+  PencilIcon,
+  PlusSmIcon,
+  XIcon
+} from "@heroicons/react/solid";
+import { Button } from "common/src/styles";
 import { useContext, useEffect, useState } from "react";
 import {
   Control,
@@ -9,35 +19,25 @@ import {
   UseFieldArrayRemove,
   useForm,
   UseFormGetValues,
-  UseFormRegister,
+  UseFormRegister
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { FormStepper as FS } from "../common/FormStepper";
+import ReactTooltip from "react-tooltip";
+import { errorModalDelayMs } from "../../constants";
+import { useCreateRound } from "../../context/round/CreateRoundContext";
 import {
   ApplicationMetadata,
   Program,
   ProgressStatus,
   QuestionOptions,
-  Round,
+  Round
 } from "../api/types";
-import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
-import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
-import { errorModalDelayMs } from "../../constants";
-import { useCreateRound } from "../../context/round/CreateRoundContext";
-import { datadogLogs } from "@datadog/browser-logs";
-import {
-  CheckIcon,
-  InformationCircleIcon,
-  PencilIcon,
-  PlusSmIcon,
-  XIcon,
-} from "@heroicons/react/solid";
-import { Switch } from "@headlessui/react";
-import ReactTooltip from "react-tooltip";
-import { Button } from "common/src/styles";
+import { FormStepper as FS } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
+import ProgressModal from "../common/ProgressModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -283,7 +283,9 @@ export function RoundApplicationForm(props: {
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-6">
         <ReviewInformation />
-        <ProjectInformation />
+        <BasicInformation />
+        <div className="md:col-span-1"></div>
+        <ProjectSocials control={control} />
       </div>
       <hr className="my-6" />
       <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -333,14 +335,13 @@ function ReviewInformation() {
   );
 }
 
-function ProjectInformation() {
+function BasicInformation() {
   return (
     <div className="mt-5 md:mt-0 md:col-span-2">
       <div className="rounded shadow-sm bg-white pt-7 pb-6 sm:px-6">
-        <p className="mb-2">Project Information</p>
+        <p className="mb-2">Basic Information</p>
         <p className="text-sm text-grey-400 mb-6">
-          These details will be collected from project owners by default during
-          the project creation process.
+          This basic information will be collected by default for all projects.
         </p>
         <hr />
         <div className="flex my-4">
@@ -354,18 +355,8 @@ function ProjectInformation() {
         </div>
         <hr />
         <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Twitter</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Your GitHub Username</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project GitHub Organization</span>
-          <span className="text-xs text-grey-400">Optional</span>
+          <span className="flex-1 text-sm">Project Description</span>
+          <span className="text-xs text-violet-400">*Required</span>
         </div>
         <hr />
         <div className="flex my-4">
@@ -377,10 +368,82 @@ function ProjectInformation() {
           <span className="flex-1 text-sm">Project Banner</span>
           <span className="text-xs text-grey-400">Optional</span>
         </div>
+      </div>
+    </div>
+  );
+}
+
+const optionalToggle = (index: number, control: Control<Round>, disabled?: boolean) => {
+  return (
+    <Controller
+        control={control}
+        name={`applicationMetadata.questions.${index}.required`}
+        render={({ field }) => (
+          <Switch.Group
+            as="div"
+            className={classNames(
+              disabled ? "opacity-60" : "opacity-100",
+              "flex items-center justify-end"
+            )}
+          >
+            <span className="flex-grow">
+              <Switch.Label
+                as="span"
+                className="text-sm font-medium text-gray-900 flex justify-end"
+                passive
+                data-testid="optional-toggle-label"
+              >
+                <p className="text-xs text-right my-auto">
+                  {field.value ? "Required" : "Optional"}
+                </p>
+              </Switch.Label>
+            </span>
+            <Switch
+              {...field}
+              checked={field.value}
+              value={field.value.toString()}
+              className="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2"
+              data-testid="optional-toggle"
+              disabled={disabled}
+            >
+              <span
+                aria-hidden="true"
+                className={classNames(
+                  field.value
+                    ? "translate-x-5 bg-violet-400"
+                    : "translate-x-0 bg-white",
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+                )}
+              />
+            </Switch>
+          </Switch.Group>
+        )}
+      />
+  );
+};
+
+function ProjectSocials({ control }: { control: Control<Round> }) {
+  return (
+    <div className="mt-5 md:mt-0 md:col-span-2">
+      <div className="rounded shadow-sm bg-white pt-7 pb-6 sm:px-6">
+        <p className="mb-2">Project Socials</p>
+        <p className="text-sm text-grey-400 mb-6">
+          Select the social accounts required for project owners to fulfill the application process.
+        </p>
         <hr />
         <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Description</span>
-          <span className="text-xs text-violet-400">*Required</span>
+          <span className="flex-1 text-sm">Project Twitter</span>
+          <span className="text-xs text-grey-400">{optionalToggle(0, control)}</span>
+        </div>
+        <hr />
+        <div className="flex my-4">
+          <span className="flex-1 text-sm">Your GitHub Username</span>
+          <span className="text-xs text-grey-400">{optionalToggle(0, control)}</span>
+        </div>
+        <hr />
+        <div className="flex my-4">
+          <span className="flex-1 text-sm">Project GitHub Organization</span>
+          <span className="text-xs text-grey-400">{optionalToggle(0, control)}</span>
         </div>
       </div>
     </div>
@@ -595,7 +658,7 @@ function ApplicationInformation(props: {
         <div className="flex flex-row">
           <div className="text-sm basis-2/5">
             {editStates[index] ||
-            getValues(`applicationMetadata.questions.${index}.title`).length ==
+              getValues(`applicationMetadata.questions.${index}.title`).length ==
               0
               ? editableTitle(index)
               : normalTitle(index)}
