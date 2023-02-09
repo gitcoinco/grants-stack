@@ -1,7 +1,7 @@
 // This script deals with updating
 import hre, { ethers } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
-import { merklePayoutStrategyParams } from "../config/merklePayoutStrategy.config";
+import { PayoutParams } from "../config/payoutStrategy.config";
 import * as utils from "../utils";
 
 utils.assertEnvironment();
@@ -12,7 +12,7 @@ export async function main(
 ) {
   const network = hre.network;
 
-  const networkParams = merklePayoutStrategyParams[network.name];
+  const networkParams = PayoutParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
