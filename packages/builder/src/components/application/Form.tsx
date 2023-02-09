@@ -347,7 +347,7 @@ export default function Form({
                       showProjectDetails={showProjectDetails}
                     />
                   </div>
-                  {formInputs[input.id] && (
+                  {isValidProjectSelected && (
                     <div>
                       <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
                         To complete your application to{" "}
