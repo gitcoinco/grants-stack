@@ -1,4 +1,4 @@
-# MerklePayoutStrategy
+# MerklePayoutStrategyImplementation
 
 
 
@@ -103,6 +103,17 @@ function init() external nonpayable
 ```
 
 Invoked by RoundImplementation on creation to set the round for which the payout strategy is to be used
+
+
+
+
+### initialize
+
+```solidity
+function initialize() external nonpayable
+```
+
+
 
 
 
@@ -243,6 +254,22 @@ Emitted when funds are withdrawn from the payout contract
 |---|---|---|
 | tokenAddress `indexed` | address | undefined |
 | amount  | uint256 | undefined |
+
+### Initialized
+
+```solidity
+event Initialized(uint8 version)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| version  | uint8 | undefined |
 
 
 

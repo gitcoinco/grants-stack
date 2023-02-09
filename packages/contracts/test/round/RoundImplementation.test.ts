@@ -6,8 +6,14 @@ import { BytesLike, formatBytes32String, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { encodeRoundParameters } from "../../scripts/utils";
-import { MockERC20, QuadraticFundingVotingStrategyImplementation, RoundFactory, RoundFactory__factory, RoundImplementation } from "../../typechain";
-import { MerklePayoutStrategy } from "../../typechain/MerklePayoutStrategy";
+import {
+  MockERC20,
+  MerklePayoutStrategyImplementation,
+  QuadraticFundingVotingStrategyImplementation,
+  RoundFactory,
+  RoundFactory__factory,
+  RoundImplementation,
+} from "../../typechain";
 
 type MetaPtr = {
   protocol: BigNumberish;
@@ -31,7 +37,7 @@ describe("RoundImplementation", function () {
   let votingStrategyArtifact: Artifact;
 
   // Payout Strategy
-  let payoutStrategyContract: MerklePayoutStrategy;
+  let payoutStrategyContract: MerklePayoutStrategyImplementation;
   let payoutStrategyArtifact: Artifact;
 
   // Variable declarations
@@ -62,8 +68,8 @@ describe("RoundImplementation", function () {
     votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
 
     // Deploy PayoutStrategy contract
-    payoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategy');
-    payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+    payoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
+    payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
   })
 
@@ -87,7 +93,7 @@ describe("RoundImplementation", function () {
       // Deploy voting strategy
       votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
       // Deploy PayoutStrategy contract
-      payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+      payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
       let amount = 100;
 
@@ -202,7 +208,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
@@ -249,7 +255,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
@@ -296,7 +302,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
@@ -343,7 +349,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
@@ -390,7 +396,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
 
@@ -766,7 +772,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         let amount = 100;
 
@@ -880,7 +886,7 @@ describe("RoundImplementation", function () {
         // Deploy voting strategy
         votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
         // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         let amount = 100;
 
