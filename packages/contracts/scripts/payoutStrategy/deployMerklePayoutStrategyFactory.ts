@@ -1,4 +1,4 @@
-// This script deals with deploying the ProgramFactory on a given network
+// This script deals with deploying the MerklePayoutStrategyFactory on a given network
 import hre, { ethers, upgrades } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import * as utils from "../utils";

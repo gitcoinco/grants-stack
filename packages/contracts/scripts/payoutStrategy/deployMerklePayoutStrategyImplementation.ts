@@ -1,4 +1,4 @@
-// This script deals with deploying the ProgramImplementation on a given network
+// This script deals with deploying the MerklePayoutStrategyImplementation on a given network
 import hre, { ethers } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import * as utils from "../utils";
