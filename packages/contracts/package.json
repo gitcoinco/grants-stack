@@ -38,9 +38,9 @@
     "create-qf-contract": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
     "cast-qf-vote": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network",
     "// payout-deploy-scripts": "echo '//-- Payout deploy Script --//'",
-    "deploy-merkle-contract": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategy.ts --network",
+    "deploy-merkle-contract-factory": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategyFactory.ts --network",
     "deploy-merkle-contract-implementation": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategyImplementation.ts --network",
-    "deploy-merkle-contract-factory": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategyFactory.ts --network"
+    "deploy-merkle-contract": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategy.ts --network"
   },
   "devDependencies": {
     "@ethersproject/constants": "^5.6.1",
