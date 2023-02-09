@@ -594,6 +594,7 @@ export default function Form({
             {!preview ? (
               <Button
                 variant={ButtonVariants.primary}
+                disabled={!isValidProjectSelected}
                 onClick={() => handlePreviewClick()}
               >
                 Preview Application
