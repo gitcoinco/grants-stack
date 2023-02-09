@@ -35,10 +35,6 @@ describe("RoundImplementation", function () {
   let payoutStrategyArtifact: Artifact;
 
   // Variable declarations
-
-  let protocolTreasury: string;
-
-  let bonusProtocolFeePercentage: Number;
   let amount: BigNumberish;
   let token: string;
 
@@ -94,7 +90,6 @@ describe("RoundImplementation", function () {
       payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
 
       let amount = 100;
-      let feePercentage = 10;
 
       const initAddress = [
         votingStrategyContract.address, // votingStrategy
@@ -121,7 +116,6 @@ describe("RoundImplementation", function () {
       let params = [
         initAddress,
         initRoundTime,
-        feePercentage,
         amount,
         token,
         initMetaPtr,
@@ -137,9 +131,6 @@ describe("RoundImplementation", function () {
 
     before(async() => {
 
-      protocolTreasury = Wallet.createRandom().address;
-
-      bonusProtocolFeePercentage = 10;
       amount = 100;
       token = Wallet.createRandom().address;
 
@@ -186,7 +177,6 @@ describe("RoundImplementation", function () {
         expect(await roundImplementation.roundStartTime()).equals(_currentBlockTimestamp + 500);
         expect(await roundImplementation.roundEndTime()).equals(_currentBlockTimestamp + 1000);
 
-        expect(await roundImplementation.bonusProtocolFeePercentage()).equals(bonusProtocolFeePercentage);
         expect(await roundImplementation.amount()).equals(amount);
         expect(await roundImplementation.token()).equals(token);
 
@@ -241,7 +231,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -289,7 +278,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -337,7 +325,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -385,7 +372,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -433,7 +419,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -474,7 +459,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          bonusProtocolFeePercentage,
           amount,
           token,
           initMetaPtr,
@@ -543,58 +527,6 @@ describe("RoundImplementation", function () {
         ).to.revertedWith("round has ended");
       });
     })
-
-    describe('test: updateBonusProtocolFeePercentage', () => {
-      let _currentBlockTimestamp: number;
-
-      beforeEach(async () => {
-
-        // reset protocol fee on factory to 0
-        await roundFactoryContract.updateProtocolFeePercentage(0);
-
-        _currentBlockTimestamp = (await ethers.provider.getBlock(
-          await ethers.provider.getBlockNumber())
-        ).timestamp;
-
-        await initRound(_currentBlockTimestamp);
-      });
-
-      it("SHOULD update bonusProtocolFeePercentage after successfully invoking updateBonusProtocolFeePercentage", async () => {
-        await roundImplementation.updateBonusProtocolFeePercentage(15);
-
-        expect(await roundImplementation.bonusProtocolFeePercentage()).to.equal(15);
-      });
-
-      it("SHOULD emit BonusProtocolFeePercentageUpdated on successfully invoking updateBonusProtocolFeePercentage", async () => {
-        const newBonusProtocolFeePercentage = 20;
-        const txn = await roundImplementation.updateBonusProtocolFeePercentage(newBonusProtocolFeePercentage);
-
-        expect(txn)
-          .to.emit(roundImplementation, 'BonusProtocolFeePercentageUpdated')
-          .withArgs(
-            newBonusProtocolFeePercentage
-          );
-      });
-
-      it("SHOULD revert if invoked by user who is not round operator", async () => {
-        const [_, notRoundOperator] = await ethers.getSigners();
-
-        const tx = roundImplementation.connect(notRoundOperator).updateBonusProtocolFeePercentage(15);
-
-        await expect(tx).to.revertedWith(
-          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
-        );
-      });
-
-      it("SHOULD revert if invoked after round has ended", async () => {
-
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 18000])
-
-        const tx = roundImplementation.updateBonusProtocolFeePercentage(15);
-
-        await expect(tx).to.revertedWith("round has ended");
-      });
-    });
 
     describe('test: updateRoundMetaPtr', () => {
 
@@ -837,7 +769,6 @@ describe("RoundImplementation", function () {
         payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
 
         let amount = 100;
-        let feePercentage = 10;
 
         const initAddress = [
           votingStrategyContract.address, // votingStrategy
@@ -864,7 +795,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          feePercentage,
           amount,
           token,
           initMetaPtr,
@@ -953,7 +883,6 @@ describe("RoundImplementation", function () {
         payoutStrategyContract = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
 
         let amount = 100;
-        let feePercentage = 10;
 
         const initAddress = [
           votingStrategyContract.address, // votingStrategy
@@ -980,7 +909,6 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          feePercentage,
           amount,
           token,
           initMetaPtr,

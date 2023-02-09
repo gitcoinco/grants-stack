@@ -38,9 +38,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice Emitted when amount is updated
   event AmountUpdated(uint256 newAmount);
 
-  /// @notice Emitted when fee percentage is updated
-  event BonusProtocolFeePercentageUpdated(uint256 newFeePercentage);
-
   /// @notice Emitted when the round metaPtr is updated
   event RoundMetaPtrUpdated(MetaPtr oldMetaPtr, MetaPtr newMetaPtr);
 
@@ -94,9 +91,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
   /// @notice Payout Strategy Contract Address
   IPayoutStrategy public payoutStrategy;
-
-  /// @notice Bonus protocol fee percentage set by the round operator
-  uint8 public bonusProtocolFeePercentage;
 
   /// @notice Unix timestamp from when round can accept applications
   uint256 public applicationsStartTime;
@@ -171,7 +165,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     (
       InitAddress memory _initAddress,
       InitRoundTime memory _initRoundTime,
-      uint8 _bonusProtocolFeePercentage,
       uint256 _amount,
       address _token,
       InitMetaPtr memory _initMetaPtr,
@@ -180,7 +173,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       encodedParameters, (
       (InitAddress),
       (InitRoundTime),
-      uint8,
       uint256,
       address,
       (InitMetaPtr),
@@ -226,7 +218,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     payoutStrategy.init();
 
     amount = _amount;
-    bonusProtocolFeePercentage = _bonusProtocolFeePercentage;
     roundMetaPtr = _initMetaPtr.roundMetaPtr;
     applicationMetaPtr = _initMetaPtr.applicationMetaPtr;
 
@@ -248,15 +239,6 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     amount = newAmount;
 
     emit AmountUpdated(newAmount);
-  }
-
-  // @notice Update bonusProtocolFeePercenatage (only by ROUND_OPERATOR_ROLE)
-  /// @param newBonusProtocolFeePercenatage new bonusProtocolFeePercenatage
-  function updateBonusProtocolFeePercentage(uint8 newBonusProtocolFeePercenatage) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
-
-    bonusProtocolFeePercentage = newBonusProtocolFeePercenatage;
-
-    emit BonusProtocolFeePercentageUpdated(bonusProtocolFeePercentage);
   }
 
   // @notice Update roundMetaPtr (only by ROUND_OPERATOR_ROLE)
@@ -369,9 +351,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   function payout(bytes[] memory encodedPayoutData) external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
     uint256 fundsInContract = _getTokenBalance();
-    // total fee = protocol fee + bonus protocol fee
-    uint8 totalFeePercentage = roundFactory.protocolFeePercentage() + bonusProtocolFeePercentage;
-    uint256 feeAmount = (amount * totalFeePercentage / 100);
+    uint256 feeAmount = (amount * roundFactory.protocolFeePercentage() / 100);
 
     // total amount to be present in the contract
     uint256 expectedAmount = amount + feeAmount;

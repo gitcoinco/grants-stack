@@ -1,3 +1,3 @@
 module.exports = {
-  skipFiles: ['dummy/']
+  skipFiles: ['dummy/', '/utils/MockERC20.sol']
 };
