@@ -147,23 +147,6 @@ function applyToRound(bytes32 projectID, MetaPtr newApplicationMetaPtr) external
 | projectID | bytes32 | undefined |
 | newApplicationMetaPtr | MetaPtr | undefined |
 
-### bonusProtocolFeePercentage
-
-```solidity
-function bonusProtocolFeePercentage() external view returns (uint8)
-```
-
-Bonus protocol fee percentage set by the round operator
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint8 | undefined |
-
 ### getRoleAdmin
 
 ```solidity
@@ -545,22 +528,6 @@ Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
 |---|---|---|
 | newApplicationsStartTime | uint256 | new applicationsStartTime |
 
-### updateBonusProtocolFeePercentage
-
-```solidity
-function updateBonusProtocolFeePercentage(uint8 newBonusProtocolFeePercenatage) external nonpayable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| newBonusProtocolFeePercenatage | uint8 | new bonusProtocolFeePercenatage |
-
 ### updateProjectsMetaPtr
 
 ```solidity
@@ -728,22 +695,6 @@ Emitted when application start time is updated
 |---|---|---|
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
-
-### BonusProtocolFeePercentageUpdated
-
-```solidity
-event BonusProtocolFeePercentageUpdated(uint256 newFeePercentage)
-```
-
-Emitted when fee percentage is updated
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| newFeePercentage  | uint256 | undefined |
 
 ### Initialized
 

@@ -209,7 +209,6 @@ describe("RoundFactory", function () {
         params = [
           initAddress,
           initRoundTime,
-          feePercentage,
           amount,
           token,
           initMetaPtr,
