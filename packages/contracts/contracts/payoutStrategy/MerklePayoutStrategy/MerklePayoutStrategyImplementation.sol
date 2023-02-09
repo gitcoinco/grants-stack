@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.17;
 
-import "../payoutStrategy/IPayoutStrategy.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "../IPayoutStrategy.sol";
+import "../../utils/MetaPtr.sol";
 
-import "../utils/MetaPtr.sol";
 
 /**
  * @notice Merkle Payout Strategy contract which is deployed once per round
  * and is used to upload the final match distribution.
  *
  */
-contract MerklePayoutStrategy is IPayoutStrategy {
+contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
   string public constant VERSION = "0.2.0";
 
@@ -25,6 +26,10 @@ contract MerklePayoutStrategy is IPayoutStrategy {
   /// @notice Emitted when the distribution is updated
   event DistributionUpdated(bytes32 merkleRoot, MetaPtr distributionMetaPtr);
 
+
+  function initialize() external initializer {
+    // empty initializer
+  }
 
   // --- Core methods ---
 
