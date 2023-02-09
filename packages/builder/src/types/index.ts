@@ -145,12 +145,17 @@ export interface JWK {
   n: string;
 }
 
+export type ProjectRequirement = boolean;
+
 export interface RoundApplicationMetadata {
   lastUpdatedOn: number;
   applicationSchema: RoundApplicationQuestion[];
   application_schema: RoundApplicationQuestion[];
   projectQuestionId?: number;
   recipientQuestionId?: number;
+  projectRequirements?: {
+    [key: string]: ProjectRequirement;
+  };
 }
 
 export type Round = {

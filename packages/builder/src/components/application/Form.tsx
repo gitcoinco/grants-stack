@@ -1,18 +1,25 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import {
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import {
   resetApplicationError,
   submitApplication,
 } from "../../actions/roundApplication";
+import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
+import { editPath } from "../../routes";
 import {
   AddressType,
   ChangeHandlers,
+  CredentialProvider,
   DynamicFormInputs,
   Metadata,
   ProjectOption,
@@ -37,19 +44,6 @@ const validation = {
   messages: [""],
   valid: false,
   errorCount: 0,
-};
-
-const projectQuestion = {
-  question: "Select a project you would like to apply for funding:",
-  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
-  required: true,
-};
-
-const recipientAddressQuestion = {
-  question: "Recipient Address",
-  type: "RECIPIENT",
-  required: true,
-  info: "Address that will receive funds",
 };
 
 enum ValidationStatus {
@@ -94,29 +88,35 @@ export default function Form({
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
-    let selectedProjectMetadata: Metadata | undefined;
-    if (selectedProjectID !== undefined && selectedProjectID !== "") {
-      selectedProjectMetadata =
-        allProjectMetadata[Number(selectedProjectID)]?.metadata;
-    }
 
     return {
       projectIDs: state.projects.ids,
       allProjectMetadata,
-      selectedProjectMetadata,
       chainID,
     };
   }, shallowEqual);
 
+  let selectedProjectMetadata: Metadata | undefined;
+
+  if (selectedProjectID !== undefined && selectedProjectID !== "") {
+    selectedProjectMetadata =
+      props.allProjectMetadata[selectedProjectID]?.metadata;
+  }
+
+  const twitterCredentialValidation = useValidateCredential(
+    selectedProjectMetadata?.credentials?.twitter,
+    CredentialProvider.Twitter,
+    selectedProjectMetadata?.projectTwitter
+  );
+
+  const githubCredentialValidation = useValidateCredential(
+    selectedProjectMetadata?.credentials?.github,
+    CredentialProvider.Github,
+    selectedProjectMetadata?.projectGithub
+  );
+
   const chainInfo = chains.find((i) => i.id === props.chainID);
-  const schema = [
-    { ...projectQuestion, id: roundApplication.projectQuestionId! },
-    {
-      ...recipientAddressQuestion,
-      id: roundApplication.recipientQuestionId!,
-    },
-    ...roundApplication.applicationSchema,
-  ];
+  const schema = roundApplication.applicationSchema;
 
   useEffect(() => {
     if (publishedApplication === undefined) {
@@ -220,6 +220,15 @@ export default function Form({
     handleSubmitApplication();
   };
 
+  const editProjectPath = (id: string) => {
+    const {
+      chainId,
+      registryAddress,
+      id: projectId,
+    } = getProjectURIComponents(id);
+    return editPath(chainId, registryAddress, projectId);
+  };
+
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
       const { chainId } = getProjectURIComponents(id);
@@ -240,14 +249,55 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
+  const projectRequirements: {
+    [key: string]: { check: () => boolean; message: string };
+  } = {
+    twitter: {
+      message: "Project Twitter is required.",
+      check: () =>
+        !!selectedProjectMetadata?.projectTwitter &&
+        selectedProjectMetadata?.projectTwitter.length > 0,
+    },
+    twitterVerification: {
+      message: "Verification of project Twitter is required.",
+      check: () =>
+        !twitterCredentialValidation.isLoading &&
+        twitterCredentialValidation.isValid,
+    },
+    github: {
+      message: "Project Github is required.",
+      check: () =>
+        !!selectedProjectMetadata?.projectGithub &&
+        selectedProjectMetadata?.projectGithub.length > 0,
+    },
+    githubVerification: {
+      message: "Verification of project Github is required.",
+      check: () =>
+        !githubCredentialValidation.isLoading &&
+        githubCredentialValidation.isValid,
+    },
+  };
+
+  const projectRequirementsResult = Object.entries(
+    roundApplication.projectRequirements ?? {}
+  ).flatMap(([requirementName, option]) => {
+    const requirement = projectRequirements[requirementName]!;
+
+    if (option && !requirement.check()) {
+      return [requirement.message];
+    }
+
+    return [];
+  });
+
+  const isValidProjectSelected =
+    selectedProjectID && projectRequirementsResult.length === 0;
+
   return (
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         {schema.map((input) => {
-          if (
-            input.type !== "PROJECT" &&
-            !formInputs[roundApplication.projectQuestionId!]
-          ) {
+          if (input.type !== "PROJECT" && !isValidProjectSelected) {
             return null;
           }
 
@@ -293,7 +343,7 @@ export default function Form({
                   </div>
                   <div>
                     <Toggle
-                      projectMetadata={props.selectedProjectMetadata}
+                      projectMetadata={selectedProjectMetadata}
                       showProjectDetails={showProjectDetails}
                     />
                   </div>
@@ -459,6 +509,34 @@ export default function Form({
               );
           }
         })}
+        {selectedProjectID && projectRequirementsResult.length > 0 && (
+          <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
+            <div className="flex flex-1 justify-start items-start">
+              <div className="text-gitcoin-violet-500 fill-current w-6 shrink-0 mx-4">
+                <InformationCircleIcon />
+              </div>
+              <div className="text-black text-sm">
+                <p className="text-primary-text pb-1 font-medium">
+                  Some information of your project is required to apply to this
+                  round. Complete the required details{" "}
+                  <Link
+                    className="text-link"
+                    target="_blank"
+                    to={editProjectPath(selectedProjectID)}
+                  >
+                    here
+                  </Link>{" "}
+                  and refresh this page.
+                </p>
+                <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
+                  {projectRequirementsResult.map((msg) => (
+                    <li key={msg}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
         {addressType &&
           ((formInputs.isSafe === "Yes" && !addressType.isContract) ||
             (formInputs.isSafe === "No" && addressType.isContract)) && (

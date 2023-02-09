@@ -17,6 +17,19 @@ import {
 } from "../types";
 import { getProviderByChainId } from "../utils/utils";
 
+const projectQuestion = {
+  question: "Select a project you would like to apply for funding:",
+  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
+  required: true,
+};
+
+const recipientAddressQuestion = {
+  question: "Recipient Address",
+  type: "RECIPIENT",
+  required: true,
+  info: "Address that will receive funds",
+};
+
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
   type: typeof ROUNDS_LOADING_ROUND;
@@ -259,6 +272,7 @@ export const loadRound =
     let recipientQuestionId;
     try {
       const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
+
       applicationMetadata = JSON.parse(resp);
 
       if (applicationMetadata.applicationSchema === undefined) {
@@ -267,8 +281,17 @@ export const loadRound =
       }
 
       recipientQuestionId = applicationMetadata.applicationSchema.length;
+      applicationMetadata.applicationSchema.unshift({
+        ...recipientAddressQuestion,
+        id: recipientQuestionId,
+      });
       applicationMetadata.recipientQuestionId = recipientQuestionId;
-      projectQuestionId = applicationMetadata.applicationSchema.length + 1;
+
+      projectQuestionId = applicationMetadata.applicationSchema.length;
+      applicationMetadata.applicationSchema.unshift({
+        ...projectQuestion,
+        id: projectQuestionId,
+      });
       applicationMetadata.projectQuestionId = projectQuestionId;
     } catch (e) {
       datadogRum.addError(e);
