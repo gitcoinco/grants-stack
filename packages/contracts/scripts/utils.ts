@@ -28,7 +28,6 @@ export const encodeRoundParameters = (params: any[]): string => {
       "tuple(address votingStrategy, address payoutStrategy)",
       "tuple(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
       "uint256",
-      "uint256",
       "address",
       "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
       "tuple(address[] adminRoles, address[] roundOperators)"
