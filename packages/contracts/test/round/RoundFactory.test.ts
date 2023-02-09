@@ -6,7 +6,12 @@ import { ContractFactory, Wallet } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
-import { MerklePayoutStrategy, QuadraticFundingVotingStrategyImplementation, RoundFactory, RoundImplementation } from "../../typechain/";
+import {
+  MerklePayoutStrategyImplementation,
+  QuadraticFundingVotingStrategyImplementation,
+  RoundFactory,
+  RoundImplementation,
+} from "../../typechain/";
 import { encodeRoundParameters } from "../../scripts/utils";
 
 describe("RoundFactory", function () {
@@ -27,7 +32,7 @@ describe("RoundFactory", function () {
   let votingStrategyArtifact: Artifact;
 
   // Payout Strategy
-  let payoutStrategy: MerklePayoutStrategy;
+  let payoutStrategy: MerklePayoutStrategyImplementation;
   let payoutStrategyArtifact: Artifact;
 
   let protocolTreasury = Wallet.createRandom();
@@ -172,8 +177,8 @@ describe("RoundFactory", function () {
         votingStrategy = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
 
         // Deploy PayoutStrategy contract
-        payoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategy');
-        payoutStrategy = <MerklePayoutStrategy>await deployContract(user, payoutStrategyArtifact, []);
+        payoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
+        payoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
         // Deploy RoundFactory contract
         roundContractFactory = await ethers.getContractFactory('RoundFactory');
