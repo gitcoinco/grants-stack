@@ -38,6 +38,7 @@ import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import { Button } from "common/src/styles";
 import InfoModal from "../common/InfoModal";
+import AddQeustionModal from "./AddQuestionModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -311,6 +312,7 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
+          <AddQeustionModal show={true} onClose={() => console.log("hello")} />
         </div>
       </div>
     </div>
