@@ -1,7 +1,7 @@
-// This script deals with updating
+// This script deals with linking the implemention to the factory contract
 import hre, { ethers } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
-import { PayoutParams } from "../config/payoutStrategy.config";
+import { MerklePayoutParams } from "../config/payoutStrategy.config";
 import * as utils from "../utils";
 
 utils.assertEnvironment();
@@ -12,20 +12,18 @@ export async function main(
 ) {
   const network = hre.network;
 
-  const networkParams = PayoutParams[network.name];
+  const networkParams = MerklePayoutParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }
 
   if (!merklePayoutStrategyFactoryContract) {
-    merklePayoutStrategyFactoryContract =
-      networkParams.merklePayoutStrategyFactoryContract;
+    merklePayoutStrategyFactoryContract = networkParams.factory;
   }
 
   if (!merklePayoutStrategyImplementationContract) {
-    merklePayoutStrategyImplementationContract =
-      networkParams.merklePayoutStrategyImplementationContract;
+    merklePayoutStrategyImplementationContract = networkParams.implementation;
   }
 
   if (!merklePayoutStrategyFactoryContract) {
@@ -46,14 +44,13 @@ export async function main(
   await confirmContinue({
     contract: "MerklePayoutStrategyFactory",
     merklePayoutStrategyFactoryContract: merklePayoutStrategyFactoryContract,
-    merklePayoutStrategyImplementationContract:
-      merklePayoutStrategyImplementationContract,
+    merklePayoutStrategyImplementationContract: merklePayoutStrategyImplementationContract,
     network: network.name,
     chainId: network.config.chainId,
   });
 
-  // Update RoundImplementation
-  const updateTx = await merkleFactory.updateMerklePayoutStrategyContract(
+  // Update PayoutImplementation
+  const updateTx = await merkleFactory.updatePayoutImplementation(
     merklePayoutStrategyImplementationContract
   );
   await updateTx.wait();
