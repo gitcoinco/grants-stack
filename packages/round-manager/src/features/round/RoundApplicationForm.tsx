@@ -204,6 +204,7 @@ export function RoundApplicationForm(props: {
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
+        version: VERSION,
         applicationSchema: {
           questions: generateApplicationSchema(
             data.applicationMetadata?.questions
@@ -220,7 +221,6 @@ export function RoundApplicationForm(props: {
 
       await createRound({
         roundMetadataWithProgramContractAddress,
-        version: VERSION,
         applicationQuestions,
         round,
       });

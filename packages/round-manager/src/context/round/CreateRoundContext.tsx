@@ -37,8 +37,8 @@ export interface CreateRoundState {
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
-  version: string;
   applicationQuestions: {
+    version: string;
     lastUpdatedOn: number;
     applicationSchema: {
       questions: SchemaQuestion[],
