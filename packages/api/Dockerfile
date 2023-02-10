@@ -1,10 +1,10 @@
-FROM node:18-slim as base
+FROM boudra/pnpm-node16:latest as base
 
 RUN apt-get update && apt-get install -y openssl libssl-dev
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 COPY prisma/ prisma/
 COPY src/ src/
 COPY bin/ bin/
@@ -18,8 +18,8 @@ RUN pnpm install
 
 COPY . .
 
-RUN pnpm build
+RUN pnpm run build
 
 EXPOSE 8000
 
-CMD ["yarn", "start"]
+CMD ["pnpm", "start"]
