@@ -47,7 +47,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <span className="">
             <Switch.Label
               as="span"
-              className="text-sm font-medium text-gray-900"
+              className="text-sm font-medium text-grey-100"
               passive
             >
               {optional ? (
@@ -82,15 +82,15 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <span className="">
             <Switch.Label
               as="span"
-              className="text-sm font-medium text-gray-900"
+              className="text-sm font-medium text-grey-100"
               passive
             >
               {encrypted ? (
                 <p className="text-xs mr-2 text-right text-violet-400">
-                  Not Encrypted
+                  Encrypted
                 </p>
               ) : (
-                <p className="text-xs mr-2 text-right">Encrypted</p>
+                <p className="text-xs mr-2 text-right">Not Encrypted</p>
               )}
             </Switch.Label>
           </span>
@@ -117,15 +117,15 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <span className="">
             <Switch.Label
               as="span"
-              className="text-sm font-medium text-gray-900"
+              className="text-sm font-medium text-grey-100"
               passive
             >
               {showExplorer ? (
                 <p className="text-xs mr-2 text-right text-violet-400">
-                  Hidden From Explorer
+                  Show in Explorer
                 </p>
               ) : (
-                <p className="text-xs mr-2 text-right">Shown in Explorer</p>
+                <p className="text-xs mr-2 text-right">Hidden from Explorer</p>
               )}
             </Switch.Label>
           </span>
@@ -147,7 +147,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
 
   const renderSwitches = () => {
     return (
-      <div className="flex flex-row justify-between mt-6">
+      <div className="flex flex-row justify-between mt-6 w-[360px]">
         {optionalSwitch()}
         {encryptionToggle()}
         {explorerToggle()}
@@ -214,6 +214,11 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
       );
     };
 
+    // todo:
+    const addOption = () => {
+      console.log("add option");
+    };
+
     return (
       <div className="flex flex-col">
         <span className="mb-2">Question Title</span>
@@ -231,7 +236,10 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             {option(2)}
             {option(3)}
           </div>
-          <button className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2">
+          <button
+            onClick={addOption}
+            className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
+          >
             <span className="flex flex-row justify-center">
               <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
               <span className="ml-2 text-violet-400 font-medium">Add Option</span>
