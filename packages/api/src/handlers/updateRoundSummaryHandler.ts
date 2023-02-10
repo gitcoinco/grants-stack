@@ -111,7 +111,7 @@ export const getRoundSummary = async (
       // fetch contributions
       let contributions = await fetchQFContributionsForRound(
         chainId,
-        votingStrategyId,
+        votingStrategyId
       );
 
       contributions = await hotfixForRounds(roundId, contributions);
