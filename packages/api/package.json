@@ -50,7 +50,7 @@
     "node-cache": "^5.1.2",
     "isomorphic-fetch": "^3.0.0",
     "yup": "^0.32.11",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^2.6.9"
   },
   "lint-staged": {
     "*.{ts,tsx,md}": [
@@ -68,7 +68,7 @@
     ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
-      "/api/node_modules/(?!(@spruceid))/"
+      "/api/node_modules/(?!(@spruceid|node-fetch))/"
     ]
   }
 }
