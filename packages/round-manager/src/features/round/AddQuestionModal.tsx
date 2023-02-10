@@ -1,8 +1,8 @@
 import { Dialog, Listbox, Switch } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/outline";
 import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon, XIcon } from "@heroicons/react/solid";
-import React from "react";
 import { useState } from "react";
+import BaseSwitch from "../common/BaseSwitch";
 
 type AddQuestionModalProps = {
   show: boolean;
@@ -36,117 +36,29 @@ const questions: Question[] = [
   { id: "5", text: "Dropdown", type: QuestionType.DROPDOWN },
 ];
 
+// eslint-disable-next-line prefer-const
+let options = [];
+
 function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   const [isOpen, setIsOpen] = useState(show);
   const [optional, setOptional] = useState(false);
   const [encrypted, setEncrypted] = useState(false);
   const [showExplorer, setShowExplorer] = useState(false);
 
+  // toggles for the modal
   const optionalSwitch = () => {
-    return (
-      <Switch.Group>
-        <div className="flex items-center mt-7">
-          <span className="">
-            <Switch.Label
-              as="span"
-              className="text-sm font-medium text-grey-100"
-              passive
-            >
-              {optional ? (
-                <p className="text-xs mr-2 text-right text-violet-400">
-                  *Required
-                </p>
-              ) : (
-                <p className="text-xs mr-2 text-right">Optional</p>
-              )}
-            </Switch.Label>
-          </span>
-          <Switch
-            checked={optional}
-            onChange={setOptional}
-            className={`${optional ? 'bg-violet-400' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2`}
-          >
-            <span
-              className={`${optional ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />
-          </Switch>
-        </div>
-      </Switch.Group>
-    );
+    return <BaseSwitch activeLabel="*Required" inactiveLabel="Optional" value={optional} handler={setOptional} />;
   }
 
   const encryptionToggle = () => {
-    return (
-      <Switch.Group>
-        <div className="flex items-center mt-7">
-          <span className="">
-            <Switch.Label
-              as="span"
-              className="text-sm font-medium text-grey-100"
-              passive
-            >
-              {encrypted ? (
-                <p className="text-xs mr-2 text-right text-violet-400">
-                  Encrypted
-                </p>
-              ) : (
-                <p className="text-xs mr-2 text-right">Not Encrypted</p>
-              )}
-            </Switch.Label>
-          </span>
-          <Switch
-            checked={encrypted}
-            onChange={setEncrypted}
-            className={`${encrypted ? 'bg-violet-400' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2`}
-          >
-            <span
-              className={`${encrypted ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />
-          </Switch>
-        </div>
-      </Switch.Group>
-    );
+    return <BaseSwitch activeLabel="Encrypted" inactiveLabel="Not Encrypted" value={encrypted} handler={setEncrypted} />;
   }
 
   const explorerToggle = () => {
-    return (
-      <Switch.Group>
-        <div className="flex items-center mt-7">
-          <span className="">
-            <Switch.Label
-              as="span"
-              className="text-sm font-medium text-grey-100"
-              passive
-            >
-              {showExplorer ? (
-                <p className="text-xs mr-2 text-right text-violet-400">
-                  Show in Explorer
-                </p>
-              ) : (
-                <p className="text-xs mr-2 text-right">Hidden from Explorer</p>
-              )}
-            </Switch.Label>
-          </span>
-          <Switch
-            checked={showExplorer}
-            onChange={setShowExplorer}
-            className={`${showExplorer ? 'bg-violet-400' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2`}
-          >
-            <span
-              className={`${showExplorer ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-            />
-          </Switch>
-        </div>
-      </Switch.Group>
-    );
+    return <BaseSwitch activeLabel="Show in Explorer" inactiveLabel="Hide in Explorer" value={showExplorer} handler={setShowExplorer} />;
   }
 
+  // renders the toggles in a group for ui
   const renderSwitches = () => {
     return (
       <div className="flex flex-row justify-between mt-6 w-[360px]">
@@ -188,7 +100,13 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
     );
   }
 
-  function MultipleChoice() {
+  // todo: figure out where to put this
+  const addOption = () => {
+    console.log("add option");
+    options.push({ id: options.length, text: "Option", parent: QuestionType.CHECKBOXES });
+  };
+
+  const Option = ({ index }: { index: number }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deleteOptionClick = (index: number) => {
       // todo: delete question
@@ -200,92 +118,36 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
         </button>
       )
-    };
-
-    const option = (index: number) => {
-      return (
-        <div className="flex flex-row mt-2">
-          <span className="flex mt-2 ml-5 mr-[22px]">Option {index}</span>
-          <input
-            className="border border-grey-100 rounded-sm ui-active:bg-violet-400 w-72"
-            type="text"
-            placeholder="Answer Option"
-          />
-          {renderDeleteOption(index)}
-        </div>
-      );
-    };
-
-    // todo:
-    const addOption = () => {
-      console.log("add option");
     };
 
     return (
-      <div className="flex flex-col">
-        <span className="mb-2">Question Title</span>
-        <div className="border-l pl-2">
-          <div className="flex flex-row mt-2">
-            <input
-              type="text"
-              className="border border-grey-100 rounded-sm ui-active:border-violet-400 w-full"
-              placeholder="Enter Question Text"
-            />
-          </div>
-          <div className="flex flex-col">
-            {/* todo: */}
-            {option(1)}
-            {option(2)}
-            {option(3)}
-          </div>
-          <button
-            onClick={addOption}
-            className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
-          >
-            <span className="flex flex-row justify-center">
-              <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
-              <span className="ml-2 text-violet-400 font-medium">Add Option</span>
-            </span>
-          </button>
-        </div>
-        {renderSwitches()}
+      <div className="flex flex-row mt-2">
+        <span className="flex mt-2 ml-5 mr-[22px]">Option {index}</span>
+        <input
+          className="border border-grey-100 rounded-sm ui-active:bg-violet-400 w-72"
+          type="text"
+          placeholder="Answer Option"
+        />
+        {renderDeleteOption(index)}
       </div>
     );
-  }
+  };
 
-  function Checkboxes() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const deleteOptionClick = (index: number) => {
-      // todo: delete question
-    };
+  const AddOptionButton = () => {
+    return (
+      <button
+        onClick={addOption}
+        className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
+      >
+        <span className="flex flex-row justify-center">
+          <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
+          <span className="ml-2 text-violet-400 font-medium">Add Option</span>
+        </span>
+      </button>
+    );
+  };
 
-    const checkboxItem = (index: number) => {
-      return (
-        <div className="flex flex-column mt-2">
-          <span className="flex mt-2 ml-5 mr-[22px]">Option {index}</span>
-          <input
-            className="border border-grey-100 rounded-sm focus:border-violet-400 w-72"
-            type="text"
-            placeholder="Answer Option"
-          />
-          {renderDeleteOption(index)}
-        </div>
-      );
-    };
-
-    const renderDeleteOption = (index: number) => {
-      return (
-        <button onClick={() => deleteOptionClick(index)}>
-          <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
-        </button>
-      )
-    };
-
-    // todo:
-    const addOption = () => {
-      console.log("add option");
-    };
-
+  function AddOptions() {
     return (
       <div className="flex flex-col mt-6">
         <hr className="mb-6" />
@@ -297,51 +159,27 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             placeholder="Enter Question Title"
           />
           <div className="flex flex-col">
-            {checkboxItem(1)}
-            {checkboxItem(2)}
-            {checkboxItem(3)}
+            <Option index={1} />
+            <Option index={2} />
+            <Option index={3} />
           </div>
-          <button
-            onClick={addOption}
-            className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
-          >
-            <span className="flex flex-row justify-center">
-              <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
-              <span className="ml-2 text-violet-400 font-medium">Add Option</span>
-            </span>
-          </button>
+          <AddOptionButton />
         </div>
         {renderSwitches()}
       </div>
     );
   }
 
+  function MultipleChoice() {
+    return <AddOptions />;
+  }
+
+  function Checkboxes() {
+    return <AddOptions />;
+  }
+
   function Dropdown() {
-    return (
-      <div className="flex flex-col mt-6">
-        <hr className="mb-6" />
-        <span className="mb-2">Question Text</span>
-        <textarea className="border border-grey-100 rounded-sm active:border-violet-400" placeholder="enter question text" />
-        <span className="mb-2 mt-6">Answer Options</span>
-        <div className="flex flex-col">
-          <input
-            className="border border-grey-100 rounded-sm active:border-violet-400"
-            type="text"
-            placeholder="Answer Option"
-          />
-          <input
-            className="border border-grey-100 rounded-sm active:border-violet-400"
-            type="text"
-            placeholder="Answer Option"
-          />
-          <input
-            className="border border-grey-100 rounded-sm active:border-violet-400"
-            type="text"
-            placeholder="Answer Option"
-          />
-        </div>
-      </div>
-    );
+    return <AddOptions />;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
