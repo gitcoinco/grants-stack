@@ -8,7 +8,6 @@ const generateSteps = (
 ): Array<(props: any) => JSX.Element> =>
   Array.from(
     { length: numberOfSteps || randomInt(1, 20) },
-    // eslint-disable-next-line react/display-name
     (_, index) => () => <div data-testid={`${index + 1}-step`} /> // 1-indexed to match initialCurrentStep convention
   );
 
