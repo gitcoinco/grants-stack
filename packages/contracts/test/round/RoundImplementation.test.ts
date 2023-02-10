@@ -1315,6 +1315,17 @@ describe("RoundImplementation", function () {
 
     });
 
+    describe('test: withdraw', () => {
+      it("SHOULD revert when not invoked by round operator", async () => {
+      });
+
+      it("SHOULD revert when trying to withdraw round token", async () => {
+      });
+
+      it("SHOULD drain and trasnfer token funds from contract to recipent ", async () => {
+      });
+    });
+
   })
 
 });

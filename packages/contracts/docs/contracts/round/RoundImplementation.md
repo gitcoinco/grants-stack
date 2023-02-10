@@ -620,6 +620,23 @@ Voting Strategy Contract Address
 |---|---|---|
 | _0 | contract IVotingStrategy | undefined |
 
+### withdraw
+
+```solidity
+function withdraw(address tokenAddress, address payable recipent) external nonpayable
+```
+
+Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress | address | token address |
+| recipent | address payable | undefined |
+
 
 
 ## Events
