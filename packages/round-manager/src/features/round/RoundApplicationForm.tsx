@@ -48,10 +48,14 @@ const payoutQuestion: QuestionOptions = {
 };
 
 const projectRequirementsInitial: ProjectRequirements = {
-  twitter: false,
-  twitterVerification: false,
-  github: false,
-  githubVerification: false,
+  twitter: {
+    required: false,
+    verification: false,
+  },
+  github: {
+    required: false,
+    verification: false,
+  },
 };
 
 export const initialQuestions: QuestionOptions[] = [
@@ -74,6 +78,14 @@ export const initialQuestions: QuestionOptions[] = [
     inputType: "text",
   },
 ];
+
+/*
+ * -------------------------------------------------------------------------------------------
+ * Please remember to update the version number in the schema when making changes to the form.
+ * -------------------------------------------------------------------------------------------
+ */
+
+const VERSION = "2.0.0";
 
 export function RoundApplicationForm(props: {
   initialData: {
@@ -192,10 +204,12 @@ export function RoundApplicationForm(props: {
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
-        applicationSchema: generateApplicationSchema(
-          data.applicationMetadata?.questions
-        ),
-        projectRequirements
+        applicationSchema: {
+          questions: generateApplicationSchema(
+            data.applicationMetadata?.questions
+          ),
+          requirements: projectRequirements
+        },
       };
 
       const round = {
@@ -206,6 +220,7 @@ export function RoundApplicationForm(props: {
 
       await createRound({
         roundMetadataWithProgramContractAddress,
+        version: VERSION,
         applicationQuestions,
         round,
       });
@@ -291,14 +306,18 @@ export function RoundApplicationForm(props: {
     </InfoModal>
   );
 
-  const projectRequirementsHandler = (data: [keyof ProjectRequirements, boolean][]) => {
+  const projectRequirementsHandler = (data: [keyof ProjectRequirements, keyof ProjectRequirements[keyof ProjectRequirements], boolean][]) => {
+    console.log("before")
+    console.log(projectRequirements)
     const tmpRequirements = { ...projectRequirements };
 
-    data.forEach(([key, value]) => {
-      tmpRequirements[key] = value;
+    data.forEach(([mainKey, subKey, value]) => {
+      tmpRequirements[mainKey][subKey] = value;
     });
 
     setProjectRequirements(tmpRequirements);
+    console.log("after")
+    console.log(tmpRequirements)
   };
 
   return (
@@ -403,65 +422,65 @@ function ProjectInformation() {
   );
 }
 
-const ProjectSocials = ({ handler, requirements }: { handler: (data: [keyof ProjectRequirements, boolean][]) => void, requirements: ProjectRequirements }) => (
+const ProjectSocials = ({ handler, requirements }: { handler: (data: [keyof ProjectRequirements, keyof ProjectRequirements[keyof ProjectRequirements], boolean][]) => void, requirements: ProjectRequirements }) => (
   <>
-    <div className={`flex flex-row mt-4 ${requirements.twitter ? "mb-1" : "mb-4"}`}>
+    <div className={`flex flex-row mt-4 ${requirements.twitter.required ? "mb-1" : "mb-4"}`}>
       <div className="text-sm basis-4/5">
         Project Twitter
       </div>
       <div className="basis-1/5 flex justify-end">
         <GeneralSwitch
-          status={requirements.twitter}
+          status={requirements.twitter.required}
           handler={
             async (a: boolean) => {
               // clear required twitterVerification, if twitter itself is not required
-              handler([["twitter", a], ["twitterVerification", false]]);
+              handler([["twitter", "required", a], ["twitter", "verification", false]]);
             }
           } />
       </div>
     </div>
-    {requirements.twitter &&
+    {requirements.twitter.required &&
       <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
         <div className="text-xs basis-4/5 ml-2">
           Verification of account ownership
         </div>
         <div className="basis-1/5 flex justify-end">
           <GeneralSwitch
-            status={requirements.twitterVerification}
+            status={requirements.twitter.verification}
             handler={
               async (a: boolean) => {
-                handler([["twitterVerification", a]]);
+                handler([["twitter", "verification", a]]);
               }
             } />
         </div>
       </div>}
     <hr />
-    <div className={`flex flex-row mt-4 ${requirements.github ? "mb-1" : "mb-4"}`}>
+    <div className={`flex flex-row mt-4 ${requirements.github.required ? "mb-1" : "mb-4"}`}>
       <div className="text-sm basis-4/5">
         Project Github
       </div>
       <div className="basis-1/5 flex justify-end">
         <GeneralSwitch
-          status={requirements.github}
+          status={requirements.github.required}
           handler={
             async (a: boolean) => {
               // clear required githubVerification, if github itself is not required
-              handler([["github", a], ["githubVerification", false]]);
+              handler([["github", "required", a], ["github", "verification", false]]);
             }
           } />
       </div>
     </div>
-    {requirements.github &&
+    {requirements.github.required &&
       <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
         <div className="text-xs basis-4/5 ml-2">
           Verification of account ownership
         </div>
         <div className="basis-1/5 flex justify-end">
           <GeneralSwitch
-            status={requirements.githubVerification}
+            status={requirements.github.verification}
             handler={
               async (a: boolean) => {
-                handler([["githubVerification", a]]);
+                handler([["github", "verification", a]]);
               }
             } />
         </div>

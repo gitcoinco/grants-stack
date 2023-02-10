@@ -111,10 +111,14 @@ export type QuestionOptions = {
 };
 
 export type ProjectRequirements = {
-  twitter: boolean;
-  twitterVerification: boolean;
-  github: boolean;
-  githubVerification: boolean;
+  twitter: {
+    required: boolean;
+    verification: boolean;
+  },
+  github: {
+    required: boolean;
+    verification: boolean;
+  }
 }
 
 export interface ApplicationMetadata {
