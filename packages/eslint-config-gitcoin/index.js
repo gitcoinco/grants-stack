@@ -8,7 +8,7 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   root: true,
   rules: {
-    "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
+    // "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
   },
   overrides: [
     {
