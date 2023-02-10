@@ -53,7 +53,6 @@ const fetchMissingContributions = async (): Promise<QFContribution[]> => {
   const contributions: QFContribution[] = [];
 
   const data = await response.json();
-  // @ts-expect-error fix this later
   const result = data.result;
 
   // fetch projectId -> payoutAddress mapping
