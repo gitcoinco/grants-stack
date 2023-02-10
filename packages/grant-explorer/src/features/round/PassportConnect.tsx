@@ -264,10 +264,9 @@ export default function PassportConnect() {
           {passportState === PassportState.INVALID_RESPONSE && (
             <div>
               <p className="text-pink-400 mb-2">
-                Passport Profile not detected. Please open Passport to
-                troubleshoot.
+                Passport Profile not detected.
               </p>
-              <p>Please try again later.</p>
+              <p>Please open Passport to troubleshoot.</p>
             </div>
           )}
         </div>

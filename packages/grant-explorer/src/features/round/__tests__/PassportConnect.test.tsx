@@ -176,11 +176,11 @@ describe("<PassportConnect/>", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(
-            "Passport Profile not detected. Please open Passport to troubleshoot."
-          )
+          screen.getByText("Passport Profile not detected.")
         ).toBeInTheDocument();
-        expect(screen.getByText("Please try again later.")).toBeInTheDocument();
+        expect(
+          screen.getByText("Please open Passport to troubleshoot.")
+        ).toBeInTheDocument();
       });
     });
 
