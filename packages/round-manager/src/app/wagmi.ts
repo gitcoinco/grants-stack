@@ -11,6 +11,7 @@ import { createClient, configureChains, chain } from "wagmi";
 
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 
 const testnetChains = () => {
   /***********************/
@@ -84,6 +85,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
   allChains,
   [
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_API_KEY}),
     publicProvider(),
   ]
 );
