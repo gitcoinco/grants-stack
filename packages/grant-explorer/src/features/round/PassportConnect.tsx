@@ -68,7 +68,7 @@ export default function PassportConnect() {
           `error: callFetchPassport - invalid score response`,
           scoreResponse
         );
-        setPassportState(PassportState.INVALID_PASSPORT);
+        setPassportState(PassportState.INVALID_RESPONSE);
         return;
       }
 
@@ -257,6 +257,16 @@ export default function PassportConnect() {
           {passportState === PassportState.ERROR && (
             <div>
               <p className="text-pink-400 mb-2">Error In fetching passport</p>
+              <p>Please try again later.</p>
+            </div>
+          )}
+
+          {passportState === PassportState.INVALID_RESPONSE && (
+            <div>
+              <p className="text-pink-400 mb-2">
+                Passport Profile not detected. Please open Passport to
+                troubleshoot.
+              </p>
               <p>Please try again later.</p>
             </div>
           )}

@@ -7,6 +7,7 @@ export enum PassportState {
   MATCH_INELIGIBLE,
   LOADING,
   ERROR,
+  INVALID_RESPONSE,
 }
 
 type PassportEvidence = {
@@ -40,7 +41,10 @@ type UsePassportHook = {
   refreshScore: () => Promise<void>;
 };
 
-export function usePassport(address: string, communityId: string): UsePassportHook {
+export function usePassport(
+  address: string,
+  communityId: string
+): UsePassportHook {
   const { data, error, mutate } = useSWR<PassportResponse>(
     [address, communityId],
     ([address, communityId]: [address: string, communityId: string]) =>
@@ -54,10 +58,9 @@ export function usePassport(address: string, communityId: string): UsePassportHo
       await mutate();
     },
     recalculateScore: () => submitPassport(address, communityId),
-    passport: data
+    passport: data,
   };
 }
-
 
 /**
  * Endpoint used to fetch the passport score for a given address
@@ -75,8 +78,8 @@ export const fetchPassport = (
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`
-    }
+      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
+    },
   });
 };
 
@@ -97,13 +100,13 @@ export const submitPassport = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`
+      Authorization: `Bearer ${process.env.REACT_APP_PASSPORT_API_KEY}`,
     },
     body: JSON.stringify({
       address,
       community: communityId,
       signature: "",
-      nonce: ""
-    })
+      nonce: "",
+    }),
   });
 };
