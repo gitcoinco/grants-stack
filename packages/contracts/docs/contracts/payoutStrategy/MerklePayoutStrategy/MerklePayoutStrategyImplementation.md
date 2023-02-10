@@ -96,6 +96,28 @@ End locking time
 |---|---|---|
 | _0 | uint256 | undefined |
 
+### hasDistributed
+
+```solidity
+function hasDistributed(uint256 _index) external view returns (bool)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _index | uint256 | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
 ### init
 
 ```solidity
@@ -138,18 +160,18 @@ Unix timestamp from when round can accept applications
 ### payout
 
 ```solidity
-function payout(bytes[] encodedDistribution) external payable
+function payout(bytes[] _distributions) external payable
 ```
 
-Invoked by RoundImplementation to upload distribution to the payout strategy
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   payout is complete - would be invoked at the end of the round*
+
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| encodedDistribution | bytes[] | encoded distribution |
+| _distributions | bytes[] | undefined |
 
 ### roundAddress
 
@@ -221,6 +243,22 @@ Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from th
 
 ## Events
 
+### BatchPayoutTriggered
+
+```solidity
+event BatchPayoutTriggered(address indexed sender)
+```
+
+Emitted when batch payout is triggered
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+
 ### DistributionUpdated
 
 ```solidity
@@ -237,6 +275,25 @@ Emitted when the distribution is updated
 |---|---|---|
 | merkleRoot  | bytes32 | undefined |
 | distributionMetaPtr  | MetaPtr | undefined |
+
+### FundsDistributed
+
+```solidity
+event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount)
+```
+
+Emitted when funds are distributed
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+| grantee `indexed` | address | undefined |
+| token `indexed` | address | undefined |
+| amount  | uint256 | undefined |
 
 ### FundsWithdrawn
 
@@ -270,6 +327,24 @@ event Initialized(uint8 version)
 | Name | Type | Description |
 |---|---|---|
 | version  | uint8 | undefined |
+
+### ReclaimFunds
+
+```solidity
+event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount)
+```
+
+Emitted when funds are reclaimed
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+| token `indexed` | address | undefined |
+| amount `indexed` | uint256 | undefined |
 
 
 

@@ -2,13 +2,9 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "../IPayoutStrategy.sol";
-import "../../utils/MetaPtr.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-
+import "../../utils/MetaPtr.sol";
+import "../IPayoutStrategy.sol";
 
 /**
  * @notice Merkle Payout Strategy contract which is deployed once per round
@@ -33,7 +29,10 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   event DistributionUpdated(bytes32 merkleRoot, MetaPtr distributionMetaPtr);
 
   /// @notice Emitted when funds are reclaimed
-  event ReclaimFunds(address indexed sender, IERC20 indexed token, uint256 indexed amount);
+  event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount);
+
+  /// @notice Emitted when funds are distributed
+  event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount);
 
   /// @notice Emitted when batch payout is triggered
   event BatchPayoutTriggered(address indexed sender);
@@ -78,20 +77,11 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     emit DistributionUpdated(merkleRoot, distributionMetaPtr);
   }
 
-
-   /**
-   * @notice Invoked by RoundImplementation to upload distribution to the
-   * payout strategy
-   *
-   * @dev
-   * - should be invoked by RoundImplementation contract
-   * - ideally IPayoutStrategy implementation should emit events after
-   *   payout is complete
-   * - would be invoked at the end of the round
-   *
-   * @param encodedDistribution encoded distribution
-   */
-  function batchPayout(Distribution[] calldata _distributions) external override isRoundContract payable { 
+  // TODO: Document this function
+  // CHECK: Function signature, should this only be callable by the round operator?
+  // NOTE: payout must be defined to satisfy the IPayoutStrategy interface 
+  //       so this implements the batch payout functionality
+  function payout(bytes[] calldata _distributions) external virtual override payable  {
 
     for (uint256 i = 0; i < _distributions.length; ++i) {
         _distribute(_distributions[i]);
@@ -100,12 +90,17 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     emit BatchPayoutTriggered(msg.sender);
   }
 
-  function _distribute(Distribution calldata _distribution) internal {
+  // TODO: Document this function
+  // CHECK: Function signature
+  // TODO: Check where tokens and eth are living before proceeding
+  function _distribute(bytes calldata _distribution) internal isRoundContract {
+    
+    Distribution memory distribution = abi.decode(_distribution, (Distribution));
 
-    uint256 _index = _distribution.index;
-    address _grantee = _distribution._grantee;
-    uint256 _amount = _distribution.amount;
-    bytes32[] calldata _merkleProof = _distribution.merkleProof;
+    uint256 _index = distribution.index;
+    address _grantee = distribution._grantee;
+    uint256 _amount = distribution.amount;
+    bytes32[] memory _merkleProof = distribution.merkleProof;
 
     require(!hasDistributed(_index), "MerklePayout: Funds already distributed.");
 
@@ -113,16 +108,23 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     require(MerkleProof.verify(_merkleProof, merkleRoot, node), "MerklePayout: Invalid proof.");
 
     _setDistributed(_index);
-    token.safeTransfer(_claimee, _amount);
 
-    emit FundsDistributed(_index, _grantee, _amount);
+    if (tokenAddress == address(0)) {
+      // if token is ETH
+    } else {
+      // if token is ERC20
+     // token.safeTransfer(_grantee, _amount);
+    }
+
+    emit FundsDistributed(msg.sender, _grantee, tokenAddress, _amount);
   }
+
 
   function hasDistributed(uint256 _index) public view returns (bool) {
 
     uint256 distributedWordIndex = _index / 256;
     uint256 distributedBitIndex = _index % 256;
-    uint256 distributedWord = distributedBitIndex[distributedWordIndex];
+    uint256 distributedWord = distributedBitMap[distributedWordIndex];
     uint256 mask = (1 << distributedBitIndex);
 
     return distributedWord & mask == mask;
@@ -134,5 +136,5 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     distributedBitMap[distributedWordIndex] |= (1 << distributedBitIndex);
   }
 
-
 }
+
