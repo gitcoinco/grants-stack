@@ -318,7 +318,6 @@ const api = new aws.ecs.TaskDefinition("api", {
             cpu: 1024,
             memory: 2048,
             essential: true,
-            command: ["./bin/init.sh"],
             portMappings: [{
                 containerPort: 80,
                 hostPort: 80,

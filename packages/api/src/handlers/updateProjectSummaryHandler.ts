@@ -125,7 +125,7 @@ export const getProjectsSummary = async (
         roundId,
         roundMetadata,
         votingStrategyId,
-        projectIds,
+        projectIds
       );
 
       contributions = await hotfixForRounds(roundId, contributions, projectIds);

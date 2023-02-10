@@ -15,11 +15,12 @@ import {
   fetchCurrentTokenPrices,
   fetchPayoutAddressToProjectIdMapping,
   fetchAverageTokenPrices,
-  fetchProjectIdToPayoutAddressMapping, fetchRoundMetadata,
+  fetchProjectIdToPayoutAddressMapping,
+  fetchRoundMetadata,
 } from "../utils";
-import {
-  fetchContributorsAboveThreshold
-} from "../sybilProtection/passport";
+// import {
+//   fetchContributorsAboveThreshold
+// } from "../sybilProtection/passport";
 
 /**
  * summarizeRound is an async function that summarizes a round of voting by counting the number of contributions, the number of unique contributors, the total amount of contributions in USD, and the average contribution in USD.
@@ -193,12 +194,11 @@ export const fetchQFContributionsForRound = async (
     chainId,
     votingStrategyId,
     response.data?.votingStrategies[0]?.votes[
-    response.data?.votingStrategies[0]?.votes.length - 1
-      ].id,
+      response.data?.votingStrategies[0]?.votes.length - 1
+    ].id,
     votes
   );
 };
-
 
 /**
  * fetchContributionsForProject is a function that fetches a list of contributions for
@@ -218,7 +218,7 @@ export const fetchQFContributionsForProjects = async (
   votingStrategyId: string,
   projectIds: string[],
   lastID: string = "",
-  votes: QFContribution[] = [],
+  votes: QFContribution[] = []
 ): Promise<QFContribution[]> => {
   const query = `
     query GetContributionsForProject($votingStrategyId: String, $lastID: String, $to: [String]) {
@@ -246,7 +246,7 @@ export const fetchQFContributionsForProjects = async (
 
   // convert projectIds to payout addresses
   const projectPayoutAddresses = await fetchProjectIdToPayoutAddressMapping(
-    metadata.projectsMetaPtr,
+    metadata.projectsMetaPtr
   );
   // convert payout addresses to array of strings
   const payoutAddresses = Array.from(projectPayoutAddresses.values());
@@ -299,7 +299,6 @@ export const fetchQFContributionsForProjects = async (
     votes
   );
 };
-
 
 /**
  *
@@ -383,7 +382,7 @@ export const matchQFContributions = async (
   let matchResults: QFDistribution[] = [];
   let totalMatchInUSD = 0;
 
-  const contributorsWhoShouldBeMatched = await fetchContributorsAboveThreshold();
+  // const contributorsWhoShouldBeMatched = await fetchContributorsAboveThreshold();
 
   for (const projectId in contributionsByProject) {
     let sumOfSquares = 0;
@@ -399,11 +398,11 @@ export const matchQFContributions = async (
 
       uniqueContributors.add(contributor);
 
-      const checksumAddress = ethers.utils.getAddress(contributor)
+      const checksumAddress = ethers.utils.getAddress(contributor);
 
       if (
-        usdValue &&
-        contributorsWhoShouldBeMatched.includes(checksumAddress)
+        usdValue
+        // && contributorsWhoShouldBeMatched.includes(checksumAddress)
       ) {
         sumOfSquares += Math.sqrt(usdValue);
         sumOfContributions += usdValue;

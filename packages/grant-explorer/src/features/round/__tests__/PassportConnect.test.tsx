@@ -1,9 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { faker } from "@faker-js/faker";
-import PassportConnect from "../PassportConnect";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { fetchPassport, submitPassport } from "../../api/passport";
 import { mockBalance, mockNetwork, mockSigner } from "../../../test-utils";
+import { fetchPassport, submitPassport } from "../../api/passport";
+import PassportConnect from "../PassportConnect";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
@@ -154,7 +154,7 @@ describe("<PassportConnect/>", () => {
       jest.clearAllMocks();
     });
 
-    it("IF passport state return error status THEN it shows error in fetching passport", async () => {
+    it("IF passport state return error status THEN it shows issue in fetching passport", async () => {
       const mockJsonPromise = Promise.resolve({
         score: "-1",
         address: userAddress,
@@ -176,9 +176,11 @@ describe("<PassportConnect/>", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Error In fetching passport")
+          screen.getByText("Passport Profile not detected.")
         ).toBeInTheDocument();
-        expect(screen.getByText("Please try again later.")).toBeInTheDocument();
+        expect(
+          screen.getByText("Please open Passport to troubleshoot.")
+        ).toBeInTheDocument();
       });
     });
 
