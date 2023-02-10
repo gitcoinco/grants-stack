@@ -102,7 +102,7 @@ End locking time
 function hasDistributed(uint256 _index) external view returns (bool)
 ```
 
-
+Util function to check if distribution is done
 
 
 
@@ -110,7 +110,7 @@ function hasDistributed(uint256 _index) external view returns (bool)
 
 | Name | Type | Description |
 |---|---|---|
-| _index | uint256 | undefined |
+| _index | uint256 | index of the distribution |
 
 #### Returns
 
@@ -140,13 +140,30 @@ function initialize() external nonpayable
 
 
 
+### isReadyForPayout
+
+```solidity
+function isReadyForPayout() external view returns (bool)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
 ### merkleRoot
 
 ```solidity
 function merkleRoot() external view returns (bytes32)
 ```
 
-Unix timestamp from when round can accept applications
+merkle root generated from distribution
 
 
 
@@ -163,7 +180,7 @@ Unix timestamp from when round can accept applications
 function payout(bytes[] _distributions) external payable
 ```
 
-
+MerklePayoutStrategy implementation of payout Can be invoked only by round operator and isReadyForPayout is true
 
 
 
@@ -171,7 +188,7 @@ function payout(bytes[] _distributions) external payable
 
 | Name | Type | Description |
 |---|---|---|
-| _distributions | bytes[] | undefined |
+| _distributions | bytes[] | encoded distributions |
 
 ### roundAddress
 
@@ -189,6 +206,17 @@ RoundImplementation address
 | Name | Type | Description |
 |---|---|---|
 | _0 | address | undefined |
+
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Invoked by RoundImplementation to set isReadyForPayout
+
+
+
 
 ### tokenAddress
 
@@ -213,9 +241,9 @@ Token address
 function updateDistribution(bytes encodedDistribution) external nonpayable
 ```
 
-Invoked by RoundImplementation to upload distribution to the payout strategy
+Invoked by round operator to update the - merkle root - distribution MetaPtr
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round*
+
 
 #### Parameters
 
@@ -327,6 +355,17 @@ event Initialized(uint8 version)
 | Name | Type | Description |
 |---|---|---|
 | version  | uint8 | undefined |
+
+### ReadyForPayout
+
+```solidity
+event ReadyForPayout()
+```
+
+Emitted when contract is ready for payout
+
+
+
 
 ### ReclaimFunds
 

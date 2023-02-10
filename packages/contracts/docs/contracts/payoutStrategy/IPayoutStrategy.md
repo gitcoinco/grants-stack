@@ -90,6 +90,23 @@ Invoked by RoundImplementation on creation to set the round for which the payout
 
 
 
+### isReadyForPayout
+
+```solidity
+function isReadyForPayout() external view returns (bool)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
 ### payout
 
 ```solidity
@@ -98,7 +115,7 @@ function payout(bytes[] _encodedPayoutData) external payable
 
 Invoked by RoundImplementation to trigger payout
 
-*- should be invoked by RoundImplementation contract - could be used to trigger payout / enable payout - ideally IPayoutStrategy implementation should emit events after   payout is triggered Modifiers:  - isRoundOperator  - roundHasEnded*
+*- could be used to trigger payout / enable payout - should be invoked only when isReadyForPayout is ttue - should emit event after every payout is triggered*
 
 #### Parameters
 
@@ -122,6 +139,17 @@ RoundImplementation address
 | Name | Type | Description |
 |---|---|---|
 | _0 | address | undefined |
+
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Invoked by RoundImplementation to set isReadyForPayout
+
+
+
 
 ### tokenAddress
 
@@ -148,7 +176,7 @@ function updateDistribution(bytes _encodedDistribution) external nonpayable
 
 sInvoked by RoundImplementation to upload distribution to the payout strategy
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round Modifiers:  - isRoundOperator  - roundHasEnded*
+*- ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round Modifiers:  - isRoundOperator  - roundHasEnded*
 
 #### Parameters
 
@@ -192,6 +220,17 @@ Emitted when funds are withdrawn from the payout contract
 |---|---|---|
 | tokenAddress `indexed` | address | undefined |
 | amount  | uint256 | undefined |
+
+### ReadyForPayout
+
+```solidity
+event ReadyForPayout()
+```
+
+Emitted when contract is ready for payout
+
+
+
 
 
 

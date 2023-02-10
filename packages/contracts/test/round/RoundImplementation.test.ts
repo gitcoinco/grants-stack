@@ -484,9 +484,12 @@ describe("RoundImplementation", function () {
 
       let _currentBlockTimestamp: number;
 
-      let newAmount = 250;
+      let newAmount = 100;
 
       beforeEach(async () => {
+
+        newAmount += 1;
+
         _currentBlockTimestamp = (await ethers.provider.getBlock(
           await ethers.provider.getBlockNumber())
         ).timestamp;
@@ -522,6 +525,26 @@ describe("RoundImplementation", function () {
           .withArgs(
             newAmount
           );
+      });
+
+      it ('SHOULD revert if invoked with amount lesser than current amount', async () => {
+
+        const lesserAmount = 2;
+
+        await expect(roundImplementation.updateAmount(lesserAmount)).to.revertedWith(
+          `lesser then current amount`
+        );
+
+      });
+
+      it ('SHOULD revert if invoked with amount lesser than current amount', async () => {
+
+        const sameAmount = await roundImplementation.amount();
+
+        await expect(roundImplementation.updateAmount(sameAmount)).to.revertedWith(
+          `lesser then current amount`
+        );
+
       });
 
       it('SHOULD revert if invoked after roundEndTime', async () => {
@@ -1236,7 +1259,7 @@ describe("RoundImplementation", function () {
 
     });
 
-    describe('test: payout', () => {
+    describe('test: setReadyForPayout', () => {
       // TODO: Add tests
       it('SHOULD revert when round has ended', async () => {
 

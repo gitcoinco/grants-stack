@@ -49,17 +49,23 @@ abstract contract IPayoutStrategy {
   /// @notice End locking time
   uint256 public endLockingTime;
 
+  // @notice
+  bool public isReadyForPayout;
+
   // --- Event ---
 
   /// @notice Emitted when funds are withdrawn from the payout contract
   event FundsWithdrawn(address indexed tokenAddress, uint256 amount);
 
+  /// @notice Emitted when contract is ready for payout
+  event ReadyForPayout();
+
   // --- Modifier ---
 
   /// @notice modifier to check if sender is round contract.
   modifier isRoundContract() {
-    require(roundAddress != address(0), "error: voting contract not linked to a round");
-    require(msg.sender == roundAddress, "error: can be invoked only by round contract");
+    require(roundAddress != address(0), "not linked to a round");
+    require(msg.sender == roundAddress, "not invoked by round");
     _;
   }
 
@@ -75,14 +81,14 @@ abstract contract IPayoutStrategy {
   /// @notice modifier to check if round has ended.
   modifier roundHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(block.timestamp >= roundEndTime,"error: round has not ended");
+    require(block.timestamp >= roundEndTime,"round has not ended");
     _;
   }
 
   /// @notice modifier to check if lock duration has ended.
   modifier timelockHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(roundEndTime >= LOCK_DURATION, "error: lockDuation not ended.");
+    require(roundEndTime >= LOCK_DURATION, "lockDuation not ended.");
     _;
   }
 
@@ -94,12 +100,14 @@ abstract contract IPayoutStrategy {
    *
    */
   function init() external {
-    require(roundAddress == address(0x0), "init: roundAddress already set");
+    require(roundAddress == address(0x0), "roundAddress already set");
     roundAddress = msg.sender;
 
     // set the end locking time
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
     endLockingTime = roundEndTime + LOCK_DURATION;
+
+    isReadyForPayout = false;
   }
 
   /**s
@@ -107,7 +115,6 @@ abstract contract IPayoutStrategy {
    * payout strategy
    *
    * @dev
-   * - should be invoked by RoundImplementation contract
    * - ideally IPayoutStrategy implementation should emit events after
    *   distribution is updated
    * - would be invoked at the end of the round
@@ -120,18 +127,20 @@ abstract contract IPayoutStrategy {
    */
   function updateDistribution(bytes calldata _encodedDistribution) external virtual;
 
+  /// @notice Invoked by RoundImplementation to set isReadyForPayout
+  function setReadyForPayout() external payable isRoundContract roundHasEnded {
+    require(isReadyForPayout == false, "already ready for payout");
+    isReadyForPayout = true;
+    emit ReadyForPayout();
+  }
+
   /**
    * @notice Invoked by RoundImplementation to trigger payout
    *
    * @dev
-   * - should be invoked by RoundImplementation contract
    * - could be used to trigger payout / enable payout
-   * - ideally IPayoutStrategy implementation should emit events after
-   *   payout is triggered
-   *
-   * Modifiers:
-   *  - isRoundOperator
-   *  - roundHasEnded
+   * - should be invoked only when isReadyForPayout is ttue
+   * - should emit event after every payout is triggered
    *
    * @param _encodedPayoutData encoded payout data
    */

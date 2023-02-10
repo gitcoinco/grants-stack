@@ -236,6 +236,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param newAmount new Amount
   function updateAmount(uint256 newAmount) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
+    require(newAmount > amount, "lesser then current amount");
+
     amount = newAmount;
 
     emit AmountUpdated(newAmount);
@@ -347,8 +349,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   }
 
   /// @notice Pay Protocol Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
-  /// @param encodedPayoutData encoded payout data
-  function payout(bytes[] memory encodedPayoutData) external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
+  function setReadyForPayout() external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
     uint256 fundsInContract = _getTokenBalance();
     uint256 feeAmount = (amount * roundFactory.protocolFeePercentage() / 100);
@@ -364,10 +365,10 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     // transfer funds to payout contract
     if (token == address(0)) {
-      payoutStrategy.payout{value: fundsInContract}(encodedPayoutData);
+      payoutStrategy.setReadyForPayout{value: fundsInContract}();
     } else {
       IERC20(token).safeTransfer(address(payoutStrategy), fundsInContract);
-      payoutStrategy.payout(encodedPayoutData);
+      payoutStrategy.setReadyForPayout();
     }
 
     emit PayFeeAndEscrowFundsToPayoutContract(amount, feeAmount);
