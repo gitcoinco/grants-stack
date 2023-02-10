@@ -162,7 +162,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <hr className="mb-6" />
           <span className="mb-2">Question Title</span>
           <input
-            className="borderborder-grey-100 rounded-sm ui-active:border-violet-400"
+            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
             type="text"
             placeholder="Question"
           />
@@ -178,8 +178,8 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
       <div>
         <div className="flex flex-col mt-6">
           <hr className="mb-6" />
-          <span className="mb-2">Question Text</span>
-          <textarea className="border border-grey-100 rounded-sm ui-active:border-violet-400" placeholder="enter question text" />
+          <span className="mb-2">Question Title</span>
+          <textarea className="border border-grey-100 rounded-sm ui-active:border-violet-400" placeholder="enter question title" />
         </div>
         {renderSwitches()}
       </div>
@@ -252,32 +252,37 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   }
 
   function Checkboxes() {
+    const checkboxItem = (index: number) => {
+      return (
+        <div key={index} className="">
+            <input
+              className="border border-grey-100 rounded ui-active:bg-violet-400 mr-2"
+              type="checkbox"
+              placeholder="Answer Option"
+            />
+            <input
+              className="border border-grey-100 rounded ui-active:bg-violet-400 m-2"
+              type="text"
+              placeholder="Answer Option"
+            />
+          </div>
+      );
+    };
+
     return (
       <div className="flex flex-col mt-6">
         <hr className="mb-6" />
-        <span className="mb-2">Question Text</span>
+        <span className="mb-2">Question Title</span>
         <input
           type="text"
-          className="border border-grey-100 rounded-sm ui-active:border-violet-400"
-          placeholder="enter question text"
+          className="border border-grey-100 rounded ui-active:border-violet-400"
+          placeholder="enter question title"
         />
         <span className="mb-2 mt-6">Answer Options</span>
         <div className="flex flex-col">
-          <input
-            className="border border-grey-100 rounded-sm ui-active:bg-violet-400"
-            type="checkbox"
-            placeholder="Answer Option"
-          />
-          <input
-            className="border border-grey-100 rounded-sm ui-active:bg-violet-400"
-            type="checkbox"
-            placeholder="Answer Option"
-          />
-          <input
-            className="border border-grey-100 rounded-sm ui-active:bg-violet-400"
-            type="checkbox"
-            placeholder="Answer Option"
-          />
+          {checkboxItem(1)}
+          {checkboxItem(2)}
+          {checkboxItem(3)}
         </div>
       </div>
     );
@@ -404,11 +409,11 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <div>
             {/* todo: get the display to work */}
             <div className="flex flex-col mt-6">
-              {/* <ShortAnswer />
-              <Paragraph /> */}
-              <MultipleChoice />
-              {/* <Checkboxes />
-              <Dropdown /> */}
+              {/* <ShortAnswer /> */}
+              {/* <Paragraph /> */}
+              {/* <MultipleChoice /> */}
+              <Checkboxes />
+              {/* <Dropdown /> */}
             </div>
           </div>
           <div className="mt-10 flex flex-row justify-end">
