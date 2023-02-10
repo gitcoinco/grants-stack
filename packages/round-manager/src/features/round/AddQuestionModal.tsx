@@ -1,5 +1,7 @@
 import { Dialog, Listbox, Switch } from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon, PlusIcon, XIcon } from "@heroicons/react/solid";
+import { CheckCircleIcon } from "@heroicons/react/outline";
+import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon, XIcon } from "@heroicons/react/solid";
+import React from "react";
 import { useState } from "react";
 
 type AddQuestionModalProps = {
@@ -188,13 +190,13 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
 
   function MultipleChoice() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const deleteQuestionClick = (index: number) => {
+    const deleteOptionClick = (index: number) => {
       // todo: delete question
     };
 
-    const renderDeleteQueston = (index: number) => {
+    const renderDeleteOption = (index: number) => {
       return (
-        <button onClick={() => deleteQuestionClick(index)}>
+        <button onClick={() => deleteOptionClick(index)}>
           <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
         </button>
       )
@@ -209,7 +211,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             type="text"
             placeholder="Answer Option"
           />
-          {renderDeleteQueston(index)}
+          {renderDeleteOption(index)}
         </div>
       );
     };
@@ -227,7 +229,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             <input
               type="text"
               className="border border-grey-100 rounded-sm ui-active:border-violet-400 w-full"
-              placeholder="enter question text"
+              placeholder="Enter Question Text"
             />
           </div>
           <div className="flex flex-col">
@@ -252,38 +254,64 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   }
 
   function Checkboxes() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const deleteOptionClick = (index: number) => {
+      // todo: delete question
+    };
+
     const checkboxItem = (index: number) => {
       return (
-        <div key={index} className="">
-            <input
-              className="border border-grey-100 rounded ui-active:bg-violet-400 mr-2"
-              type="checkbox"
-              placeholder="Answer Option"
-            />
-            <input
-              className="border border-grey-100 rounded ui-active:bg-violet-400 m-2"
-              type="text"
-              placeholder="Answer Option"
-            />
-          </div>
+        <div className="flex flex-column mt-2">
+          <span className="flex mt-2 ml-5 mr-[22px]">Option {index}</span>
+          <input
+            className="border border-grey-100 rounded-sm focus:border-violet-400 w-72"
+            type="text"
+            placeholder="Answer Option"
+          />
+          {renderDeleteOption(index)}
+        </div>
       );
+    };
+
+    const renderDeleteOption = (index: number) => {
+      return (
+        <button onClick={() => deleteOptionClick(index)}>
+          <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
+        </button>
+      )
+    };
+
+    // todo:
+    const addOption = () => {
+      console.log("add option");
     };
 
     return (
       <div className="flex flex-col mt-6">
         <hr className="mb-6" />
         <span className="mb-2">Question Title</span>
-        <input
-          type="text"
-          className="border border-grey-100 rounded ui-active:border-violet-400"
-          placeholder="enter question title"
-        />
-        <span className="mb-2 mt-6">Answer Options</span>
-        <div className="flex flex-col">
-          {checkboxItem(1)}
-          {checkboxItem(2)}
-          {checkboxItem(3)}
+        <div className="border-l pl-2">
+          <input
+            type="text"
+            className="flex border border-grey-100 rounded focus:border-violet-400 w-full"
+            placeholder="Enter Question Title"
+          />
+          <div className="flex flex-col">
+            {checkboxItem(1)}
+            {checkboxItem(2)}
+            {checkboxItem(3)}
+          </div>
+          <button
+            onClick={addOption}
+            className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
+          >
+            <span className="flex flex-row justify-center">
+              <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
+              <span className="ml-2 text-violet-400 font-medium">Add Option</span>
+            </span>
+          </button>
         </div>
+        {renderSwitches()}
       </div>
     );
   }
@@ -293,21 +321,21 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
       <div className="flex flex-col mt-6">
         <hr className="mb-6" />
         <span className="mb-2">Question Text</span>
-        <textarea className="border border-grey-100 rounded-sm ui-active:border-violet-400" placeholder="enter question text" />
+        <textarea className="border border-grey-100 rounded-sm active:border-violet-400" placeholder="enter question text" />
         <span className="mb-2 mt-6">Answer Options</span>
         <div className="flex flex-col">
           <input
-            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            className="border border-grey-100 rounded-sm active:border-violet-400"
             type="text"
             placeholder="Answer Option"
           />
           <input
-            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            className="border border-grey-100 rounded-sm active:border-violet-400"
             type="text"
             placeholder="Answer Option"
           />
           <input
-            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            className="border border-grey-100 rounded-sm active:border-violet-400"
             type="text"
             placeholder="Answer Option"
           />
@@ -343,14 +371,32 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
       }
     }
 
-    // todo: render the correct icon based on the question type
-    function renderIcon() {
-      return (
-        <CheckIcon
-          className="ui-active:text-white h-5 w-5 text-violet-400 flex justify-center align-middle mt-1 ui-not-active:text-grey-500"
-          aria-hidden="true"
-        />
-      );
+    // render the correct icon based on the question type
+    function renderIcon(type: QuestionType) {
+      switch (type) {
+        case QuestionType.SHORT_ANSWER:
+          return (
+            <span className="h-4 w-4 mt-0.5"><MenuAlt4Icon /></span>
+          );
+        case QuestionType.PARAGRAPH:
+          return (
+            <span className="h-4 w-4 mt-0.5"><MenuAlt2Icon /></span>
+          );
+        case QuestionType.MULTIPLE_CHOICE:
+          return (
+            <span className="h-4 w-4 mt-0.5"><DuplicateIcon /></span>
+          );
+        case QuestionType.CHECKBOXES:
+          return (
+            <span className="h-4 w-4 mt-0.5"><CheckCircleIcon /></span>
+          );
+        case QuestionType.DROPDOWN:
+          return (
+            <span className="h-4 w-4 mt-0.5"><ArrowCircleDownIcon /></span>
+          );
+        case QuestionType.NA:
+          return <></>;
+      }
     }
 
     return (
@@ -364,27 +410,28 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
         }}
       >
         <Listbox.Button className="border rounded-[4px] border-gray-100 p-2 flex">
-          <span className="mr-1 ml-3 text-grey-400 font-medium">{selectedQueston.text}</span>
-          {/* todo: add chevron */}
+          {renderIcon(selectedQueston.type)}
+          <span className="mr-1 ml-2 text-grey-400 font-medium">{selectedQueston.text}</span>
           <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
         </Listbox.Button>
         <Listbox.Options className="border p-2 border-grey-100 w-[208px]">
           {questions.map(question => (
-            <Listbox.Option
-              key={question.id}
-              value={question}
-              className="flex ui-active:bg-violet-400 ui-active:text-white ui-not-active:bg-white ui-not-active:text-black"
-            >
-              {({ active, selected }) => (
-                <span
-                  className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
-                    }`}
-                >
-                  {selected && renderIcon()}
-                  <span className="flex text-[16px]">{question.text}</span>
-                </span>
-              )}
-            </Listbox.Option>
+            question.id !== "0" && (
+              <Listbox.Option
+                key={question.id}
+                value={question}
+                className="flex active:bg-violet-400 active:text-white bg-white text-black"
+              >
+                {({ active }) => (
+                  <span
+                    className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
+                      }`}
+                  >
+                    <span className="mt-1 text-grey-500 focus:text-violet-400">{renderIcon(question.type)}</span>
+                    <span className="flex text-md">{question.text}</span>
+                  </span>
+                )}
+              </Listbox.Option>)
           ))}
         </Listbox.Options>
       </Listbox>
@@ -407,13 +454,13 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             <QuestionSelectList />
           </div>
           <div>
-            {/* todo: get the display to work */}
+            {/* todo: get the display to work on selected question type */}
             <div className="flex flex-col mt-6">
               {/* <ShortAnswer /> */}
               {/* <Paragraph /> */}
               {/* <MultipleChoice /> */}
-              <Checkboxes />
-              {/* <Dropdown /> */}
+              {/* <Checkboxes /> */}
+              <Dropdown />
             </div>
           </div>
           <div className="mt-10 flex flex-row justify-end">

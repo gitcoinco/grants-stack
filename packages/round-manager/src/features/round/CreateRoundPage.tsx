@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "react-datetime/css/react-datetime.css";
 import { XIcon } from "@heroicons/react/solid";
