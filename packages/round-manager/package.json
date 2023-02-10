@@ -11,6 +11,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test --watchAll=false --silent",
+    "test:dev": "craco test --watchAll=true --silent",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "format": "prettier . --write",

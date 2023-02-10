@@ -38,7 +38,7 @@ import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import { Button } from "common/src/styles";
 import InfoModal from "../common/InfoModal";
-import AddQeustionModal from "./AddQuestionModal";
+import AddQuestionModal from "./AddQuestionModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -312,7 +312,7 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
-          <AddQeustionModal show={true} onClose={() => console.log("hello")} />
+          <AddQuestionModal show={true} onClose={() => console.log("hello")} />
         </div>
       </div>
     </div>
@@ -393,7 +393,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-function EncryptedInformation() {
+export function EncryptedInformation() {
   return (
     <>
       <InformationCircleIcon
