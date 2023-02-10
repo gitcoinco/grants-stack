@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@chakra-ui/react";
 import {
-  QuestionMarkCircleIcon,
   BookOpenIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   CodeBracketIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect, useRef, useState } from "react";
 
 type Menu = {
-  Icon: (props: React.ComponentProps<"svg">) => JSX.Element;
+  Icon: React.FC<React.SVGProps<SVGSVGElement>>;
   title: string;
   subTitle: string;
   link: string;
