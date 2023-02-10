@@ -51,7 +51,6 @@ export type HandleResponseObject = {
   data: object;
 };
 
-
 /****************/
 /* = Passport = */
 /****************/
@@ -68,7 +67,7 @@ export type PassportResponse = {
   status?: string;
   last_score_timestamp?: string;
   evidence?: PassportEvidence;
-  error?: string|null;
+  error?: string | null;
   detail?: string;
 };
 

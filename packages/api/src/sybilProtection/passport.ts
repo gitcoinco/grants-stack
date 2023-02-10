@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
-import  { PassportResponse } from "../types";
+import { PassportResponse } from "../types";
 import fetch from "node-fetch";
 
 type PassportScoresResponse = {
-  count: number,
-  passports: PassportResponse[]
-}
+  count: number;
+  passports: PassportResponse[];
+};
 
 /**
  * Fetches list of contributors who have score above the threshold
@@ -14,7 +14,6 @@ type PassportScoresResponse = {
  * @returns string[]
  */
 export const fetchContributorsAboveThreshold = async () => {
-
   const communityId = 13;
   const limit = 1000;
   let offset = 0;
@@ -22,7 +21,9 @@ export const fetchContributorsAboveThreshold = async () => {
   let allPassports: PassportResponse[];
 
   let { passports, count } = await fetchPassportScores(
-    communityId, limit, offset
+    communityId,
+    limit,
+    offset
   );
 
   allPassports = passports;
@@ -34,9 +35,7 @@ export const fetchContributorsAboveThreshold = async () => {
     offset += limit;
 
     // fetch next set of passports
-    const { passports } = await fetchPassportScores(
-      communityId, limit, offset
-    );
+    const { passports } = await fetchPassportScores(communityId, limit, offset);
 
     allPassports.push(...passports);
   }
@@ -44,13 +43,13 @@ export const fetchContributorsAboveThreshold = async () => {
   const passportAboveThreshold = filterPassportByEvidence(allPassports);
 
   let contributorsAboveThreshold: string[] = [];
-  passportAboveThreshold.map(passport => {
+  passportAboveThreshold.map((passport) => {
     const checksumAddress = ethers.utils.getAddress(passport.address!);
     contributorsAboveThreshold.push(checksumAddress);
   });
 
   return contributorsAboveThreshold;
-}
+};
 
 /**
  * Filters passports having evidence.success as true
@@ -58,9 +57,13 @@ export const fetchContributorsAboveThreshold = async () => {
  * @param passports PassportResponse[]
  * @returns PassportResponse[]
  */
-export const filterPassportByEvidence = (passports: PassportResponse[]): PassportResponse[] => {
-  return passports.filter(passport => passport.evidence && passport.evidence.success)
-}
+export const filterPassportByEvidence = (
+  passports: PassportResponse[]
+): PassportResponse[] => {
+  return passports.filter(
+    (passport) => passport.evidence && passport.evidence.success
+  );
+};
 
 /**
  * Fetches passport scores of a given community based on limit and offset
@@ -75,7 +78,6 @@ export const fetchPassportScores = async (
   limit: number,
   offset: number
 ): Promise<PassportScoresResponse> => {
-
   const passportURL = `https://api.scorer.gitcoin.co/registry/score/${communityId}?limit=${limit}&offset=${offset}`;
 
   const response = await fetch(passportURL, {
@@ -83,7 +85,7 @@ export const fetchPassportScores = async (
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.PASSPORT_API_KEY}`,
-    }
+    },
   });
 
   const jsonResponse = await response.json();
@@ -93,6 +95,6 @@ export const fetchPassportScores = async (
 
   return {
     passports,
-    count
-  }
-}
+    count,
+  };
+};
