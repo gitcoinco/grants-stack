@@ -44,7 +44,7 @@ export async function main() {
     chainId: network.config.chainId,
   });
 
-  const tokenAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"; //DummyERC20 Mumbai
+  const tokenAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"; // DummyERC20 Mumbai
 
   const erc20Abi = [
     "constructor(string name_, string symbol_)",
@@ -68,6 +68,9 @@ export async function main() {
 
   const approveTx = await tokenContract.approve(votingContract, 100);
   approveTx.wait();
+
+  const approveRoundTx = await tokenContract.approve(grantRoundContract, 100);
+  approveRoundTx.wait();
 
   console.log("Approved Allowance");
 
