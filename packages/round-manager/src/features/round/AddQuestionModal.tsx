@@ -1,4 +1,4 @@
-import { Dialog, Listbox, Switch } from "@headlessui/react";
+import { Dialog, Listbox } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/outline";
 import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon, XIcon } from "@heroicons/react/solid";
 import { useState } from "react";
