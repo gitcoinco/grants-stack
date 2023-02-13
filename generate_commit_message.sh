@@ -8,6 +8,12 @@ if ! git diff-index --quiet HEAD --; then
   exit 1
 fi
 
+# Switch to the main branch
+git checkout main
+
+# Update main branch from origin
+git pull origin main
+
 # Find the commit hash of the latest merge of main into release
 LAST_RELEASE_COMMIT=$(git merge-base main release)
 
@@ -25,22 +31,8 @@ else
   exit 1
 fi
 
-# Switch to the release branch
-git checkout release
-
-# Update release branch from origin
-git pull origin release
-
-# Switch to the main branch
-git checkout main
-
-# Update main branch from origin
-git pull origin main
-
 COMMIT_MESSAGE=""
 REPO_URL="https://github.com/gitcoinco/grants-round"
-CURRENT_DATE=$(date +%Y-%m-%d)
-AUTHOR=$(git config user.name)
 
 # Get a list of commits since the last release
 COMMITS=$(git log --pretty=format:"%h - %s - %an" $LAST_RELEASE_COMMIT..HEAD)
@@ -52,19 +44,17 @@ while read -r commit; do
   COMMIT_MESSAGE="$COMMIT_MESSAGE * [$HASH]($REPO_URL/commit/$HASH)$MESSAGE \n"
 done <<<"$COMMITS"
 
-COMMIT_MESSAGE=$(echo $COMMIT_MESSAGE | sed 's/\\n/\'$'\n''/g')
-echo $COMMIT_MESSAGE
+echo -e "$COMMIT_MESSAGE"
 
-# Prompt the user to confirm the commit hash
-read -p "Is the commit message $LAST_RELEASE_COMMIT okay? (y/n) " CONFIRM
+# Prompt the user to confirm the commit message
+read -p "Is the commit message okay? (y/n) " CONFIRM
 
 # Check if the user confirmed
 if [ "$CONFIRM" == "y" ]; then
-  echo "Creating PR"
+  echo "Copying to clipboard"
 else
   echo "Aborting."
   exit 1
 fi
 
-# Create a pull request
-gh pr create -H main -B release -t "Production release $CURRENT_DATE by $AUTHOR" -b "$COMMIT_MESSAGE"
+echo "$COMMIT_MESSAGE" | pbcopy

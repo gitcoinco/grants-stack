@@ -650,7 +650,6 @@ export const isTestnet = (chainId: ChainId) => {
   return testnet.includes(chainId);
 };
 
-
 /**
  * Util function to specify valid coingecko address in scenarios where
  * coingecko doesn't return token price on given chain.

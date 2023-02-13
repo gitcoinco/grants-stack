@@ -1,18 +1,18 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import { Button } from "common/src/styles";
-import Footer from "../common/Footer";
 import { ArrowPathIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { Button } from "common/src/styles";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAccount } from "wagmi";
+import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import {
   fetchPassport,
   PassportResponse,
   PassportState,
   submitPassport,
 } from "../api/passport";
-import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
-import { useState, useEffect } from "react";
-import { useAccount } from "wagmi";
+import Footer from "../common/Footer";
+import Navbar from "../common/Navbar";
 
 export default function PassportConnect() {
   datadogLogs.logger.info(
@@ -43,6 +43,7 @@ export default function PassportConnect() {
     const res = await fetchPassport(address, PASSPORT_COMMUNITY_ID);
 
     if (!res) {
+      datadogLogs.logger.error(`error: callFetchPassport - fetch failed`, res);
       setPassportState(PassportState.ERROR);
       return;
     }
@@ -63,7 +64,11 @@ export default function PassportConnect() {
         !scoreResponse.evidence ||
         scoreResponse.status == "ERROR"
       ) {
-        setPassportState(PassportState.ERROR);
+        datadogLogs.logger.error(
+          `error: callFetchPassport - invalid score response`,
+          scoreResponse
+        );
+        setPassportState(PassportState.INVALID_RESPONSE);
         return;
       }
 
@@ -76,6 +81,10 @@ export default function PassportConnect() {
       );
     } else {
       setError(res);
+      datadogLogs.logger.error(
+        `error: callFetchPassport - passport NOT OK`,
+        res
+      );
       switch (res.status) {
         case 400: // unregistered/nonexistent passport address
           setPassportState(PassportState.INVALID_PASSPORT);
@@ -249,6 +258,15 @@ export default function PassportConnect() {
             <div>
               <p className="text-pink-400 mb-2">Error In fetching passport</p>
               <p>Please try again later.</p>
+            </div>
+          )}
+
+          {passportState === PassportState.INVALID_RESPONSE && (
+            <div>
+              <p className="text-pink-400 mb-2">
+                Passport Profile not detected.
+              </p>
+              <p>Please open Passport to troubleshoot.</p>
             </div>
           )}
         </div>

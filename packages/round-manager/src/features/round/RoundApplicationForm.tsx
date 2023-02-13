@@ -44,6 +44,8 @@ import { Switch } from "@headlessui/react";
 import ReactTooltip from "react-tooltip";
 import { Button } from "common/src/styles";
 import InfoModal from "../common/InfoModal";
+import AddQuestionModal from "./AddQuestionModal";
+import PreviewQuestionModal from "./PreviewQuestionModal";
 
 import DoubleLinesText from "../../assets/double-lines-text.svg";
 
@@ -403,6 +405,8 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
+          <AddQuestionModal show={true} onClose={() => console.log("hello")} />
+          {/* <PreviewQuestionModal show={true} onClose={() => console.log("hello")} /> */}
         </div>
       </div>
     </div>

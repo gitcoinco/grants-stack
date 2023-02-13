@@ -14,7 +14,7 @@ services:
 
   # Start the server
   web:
-    image: node:18-slim
+    image: boudra/pnpm-node16:latest
     build:
       context: ./
       target: dev

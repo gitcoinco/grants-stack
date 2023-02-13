@@ -169,7 +169,6 @@ describe("updateProjectSummaryHandler", () => {
       roundId: roundId,
     };
 
-
     const responseJSON = (await updateProjectSummaryHandler(
       req,
       res
@@ -179,8 +178,7 @@ describe("updateProjectSummaryHandler", () => {
     expect(responseJSON.message).toEqual(req.originalUrl);
     expect(responseJSON.data).toMatchObject({
       ...defaultSummary,
-    })
-
+    });
   });
 
   it("returns successfull response when project in round has 2 contributions", async () => {
