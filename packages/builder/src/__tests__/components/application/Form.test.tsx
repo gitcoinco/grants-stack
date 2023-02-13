@@ -112,30 +112,30 @@ jest.mock("wagmi", () => ({
 }));
 
 describe("<Form />", () => {
-  describe("addressInput valid address change", () => {
-    let store: Store;
+  let store: Store;
 
-    beforeEach(() => {
-      store = setupStore();
-      store.dispatch(web3ChainIDLoaded(5));
-      store.dispatch({
-        type: "PROJECTS_LOADED",
-        payload: {
-          chainID: 5,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
+  beforeEach(() => {
+    store = setupStore();
+    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch({
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 5,
+        events: {
+          "1:1:1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
           },
         },
-      });
-      store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: projectsMetadata[0],
-      });
+      },
     });
+    store.dispatch({
+      type: "GRANT_METADATA_FETCHED",
+      data: projectsMetadata[0],
+    });
+  });
 
+  describe("addressInput valid address change", () => {
     test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
       // const setState = jest.fn();
       const returnValue = {
@@ -343,58 +343,86 @@ describe("<Form />", () => {
     });
   });
 
-  describe("projectRequirements", () => {
-    it("prevents appliying when requirements are not met", async () => {
-      const store = setupStore();
+  it("shows a project details section", async () => {
+    renderWrapped(
+      <Form
+        roundApplication={roundApplicationMetadata}
+        round={round}
+        onSubmit={jest.fn()}
+        showErrorModal={false}
+      />,
+      store
+    );
 
-      store.dispatch(web3ChainIDLoaded(5));
-      store.dispatch({
-        type: "PROJECTS_LOADED",
-        payload: {
-          chainID: 5,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
+    const selectProject = screen.getByLabelText("Project");
+    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
+    const toggleButton = screen.getByText("View your Project Details");
+
+    expect(screen.getByLabelText("Project Website")).toBeInTheDocument();
+    expect(screen.getByLabelText("Project Website")).not.toBeVisible();
+
+    global.scrollTo = jest.fn();
+
+    fireEvent.click(toggleButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Project Website")).toBeVisible();
+    });
+  });
+});
+
+describe("<Form/>", () => {
+  it("prevents appliying when requirements are not met", async () => {
+    const store = setupStore();
+
+    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch({
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 5,
+        events: {
+          "1:1:1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
           },
         },
-      });
-
-      store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: { ...projectsMetadata[0], projectGithub: "mygithub" },
-      });
-
-      renderWrapped(
-        <Form
-          roundApplication={{
-            ...roundApplicationMetadata,
-            applicationSchema: {
-              ...roundApplicationMetadata.applicationSchema,
-              requirements: {
-                github: { required: true, verification: false },
-                twitter: { required: true, verification: false },
-              },
-            },
-          }}
-          round={round}
-          onSubmit={jest.fn()}
-          showErrorModal={false}
-        />,
-        store
-      );
-
-      const selectProject = screen.getByLabelText("Project");
-      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
-
-      expect(
-        screen.getByText("Project Twitter is required.")
-      ).toBeInTheDocument();
-
-      expect(
-        screen.queryByText("Project Github is required.")
-      ).not.toBeInTheDocument();
+      },
     });
+
+    store.dispatch({
+      type: "GRANT_METADATA_FETCHED",
+      data: { ...projectsMetadata[0], projectGithub: "mygithub" },
+    });
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            requirements: {
+              github: { required: true, verification: false },
+              twitter: { required: true, verification: false },
+            },
+          },
+        }}
+        round={round}
+        onSubmit={jest.fn()}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    const selectProject = screen.getByLabelText("Project");
+    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
+    expect(
+      screen.getByText("Project Twitter is required.")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Project Github is required.")
+    ).not.toBeInTheDocument();
   });
 });

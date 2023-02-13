@@ -5,16 +5,10 @@ import { getProjectImage, ImgTypes } from "../../utils/components";
 function Section({ title, text }: { title: string; text: string | undefined }) {
   return (
     <div className="flex flex-col items-left justify-left mb-4">
-      <label htmlFor={text} className="text-sm">
+      <label htmlFor={title} className="text-sm">
         {title}
       </label>
-      <input
-        className="text-sm"
-        name={text}
-        type="text"
-        value={text}
-        disabled
-      />
+      <input className="text-sm" id={title} type="text" value={text} disabled />
     </div>
   );
 }

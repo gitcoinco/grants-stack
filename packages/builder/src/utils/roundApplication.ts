@@ -35,11 +35,13 @@ export const buildRoundApplicationMetadata = (
     applicationSchema: object.applciationSchema,
   };
 
+  console.log(object);
+
   // Build metadata from first version, which doesnt't have a version defined
   if (object.version === undefined) {
     let { applicationSchema } = object;
 
-    if (applicationSchema) {
+    if (!applicationSchema) {
       applicationSchema = object.application_schema;
     }
 
