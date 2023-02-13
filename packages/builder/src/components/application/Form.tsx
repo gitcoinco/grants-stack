@@ -249,46 +249,41 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
-  const projectRequirements: {
-    [key: string]: { check: () => boolean; message: string };
-  } = {
-    twitter: {
-      message: "Project Twitter is required.",
-      check: () =>
-        !!selectedProjectMetadata?.projectTwitter &&
-        selectedProjectMetadata?.projectTwitter.length > 0,
-    },
-    twitterVerification: {
-      message: "Verification of project Twitter is required.",
-      check: () =>
-        !twitterCredentialValidation.isLoading &&
-        twitterCredentialValidation.isValid,
-    },
-    github: {
-      message: "Project Github is required.",
-      check: () =>
-        !!selectedProjectMetadata?.projectGithub &&
-        selectedProjectMetadata?.projectGithub.length > 0,
-    },
-    githubVerification: {
-      message: "Verification of project Github is required.",
-      check: () =>
-        !githubCredentialValidation.isLoading &&
-        githubCredentialValidation.isValid,
-    },
-  };
+  const projectRequirementsResult = [];
 
-  const projectRequirementsResult = Object.entries(
-    roundApplication.projectRequirements ?? {}
-  ).flatMap(([requirementName, option]) => {
-    const requirement = projectRequirements[requirementName]!;
+  if (
+    roundApplication.applicationSchema.requirements.twitter.required &&
+    !selectedProjectMetadata?.projectTwitter
+  ) {
+    projectRequirementsResult.push("Project Twitter is required.");
+  }
 
-    if (option && !requirement.check()) {
-      return [requirement.message];
-    }
+  if (
+    roundApplication.applicationSchema.requirements.twitter.verification &&
+    !twitterCredentialValidation.isLoading &&
+    !twitterCredentialValidation.isValid
+  ) {
+    projectRequirementsResult.push(
+      "Verification of prooject Twitter is required."
+    );
+  }
 
-    return [];
-  });
+  if (
+    roundApplication.applicationSchema.requirements.github.required &&
+    !selectedProjectMetadata?.projectGithub
+  ) {
+    projectRequirementsResult.push("Project Github is required.");
+  }
+
+  if (
+    roundApplication.applicationSchema.requirements.github.verification &&
+    !githubCredentialValidation.isLoading &&
+    !githubCredentialValidation.isValid
+  ) {
+    projectRequirementsResult.push(
+      "Verification of prooject Github is required."
+    );
+  }
 
   const isValidProjectSelected =
     selectedProjectID && projectRequirementsResult.length === 0;

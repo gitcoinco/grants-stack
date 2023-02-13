@@ -370,9 +370,12 @@ describe("<Form />", () => {
         <Form
           roundApplication={{
             ...roundApplicationMetadata,
-            projectRequirements: {
-              twitter: true,
-              github: true,
+            applicationSchema: {
+              ...roundApplicationMetadata.applicationSchema,
+              requirements: {
+                github: { required: true, verification: false },
+                twitter: { required: true, verification: false },
+              },
             },
           }}
           round={round}
