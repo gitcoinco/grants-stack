@@ -1,53 +1,39 @@
+import { datadogLogs } from "@datadog/browser-logs";
+import {
+  EyeIcon, EyeOffIcon, LockClosedIcon,
+  LockOpenIcon
+} from "@heroicons/react/outline";
+import {
+  PencilIcon,
+  PlusSmIcon,
+  XIcon
+} from "@heroicons/react/solid";
+import { Button } from "common/src/styles";
 import { useContext, useEffect, useState } from "react";
 import {
-  Control,
-  Controller,
-  FieldArrayWithId,
   SubmitHandler,
-  useFieldArray,
-  UseFieldArrayAppend,
-  UseFieldArrayRemove,
-  useForm,
-  UseFormGetValues,
-  UseFormRegister,
+  useFieldArray, useForm
 } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { FormStepper as FS } from "../common/FormStepper";
+import { errorModalDelayMs } from "../../constants";
+import { useCreateRound } from "../../context/round/CreateRoundContext";
 import {
   ApplicationMetadata,
   Program,
   ProgressStatus,
   QuestionOptions,
-  Round,
+  Round
 } from "../api/types";
-import { FormContext } from "../common/FormWizard";
 import { generateApplicationSchema } from "../api/utils";
-import ProgressModal from "../common/ProgressModal";
+import AddQuestionModal from "../common/AddQuestionModal";
 import ErrorModal from "../common/ErrorModal";
-import { errorModalDelayMs } from "../../constants";
-import { useCreateRound } from "../../context/round/CreateRoundContext";
-import { datadogLogs } from "@datadog/browser-logs";
-import {
-  CheckIcon,
-  InformationCircleIcon,
-  PencilIcon,
-  PlusSmIcon,
-  XIcon,
-} from "@heroicons/react/solid";
-import {
-  LockClosedIcon,
-  LockOpenIcon,
-  EyeOffIcon,
-  EyeIcon,
-} from "@heroicons/react/outline";
-import { Switch } from "@headlessui/react";
-import ReactTooltip from "react-tooltip";
-import { Button } from "common/src/styles";
+import { FormStepper as FS } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
-import AddQuestionModal from "./AddQuestionModal";
-import PreviewQuestionModal from "./PreviewQuestionModal";
+import ProgressModal from "../common/ProgressModal";
 
 import DoubleLinesText from "../../assets/double-lines-text.svg";
+import PreviewQuestionModal from "../common/PreviewQuestionModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -405,8 +391,8 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
-          <AddQuestionModal show={true} onClose={() => console.log("hello")} />
-          {/* <PreviewQuestionModal show={true} onClose={() => console.log("hello")} /> */}
+          <AddQuestionModal onSave={() => console.log("Saving")} question={payoutQuestion} show={true} onClose={() => console.log("hello")} />
+          <PreviewQuestionModal show={true} onClose={() => console.log("hello")} />
         </div>
       </div>
     </div>

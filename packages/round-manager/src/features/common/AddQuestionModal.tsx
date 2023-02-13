@@ -1,16 +1,18 @@
 import { Dialog, Listbox } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/outline";
-import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon, XIcon } from "@heroicons/react/solid";
+import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon } from "@heroicons/react/solid";
+import { Button } from "common/src/styles";
 import { useState } from "react";
-import { InputType } from "../api/types";
-import BaseSwitch from "../common/BaseSwitch";
+import { InputType, QuestionOptions } from "../api/types";
+import BaseSwitch from "./BaseSwitch";
+import Option from "./Option";
 
 type AddQuestionModalProps = {
+  onSave: (question: Question) => void;
+  question: QuestionOptions;
   show: boolean;
   onClose: () => void;
 };
-
-// type AddQeustionModalProps2 = Parameters<typeof AddQeustionModal>;
 
 type Question = {
   id: string;
@@ -30,7 +32,7 @@ const questions: Question[] = [
 // eslint-disable-next-line prefer-const
 let options = [];
 
-function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
+function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
   const [isOpen, setIsOpen] = useState(show);
   const [optional, setOptional] = useState(true);
   const [encrypted, setEncrypted] = useState(false);
@@ -61,7 +63,8 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
     );
   }
 
-  function ShortAnswer() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function ShortAnswer({ type }: { type: InputType }) {
     return (
       <div>
         <div className="flex flex-col mt-6">
@@ -98,36 +101,9 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
     options.push({ id: options.length, text: "Option", parent: "checkbox" });
   };
 
-  const Option = ({ index }: { index: number }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const deleteOptionClick = (index: number) => {
-      // todo: delete question
-    };
-
-    const renderDeleteOption = (index: number) => {
-      return (
-        <button onClick={() => deleteOptionClick(index)}>
-          <XIcon className="h-5 w-5 text-[#D03E63] ml-6" aria-hidden="true" />
-        </button>
-      )
-    };
-
-    return (
-      <div className="flex flex-row mt-2">
-        <span className="flex mt-2 ml-5 mr-[22px]">Option {index}</span>
-        <input
-          className="border border-grey-100 rounded-sm ui-active:bg-violet-400 w-72"
-          type="text"
-          placeholder="Answer Option"
-        />
-        {renderDeleteOption(index)}
-      </div>
-    );
-  };
-
   const AddOptionButton = () => {
     return (
-      <button
+      <Button
         onClick={addOption}
         className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
       >
@@ -135,7 +111,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
           <span className="ml-2 text-violet-400 font-medium">Add Option</span>
         </span>
-      </button>
+      </Button>
     );
   };
 
@@ -151,9 +127,26 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             placeholder="Enter Question Title"
           />
           <div className="flex flex-col">
-            <Option index={1} />
-            <Option index={2} />
-            <Option index={3} />
+            <Option
+              index={1}
+              onAddOption={() => {
+                // todo:
+              }}
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              onDeleteOption={(index: number) => {
+                // todo:
+              }}
+            />
+            <Option
+              index={2}
+              onAddOption={() => {
+                // todo:
+              }}
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              onDeleteOption={(index: number) => {
+                // todo:
+              }}
+            />
           </div>
           <AddOptionButton />
         </div>
@@ -260,7 +253,9 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <div>
             {/* todo: get the display to work on selected question type */}
             <div className="flex flex-col mt-6">
-              {selectedQuestion.type === "short-answer" && <ShortAnswer />}
+              {selectedQuestion.type === "email" && <ShortAnswer type={selectedQuestion.type} />}
+              {selectedQuestion.type === "address" && <ShortAnswer type={selectedQuestion.type} />}
+              {selectedQuestion.type === "short-answer" && <ShortAnswer type={selectedQuestion.type} />}
               {selectedQuestion.type === "paragraph" && <Paragraph />}
               {selectedQuestion.type === "multiple-choice" && <MultipleChoice />}
               {selectedQuestion.type === "checkbox" && <Checkboxes />}
@@ -276,7 +271,10 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             </button>
             <button
               className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                // onSave();
+              }}
             >
               Add
             </button>
