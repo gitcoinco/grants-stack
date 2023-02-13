@@ -39,6 +39,7 @@ import ReactTooltip from "react-tooltip";
 import { Button } from "common/src/styles";
 import InfoModal from "../common/InfoModal";
 import AddQuestionModal from "./AddQuestionModal";
+import PreviewQuestionModal from "./PreviewQuestionModal";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
@@ -317,6 +318,7 @@ export function RoundApplicationForm(props: {
           </form>
           {formSubmitModals()}
           <AddQuestionModal show={true} onClose={() => console.log("hello")} />
+          {/* <PreviewQuestionModal show={true} onClose={() => console.log("hello")} /> */}
         </div>
       </div>
     </div>

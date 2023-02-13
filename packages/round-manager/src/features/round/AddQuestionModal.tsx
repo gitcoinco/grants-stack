@@ -33,13 +33,16 @@ let options = [];
 
 function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   const [isOpen, setIsOpen] = useState(show);
-  const [optional, setOptional] = useState(false);
+  const [optional, setOptional] = useState(true);
   const [encrypted, setEncrypted] = useState(false);
   const [showExplorer, setShowExplorer] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
+  const [selectedQuestionView, setSelectedQuestionView] = useState(<></>);
+
 
   // toggles for the modal
   const optionalSwitch = () => {
-    return <BaseSwitch activeLabel="*Required" inactiveLabel="Optional" value={optional} handler={setOptional} />;
+    return <BaseSwitch activeLabel="*Required" inactiveLabel="Optional" value={optional} handler={b => setOptional(b)} />;
   }
 
   const encryptionToggle = () => {
@@ -174,33 +177,8 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
     return <AddOptions />;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let questionDisplay: JSX.Element;
+
   function QuestionSelectList() {
-    const [selectedQueston, setSelectedQueston] = useState<Question>(questions[0]);
-
-    function renderQuestionType(questionType: InputType) {
-      switch (questionType) {
-        case "short-answer":
-          questionDisplay = <ShortAnswer />;
-          break;
-        case "paragraph":
-          questionDisplay = <Paragraph />;
-          break;
-        case "mulitple-choice":
-          questionDisplay = <MultipleChoice />;
-          break;
-        case "checkbox":
-          questionDisplay = <Checkboxes />;
-          break;
-        case "dropdown":
-          questionDisplay = <Dropdown />;
-          break;
-        case "unknown":
-          return <></>;
-      }
-    }
-
     // render the correct icon based on the question type
     function renderIcon(type: InputType) {
       switch (type) {
@@ -231,17 +209,16 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
 
     return (
       <Listbox
-        value={selectedQueston}
+        value={selectedQuestion}
         name="question"
         onChange={(q: Question) => {
           console.log("q", q);
-          setSelectedQueston(q);
-          renderQuestionType(q.type);
+          setSelectedQuestion(q);
         }}
       >
-        <Listbox.Button className="border rounded-[4px] border-gray-100 p-2 flex">
-          {renderIcon(selectedQueston.type)}
-          <span className="mr-1 ml-2 text-grey-400 font-medium">{selectedQueston.text}</span>
+        <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
+          {renderIcon(selectedQuestion.type)}
+          <span className="mr-1 ml-2 text-grey-400 font-medium">{selectedQuestion.text}</span>
           <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
         </Listbox.Button>
         <Listbox.Options className="border p-2 border-grey-100 w-[208px]">
@@ -257,8 +234,10 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
                     className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
                       }`}
                   >
-                    <span className="mt-1 text-grey-500 focus:text-violet-400">{renderIcon(question.type)}</span>
-                    <span className="flex text-md">{question.text}</span>
+                    <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
+                      {renderIcon(question.type)}
+                    </span>
+                    <span className="flex text-md w-full">{question.text}</span>
                   </span>
                 )}
               </Listbox.Option>)
@@ -286,11 +265,11 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           <div>
             {/* todo: get the display to work on selected question type */}
             <div className="flex flex-col mt-6">
-              {/* <ShortAnswer /> */}
-              {/* <Paragraph /> */}
-              {/* <MultipleChoice /> */}
-              {/* <Checkboxes /> */}
-              <Dropdown />
+              {selectedQuestion.type === "short-answer" && <ShortAnswer />}
+              {selectedQuestion.type === "paragraph" && <Paragraph />}
+              {selectedQuestion.type === "mulitple-choice" && <MultipleChoice />}
+              {selectedQuestion.type === "checkbox" && <Checkboxes />}
+              {selectedQuestion.type === "dropdown" && <Dropdown />}
             </div>
           </div>
           <div className="mt-10 flex flex-row justify-end">
