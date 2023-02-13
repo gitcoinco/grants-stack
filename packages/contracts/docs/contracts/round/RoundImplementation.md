@@ -271,22 +271,6 @@ Instantiates a new round
 | encodedParameters | bytes | Encoded parameters for program creation |
 | _roundFactory | address | undefined |
 
-### payout
-
-```solidity
-function payout(bytes[] encodedPayoutData) external payable
-```
-
-Pay Protocol Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| encodedPayoutData | bytes[] | encoded payout data |
-
 ### payoutStrategy
 
 ```solidity
@@ -424,6 +408,17 @@ Unix timestamp of the start of the round
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | undefined |
+
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Pay Protocol Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
+
+
+
 
 ### supportsInterface
 
@@ -624,6 +619,23 @@ Voting Strategy Contract Address
 | Name | Type | Description |
 |---|---|---|
 | _0 | contract IVotingStrategy | undefined |
+
+### withdraw
+
+```solidity
+function withdraw(address tokenAddress, address payable recipent) external nonpayable
+```
+
+Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| tokenAddress | address | token address |
+| recipent | address payable | undefined |
 
 
 

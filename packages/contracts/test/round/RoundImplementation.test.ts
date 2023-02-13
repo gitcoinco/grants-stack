@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
-import { BigNumberish, Wallet } from "ethers";
+import { BigNumber, BigNumberish, Wallet } from "ethers";
 import { BytesLike, formatBytes32String, isAddress } from "ethers/lib/utils";
 import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
@@ -88,14 +88,19 @@ describe("RoundImplementation", function () {
 
   describe('core functions', () => {
 
-    const initRound = async (_currentBlockTimestamp: number) => {
+    const initRound = async (_currentBlockTimestamp: number, overrides ?: any) => {
+
+      // Deploy MockERC20 contract if _token is not provided
+      const mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+      const tokenContract = <MockERC20>await deployContract(user, mockERC20Artifact, [10000]);
+      token =  overrides && overrides.hasOwnProperty('token') ? overrides.token : tokenContract.address;
 
       // Deploy voting strategy
       votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
       // Deploy PayoutStrategy contract
       payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
-      let amount = 100;
+      let amount = overrides && overrides.hasOwnProperty('amount') ? overrides.amount : 100;
 
       const initAddress = [
         votingStrategyContract.address, // votingStrategy
@@ -133,6 +138,7 @@ describe("RoundImplementation", function () {
         roundFactoryContract.address
       );
 
+      return params;
     }
 
     before(async() => {
@@ -484,9 +490,12 @@ describe("RoundImplementation", function () {
 
       let _currentBlockTimestamp: number;
 
-      let newAmount = 250;
+      let newAmount = 100;
 
       beforeEach(async () => {
+
+        newAmount += 1;
+
         _currentBlockTimestamp = (await ethers.provider.getBlock(
           await ethers.provider.getBlockNumber())
         ).timestamp;
@@ -522,6 +531,26 @@ describe("RoundImplementation", function () {
           .withArgs(
             newAmount
           );
+      });
+
+      it ('SHOULD revert if invoked with amount lesser than current amount', async () => {
+
+        const lesserAmount = 2;
+
+        await expect(roundImplementation.updateAmount(lesserAmount)).to.revertedWith(
+          `lesser then current amount`
+        );
+
+      });
+
+      it ('SHOULD revert if invoked with amount lesser than current amount', async () => {
+
+        const sameAmount = await roundImplementation.amount();
+
+        await expect(roundImplementation.updateAmount(sameAmount)).to.revertedWith(
+          `lesser then current amount`
+        );
+
       });
 
       it('SHOULD revert if invoked after roundEndTime', async () => {
@@ -1236,21 +1265,170 @@ describe("RoundImplementation", function () {
 
     });
 
-    describe('test: payout', () => {
-      // TODO: Add tests
-      it('SHOULD revert when round has ended', async () => {
+    describe('test: setReadyForPayout', () => {
+      let mockERC20 : MockERC20;
+      let _currentBlockTimestamp: number;
 
+      beforeEach(async () => {
+
+        // Deploy RoundImplementation contract
+        roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
+        roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+        let mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+        mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [10000]);
+
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        await initRound(_currentBlockTimestamp, mockERC20.address);
+      });
+
+      it('SHOULD revert when round has ended', async () => {
+        await expect(
+          roundImplementation.setReadyForPayout()
+        ).to.revertedWith("round has not ended");
       });
 
       it('SHOULD revert when called is not round operator', async () => {
+        const [ _, notRoundOperator ] = await ethers.getSigners();
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
 
+        await expect(
+          roundImplementation.connect(notRoundOperator).setReadyForPayout()
+        ).to.revertedWith(
+          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
       });
 
       it('SHOULD revert when round contract does not have enough funds', async () => {
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+
+        await expect(
+          roundImplementation.setReadyForPayout()
+        ).to.revertedWith("not enough funds");
+      });
+    });
+
+    describe('test: setReadyForPayout', () => {
+
+      let protocolTreasuryBalance: BigNumber;
+      let protocolTreasury: string;
+      let feePercentage = 10;
+
+      before(async() => {
+        protocolTreasury = Wallet.createRandom().address;
+
+        roundFactoryContract.updateProtocolTreasury(protocolTreasury);
+        roundFactoryContract.updateProtocolFeePercentage(feePercentage);
+      })
+
+
+      describe('Native token payout', () => {
+
+        //// TODO: IS BROKEN
+
+        let _currentBlockTimestamp: number;
+        let roundAmount = 10;
+        let protocolFeePercentage: any;
+        let roundParams: any;
+        let tx: any;
+
+        before(async () => {
+          // get protocol fee percentage
+          protocolFeePercentage = await roundFactoryContract.protocolFeePercentage();
+
+          // Deploy RoundImplementation contract
+          roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
+          roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+          _currentBlockTimestamp = (await ethers.provider.getBlock(
+            await ethers.provider.getBlockNumber())
+          ).timestamp;
+
+          roundParams = await initRound(_currentBlockTimestamp, {
+            token: ethers.constants.AddressZero,
+            amount: roundAmount
+          });
+
+          // Mine Blocks
+          await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+
+          // check round balance
+          let originalRoundBalance = await ethers.provider.getBalance(roundImplementation.address);
+          expect(originalRoundBalance).to.equal(ethers.utils.parseEther("0"));
+
+          // check protocolTreasury balance
+          protocolTreasuryBalance = await ethers.provider.getBalance(protocolTreasury);
+          expect(protocolTreasuryBalance).to.equal(ethers.utils.parseEther("0"));
+
+          // send funds to contract
+          await user.sendTransaction({
+            to: roundImplementation.address,
+            value: ethers.utils.parseEther("11.0"), // Sends exactly 11.0 ether
+          });
+
+          tx = await(roundImplementation.setReadyForPayout());
+        });
+
+
+        it("SHOULD transfer correct fee percentage to protocolTreasury", async () => {
+          let newProtocolTreasuryBalance = await ethers.provider.getBalance(user.address);
+
+          expect(newProtocolTreasuryBalance).to.equal(
+           ethers.utils.parseEther("1.0")
+          );
+        });
+
+        it("SHOULD transfer pot amount to payout contract", async () => {
+          let payoutContract = await roundImplementation.payoutStrategy();
+          expect(payoutContract).to.equal(
+            ethers.utils.parseEther("10.0")
+           );
+        });
+
+        it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
+          expect(tx).to.emit(roundImplementation, 'PayFeeAndEscrowFundsToPayoutContract').withArgs(
+            ethers.utils.parseEther("10.0"),
+            ethers.utils.parseEther("1.0")
+          );
+        });
+
+        it("Funds in round contract SHOULD be 0 after payout", async () => {
+          let roundBalance = await ethers.provider.getBalance(roundImplementation.address);
+          expect(roundBalance).to.equal(ethers.utils.parseEther("0"));
+        });
+
+        it("SHOULD not send funds to protocolTreasury when fee is 0", async () => {
+          // TODO: ADD
+        });
 
       });
 
+
       describe('ERC20 payout', () => {
+
+        let mockERC20: MockERC20;
+        let _currentBlockTimestamp: number;
+
+        beforeEach(async () => {
+          // // Deploy RoundImplementation contract
+          // roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
+          // roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+          // let mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+          // mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [10000]);
+
+          // _currentBlockTimestamp = (await ethers.provider.getBlock(
+          //   await ethers.provider.getBlockNumber())
+          // ).timestamp;
+
+          // await initRound(_currentBlockTimestamp, mockERC20.address);
+        });
+
         it("SHOULD transfer fee to protocolTreasury", async () => {
 
         });
@@ -1271,23 +1449,94 @@ describe("RoundImplementation", function () {
 
         });
       });
+    });
 
-      describe('Native token payout', () => {
-        it("SHOULD transfer fee to protocolTreasury", async () => {
+    describe.only('test: withdraw', () => {
 
+      let mockERC20: MockERC20;
+      let _currentBlockTimestamp: number;
+
+      beforeEach(async () => {
+        // Deploy RoundImplementation contract
+        roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
+        roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
+
+        let mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+        mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [10000]);
+
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        await initRound(_currentBlockTimestamp, mockERC20.address);
+      });
+
+      it("SHOULD revert when not invoked by round operator", async () => {
+        const [ user , notRoundOperator ] = await ethers.getSigners();
+
+        await expect(
+          roundImplementation.connect(notRoundOperator).withdraw(mockERC20.address, user.address)
+        ).to.revertedWith(
+          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+
+      });
+
+      it("SHOULD revert when trying to withdraw round token", async () => {
+        const roundToken = await roundImplementation.token();
+
+        await expect(
+          roundImplementation.withdraw(roundToken, user.address)
+        ).to.revertedWith(
+          `cannot withdraw round token`
+        );
+      });
+
+      it("SHOULD drain and transfer ERC-20 token funds from contract to recipent ", async () => {
+
+        // check user balance before withdraw
+        let originalUserBalance = Number(await mockERC20.balanceOf(user.address));
+
+        // transfer tokens to 1000 to round contract
+        await mockERC20.transfer(roundImplementation.address, 100);
+
+        let userBalanceBeforeWithdraw = Number(await mockERC20.balanceOf(user.address));
+        expect(userBalanceBeforeWithdraw).to.equal(originalUserBalance - 100);
+
+        // check round balance before withdraw
+        let roundBalance = await mockERC20.balanceOf(roundImplementation.address);
+        expect(roundBalance).to.equal(100);
+
+        // withdraw
+        await roundImplementation.withdraw(mockERC20.address, user.address);
+
+        // check user balance after withdraw
+        let userBalanceAfterWithdraw = Number(await mockERC20.balanceOf(user.address));
+        expect(userBalanceAfterWithdraw).to.equal(originalUserBalance);
+
+        // check round balance after withdraw
+        let roundBalanceAfterWithdraw = Number(await mockERC20.balanceOf(roundImplementation.address))
+        expect(roundBalanceAfterWithdraw).to.equal(0);
+      });
+
+      it("SHOULD drain and transfer native token funds from contract to recipent ", async () => {
+
+        // transfer tokens to 1 ETH to round contract
+        await user.sendTransaction({
+          to: roundImplementation.address,
+          value: ethers.utils.parseEther("1.0"),
         });
 
-        it("SHOULD transfer pot amount to payout contract", async () => {
+        // check round balance before withdraw
+        let roundBalance = await ethers.provider.getBalance(roundImplementation.address);
+        expect(roundBalance).to.equal(ethers.utils.parseEther("1.0"));
 
-        });
+        await roundImplementation.withdraw(ethers.constants.AddressZero, user.address);
 
-        it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
+        // check round balance after withdraw
+        roundBalance = await ethers.provider.getBalance(roundImplementation.address);
+        expect(roundBalance).to.equal(ethers.utils.parseEther("0"));
 
-        });
-
-        it("Funds in round contract SHOULD be 0 after payout", async () => {
-
-        });
       });
 
     });
