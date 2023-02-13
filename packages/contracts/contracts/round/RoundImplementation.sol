@@ -359,9 +359,14 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     require(fundsInContract >= expectedAmount, "not enough funds");
 
-    // deduct fee
-    address payable protocolTreasury = roundFactory.protocolTreasury();
-    _transferAmount(protocolTreasury, feeAmount, token);
+    if (feeAmount > 0) {
+      // deduct fee
+      address payable protocolTreasury = roundFactory.protocolTreasury();
+      _transferAmount(protocolTreasury, feeAmount, token);
+      
+      // update fundsInContract
+      fundsInContract = _getTokenBalance(token);
+    }
 
     // transfer funds to payout contract
     if (token == address(0)) {
@@ -371,7 +376,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       payoutStrategy.setReadyForPayout();
     }
 
-    emit PayFeeAndEscrowFundsToPayoutContract(amount, feeAmount);
+    emit PayFeeAndEscrowFundsToPayoutContract(fundsInContract, feeAmount);
   }
 
   /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
