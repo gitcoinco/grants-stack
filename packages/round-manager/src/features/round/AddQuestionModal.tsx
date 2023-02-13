@@ -2,6 +2,7 @@ import { Dialog, Listbox } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/outline";
 import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon, XIcon } from "@heroicons/react/solid";
 import { useState } from "react";
+import { InputType } from "../api/types";
 import BaseSwitch from "../common/BaseSwitch";
 
 type AddQuestionModalProps = {
@@ -11,29 +12,20 @@ type AddQuestionModalProps = {
 
 // type AddQeustionModalProps2 = Parameters<typeof AddQeustionModal>;
 
-export enum QuestionType {
-  SHORT_ANSWER = "SHORT_ANSWER",
-  PARAGRAPH = "PARAGRAPH",
-  MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
-  CHECKBOXES = "CHECKBOXES",
-  DROPDOWN = "DROPDOWN",
-  NA = "NA",
-}
-
 type Question = {
   id: string;
   text: string;
-  type: QuestionType;
+  type: InputType;
 };
 
 // test data for building out the questions
 const questions: Question[] = [
-  { id: "0", text: "Select a type", type: QuestionType.NA },
-  { id: "1", text: "Short answer", type: QuestionType.SHORT_ANSWER },
-  { id: "2", text: "Paragraph", type: QuestionType.PARAGRAPH },
-  { id: "3", text: "Mulitple Choice", type: QuestionType.MULTIPLE_CHOICE },
-  { id: "4", text: "Checkboxes", type: QuestionType.CHECKBOXES },
-  { id: "5", text: "Dropdown", type: QuestionType.DROPDOWN },
+  { id: "0", text: "Select a type", type: "unknown" },
+  { id: "1", text: "Short answer", type: "short-answer" },
+  { id: "2", text: "Paragraph", type: "paragraph" },
+  { id: "3", text: "Mulitple Choice", type: "mulitple-choice" },
+  { id: "4", text: "Checkboxes", type: "checkbox" },
+  { id: "5", text: "Dropdown", type: "dropdown" },
 ];
 
 // eslint-disable-next-line prefer-const
@@ -103,7 +95,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   // todo: figure out where to put this
   const addOption = () => {
     console.log("add option");
-    options.push({ id: options.length, text: "Option", parent: QuestionType.CHECKBOXES });
+    options.push({ id: options.length, text: "Option", parent: "checkbox" });
   };
 
   const Option = ({ index }: { index: number }) => {
@@ -187,52 +179,52 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   function QuestionSelectList() {
     const [selectedQueston, setSelectedQueston] = useState<Question>(questions[0]);
 
-    function renderQuestionType(questionType: QuestionType) {
+    function renderQuestionType(questionType: InputType) {
       switch (questionType) {
-        case QuestionType.SHORT_ANSWER:
+        case "short-answer":
           questionDisplay = <ShortAnswer />;
           break;
-        case QuestionType.PARAGRAPH:
+        case "paragraph":
           questionDisplay = <Paragraph />;
           break;
-        case QuestionType.MULTIPLE_CHOICE:
+        case "mulitple-choice":
           questionDisplay = <MultipleChoice />;
           break;
-        case QuestionType.CHECKBOXES:
+        case "checkbox":
           questionDisplay = <Checkboxes />;
           break;
-        case QuestionType.DROPDOWN:
+        case "dropdown":
           questionDisplay = <Dropdown />;
           break;
-        case QuestionType.NA:
+        case "unknown":
           return <></>;
       }
     }
 
     // render the correct icon based on the question type
-    function renderIcon(type: QuestionType) {
+    function renderIcon(type: InputType) {
       switch (type) {
-        case QuestionType.SHORT_ANSWER:
+        case "short-answer":
           return (
             <span className="h-4 w-4 mt-0.5"><MenuAlt4Icon /></span>
           );
-        case QuestionType.PARAGRAPH:
+        case "paragraph":
           return (
             <span className="h-4 w-4 mt-0.5"><MenuAlt2Icon /></span>
           );
-        case QuestionType.MULTIPLE_CHOICE:
+        case "mulitple-choice":
           return (
             <span className="h-4 w-4 mt-0.5"><DuplicateIcon /></span>
           );
-        case QuestionType.CHECKBOXES:
+        case "checkbox":
           return (
             <span className="h-4 w-4 mt-0.5"><CheckCircleIcon /></span>
           );
-        case QuestionType.DROPDOWN:
+        case "dropdown":
           return (
             <span className="h-4 w-4 mt-0.5"><ArrowCircleDownIcon /></span>
           );
-        case QuestionType.NA:
+        case "unknown":
           return <></>;
       }
     }

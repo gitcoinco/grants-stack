@@ -44,6 +44,7 @@ const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
   required: true,
   encrypted: false,
+  hidden: false,
   inputType: "text",
 };
 export const initialQuestions: QuestionOptions[] = [
@@ -51,18 +52,21 @@ export const initialQuestions: QuestionOptions[] = [
     title: "Email Address",
     required: true,
     encrypted: true,
+    hidden: false,
     inputType: "text",
   },
   {
     title: "Funding Sources",
     required: true,
     encrypted: false,
+    hidden: false,
     inputType: "text",
   },
   {
     title: "Team Size",
     required: true,
     encrypted: false,
+    hidden: false,
     inputType: "text",
   },
 ];
@@ -638,6 +642,7 @@ function ApplicationInformation(props: {
               title: "",
               required: false,
               encrypted: false,
+              hidden: false,
               inputType: "text",
             })
           }

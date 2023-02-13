@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@craco/craco": "^6.4.3",
+    "@craco/craco": "^6.4.5",
     "@datadog/browser-logs": "^4.17.1",
     "@datadog/browser-rum": "^4.17.1",
     "@ethersproject/abstract-signer": "^5.7.0",

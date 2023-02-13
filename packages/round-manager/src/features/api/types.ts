@@ -101,12 +101,14 @@ export interface Program {
   };
 }
 
-export type InputType = "email" | "number" | "text";
+export type InputType = "email" | "number" | "text" | "short-answer" | "paragraph" |
+  "mulitple-choice" | "checkbox" | "dropdown" | "unknown";
 
 export type QuestionOptions = {
   title: string;
   required: boolean;
   encrypted: boolean;
+  hidden: boolean;
   inputType: InputType;
 };
 
