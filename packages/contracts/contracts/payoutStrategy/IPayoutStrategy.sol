@@ -38,7 +38,7 @@ abstract contract IPayoutStrategy {
   // --- Data ---
 
   /// @notice RoundImplementation address
-  address public roundAddress;
+  address payable public roundAddress;
 
   /// @notice Token address
   address public tokenAddress;
@@ -101,7 +101,7 @@ abstract contract IPayoutStrategy {
    */
   function init() external {
     require(roundAddress == address(0x0), "Payout: roundAddress already set");
-    roundAddress = msg.sender;
+    roundAddress = payable(msg.sender);
 
     // set the reclaim lock end time
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();

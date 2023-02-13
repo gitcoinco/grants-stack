@@ -193,7 +193,7 @@ Relclaim lock end time
 ### roundAddress
 
 ```solidity
-function roundAddress() external view returns (address)
+function roundAddress() external view returns (address payable)
 ```
 
 RoundImplementation address
@@ -205,7 +205,7 @@ RoundImplementation address
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | address payable | undefined |
 
 ### setReadyForPayout
 

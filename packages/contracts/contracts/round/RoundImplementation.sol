@@ -404,4 +404,5 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     }
   }
 
+  receive() external payable {}
 }
