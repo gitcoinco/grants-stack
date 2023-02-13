@@ -96,10 +96,10 @@ End locking time
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### hasDistributed
+### hasBeenDistributed
 
 ```solidity
-function hasDistributed(uint256 _index) external view returns (bool)
+function hasBeenDistributed(uint256 _index) external view returns (bool)
 ```
 
 Util function to check if distribution is done

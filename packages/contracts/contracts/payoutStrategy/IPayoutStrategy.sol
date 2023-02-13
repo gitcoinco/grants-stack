@@ -180,7 +180,7 @@ abstract contract IPayoutStrategy {
   /**
    * Util function to get token balance in the contract
    */
-  function _getTokenBalance() private view returns (uint) {
+  function _getTokenBalance() internal view returns (uint) {
     if (tokenAddress == address(0)) {
       return address(this).balance;
     } else {

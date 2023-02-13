@@ -79,7 +79,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
   /// @notice Util function to check if distribution is done
   /// @param _index index of the distribution
-  function hasDistributed(uint256 _index) public view returns (bool) {
+  function hasBeenDistributed(uint256 _index) public view returns (bool) {
 
     uint256 distributedWordIndex = _index / 256;
     uint256 distributedBitIndex = _index % 256;
@@ -117,7 +117,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     uint256 _amount = distribution.amount;
     bytes32[] memory _merkleProof = distribution.merkleProof;
 
-    require(!hasDistributed(_index), "funds already distributed");
+    require(!hasBeenDistributed(_index), "funds already distributed");
 
     bytes32 node = keccak256(abi.encodePacked(_index, _grantee, _amount));
     require(MerkleProof.verify(_merkleProof, merkleRoot, node), "MerklePayout: Invalid proof.");
