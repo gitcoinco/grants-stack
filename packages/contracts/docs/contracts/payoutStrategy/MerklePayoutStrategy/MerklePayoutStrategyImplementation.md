@@ -79,22 +79,27 @@ MetaPtr containing the distribution
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
 
-### endLockingTime
+### hasBeenDistributed
 
 ```solidity
-function endLockingTime() external view returns (uint256)
+function hasBeenDistributed(uint256 _index) external view returns (bool)
 ```
 
-End locking time
+Util function to check if distribution is done
 
 
 
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _index | uint256 | index of the distribution |
 
 #### Returns
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | uint256 | undefined |
+| _0 | bool | undefined |
 
 ### init
 
@@ -118,13 +123,30 @@ function initialize() external nonpayable
 
 
 
+### isReadyForPayout
+
+```solidity
+function isReadyForPayout() external view returns (bool)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
 ### merkleRoot
 
 ```solidity
 function merkleRoot() external view returns (bytes32)
 ```
 
-Unix timestamp from when round can accept applications
+merkle root generated from distribution
 
 
 
@@ -138,23 +160,40 @@ Unix timestamp from when round can accept applications
 ### payout
 
 ```solidity
-function payout(bytes[] encodedDistribution) external payable
+function payout(bytes[] _distributions) external payable
 ```
 
-Invoked by RoundImplementation to upload distribution to the payout strategy
+MerklePayoutStrategy implementation of payout Can be invoked only by round operator and isReadyForPayout is true
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   payout is complete - would be invoked at the end of the round*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| encodedDistribution | bytes[] | encoded distribution |
+| _distributions | bytes[] | encoded distributions |
+
+### reclaimLockEndTime
+
+```solidity
+function reclaimLockEndTime() external view returns (uint256)
+```
+
+Relclaim lock end time
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### roundAddress
 
 ```solidity
-function roundAddress() external view returns (address)
+function roundAddress() external view returns (address payable)
 ```
 
 RoundImplementation address
@@ -166,7 +205,18 @@ RoundImplementation address
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | address payable | undefined |
+
+### setReadyForPayout
+
+```solidity
+function setReadyForPayout() external payable
+```
+
+Invoked by RoundImplementation to set isReadyForPayout
+
+
+
 
 ### tokenAddress
 
@@ -191,9 +241,9 @@ Token address
 function updateDistribution(bytes encodedDistribution) external nonpayable
 ```
 
-Invoked by RoundImplementation to upload distribution to the payout strategy
+Invoked by round operator to update the - merkle root - distribution MetaPtr
 
-*- should be invoked by RoundImplementation contract - ideally IPayoutStrategy implementation should emit events after   distribution is updated - would be invoked at the end of the round*
+
 
 #### Parameters
 
@@ -204,10 +254,10 @@ Invoked by RoundImplementation to upload distribution to the payout strategy
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds(address payable withdrawFundsAddress) external nonpayable
+function withdrawFunds(address payable withdrawAddress) external nonpayable
 ```
 
-Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
+Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
 
 
 
@@ -215,11 +265,27 @@ Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from th
 
 | Name | Type | Description |
 |---|---|---|
-| withdrawFundsAddress | address payable | withdraw funds address |
+| withdrawAddress | address payable | withdraw funds address |
 
 
 
 ## Events
+
+### BatchPayoutSuccessful
+
+```solidity
+event BatchPayoutSuccessful(address indexed sender)
+```
+
+Emitted when batch payout is successful
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
 
 ### DistributionUpdated
 
@@ -237,6 +303,25 @@ Emitted when the distribution is updated
 |---|---|---|
 | merkleRoot  | bytes32 | undefined |
 | distributionMetaPtr  | MetaPtr | undefined |
+
+### FundsDistributed
+
+```solidity
+event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount)
+```
+
+Emitted when funds are distributed
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+| grantee `indexed` | address | undefined |
+| token `indexed` | address | undefined |
+| amount  | uint256 | undefined |
 
 ### FundsWithdrawn
 
@@ -270,6 +355,35 @@ event Initialized(uint8 version)
 | Name | Type | Description |
 |---|---|---|
 | version  | uint8 | undefined |
+
+### ReadyForPayout
+
+```solidity
+event ReadyForPayout()
+```
+
+Emitted when contract is ready for payout
+
+
+
+
+### ReclaimFunds
+
+```solidity
+event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount)
+```
+
+Emitted when funds are reclaimed
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| sender `indexed` | address | undefined |
+| token `indexed` | address | undefined |
+| amount `indexed` | uint256 | undefined |
 
 
 

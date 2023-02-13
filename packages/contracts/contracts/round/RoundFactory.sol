@@ -33,7 +33,7 @@ contract RoundFactory is OwnableUpgradeable {
   address payable public protocolTreasury;
 
   /// @notice Address of the RoundImplementation contract
-  address public roundContract;
+  address payable public roundContract;
 
   // --- Event ---
 
@@ -93,7 +93,7 @@ contract RoundFactory is OwnableUpgradeable {
    *
    * @param newRoundContract New RoundImplementation contract address
    */
-  function updateRoundContract(address newRoundContract) external onlyOwner {
+  function updateRoundContract(address payable newRoundContract) external onlyOwner {
 
     require(newRoundContract != address(0), "roundContract is 0x");   
 
@@ -120,7 +120,7 @@ contract RoundFactory is OwnableUpgradeable {
 
     emit RoundCreated(clone, ownedBy, roundContract);
 
-    RoundImplementation(clone).initialize(
+    RoundImplementation(payable(clone)).initialize(
       encodedParameters,
       address(this)
     );

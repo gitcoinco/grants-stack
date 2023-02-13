@@ -236,6 +236,8 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param newAmount new Amount
   function updateAmount(uint256 newAmount) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
+    require(newAmount > amount, "lesser then current amount");
+
     amount = newAmount;
 
     emit AmountUpdated(newAmount);
@@ -347,10 +349,9 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   }
 
   /// @notice Pay Protocol Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
-  /// @param encodedPayoutData encoded payout data
-  function payout(bytes[] memory encodedPayoutData) external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
+  function setReadyForPayout() external payable roundHasEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
-    uint256 fundsInContract = _getTokenBalance();
+    uint256 fundsInContract = _getTokenBalance(token);
     uint256 feeAmount = (amount * roundFactory.protocolFeePercentage() / 100);
 
     // total amount to be present in the contract
@@ -360,35 +361,48 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     // deduct fee
     address payable protocolTreasury = roundFactory.protocolTreasury();
-    _transferAmount(protocolTreasury, feeAmount);
+    _transferAmount(protocolTreasury, feeAmount, token);
 
     // transfer funds to payout contract
     if (token == address(0)) {
-      payoutStrategy.payout{value: fundsInContract}(encodedPayoutData);
+      payoutStrategy.setReadyForPayout{value: fundsInContract}();
     } else {
       IERC20(token).safeTransfer(address(payoutStrategy), fundsInContract);
-      payoutStrategy.payout(encodedPayoutData);
+      payoutStrategy.setReadyForPayout();
     }
 
     emit PayFeeAndEscrowFundsToPayoutContract(amount, feeAmount);
   }
 
+  /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
+  /// @param tokenAddress token address
+  // @param recipent recipient address
+  function withdraw(address tokenAddress, address payable recipent) external onlyRole(ROUND_OPERATOR_ROLE) {
+    require(tokenAddress != token, "cannot withdraw round token");
+    _transferAmount(recipent, _getTokenBalance(tokenAddress), tokenAddress);
+  }
+
   /// @notice Util function to get token balance in the contract
-  function _getTokenBalance() private view returns (uint256) {
-    if (token == address(0)) {
+  /// @param tokenAddress token address
+  function _getTokenBalance(address tokenAddress) private view returns (uint256) {
+    if (tokenAddress == address(0)) {
       return address(this).balance;
     } else {
-      return IERC20(token).balanceOf(address(this));
+      return IERC20(tokenAddress).balanceOf(address(this));
     }
   }
 
   /// @notice Util function to transfer amount to recipient
-  function _transferAmount(address payable _recipient, uint256 _amount) private {
-    if (token == address(0)) {
+  /// @param _recipient recipient address
+  /// @param _amount amount to transfer
+  /// @param _tokenAddress token address
+  function _transferAmount(address payable _recipient, uint256 _amount, address _tokenAddress) private {
+    if (_tokenAddress == address(0)) {
       Address.sendValue(_recipient, _amount);
     } else {
-      IERC20(token).safeTransfer(_recipient, _amount);
+      IERC20(_tokenAddress).safeTransfer(_recipient, _amount);
     }
   }
 
+  receive() external payable {}
 }
