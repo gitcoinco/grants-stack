@@ -28,26 +28,32 @@ const projectsMetadata: Metadata[] = [
 ];
 
 const roundApplicationMetadata = {
+  version: "2.0.0",
   lastUpdatedOn: 1657817494040,
-  application_schema: [],
-  applicationSchema: [
-    {
-      id: 0,
-      question: "Project",
-      type: "PROJECT",
-      required: true,
-      info: "",
-      choices: [],
+  applicationSchema: {
+    requirements: {
+      github: { required: false, verification: false },
+      twitter: { required: false, verification: false },
     },
-    {
-      id: 1,
-      question: "Recipient Address",
-      type: "RECIPIENT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-  ],
+    questions: [
+      {
+        id: 0,
+        question: "Project",
+        type: "PROJECT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 1,
+        question: "Recipient Address",
+        type: "RECIPIENT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+    ],
+  },
 };
 
 const round: Round = {
@@ -70,27 +76,24 @@ const round: Round = {
     pointer: "metaPointer",
   },
   applicationMetadata: {
+    version: "2.0.0",
     lastUpdatedOn: 1234,
-    applicationSchema: [
-      {
-        id: 0,
-        question: "Recipient Address",
-        type: "RECIPIENT",
-        required: true,
-        info: "",
-        choices: [],
+    applicationSchema: {
+      requirements: {
+        twitter: { required: false, verification: false },
+        github: { required: false, verification: false },
       },
-    ],
-    application_schema: [
-      {
-        id: 0,
-        question: "Recipient Address",
-        type: "RECIPIENT",
-        required: true,
-        info: "",
-        choices: [],
-      },
-    ],
+      questions: [
+        {
+          id: 0,
+          question: "Recipient Address",
+          type: "RECIPIENT",
+          required: true,
+          info: "",
+          choices: [],
+        },
+      ],
+    },
   },
   programName: "sample program",
 };

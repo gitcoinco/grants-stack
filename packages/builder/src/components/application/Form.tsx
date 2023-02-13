@@ -24,8 +24,8 @@ import {
   Metadata,
   ProjectOption,
   Round,
-  RoundApplicationMetadata,
 } from "../../types";
+import { RoundApplicationMetadata } from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
@@ -136,7 +136,7 @@ export default function Form({
 
   const validate = async (inputs: DynamicFormInputs) => {
     try {
-      await validateApplication(schema, inputs);
+      await validateApplication(schema.questions, inputs);
       setFormValidation({
         messages: [],
         valid: true,
@@ -296,7 +296,7 @@ export default function Form({
   return (
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        {schema.map((input) => {
+        {schema.questions.map((input) => {
           if (input.type !== "PROJECT" && !isValidProjectSelected) {
             return null;
           }
