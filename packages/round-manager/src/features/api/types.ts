@@ -101,7 +101,15 @@ export interface Program {
   };
 }
 
-export type InputType = "email" | "number" | "text" | "short-answer" | "paragraph" | "multiple-choice" | "checkbox" | "dropdown";
+export type InputType =
+  | "email"
+  | "number"
+  | "text"
+  | "short-answer"
+  | "paragraph"
+  | "multiple-choice"
+  | "checkbox"
+  | "dropdown";
 
 export type QuestionOptions = {
   title: string;
@@ -109,6 +117,7 @@ export type QuestionOptions = {
   encrypted: boolean;
   hidden: boolean;
   inputType: InputType;
+  options?: string[];
 };
 
 export interface ApplicationMetadata {

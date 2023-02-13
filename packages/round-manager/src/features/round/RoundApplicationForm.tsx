@@ -112,10 +112,11 @@ export function RoundApplicationForm(props: {
     },
   });
 
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, update } = useFieldArray({
     name: "applicationMetadata.questions",
     control,
   });
+
   const [isInEditState, setIsInEditState] = useState<boolean[]>(
     fields.map(() => false)
   );
@@ -324,7 +325,7 @@ export function RoundApplicationForm(props: {
             </div>
           </div>
           <div className="w-5 text-red-600">
-            {key > 0 && <XIcon />}
+            {key > 0 && <XIcon onClick={() => removeQuestion(key)} />}
           </div>
         </div>
       </div>
@@ -335,7 +336,7 @@ export function RoundApplicationForm(props: {
   const ApplicationQuestions = () => {
     const lockedQuestion = singleQuestion(payoutQuestion, 0);
     const f = fields.map((field, i) => (
-      singleQuestion(field, i + 1)
+      singleQuestion(field, -1)
     ))
 
     return (
@@ -345,13 +346,31 @@ export function RoundApplicationForm(props: {
           type="button"
           $variant="outline"
           className="inline-flex items-center px-3.5 py-2 mt-5 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
-          onClick={() => alert("hello world")}
+          onClick={() => addQuestion()}
         >
           <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
           Add Question
         </Button>
       </div>
     )
+  }
+
+  const addQuestion = () => {
+    append({
+      title: "",
+      inputType: "short-answer",
+      required: false,
+      encrypted: false,
+      hidden: false,
+    })
+  }
+
+  const editQuestion = (index: number, question: QuestionOptions) => {
+    update(index, question)
+  }
+
+  const removeQuestion = (index: number) => {
+    remove(index);
   }
 
   return (
@@ -433,8 +452,6 @@ const fieldHidden = (hidden: boolean) => (
     </div>
   </div>
 )
-
-
 
 function ProjectInformation() {
   const fields = [
