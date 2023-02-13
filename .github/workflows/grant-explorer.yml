@@ -1,9 +1,10 @@
 name: package/grant-explorer - Build -> Test
 on:
   push:
-  pull_request:
     branches:
       - main
+      - release
+  pull_request:
 jobs:
   build-and-deploy:
     concurrency: ci-grant-explorer-${{ github.head_ref || github.run_id }}
