@@ -38,7 +38,7 @@ abstract contract IPayoutStrategy {
   // --- Data ---
 
   /// @notice RoundImplementation address
-  address public roundAddress;
+  address payable public roundAddress;
 
   /// @notice Token address
   address public tokenAddress;
@@ -46,20 +46,26 @@ abstract contract IPayoutStrategy {
   /// MetaPtr containing the distribution
   MetaPtr public distributionMetaPtr;
 
-  /// @notice End locking time
-  uint256 public endLockingTime;
+  /// @notice Relclaim lock end time
+  uint256 public reclaimLockEndTime;
+
+  // @notice
+  bool public isReadyForPayout;
 
   // --- Event ---
 
   /// @notice Emitted when funds are withdrawn from the payout contract
   event FundsWithdrawn(address indexed tokenAddress, uint256 amount);
 
+  /// @notice Emitted when contract is ready for payout
+  event ReadyForPayout();
+
   // --- Modifier ---
 
   /// @notice modifier to check if sender is round contract.
   modifier isRoundContract() {
-    require(roundAddress != address(0), "error: voting contract not linked to a round");
-    require(msg.sender == roundAddress, "error: can be invoked only by round contract");
+    require(roundAddress != address(0), "Payout: Not linked to a round");
+    require(msg.sender == roundAddress, "Payout: Not invoked by round");
     _;
   }
 
@@ -67,7 +73,7 @@ abstract contract IPayoutStrategy {
   modifier isRoundOperator() {
     require(
       RoundImplementation(roundAddress).hasRole(ROUND_OPERATOR_ROLE, msg.sender),
-      "error: not round operator"
+      "Payout: Not round operator"
     );
     _;
   }
@@ -75,14 +81,14 @@ abstract contract IPayoutStrategy {
   /// @notice modifier to check if round has ended.
   modifier roundHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(block.timestamp >= roundEndTime,"error: round has not ended");
+    require(block.timestamp >= roundEndTime,"Payout: Round has not ended");
     _;
   }
 
   /// @notice modifier to check if lock duration has ended.
-  modifier timelockHasEnded() {
+  modifier reclaimTimelockHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(roundEndTime >= LOCK_DURATION, "error: lockDuation not ended.");
+    require(block.timestamp >= reclaimLockEndTime, "Payout: Reclaim lockDuation not ended.");
     _;
   }
 
@@ -94,12 +100,14 @@ abstract contract IPayoutStrategy {
    *
    */
   function init() external {
-    require(roundAddress == address(0x0), "init: roundAddress already set");
-    roundAddress = msg.sender;
+    require(roundAddress == address(0x0), "Payout: roundAddress already set");
+    roundAddress = payable(msg.sender);
 
-    // set the end locking time
+    // set the reclaim lock end time
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    endLockingTime = roundEndTime + LOCK_DURATION;
+    reclaimLockEndTime = roundEndTime + LOCK_DURATION;
+
+    isReadyForPayout = false;
   }
 
   /**s
@@ -107,7 +115,6 @@ abstract contract IPayoutStrategy {
    * payout strategy
    *
    * @dev
-   * - should be invoked by RoundImplementation contract
    * - ideally IPayoutStrategy implementation should emit events after
    *   distribution is updated
    * - would be invoked at the end of the round
@@ -120,18 +127,20 @@ abstract contract IPayoutStrategy {
    */
   function updateDistribution(bytes calldata _encodedDistribution) external virtual;
 
+  /// @notice Invoked by RoundImplementation to set isReadyForPayout
+  function setReadyForPayout() external payable isRoundContract roundHasEnded {
+    require(isReadyForPayout == false, "Payout: Already ready for payout");
+    isReadyForPayout = true;
+    emit ReadyForPayout();
+  }
+
   /**
    * @notice Invoked by RoundImplementation to trigger payout
    *
    * @dev
-   * - should be invoked by RoundImplementation contract
    * - could be used to trigger payout / enable payout
-   * - ideally IPayoutStrategy implementation should emit events after
-   *   payout is triggered
-   *
-   * Modifiers:
-   *  - isRoundOperator
-   *  - roundHasEnded
+   * - should be invoked only when isReadyForPayout is ttue
+   * - should emit event after every payout is triggered
    *
    * @param _encodedPayoutData encoded payout data
    */
@@ -139,18 +148,18 @@ abstract contract IPayoutStrategy {
 
   /**
    * @notice Invoked by RoundImplementation to withdraw funds to
-   * withdrawFundsAddress from the payout contract
+   * withdrawAddress from the payout contract
    *
-   * @param withdrawFundsAddress withdraw funds address
+   * @param withdrawAddress withdraw funds address
    */
-  function withdrawFunds(address payable withdrawFundsAddress) external virtual isRoundOperator timelockHasEnded {
+  function withdrawFunds(address payable withdrawAddress) external virtual isRoundOperator reclaimTimelockHasEnded {
 
     uint balance = _getTokenBalance();
 
     if (tokenAddress == address(0)) { /// @dev native token
 
       AddressUpgradeable.sendValue(
-        withdrawFundsAddress,
+        withdrawAddress,
         balance
       );
 
@@ -159,7 +168,7 @@ abstract contract IPayoutStrategy {
     } else { /// @dev ERC20 token
 
       IERC20Upgradeable(tokenAddress).safeTransfer(
-        withdrawFundsAddress,
+        withdrawAddress,
         balance
       );
 
@@ -171,7 +180,7 @@ abstract contract IPayoutStrategy {
   /**
    * Util function to get token balance in the contract
    */
-  function _getTokenBalance() private view returns (uint) {
+  function _getTokenBalance() internal view returns (uint) {
     if (tokenAddress == address(0)) {
       return address(this).balance;
     } else {
