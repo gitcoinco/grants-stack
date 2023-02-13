@@ -20,10 +20,9 @@ type Question = {
 
 // test data for building out the questions
 const questions: Question[] = [
-  { id: "0", text: "Select a type", type: "unknown" },
   { id: "1", text: "Short answer", type: "short-answer" },
   { id: "2", text: "Paragraph", type: "paragraph" },
-  { id: "3", text: "Mulitple Choice", type: "mulitple-choice" },
+  { id: "3", text: "Mulitple Choice", type: "multiple-choice" },
   { id: "4", text: "Checkboxes", type: "checkbox" },
   { id: "5", text: "Dropdown", type: "dropdown" },
 ];
@@ -37,8 +36,6 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
   const [encrypted, setEncrypted] = useState(false);
   const [showExplorer, setShowExplorer] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
-  const [selectedQuestionView, setSelectedQuestionView] = useState(<></>);
-
 
   // toggles for the modal
   const optionalSwitch = () => {
@@ -190,7 +187,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           return (
             <span className="h-4 w-4 mt-0.5"><MenuAlt2Icon /></span>
           );
-        case "mulitple-choice":
+        case "multiple-choice":
           return (
             <span className="h-4 w-4 mt-0.5"><DuplicateIcon /></span>
           );
@@ -202,8 +199,6 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
           return (
             <span className="h-4 w-4 mt-0.5"><ArrowCircleDownIcon /></span>
           );
-        case "unknown":
-          return <></>;
       }
     }
 
@@ -267,7 +262,7 @@ function AddQuestionModal({ show, onClose }: AddQuestionModalProps) {
             <div className="flex flex-col mt-6">
               {selectedQuestion.type === "short-answer" && <ShortAnswer />}
               {selectedQuestion.type === "paragraph" && <Paragraph />}
-              {selectedQuestion.type === "mulitple-choice" && <MultipleChoice />}
+              {selectedQuestion.type === "multiple-choice" && <MultipleChoice />}
               {selectedQuestion.type === "checkbox" && <Checkboxes />}
               {selectedQuestion.type === "dropdown" && <Dropdown />}
             </div>
