@@ -300,7 +300,7 @@ export function RoundApplicationForm(props: {
             <span>
               <img src={DoubleLinesText} alt="double lines" width="10px" className="mr-1 mb-1" />
             </span>
-            <span className="capitalize">
+            <span className="first-letter:capitalize">
               {field.inputType.replace("-", " ")}
             </span>
           </div>
@@ -348,7 +348,7 @@ export function RoundApplicationForm(props: {
           onClick={() => alert("hello world")}
         >
           <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-          Add A Question
+          Add Question
         </Button>
       </div>
     )
