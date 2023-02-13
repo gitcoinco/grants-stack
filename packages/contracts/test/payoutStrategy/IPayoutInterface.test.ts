@@ -135,14 +135,14 @@ describe("IPayoutInterface", function () {
 
       it("SHOULD revert WHEN invoked more than once", async() => {
         const tx = merklePayoutStrategy.init();
-        await expect(tx).to.revertedWith('roundAddress already set');
+        await expect(tx).to.revertedWith('Payout: roundAddress already set');
       });
 
       it("SHOULD set default value", async() => {
         expect(await merklePayoutStrategy.isReadyForPayout()).to.equal(false);
         
         const LOCK_DURATION = 5185000; // 60 days
-        const endLockingTime = await merklePayoutStrategy.endLockingTime();
+        const endLockingTime = await merklePayoutStrategy.reclaimLockEndTime();
         expect(endLockingTime).to.equal(_currentBlockTimestamp + LOCK_DURATION);
       });
 

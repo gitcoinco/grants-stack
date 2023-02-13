@@ -46,8 +46,8 @@ abstract contract IPayoutStrategy {
   /// MetaPtr containing the distribution
   MetaPtr public distributionMetaPtr;
 
-  /// @notice End locking time
-  uint256 public endLockingTime;
+  /// @notice Relclaim lock end time
+  uint256 public reclaimLockEndTime;
 
   // @notice
   bool public isReadyForPayout;
@@ -64,8 +64,8 @@ abstract contract IPayoutStrategy {
 
   /// @notice modifier to check if sender is round contract.
   modifier isRoundContract() {
-    require(roundAddress != address(0), "not linked to a round");
-    require(msg.sender == roundAddress, "not invoked by round");
+    require(roundAddress != address(0), "Payout: Not linked to a round");
+    require(msg.sender == roundAddress, "Payout: Not invoked by round");
     _;
   }
 
@@ -73,7 +73,7 @@ abstract contract IPayoutStrategy {
   modifier isRoundOperator() {
     require(
       RoundImplementation(roundAddress).hasRole(ROUND_OPERATOR_ROLE, msg.sender),
-      "error: not round operator"
+      "Payout: Not round operator"
     );
     _;
   }
@@ -81,14 +81,14 @@ abstract contract IPayoutStrategy {
   /// @notice modifier to check if round has ended.
   modifier roundHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(block.timestamp >= roundEndTime,"round has not ended");
+    require(block.timestamp >= roundEndTime,"Payout: Round has not ended");
     _;
   }
 
   /// @notice modifier to check if lock duration has ended.
-  modifier timelockHasEnded() {
+  modifier reclaimTimelockHasEnded() {
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(roundEndTime >= LOCK_DURATION, "lockDuation not ended.");
+    require(block.timestamp >= reclaimLockEndTime, "Payout: Reclaim lockDuation not ended.");
     _;
   }
 
@@ -100,12 +100,12 @@ abstract contract IPayoutStrategy {
    *
    */
   function init() external {
-    require(roundAddress == address(0x0), "roundAddress already set");
+    require(roundAddress == address(0x0), "Payout: roundAddress already set");
     roundAddress = msg.sender;
 
-    // set the end locking time
+    // set the reclaim lock end time
     uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    endLockingTime = roundEndTime + LOCK_DURATION;
+    reclaimLockEndTime = roundEndTime + LOCK_DURATION;
 
     isReadyForPayout = false;
   }
@@ -129,7 +129,7 @@ abstract contract IPayoutStrategy {
 
   /// @notice Invoked by RoundImplementation to set isReadyForPayout
   function setReadyForPayout() external payable isRoundContract roundHasEnded {
-    require(isReadyForPayout == false, "already ready for payout");
+    require(isReadyForPayout == false, "Payout: Already ready for payout");
     isReadyForPayout = true;
     emit ReadyForPayout();
   }
@@ -148,18 +148,18 @@ abstract contract IPayoutStrategy {
 
   /**
    * @notice Invoked by RoundImplementation to withdraw funds to
-   * withdrawFundsAddress from the payout contract
+   * withdrawAddress from the payout contract
    *
-   * @param withdrawFundsAddress withdraw funds address
+   * @param withdrawAddress withdraw funds address
    */
-  function withdrawFunds(address payable withdrawFundsAddress) external virtual isRoundOperator timelockHasEnded {
+  function withdrawFunds(address payable withdrawAddress) external virtual isRoundOperator reclaimTimelockHasEnded {
 
     uint balance = _getTokenBalance();
 
     if (tokenAddress == address(0)) { /// @dev native token
 
       AddressUpgradeable.sendValue(
-        withdrawFundsAddress,
+        withdrawAddress,
         balance
       );
 
@@ -168,7 +168,7 @@ abstract contract IPayoutStrategy {
     } else { /// @dev ERC20 token
 
       IERC20Upgradeable(tokenAddress).safeTransfer(
-        withdrawFundsAddress,
+        withdrawAddress,
         balance
       );
 

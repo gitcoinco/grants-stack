@@ -79,23 +79,6 @@ MetaPtr containing the distribution
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
 
-### endLockingTime
-
-```solidity
-function endLockingTime() external view returns (uint256)
-```
-
-End locking time
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
 ### hasBeenDistributed
 
 ```solidity
@@ -190,6 +173,23 @@ MerklePayoutStrategy implementation of payout Can be invoked only by round opera
 |---|---|---|
 | _distributions | bytes[] | encoded distributions |
 
+### reclaimLockEndTime
+
+```solidity
+function reclaimLockEndTime() external view returns (uint256)
+```
+
+Relclaim lock end time
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### roundAddress
 
 ```solidity
@@ -254,10 +254,10 @@ Invoked by round operator to update the - merkle root - distribution MetaPtr
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds(address payable withdrawFundsAddress) external nonpayable
+function withdrawFunds(address payable withdrawAddress) external nonpayable
 ```
 
-Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
+Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
 
 
 
@@ -265,19 +265,19 @@ Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from th
 
 | Name | Type | Description |
 |---|---|---|
-| withdrawFundsAddress | address payable | withdraw funds address |
+| withdrawAddress | address payable | withdraw funds address |
 
 
 
 ## Events
 
-### BatchPayoutTriggered
+### BatchPayoutSuccessful
 
 ```solidity
-event BatchPayoutTriggered(address indexed sender)
+event BatchPayoutSuccessful(address indexed sender)
 ```
 
-Emitted when batch payout is triggered
+Emitted when batch payout is successful
 
 
 

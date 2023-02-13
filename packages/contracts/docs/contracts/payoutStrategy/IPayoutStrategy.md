@@ -62,23 +62,6 @@ MetaPtr containing the distribution
 | protocol | uint256 | undefined |
 | pointer | string | undefined |
 
-### endLockingTime
-
-```solidity
-function endLockingTime() external view returns (uint256)
-```
-
-End locking time
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
 ### init
 
 ```solidity
@@ -122,6 +105,23 @@ Invoked by RoundImplementation to trigger payout
 | Name | Type | Description |
 |---|---|---|
 | _encodedPayoutData | bytes[] | encoded payout data |
+
+### reclaimLockEndTime
+
+```solidity
+function reclaimLockEndTime() external view returns (uint256)
+```
+
+Relclaim lock end time
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### roundAddress
 
@@ -187,10 +187,10 @@ sInvoked by RoundImplementation to upload distribution to the payout strategy
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds(address payable withdrawFundsAddress) external nonpayable
+function withdrawFunds(address payable withdrawAddress) external nonpayable
 ```
 
-Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from the payout contract
+Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
 
 
 
@@ -198,7 +198,7 @@ Invoked by RoundImplementation to withdraw funds to withdrawFundsAddress from th
 
 | Name | Type | Description |
 |---|---|---|
-| withdrawFundsAddress | address payable | withdraw funds address |
+| withdrawAddress | address payable | withdraw funds address |
 
 
 

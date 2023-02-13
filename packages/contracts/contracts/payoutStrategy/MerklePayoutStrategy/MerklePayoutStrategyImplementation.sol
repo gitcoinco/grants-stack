@@ -38,8 +38,8 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   /// @notice Emitted when funds are distributed
   event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount);
 
-  /// @notice Emitted when batch payout is triggered
-  event BatchPayoutTriggered(address indexed sender);
+  /// @notice Emitted when batch payout is successful
+  event BatchPayoutSuccessful(address indexed sender);
 
   // --- Types ---
   struct Distribution {
@@ -64,7 +64,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
    */
   function updateDistribution(bytes calldata encodedDistribution) external override roundHasEnded isRoundOperator {
 
-    require(isReadyForPayout == false, "already ready for payout");
+    require(isReadyForPayout == false, "Payout: Cannot update dsitribution once ready for payout");
 
     (bytes32 _merkleRoot, MetaPtr memory _distributionMetaPtr) = abi.decode(
       encodedDistribution,
@@ -97,13 +97,13 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
    */
   function payout(bytes[] calldata _distributions) external virtual override payable isRoundOperator {
 
-    require(isReadyForPayout == true, "not ready for payout");
+    require(isReadyForPayout == true, "Payout: Not ready for payout");
 
     for (uint256 i = 0; i < _distributions.length; ++i) {
       _distribute(_distributions[i]);
     }
 
-    emit BatchPayoutTriggered(msg.sender);
+    emit BatchPayoutSuccessful(msg.sender);
   }
 
   /// @notice Util function to distribute funds to recipient
@@ -120,7 +120,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     require(!hasBeenDistributed(_index), "funds already distributed");
 
     bytes32 node = keccak256(abi.encodePacked(_index, _grantee, _amount));
-    require(MerkleProof.verify(_merkleProof, merkleRoot, node), "MerklePayout: Invalid proof.");
+    require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof.");
 
     _setDistributed(_index);
 
