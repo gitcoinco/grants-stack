@@ -109,15 +109,15 @@ describe("MerklePayoutStrategyImplementation", function () {
 
     };
 
-    describe('updateDistribution', () => {
+    describe('test: updateDistribution', () => {
 
     });
 
-    describe('hasBeenDistributed', () => {
+    describe('test: hasBeenDistributed', () => {
 
     });
 
-    describe('payout', () => {
+    describe('test: payout', () => {
 
     });
   });

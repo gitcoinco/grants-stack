@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { deployContract, deployMockContract, MockContract } from "ethereum-waffle";
+import { deployContract, MockContract } from "ethereum-waffle";
 import { Wallet } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { artifacts, ethers } from "hardhat";
@@ -65,7 +65,7 @@ describe("IPayoutInterface", function () {
       // Deploy RoundImplementation contract
       roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
       roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
-      
+
       // Deploy voting strategy
       votingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
       votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
@@ -109,7 +109,7 @@ describe("IPayoutInterface", function () {
 
     };
 
-    describe('init', () => {
+    describe('test: init', () => {
 
       before(async () => {
         [user] = await ethers.getSigners();
@@ -140,7 +140,7 @@ describe("IPayoutInterface", function () {
 
       it("SHOULD set default value", async() => {
         expect(await merklePayoutStrategy.isReadyForPayout()).to.equal(false);
-        
+
         const LOCK_DURATION = 5185000; // 60 days
         const endLockingTime = await merklePayoutStrategy.reclaimLockEndTime();
         expect(endLockingTime).to.equal(_currentBlockTimestamp + LOCK_DURATION);
@@ -148,7 +148,108 @@ describe("IPayoutInterface", function () {
 
     });
 
-    describe('withdrawFunds', () => {
+    describe('test: setReadyForPayout', () => {
+
+      beforeEach(async () => {
+
+        [user] = await ethers.getSigners();
+
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        // Deploy MerklePayoutStrategyImplementation
+        merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
+        merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
+      });
+
+      it("SHOULD revert if invoked when roundAddress is not set", async() => {
+        const tx = merklePayoutStrategy.setReadyForPayout();
+        await expect(tx).to.revertedWith('not linked to a round');
+      });
+
+      it("SHOULD revert if not called by Round", async () => {
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+        const tx = merklePayoutStrategy.setReadyForPayout();
+        await expect(tx).to.revertedWith('not invoked by round');
+      });
+
+      // TODO: FIX
+
+      // it.only("SHOULD revert if round has not ended", async () => {
+
+      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+      //   const tx = merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+
+      //   await expect(tx).to.revertedWith('round has not ended');
+      // });
+
+
+      // it("SHOULD set isReadyForPayout as true", async() => {
+      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+      //   console.log(roundImplementation.address);
+      //   console.log(await roundImplementation.roundEndTime());
+      //   console.log(await merklePayoutStrategy.isReadyForPayout());
+
+      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+
+      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+      //   const tx = await merklePayoutStrategy.isReadyForPayout();
+      //   expect(tx).to.equal(true);
+
+      // });
+
+      // it.only("SHOULD emit ReadyForPayout event", async() => {
+      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+
+      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+      //   const tx = await merklePayoutStrategy.isReadyForPayout();
+
+      //   expect(tx).to.emit(merklePayoutStrategy, 'ReadyForPayout');
+      // });
+
+      // it.only("SHOULD revert if isReadyForPayout is already true", async() => {
+      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+
+      //   const tx = await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+
+      //   expect(tx).to.revertedWith('isReadyForPayout already set');
+      // });
+
+    });
+
+    describe('test: withdrawFunds', () => {
+      before(async () => {
+        [user] = await ethers.getSigners();
+
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        // Deploy MerklePayoutStrategyImplementation
+        merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
+        merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
+
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+      });
+
+      it("SHOULD revert WHEN invoked before endLockingTime", async() => {
+      });
+
+      it("SHOULD not revert WHEN invoked when the contract has no funds", async() => {
+      });
+
+      it("SHOULD transfer native funds WHEN invoked after endLockingTime", async() => {
+      });
+
+      it("SHOULD transfer ERC20 funds WHEN invoked after endLockingTime", async() => {
+      });
 
     });
   });
