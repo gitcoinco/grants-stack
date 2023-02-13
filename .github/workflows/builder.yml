@@ -6,6 +6,8 @@ on:
       - main
       - release
   pull_request:
+    branches:
+      - "**"
 
 jobs:
   build:

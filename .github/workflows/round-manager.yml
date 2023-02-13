@@ -5,6 +5,8 @@ on:
       - main
       - release
   pull_request:
+    branches:
+      - "**"
 jobs:
   build-and-deploy:
     concurrency: ci-round-manager-${{ github.head_ref || github.run_id }}
