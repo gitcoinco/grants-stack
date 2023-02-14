@@ -315,6 +315,7 @@ export function RoundApplicationForm(props: {
             <div className="w-5">
               {key >= 0 &&
                 <PencilIcon
+                  className="cursor-pointer"
                   onClick={() => {
                     setToEdit({
                       index: key,
@@ -325,7 +326,7 @@ export function RoundApplicationForm(props: {
             </div>
           </div>
           <div className="w-5 text-red-600">
-            {key >= 0 && <XIcon onClick={() => removeQuestion(key)} />}
+            {key >= 0 && <XIcon className="cursor-pointer" onClick={() => removeQuestion(key)} />}
           </div>
         </div>
       </div>

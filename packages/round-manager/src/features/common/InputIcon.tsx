@@ -2,10 +2,9 @@ import { CheckCircleIcon, MailIcon, CubeTransparentIcon, MenuAlt4Icon, MenuAlt2I
 import { InputType } from "../api/types";
 
 type InputIconProps = {
-  type: InputType;
+  type?: InputType | string;
   className?: string;
 };
-
 
 export const InputIcon = ({ type, className }: InputIconProps) => {
   const icons: any = {
@@ -20,7 +19,7 @@ export const InputIcon = ({ type, className }: InputIconProps) => {
 
   return (
     <span className={`h-4 w-4 flex items-center ${className}`}>
-      {icons[type] || <MenuAlt4Icon />}
+      {type && type in icons ? icons[type] : <></>}
     </span>
   );
 };
