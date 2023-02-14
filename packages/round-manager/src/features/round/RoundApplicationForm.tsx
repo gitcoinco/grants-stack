@@ -32,15 +32,15 @@ import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 
-import DoubleLinesText from "../../assets/double-lines-text.svg";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
+import { InputIcon } from "../common/InputIcon";
 
 const payoutQuestion: QuestionOptions = {
   title: "Payout Wallet Address",
   required: true,
   encrypted: false,
   hidden: true,
-  inputType: "short-answer",
+  inputType: "address",
 };
 
 export const initialQuestions: QuestionOptions[] = [
@@ -287,7 +287,7 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <img src={DoubleLinesText} alt="double lines" width="10px" className="mr-1 mb-1" />
+              <InputIcon className="mr-1 mb-0.5" type={field.inputType}/>
             </span>
             <span className="first-letter:capitalize">
               {field.inputType.replace("-", " ")}
@@ -391,8 +391,16 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
-          <AddQuestionModal onSave={() => console.log("Saving")} question={payoutQuestion} show={true} onClose={() => console.log("hello")} />
-          <PreviewQuestionModal show={true} onClose={() => console.log("hello")} />
+          <AddQuestionModal
+            show={true}
+            onSave={() => console.log("Saving")}
+            onClose={() => console.log("hello")}
+            question={payoutQuestion}
+          />
+          <PreviewQuestionModal
+            show={false}
+            onClose={() => console.log("hello")}
+          />
         </div>
       </div>
     </div>

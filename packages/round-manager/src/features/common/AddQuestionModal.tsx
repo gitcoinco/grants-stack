@@ -1,10 +1,10 @@
 import { Dialog, Listbox } from "@headlessui/react";
-import { CheckCircleIcon } from "@heroicons/react/outline";
-import { ArrowCircleDownIcon, ChevronDownIcon, DuplicateIcon, MenuAlt2Icon, MenuAlt4Icon, PlusIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useState } from "react";
 import { InputType, QuestionOptions } from "../api/types";
 import BaseSwitch from "./BaseSwitch";
+import { InputIcon } from "./InputIcon";
 import Option from "./Option";
 
 type AddQuestionModalProps = {
@@ -170,30 +170,6 @@ function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
 
   function QuestionSelectList() {
     // render the correct icon based on the question type
-    function renderIcon(type: InputType) {
-      switch (type) {
-        case "short-answer":
-          return (
-            <span className="h-4 w-4 mt-0.5"><MenuAlt4Icon /></span>
-          );
-        case "paragraph":
-          return (
-            <span className="h-4 w-4 mt-0.5"><MenuAlt2Icon /></span>
-          );
-        case "multiple-choice":
-          return (
-            <span className="h-4 w-4 mt-0.5"><DuplicateIcon /></span>
-          );
-        case "checkbox":
-          return (
-            <span className="h-4 w-4 mt-0.5"><CheckCircleIcon /></span>
-          );
-        case "dropdown":
-          return (
-            <span className="h-4 w-4 mt-0.5"><ArrowCircleDownIcon /></span>
-          );
-      }
-    }
 
     return (
       <Listbox
@@ -205,7 +181,7 @@ function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
         }}
       >
         <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
-          {renderIcon(selectedQuestion.type)}
+          <InputIcon className="mt-1" type={selectedQuestion.type} />
           <span className="mr-1 ml-2 text-grey-400 font-medium">{selectedQuestion.text}</span>
           <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
         </Listbox.Button>
@@ -223,9 +199,9 @@ function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
                       }`}
                   >
                     <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
-                      {renderIcon(question.type)}
+                      <InputIcon type={question.type} />
                     </span>
-                    <span className="flex text-md w-full">{question.text}</span>
+                    <span className="flex text-md w-full ml-1 mt-0.5">{question.text}</span>
                   </span>
                 )}
               </Listbox.Option>)
