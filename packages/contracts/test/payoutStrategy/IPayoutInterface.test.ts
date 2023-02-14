@@ -1,16 +1,21 @@
+import { AddressZero } from "@ethersproject/constants";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { deployContract, MockContract } from "ethereum-waffle";
 import { Wallet } from "ethers";
 import { isAddress } from "ethers/lib/utils";
-import { artifacts, ethers } from "hardhat";
+import { artifacts, ethers, upgrades } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { encodeRoundParameters } from "../../scripts/utils";
-import { MerklePayoutStrategyImplementation, QuadraticFundingVotingStrategyImplementation, RoundFactory, RoundImplementation } from "../../typechain";
+import { MerklePayoutStrategyImplementation, MockERC20, QuadraticFundingVotingStrategyImplementation, RoundFactory, RoundFactory__factory, RoundImplementation } from "../../typechain";
 
 describe("IPayoutInterface", function () {
 
   let user: SignerWithAddress;
+
+  // Round Factory
+  let roundContractFactory: RoundFactory__factory;
+  let roundFactoryContract: RoundFactory;
 
   // Round Implementation
   let roundImplementation: RoundImplementation;
@@ -24,17 +29,32 @@ describe("IPayoutInterface", function () {
   let merklePayoutStrategy: MerklePayoutStrategyImplementation;
   let merklePayoutStrategyArtifact: Artifact;
 
+  // MockERC20
+  let mockERC20: MockERC20;
+  let mockERC20Artifact: Artifact;
+
+
   const VERSION = "0.2.0";
+
+
+  before(async () => {
+    [user] = await ethers.getSigners();
+
+    // Deploy RoundFactory contract
+    roundContractFactory = await ethers.getContractFactory('RoundFactory');
+    roundFactoryContract = <RoundFactory>await upgrades.deployProxy(roundContractFactory);
+
+    // Deploy MerklePayoutStrategyImplementation
+    merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
+    merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
+
+    roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
+
+  })
 
   describe('constructor', () => {
 
     it('SHOULD deploy properly', async () => {
-
-      [user] = await ethers.getSigners();
-
-      // Deploy MerklePayoutStrategyImplementation
-      merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
-      merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
 
       // Verify deploy
       expect(isAddress(merklePayoutStrategy.address), 'Failed to deploy MerklePayoutStrategyImplementation').to.be.true;
@@ -47,10 +67,14 @@ describe("IPayoutInterface", function () {
 
     const initPayoutStrategy = async (
       _currentBlockTimestamp: number,
-      payoutStrategyContract: MerklePayoutStrategyImplementation
+      payoutStrategyContract: MerklePayoutStrategyImplementation,
+      overrides?: any
     ) => {
 
-      const token = Wallet.createRandom().address;
+      // Deploy MockERC20 contract if _token is not provided
+      mockERC20Artifact = await artifacts.readArtifact('MockERC20');
+      mockERC20 = <MockERC20>await deployContract(user, mockERC20Artifact, [10000]);
+      const token =  overrides && overrides.hasOwnProperty('token') ? overrides.token : mockERC20.address;
 
       const roundMetaPtr = { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" };
       const applicationMetaPtr = { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" };
@@ -104,9 +128,10 @@ describe("IPayoutInterface", function () {
 
       await roundImplementation.initialize(
         encodeRoundParameters(params),
-        Wallet.createRandom().address
+        roundFactoryContract.address
       );
-
+      
+      return params;
     };
 
     describe('test: init', () => {
@@ -135,7 +160,7 @@ describe("IPayoutInterface", function () {
 
       it("SHOULD revert WHEN invoked more than once", async() => {
         const tx = merklePayoutStrategy.init();
-        await expect(tx).to.revertedWith('Payout: roundAddress already set');
+        await expect(tx).to.revertedWith('roundAddress already set');
       });
 
       it("SHOULD set default value", async() => {
@@ -152,6 +177,10 @@ describe("IPayoutInterface", function () {
 
       beforeEach(async () => {
 
+        // update protocol treasury
+        let protocolTreasury = Wallet.createRandom().address;
+        await roundFactoryContract.updateProtocolTreasury(protocolTreasury);
+                  
         [user] = await ethers.getSigners();
 
         _currentBlockTimestamp = (await ethers.provider.getBlock(
@@ -162,7 +191,7 @@ describe("IPayoutInterface", function () {
         merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
         merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
       });
-
+      
       it("SHOULD revert if invoked when roundAddress is not set", async() => {
         const tx = merklePayoutStrategy.setReadyForPayout();
         await expect(tx).to.revertedWith('not linked to a round');
@@ -175,57 +204,68 @@ describe("IPayoutInterface", function () {
         await expect(tx).to.revertedWith('not invoked by round');
       });
 
-      // TODO: FIX
+      it("SHOULD revert if round has not ended", async () => {
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
 
-      // it.only("SHOULD revert if round has not ended", async () => {
+        // transfer some tokens to roundImplementation
+        await mockERC20.transfer(roundImplementation.address, 110);
 
-      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
-      //   const tx = merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+        const tx = roundImplementation.setReadyForPayout();
+        await expect(tx).to.revertedWith('round has not ended');
+      });
 
-      //   await expect(tx).to.revertedWith('round has not ended');
-      // });
+      it("SHOULD set isReadyForPayout as true", async() => {
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
 
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1300]);
 
-      // it("SHOULD set isReadyForPayout as true", async() => {
-      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+        // transfer some tokens to roundImplementation
+        await mockERC20.transfer(roundImplementation.address, 110);
 
-      //   console.log(roundImplementation.address);
-      //   console.log(await roundImplementation.roundEndTime());
-      //   console.log(await merklePayoutStrategy.isReadyForPayout());
+        await roundImplementation.setReadyForPayout();
 
-      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+        expect(await merklePayoutStrategy.isReadyForPayout()).to.equal(true);
+      });
 
-      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
-      //   const tx = await merklePayoutStrategy.isReadyForPayout();
-      //   expect(tx).to.equal(true);
+      it("SHOULD emit ReadyForPayout event", async() => {
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
 
-      // });
+        // transfer some tokens to roundImplementation
+        await mockERC20.transfer(roundImplementation.address, 110);
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1300])
 
-      // it.only("SHOULD emit ReadyForPayout event", async() => {
-      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+        // set isReadyForPayout as true
+        const tx = roundImplementation.setReadyForPayout();
 
-      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
+        await expect(tx).to.emit(merklePayoutStrategy, 'ReadyForPayout');
+      });
 
-      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
-      //   const tx = await merklePayoutStrategy.isReadyForPayout();
+      it("SHOULD revert if isReadyForPayout is already true", async() => {
+        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
 
-      //   expect(tx).to.emit(merklePayoutStrategy, 'ReadyForPayout');
-      // });
+        // transfer some tokens to roundImplementation
+        await mockERC20.transfer(roundImplementation.address, 110);
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1300])
 
-      // it.only("SHOULD revert if isReadyForPayout is already true", async() => {
-      //   await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
-      //   await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
-      //   await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
+        // set isReadyForPayout as true
+        await roundImplementation.setReadyForPayout();
 
-      //   const tx = await merklePayoutStrategy.connect(roundImplementation).setReadyForPayout();
-
-      //   expect(tx).to.revertedWith('isReadyForPayout already set');
-      // });
+        // try to set isReadyForPayout as true again
+        await mockERC20.transfer(roundImplementation.address, 110);
+        const tx = roundImplementation.setReadyForPayout(); 
+  
+        await expect(tx).to.revertedWith('isReadyForPayout already set');
+      });
 
     });
 
     describe('test: withdrawFunds', () => {
-      before(async () => {
+
+      let params: any;
+
+      const LOCK_DURATION = 5185000; // 60 days
+
+      beforeEach(async () => {
         [user] = await ethers.getSigners();
 
         _currentBlockTimestamp = (await ethers.provider.getBlock(
@@ -236,19 +276,105 @@ describe("IPayoutInterface", function () {
         merklePayoutStrategyArtifact = await artifacts.readArtifact('MerklePayoutStrategyImplementation');
         merklePayoutStrategy = <MerklePayoutStrategyImplementation>await deployContract(user, merklePayoutStrategyArtifact, []);
 
-        await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+      });
+
+      it("SHOULD revert WHEN invoked by not round operator", async() => {
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+        const [_, notRoundOperator] = await ethers.getSigners();
+        const tx = merklePayoutStrategy.connect(notRoundOperator).withdrawFunds(Wallet.createRandom().address);        
+        await expect(tx).to.revertedWith('not round operator');
       });
 
       it("SHOULD revert WHEN invoked before endLockingTime", async() => {
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+        const tx = merklePayoutStrategy.withdrawFunds(Wallet.createRandom().address);        
+        await expect(tx).to.revertedWith('reclaim lockDuration not ended');
       });
 
       it("SHOULD not revert WHEN invoked when the contract has no funds", async() => {
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + LOCK_DURATION + 1200])
+
+        const tx = merklePayoutStrategy.withdrawFunds(Wallet.createRandom().address);
+        await expect(tx).to.not.reverted;
       });
 
       it("SHOULD transfer native funds WHEN invoked after endLockingTime", async() => {
+        
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy, {
+          token: AddressZero
+        });
+
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + LOCK_DURATION + 1200])
+
+        // transfer funds to payout strategy
+        await user.sendTransaction({
+          to: merklePayoutStrategy.address,
+          value: ethers.utils.parseEther("1.0"),
+        });
+        
+        expect(await ethers.provider.getBalance(merklePayoutStrategy.address)).to.equal(ethers.utils.parseEther("1.0"));
+
+        // withdraw funds
+        const withdrawAddress = Wallet.createRandom().address;
+        await merklePayoutStrategy.withdrawFunds(withdrawAddress);
+        
+        expect(await ethers.provider.getBalance(merklePayoutStrategy.address)).to.equal(0);
+        expect(await ethers.provider.getBalance(withdrawAddress)).to.equal(ethers.utils.parseEther("1.0"));
+
       });
 
-      it("SHOULD transfer ERC20 funds WHEN invoked after endLockingTime", async() => {
+      it("SHOULD transfer ERC20 funds and emit event WHEN invoked after endLockingTime", async() => {
+
+        const [_, withdrawAddress] = await ethers.getSigners();
+
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy, {});
+        
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + LOCK_DURATION + 1200])
+
+        // transfer funds to payout strategy
+        await mockERC20.transfer(merklePayoutStrategy.address, 10);
+
+        // check balance on payout strategy
+        expect(await mockERC20.balanceOf(merklePayoutStrategy.address)).to.equal(10);
+
+        // withdraw funds
+        await merklePayoutStrategy.withdrawFunds(withdrawAddress.address);
+
+        // check balance on payout strategy & withdraw address
+        expect(await mockERC20.balanceOf(merklePayoutStrategy.address)).to.equal(0);
+        expect(await mockERC20.balanceOf(withdrawAddress.address)).to.equal(10);
+      });
+
+      it("SHOULD emit event WHEN invoked after endLockingTime", async() => {
+        params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
+        
+        // Mine Blocks
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + LOCK_DURATION + 1200])
+
+        // transfer funds to payout strategy
+        await mockERC20.transfer(merklePayoutStrategy.address, 10);
+
+        // check balance on payout strategy
+        expect(await mockERC20.balanceOf(merklePayoutStrategy.address)).to.equal(10);
+
+        // withdraw funds
+        const withdrawAddress = Wallet.createRandom().address;
+        const tx = merklePayoutStrategy.withdrawFunds(withdrawAddress);        
+
+        await expect(tx).to.emit(
+          merklePayoutStrategy, 'FundsWithdrawn'
+        ).withArgs(
+          mockERC20.address,
+          10,
+          withdrawAddress
+        );
       });
 
     });
