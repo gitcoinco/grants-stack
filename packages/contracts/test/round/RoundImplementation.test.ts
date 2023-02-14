@@ -24,7 +24,7 @@ describe("RoundImplementation", function () {
 
   let user: SignerWithAddress;
 
-  // Round Implementation
+  // Round Factory
   let roundContractFactory: RoundFactory__factory;
   let roundFactoryContract: RoundFactory;
 

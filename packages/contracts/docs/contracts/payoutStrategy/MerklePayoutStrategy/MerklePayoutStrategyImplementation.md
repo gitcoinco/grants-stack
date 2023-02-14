@@ -254,7 +254,7 @@ Invoked by round operator to update the - merkle root - distribution MetaPtr
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds(address payable withdrawAddress) external nonpayable
+function withdrawFunds(address payable withdrawAddress) external payable
 ```
 
 Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
@@ -326,7 +326,7 @@ Emitted when funds are distributed
 ### FundsWithdrawn
 
 ```solidity
-event FundsWithdrawn(address indexed tokenAddress, uint256 amount)
+event FundsWithdrawn(address indexed tokenAddress, uint256 amount, address withdrawAddress)
 ```
 
 Emitted when funds are withdrawn from the payout contract
@@ -339,6 +339,7 @@ Emitted when funds are withdrawn from the payout contract
 |---|---|---|
 | tokenAddress `indexed` | address | undefined |
 | amount  | uint256 | undefined |
+| withdrawAddress  | address | undefined |
 
 ### Initialized
 
