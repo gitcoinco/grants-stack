@@ -11,7 +11,7 @@ contract MerklePayoutStrategyFactory is OwnableUpgradeable {
 
   // --- Data ---
 
-  address public payoutImplementation;
+  address payable public payoutImplementation;
 
   // --- Event ---
 
@@ -40,7 +40,7 @@ contract MerklePayoutStrategyFactory is OwnableUpgradeable {
    *
    * @param newPayoutImplementation - address of the new payoutImplementation
    */
-  function updatePayoutImplementation(address newPayoutImplementation) external onlyOwner {
+  function updatePayoutImplementation(address payable newPayoutImplementation) external onlyOwner {
 
     payoutImplementation = newPayoutImplementation;
 
@@ -55,7 +55,7 @@ contract MerklePayoutStrategyFactory is OwnableUpgradeable {
   ) external returns (address) {
 
     address clone = ClonesUpgradeable.clone(payoutImplementation);
-    MerklePayoutStrategyImplementation(clone).initialize();
+    MerklePayoutStrategyImplementation(payable(clone)).initialize();
     emit PayoutContractCreated(clone, payoutImplementation);
 
     return clone;

@@ -187,7 +187,7 @@ sInvoked by RoundImplementation to upload distribution to the payout strategy
 ### withdrawFunds
 
 ```solidity
-function withdrawFunds(address payable withdrawAddress) external nonpayable
+function withdrawFunds(address payable withdrawAddress) external payable
 ```
 
 Invoked by RoundImplementation to withdraw funds to withdrawAddress from the payout contract
@@ -207,7 +207,7 @@ Invoked by RoundImplementation to withdraw funds to withdrawAddress from the pay
 ### FundsWithdrawn
 
 ```solidity
-event FundsWithdrawn(address indexed tokenAddress, uint256 amount)
+event FundsWithdrawn(address indexed tokenAddress, uint256 amount, address withdrawAddress)
 ```
 
 Emitted when funds are withdrawn from the payout contract
@@ -220,6 +220,7 @@ Emitted when funds are withdrawn from the payout contract
 |---|---|---|
 | tokenAddress `indexed` | address | undefined |
 | amount  | uint256 | undefined |
+| withdrawAddress  | address | undefined |
 
 ### ReadyForPayout
 
