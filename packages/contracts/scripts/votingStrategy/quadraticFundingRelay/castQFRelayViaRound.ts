@@ -69,9 +69,6 @@ export async function main() {
   const approveTx = await tokenContract.approve(votingContract, 100);
   approveTx.wait();
 
-  const approveRoundTx = await tokenContract.approve(grantRoundContract, 100);
-  approveRoundTx.wait();
-
   console.log("Approved Allowance");
 
   // Cast Vote
