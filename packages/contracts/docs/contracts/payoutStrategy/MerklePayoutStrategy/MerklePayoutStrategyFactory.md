@@ -58,7 +58,7 @@ function owner() external view returns (address)
 ### payoutImplementation
 
 ```solidity
-function payoutImplementation() external view returns (address)
+function payoutImplementation() external view returns (address payable)
 ```
 
 
@@ -70,7 +70,7 @@ function payoutImplementation() external view returns (address)
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | address payable | undefined |
 
 ### renounceOwnership
 
@@ -102,7 +102,7 @@ function transferOwnership(address newOwner) external nonpayable
 ### updatePayoutImplementation
 
 ```solidity
-function updatePayoutImplementation(address newPayoutImplementation) external nonpayable
+function updatePayoutImplementation(address payable newPayoutImplementation) external nonpayable
 ```
 
 Allows the owner to update the payoutImplementation. This provides us the flexibility to upgrade MerklePayoutStrategyImplementation contract while relying on the same MerklePayoutStrategyFactory to get the list of MerklePayout contracts.
@@ -113,7 +113,7 @@ Allows the owner to update the payoutImplementation. This provides us the flexib
 
 | Name | Type | Description |
 |---|---|---|
-| newPayoutImplementation | address | - address of the new payoutImplementation |
+| newPayoutImplementation | address payable | - address of the new payoutImplementation |
 
 
 
