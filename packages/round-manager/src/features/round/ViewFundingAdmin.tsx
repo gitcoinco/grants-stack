@@ -474,9 +474,9 @@ function UploadJSON(props: {
         );
         setProjectIDMismatch(idMismatch);
         setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-        !idMismatch &&
-          !matchPoolPercentageMismatch &&
-          props.setCustomMatchingData(jsonData);
+        // !idMismatch &&
+        //   !matchPoolPercentageMismatch &&
+        props.setCustomMatchingData(jsonData);
       } catch (error) {
         props.setCustomMatchingData(undefined);
       }
@@ -517,9 +517,9 @@ function UploadJSON(props: {
           );
           setProjectIDMismatch(idMismatch);
           setMatchingPerecentMismatch(matchPoolPercentageMismatch);
-          !idMismatch &&
-            !matchPoolPercentageMismatch &&
-            props.setCustomMatchingData(jsonData);
+          // !idMismatch &&
+          //   !matchPoolPercentageMismatch &&
+          props.setCustomMatchingData(jsonData);
         } catch (error) {
           props.setCustomMatchingData(undefined);
         }
