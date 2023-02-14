@@ -19,6 +19,7 @@ import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
 import {
   ApplicationMetadata,
+  EditQuestion,
   Program,
   ProgressStatus,
   QuestionOptions,
@@ -74,7 +75,10 @@ export function RoundApplicationForm(props: {
   stepper: typeof FS;
 }) {
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openPreviewModal, setOpenPreviewModal] = useState(false);
+  const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [openHeadsUpModal, setOpenHeadsUpModal] = useState(false);
+  const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -287,7 +291,7 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5" type={field.inputType}/>
+              <InputIcon className="mr-1 mb-0.5 w-3 h-3" type={field.inputType} />
             </span>
             <span className="first-letter:capitalize">
               {field.inputType.replace("-", " ")}
@@ -309,11 +313,19 @@ export function RoundApplicationForm(props: {
           </div>
           <div className="text-sm justify-center flex p-2">
             <div className="w-5">
-              {key > 0 && <PencilIcon />}
+              {key >= 0 &&
+                <PencilIcon
+                  onClick={() => {
+                    setToEdit({
+                      index: key,
+                      field: field,
+                    });
+                    setOpenAddQuestionModal(true);
+                  }} />}
             </div>
           </div>
           <div className="w-5 text-red-600">
-            {key > 0 && <XIcon onClick={() => removeQuestion(key)} />}
+            {key >= 0 && <XIcon onClick={() => removeQuestion(key)} />}
           </div>
         </div>
       </div>
@@ -322,9 +334,9 @@ export function RoundApplicationForm(props: {
   )
 
   const ApplicationQuestions = () => {
-    const lockedQuestion = singleQuestion(payoutQuestion, 0);
+    const lockedQuestion = singleQuestion(payoutQuestion, -1);
     const f = fields.map((field, i) => (
-      singleQuestion(field, -1)
+      singleQuestion(field, i)
     ))
 
     return (
@@ -334,27 +346,39 @@ export function RoundApplicationForm(props: {
           type="button"
           $variant="outline"
           className="inline-flex items-center px-3.5 py-2 mt-5 border-none shadow-sm text-sm rounded text-violet-500 bg-violet-100"
-          onClick={() => addQuestion()}
+          onClick={() => {
+            setToEdit(undefined);
+            setOpenAddQuestionModal(true);
+          }}
         >
           <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
           Add Question
         </Button>
+        <AddQuestionModal
+          show={openAddQuestionModal}
+          onSave={addOrEditQuestion}
+          onClose={() => {
+            setToEdit(undefined)
+            setOpenAddQuestionModal(false)
+          }}
+          question={toEdit}
+        />
+        <PreviewQuestionModal
+          show={openPreviewModal}
+          onClose={() => setOpenPreviewModal(false)}
+        />
       </div>
     )
   }
 
-  const addQuestion = () => {
-    append({
-      title: "",
-      inputType: "short-answer",
-      required: false,
-      encrypted: false,
-      hidden: false,
-    })
-  }
-
-  const editQuestion = (index: number, question: QuestionOptions) => {
-    update(index, question)
+  const addOrEditQuestion = (question: EditQuestion) => {
+    if(question.field) {
+      if (!question.index) {
+        append(question.field);
+      } else {
+        update(question.index, question.field);
+      }
+    }
   }
 
   const removeQuestion = (index: number) => {
@@ -391,16 +415,6 @@ export function RoundApplicationForm(props: {
             </div>
           </form>
           {formSubmitModals()}
-          <AddQuestionModal
-            show={true}
-            onSave={() => console.log("Saving")}
-            onClose={() => console.log("hello")}
-            question={payoutQuestion}
-          />
-          <PreviewQuestionModal
-            show={false}
-            onClose={() => console.log("hello")}
-          />
         </div>
       </div>
     </div>

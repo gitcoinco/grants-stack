@@ -2,14 +2,14 @@ import { Dialog, Listbox } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useState } from "react";
-import { InputType, QuestionOptions } from "../api/types";
+import { EditQuestion, InputType, QuestionOptions } from "../api/types";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
 
 type AddQuestionModalProps = {
-  onSave: (question: Question) => void;
-  question: QuestionOptions;
+  onSave: (question: EditQuestion) => void;
+  question: EditQuestion | undefined;
   show: boolean;
   onClose: () => void;
 };
@@ -32,7 +32,7 @@ const questions: Question[] = [
 // eslint-disable-next-line prefer-const
 let options = [];
 
-function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
+function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
   const [isOpen, setIsOpen] = useState(show);
   const [optional, setOptional] = useState(true);
   const [encrypted, setEncrypted] = useState(false);
@@ -217,7 +217,7 @@ function AddQuestionModal({ onSave, show, onClose }: AddQuestionModalProps) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
           <Dialog.Title className="mb-4">
-            <span className="text-lg text-grey-500">Add Question</span>
+            <span className="text-lg text-grey-500">{question && !question.index ? `Add Question` : `Edit Question`}</span>
           </Dialog.Title>
           <Dialog.Description className="mb-2 text-grey-500 font-normal">
             <span className="text-md ">Question Type</span>

@@ -121,6 +121,11 @@ export type QuestionOptions = {
   options?: string[];
 };
 
+export type EditQuestion = {
+  index?: number;
+  field?: QuestionOptions;
+};
+
 export interface ApplicationMetadata {
   questions?: QuestionOptions[];
 }
