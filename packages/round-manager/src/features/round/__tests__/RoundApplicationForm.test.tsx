@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import {
   initialQuestions,
   RoundApplicationForm,
@@ -632,14 +638,13 @@ describe("Project Socials", () => {
 
     const switches = getAllByTestId("test-switch-id");
 
-    expect(switches.length).toBe(2)
+    expect(switches.length).toBe(2);
     // twitterVerification and githubVerification are not rendered at this point
     expect(switches[0]).not.toBeChecked(); // twitter
     expect(switches[1]).not.toBeChecked(); // github
   });
 
   it("should render twitterVerification when twitter is required", async () => {
-
     const { getAllByTestId } = renderWithContext(
       <RoundApplicationForm
         initialData={{
@@ -660,14 +665,13 @@ describe("Project Socials", () => {
 
     const updatedSwitches = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches.length).toBe(3)
+    expect(updatedSwitches.length).toBe(3);
     expect(updatedSwitches[0]).toBeChecked(); // twitter
     expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
     expect(updatedSwitches[2]).not.toBeChecked(); // github
   });
 
   it("should render githubVerification when github is required", async () => {
-
     const { getAllByTestId } = renderWithContext(
       <RoundApplicationForm
         initialData={{
@@ -681,6 +685,7 @@ describe("Project Socials", () => {
     );
 
     const switches = getAllByTestId("test-switch-id");
+    expect(switches.length).toBe(2);
 
     await act(async () => {
       fireEvent.click(switches[1]); // github required: true
@@ -688,14 +693,13 @@ describe("Project Socials", () => {
 
     const updatedSwitches = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches.length).toBe(3)
+    expect(updatedSwitches.length).toBe(3);
     expect(updatedSwitches[0]).not.toBeChecked(); // twitter
     expect(updatedSwitches[1]).toBeChecked(); // github
     expect(updatedSwitches[2]).not.toBeChecked(); // github verification
   });
 
   it("should render twitterVerification and githubVerification when twitter and github are required", async () => {
-
     const { getAllByTestId } = renderWithContext(
       <RoundApplicationForm
         initialData={{
@@ -720,7 +724,7 @@ describe("Project Socials", () => {
 
     const updatedSwitches = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches.length).toBe(4)
+    expect(updatedSwitches.length).toBe(4);
     expect(updatedSwitches[0]).toBeChecked(); // twitter
     expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
     expect(updatedSwitches[2]).toBeChecked(); // github
@@ -728,7 +732,6 @@ describe("Project Socials", () => {
   });
 
   it("should toggle all switches on", async () => {
-
     const { getAllByTestId } = renderWithContext(
       <RoundApplicationForm
         initialData={{
@@ -763,7 +766,7 @@ describe("Project Socials", () => {
 
     const updatedSwitches = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches.length).toBe(4)
+    expect(updatedSwitches.length).toBe(4);
     expect(updatedSwitches[0]).toBeChecked(); // twitter
     expect(updatedSwitches[1]).toBeChecked(); // twitter verification
     expect(updatedSwitches[2]).toBeChecked(); // github
@@ -771,7 +774,6 @@ describe("Project Socials", () => {
   });
 
   it("should toggle all switches off", async () => {
-
     const { getAllByTestId } = renderWithContext(
       <RoundApplicationForm
         initialData={{
@@ -806,7 +808,7 @@ describe("Project Socials", () => {
 
     const updatedSwitches = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches.length).toBe(4)
+    expect(updatedSwitches.length).toBe(4);
     expect(updatedSwitches[0]).toBeChecked(); // twitter
     expect(updatedSwitches[1]).toBeChecked(); // twitter verification
     expect(updatedSwitches[2]).toBeChecked(); // github
@@ -824,23 +826,22 @@ describe("Project Socials", () => {
 
     const updatedSwitches5 = getAllByTestId("test-switch-id");
 
-    expect(updatedSwitches5.length).toBe(2)
+    expect(updatedSwitches5.length).toBe(2);
     expect(updatedSwitches5[0]).not.toBeChecked(); // twitter
     expect(updatedSwitches5[1]).not.toBeChecked(); // github
   });
-
 });
 
-  export const renderWithContext = (
-    ui: JSX.Element,
-    createRoundStateOverrides: Partial<CreateRoundState> = {}
-  ) =>
-    render(
-      <MemoryRouter>
-        <CreateRoundContext.Provider
-          value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
-        >
-          {ui}
-        </CreateRoundContext.Provider>
-      </MemoryRouter>
-    );
+export const renderWithContext = (
+  ui: JSX.Element,
+  createRoundStateOverrides: Partial<CreateRoundState> = {}
+) =>
+  render(
+    <MemoryRouter>
+      <CreateRoundContext.Provider
+        value={{ ...initialCreateRoundState, ...createRoundStateOverrides }}
+      >
+        {ui}
+      </CreateRoundContext.Provider>
+    </MemoryRouter>
+  );

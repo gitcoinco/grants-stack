@@ -47,17 +47,6 @@ const payoutQuestion: QuestionOptions = {
   inputType: "text",
 };
 
-const projectRequirementsInitial: ProjectRequirements = {
-  twitter: {
-    required: false,
-    verification: false,
-  },
-  github: {
-    required: false,
-    verification: false,
-  },
-};
-
 export const initialQuestions: QuestionOptions[] = [
   {
     title: "Email Address",
@@ -78,6 +67,17 @@ export const initialQuestions: QuestionOptions[] = [
     inputType: "text",
   },
 ];
+
+export const initialRequirements: ProjectRequirements = {
+  twitter: {
+    required: false,
+    verification: false,
+  },
+  github: {
+    required: false,
+    verification: false,
+  },
+};
 
 /*
  * -------------------------------------------------------------------------------------------
@@ -116,7 +116,8 @@ export function RoundApplicationForm(props: {
       ...formData,
       applicationMetadata: {
         questions: defaultQuestions,
-      }
+        requirements: initialRequirements,
+      },
     },
   });
 
@@ -128,7 +129,8 @@ export function RoundApplicationForm(props: {
     fields.map(() => false)
   );
 
-  const [projectRequirements, setProjectRequirements] = useState<ProjectRequirements>(projectRequirementsInitial);
+  const [projectRequirements, setProjectRequirements] =
+    useState<ProjectRequirements>({ ...initialRequirements });
 
   const {
     createRound,
@@ -205,12 +207,10 @@ export function RoundApplicationForm(props: {
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
         version: VERSION,
-        applicationSchema: {
-          questions: generateApplicationSchema(
-            data.applicationMetadata?.questions
-          ),
-          requirements: projectRequirements
-        },
+        applicationSchema: generateApplicationSchema(
+          data.applicationMetadata?.questions,
+          projectRequirements
+        ),
       };
 
       const round = {
@@ -306,18 +306,26 @@ export function RoundApplicationForm(props: {
     </InfoModal>
   );
 
-  const projectRequirementsHandler = (data: [keyof ProjectRequirements, keyof ProjectRequirements[keyof ProjectRequirements], boolean][]) => {
-    console.log("before")
-    console.log(projectRequirements)
-    const tmpRequirements = { ...projectRequirements };
+  const projectRequirementsHandler = (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => {
+    let tmpRequirements = { ...projectRequirements };
 
     data.forEach(([mainKey, subKey, value]) => {
-      tmpRequirements[mainKey][subKey] = value;
+      tmpRequirements = {
+        ...tmpRequirements,
+        [mainKey]: {
+          ...tmpRequirements[mainKey],
+          [subKey]: value,
+        },
+      };
     });
 
     setProjectRequirements(tmpRequirements);
-    console.log("after")
-    console.log(tmpRequirements)
   };
 
   return (
@@ -326,7 +334,8 @@ export function RoundApplicationForm(props: {
         <ReviewInformation />
         <Box
           title="Project Information"
-          description="These details will be collected from project owners by default during the project creation process.">
+          description="These details will be collected from project owners by default during the project creation process."
+        >
           <ProjectInformation />
         </Box>
       </div>
@@ -335,8 +344,12 @@ export function RoundApplicationForm(props: {
         <div className="mt-5 md:mt-0 md:col-span-2">
           <Box
             title="Project Socials"
-            description="These details will be collected from project owners by default during the creation process.">
-            <ProjectSocials handler={projectRequirementsHandler} requirements={projectRequirements} />
+            description="These details will be collected from project owners by default during the creation process."
+          >
+            <ProjectSocials
+              handler={projectRequirementsHandler}
+              requirements={projectRequirements}
+            />
           </Box>
         </div>
         <div className="md:col-span-1"></div>
@@ -346,7 +359,8 @@ export function RoundApplicationForm(props: {
               title="Application Information"
               description="Project Owners will need to fill out an application with the details
             below."
-              onlyTopRounded >
+              onlyTopRounded
+            >
               <ApplicationInformation
                 fields={fields}
                 register={register}
@@ -422,24 +436,40 @@ function ProjectInformation() {
   );
 }
 
-const ProjectSocials = ({ handler, requirements }: { handler: (data: [keyof ProjectRequirements, keyof ProjectRequirements[keyof ProjectRequirements], boolean][]) => void, requirements: ProjectRequirements }) => (
+const ProjectSocials = ({
+  handler,
+  requirements,
+}: {
+  handler: (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => void;
+  requirements: ProjectRequirements;
+}) => (
   <>
-    <div className={`flex flex-row mt-4 ${requirements.twitter.required ? "mb-1" : "mb-4"}`}>
-      <div className="text-sm basis-4/5">
-        Project Twitter
-      </div>
+    <div
+      className={`flex flex-row mt-4 ${
+        requirements.twitter.required ? "mb-1" : "mb-4"
+      }`}
+    >
+      <div className="text-sm basis-4/5">Project Twitter</div>
       <div className="basis-1/5 flex justify-end">
         <GeneralSwitch
           status={requirements.twitter.required}
-          handler={
-            async (a: boolean) => {
-              // clear required twitterVerification, if twitter itself is not required
-              handler([["twitter", "required", a], ["twitter", "verification", false]]);
-            }
-          } />
+          handler={async (a: boolean) => {
+            // clear required twitterVerification, if twitter itself is not required
+            handler([
+              ["twitter", "required", a],
+              ["twitter", "verification", false],
+            ]);
+          }}
+        />
       </div>
     </div>
-    {requirements.twitter.required &&
+    {requirements.twitter.required && (
       <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
         <div className="text-xs basis-4/5 ml-2">
           Verification of account ownership
@@ -447,30 +477,34 @@ const ProjectSocials = ({ handler, requirements }: { handler: (data: [keyof Proj
         <div className="basis-1/5 flex justify-end">
           <GeneralSwitch
             status={requirements.twitter.verification}
-            handler={
-              async (a: boolean) => {
-                handler([["twitter", "verification", a]]);
-              }
-            } />
+            handler={async (a: boolean) => {
+              handler([["twitter", "verification", a]]);
+            }}
+          />
         </div>
-      </div>}
-    <hr />
-    <div className={`flex flex-row mt-4 ${requirements.github.required ? "mb-1" : "mb-4"}`}>
-      <div className="text-sm basis-4/5">
-        Project Github
       </div>
+    )}
+    <hr />
+    <div
+      className={`flex flex-row mt-4 ${
+        requirements.github.required ? "mb-1" : "mb-4"
+      }`}
+    >
+      <div className="text-sm basis-4/5">Project Github</div>
       <div className="basis-1/5 flex justify-end">
         <GeneralSwitch
           status={requirements.github.required}
-          handler={
-            async (a: boolean) => {
-              // clear required githubVerification, if github itself is not required
-              handler([["github", "required", a], ["github", "verification", false]]);
-            }
-          } />
+          handler={async (a: boolean) => {
+            // clear required githubVerification, if github itself is not required
+            handler([
+              ["github", "required", a],
+              ["github", "verification", false],
+            ]);
+          }}
+        />
       </div>
     </div>
-    {requirements.github.required &&
+    {requirements.github.required && (
       <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
         <div className="text-xs basis-4/5 ml-2">
           Verification of account ownership
@@ -478,17 +512,23 @@ const ProjectSocials = ({ handler, requirements }: { handler: (data: [keyof Proj
         <div className="basis-1/5 flex justify-end">
           <GeneralSwitch
             status={requirements.github.verification}
-            handler={
-              async (a: boolean) => {
-                handler([["github", "verification", a]]);
-              }
-            } />
+            handler={async (a: boolean) => {
+              handler([["github", "verification", a]]);
+            }}
+          />
         </div>
-      </div>}
+      </div>
+    )}
   </>
-)
+);
 
-const GeneralSwitch = ({ status, handler }: { status: boolean, handler: (a: boolean) => void }) => (
+const GeneralSwitch = ({
+  status,
+  handler,
+}: {
+  status: boolean;
+  handler: (a: boolean) => void;
+}) => (
   <Switch.Group
     as="div"
     className={classNames("flex items-center justify-end")}
@@ -500,9 +540,7 @@ const GeneralSwitch = ({ status, handler }: { status: boolean, handler: (a: bool
         passive
       >
         {status ? (
-          <p className="text-xs mr-2 text-right text-violet-400">
-            *Required
-          </p>
+          <p className="text-xs mr-2 text-right text-violet-400">*Required</p>
         ) : (
           <p className="text-xs mr-2 text-right text-grey-400">Optional</p>
         )}
@@ -513,35 +551,43 @@ const GeneralSwitch = ({ status, handler }: { status: boolean, handler: (a: bool
       className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
       onChange={handler}
       value={status.toString()}
-      checked={status} >
-
+      checked={status}
+    >
       <span
         aria-hidden="true"
         className={classNames(
-          status
-            ? "translate-x-5 bg-violet-400"
-            : "translate-x-0 bg-white",
+          status ? "translate-x-5 bg-violet-400" : "translate-x-0 bg-white",
           "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
         )}
       />
     </Switch>
   </Switch.Group>
-)
+);
 
-const Box = ({ title, description, onlyTopRounded = false, children }: { title: string, description: string, onlyTopRounded?: boolean, children: React.ReactNode }) => (
+const Box = ({
+  title,
+  description,
+  onlyTopRounded = false,
+  children,
+}: {
+  title: string;
+  description: string;
+  onlyTopRounded?: boolean;
+  children: React.ReactNode;
+}) => (
   <div className="mt-5 md:mt-0 md:col-span-2">
-    <div className={`${onlyTopRounded ? "rounded-t" : "rounded"} shadow-sm bg-white pt-7 pb-6 sm:px-6`}>
+    <div
+      className={`${
+        onlyTopRounded ? "rounded-t" : "rounded"
+      } shadow-sm bg-white pt-7 pb-6 sm:px-6`}
+    >
       <p className="mb-2 font-bold">{title}</p>
-      <p className="text-sm text-grey-400 mb-6">
-        {description}
-      </p>
+      <p className="text-sm text-grey-400 mb-6">{description}</p>
       <hr />
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   </div>
-)
+);
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -751,7 +797,7 @@ function ApplicationInformation(props: {
         <div className="flex flex-row">
           <div className="text-sm basis-2/5">
             {editStates[index] ||
-              getValues(`applicationMetadata.questions.${index}.title`).length ==
+            getValues(`applicationMetadata.questions.${index}.title`).length ==
               0
               ? editableTitle(index)
               : normalTitle(index)}

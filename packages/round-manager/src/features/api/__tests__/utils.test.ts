@@ -10,7 +10,10 @@ import {
 
 import { MetadataPointer } from "../types";
 import { checkGrantApplicationStatus } from "../application";
-import { initialQuestions } from "../../round/RoundApplicationForm";
+import {
+  initialQuestions,
+  initialRequirements,
+} from "../../round/RoundApplicationForm";
 
 enableFetchMocks();
 
@@ -352,18 +355,33 @@ describe("graphql_fetch", () => {
 
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
-    const expectedSchema = initialQuestions.map((question) => ({
-      question: question.title,
-      type: question.inputType,
-      required: question.required,
-      info: "", // TODO: is grant hub using this???
-      choices: [], // TODO: is grant hub using this???
-      encrypted: question.encrypted,
-    }));
+    const expectedSchema = {
+      questions: initialQuestions.map((question) => ({
+        question: question.title,
+        type: question.inputType,
+        required: question.required,
+        info: "", // TODO: is grant hub using this???
+        choices: [], // TODO: is grant hub using this???
+        encrypted: question.encrypted,
+      })),
+      requirements: {
+        twitter: {
+          required: false,
+          verification: false,
+        },
+        github: {
+          required: false,
+          verification: false,
+        },
+      },
+    };
 
-    const schema = generateApplicationSchema(initialQuestions);
+    const schema = generateApplicationSchema(
+      initialQuestions,
+      initialRequirements
+    );
 
-    expect(Array.isArray(schema)).toBe(true);
+    expect(Array.isArray(schema.questions)).toBe(true);
     expect(schema).toMatchObject(expectedSchema);
   });
 });
