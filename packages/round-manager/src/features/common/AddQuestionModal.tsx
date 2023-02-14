@@ -48,7 +48,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   }
 
   const explorerToggle = () => {
-    return <BaseSwitch activeLabel="Show in Explorer" inactiveLabel="Hide in Explorer" value={showExplorer} handler={setShowExplorer} />;
+    return <BaseSwitch activeLabel="Show in Explorer" inactiveLabel="Hide from Explorer" value={showExplorer} handler={setShowExplorer} />;
   }
 
   // renders the toggles in a group for ui
