@@ -32,10 +32,8 @@ export const buildRoundApplicationMetadata = (
   const metadata: RoundApplicationMetadata = {
     version: object.version,
     lastUpdatedOn: object.lastUpdatedOn,
-    applicationSchema: object.applciationSchema,
+    applicationSchema: object.applicationSchema,
   };
-
-  console.log(object);
 
   // Build metadata from first version, which doesnt't have a version defined
   if (object.version === undefined) {
