@@ -162,15 +162,16 @@ describe("RoundFactory", function () {
       const token = Wallet.createRandom().address;
       const programAddress = Wallet.createRandom().address;
 
-      const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 3600); // 1 hour later
-      const applicationsEndTime = Math.round(new Date().getTime() / 1000 + 7200); // 2 hours later
-      const roundStartTime = Math.round(new Date().getTime() / 1000 + 10800); // 3 hours later
-      const roundEndTime = Math.round(new Date().getTime() / 1000 + 14400); // 4 hours later
+      let _currentBlockTimestamp: number
 
       let params: any = [];
 
       beforeEach(async () => {
         [user] = await ethers.getSigners();
+
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
 
         // Deploy VotingStrategy contract
         votingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
@@ -195,10 +196,10 @@ describe("RoundFactory", function () {
         ];
 
         const initRoundTime = [
-          applicationsStartTime,
-          applicationsEndTime,
-          roundStartTime,
-          roundEndTime,
+          _currentBlockTimestamp + 100, // applicationsStartTime
+          _currentBlockTimestamp + 250, // applicationsEndTime
+          _currentBlockTimestamp + 500, // roundStartTime
+          _currentBlockTimestamp + 1000, // roundEndTime
         ];
 
         const initMetaPtr = [
@@ -237,8 +238,8 @@ describe("RoundFactory", function () {
 
       it("SHOULD REVERT if protocolTreasury is not set", async () => {
         // Deploy RoundFactory contract
-        roundContractFactory = await ethers.getContractFactory('RoundFactory');
-        roundFactory = <RoundFactory>await upgrades.deployProxy(roundContractFactory);
+        let roundContractFactory = await ethers.getContractFactory('RoundFactory');
+        let roundFactory = <RoundFactory>await upgrades.deployProxy(roundContractFactory);
 
         // Set the init values
         await roundFactory.updateRoundContract(roundImplementation.address);
@@ -260,7 +261,7 @@ describe("RoundFactory", function () {
 
         const receipt = await txn.wait();
 
-        expect(txn.hash).to.not.be.empty;
+        expect(await txn.hash).to.not.be.empty;
         expect(receipt.status).equals(1);
       });
 
