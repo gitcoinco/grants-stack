@@ -15,7 +15,7 @@ import {
 } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
-import { editPath } from "../../routes";
+import { editProjectPathByID } from "../../routes";
 import {
   AddressType,
   ChangeHandlers,
@@ -218,15 +218,6 @@ export default function Form({
   const handleSubmitApplicationRetry = async () => {
     closeErrorModal();
     handleSubmitApplication();
-  };
-
-  const editProjectPath = (id: string) => {
-    const {
-      chainId,
-      registryAddress,
-      id: projectId,
-    } = getProjectURIComponents(id);
-    return editPath(chainId, registryAddress, projectId);
   };
 
   useEffect(() => {
@@ -517,7 +508,7 @@ export default function Form({
                   <Link
                     className="text-link"
                     target="_blank"
-                    to={editProjectPath(selectedProjectID)}
+                    to={editProjectPathByID(selectedProjectID)!}
                   >
                     here
                   </Link>{" "}
