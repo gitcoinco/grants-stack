@@ -110,8 +110,20 @@ export type QuestionOptions = {
   inputType: InputType;
 };
 
+export type ProjectRequirements = {
+  twitter: {
+    required: boolean;
+    verification: boolean;
+  };
+  github: {
+    required: boolean;
+    verification: boolean;
+  };
+};
+
 export interface ApplicationMetadata {
   questions?: QuestionOptions[];
+  requirements: ProjectRequirements;
 }
 
 export interface Round {

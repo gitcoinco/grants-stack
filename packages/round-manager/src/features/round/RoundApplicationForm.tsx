@@ -17,6 +17,7 @@ import {
   ApplicationMetadata,
   Program,
   ProgressStatus,
+  ProjectRequirements,
   QuestionOptions,
   Round,
 } from "../api/types";
@@ -45,6 +46,7 @@ const payoutQuestion: QuestionOptions = {
   encrypted: false,
   inputType: "text",
 };
+
 export const initialQuestions: QuestionOptions[] = [
   {
     title: "Email Address",
@@ -65,6 +67,25 @@ export const initialQuestions: QuestionOptions[] = [
     inputType: "text",
   },
 ];
+
+export const initialRequirements: ProjectRequirements = {
+  twitter: {
+    required: false,
+    verification: false,
+  },
+  github: {
+    required: false,
+    verification: false,
+  },
+};
+
+/*
+ * -------------------------------------------------------------------------------------------
+ * Please remember to update the version number in the schema when making changes to the form.
+ * -------------------------------------------------------------------------------------------
+ */
+
+const VERSION = "2.0.0";
 
 export function RoundApplicationForm(props: {
   initialData: {
@@ -95,6 +116,7 @@ export function RoundApplicationForm(props: {
       ...formData,
       applicationMetadata: {
         questions: defaultQuestions,
+        requirements: initialRequirements,
       },
     },
   });
@@ -106,6 +128,9 @@ export function RoundApplicationForm(props: {
   const [isInEditState, setIsInEditState] = useState<boolean[]>(
     fields.map(() => false)
   );
+
+  const [projectRequirements, setProjectRequirements] =
+    useState<ProjectRequirements>({ ...initialRequirements });
 
   const {
     createRound,
@@ -181,8 +206,10 @@ export function RoundApplicationForm(props: {
 
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
+        version: VERSION,
         applicationSchema: generateApplicationSchema(
-          data.applicationMetadata?.questions
+          data.applicationMetadata?.questions,
+          projectRequirements
         ),
       };
 
@@ -279,27 +306,72 @@ export function RoundApplicationForm(props: {
     </InfoModal>
   );
 
+  const projectRequirementsHandler = (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => {
+    let tmpRequirements = { ...projectRequirements };
+
+    data.forEach(([mainKey, subKey, value]) => {
+      tmpRequirements = {
+        ...tmpRequirements,
+        [mainKey]: {
+          ...tmpRequirements[mainKey],
+          [subKey]: value,
+        },
+      };
+    });
+
+    setProjectRequirements(tmpRequirements);
+  };
+
   return (
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-6">
         <ReviewInformation />
-        <ProjectInformation />
+        <Box
+          title="Project Information"
+          description="These details will be collected from project owners by default during the project creation process."
+        >
+          <ProjectInformation />
+        </Box>
       </div>
-      <hr className="my-6" />
-      <div className="md:grid md:grid-cols-3 md:gap-6">
+      <div className="md:grid md:grid-cols-3 md:gap-6 mt-7">
+        <div className="md:col-span-1"></div>
+        <div className="mt-5 md:mt-0 md:col-span-2">
+          <Box
+            title="Project Socials"
+            description="These details will be collected from project owners by default during the creation process."
+          >
+            <ProjectSocials
+              handler={projectRequirementsHandler}
+              requirements={projectRequirements}
+            />
+          </Box>
+        </div>
         <div className="md:col-span-1"></div>
         <div className="mt-5 md:mt-0 md:col-span-2">
           <form onSubmit={handleSubmit(next)} className="text-grey-500">
-            <ApplicationInformation
-              fields={fields}
-              register={register}
-              editStates={isInEditState}
-              setEditStates={setIsInEditState}
-              getValues={getValues}
-              control={control}
-              remove={remove}
-              append={append}
-            />
+            <Box
+              title="Application Information"
+              description="Project Owners will need to fill out an application with the details
+            below."
+              onlyTopRounded
+            >
+              <ApplicationInformation
+                fields={fields}
+                register={register}
+                editStates={isInEditState}
+                setEditStates={setIsInEditState}
+                getValues={getValues}
+                control={control}
+                remove={remove}
+                append={append}
+              />
+            </Box>
 
             <div className="px-6 align-middle py-3.5 shadow-md">
               <Steps
@@ -335,57 +407,187 @@ function ReviewInformation() {
 
 function ProjectInformation() {
   return (
-    <div className="mt-5 md:mt-0 md:col-span-2">
-      <div className="rounded shadow-sm bg-white pt-7 pb-6 sm:px-6">
-        <p className="mb-2">Project Information</p>
-        <p className="text-sm text-grey-400 mb-6">
-          These details will be collected from project owners by default during
-          the project creation process.
-        </p>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Name</span>
-          <span className="text-xs text-violet-400">*Required</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Website</span>
-          <span className="text-xs text-violet-400">*Required</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Twitter</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Your GitHub Username</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project GitHub Organization</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Logo</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Banner</span>
-          <span className="text-xs text-grey-400">Optional</span>
-        </div>
-        <hr />
-        <div className="flex my-4">
-          <span className="flex-1 text-sm">Project Description</span>
-          <span className="text-xs text-violet-400">*Required</span>
-        </div>
+    <>
+      <div className="flex my-4">
+        <span className="flex-1 text-sm">Project Name</span>
+        <span className="text-xs text-violet-400">*Required</span>
       </div>
-    </div>
+      <hr />
+      <div className="flex my-4">
+        <span className="flex-1 text-sm">Project Website</span>
+        <span className="text-xs text-violet-400">*Required</span>
+      </div>
+      <hr />
+      <div className="flex my-4">
+        <span className="flex-1 text-sm">Project Logo</span>
+        <span className="text-xs text-grey-400">Optional</span>
+      </div>
+      <hr />
+      <div className="flex my-4">
+        <span className="flex-1 text-sm">Project Banner</span>
+        <span className="text-xs text-grey-400">Optional</span>
+      </div>
+      <hr />
+      <div className="flex my-4">
+        <span className="flex-1 text-sm">Project Description</span>
+        <span className="text-xs text-violet-400">*Required</span>
+      </div>
+    </>
   );
 }
+
+const ProjectSocials = ({
+  handler,
+  requirements,
+}: {
+  handler: (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => void;
+  requirements: ProjectRequirements;
+}) => (
+  <>
+    <div
+      className={`flex flex-row mt-4 ${
+        requirements.twitter.required ? "mb-1" : "mb-4"
+      }`}
+    >
+      <div className="text-sm basis-4/5">Project Twitter</div>
+      <div className="basis-1/5 flex justify-end">
+        <GeneralSwitch
+          status={requirements.twitter.required}
+          handler={async (a: boolean) => {
+            // clear required twitterVerification, if twitter itself is not required
+            handler([
+              ["twitter", "required", a],
+              ["twitter", "verification", false],
+            ]);
+          }}
+        />
+      </div>
+    </div>
+    {requirements.twitter.required && (
+      <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
+        <div className="text-xs basis-4/5 ml-2">
+          Verification of account ownership
+        </div>
+        <div className="basis-1/5 flex justify-end">
+          <GeneralSwitch
+            status={requirements.twitter.verification}
+            handler={async (a: boolean) => {
+              handler([["twitter", "verification", a]]);
+            }}
+          />
+        </div>
+      </div>
+    )}
+    <hr />
+    <div
+      className={`flex flex-row mt-4 ${
+        requirements.github.required ? "mb-1" : "mb-4"
+      }`}
+    >
+      <div className="text-sm basis-4/5">Project Github</div>
+      <div className="basis-1/5 flex justify-end">
+        <GeneralSwitch
+          status={requirements.github.required}
+          handler={async (a: boolean) => {
+            // clear required githubVerification, if github itself is not required
+            handler([
+              ["github", "required", a],
+              ["github", "verification", false],
+            ]);
+          }}
+        />
+      </div>
+    </div>
+    {requirements.github.required && (
+      <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
+        <div className="text-xs basis-4/5 ml-2">
+          Verification of account ownership
+        </div>
+        <div className="basis-1/5 flex justify-end">
+          <GeneralSwitch
+            status={requirements.github.verification}
+            handler={async (a: boolean) => {
+              handler([["github", "verification", a]]);
+            }}
+          />
+        </div>
+      </div>
+    )}
+  </>
+);
+
+const GeneralSwitch = ({
+  status,
+  handler,
+}: {
+  status: boolean;
+  handler: (a: boolean) => void;
+}) => (
+  <Switch.Group
+    as="div"
+    className={classNames("flex items-center justify-end")}
+  >
+    <span className="flex-grow">
+      <Switch.Label
+        as="span"
+        className="text-sm font-medium text-gray-900"
+        passive
+      >
+        {status ? (
+          <p className="text-xs mr-2 text-right text-violet-400">*Required</p>
+        ) : (
+          <p className="text-xs mr-2 text-right text-grey-400">Optional</p>
+        )}
+      </Switch.Label>
+    </span>
+    <Switch
+      data-testid={"test-switch-id"}
+      className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+      onChange={handler}
+      value={status.toString()}
+      checked={status}
+    >
+      <span
+        aria-hidden="true"
+        className={classNames(
+          status ? "translate-x-5 bg-violet-400" : "translate-x-0 bg-white",
+          "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+        )}
+      />
+    </Switch>
+  </Switch.Group>
+);
+
+const Box = ({
+  title,
+  description,
+  onlyTopRounded = false,
+  children,
+}: {
+  title: string;
+  description: string;
+  onlyTopRounded?: boolean;
+  children: React.ReactNode;
+}) => (
+  <div className="mt-5 md:mt-0 md:col-span-2">
+    <div
+      className={`${
+        onlyTopRounded ? "rounded-t" : "rounded"
+      } shadow-sm bg-white pt-7 pb-6 sm:px-6`}
+    >
+      <p className="mb-2 font-bold">{title}</p>
+      <p className="text-sm text-grey-400 mb-6">{description}</p>
+      <hr />
+      <div>{children}</div>
+    </div>
+  </div>
+);
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -614,34 +816,24 @@ function ApplicationInformation(props: {
   };
 
   return (
-    <div className="mt-5 md:mt-0 md:col-span-2">
-      <div className="rounded-t shadow-sm pt-7 pb-10 sm:px-6 bg-white">
-        <div className="flex">
-          <p className="flex-1 mb-2">Application Information</p>
-        </div>
-        <p className="text-sm text-grey-400 mb-6">
-          Project Owners will need to fill out an application with the details
-          below.
-        </p>
+    <>
+      {disabledPayoutQuestion}
+      <hr />
+      {fields.map((field, index) => (
+        <Question key={index} index={index} />
+      ))}
 
-        {disabledPayoutQuestion}
-        <hr />
-        {fields.map((field, index) => (
-          <Question key={index} index={index} />
-        ))}
-
-        <AddQuestion
-          onClick={() =>
-            append({
-              title: "",
-              required: false,
-              encrypted: false,
-              inputType: "text",
-            })
-          }
-        />
-      </div>
-    </div>
+      <AddQuestion
+        onClick={() =>
+          append({
+            title: "",
+            required: false,
+            encrypted: false,
+            inputType: "text",
+          })
+        }
+      />
+    </>
   );
 }
 
