@@ -8,7 +8,7 @@ export interface RoundApplicationQuestion {
   encrypted?: boolean;
 }
 
-export type ProjectRequirements = {
+export interface ProjectRequirements {
   twitter: {
     required: boolean;
     verification: boolean;
@@ -17,7 +17,7 @@ export type ProjectRequirements = {
     required: boolean;
     verification: boolean;
   };
-};
+}
 
 export interface RoundApplicationMetadata {
   version: string;
