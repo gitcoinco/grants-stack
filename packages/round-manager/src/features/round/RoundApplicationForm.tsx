@@ -135,6 +135,7 @@ export function RoundApplicationForm(props: {
   const [isInEditState, setIsInEditState] = useState<boolean[]>(
     fields.map(() => false)
   );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [projectRequirements, setProjectRequirements] =
     useState<ProjectRequirements>({ ...initialRequirements });
 

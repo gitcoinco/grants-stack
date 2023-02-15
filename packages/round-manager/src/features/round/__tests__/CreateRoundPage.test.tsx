@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import CreateRoundPage from "../CreateRoundPage";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
