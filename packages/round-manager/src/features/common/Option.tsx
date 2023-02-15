@@ -1,7 +1,8 @@
 import { XIcon } from "@heroicons/react/solid";
+import { QuestionOption } from "../api/types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function Option({ index, onAddOption, onDeleteOption }: { index: number, onAddOption: () => void, onDeleteOption: (index: number) => void }) {
+function Option({ index, onAddOption, onDeleteOption, options }: { index: number, onAddOption: () => void, onDeleteOption: (index: number) => void, options: QuestionOption[] }) {
   const renderDeleteOption = (index: number) => {
     return (
       <button onClick={() => onDeleteOption(index)}>

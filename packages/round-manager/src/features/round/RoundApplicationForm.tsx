@@ -22,7 +22,7 @@ import {
   EditQuestion,
   Program,
   ProgressStatus,
-  QuestionOptions,
+  QuestionOption,
   Round
 } from "../api/types";
 import { generateApplicationSchema } from "../api/utils";
@@ -33,10 +33,10 @@ import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 
-import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import { InputIcon } from "../common/InputIcon";
+import PreviewQuestionModal from "../common/PreviewQuestionModal";
 
-const payoutQuestion: QuestionOptions = {
+const payoutQuestion: QuestionOption = {
   title: "Payout Wallet Address",
   required: true,
   encrypted: false,
@@ -44,7 +44,7 @@ const payoutQuestion: QuestionOptions = {
   inputType: "address",
 };
 
-export const initialQuestions: QuestionOptions[] = [
+export const initialQuestions: QuestionOption[] = [
   {
     title: "Email Address",
     required: true,
@@ -95,6 +95,7 @@ export function RoundApplicationForm(props: {
     // @ts-expect-error TODO: either fix this or refactor the whole formstepper
     formData?.applicationMetadata?.questions ?? initialQuestions;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { control, handleSubmit, register, getValues } = useForm<Round>({
     defaultValues: {
       ...formData,
@@ -109,6 +110,7 @@ export function RoundApplicationForm(props: {
     control,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isInEditState, setIsInEditState] = useState<boolean[]>(
     fields.map(() => false)
   );
@@ -285,7 +287,7 @@ export function RoundApplicationForm(props: {
     </InfoModal>
   );
 
-  const singleQuestion = (field: QuestionOptions, key: number) => (
+  const singleQuestion = (field: QuestionOption, key: number) => (
     <div key={key}>
       <div className="flex flex-row my-4 items-center">
         <div className="text-sm basis-2/3">
@@ -338,7 +340,7 @@ export function RoundApplicationForm(props: {
     const lockedQuestion = singleQuestion(payoutQuestion, -1);
     const f = fields.map((field, i) => (
       singleQuestion(field, i)
-    ))
+    ));
 
     return (
       <div>
@@ -370,21 +372,21 @@ export function RoundApplicationForm(props: {
         />
       </div>
     )
-  }
+  };
 
   const addOrEditQuestion = (question: EditQuestion) => {
-    if(question.field) {
+    if (question.field) {
       if (!question.index) {
         append(question.field);
       } else {
         update(question.index, question.field);
       }
     }
-  }
+  };
 
   const removeQuestion = (index: number) => {
     remove(index);
-  }
+  };
 
   return (
     <div>
@@ -466,6 +468,7 @@ const fieldHidden = (hidden: boolean) => (
   </div>
 )
 
+// is this always going to be static?
 function ProjectInformation() {
   const fields = [
     { name: "Project Name", required: true },
@@ -504,11 +507,6 @@ const Box = ({ title, description, onlyTopRounded = false, children }: { title: 
     </div>
   </div>
 )
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 
 function InfoModalBody() {
   return (

@@ -2,7 +2,8 @@ import { Dialog, Listbox } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useState } from "react";
-import { EditQuestion, InputType, QuestionOptions } from "../api/types";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { EditQuestion, InputType, QuestionOption } from "../api/types";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
@@ -26,8 +27,9 @@ const questions: InputType[] = [
 ]
 
 // eslint-disable-next-line prefer-const
-let options = [];
+let options: QuestionOption[] = [];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
   const questionExists = question && question !== undefined;
 
@@ -95,7 +97,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   // todo: figure out where to put this
   const addOption = () => {
     console.log("add option");
-    options.push({ id: options.length, text: "Option", parent: "checkbox" });
+    // todo: add option to the options array
   };
 
   const AddOptionButton = () => {
@@ -120,6 +122,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           className="flex border border-grey-100 rounded focus:border-violet-400 w-full"
           placeholder="Enter Question Title"
         />
+        {/* todo: map the options object */}
         <div className="flex flex-col">
           <Option
             index={1}
@@ -130,16 +133,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             onDeleteOption={(index: number) => {
               // todo:
             }}
-          />
-          <Option
-            index={2}
-            onAddOption={() => {
-              // todo:
-            }}
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            onDeleteOption={(index: number) => {
-              // todo:
-            }}
+            options={options}
           />
         </div>
         <AddOptionButton />
@@ -164,44 +158,44 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   }
 
   function QuestionSelectList() {
-    // render the correct icon based on the question type
-
     return (
-      <Listbox
-        value={selectedQuestion}
-        name="question"
-        onChange={(q: InputType) => {
-          console.log("q", q);
-          setSelectedQuestion(q);
-        }}
-      >
-        <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
-          <InputIcon className="mt-1" type={selectedQuestion} />
-          <span className="mr-1 ml-2 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
-          <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
-        </Listbox.Button>
-        <Listbox.Options className="border p-2 border-grey-100 w-[208px]">
-          {questions.map((q, index) => (
-            <Listbox.Option
-              key={index}
-              value={q}
-              className="flex active:bg-violet-400 active:text-white bg-white text-black"
-            >
-              {({ active }) => (
-                <span
-                  className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
-                    }`}
-                >
-                  <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
-                    <InputIcon type={q} />
+      <div className="w-[208px]">
+        <Listbox
+          value={selectedQuestion}
+          name="question"
+          onChange={(q: InputType) => {
+            console.log("q", q);
+            setSelectedQuestion(q);
+          }}
+        >
+          <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
+            <InputIcon className="mt-1" type={selectedQuestion} />
+            <span className="mr-1 ml-2 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
+            <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
+          </Listbox.Button>
+          <Listbox.Options className="border p-2 border-grey-100 w-[208px]">
+            {questions.map((q, index) => (
+              <Listbox.Option
+                key={index}
+                value={q}
+                className="flex active:bg-violet-400 active:text-white bg-white text-black"
+              >
+                {({ active }) => (
+                  <span
+                    className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
+                      }`}
+                  >
+                    <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
+                      <InputIcon type={q} />
+                    </span>
+                    <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
                   </span>
-                  <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
-                </span>
-              )}
-            </Listbox.Option>)
-          )}
-        </Listbox.Options>
-      </Listbox>
+                )}
+              </Listbox.Option>)
+            )}
+          </Listbox.Options>
+        </Listbox>
+      </div>
     )
   }
 
@@ -214,14 +208,13 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
           </Dialog.Title>
           <Dialog.Description className="mb-2 text-grey-500 font-normal">
-            <span className="text-md ">Question Type</span>
+            <span className="text-md">Question Type</span>
           </Dialog.Description>
           <hr className="my-6" />
           <div>
             <QuestionSelectList />
           </div>
           <div>
-            {/* todo: get the display to work on selected question type */}
             <div className="flex flex-col mt-6">
               <AnswerArea>
                 <>
@@ -261,7 +254,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
               onClick={() => {
                 setIsOpen(false);
-                // onSave();
               }}
             >
               Add

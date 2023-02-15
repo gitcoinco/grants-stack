@@ -112,7 +112,7 @@ export type InputType =
   | "checkbox"
   | "dropdown";
 
-export type QuestionOptions = {
+export type QuestionOption = {
   title: string;
   required: boolean;
   encrypted: boolean;
@@ -123,11 +123,11 @@ export type QuestionOptions = {
 
 export type EditQuestion = {
   index?: number;
-  field?: QuestionOptions;
+  field?: QuestionOption;
 };
 
 export interface ApplicationMetadata {
-  questions?: QuestionOptions[];
+  questions?: QuestionOption[];
 }
 
 export interface Round {
