@@ -21,11 +21,10 @@ export async function validateApplication(
   formInputs: DynamicFormInputs
 ) {
   const schema = defaultInputs.reduce((acc, input) => {
-    const { id, required, type } = input;
-    if (type === "RECIPIENT") {
+    if (input.inputType === "recipient") {
       return {
         ...acc,
-        [id]: string()
+        recipient: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
             excludeEmptyString: true,
             message: "Payout Wallet Address must be a valid Ethereum address",
@@ -33,11 +32,16 @@ export async function validateApplication(
           .required("Payout Wallet Address is required"),
       };
     }
-    if (id !== undefined) {
+
+    if (input.inputType === "project") {
+      return acc;
+    }
+
+    if (input.id !== undefined) {
       return {
         ...acc,
-        [id]: required
-          ? string().required(`${input.question} is required`)
+        [input.id]: input.required
+          ? string().required(`${input?.title} is required`)
           : string(),
         isSafe: string().required(
           "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"

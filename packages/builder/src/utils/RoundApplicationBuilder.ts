@@ -69,7 +69,7 @@ export default class RoundApplicationBuilder {
 
   async build(
     roundAddress: string,
-    formInputs: { [id: number]: string }
+    formInputs: { [id: number | string]: string }
   ): Promise<RoundApplication> {
     const answers = [];
     let recipient: string;
@@ -78,12 +78,12 @@ export default class RoundApplicationBuilder {
     for (let i = 0; i < this.ram.applicationSchema.questions.length; i++) {
       const question = this.ram.applicationSchema.questions[i];
 
-      switch (question.type) {
-        case "RECIPIENT":
+      switch (question.inputType) {
+        case "recipient":
           // FIXME: validate recipient here?
-          recipient = String(formInputs[question.id]);
+          recipient = String(formInputs.recipient);
           break;
-        case "PROJECT":
+        case "project":
           break;
         default:
           // eslint-disable-next-line
@@ -101,7 +101,7 @@ export default class RoundApplicationBuilder {
 
           answers.push({
             questionId: question.id,
-            question: question.question,
+            question: question.title,
             answer,
             encryptedAnswer,
           });

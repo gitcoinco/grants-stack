@@ -283,44 +283,44 @@ export default function Form({
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         {schema.questions.map((input) => {
-          if (input.type !== "PROJECT" && !isValidProjectSelected) {
+          if (input.inputType !== "project" && !isValidProjectSelected) {
             return null;
           }
 
-          switch (input.type) {
-            case "PROJECT":
+          switch (input.inputType) {
+            case "project":
               return readOnly ? (
                 <TextInput
-                  key={input.id}
-                  label={input.question}
-                  placeholder={input.info}
-                  name={`${input.id}`}
-                  value={formInputs[`${input.id}`] ?? ""}
+                  key="project"
+                  label="Select a project you would like to apply for funding:"
+                  name="project"
+                  value={formInputs.project ?? ""}
                   disabled={preview}
                   changeHandler={(e) => {
                     handleInput(e);
                   }}
-                  required={input.required ?? false}
+                  required
                   feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                    feedback.find((fb) => fb.title === "project") ?? {
                       type: "none",
                       message: "",
                     }
                   }
                 />
               ) : (
-                <Fragment key={input.id}>
+                <Fragment key="project">
                   <div className="mt-6 w-full sm:w-1/2 relative">
                     <CustomSelect
-                      key={input.id}
-                      name={`${input.id}`}
-                      label={input.question}
+                      key="project"
+                      label="Select a project you would like to apply for funding:"
+                      name="project"
+                      value={formInputs.project ?? ""}
                       options={projectOptions ?? []}
                       disabled={preview}
                       changeHandler={handleProjectInput}
-                      required={input.required ?? true}
+                      required
                       feedback={
-                        feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        feedback.find((fb) => fb.title === "project") ?? {
                           type: "none",
                           message: "",
                         }
@@ -345,12 +345,66 @@ export default function Form({
                   )}
                 </Fragment>
               );
-            case "TEXT":
+            case "recipient":
+              /* Radio for safe or multi-sig */
+              return (
+                <Fragment key="recipient">
+                  {!readOnly && (
+                    <div className="relative mt-2" data-testid="wallet-type">
+                      <Stack>
+                        <Radio
+                          label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                          choices={["Yes", "No"]}
+                          changeHandler={handleInput}
+                          name="isSafe"
+                          value={formInputs.isSafe}
+                          info=""
+                          required
+                          disabled={preview}
+                          feedback={
+                            feedback.find((fb) => fb.title === "isSafe") ?? {
+                              type: "none",
+                              message: "",
+                            }
+                          }
+                        />
+                      </Stack>
+                    </div>
+                  )}
+                  {/* todo: do we need this tooltip for all networks? */}
+                  <TextInputAddress
+                    data-testid="address-input-wrapper"
+                    key="recipient"
+                    label="Payout Wallet Address"
+                    name="recipient"
+                    placeholder="Address that will receive funds"
+                    // eslint-disable-next-line max-len
+                    tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
+                    value={formInputs.recipient}
+                    disabled={preview}
+                    changeHandler={handleInput}
+                    required
+                    onAddressType={(v) => setAddressType(v)}
+                    warningHighlight={
+                      addressType &&
+                      ((formInputs.isSafe === "Yes" &&
+                        !addressType.isContract) ||
+                        (formInputs.isSafe === "No" && addressType.isContract))
+                    }
+                    feedback={
+                      feedback.find((fb) => fb.title === "recipient") ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                </Fragment>
+              );
+            case "text":
               return (
                 <TextInput
                   key={input.id}
-                  label={input.question}
-                  placeholder={input.info}
+                  label={input.title}
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
@@ -366,67 +420,11 @@ export default function Form({
                   }
                 />
               );
-            case "RECIPIENT":
-              /* Radio for safe or multi-sig */
-              return (
-                <Fragment key={input.id}>
-                  {!readOnly && (
-                    <div className="relative mt-2" data-testid="wallet-type">
-                      <Stack>
-                        <Radio
-                          label="Is your payout wallet a Gnosis Safe or multi-sig?"
-                          choices={["Yes", "No"]}
-                          changeHandler={handleInput}
-                          name="isSafe"
-                          value={formInputs.isSafe}
-                          info=""
-                          required={input.required ?? true}
-                          disabled={preview}
-                          feedback={
-                            feedback.find((fb) => fb.title === "isSafe") ?? {
-                              type: "none",
-                              message: "",
-                            }
-                          }
-                        />
-                      </Stack>
-                    </div>
-                  )}
-                  {/* todo: do we need this tooltip for all networks? */}
-                  <TextInputAddress
-                    data-testid="address-input-wrapper"
-                    key={input.id}
-                    label="Payout Wallet Address"
-                    placeholder={input.info}
-                    name={`${input.id}`}
-                    // eslint-disable-next-line max-len
-                    tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
-                    value={formInputs[`${input.id}`]}
-                    disabled={preview}
-                    changeHandler={handleInput}
-                    required={input.required ?? true}
-                    onAddressType={(v) => setAddressType(v)}
-                    warningHighlight={
-                      addressType &&
-                      ((formInputs.isSafe === "Yes" &&
-                        !addressType.isContract) ||
-                        (formInputs.isSafe === "No" && addressType.isContract))
-                    }
-                    feedback={
-                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                        type: "none",
-                        message: "",
-                      }
-                    }
-                  />
-                </Fragment>
-              );
-            case "TEXTAREA":
+            case "paragraph":
               return (
                 <TextArea
                   key={input.id}
-                  label={input.question}
-                  placeholder={input.info}
+                  label={input.title}
                   name={`${input.id}`}
                   value={formInputs[`${input.id}`] ?? ""}
                   disabled={preview}
@@ -440,51 +438,20 @@ export default function Form({
                   }
                 />
               );
-            case "RADIO":
+            case "multiple-choice":
               return (
                 <Radio
                   key={input.id}
-                  label={input.question}
+                  label={input.title}
                   name={`${input.id}`}
                   value={
                     formInputs[`${input.id}`] ??
-                    (input.choices && input.choices[0])
+                    (input.options && input.options[0])
                   }
-                  choices={input.choices}
+                  choices={input.options}
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            // case "MULTIPLE":
-            // placeholder until we support multiple input
-            //   return (
-            //     <Radio
-            //       label={appInput.question}
-            //       name={id}
-            //       info={appInput.info}
-            //       choices={appInput.choices}
-            //       changeHandler={(e) => console.log(e)}
-            //     />
-            //   );
-            default:
-              return (
-                <TextInput
-                  key={input.id}
-                  label={input.question}
-                  placeholder={input.info}
-                  name={`${input.id}`}
-                  value={formInputs[`${input.id}`]}
-                  disabled={preview}
-                  changeHandler={handleInput}
-                  required={input.required ?? false}
-                  encrypted={input.encrypted}
                   feedback={
                     feedback.find((fb) => fb.title === `${input.id}`) ?? {
                       type: "none",
@@ -494,6 +461,7 @@ export default function Form({
                 />
               );
           }
+          return null;
         })}
         {selectedProjectID && projectRequirementsResult.length > 0 && (
           <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
