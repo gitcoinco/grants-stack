@@ -22,6 +22,7 @@ import {
   EditQuestion,
   Program,
   ProgressStatus,
+  ProjectRequirements,
   QuestionOption,
   Round
 } from "../api/types";
@@ -67,6 +68,26 @@ export const initialQuestions: QuestionOption[] = [
     inputType: "short-answer",
   },
 ];
+
+export const initialRequirements: ProjectRequirements = {
+  twitter: {
+    required: false,
+    verification: false,
+  },
+  github: {
+    required: false,
+    verification: false,
+  },
+};
+
+
+/*
+ * -------------------------------------------------------------------------------------------
+ * Please remember to update the version number in the schema when making changes to the form.
+ * -------------------------------------------------------------------------------------------
+ */
+
+const VERSION = "2.0.0";
 
 export function RoundApplicationForm(props: {
   initialData: {
@@ -114,6 +135,8 @@ export function RoundApplicationForm(props: {
   const [isInEditState, setIsInEditState] = useState<boolean[]>(
     fields.map(() => false)
   );
+  const [projectRequirements, setProjectRequirements] =
+    useState<ProjectRequirements>({ ...initialRequirements });
 
   const {
     createRound,
@@ -190,8 +213,10 @@ export function RoundApplicationForm(props: {
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
         applicationSchema: generateApplicationSchema(
-          data.applicationMetadata?.questions
+          data.applicationMetadata?.questions,
+          projectRequirements
         ),
+        version: VERSION,
       };
 
       const round = {
