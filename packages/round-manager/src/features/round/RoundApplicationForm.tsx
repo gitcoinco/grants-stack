@@ -36,6 +36,7 @@ import ProgressModal from "../common/ProgressModal";
 
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
+import { Switch } from "@headlessui/react";
 
 const payoutQuestion: QuestionOption = {
   title: "Payout Wallet Address",
@@ -284,6 +285,28 @@ export function RoundApplicationForm(props: {
     indexingStatus === ProgressStatus.IS_SUCCESS ||
     !props.initialData.program;
 
+  const projectRequirementsHandler = (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => {
+    let tmpRequirements = { ...projectRequirements };
+
+    data.forEach(([mainKey, subKey, value]) => {
+      tmpRequirements = {
+        ...tmpRequirements,
+        [mainKey]: {
+          ...tmpRequirements[mainKey],
+          [subKey]: value,
+        },
+      };
+    });
+
+    setProjectRequirements(tmpRequirements);
+  };
+
   const formSubmitModals = () => (
     <InfoModal
       title={"Heads up!"}
@@ -430,6 +453,18 @@ export function RoundApplicationForm(props: {
         <div className="md:col-span-1"></div>
         <div className="mt-5 md:mt-0 md:col-span-2">
           <Box
+            title="Project Socials"
+            description="These details will be collected from project owners by default during the creation process."
+          >
+            <ProjectSocials
+              handler={projectRequirementsHandler}
+              requirements={projectRequirements}
+            />
+          </Box>
+        </div>
+        <div className="md:col-span-1"></div>
+        <div className="mt-5 md:mt-0 md:col-span-2">
+          <Box
             title="Application Questions"
             description="Add round application questions for project owners to fulfill the application process."
             onlyTopRounded={true} >
@@ -450,6 +485,136 @@ export function RoundApplicationForm(props: {
       </div>
     </div>
   );
+}
+
+const ProjectSocials = ({
+  handler,
+  requirements,
+}: {
+  handler: (
+    data: [
+      keyof ProjectRequirements,
+      keyof ProjectRequirements[keyof ProjectRequirements],
+      boolean
+    ][]
+  ) => void;
+  requirements: ProjectRequirements;
+}) => (
+  <>
+    <div
+      className={`flex flex-row mt-4 ${requirements.twitter.required ? "mb-1" : "mb-4"
+        }`}
+    >
+      <div className="text-sm basis-4/5">Project Twitter</div>
+      <div className="basis-1/5 flex justify-end">
+        <GeneralSwitch
+          status={requirements.twitter.required}
+          handler={async (a: boolean) => {
+            // clear required twitterVerification, if twitter itself is not required
+            handler([
+              ["twitter", "required", a],
+              ["twitter", "verification", false],
+            ]);
+          }}
+        />
+      </div>
+    </div>
+    {requirements.twitter.required && (
+      <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
+        <div className="text-xs basis-4/5 ml-2">
+          Verification of account ownership
+        </div>
+        <div className="basis-1/5 flex justify-end">
+          <GeneralSwitch
+            status={requirements.twitter.verification}
+            handler={async (a: boolean) => {
+              handler([["twitter", "verification", a]]);
+            }}
+          />
+        </div>
+      </div>
+    )}
+    <hr />
+    <div
+      className={`flex flex-row mt-4 ${requirements.github.required ? "mb-1" : "mb-4"
+        }`}
+    >
+      <div className="text-sm basis-4/5">Project Github</div>
+      <div className="basis-1/5 flex justify-end">
+        <GeneralSwitch
+          status={requirements.github.required}
+          handler={async (a: boolean) => {
+            // clear required githubVerification, if github itself is not required
+            handler([
+              ["github", "required", a],
+              ["github", "verification", false],
+            ]);
+          }}
+        />
+      </div>
+    </div>
+    {requirements.github.required && (
+      <div className="flex flex-row items-center mb-4 border-gray-200 border border-l-1 border-r-0 border-t-0 border-b-0">
+        <div className="text-xs basis-4/5 ml-2">
+          Verification of account ownership
+        </div>
+        <div className="basis-1/5 flex justify-end">
+          <GeneralSwitch
+            status={requirements.github.verification}
+            handler={async (a: boolean) => {
+              handler([["github", "verification", a]]);
+            }}
+          />
+        </div>
+      </div>
+    )}
+  </>
+);
+
+const GeneralSwitch = ({
+  status,
+  handler,
+}: {
+  status: boolean;
+  handler: (a: boolean) => void;
+}) => (
+  <Switch.Group
+    as="div"
+    className={classNames("flex items-center justify-end")}
+  >
+    <span className="flex-grow">
+      <Switch.Label
+        as="span"
+        className="text-sm font-medium text-gray-900"
+        passive
+      >
+        {status ? (
+          <p className="text-xs mr-2 text-right text-violet-400">*Required</p>
+        ) : (
+          <p className="text-xs mr-2 text-right text-grey-400">Optional</p>
+        )}
+      </Switch.Label>
+    </span>
+    <Switch
+      data-testid={"test-switch-id"}
+      className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+      onChange={handler}
+      value={status.toString()}
+      checked={status}
+    >
+      <span
+        aria-hidden="true"
+        className={classNames(
+          status ? "translate-x-5 bg-violet-400" : "translate-x-0 bg-white",
+          "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
+        )}
+      />
+    </Switch>
+  </Switch.Group>
+);
+
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
 }
 
 function ReviewInformation() {
