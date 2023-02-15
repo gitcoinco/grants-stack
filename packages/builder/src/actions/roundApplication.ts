@@ -129,7 +129,7 @@ const dispatchAndLogApplicationError = (
 };
 
 export const submitApplication =
-  (roundAddress: string, formInputs: { [id: number]: string }) =>
+  (roundAddress: string, formInputs: { [id: number | string]: string }) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
@@ -161,18 +161,7 @@ export const submitApplication =
       return;
     }
 
-    const { projectQuestionId } = roundApplicationMetadata;
-    if (projectQuestionId === undefined) {
-      dispatchAndLogApplicationError(
-        dispatch,
-        roundAddress,
-        "cannot find project question id",
-        Status.BuildingApplication
-      );
-      return;
-    }
-
-    const projectID = formInputs[projectQuestionId];
+    const projectID = formInputs.project;
     const {
       id: projectNumber,
       registryAddress: projectRegistryAddress,

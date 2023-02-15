@@ -46,39 +46,38 @@ describe("Form Validation", () => {
   it("Validates application form", async () => {
     const formInputs = {
       2: "Text Area Response",
-      4: "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B",
+      recipient: "0xA4ca1b15fE81F57cb2d3f686c7B13309906cd37B",
       isSafe: "No",
     };
 
     const defaultInputs: RoundApplicationQuestion[] = [
       {
+        inputType: "text",
         id: 1,
-        question: "Text Question",
-        type: "TEXT",
+        title: "Text Question",
         required: true,
-        info: "This is your text question",
+        hidden: false,
+        encrypted: false,
       },
       {
-        question: "Text Area Question",
-        type: "TEXTAREA",
-        required: true,
-        info: "This is a text question",
+        inputType: "text",
         id: 2,
-      },
-      {
-        question: "Radio Input Question",
-        type: "RADIO",
-        required: false,
-        info: "This is a radio question",
-        choices: ["Option 1", "Option 2"],
-        id: 3,
-      },
-      {
-        id: 4,
-        question: "Recipient Address",
-        type: "RECIPIENT",
+        title: "Text Area Question",
         required: true,
-        info: "This is your recipient address",
+        hidden: false,
+        encrypted: false,
+      },
+      {
+        id: 3,
+        inputType: "multiple-choice",
+        title: "Radio Input Question",
+        required: false,
+        options: ["Option 1", "Option 2"],
+        hidden: false,
+        encrypted: false,
+      },
+      {
+        inputType: "recipient",
       },
     ];
     try {

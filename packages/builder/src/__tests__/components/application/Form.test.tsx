@@ -4,7 +4,11 @@ import { Store } from "redux";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import { Metadata, Round } from "../../../types/index";
+import {
+  Metadata,
+  Round,
+  RoundApplicationMetadata,
+} from "../../../types/index";
 import { renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
@@ -27,7 +31,7 @@ const projectsMetadata: Metadata[] = [
   },
 ];
 
-const roundApplicationMetadata = {
+const roundApplicationMetadata: RoundApplicationMetadata = {
   version: "2.0.0",
   lastUpdatedOn: 1657817494040,
   applicationSchema: {
@@ -35,24 +39,7 @@ const roundApplicationMetadata = {
       github: { required: false, verification: false },
       twitter: { required: false, verification: false },
     },
-    questions: [
-      {
-        id: 0,
-        question: "Project",
-        type: "PROJECT",
-        required: true,
-        info: "",
-        choices: [],
-      },
-      {
-        id: 1,
-        question: "Recipient Address",
-        type: "RECIPIENT",
-        required: true,
-        info: "",
-        choices: [],
-      },
-    ],
+    questions: [{ inputType: "project" }, { inputType: "recipient" }],
   },
 };
 
@@ -85,12 +72,7 @@ const round: Round = {
       },
       questions: [
         {
-          id: 0,
-          question: "Recipient Address",
-          type: "RECIPIENT",
-          required: true,
-          info: "",
-          choices: [],
+          inputType: "recipient",
         },
       ],
     },
@@ -157,7 +139,9 @@ describe("<Form />", () => {
         store
       );
 
-      const selectProject = screen.getByLabelText("Project");
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
       fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -208,7 +192,9 @@ describe("<Form />", () => {
         store
       );
 
-      const selectProject = screen.getByLabelText("Project");
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
       fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -259,7 +245,9 @@ describe("<Form />", () => {
         store
       );
 
-      const selectProject = screen.getByLabelText("Project");
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
       fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -310,7 +298,9 @@ describe("<Form />", () => {
         store
       );
 
-      const selectProject = screen.getByLabelText("Project");
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
       fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
@@ -354,7 +344,9 @@ describe("<Form />", () => {
       store
     );
 
-    const selectProject = screen.getByLabelText("Project");
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
     fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
     const toggleButton = screen.getByText("View your Project Details");
@@ -414,7 +406,9 @@ describe("<Form/>", () => {
       store
     );
 
-    const selectProject = screen.getByLabelText("Project");
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
     fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
     expect(
