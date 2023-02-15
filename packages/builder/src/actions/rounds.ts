@@ -11,7 +11,7 @@ import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
-import { buildRoundApplicationMetadata } from "../utils/roundApplication";
+import { parseRoundApplicationMetadata } from "../utils/roundApplication";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -253,7 +253,7 @@ export const loadRound =
     let applicationMetadata: RoundApplicationMetadata;
     try {
       const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
-      applicationMetadata = buildRoundApplicationMetadata(JSON.parse(resp));
+      applicationMetadata = parseRoundApplicationMetadata(JSON.parse(resp));
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error("ipfs: error loading application metadata");

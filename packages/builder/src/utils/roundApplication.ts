@@ -26,7 +26,7 @@ const recipientAddressQuestion = {
   info: "Address that will receive funds",
 };
 
-export const buildRoundApplicationMetadata = (
+export const parseRoundApplicationMetadata = (
   object: any
 ): RoundApplicationMetadata => {
   const metadata: RoundApplicationMetadata = {
