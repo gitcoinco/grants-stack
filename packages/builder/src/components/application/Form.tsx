@@ -251,8 +251,6 @@ export default function Form({
 
   const projectRequirementsResult = [];
 
-  console.log(roundApplication.applicationSchema.requirements);
-
   if (
     roundApplication.applicationSchema.requirements.twitter.required &&
     !selectedProjectMetadata?.projectTwitter
