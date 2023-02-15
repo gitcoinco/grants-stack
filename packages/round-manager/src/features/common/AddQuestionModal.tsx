@@ -1,12 +1,16 @@
 import { Dialog, Listbox } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
+import { render } from "@testing-library/react";
 import { Button } from "common/src/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { EditQuestion, InputType, QuestionOption } from "../api/types";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
+
+const INITIAL_VALUE = "Select a type";
 
 type AddQuestionModalProps = {
   onSave: (question: EditQuestion) => void;
@@ -31,79 +35,106 @@ let options: QuestionOption[] = [];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
-  const questionExists = question && question !== undefined;
+  const questionExists = question && question.index !== undefined;
 
   const [isOpen, setIsOpen] = useState(show);
-  const [optional, setOptional] = useState(questionExists && question.field?.required ? false : true);
-  const [encrypted, setEncrypted] = useState(questionExists && question.field?.encrypted ? true : false);
-  const [showExplorer, setShowExplorer] = useState(false);
+  const initialQuestion = question;
+  const [questionOptions, setQuestionOptions] = useState<QuestionOption>({
+    title: "",
+    required: false,
+    encrypted: false,
+    hidden: false,
+    inputType: "short-answer",
+    options: [],
+  });
 
-  const [selectedQuestion, setSelectedQuestion] = useState(questionExists && question.field?.inputType ? question.field.inputType : "Select a type");
+  const [selectedQuestion, setSelectedQuestion] = useState("");
 
-  // toggles for the modal
-  const optionalSwitch = () => {
-    return <BaseSwitch activeLabel="*Required" inactiveLabel="Optional" value={optional} handler={b => setOptional(b)} />;
-  }
-
-  const encryptionToggle = () => {
-    return <BaseSwitch activeLabel="Encrypted" inactiveLabel="Not Encrypted" value={encrypted} handler={setEncrypted} />;
-  }
-
-  const explorerToggle = () => {
-    return <BaseSwitch activeLabel="Show in Explorer" inactiveLabel="Hide from Explorer" value={showExplorer} handler={setShowExplorer} />;
-  }
+  useEffect(() => {
+    if (question && question.index !== undefined && question.field?.inputType) {
+      setSelectedQuestion(question.field.inputType);
+      setQuestionOptions(question.field);
+    } else {
+      setSelectedQuestion(INITIAL_VALUE);
+    }
+  }, [question]);
 
   // renders the toggles in a group for ui
   const renderSwitches = () => {
+
+    const switches = [
+      {
+        activeLabel: "*Required",
+        inactiveLabel: "Optional",
+        value: "required"
+      },
+      {
+        activeLabel: "Encrypted",
+        inactiveLabel: "Not Encrypted",
+        value: "encrypted"
+      },
+      {
+        activeLabel: "Show in Explorer",
+        inactiveLabel: "Hide from Explorer",
+        value: "hidden"
+      }
+    ]
+
     return (
-      <div className="flex flex-row justify-between mt-6 w-[360px]">
-        {optionalSwitch()}
-        {encryptionToggle()}
-        {explorerToggle()}
+      <div className="flex flex-row justify-between mt-6 w-[80%]">
+        {switches.map((s, i) => (
+          <BaseSwitch
+            key={s.value}
+            activeLabel={s.activeLabel}
+            inactiveLabel={s.inactiveLabel}
+            value={Boolean(questionOptions[s.value as keyof QuestionOption]) || false}
+            handler={(b: boolean) =>
+              setQuestionOptions({ ...questionOptions, [s.value]: b })
+            }
+          />
+        ))}
       </div>
     );
   }
 
-  function AnswerArea({ children }: { children: React.ReactNode }) {
+  function answerArea(inner: any) {
     return (
       <div>
         <div className="flex flex-col mt-6">
           <hr className="mb-6" />
           <span className="mb-2">Question Title</span>
-          {children}
+          <input
+            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            key="question-title"
+            type="text"
+            placeholder="Question"
+            value={questionOptions.title}
+            onChange={(e) =>
+              setQuestionOptions({
+                ...questionOptions,
+                title: e.target.value,
+              })
+            }
+          />
+          {inner}
         </div>
         {renderSwitches()}
       </div>
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function ShortAnswer({ type }: { type: InputType }) {
-    return (
-      <input
-        className="border border-grey-100 rounded-sm ui-active:border-violet-400"
-        type="text"
-        placeholder="Question"
-      />
-    );
-  }
-
-  function Paragraph() {
-    return (
-      <textarea className="border border-grey-100 rounded-sm ui-active:border-violet-400" placeholder="enter question title" />
-    );
-  }
-
-  // todo: figure out where to put this
-  const addOption = () => {
-    console.log("add option");
-    // todo: add option to the options array
-  };
-
   const AddOptionButton = () => {
     return (
       <Button
-        onClick={addOption}
+        onClick={() => {
+          const renderOptions = questionOptions.options || [];
+          renderOptions.push("");
+          setQuestionOptions({
+            ...questionOptions,
+            options: renderOptions,
+          });
+        }}
+
         className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
       >
         <span className="flex flex-row justify-center">
@@ -114,43 +145,63 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     );
   };
 
-  function AddOptions() {
-    return (
-      <>
-        <input
-          type="text"
-          className="flex border border-grey-100 rounded focus:border-violet-400 w-full"
-          placeholder="Enter Question Title"
-        />
-        {/* todo: map the options object */}
+  function addOptions() {
+
+    const renderOptions = questionOptions.options || [];
+
+    if (renderOptions.length === 0) {
+      renderOptions.push("");
+
+      setQuestionOptions({
+        ...questionOptions,
+        options: renderOptions,
+      })
+    }
+
+    const render: any = [];
+
+    for (let i = 0; i < renderOptions.length; i++) {
+      render.push(
         <div className="flex flex-col">
           <Option
-            index={1}
-            onAddOption={() => {
-              // todo:
-            }}
+            index={i + 1}
+            value={questionOptions.options?.[i] || ""}
+            onChange={(event: any) => {
+              event.preventDefault();
+              if (questionOptions.options?.length)
+                setQuestionOptions({
+                  ...questionOptions,
+                  options: [
+                    ...questionOptions.options.slice(0, i),
+                    event.target.value,
+                    ...questionOptions.options.slice(i + 1),
+                  ]
+                })
+            }
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            onDeleteOption={(index: number) => {
-              // todo:
+            onDeleteOption={() => {
+              if (questionOptions.options?.length)
+                setQuestionOptions({
+                  ...questionOptions,
+                  options: [
+                    ...questionOptions.options.slice(0, i),
+                    ...questionOptions.options.slice(i + 1),
+                  ]
+                })
             }}
-            options={options}
+            options={[questionOptions]}
           />
         </div>
+      );
+    }
+
+    return (
+      <>
+        {render}
         <AddOptionButton />
       </>
     );
-  }
-
-  function MultipleChoice() {
-    return <AddOptions />;
-  }
-
-  function Checkboxes() {
-    return <AddOptions />;
-  }
-
-  function Dropdown() {
-    return <AddOptions />;
   }
 
   function typeToText(s: string) {
@@ -166,6 +217,10 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           onChange={(q: InputType) => {
             console.log("q", q);
             setSelectedQuestion(q);
+            setQuestionOptions({
+              ...questionOptions,
+              inputType: q,
+            });
           }}
         >
           <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
@@ -216,28 +271,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           </div>
           <div>
             <div className="flex flex-col mt-6">
-              <AnswerArea>
-                <>
-                  {(() => {
-                    switch (selectedQuestion) {
-                      case "email":
-                      case "address":
-                      case "short-answer":
-                        return <ShortAnswer type={selectedQuestion} />;
-                      case "paragraph":
-                        return <Paragraph />;
-                      case "multiple-choice":
-                        return <MultipleChoice />;
-                      case "checkbox":
-                        return <Checkboxes />;
-                      case "dropdown":
-                        return <Dropdown />;
-                      default:
-                        return null;
-                    }
-                  })()}
-                </>
-              </AnswerArea>
+              {selectedQuestion !== INITIAL_VALUE &&
+                answerArea((selectedQuestion == "multiple-choice"
+                  || selectedQuestion == "checkbox"
+                  || selectedQuestion == "dropdown") ? addOptions() : <></>)
+              }
             </div>
           </div>
           <div className="mt-10 flex flex-row justify-end">
@@ -254,9 +292,15 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
               onClick={() => {
                 setIsOpen(false);
+                onSave({
+                  ...initialQuestion,
+                  field: {
+                    ...questionOptions
+                  }
+                })
               }}
             >
-              Add
+              {questionExists ? `Save` : `Add`}
             </button>
           </div>
         </Dialog.Panel>

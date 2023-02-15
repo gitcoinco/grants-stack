@@ -375,6 +375,7 @@ export function RoundApplicationForm(props: {
   };
 
   const addOrEditQuestion = (question: EditQuestion) => {
+    setOpenAddQuestionModal(false);
     if (question.field) {
       if (!question.index) {
         append(question.field);
@@ -401,13 +402,13 @@ export function RoundApplicationForm(props: {
       <div className="md:grid md:grid-cols-3 md:gap-6 mt-7">
         <div className="md:col-span-1"></div>
         <div className="mt-5 md:mt-0 md:col-span-2">
+          <Box
+            title="Application Questions"
+            description="Add round application questions for project owners to fulfill the application process."
+            onlyTopRounded={true} >
+            <ApplicationQuestions />
+          </Box>
           <form onSubmit={handleSubmit(next)} className="text-grey-500">
-            <Box
-              title="Application Questions"
-              description="Add round application questions for project owners to fulfill the application process."
-              onlyTopRounded={true} >
-              <ApplicationQuestions />
-            </Box>
             <div className="px-6 align-middle py-3.5 shadow-md">
               <Steps
                 currentStep={currentStep}
