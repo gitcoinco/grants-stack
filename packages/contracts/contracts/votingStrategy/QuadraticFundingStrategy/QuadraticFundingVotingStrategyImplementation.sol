@@ -10,7 +10,11 @@ import "../IVotingStrategy.sol";
 
 /// @title QuadraticFundingVotingStrategyImplementation
 /// @notice Allows voters to cast multiple weighted votes to grants with one transaction This is inspired from BulkCheckout documented over at: https://github.com/gitcoinco/BulkTransactions/blob/master/contracts/BulkCheckout.sol
-contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Initializable, ReentrancyGuardUpgradeable {
+contract QuadraticFundingVotingStrategyImplementation is
+    IVotingStrategy,
+    Initializable,
+    ReentrancyGuardUpgradeable
+{
     //
     // --- Type declarations ---
     //
@@ -26,12 +30,12 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Initia
     //
     /// @notice Emitted when a new vote is sent
     event Voted(
-      address token,                    // voting token
-      uint256 amount,                   // voting amount
-      address indexed voter,            // voter address
-      address grantAddress,             // grant address
-      bytes32 indexed projectId,        // project id
-      address indexed roundAddress      // round address
+        address token, // voting token
+        uint256 amount, // voting amount
+        address indexed voter, // voter address
+        address grantAddress, // grant address
+        bytes32 indexed projectId, // project id
+        address indexed roundAddress // round address
     );
 
     //
@@ -48,51 +52,47 @@ contract QuadraticFundingVotingStrategyImplementation is IVotingStrategy, Initia
     ///
     /// @param encodedVotes encoded list of votes
     /// @param voterAddress voter address
-    function vote(bytes[] calldata encodedVotes, address voterAddress) external override payable nonReentrant isRoundContract {
+    function vote(
+        bytes[] calldata encodedVotes,
+        address voterAddress
+    ) external payable override nonReentrant isRoundContract {
+        /// @dev iterate over multiple donations and transfer funds
+        for (uint256 i = 0; i < encodedVotes.length; i++) {
+            /// @dev decode encoded vote
+            (
+                address _token,
+                uint256 _amount,
+                address _grantAddress,
+                bytes32 _projectId
+            ) = abi.decode(
+                    encodedVotes[i],
+                    (address, uint256, address, bytes32)
+                );
 
-      /// @dev iterate over multiple donations and transfer funds
-      for (uint256 i = 0; i < encodedVotes.length; i++) {
+            if (_token == address(0)) {
+                /// @dev native token transfer to grant address
+                // slither-disable-next-line reentrancy-events
+                AddressUpgradeable.sendValue(payable(_grantAddress), _amount);
+            } else {
+                /// @dev erc20 transfer to grant address
+                // slither-disable-next-line arbitrary-send-erc20,reentrancy-events,
+                SafeERC20Upgradeable.safeTransferFrom(
+                    IERC20Upgradeable(_token),
+                    voterAddress,
+                    _grantAddress,
+                    _amount
+                );
+            }
 
-        /// @dev decode encoded vote
-        (
-          address _token,
-          uint256 _amount,
-          address _grantAddress,
-          bytes32 _projectId
-        ) = abi.decode(encodedVotes[i], (
-          address,
-          uint256,
-          address,
-          bytes32
-        ));
-
-        if (_token == address(0)) {
-          /// @dev native token transfer to grant address
-          // slither-disable-next-line reentrancy-events
-          AddressUpgradeable.sendValue(payable(_grantAddress), _amount);
-        } else {
-
-          /// @dev erc20 transfer to grant address
-          // slither-disable-next-line arbitrary-send-erc20,reentrancy-events,
-          SafeERC20Upgradeable.safeTransferFrom(
-            IERC20Upgradeable(_token),
-            voterAddress,
-            _grantAddress,
-            _amount
-          );
-
+            /// @dev emit event for transfer
+            emit Voted(
+                _token,
+                _amount,
+                voterAddress,
+                _grantAddress,
+                _projectId,
+                msg.sender
+            );
         }
-
-        /// @dev emit event for transfer
-        emit Voted(
-          _token,
-          _amount,
-          voterAddress,
-          _grantAddress,
-          _projectId,
-          msg.sender
-        );
-      }
-
     }
 }

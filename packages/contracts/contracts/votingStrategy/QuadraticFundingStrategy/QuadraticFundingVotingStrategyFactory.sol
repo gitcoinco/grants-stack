@@ -22,8 +22,8 @@ contract QuadraticFundingVotingStrategyFactory is OwnableUpgradeable {
 
     /// @notice Emitted when a new Voting is created
     event VotingContractCreated(
-      address indexed votingContractAddress,
-      address indexed votingImplementation
+        address indexed votingContractAddress,
+        address indexed votingImplementation
     );
 
     //
@@ -31,27 +31,29 @@ contract QuadraticFundingVotingStrategyFactory is OwnableUpgradeable {
     //
     /// @notice constructor function which ensure deployer is set as owner
     function initialize() external initializer {
-      __Context_init_unchained();
-      __Ownable_init_unchained();
+        __Context_init_unchained();
+        __Ownable_init_unchained();
     }
 
     /// @notice Allows the owner to update the QuadraticFundingVotingStrategyImplementation.
     /// This provides us the flexibility to upgrade QuadraticFundingVotingStrategyImplementation
     /// contract while relying on the same QuadraticFundingVotingStrategyFactory to get the list of
     /// QuadraticFundingVoting contracts.
-    function updateVotingContract(address newVotingContract) external onlyOwner {
-      // slither-disable-next-line missing-zero-check
-      votingContract = newVotingContract;
+    function updateVotingContract(
+        address newVotingContract
+    ) external onlyOwner {
+        // slither-disable-next-line missing-zero-check
+        votingContract = newVotingContract;
 
-      emit VotingContractUpdated(newVotingContract);
+        emit VotingContractUpdated(newVotingContract);
     }
 
     /// @notice Clones QuadraticFundingVotingStrategyImplementation and deploys a contract and emits an event
     function create() external returns (address) {
-      address clone = ClonesUpgradeable.clone(votingContract);
-      emit VotingContractCreated(clone, votingContract);
-      QuadraticFundingVotingStrategyImplementation(clone).initialize();
+        address clone = ClonesUpgradeable.clone(votingContract);
+        emit VotingContractCreated(clone, votingContract);
+        QuadraticFundingVotingStrategyImplementation(clone).initialize();
 
-      return clone;
+        return clone;
     }
 }

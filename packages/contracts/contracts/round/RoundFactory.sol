@@ -25,9 +25,9 @@ contract RoundFactory is OwnableUpgradeable {
 
     /// @notice Emitted when a new Round is created
     event RoundCreated(
-      address indexed roundAddress,
-      address indexed ownedBy,
-      address indexed roundImplementation
+        address indexed roundAddress,
+        address indexed ownedBy,
+        address indexed roundImplementation
     );
 
     //
@@ -35,17 +35,16 @@ contract RoundFactory is OwnableUpgradeable {
     //
     /// @notice constructor function which ensure deployer is set as owner
     function initialize() external initializer {
-      __Context_init_unchained();
-      __Ownable_init_unchained();
+        __Context_init_unchained();
+        __Ownable_init_unchained();
     }
-
 
     /// @notice Allows the owner to update the RoundImplementation. This provides us the flexibility to upgrade RoundImplementation contract while relying on the same RoundFactory to get the list of rounds.
     function updateRoundContract(address newRoundContract) external onlyOwner {
-      // slither-disable-next-line missing-zero-check
-      roundContract = newRoundContract;
+        // slither-disable-next-line missing-zero-check
+        roundContract = newRoundContract;
 
-      emit RoundContractUpdated(newRoundContract);
+        emit RoundContractUpdated(newRoundContract);
     }
 
     /// @notice Clones RoundImp a new round and emits event
@@ -53,18 +52,15 @@ contract RoundFactory is OwnableUpgradeable {
     /// @param ownedBy Program which created the contract
     /// @return address of the newly created round
     function create(
-      bytes calldata encodedParameters,
-      address ownedBy
+        bytes calldata encodedParameters,
+        address ownedBy
     ) external returns (address) {
+        address clone = ClonesUpgradeable.clone(roundContract);
 
-      address clone = ClonesUpgradeable.clone(roundContract);
+        emit RoundCreated(clone, ownedBy, roundContract);
 
-      emit RoundCreated(clone, ownedBy, roundContract);
+        RoundImplementation(clone).initialize(encodedParameters);
 
-      RoundImplementation(clone).initialize(
-        encodedParameters
-      );
-
-      return clone;
+        return clone;
     }
 }

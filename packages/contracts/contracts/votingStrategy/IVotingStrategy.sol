@@ -19,9 +19,15 @@ abstract contract IVotingStrategy {
     //
     /// @notice modifier to check if sender is round contract.
     modifier isRoundContract() {
-      require(roundAddress != address(0), "error: voting contract not linked to a round");
-      require(msg.sender == roundAddress, "error: can be invoked only by round contract");
-      _;
+        require(
+            roundAddress != address(0),
+            "error: voting contract not linked to a round"
+        );
+        require(
+            msg.sender == roundAddress,
+            "error: can be invoked only by round contract"
+        );
+        _;
     }
 
     //
@@ -29,8 +35,8 @@ abstract contract IVotingStrategy {
     //
     /// @notice Invoked by RoundImplementation on creation to set the round for which the voting contracts is to be used
     function init() external {
-      require(roundAddress == address(0), "init: roundAddress already set");
-      roundAddress = msg.sender;
+        require(roundAddress == address(0), "init: roundAddress already set");
+        roundAddress = msg.sender;
     }
 
     /// @notice Invoked by RoundImplementation to allow voter to case vote for grants during a round.
@@ -41,5 +47,8 @@ abstract contract IVotingStrategy {
     /// - this would be triggered when a voter casts their vote via grant explorer
     /// @param _encodedVotes encoded votes
     /// @param _voterAddress voter address
-    function vote(bytes[] calldata _encodedVotes, address _voterAddress) external virtual payable;
+    function vote(
+        bytes[] calldata _encodedVotes,
+        address _voterAddress
+    ) external payable virtual;
 }

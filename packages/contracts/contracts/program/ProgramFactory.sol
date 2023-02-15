@@ -25,8 +25,8 @@ contract ProgramFactory is OwnableUpgradeable {
 
     /// @notice Emitted when a new Program is created
     event ProgramCreated(
-      address indexed programContractAddress,
-      address indexed programImplementation
+        address indexed programContractAddress,
+        address indexed programImplementation
     );
 
     //
@@ -34,18 +34,20 @@ contract ProgramFactory is OwnableUpgradeable {
     //
     /// @notice constructor function which ensure deployer is set as owner
     function initialize() external initializer {
-      __Context_init_unchained();
-      __Ownable_init_unchained();
+        __Context_init_unchained();
+        __Ownable_init_unchained();
     }
 
     /// @notice Allows the owner to update the ProgramImplementation. This provides us the flexibility to upgrade ProgramImplementation contract while relying on the same ProgramFactory to get the list of programs.
     /// @dev This function is used to update the programContract address
     /// @param newProgramContract Address of the new ProgramImplementation contract
-    function updateProgramContract(address newProgramContract) external onlyOwner {
-      // slither-disable-next-line missing-zero-check
-      programContract = newProgramContract;
+    function updateProgramContract(
+        address newProgramContract
+    ) external onlyOwner {
+        // slither-disable-next-line missing-zero-check
+        programContract = newProgramContract;
 
-      emit ProgramContractUpdated(newProgramContract);
+        emit ProgramContractUpdated(newProgramContract);
     }
 
     /// @notice Clones ProgramImplmentation and deploys a program
@@ -53,13 +55,12 @@ contract ProgramFactory is OwnableUpgradeable {
     /// @param encodedParameters Encoded parameters for creating a program
     /// @return address of the newly created program
     function create(
-      bytes calldata encodedParameters
+        bytes calldata encodedParameters
     ) external returns (address) {
+        address clone = ClonesUpgradeable.clone(programContract);
+        emit ProgramCreated(clone, programContract);
+        ProgramImplementation(clone).initialize(encodedParameters);
 
-      address clone = ClonesUpgradeable.clone(programContract);
-      emit ProgramCreated(clone, programContract);
-      ProgramImplementation(clone).initialize(encodedParameters);
-
-      return clone;
+        return clone;
     }
 }

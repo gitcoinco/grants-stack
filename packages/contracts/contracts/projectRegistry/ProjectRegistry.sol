@@ -61,7 +61,10 @@ contract ProjectRegistry is Initializable {
     // --- Modifiers ---
     //
     modifier onlyProjectOwner(uint256 projectID) {
-        require(projectsOwners[projectID].list[msg.sender] != address(0), "PR000");
+        require(
+            projectsOwners[projectID].list[msg.sender] != address(0),
+            "PR000"
+        );
         _;
     }
 
@@ -90,7 +93,10 @@ contract ProjectRegistry is Initializable {
     /// @notice Updates Metadata for singe project
     /// @param projectID ID of previously created project
     /// @param metadata Updated pointer to external metadata
-    function updateProjectMetadata(uint256 projectID, MetaPtr calldata metadata) external onlyProjectOwner(projectID) {
+    function updateProjectMetadata(
+        uint256 projectID,
+        MetaPtr calldata metadata
+    ) external onlyProjectOwner(projectID) {
         projects[projectID].metadata = metadata;
         emit MetadataUpdated(projectID, metadata);
     }
@@ -98,8 +104,16 @@ contract ProjectRegistry is Initializable {
     /// @notice Associate a new owner with a project
     /// @param projectID ID of previously created project
     /// @param newOwner address of new project owner
-    function addProjectOwner(uint256 projectID, address newOwner) external onlyProjectOwner(projectID) {
-        require(newOwner != address(0) && newOwner != OWNERS_LIST_SENTINEL && newOwner != address(this), "PR001");
+    function addProjectOwner(
+        uint256 projectID,
+        address newOwner
+    ) external onlyProjectOwner(projectID) {
+        require(
+            newOwner != address(0) &&
+                newOwner != OWNERS_LIST_SENTINEL &&
+                newOwner != address(this),
+            "PR001"
+        );
 
         OwnerList storage owners = projectsOwners[projectID];
 
@@ -116,7 +130,11 @@ contract ProjectRegistry is Initializable {
     /// @param projectID ID of previously created project
     /// @param prevOwner Address of previous owner in OwnerList
     /// @param owner Address of new Owner
-    function removeProjectOwner(uint256 projectID, address prevOwner, address owner) external onlyProjectOwner(projectID) {
+    function removeProjectOwner(
+        uint256 projectID,
+        address prevOwner,
+        address owner
+    ) external onlyProjectOwner(projectID) {
         require(owner != address(0) && owner != OWNERS_LIST_SENTINEL, "PR001");
 
         OwnerList storage owners = projectsOwners[projectID];
@@ -132,16 +150,20 @@ contract ProjectRegistry is Initializable {
     }
 
     /// @notice Retrieve count of existing project owners
-    /// @param projectID ID of project 
+    /// @param projectID ID of project
     /// @return Count of owners for given project
-    function projectOwnersCount(uint256 projectID) external view returns(uint256) {
+    function projectOwnersCount(
+        uint256 projectID
+    ) external view returns (uint256) {
         return projectsOwners[projectID].count;
     }
 
-    /// @notice Retrieve list of project owners 
-    /// @param projectID ID of project 
+    /// @notice Retrieve list of project owners
+    /// @param projectID ID of project
     /// @return List of current owners of given project
-    function getProjectOwners(uint256 projectID) external view returns(address[] memory) {
+    function getProjectOwners(
+        uint256 projectID
+    ) external view returns (address[] memory) {
         OwnerList storage owners = projectsOwners[projectID];
 
         address[] memory list = new address[](owners.count);
