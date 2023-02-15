@@ -38,7 +38,7 @@ describe("RoundFactory", function () {
   let protocolTreasury = Wallet.createRandom();
 
 
-  describe('constructor', () => {
+  describe ('constructor', () => {
 
     it('RoundFactory SHOULD deploy properly', async () => {
 
@@ -68,7 +68,7 @@ describe("RoundFactory", function () {
 
     });
 
-    describe('test: updateProtocolFeePercentage', async () => {
+    describe ('test: updateProtocolFeePercentage', async () => {
 
       it("SHOULD REVERT if not called by owner", async () => {
         const tx = roundFactory.connect(notOwnerWallet).updateProtocolFeePercentage(1);
@@ -94,7 +94,7 @@ describe("RoundFactory", function () {
       });
     });
 
-    describe('test: updateProtocolTreasury', async () => {
+    describe ('test: updateProtocolTreasury', async () => {
 
       it("SHOULD REVERT if not called by owner", async () => {
         const tx = roundFactory.connect(notOwnerWallet).updateProtocolTreasury(protocolTreasury.address);
@@ -125,7 +125,7 @@ describe("RoundFactory", function () {
       });
     });
 
-    describe('test: updateRoundContract', async () => {
+    describe ('test: updateRoundContract', async () => {
 
       it("SHOULD REVERT if not called by owner", async () => {
         const tx = roundFactory.connect(notOwnerWallet).updateRoundContract(roundImplementation.address);
@@ -155,12 +155,14 @@ describe("RoundFactory", function () {
       });
     });
 
-    describe('test: create', async () => {
+    describe ('test: create', async () => {
 
       const feePercentage = 10;
-      const amount = 1000;
+      const matchAmount = 1000;
       const token = Wallet.createRandom().address;
       const programAddress = Wallet.createRandom().address;
+      const roundFeePercentage = 10;
+      const roundFeeAddress = Wallet.createRandom().address;
 
       let _currentBlockTimestamp: number
 
@@ -215,8 +217,10 @@ describe("RoundFactory", function () {
         params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];

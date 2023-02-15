@@ -52,7 +52,7 @@ describe("IPayoutInterface", function () {
 
   })
 
-  describe('constructor', () => {
+  describe ('constructor', () => {
 
     it('SHOULD deploy properly', async () => {
 
@@ -63,7 +63,7 @@ describe("IPayoutInterface", function () {
 
   let _currentBlockTimestamp: number;
 
-  describe('IPayoutInterface functions', () => {
+  describe ('IPayoutInterface functions', () => {
 
     const initPayoutStrategy = async (
       _currentBlockTimestamp: number,
@@ -93,7 +93,9 @@ describe("IPayoutInterface", function () {
       // Deploy voting strategy
       votingStrategyArtifact = await artifacts.readArtifact('QuadraticFundingVotingStrategyImplementation');
       votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
-      let amount = 100;
+      const matchAmount = 100;
+      const roundFeePercentage = 10;
+      const roundFeeAddress = Wallet.createRandom().address;
 
       const initAddress = [
         votingStrategyContract.address, // votingStrategy
@@ -120,8 +122,10 @@ describe("IPayoutInterface", function () {
       let params = [
         initAddress,
         initRoundTime,
-        amount,
+        matchAmount,
         token,
+        roundFeePercentage,
+        roundFeeAddress,
         initMetaPtr,
         initRoles
       ];
@@ -211,7 +215,7 @@ describe("IPayoutInterface", function () {
         await mockERC20.transfer(roundImplementation.address, 110);
 
         const tx = roundImplementation.setReadyForPayout();
-        await expect(tx).to.revertedWith('round has not ended');
+        await expect(tx).to.revertedWith('Round: Round has not ended');
       });
 
       it("SHOULD set isReadyForPayout as true", async() => {

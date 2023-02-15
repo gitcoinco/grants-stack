@@ -41,8 +41,11 @@ describe("RoundImplementation", function () {
   let payoutStrategyArtifact: Artifact;
 
   // Variable declarations
-  let amount: BigNumberish;
+  let matchAmount: BigNumberish;
   let token: string;
+
+  let roundFeePercentage: BigNumberish;
+  let roundFeeAddress: string;
 
   let roundMetaPtr: MetaPtr;
   let applicationMetaPtr: MetaPtr;
@@ -86,7 +89,7 @@ describe("RoundImplementation", function () {
   })
 
 
-  describe('core functions', () => {
+  describe ('core functions', () => {
 
     const initRound = async (_currentBlockTimestamp: number, overrides ?: any) => {
 
@@ -100,7 +103,8 @@ describe("RoundImplementation", function () {
       // Deploy PayoutStrategy contract
       payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
 
-      let amount = overrides && overrides.hasOwnProperty('amount') ? overrides.amount : 100;
+      let matchAmount = overrides && overrides.hasOwnProperty('matchAmount') ? overrides.matchAmount : 100;
+      let roundFeePercentage = overrides && overrides.hasOwnProperty('roundFeePercentage') ? overrides.roundFeePercentage : 0;
 
       const initAddress = [
         votingStrategyContract.address, // votingStrategy
@@ -127,8 +131,10 @@ describe("RoundImplementation", function () {
       let params = [
         initAddress,
         initRoundTime,
-        amount,
+        matchAmount,
         token,
+        roundFeePercentage,
+        roundFeeAddress,
         initMetaPtr,
         initRoles
       ];
@@ -143,8 +149,10 @@ describe("RoundImplementation", function () {
 
     before(async() => {
 
-      amount = 100;
+      matchAmount = 100;
       token = Wallet.createRandom().address;
+      roundFeePercentage = 0;
+      roundFeeAddress = Wallet.createRandom().address;
 
       roundMetaPtr = { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" };
       applicationMetaPtr = { protocol: 1, pointer: "bafybeiaoakfoxjwi2kwh43djbmomroiryvhv5cetg74fbtzwef7hzzvrnq" };
@@ -163,7 +171,7 @@ describe("RoundImplementation", function () {
       roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
     });
 
-    describe('test: initialize', () => {
+    describe ('test: initialize', () => {
 
       let _currentBlockTimestamp: number;
 
@@ -189,8 +197,10 @@ describe("RoundImplementation", function () {
         expect(await roundImplementation.roundStartTime()).equals(_currentBlockTimestamp + 500);
         expect(await roundImplementation.roundEndTime()).equals(_currentBlockTimestamp + 1000);
 
-        expect(await roundImplementation.amount()).equals(amount);
+        expect(await roundImplementation.matchAmount()).equals(matchAmount);
         expect(await roundImplementation.token()).equals(token);
+        expect(await roundImplementation.roundFeePercentage()).equals(0);
+        expect(await roundImplementation.roundFeeAddress()).equals(roundFeeAddress);
 
         const roundMetaPtr = await roundImplementation.roundMetaPtr();
         expect(roundMetaPtr.pointer).equals(roundMetaPtr.pointer);
@@ -243,8 +253,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -252,7 +264,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           encodeRoundParameters(params),
           roundFactoryContract.address
-        )).to.be.revertedWith("time has already passed");
+        )).to.be.revertedWith("Round: Time has already passed");
 
       });
 
@@ -290,8 +302,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -299,7 +313,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           encodeRoundParameters(params),
           roundFactoryContract.address
-        )).to.be.revertedWith("app end is before app start");
+        )).to.be.revertedWith("Round: App end is before app start");
 
       });
 
@@ -337,8 +351,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -346,7 +362,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           encodeRoundParameters(params),
           roundFactoryContract.address
-        )).to.be.revertedWith("round end is before app end");
+        )).to.be.revertedWith("Round: Round end is before app end");
 
       });
 
@@ -384,8 +400,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -393,7 +411,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           encodeRoundParameters(params),
           roundFactoryContract.address
-        )).to.be.revertedWith("round end is before round start");
+        )).to.be.revertedWith("Round: Round end is before round start");
 
       });
 
@@ -431,8 +449,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -440,7 +460,7 @@ describe("RoundImplementation", function () {
         await expect(newRoundImplementation.initialize(
           encodeRoundParameters(params),
           roundFactoryContract.address
-        )).to.be.revertedWith("round start is before app start");
+        )).to.be.revertedWith("Round: Round start is before app start");
 
       });
 
@@ -471,8 +491,10 @@ describe("RoundImplementation", function () {
         let params = [
           initAddress,
           initRoundTime,
-          amount,
+          matchAmount,
           token,
+          roundFeePercentage,
+          roundFeeAddress,
           initMetaPtr,
           initRoles
         ];
@@ -486,7 +508,7 @@ describe("RoundImplementation", function () {
 
     });
 
-    describe('test: updateAmount', () => {
+    describe ('test: updateMatchAmount', () => {
 
       let _currentBlockTimestamp: number;
 
@@ -507,7 +529,7 @@ describe("RoundImplementation", function () {
 
         const [_, notRoundOperator] = await ethers.getSigners();
 
-        await expect(roundImplementation.connect(notRoundOperator).updateAmount(newAmount)).to.revertedWith(
+        await expect(roundImplementation.connect(notRoundOperator).updateMatchAmount(newAmount)).to.revertedWith(
           `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
         );
 
@@ -515,19 +537,19 @@ describe("RoundImplementation", function () {
 
       it ('SHOULD update amount value IF called is round operator', async () => {
 
-        const txn = await roundImplementation.updateAmount(newAmount);
+        const txn = await roundImplementation.updateMatchAmount(newAmount);
         await txn.wait();
 
-        const amount = await roundImplementation.amount();
-        expect(amount).equals(newAmount);
+        const matchAmount = await roundImplementation.matchAmount();
+        expect(matchAmount).equals(newAmount);
       });
 
-      it ('SHOULD emit AmountUpdated event', async () => {
+      it ('SHOULD emit MatchAmountUpdated event', async () => {
 
-        const txn = await roundImplementation.updateAmount(newAmount);
+        const txn = await roundImplementation.updateMatchAmount(newAmount);
 
         expect(txn)
-          .to.emit(roundImplementation, 'AmountUpdated')
+          .to.emit(roundImplementation, 'MatchAmountUpdated')
           .withArgs(
             newAmount
           );
@@ -537,18 +559,8 @@ describe("RoundImplementation", function () {
 
         const lesserAmount = 2;
 
-        await expect(roundImplementation.updateAmount(lesserAmount)).to.revertedWith(
-          `lesser then current amount`
-        );
-
-      });
-
-      it ('SHOULD revert if invoked with amount lesser than current amount', async () => {
-
-        const sameAmount = await roundImplementation.amount();
-
-        await expect(roundImplementation.updateAmount(sameAmount)).to.revertedWith(
-          `lesser then current amount`
+        await expect(roundImplementation.updateMatchAmount(lesserAmount)).to.revertedWith(
+          `Round: Lesser than current match amount`
         );
 
       });
@@ -558,12 +570,122 @@ describe("RoundImplementation", function () {
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500])
 
         await expect(
-          roundImplementation.updateAmount(newAmount)
-        ).to.revertedWith("round has ended");
+          roundImplementation.updateMatchAmount(newAmount)
+        ).to.revertedWith("Round: Round has ended");
       });
-    })
+    });
 
-    describe('test: updateRoundMetaPtr', () => {
+    describe ('test: updateRoundFeePercentage', () => {
+
+      let _currentBlockTimestamp: number;
+
+      beforeEach(async () => {
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        await initRound(_currentBlockTimestamp);
+      });
+
+      it ('SHOULD revert if invoked by wallet who is not round operator', async () => {
+        const newRoundFeePercentage = 10;
+        const [_, notRoundOperator] = await ethers.getSigners();
+        await expect(roundImplementation.connect(notRoundOperator).updateRoundFeePercentage(newRoundFeePercentage)).to.revertedWith(
+          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+
+      });
+
+      it ('SHOULD update roundFeePercentage value IF called is round operator', async () => {
+
+        const newRoundFeePercentage = 10;
+
+        const txn = await roundImplementation.updateRoundFeePercentage(newRoundFeePercentage);
+        await txn.wait();
+
+        const roundFeePercentage = await roundImplementation.roundFeePercentage();
+        expect(roundFeePercentage).equals(newRoundFeePercentage);
+      });
+
+      it ('SHOULD emit RoundFeePercentageUpdated event', async () => {
+
+        const newRoundFeePercentage = 10;
+
+        const txn = await roundImplementation.updateRoundFeePercentage(newRoundFeePercentage);
+
+        expect(txn)
+          .to.emit(roundImplementation, 'RoundFeePercentageUpdated')
+          .withArgs(newRoundFeePercentage);
+      });
+
+      it('SHOULD revert if invoked after roundEndTime', async () => {
+
+        const newRoundFeePercentage = 10;
+
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500])
+
+        await expect(
+          roundImplementation.updateRoundFeePercentage(newRoundFeePercentage)
+        ).to.revertedWith("Round: Round has ended");
+      });
+    });
+
+    describe ('test: updateRoundFeeAddress', () => {
+
+      let _currentBlockTimestamp: number;
+
+      beforeEach(async () => {
+        _currentBlockTimestamp = (await ethers.provider.getBlock(
+          await ethers.provider.getBlockNumber())
+        ).timestamp;
+
+        await initRound(_currentBlockTimestamp);
+      });
+
+      it ('SHOULD revert if invoked by wallet who is not round operator', async () => {
+        const newRoundFeeAddress = Wallet.createRandom().address;
+        const [_, notRoundOperator] = await ethers.getSigners();
+        await expect(roundImplementation.connect(notRoundOperator).updateRoundFeeAddress(newRoundFeeAddress)).to.revertedWith(
+          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
+        );
+
+      });
+
+      it ('SHOULD update roundFeeAddress IF called is round operator', async () => {
+
+        const newRoundFeeAddress = Wallet.createRandom().address;
+
+        const txn = await roundImplementation.updateRoundFeeAddress(newRoundFeeAddress);
+        await txn.wait();
+
+        const roundFeeAddress = await roundImplementation.roundFeeAddress();
+        expect(roundFeeAddress).equals(newRoundFeeAddress);
+      });
+
+      it ('SHOULD emit RoundFeeAddressUpdated event', async () => {
+
+        const newRoundFeeAddress = Wallet.createRandom().address;
+
+        const txn = await roundImplementation.updateRoundFeeAddress(newRoundFeeAddress);
+
+        expect(txn)
+          .to.emit(roundImplementation, 'RoundFeeAddressUpdated')
+          .withArgs(newRoundFeeAddress);
+      });
+
+      it('SHOULD revert if invoked after roundEndTime', async () => {
+
+        const newRoundFeeAddress = Wallet.createRandom().address;
+
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500])
+
+        await expect(
+          roundImplementation.updateRoundFeeAddress(newRoundFeeAddress)
+        ).to.revertedWith("Round: Round has ended");
+      });
+    });
+
+    describe ('test: updateRoundMetaPtr', () => {
 
       let _currentBlockTimestamp: number;
 
@@ -616,11 +738,11 @@ describe("RoundImplementation", function () {
 
         await expect(
           roundImplementation.updateRoundMetaPtr(randomMetaPtr)
-        ).to.revertedWith("round has ended");
+        ).to.revertedWith("Round: Round has ended");
       });
     });
 
-    describe('test: updateApplicationMetaPtr', () => {
+    describe ('test: updateApplicationMetaPtr', () => {
 
       let _currentBlockTimestamp: number;
 
@@ -673,14 +795,17 @@ describe("RoundImplementation", function () {
 
         await expect(
           roundImplementation.updateApplicationMetaPtr(randomMetaPtr)
-        ).to.revertedWith("round has ended");
+        ).to.revertedWith("Round: Round has ended");
       });
     });
 
-    describe('test: updateRoundStartTime', () => {
+    describe ('test: updateStartAndEndTimes', () => {
 
       let _currentBlockTimestamp: number;
-      let newTime: number;
+      let newApplicationsStartTime: number;
+      let newApplicationsEndTime: number;
+      let newRoundStartTime: number;
+      let newRoundEndTime: number;
 
       beforeEach(async () => {
 
@@ -688,60 +813,141 @@ describe("RoundImplementation", function () {
           await ethers.provider.getBlockNumber())
         ).timestamp;
 
-        newTime = _currentBlockTimestamp + 110;
+        newApplicationsStartTime = _currentBlockTimestamp + 150;
+        newApplicationsEndTime = _currentBlockTimestamp + 350;
+        newRoundStartTime = _currentBlockTimestamp + 550;
+        newRoundEndTime = _currentBlockTimestamp + 750;
 
         await initRound(_currentBlockTimestamp);
       });
 
       it ('SHOULD revert if invoked by wallet who is not round operator', async () => {
         const [_, notRoundOperator] = await ethers.getSigners();
-        await expect(roundImplementation.connect(notRoundOperator).updateRoundStartTime(newTime)).to.revertedWith(
+        await expect(roundImplementation.connect(notRoundOperator).updateStartAndEndTimes(
+          newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        )).to.revertedWith(
           `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
         );
       });
 
 
-      it ('SHOULD revert if roundStartTime is in past', async () => {
+      it ('SHOULD revert if newApplicationStartTime is after newApplicationsEndTime', async () => {
 
-        const _time = _currentBlockTimestamp - 100;
+        const _newApplicationsStartTime = _currentBlockTimestamp + 400;
 
-        await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
-          'time has already passed'
+        await expect(roundImplementation.updateStartAndEndTimes(
+          _newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        )).to.revertedWith(
+          'Round: Application end is before application start'
         );
       });
 
-      it ('SHOULD revert if roundStartTime is before applicationsStartTime', async () => {
+      it ('SHOULD revert if newRoundStartTime is after newRoundEndTime', async () => {
 
-        const _time = _currentBlockTimestamp + 50;
+        const _newRoundStartTime = _currentBlockTimestamp + 800;
 
-        await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
-          'is before app start'
+        await expect(roundImplementation.updateStartAndEndTimes(
+          newApplicationsStartTime,
+          newApplicationsEndTime,
+          _newRoundStartTime,
+          newRoundEndTime
+        )).to.revertedWith(
+          'Round: Round end is before round start'
         );
       });
 
-      it ('SHOULD revert if roundStartTime is after roundEndTime', async () => {
+      it ('SHOULD revert if newRoundStartTime is before newApplicationsStartTime', async () => {
 
-        const _time = _currentBlockTimestamp + 1500;
+        const _newApplicationsStartTime = _currentBlockTimestamp + 600;
+        const _newApplicationsEndTime = _currentBlockTimestamp + 800;
 
-        await expect(roundImplementation.updateRoundStartTime(_time)).to.revertedWith(
-          'is after round end'
+        await expect(roundImplementation.updateStartAndEndTimes(
+          _newApplicationsStartTime,
+          _newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        )).to.revertedWith(
+          'Round: Round start is before application start'
         );
       });
 
-      it ('SHOULD update roundStartTime value IF called is round operator', async () => {
+      it ('SHOULD revert if newApplicationsEndTime is after newRoundEndTime', async () => {
 
-        const txn = await roundImplementation.updateRoundStartTime(newTime);
+       const _newApplicationsEndTime = _currentBlockTimestamp + 800;
+
+        await expect(roundImplementation.updateStartAndEndTimes(
+          newApplicationsStartTime,
+          _newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        )).to.revertedWith(
+          'Round: Round end is before application end'
+        );
+      });
+
+      it ('SHOULD update start & end times value IF called is round operator', async () => {
+
+        const txn = await roundImplementation.updateStartAndEndTimes(
+          newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        );
         await txn.wait();
 
+        const applicationsStartTime = await roundImplementation.applicationsStartTime();
+        const applicationsEndTime = await roundImplementation.applicationsEndTime();
         const roundStartTime = await roundImplementation.roundStartTime();
-        expect(roundStartTime).equals(newTime);
+        const roundEndTime = await roundImplementation.roundEndTime();
+
+        expect(applicationsStartTime).equals(newApplicationsStartTime);
+        expect(applicationsEndTime).equals(newApplicationsEndTime);
+        expect(roundStartTime).equals(newRoundStartTime);
+        expect(roundEndTime).equals(newRoundEndTime);
       });
 
-      it('SHOULD emit RountStartTimeUpdated event', async() => {
+      it('SHOULD emit ApplicationsStartTimeUpdated event', async() => {
 
-        expect(await roundImplementation.updateRoundStartTime(newTime))
-          .to.emit(roundImplementation, 'RoundStartTimeUpdated')
-          .withArgs(_currentBlockTimestamp + 500, newTime);
+        expect(await roundImplementation.updateStartAndEndTimes(
+          newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        ))
+          .to.emit(roundImplementation, 'ApplicationsStartTimeUpdated')
+          .withArgs(_currentBlockTimestamp + 100, newApplicationsStartTime);
+      });
+
+      it('SHOULD not emit ApplicationsStartTimeUpdated event if newApplicationsStartTime has passed current timestamp', async() => {
+
+        const _newApplicationsStartTime = _currentBlockTimestamp - 100;
+        
+        expect(await roundImplementation.updateStartAndEndTimes(
+          _newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        ))
+          .not.to.emit(roundImplementation, 'ApplicationsStartTimeUpdated');
+      });
+
+      it('SHOULD not emit ApplicationsStartTimeUpdated event if current time has passed applicationStartTime', async() => {
+
+        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 200])
+        
+        expect(await roundImplementation.updateStartAndEndTimes(
+          newApplicationsStartTime,
+          newApplicationsEndTime,
+          newRoundStartTime,
+          newRoundEndTime
+        ))
+          .not.to.emit(roundImplementation, 'ApplicationsStartTimeUpdated');
       });
 
       it('SHOULD revert if invoked after roundEndTime', async () => {
@@ -749,336 +955,13 @@ describe("RoundImplementation", function () {
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500])
 
         await expect(
-          roundImplementation.updateRoundStartTime(newTime)
-        ).to.revertedWith("round has ended");
-      });
-
-    });
-
-    describe('test: updateRoundEndTime', () => {
-
-      let _currentBlockTimestamp: number;
-      let newTime: number;
-      beforeEach(async () => {
-
-        _currentBlockTimestamp = (await ethers.provider.getBlock(
-          await ethers.provider.getBlockNumber())
-        ).timestamp;
-
-        newTime = _currentBlockTimestamp + 1500;
-
-        await initRound(_currentBlockTimestamp);
-      });
-
-      it ('SHOULD revert if invoked by wallet who is not round operator', async () => {
-        const [_, notRoundOperator] = await ethers.getSigners();
-
-        await expect(roundImplementation.connect(notRoundOperator).updateRoundEndTime(newTime)).to.revertedWith(
-          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
-        );
-      });
-
-      it ('SHOULD revert if roundEndTime is in the past', async () => {
-
-        const _time =_currentBlockTimestamp - 10;
-
-        await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'time has already passed'
-        );
-      });
-
-      it ('SHOULD revert if roundEndTime is before roundStartTime', async () => {
-
-        const _time = _currentBlockTimestamp + 400;
-
-        await expect(roundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'is before round start'
-        );
-      });
-
-      it ('SHOULD revert if roundEndTime is before applicationsEndTime', async () => {
-
-        // Deploy voting strategy
-        votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
-        // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
-
-        let amount = 100;
-
-        const initAddress = [
-          votingStrategyContract.address, // votingStrategy
-          payoutStrategyContract.address, // payoutStrategy
-        ];
-
-        const initRoundTime = [
-          _currentBlockTimestamp + 100, // applicationsStartTime
-          _currentBlockTimestamp + 600, // applicationsEndTime
-          _currentBlockTimestamp + 500, // roundStartTime
-          _currentBlockTimestamp + 1000, // roundEndTime
-        ];
-
-        const initMetaPtr = [
-          roundMetaPtr,
-          applicationMetaPtr,
-        ];
-
-        const initRoles = [
-          adminRoles,
-          roundOperators
-        ];
-
-        let params = [
-          initAddress,
-          initRoundTime,
-          amount,
-          token,
-          initMetaPtr,
-          initRoles
-        ];
-
-        // Deploy Round contract
-        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
-        await newRoundImplementation.initialize(
-          encodeRoundParameters(params),
-          roundFactoryContract.address
-        );
-
-        const _time = _currentBlockTimestamp + 550;
-
-        await expect(newRoundImplementation.updateRoundEndTime(_time)).to.revertedWith(
-          'is before app end'
-        );
-      });
-
-      it ('SHOULD update roundEndTime value IF called is round operator', async () => {
-
-        const txn = await roundImplementation.updateRoundEndTime(newTime);
-        await txn.wait();
-
-        const roundEndTime = await roundImplementation.roundEndTime();
-        expect(roundEndTime).equals(newTime);
-      });
-
-      it('SHOULD emit RoundEndTimeUpdated event', async() => {
-
-        expect(await roundImplementation.updateRoundEndTime(newTime))
-          .to.emit(roundImplementation, 'RoundEndTimeUpdated')
-          .withArgs(_currentBlockTimestamp + 1000, newTime);
-      });
-
-      it('SHOULD revert if invoked after roundEndTime', async () => {
-
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 150000])
-
-        await expect(
-          roundImplementation.updateRoundEndTime(newTime)
-        ).to.revertedWith("round has ended");
-      });
-    });
-
-    describe('test: updateApplicationsStartTime', () => {
-
-      let _currentBlockTimestamp: number;
-      let newTime: number;
-
-      beforeEach(async () => {
-
-        _currentBlockTimestamp = (await ethers.provider.getBlock(
-          await ethers.provider.getBlockNumber())
-        ).timestamp;
-
-        newTime = _currentBlockTimestamp + 200;
-
-        await initRound(_currentBlockTimestamp);
-      });
-
-
-      it('updateApplicationsStartTime SHOULD revert if invoked by wallet who is not round operator', async () => {
-        const [_, notRoundOperator] = await ethers.getSigners();
-
-        await expect(roundImplementation.connect(notRoundOperator).updateApplicationsStartTime(newTime)).to.revertedWith(
-          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
-        );
-      });
-
-      it ('SHOULD revert if applicationsStartTime is in the past', async () => {
-
-        const _time = _currentBlockTimestamp - 10;
-
-        await expect(roundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
-          'time has already passed'
-        );
-      });
-
-      it ('SHOULD revert if applicationsStartTime is after roundStartTime', async () => {
-
-        // Deploy voting strategy
-        votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>await deployContract(user, votingStrategyArtifact, []);
-        // Deploy PayoutStrategy contract
-        payoutStrategyContract = <MerklePayoutStrategyImplementation>await deployContract(user, payoutStrategyArtifact, []);
-
-        let amount = 100;
-
-        const initAddress = [
-          votingStrategyContract.address, // votingStrategy
-          payoutStrategyContract.address, // payoutStrategy
-        ];
-
-        const initRoundTime = [
-          _currentBlockTimestamp + 100, // applicationsStartTime
-          _currentBlockTimestamp + 500, // applicationsEndTime
-          _currentBlockTimestamp + 250, // roundStartTime
-          _currentBlockTimestamp + 1000, // roundEndTime
-        ];
-
-        const initMetaPtr = [
-          roundMetaPtr,
-          applicationMetaPtr,
-        ];
-
-        const initRoles = [
-          adminRoles,
-          roundOperators
-        ];
-
-        let params = [
-          initAddress,
-          initRoundTime,
-          amount,
-          token,
-          initMetaPtr,
-          initRoles
-        ];
-
-        // Deploy Round contract
-        const newRoundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
-        await newRoundImplementation.initialize(
-          encodeRoundParameters(params),
-          roundFactoryContract.address
-        );
-
-        const _time = _currentBlockTimestamp + 300;
-
-        await expect(newRoundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
-          'is after round start'
-        );
-      });
-
-      it ('SHOULD revert if applicationsStartTime is after applicationsEndTime', async () => {
-
-        const _time = _currentBlockTimestamp + 400;
-
-        await expect(roundImplementation.updateApplicationsStartTime(_time)).to.revertedWith(
-          'is after app end'
-        );
-      });
-
-      it ('SHOULD update applicationsStartTime value IF called is round operator', async () => {
-
-        const txn = await roundImplementation.updateApplicationsStartTime(newTime);
-        await txn.wait();
-
-        const applicationsStartTime = await roundImplementation.applicationsStartTime();
-        expect(applicationsStartTime).equals(newTime);
-      });
-
-      it('SHOULD emit ApplicationsStartTimeUpdated event', async() => {
-        const applicationsStartTime = await roundImplementation.applicationsStartTime();
-
-        expect(await roundImplementation.updateApplicationsStartTime(newTime))
-          .to.emit(roundImplementation, 'ApplicationsStartTimeUpdated')
-          .withArgs(applicationsStartTime, newTime);
-      });
-
-      it('SHOULD revert if invoked after roundEndTime', async () => {
-
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 150000])
-
-        await expect(
-          roundImplementation.updateApplicationsStartTime(newTime)
-        ).to.revertedWith("round has ended");
-      });
-
-    });
-
-    describe('test: updateApplicationsEndTime', () => {
-
-      let newTime: number;
-
-      let _currentBlockTimestamp: number;
-
-      beforeEach(async () => {
-
-        _currentBlockTimestamp = (await ethers.provider.getBlock(
-          await ethers.provider.getBlockNumber())
-        ).timestamp;
-
-        newTime = _currentBlockTimestamp + 300;
-
-        await initRound(_currentBlockTimestamp);
-      });
-
-      it ('SHOULD revert if invoked by wallet who is not round operator', async () => {
-
-        const [_, notRoundOperator] = await ethers.getSigners();
-
-        await expect(roundImplementation.connect(notRoundOperator).updateApplicationsEndTime(newTime)).to.revertedWith(
-          `AccessControl: account ${notRoundOperator.address.toLowerCase()} is missing role 0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5`
-        );
-      });
-
-      it('SHOULD revert if applicationsEndTime has already passed', async () => {
-
-        const _time = _currentBlockTimestamp - 10;
-
-        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
-          'time has already passed'
-        );
-      });
-
-      it('SHOULD revert if applicationsEndTime is before applicationsStartTime', async () => {
-
-        const _time = _currentBlockTimestamp + 50;
-
-        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
-          'is before app start'
-        );
-      });
-
-      it('SHOULD revert if applicationsEndTime is after roundEndTime', async () => {
-
-        const _time =  _currentBlockTimestamp + 1500;
-
-        await expect(roundImplementation.updateApplicationsEndTime(_time)).to.revertedWith(
-          'is after round end'
-        );
-      });
-
-      it('SHOULD update roundEndTime value IF called is round operator', async () => {
-
-        const txn = await roundImplementation.updateApplicationsEndTime(newTime);
-        await txn.wait();
-
-        const applicationsEndTime = await roundImplementation.applicationsEndTime();
-        expect(applicationsEndTime).equals(newTime);
-      });
-
-      it('SHOULD emit RoundEndTimeUpdated event', async() => {
-
-        const applicationsEndTime = await roundImplementation.applicationsEndTime();
-
-        expect(await roundImplementation.updateApplicationsEndTime(newTime))
-          .to.emit(roundImplementation, 'ApplicationsEndTimeUpdated')
-          .withArgs(applicationsEndTime, newTime);
-      });
-
-      it('SHOULD revert if invoked after roundEndTime', async () => {
-
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 2000]);
-
-        await expect(
-          roundImplementation.updateApplicationsEndTime(newTime)
-        ).to.revertedWith("round has ended");
+          roundImplementation.updateStartAndEndTimes(
+            newApplicationsStartTime,
+            newApplicationsEndTime,
+            newRoundStartTime,
+            newRoundEndTime
+          )
+        ).to.revertedWith("Round: Round has ended");
       });
 
     });
@@ -1139,12 +1022,12 @@ describe("RoundImplementation", function () {
 
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1500])
 
-        await expect(roundImplementation.updateProjectsMetaPtr(randomMetaPtr)).to.revertedWith("round has ended");
+        await expect(roundImplementation.updateProjectsMetaPtr(randomMetaPtr)).to.revertedWith("Round: Round has ended");
       });
 
     });
 
-    describe('test: applyToRound', () => {
+    describe ('test: applyToRound', () => {
 
       let projectID: string;
       let newProjectMetaPtr: MetaPtr;
@@ -1172,7 +1055,7 @@ describe("RoundImplementation", function () {
 
       it('SHOULD revert WHEN invoked before applicationsStartTime has started', async () => {
         await expect(roundImplementation.applyToRound(projectID, newProjectMetaPtr)).to.be.revertedWith(
-          "applications period over"
+          "Round: Applications period over"
         );
       });
 
@@ -1181,7 +1064,7 @@ describe("RoundImplementation", function () {
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 7500])
 
         await expect(roundImplementation.applyToRound(projectID, newProjectMetaPtr)).to.be.revertedWith(
-          "applications period over"
+          "Round: Applications period over"
         );
       });
 
@@ -1200,7 +1083,7 @@ describe("RoundImplementation", function () {
       });
     });
 
-    describe('test: vote', () => {
+    describe ('test: vote', () => {
 
       let encodedVotes: BytesLike[] = [];
       let mockERC20 : MockERC20;
@@ -1241,7 +1124,7 @@ describe("RoundImplementation", function () {
 
       it('SHOULD revert WHEN invoked before roundStartTime', async () => {
         await expect(roundImplementation.vote(encodedVotes)).to.be.revertedWith(
-          "round is not active"
+          "Round: Round is not active"
         );
       });
 
@@ -1250,7 +1133,7 @@ describe("RoundImplementation", function () {
         await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 18000])
 
         await expect(roundImplementation.vote(encodedVotes)).to.be.revertedWith(
-          "round is not active"
+          "Round: Round is not active"
         );
       });
 
@@ -1265,7 +1148,7 @@ describe("RoundImplementation", function () {
 
     });
 
-    describe('test: setReadyForPayout', () => {
+    describe ('test: setReadyForPayout', () => {
       let mockERC20 : MockERC20;
       let _currentBlockTimestamp: number;
 
@@ -1288,7 +1171,7 @@ describe("RoundImplementation", function () {
       it('SHOULD revert when round has ended', async () => {
         await expect(
           roundImplementation.setReadyForPayout()
-        ).to.revertedWith("round has not ended");
+        ).to.revertedWith("Round: Round has not ended");
       });
 
       it('SHOULD revert when called is not round operator', async () => {
@@ -1309,11 +1192,11 @@ describe("RoundImplementation", function () {
 
         await expect(
           roundImplementation.setReadyForPayout()
-        ).to.revertedWith("not enough funds");
+        ).to.revertedWith("Round: Not enough funds in contract");
       });
     });
 
-    describe('test: setReadyForPayout', () => {
+    describe ('test: setReadyForPayout', () => {
 
       let protocolTreasuryBalance: BigNumber;
       let protocolTreasury: string;
@@ -1330,7 +1213,7 @@ describe("RoundImplementation", function () {
       describe('Native token payout', () => {
 
         let _currentBlockTimestamp: number;
-        let roundAmount = 10;
+        let roundMatchAmount = ethers.utils.parseEther("10");
         let protocolFeePercentage: any;
         let roundParams: any;
         let tx: any;
@@ -1353,7 +1236,8 @@ describe("RoundImplementation", function () {
 
           roundParams = await initRound(_currentBlockTimestamp, {
             token: ethers.constants.AddressZero,
-            amount: roundAmount
+            matchAmount: roundMatchAmount,
+            roundFeePercentage: 10,
           });
 
           // Mine Blocks
@@ -1365,11 +1249,16 @@ describe("RoundImplementation", function () {
 
           // check protocolTreasury balance
           protocolTreasuryBalance = await ethers.provider.getBalance(protocolTreasury);
+
+          // check round fee address balance
+          let roundFeeAddress = await roundImplementation.roundFeeAddress();
+          let roundFeeAddressBalance = await ethers.provider.getBalance(roundFeeAddress);
+
           
           // send funds to contract
           await user.sendTransaction({
             to: roundImplementation.address,
-            value: ethers.utils.parseEther("11.1"),
+            value: ethers.utils.parseEther("10"),
           });
 
           let payoutContract = await roundImplementation.payoutStrategy();
@@ -1379,26 +1268,30 @@ describe("RoundImplementation", function () {
           tx = await roundImplementation.setReadyForPayout();
         });
 
-        it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
+        it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract and transfer fee to protocol treasury & roundFeeAddress", async () => {
 
           let newProtocolTreasuryBalance = await ethers.provider.getBalance(protocolTreasury);
           let payoutContract = await roundImplementation.payoutStrategy();
+          let roundFeeAddress = await roundImplementation.roundFeeAddress();
           let payoutContractBalance = await ethers.provider.getBalance(payoutContract);
+          let newRoundFeeAddressBalance = await ethers.provider.getBalance(roundFeeAddress);
           
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
           ).withArgs(
             payoutContractBalance,
-            newProtocolTreasuryBalance
+            newProtocolTreasuryBalance,
+            newRoundFeeAddressBalance,
           );
-        });
 
-        it("SHOULD transfer fee to protocolTreasury", async () => {
-          let newProtocolTreasuryBalance = await ethers.provider.getBalance(protocolTreasury);
           expect(newProtocolTreasuryBalance).to.be.equal(
-            1
-          )
+            ethers.utils.parseEther("1")
+          );
+
+          expect(newRoundFeeAddressBalance).to.be.equal(
+            ethers.utils.parseEther("1")
+          );
         });
 
         it("SHOULD transfer pot amount to payout contract", async () => {
@@ -1443,7 +1336,7 @@ describe("RoundImplementation", function () {
           ).timestamp;
 
           params = await initRound(_currentBlockTimestamp, {
-            amount: 100,
+            matchAmount: 100,
             token: mockERC20.address
           });
 
@@ -1451,11 +1344,11 @@ describe("RoundImplementation", function () {
           originalUserBalance = Number(await mockERC20.balanceOf(user.address));
 
           // send funds to contract
-          await mockERC20.transfer(roundImplementation.address, 110);
+          await mockERC20.transfer(roundImplementation.address, 100);
 
           // check round balance
           const roundBalance = Number(await mockERC20.balanceOf(roundImplementation.address));
-          expect(roundBalance).to.equal(110);
+          expect(roundBalance).to.equal(100);
 
           // Mine Blocks
           await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 1200])
@@ -1469,7 +1362,7 @@ describe("RoundImplementation", function () {
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
-          ).withArgs(100, 10);
+          ).withArgs(90, 10, 0);
         });
 
         it("SHOULD transfer fee to protocolTreasury", async () => {
@@ -1478,7 +1371,7 @@ describe("RoundImplementation", function () {
 
         it("SHOULD transfer pot amount to payout contract", async () => {
           const payoutContractAddress = await roundImplementation.payoutStrategy();
-          expect(Number(await mockERC20.balanceOf(payoutContractAddress))).to.equal(100);
+          expect(Number(await mockERC20.balanceOf(payoutContractAddress))).to.equal(90);
         });
 
         it("Funds in round contract SHOULD always be 0 after payout", async () => {
@@ -1513,7 +1406,7 @@ describe("RoundImplementation", function () {
           ).timestamp;
 
           params = await initRound(_currentBlockTimestamp, {
-            amount: 100,
+            matchAmount: 100,
             token: mockERC20.address
           });
 
@@ -1538,7 +1431,7 @@ describe("RoundImplementation", function () {
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
-          ).withArgs(100, 0);
+          ).withArgs(100, 0, 0);
         });
 
         it("SHOULD NOT transfer fee to protocolTreasury", async () => {
@@ -1593,7 +1486,7 @@ describe("RoundImplementation", function () {
         await expect(
           roundImplementation.withdraw(roundToken, user.address)
         ).to.revertedWith(
-          `cannot withdraw round token`
+          `Round: Cannot withdraw round token`
         );
       });
 

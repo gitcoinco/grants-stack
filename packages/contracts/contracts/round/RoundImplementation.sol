@@ -76,14 +76,14 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @notice modifier to check if round has not ended.
   modifier roundHasNotEnded() {
     // slither-disable-next-line timestamp
-    require(block.timestamp <= roundEndTime, "round has ended");
+    require(block.timestamp <= roundEndTime, "Round: Round has ended");
    _;
   }
 
   /// @notice modifier to check if round has not ended.
   modifier roundHasEnded() {
     // slither-disable-next-line timestamp
-    require(block.timestamp > roundEndTime, "round has not ended");
+    require(block.timestamp > roundEndTime, "Round: Round has not ended");
    _;
   }
 
@@ -254,7 +254,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   /// @param newAmount new Amount
   function updateMatchAmount(uint256 newAmount) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
 
-    require(newAmount > matchAmount, "Round: lesser then current match amount");
+    require(newAmount > matchAmount, "Round: Lesser than current match amount");
 
     matchAmount = newAmount;
 
@@ -315,24 +315,24 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     require(newApplicationsStartTime < newRoundStartTime, "Round: Round start is before application start");
     require(newApplicationsEndTime < newRoundEndTime, "Round: Round end is before application end");
 
-    if(newApplicationsStartTime >= block.timestamp && applicationsStartTime >= block.timestamp) {
-      applicationsStartTime = newApplicationsStartTime;
+    if(newApplicationsStartTime > block.timestamp && applicationsStartTime > block.timestamp) {
       emit ApplicationsStartTimeUpdated(applicationsStartTime, newApplicationsStartTime);
+      applicationsStartTime = newApplicationsStartTime;
     }
 
-    if (newApplicationsEndTime >= block.timestamp && applicationsEndTime >= block.timestamp) {
-      applicationsEndTime = newApplicationsEndTime;
+    if (newApplicationsEndTime > block.timestamp && applicationsEndTime > block.timestamp) {
       emit ApplicationsEndTimeUpdated(applicationsEndTime, newApplicationsEndTime);
+      applicationsEndTime = newApplicationsEndTime;
     }
 
-    if (newRoundStartTime >= block.timestamp && roundStartTime >= block.timestamp) {
-      roundStartTime = newRoundStartTime;
+    if (newRoundStartTime > block.timestamp && roundStartTime > block.timestamp) {
       emit RoundStartTimeUpdated(roundStartTime, newRoundStartTime);
+      roundStartTime = newRoundStartTime;
     }
 
-    if (newRoundEndTime >= block.timestamp && roundEndTime >= block.timestamp) {
-      roundEndTime = newRoundEndTime;
+    if (newRoundEndTime > block.timestamp && roundEndTime > block.timestamp) {
       emit RoundEndTimeUpdated(roundEndTime, newRoundEndTime);
+      roundEndTime = newRoundEndTime;
     }
   
   }
@@ -378,13 +378,12 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     uint256 fundsInContract = _getTokenBalance(token);
 
     require(fundsInContract >= matchAmount, "Round: Not enough funds in contract");
-    
+
     uint256 protocolFeeAmount = (matchAmount * roundFactory.protocolFeePercentage() / 100);
     uint256 roundFeeAmount = (matchAmount * roundFeePercentage / 100);
-    uint256 totalFeeAmount = protocolFeeAmount + roundFeeAmount;
 
     // match amount after fees
-    uint256 matchAmountAfterFees = matchAmount - totalFeeAmount;
+    uint256 matchAmountAfterFees = matchAmount - (protocolFeeAmount + roundFeeAmount);
 
     // deduct protocol fee
     if (protocolFeeAmount > 0) {
