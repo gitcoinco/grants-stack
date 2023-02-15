@@ -1,9 +1,8 @@
-import { Dialog, Listbox } from "@headlessui/react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
-import { render } from "@testing-library/react";
 import { Button } from "common/src/styles";
-import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Fragment, useEffect, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { EditQuestion, InputType, QuestionOption } from "../api/types";
 import BaseSwitch from "./BaseSwitch";
@@ -30,7 +29,7 @@ const questions: InputType[] = [
   "dropdown",
 ]
 
-// eslint-disable-next-line prefer-const
+// eslint-disable-next-line
 let options: QuestionOption[] = [];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,7 +81,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
     return (
       <div className="flex flex-row justify-between mt-6 w-[80%]">
-        {switches.map((s, i) => (
+        {switches.map(s => (
           <BaseSwitch
             key={s.value}
             activeLabel={s.activeLabel}
@@ -97,7 +96,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     );
   }
 
-  function answerArea(inner: any) {
+  function answerArea(inner: JSX.Element) {
     return (
       <div>
         <div className="flex flex-col mt-6">
@@ -158,11 +157,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       })
     }
 
-    const render: any = [];
+    const render: JSX.Element[] = [];
 
     for (let i = 0; i < renderOptions.length; i++) {
       render.push(
-        <div className="flex flex-col">
+        <div key={i + 1} className="flex flex-col">
           <Option
             index={i + 1}
             value={questionOptions.options?.[i] || ""}
@@ -223,89 +222,102 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             });
           }}
         >
-          <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex">
-            <InputIcon className="mt-1" type={selectedQuestion} />
-            <span className="mr-1 ml-2 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
-            <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
-          </Listbox.Button>
-          <Listbox.Options className="border p-2 border-grey-100 w-[208px]">
-            {questions.map((q, index) => (
-              <Listbox.Option
-                key={index}
-                value={q}
-                className="flex active:bg-violet-400 active:text-white bg-white text-black"
-              >
-                {({ active }) => (
-                  <span
-                    className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
-                      }`}
+          <div className="relative mt-1">
+            <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex relative">
+              <InputIcon className="mt-1" type={selectedQuestion} />
+              <span className="mr-1 ml-2 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
+              <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
+            </Listbox.Button>
+            <Transition
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options className="border p-2 border-grey-100 w-[208px] overflow-auto">
+                {questions.map((q, index) => (
+                  <Listbox.Option
+                    key={index}
+                    value={q}
+                    className="flex active:bg-violet-400 active:text-white bg-white text-black"
                   >
-                    <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
-                      <InputIcon type={q} />
-                    </span>
-                    <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
-                  </span>
+                    {({ active }) => (
+                      <span
+                        className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
+                          }`}
+                      >
+                        <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
+                          <InputIcon type={q} />
+                        </span>
+                        <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
+                      </span>
+                    )}
+                  </Listbox.Option>)
                 )}
-              </Listbox.Option>)
-            )}
-          </Listbox.Options>
+              </Listbox.Options>
+            </Transition>
+          </div>
         </Listbox>
       </div>
     )
   }
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
-          <Dialog.Title className="mb-4">
-            <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
-          </Dialog.Title>
-          <Dialog.Description className="mb-2 text-grey-500 font-normal">
-            <span className="text-md">Question Type</span>
-          </Dialog.Description>
-          <hr className="my-6" />
-          <div>
-            <QuestionSelectList />
-          </div>
-          <div>
-            <div className="flex flex-col mt-6">
-              {selectedQuestion !== INITIAL_VALUE &&
-                answerArea((selectedQuestion == "multiple-choice"
-                  || selectedQuestion == "checkbox"
-                  || selectedQuestion == "dropdown") ? addOptions() : <></>)
-              }
+    <div data-testid="add-question-modal">
+      <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
+            <Dialog.Title className="mb-4">
+              <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
+            </Dialog.Title>
+            <Dialog.Description className="mb-2 text-grey-500 font-normal">
+              <span className="text-md">Question Type</span>
+            </Dialog.Description>
+            <hr className="my-6" />
+            <div>
+              <QuestionSelectList />
             </div>
-          </div>
-          <div className="mt-10 flex flex-row justify-end">
-            <button
-              className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
-              onClick={() => {
-                setIsOpen(false)
-                onClose()
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-              onClick={() => {
-                setIsOpen(false);
-                onSave({
-                  ...initialQuestion,
-                  field: {
-                    ...questionOptions
-                  }
-                })
-              }}
-            >
-              {questionExists ? `Save` : `Add`}
-            </button>
-          </div>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+            <div>
+              <div className="flex flex-col mt-6">
+                {selectedQuestion !== INITIAL_VALUE &&
+                  answerArea((selectedQuestion == "multiple-choice"
+                    || selectedQuestion == "checkbox"
+                    || selectedQuestion == "dropdown") ? addOptions() : <></>)
+                }
+              </div>
+            </div>
+            <div className="mt-10 flex flex-row justify-end">
+              <button
+                data-testid="cancel-add-question"
+                className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
+                onClick={() => {
+                  setIsOpen(false)
+                  onClose()
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                data-testid="save-add-question"
+                className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
+                onClick={() => {
+                  setIsOpen(false);
+                  onSave({
+                    ...initialQuestion,
+                    field: {
+                      ...questionOptions
+                    }
+                  })
+                }}
+              >
+                {questionExists ? `Save` : `Add`}
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+    </div>
   );
 }
 

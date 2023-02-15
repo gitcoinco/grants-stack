@@ -343,7 +343,8 @@ export function RoundApplicationForm(props: {
     ));
 
     return (
-      <div>
+      <div data-testid="application-question">
+        {/* todo: update the element to reflect tests */}
         {[lockedQuestion, ...f]}
         <Button
           type="button"
@@ -355,7 +356,7 @@ export function RoundApplicationForm(props: {
           }}
         >
           <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-          Add Question
+          Add a Question
         </Button>
         <AddQuestionModal
           show={openAddQuestionModal}
