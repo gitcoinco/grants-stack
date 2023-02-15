@@ -5,75 +5,81 @@ import Lit from "../../services/lit";
 jest.mock("../../services/lit");
 
 const roundApplicationMetadata: RoundApplicationMetadata = {
+  version: "2.0.0",
   lastUpdatedOn: 1657817494040,
-  application_schema: [],
-  applicationSchema: [
-    {
-      id: 0,
-      question: "Email",
-      type: "TEXT",
-      required: true,
-      info: "",
-      encrypted: true,
-      choices: [],
+  applicationSchema: {
+    requirements: {
+      github: { required: false, verification: false },
+      twitter: { required: false, verification: false },
     },
-    {
-      id: 1,
-      question: "Twitter",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 2,
-      question: "Github",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 3,
-      question: "Funding Source",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 4,
-      question: "Profit2022",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 5,
-      question: "Team Size",
-      type: "TEXT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 6,
-      question: "Project",
-      type: "PROJECT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-    {
-      id: 7,
-      question: "Recipient Address",
-      type: "RECIPIENT",
-      required: true,
-      info: "",
-      choices: [],
-    },
-  ],
+    questions: [
+      {
+        id: 0,
+        question: "Email",
+        type: "TEXT",
+        required: true,
+        info: "",
+        encrypted: true,
+        choices: [],
+      },
+      {
+        id: 1,
+        question: "Twitter",
+        type: "TEXT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 2,
+        question: "Github",
+        type: "TEXT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 3,
+        question: "Funding Source",
+        type: "TEXT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 4,
+        question: "Profit2022",
+        type: "TEXT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 5,
+        question: "Team Size",
+        type: "TEXT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 6,
+        question: "Project",
+        type: "PROJECT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+      {
+        id: 7,
+        question: "Recipient Address",
+        type: "RECIPIENT",
+        required: true,
+        info: "",
+        choices: [],
+      },
+    ],
+  },
 };
 
 const formInputs = {
@@ -129,7 +135,7 @@ describe("round application builder", () => {
 
     // PROJECT and RECIPIENT are not included in the answers
     expect(application.answers.length).toEqual(
-      roundApplicationMetadata.applicationSchema.length - 2
+      roundApplicationMetadata.applicationSchema.questions.length - 2
     );
 
     const emailAnswer = application.answers[0]!;

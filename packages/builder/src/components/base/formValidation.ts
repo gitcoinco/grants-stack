@@ -1,9 +1,6 @@
 import { object, string } from "yup";
-import {
-  DynamicFormInputs,
-  FormInputs,
-  RoundApplicationQuestion,
-} from "../../types";
+import { DynamicFormInputs, FormInputs } from "../../types";
+import { RoundApplicationQuestion } from "../../types/roundApplication";
 
 export async function validateProjectForm(inputs: FormInputs) {
   const schema = object({
