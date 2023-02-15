@@ -75,8 +75,8 @@ export default class RoundApplicationBuilder {
     let recipient: string;
 
     // eslint-disable-next-line
-    for (let i = 0; i < this.ram.applicationSchema.length; i++) {
-      const question = this.ram.applicationSchema[i];
+    for (let i = 0; i < this.ram.applicationSchema.questions.length; i++) {
+      const question = this.ram.applicationSchema.questions[i];
 
       switch (question.type) {
         case "RECIPIENT":

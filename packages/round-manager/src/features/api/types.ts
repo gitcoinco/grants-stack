@@ -126,8 +126,20 @@ export type EditQuestion = {
   field?: QuestionOption;
 };
 
+export type ProjectRequirements = {
+  twitter: {
+    required: boolean;
+    verification: boolean;
+  };
+  github: {
+    required: boolean;
+    verification: boolean;
+  };
+};
+
 export interface ApplicationMetadata {
   questions?: QuestionOption[];
+  requirements: ProjectRequirements;
 }
 
 export interface Round {

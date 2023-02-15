@@ -1,24 +1,31 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import {
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import {
   resetApplicationError,
   submitApplication,
 } from "../../actions/roundApplication";
+import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
+import { editProjectPathByID } from "../../routes";
 import {
   AddressType,
   ChangeHandlers,
+  CredentialProvider,
   DynamicFormInputs,
   Metadata,
   ProjectOption,
   Round,
-  RoundApplicationMetadata,
 } from "../../types";
+import { RoundApplicationMetadata } from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
@@ -81,19 +88,32 @@ export default function Form({
   const props = useSelector((state: RootState) => {
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
-    let selectedProjectMetadata: Metadata | undefined;
-    if (selectedProjectID !== undefined && selectedProjectID !== "") {
-      selectedProjectMetadata =
-        allProjectMetadata[Number(selectedProjectID)]?.metadata;
-    }
 
     return {
       projectIDs: state.projects.ids,
       allProjectMetadata,
-      selectedProjectMetadata,
       chainID,
     };
   }, shallowEqual);
+
+  let selectedProjectMetadata: Metadata | undefined;
+
+  if (selectedProjectID !== undefined && selectedProjectID !== "") {
+    selectedProjectMetadata =
+      props.allProjectMetadata[selectedProjectID]?.metadata;
+  }
+
+  const twitterCredentialValidation = useValidateCredential(
+    selectedProjectMetadata?.credentials?.twitter,
+    CredentialProvider.Twitter,
+    selectedProjectMetadata?.projectTwitter
+  );
+
+  const githubCredentialValidation = useValidateCredential(
+    selectedProjectMetadata?.credentials?.github,
+    CredentialProvider.Github,
+    selectedProjectMetadata?.projectGithub
+  );
 
   const chainInfo = chains.find((i) => i.id === props.chainID);
   const schema = roundApplication.applicationSchema;
@@ -116,7 +136,7 @@ export default function Form({
 
   const validate = async (inputs: DynamicFormInputs) => {
     try {
-      await validateApplication(schema, inputs);
+      await validateApplication(schema.questions, inputs);
       setFormValidation({
         messages: [],
         valid: true,
@@ -220,10 +240,53 @@ export default function Form({
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
+  const projectRequirementsResult = [];
+
+  if (
+    roundApplication.applicationSchema.requirements.twitter.required &&
+    !selectedProjectMetadata?.projectTwitter
+  ) {
+    projectRequirementsResult.push("Project Twitter is required.");
+  }
+
+  if (
+    roundApplication.applicationSchema.requirements.twitter.verification &&
+    !twitterCredentialValidation.isLoading &&
+    !twitterCredentialValidation.isValid
+  ) {
+    projectRequirementsResult.push(
+      "Verification of project Twitter is required."
+    );
+  }
+
+  if (
+    roundApplication.applicationSchema.requirements.github.required &&
+    !selectedProjectMetadata?.projectGithub
+  ) {
+    projectRequirementsResult.push("Project Github is required.");
+  }
+
+  if (
+    roundApplication.applicationSchema.requirements.github.verification &&
+    !githubCredentialValidation.isLoading &&
+    !githubCredentialValidation.isValid
+  ) {
+    projectRequirementsResult.push(
+      "Verification of project Github is required."
+    );
+  }
+
+  const isValidProjectSelected =
+    selectedProjectID && projectRequirementsResult.length === 0;
+
   return (
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
-        {schema.map((input) => {
+        {schema.questions.map((input) => {
+          if (input.type !== "PROJECT" && !isValidProjectSelected) {
+            return null;
+          }
+
           switch (input.type) {
             case "PROJECT":
               return readOnly ? (
@@ -266,17 +329,20 @@ export default function Form({
                   </div>
                   <div>
                     <Toggle
-                      projectMetadata={props.selectedProjectMetadata}
+                      projectMetadata={selectedProjectMetadata}
                       showProjectDetails={showProjectDetails}
                     />
                   </div>
-                  <div>
-                    <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
-                      To complete your application to {round.roundMetadata.name}
-                      , a little more info is needed:
-                    </p>
-                    <hr className="w-1/2" />
-                  </div>
+                  {isValidProjectSelected && (
+                    <div>
+                      <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
+                        To complete your application to{" "}
+                        {round.roundMetadata.name}, a little more info is
+                        needed:
+                      </p>
+                      <hr className="w-1/2" />
+                    </div>
+                  )}
                 </Fragment>
               );
             case "TEXT":
@@ -429,6 +495,34 @@ export default function Form({
               );
           }
         })}
+        {selectedProjectID && projectRequirementsResult.length > 0 && (
+          <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
+            <div className="flex flex-1 justify-start items-start">
+              <div className="text-gitcoin-violet-500 fill-current w-6 shrink-0 mx-4">
+                <InformationCircleIcon />
+              </div>
+              <div className="text-black text-sm">
+                <p className="text-primary-text pb-1 font-medium">
+                  Some information of your project is required to apply to this
+                  round. Complete the required details{" "}
+                  <Link
+                    className="text-link"
+                    target="_blank"
+                    to={editProjectPathByID(selectedProjectID)!}
+                  >
+                    here
+                  </Link>{" "}
+                  and refresh this page.
+                </p>
+                <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
+                  {projectRequirementsResult.map((msg) => (
+                    <li key={msg}>{msg}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
         {addressType &&
           ((formInputs.isSafe === "Yes" && !addressType.isContract) ||
             (formInputs.isSafe === "No" && addressType.isContract)) && (
@@ -486,6 +580,7 @@ export default function Form({
             {!preview ? (
               <Button
                 variant={ButtonVariants.primary}
+                disabled={!isValidProjectSelected}
                 onClick={() => handlePreviewClick()}
               >
                 Preview Application
