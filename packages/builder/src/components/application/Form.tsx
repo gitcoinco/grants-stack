@@ -251,6 +251,8 @@ export default function Form({
 
   const projectRequirementsResult = [];
 
+  console.log(roundApplication.applicationSchema.requirements);
+
   if (
     roundApplication.applicationSchema.requirements.twitter.required &&
     !selectedProjectMetadata?.projectTwitter
@@ -264,7 +266,7 @@ export default function Form({
     !twitterCredentialValidation.isValid
   ) {
     projectRequirementsResult.push(
-      "Verification of prooject Twitter is required."
+      "Verification of project Twitter is required."
     );
   }
 
@@ -281,7 +283,7 @@ export default function Form({
     !githubCredentialValidation.isValid
   ) {
     projectRequirementsResult.push(
-      "Verification of prooject Github is required."
+      "Verification of project Github is required."
     );
   }
 
