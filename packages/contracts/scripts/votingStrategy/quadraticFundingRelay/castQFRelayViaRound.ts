@@ -44,7 +44,7 @@ export async function main() {
     chainId: network.config.chainId,
   });
 
-  const tokenAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"; // DummyERC20 Mumbai
+  const tokenAddress = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"; // WMATIC Mumbai
 
   const erc20Abi = [
     "constructor(string name_, string symbol_)",

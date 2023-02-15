@@ -150,9 +150,9 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       return [
         {
-          name: "DERC20",
+          name: "WMATIC",
           chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
-          address: "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
+          address: "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
           logo: TokenNamesAndLogos["DAI"],
         },
       ];

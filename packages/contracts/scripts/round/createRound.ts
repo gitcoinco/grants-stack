@@ -70,7 +70,7 @@ export async function main() {
     applicationsEndTime, // _applicationsEndTime
     roundStartTime, // _roundStartTime
     roundEndTime, // _roundEndTime
-    '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
+    '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889', // _token WMATIC MUMBAI
     { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
     { protocol: 1, pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia" }, // _applicationMetaPtr
     [
