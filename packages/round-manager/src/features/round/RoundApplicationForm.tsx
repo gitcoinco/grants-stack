@@ -341,13 +341,20 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5 w-6 h-6" type={field.type} />
+              <InputIcon className="mr-1 mb-0.5" type={field.type} size={12}/>
             </span>
             <span className="first-letter:capitalize">
               {field.type.replace("-", " ")}
             </span>
           </div>
           {field.title}
+          {field.options && field.options?.length > 0 && 
+          field.options.map((option, index) => (
+            <div key={index} className="ml-1 border-l border-gray-200">
+              <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{option}</span>
+            </div>
+          ))
+          }
         </div>
         <div className="basis-1/3 flex justify-end items-center">
           <div className="text-sm justify-end p-2 leading-tight">
