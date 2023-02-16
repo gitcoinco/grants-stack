@@ -212,7 +212,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           value={selectedQuestion}
           name="question"
           onChange={(q: InputType) => {
-            console.log("q", q);
             setSelectedQuestion(q);
             setQuestionOptions({
               ...questionOptions,
@@ -264,7 +263,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     setInputError([]);
     const errors = [];
 
-    if(selectedQuestion === INITIAL_VALUE) {
+    if (selectedQuestion === INITIAL_VALUE) {
       errors.push("Please select a question type.");
     }
     if (selectedQuestion !== INITIAL_VALUE && !questionOptions.title) {
@@ -282,87 +281,104 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     return (errors.length > 0);
   }
 
-  const renderError = (errors: string[]) => {
-    return (
-      <div className="bg-pink-100 pb-3 text-sm mt-4">
-        <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10  flex items-center">
-          <div className="col-span-1 w-5"><XCircleIcon /></div>
-          <div className="col-span-9">
-            {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
-          </div>
-        </div>
-        {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
-          <div className="col-span-1"></div>
-          <div className="col-span-9">
-            <span className="text-md pr-2 pt-1">&bull;</span>{error}
-          </div>
-        </div>)
-        )}
-      </div>
-    )
+  const checkForOptions = () => {
+    switch (questionOptions.type) {
+      case "short-answer":
+      case "email":
+      case "address":
+      case "paragraph":
+        setQuestionOptions(
+          {
+            ...questionOptions,
+            options: [],
+          }
+        )
+        break;
+    }
   }
 
-  return (
-    <div data-testid="add-question-modal">
-      <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
-            <Dialog.Title className="mb-4">
-              <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
-            </Dialog.Title>
-            <Dialog.Description className="mb-2 text-grey-500 font-normal">
-              <span className="text-md">Question Type</span>
-            </Dialog.Description>
-            <hr className="my-6" />
-            <div>
-              <QuestionSelectList />
+    const renderError = (errors: string[]) => {
+      return (
+        <div className="bg-pink-100 pb-3 text-sm mt-4">
+          <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10  flex items-center">
+            <div className="col-span-1 w-5"><XCircleIcon /></div>
+            <div className="col-span-9">
+              {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
             </div>
-            <div>
-              <div className="flex flex-col mt-6">
-                {selectedQuestion !== INITIAL_VALUE &&
-                  answerArea((selectedQuestion == "multiple-choice"
-                    || selectedQuestion == "checkbox"
-                    || selectedQuestion == "dropdown") ? addOptions() : <></>)
-                }
-              </div>
+          </div>
+          {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
+            <div className="col-span-1"></div>
+            <div className="col-span-9">
+              <span className="text-md pr-2 pt-1">&bull;</span>{error}
             </div>
-            {inputError.length > 0 && renderError(inputError)}
-            <div className="mt-10 flex flex-row justify-end">
-              <button
-                role="cancel"
-                className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
-                onClick={() => {
-                  setIsOpen(false)
-                  onClose()
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                role="save"
-                className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-                onClick={() => {
-                  if (!checkForErrors()) {
-                    setIsOpen(false);
-                    onSave({
-                      ...initialQuestion,
-                      field: {
-                        ...questionOptions
-                      }
-                    })
-                  }
-                }
-                }
-              >
-                {questionExists ? `Save` : `Add`}
-              </button>
-            </div>
-          </Dialog.Panel>
+          </div>)
+          )}
         </div>
-      </Dialog>
-    </div>
-  );
-}
+      )
+    }
 
-export default AddQuestionModal;
+    return (
+      <div data-testid="add-question-modal">
+        <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
+              <Dialog.Title className="mb-4">
+                <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
+              </Dialog.Title>
+              <Dialog.Description className="mb-2 text-grey-500 font-normal">
+                <span className="text-md">Question Type</span>
+              </Dialog.Description>
+              <hr className="my-6" />
+              <div>
+                <QuestionSelectList />
+              </div>
+              <div>
+                <div className="flex flex-col mt-6">
+                  {selectedQuestion !== INITIAL_VALUE &&
+                    answerArea((selectedQuestion == "multiple-choice"
+                      || selectedQuestion == "checkbox"
+                      || selectedQuestion == "dropdown") ? addOptions() : <></>)
+                  }
+                </div>
+              </div>
+              {inputError.length > 0 && renderError(inputError)}
+              <div className="mt-10 flex flex-row justify-end">
+                <button
+                  role="cancel"
+                  className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
+                  onClick={() => {
+                    setIsOpen(false)
+                    onClose()
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  role="save"
+                  className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
+                  onClick={() => {
+                    checkForOptions();
+                    if (!checkForErrors()) {
+                      setIsOpen(false);
+                      onSave({
+                        ...initialQuestion,
+                        field: {
+                          ...questionOptions
+                        }
+                      })
+                    }
+                  }
+                  }
+                >
+                  {questionExists ? `Save` : `Add`}
+                </button>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      </div>
+    );
+  }
+
+  export default AddQuestionModal;
