@@ -71,8 +71,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         value: "encrypted"
       },
       {
-        activeLabel: "Shown in Explorer",
-        inactiveLabel: "Hidden from Explorer",
+        activeLabel:  "Hidden from Explorer",
+        inactiveLabel: "Shown in Explorer",
         value: "hidden"
       }
     ]
@@ -239,11 +239,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                   <Listbox.Option
                     key={index}
                     value={q}
-                    className="flex active:bg-violet-400 active:text-white bg-white text-black"
+                    className="flex active:bg-violet-400 active:text-white bg-white text-black w-full"
                   >
                     {({ active }) => (
                       <span
-                        className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
+                        className={`flex w-full ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
                           }`}
                       >
                         <span className="mt-0.5 flex items-center text-grey-500 focus:text-violet-400">
