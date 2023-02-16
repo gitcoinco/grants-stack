@@ -365,7 +365,7 @@ export function RoundApplicationForm(props: {
               {fieldEncrypted(field.encrypted)}
             </div>
             <div className="flex justify-end">
-              {fieldHidden(field.hidden)}
+              {fieldHidden(!field.hidden)}
             </div>
           </div>
           <div className="text-sm justify-center flex p-2">

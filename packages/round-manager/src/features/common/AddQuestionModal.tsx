@@ -71,8 +71,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         value: "encrypted"
       },
       {
-        activeLabel:  "Hidden from Explorer",
-        inactiveLabel: "Shown in Explorer",
+        activeLabel: "Shown in Explorer",
+        inactiveLabel: "Hidden from Explorer",
         value: "hidden"
       }
     ]
@@ -195,7 +195,9 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
     return (
       <>
-        {render}
+        <div className="border-l mb-2 mt-4">
+          {render}
+        </div>
         <AddOptionButton />
       </>
     );
@@ -234,7 +236,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border rounded-md my-2 border-grey-100 w-[208px] overflow-auto"> 
+              <Listbox.Options className="border rounded-md my-2 border-grey-100 w-[208px] overflow-auto">
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
@@ -300,87 +302,87 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     }
   }
 
-    const renderError = (errors: string[]) => {
-      return (
-        <div className="bg-pink-100 pb-3 text-sm mt-4">
-          <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10 items-center">
-            <div className="col-span-1 w-5"><XCircleIcon /></div>
-            <div className="col-span-9">
-              {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
-            </div>
-          </div>
-          {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
-            <div className="col-span-1"></div>
-            <div className="col-span-9">
-              <span className="text-md pr-2 pt-1">&bull;</span>{error}
-            </div>
-          </div>)
-          )}
-        </div>
-      )
-    }
-
+  const renderError = (errors: string[]) => {
     return (
-      <div data-testid="add-question-modal">
-        <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center">
-            <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-6">
-              <Dialog.Title className="mb-4 -mt-4">
-                <span className="text-[18px] text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
-              </Dialog.Title>
-              <Dialog.Description className="mb-2 text-grey-500 font-normal">
-                <span className="text-[14px]">Question Type</span>
-              </Dialog.Description>
-              <div>
-                <QuestionSelectList />
-              </div>
-              <div>
-                <div className="flex flex-col mt-2">
-                  {selectedQuestion !== INITIAL_VALUE &&
-                    answerArea((selectedQuestion == "multiple-choice"
-                      || selectedQuestion == "checkbox"
-                      || selectedQuestion == "dropdown") ? addOptions() : <></>)
-                  }
-                </div>
-              </div>
-              {inputError.length > 0 && renderError(inputError)}
-              <div className="mt-10 flex flex-row justify-end">
-                <button
-                  role="cancel"
-                  className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
-                  onClick={() => {
-                    setIsOpen(false)
-                    onClose()
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  role="save"
-                  className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-                  onClick={() => {
-                    checkForOptions();
-                    if (!checkForErrors()) {
-                      setIsOpen(false);
-                      onSave({
-                        ...initialQuestion,
-                        field: {
-                          ...questionOptions
-                        }
-                      })
-                    }
-                  }
-                  }
-                >
-                  {questionExists ? `Save` : `Add`}
-                </button>
-              </div>
-            </Dialog.Panel>
+      <div className="bg-pink-100 pb-3 text-sm mt-4">
+        <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10 items-center">
+          <div className="col-span-1 w-5"><XCircleIcon /></div>
+          <div className="col-span-9">
+            {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
           </div>
-        </Dialog>
+        </div>
+        {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
+          <div className="col-span-1"></div>
+          <div className="col-span-9">
+            <span className="text-md pr-2 pt-1">&bull;</span>{error}
+          </div>
+        </div>)
+        )}
       </div>
-    );
+    )
   }
 
-  export default AddQuestionModal;
+  return (
+    <div data-testid="add-question-modal">
+      <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center">
+          <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-6">
+            <Dialog.Title className="mb-4 -mt-4">
+              <span className="text-[18px] text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
+            </Dialog.Title>
+            <Dialog.Description className="mb-2 text-grey-500 font-normal">
+              <span className="text-[14px]">Question Type</span>
+            </Dialog.Description>
+            <div>
+              <QuestionSelectList />
+            </div>
+            <div>
+              <div className="flex flex-col mt-2">
+                {selectedQuestion !== INITIAL_VALUE &&
+                  answerArea((selectedQuestion == "multiple-choice"
+                    || selectedQuestion == "checkbox"
+                    || selectedQuestion == "dropdown") ? addOptions() : <></>)
+                }
+              </div>
+            </div>
+            {inputError.length > 0 && renderError(inputError)}
+            <div className="mt-10 flex flex-row justify-end">
+              <button
+                role="cancel"
+                className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
+                onClick={() => {
+                  setIsOpen(false)
+                  onClose()
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                role="save"
+                className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
+                onClick={() => {
+                  checkForOptions();
+                  if (!checkForErrors()) {
+                    setIsOpen(false);
+                    onSave({
+                      ...initialQuestion,
+                      field: {
+                        ...questionOptions
+                      }
+                    })
+                  }
+                }
+                }
+              >
+                {questionExists ? `Save` : `Add`}
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+export default AddQuestionModal;
