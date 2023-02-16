@@ -1,5 +1,5 @@
 import { InputType } from "../api/types";
-import { MdMail, MdOutlineShortText, MdCheckBox, MdArrowDropDownCircle, MdRadioButtonChecked, MdPermIdentity, MdNotes } from "react-icons/md";
+import { MdMail, MdOutlineShortText, MdCheckBox, MdArrowDropDownCircle, MdRadioButtonChecked, MdAccountBalanceWallet, MdNotes } from "react-icons/md";
 
 type InputIconProps = {
   type?: InputType | string;
@@ -11,7 +11,7 @@ export const InputIcon = ({ type, className, color }: InputIconProps) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const icons: any = {
     "email": <MdMail color={color} style={{ fontSize: 20 }} />,
-    "address": <MdPermIdentity color={color} style={{ fontSize: 20 }} />,
+    "wallet-address": <MdAccountBalanceWallet color={color} style={{ fontSize: 20 }} />,
     "short-answer": <MdOutlineShortText color={color} style={{ fontSize: 20 }} />,
     "paragraph": <MdNotes color={color} style={{ fontSize: 20 }} />,
     "multiple-choice": <MdRadioButtonChecked color={color} style={{ fontSize: 20 }} />,

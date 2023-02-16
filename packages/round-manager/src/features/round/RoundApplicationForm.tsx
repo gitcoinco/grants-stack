@@ -42,7 +42,7 @@ const payoutQuestion: QuestionOption = {
   required: true,
   encrypted: false,
   hidden: true,
-  type: "address",
+  type: "wallet-address",
 };
 
 export const initialQuestions: QuestionOption[] = [
@@ -404,7 +404,7 @@ export function RoundApplicationForm(props: {
           }}
         >
           <PlusSmIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-          Add a Question
+          Add question
         </Button>
         <AddQuestionModal
           show={openAddQuestionModal}

@@ -22,7 +22,7 @@ type AddQuestionModalProps = {
 const questions: InputType[] = [
   "short-answer",
   "email",
-  "address",
+  "wallet-address",
   "paragraph",
   "multiple-choice",
   "checkbox",
@@ -71,8 +71,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         value: "encrypted"
       },
       {
-        activeLabel: "Show in Explorer",
-        inactiveLabel: "Hide from Explorer",
+        activeLabel: "Shown in Explorer",
+        inactiveLabel: "Hidden from Explorer",
         value: "hidden"
       }
     ]
@@ -99,7 +99,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       <div>
         <div className="flex flex-col mt-6">
           <hr className="mb-6" />
-          <span className="mb-2">Question Title</span>
+          <span className="mb-2 text-[14px]">Question Title</span>
           <input
             className="border border-grey-100 rounded-sm ui-active:border-violet-400"
             key="question-title"
@@ -224,7 +224,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             <Listbox.Button className="border rounded-md border-gray-100 p-1 flex relative items-center justify-center">
               <div className="flex items-center justify-center">
                 <InputIcon type={selectedQuestion} color="#0E0333" />
-                <span className="mx-1 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
+                <span className="mx-1 text-[16px] text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
                 <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
               </div>
             </Listbox.Button>
@@ -234,7 +234,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border rounded-md p-2 mt-2 border-grey-100 w-[208px] overflow-auto">
+              <Listbox.Options className="border rounded-md p-2 mt-2 border-grey-100 w-[208px] overflow-auto"> 
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
@@ -288,7 +288,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     switch (questionOptions.type) {
       case "short-answer":
       case "email":
-      case "address":
+      case "wallet-address":
       case "paragraph":
         setQuestionOptions(
           {
@@ -303,7 +303,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     const renderError = (errors: string[]) => {
       return (
         <div className="bg-pink-100 pb-3 text-sm mt-4">
-          <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10  flex items-center">
+          <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10 items-center">
             <div className="col-span-1 w-5"><XCircleIcon /></div>
             <div className="col-span-9">
               {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
@@ -324,20 +324,19 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       <div data-testid="add-question-modal">
         <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-10">
-              <Dialog.Title className="mb-4">
-                <span className="text-lg text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
+          <div className="fixed inset-0 flex items-center justify-center">
+            <Dialog.Panel className="w-full max-w-[628px] rounded bg-white p-6">
+              <Dialog.Title className="mb-4 -mt-4">
+                <span className="text-[18px] text-grey-500">{questionExists ? `Edit Question` : `Add Question`}</span>
               </Dialog.Title>
               <Dialog.Description className="mb-2 text-grey-500 font-normal">
-                <span className="text-md">Question Type</span>
+                <span className="text-[14px]">Question Type</span>
               </Dialog.Description>
-              <hr className="my-6" />
               <div>
                 <QuestionSelectList />
               </div>
               <div>
-                <div className="flex flex-col mt-6">
+                <div className="flex flex-col mt-2">
                   {selectedQuestion !== INITIAL_VALUE &&
                     answerArea((selectedQuestion == "multiple-choice"
                       || selectedQuestion == "checkbox"
