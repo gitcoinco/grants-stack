@@ -37,6 +37,7 @@ import ProgressModal from "../common/ProgressModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import { Switch } from "@headlessui/react";
+import BaseSwitch from "../common/BaseSwitch";
 
 const payoutQuestion: QuestionOption = {
   title: "Payout Wallet Address",
@@ -507,8 +508,10 @@ const ProjectSocials = ({
     >
       <div className="text-sm basis-4/5">Project Twitter</div>
       <div className="basis-1/5 flex justify-end">
-        <GeneralSwitch
-          status={requirements.twitter.required}
+        <BaseSwitch
+          activeLabel="*Required"
+          inactiveLabel="*Optional"
+          value={requirements.twitter.required}
           handler={async (a: boolean) => {
             // clear required twitterVerification, if twitter itself is not required
             handler([
@@ -525,8 +528,10 @@ const ProjectSocials = ({
           Verification of account ownership
         </div>
         <div className="basis-1/5 flex justify-end">
-          <GeneralSwitch
-            status={requirements.twitter.verification}
+          <BaseSwitch
+            activeLabel="*Required"
+            inactiveLabel="*Optional"
+            value={requirements.twitter.verification}
             handler={async (a: boolean) => {
               handler([["twitter", "verification", a]]);
             }}
@@ -541,8 +546,10 @@ const ProjectSocials = ({
     >
       <div className="text-sm basis-4/5">Project Github</div>
       <div className="basis-1/5 flex justify-end">
-        <GeneralSwitch
-          status={requirements.github.required}
+        <BaseSwitch
+          activeLabel="*Required"
+          inactiveLabel="*Optional"
+          value={requirements.github.required}
           handler={async (a: boolean) => {
             // clear required githubVerification, if github itself is not required
             handler([
@@ -559,8 +566,10 @@ const ProjectSocials = ({
           Verification of account ownership
         </div>
         <div className="basis-1/5 flex justify-end">
-          <GeneralSwitch
-            status={requirements.github.verification}
+          <BaseSwitch
+            activeLabel="*Required"
+            inactiveLabel="*Optional"
+            value={requirements.github.verification}
             handler={async (a: boolean) => {
               handler([["github", "verification", a]]);
             }}
@@ -569,48 +578,6 @@ const ProjectSocials = ({
       </div>
     )}
   </>
-);
-
-const GeneralSwitch = ({
-  status,
-  handler,
-}: {
-  status: boolean;
-  handler: (a: boolean) => void;
-}) => (
-  <Switch.Group
-    as="div"
-    className={classNames("flex items-center justify-end")}
-  >
-    <span className="flex-grow">
-      <Switch.Label
-        as="span"
-        className="text-sm font-medium text-gray-900"
-        passive
-      >
-        {status ? (
-          <p className="text-xs mr-2 text-right text-violet-400">*Required</p>
-        ) : (
-          <p className="text-xs mr-2 text-right text-grey-400">Optional</p>
-        )}
-      </Switch.Label>
-    </span>
-    <Switch
-      data-testid={"test-switch-id"}
-      className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
-      onChange={handler}
-      value={status.toString()}
-      checked={status}
-    >
-      <span
-        aria-hidden="true"
-        className={classNames(
-          status ? "translate-x-5 bg-violet-400" : "translate-x-0 bg-white",
-          "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
-        )}
-      />
-    </Switch>
-  </Switch.Group>
 );
 
 function classNames(...classes: string[]) {
