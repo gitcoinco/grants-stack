@@ -125,6 +125,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   const AddOptionButton = () => {
     return (
       <Button
+        role="add-option"
         onClick={() => {
           const renderOptions = questionOptions.options || [];
           renderOptions.push("");
@@ -133,7 +134,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             options: renderOptions,
           });
         }}
-
         className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
       >
         <span className="flex flex-row justify-center">
@@ -161,7 +161,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
     for (let i = 0; i < renderOptions.length; i++) {
       render.push(
-        <div key={i + 1} className="flex flex-col">
+        <div role="option" key={i + 1} className="flex flex-col">
           <Option
             index={i + 1}
             value={questionOptions.options?.[i] || ""}
@@ -209,7 +209,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
   function QuestionSelectList() {
     return (
-      <div className="w-[208px]">
+      <div role="select-list" className="w-[208px]">
         <Listbox
           value={selectedQuestion}
           name="question"
@@ -289,7 +289,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             </div>
             <div className="mt-10 flex flex-row justify-end">
               <button
-                data-testid="cancel-add-question"
+                role="cancel"
                 className="border rounded-[4px] border-gray-100 p-3 mr-2 w-[140px]"
                 onClick={() => {
                   setIsOpen(false)
@@ -299,7 +299,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 Cancel
               </button>
               <button
-                data-testid="save-add-question"
+                role="save"
                 className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
                 onClick={() => {
                   setIsOpen(false);
