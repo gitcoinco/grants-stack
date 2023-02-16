@@ -1,62 +1,112 @@
 # Setup
 
-## Terminology
+This guide will walk you through how to setup the project on your local machine.
+It's intended for anyone who wishes to contribute to the development of the Allo
+protocol, specifically by contributing to these smart contracts.
 
-- **Program Operators**: wallets that have the permission to create & manage the program
-- **Program**: maintained by Program Operators which together form a team
-- **Round Operators**: wallets that have the permission to create & manage the round
-- **Round**: created by a Program and deal with everything relating to running a round
-- **Voter** : wallet who cast a vote to a grant during the round
+Before getting started here, please read through the [Contributing
+Guide](./CONTRIBUTING.md) to learn about the project roadmap and how to get
+involved.
+
+Also, please note that we have not tested these setup instructions on every
+possible machine, operating system, or configuration. If you run into an problem
+getting this project set up, you may file [a bug
+report](https://github.com/gitcoinco/grants-round/issues/new?assignees=&labels=bug&template=bug.md&title=)
+but we can only prioritize problems related to the codebase itself and not
+issues caused by your operating system or system configuration.
+
+## Prerequisites
+
+Before you get started, we assume you have a working knowledge of the following
+tools and libraries:
+
+- Node and pnpm
+- Hardhat
+- Solidity (including solcover and solhint)
 
 ## General Setup
 
-These steps would have to be done per chain but there are intended to be deployed only once
+After cloning the repo down, install all the dependencies with `pnpm`:
 
-**Program**
-1. Deploy `ProgramFactory`
-2. Deploy `ProgramImplementation`
-3. Link `ProgramImplementation` to ProgramFactory contract 
+```shell
+pnpm install
+```
 
-**Round**
-1. Deploying all voting strategy (contracts under `votingStrategy/`)
-2. Deploy `RoundFactory`
-3. Deploy `RoundImplementation`
-4. Link `RoundImplementation` to `RoundFactory` contract
+Create environment files, and replace environment variables with your own values
+```sh
+cp ../.env.example ../.env
+```
 
+Compile the smart contracts and generate TypeChain artifacts:
 
-## Program Setup
+```sh
+$ pnpm clean
+$ pnpm compile
+```
+## Usage
 
-1. To create a program, you would not deploy a contract but instead, rely on the create function on the `ProgramFactory` to create a clone of the already deployed `ProgramImplementation` contract
-2. Any interaction in terms of updating parameters etc can be performed against the `ProgramImplementation` contract itself
+With the above, you should be good to start contributing, provided you've also
+worked through the [contributing guide](./CONTRIBUTING.md). The following are
+some other things you may want to know how to do.
 
+### Lint Solidity
 
-The ProgramFactory enables us to have upgradable contracts on ProgramImplementation
+Lint the Solidity code:
 
+```sh
+$ pnpm lint:sol
+```
 
-## Round Setup
+### Test
 
-1. To create a round, you would not deploy a contract but instead, rely on the create function on the `RoundFactory` to create a new `RoundImplementation` contract.
-2. The user would have to choose a voting strategy like `QuadraticFundingVotingStrategy` (already deployed via instruction mention in DEPLOY_STEPS.md)
-3. Any interaction in terms of updating parameters etc can be performed against the `RoundImplementation` contract itself
+Run the tests:
 
+```sh
+$ pnpm test
+```
 
-The `RoundFactory` enables us to have upgradable contracts on `RoundImplementation`.
+### Coverage
 
+Generate the code coverage report:
 
-## Deploy Steps
+```sh
+$ pnpm coverage
+```
 
-To know how the contracts should be setup, refer [DEPLOY_STEPS.md](docs/DEPLOY_STEPS.md)
+### Generate ABI
 
+Generate ABI of contracts. 
+The generated ABI can be found within `abis/` folder
+We generate both human readable ABI
 
-## Chain Deployment List
+```sh
+pnpm run clear-abi
+pnpm run export-abi
+```
 
-To know the addresses are deployed on which network. refer [CHAINS.md](docs/CHAINS.md)
+### Report Gas
 
-## Development
+See the gas usage per unit test and average gas per method call:
 
-To contribute to this project, fork the project and follow the instructions at [DEV.md](docs/DEV.md)
+```sh
+$ REPORT_GAS=true pnpm test
+```
 
-## Contract Documentation
+### Clean
 
-The contract documentation has been generated using [primitive-dodoc](https://github.com/primitivefinance/primitive-dodoc) and can be found over at [docs/contracts](docs/contracts/)
+Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
+
+```sh
+$ pnpm clean
+```
+
+### Deploy
+
+Contracts written here have deploy scripts written in `scripts/` directory.
+The commands to run them are documented in `package.json`.
+To get a better grasp of how the scripts can be used to deploy / interact with contracts.
+Please refer to [DEPLOY_STEPS.md](./docs/DEPLOY_STEPS.md).
+
+Additionally if you are using vscode -> debug scripts are written up in `launch.json`
+to make it easier to debug the script while running them.
 

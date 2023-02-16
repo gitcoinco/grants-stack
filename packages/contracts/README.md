@@ -3,7 +3,7 @@
 Allo Protocol is a set of smart contracts that enable the democratic allocation
 and distribution of funds through the power of [Quadratic
 Funding](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3243656). It is the
-former smart contract back-end for cGrants, Gitcoin's quadratic funding grant
+former smart contract back-end for cGrants, Gitcoin's public goods funding
 product. This new iteration is more flexible and more modular. It powers
 Gitcoin's three products,
 [Builder](https://github.com/gitcoinco/grants-round/tree/main/packages/builder),
@@ -74,9 +74,8 @@ familiar with the system -->
 
 ## Contribute
 
-<!-- Welcome message, encouraging contribution -->
 We welcome everyone to contribute to Allo. Please review the [contribution
-guidelines]() before proceeding.
+guidelines](./CONTRIBUTING.md) before proceeding.
 
 You can join our [Discord](https://discord.gg/gitcoin) to get help and discuss
 the project with the rest of the community.
@@ -84,27 +83,28 @@ the project with the rest of the community.
 You can also familiarize yourself with our near term project roadmap in the
 [project backlog](https://github.com/orgs/gitcoinco/projects/7).
 
-### Setup
+## Deploy Steps
 
-<!-- Summary and link to the Setup instructions -->
-Instructions are provided in the [`SETUP.md`](./SETUP.md) for getting the
-codebase up and running on your local machine.
+To know how the contracts should be setup, refer
+[DEPLOY_STEPS.md](docs/DEPLOY_STEPS.md).
 
-### Submit a Bug Report
+## Chain Deployment List
 
-<!-- Instructions on how to submit a bug report. GH Issue for bugs, bug bounty
-program for security vulnerabilties. -->
+To know the addresses are deployed on which network, refer to
+[CHAINS.md](docs/CHAINS.md).
 
-For non-security-critical bugs, you can open a [public
-issue](https://github.com/gitcoinco/grants-round/issues/new?assignees=&labels=bug&template=bug.md&title=)
-on this repository, but please follow our issue guidelines for doing so.
+## Development
 
-### Submit a Feature Request
+To contribute to this project, fork the project and follow the instructions at
+[DEV.md](docs/DEV.md).
 
-<!-- How to submit a feature request -->
-To request a feature be added to the protocol, please open a [public issue](https://github.com/gitcoinco/grants-round/issues/new?assignees=&labels=&template=feature_request.md&title=), but please follow our issue guidelines for doing so.
+## Contract Documentation
+
+The contract documentation has been generated using
+[primitive-dodoc](https://github.com/primitivefinance/primitive-dodoc) and can
+be found over at [docs/contracts](docs/contracts/).
 
 ## [License](../../LICENSE)
 
 All code is licensed under GNU AGPL.
-<!-- Link to the license -->
+

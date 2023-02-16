@@ -1,10 +1,11 @@
-## Contract Deploy information
+## Contract Deploy Information
 
-This document lists all the addresses of the contracts that have been deployed on a given network
+This document lists all the addresses of the contracts that have been deployed
+on a given network.
 
 ## Ethereum Mainnet
 
-These are contracts that are created/deployed once for ethereum mainnet
+These are contracts that are created/deployed once for Ethereum Mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -16,9 +17,10 @@ These are contracts that are created/deployed once for ethereum mainnet
 | RoundImplementation                   | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
 | ProjectRegistry                       | 0x03506eD3f57892C85DB20C36846e9c808aFe9ef4 |
 
-**Sample contracts unique to a round **
+**Sample contracts unique to a Round**
 
-These are contracts that are created/deployed for every round created on ethereum mainnet
+These are contracts that are created/deployed for every round created on
+Ethereum Mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -29,7 +31,7 @@ These are contracts that are created/deployed for every round created on ethereu
 
 ## Optimism Mainnet
 
-These are contracts that are created/deployed once for optimism mainnet
+These are contracts that are created/deployed once for Optimism Mainnet.
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -42,9 +44,10 @@ These are contracts that are created/deployed once for optimism mainnet
 | ProjectRegistry                       | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
 
 
-**Sample contracts unique to a round **
+**Sample contracts unique to a round**
 
-These are contracts that are created/deployed for every round created on optimism mainnet
+These are contracts that are created/deployed for every round created on
+Optimism Mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -55,7 +58,7 @@ These are contracts that are created/deployed for every round created on optimis
 
 ## Fantom Mainnet
 
-These are contracts that are created/deployed once for fantom mainnet
+These are contracts that are created/deployed once for Fantom Mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -68,9 +71,10 @@ These are contracts that are created/deployed once for fantom mainnet
 | ProjectRegistry                       | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
 
 
-**Sample contracts unique to a round **
+**Sample contracts unique to a round**
 
-These are contracts that are created/deployed for every round created on fantom mainnet
+These are contracts that are created/deployed for every round created on Fantom
+Mainnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -81,7 +85,7 @@ These are contracts that are created/deployed for every round created on fantom 
 
 ## Goerli Network
 
-These are contracts that are created/deployed once for goerli
+These are contracts that are created/deployed once for Goerli
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -94,9 +98,9 @@ These are contracts that are created/deployed once for goerli
 | ProjectRegistry                       | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
 
 
-**Sample contracts unique to a round **
+**Sample contracts unique to a round**
 
-These are contracts that are created/deployed for every round created on goerli
+These are contracts that are created/deployed for every round created on Goerli
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -106,9 +110,9 @@ These are contracts that are created/deployed for every round created on goerli
 | Round                                 | 0x84c3445D33488Dc0dd94694F6299ea3b37aB3cB6 |
 
 
-## Fantom Testnetwork
+## Fantom Test Network
 
-These are contracts that are created/deployed once for fantom testnet
+These are contracts that are created/deployed once for Fantom Testnet.
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -121,9 +125,10 @@ These are contracts that are created/deployed once for fantom testnet
 | ProjectRegistry                       | 0x984749e408FF0446d8ADaf20E293F2F299396631 |
 
 
-**Sample contracts unique to a round **
+**Sample contracts unique to a round**
 
-These are contracts that are created/deployed for every round created on fantom testnet
+These are contracts that are created/deployed for every round created on Fantom
+Testnet
 
 | Contract                              | Address                                    |
 |---------------------------------------|--------------------------------------------|
@@ -132,13 +137,10 @@ These are contracts that are created/deployed for every round created on fantom 
 | MerklePayoutContract                  | 0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a |
 | Round                                 | 0xd3E45c78050a6472e28b9E02AA8596F7868e63d6 |
 
-
-
-
 # Project Registry
 
-This section lists the proxy, current implementation and admin contracts of the project registry.
-This information is useful for contract upgrades.
+This section lists the proxy, current implementation, and admin contracts of the
+Project Registry. This information is useful for contract upgrades.
 
 ### Ethereum Mainnet
 
@@ -156,14 +158,14 @@ This information is useful for contract upgrades.
 | ProjectRegistry Implementation    | 0xbce556cf365E631fF50449211A6f2CB8936f40D1 |
 | Proxy Admin                       | 0xec77FccE4f0396BaB43BC66a513157Ee59EE07c7 |
 
-### Fantom mainnet
+### Fantom Mainnet
 
 | Contract                          | Address                                    |
 |-----------------------------------|--------------------------------------------|
 | ProjectRegistry (Proxy)           | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
 | ProjectRegistry Implementation    | 0xbce556cf365E631fF50449211A6f2CB8936f40D1 |
 
-### Fantom testnet
+### Fantom Testnet
 
 | Contract                          | Address                                    |
 |-----------------------------------|--------------------------------------------|

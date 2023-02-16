@@ -1,9 +1,45 @@
-### Networks
+# Deployment Guide
 
-The project has been configured to support the following networks.
-All the deploy scripts will expect network param to know which network the contract deployment / interaction should take place
+This guide will walk you through deploying the protocol's smart contracts to
+a new network. Note that these contracts are intended to only be deployed once
+per chain.
 
-| network            |
+## Overview
+
+These steps have to be done per chain and are intended to be deployed only once
+per chain.
+
+**1. Program** - First we deploy and set up the Program contracts.
+
+1. Deploy `ProgramFactory`
+2. Deploy `ProgramImplementation`
+3. Link `ProgramImplementation` to `ProgramFactory` contract 
+
+To create an individual Program, use the `ProgramFactory`. Do not deploy a new
+instance of the `ProgramImplementation` contract.
+
+**2. Round** - Then we deploy and set up the Round contracts.
+
+1. Deploying all voting strategy (contracts under `votingStrategy/`)
+2. Deploy `RoundFactory`
+3. Deploy `RoundImplementation`
+4. Link `RoundImplementation` to `RoundFactory` contract
+
+To create an individual Round, use the `RoundFactory` rather than deploying your
+own instance of `RoundImplementation`.
+
+**3. Project Registry** - Finally, we deploy the Project Registry contracts.
+
+1. Deploy the `ProgramRegistry` contract
+
+The `ProgramFactory` enables us to have upgradable contracts on `ProgramImplementation`
+
+## Networks
+
+The project has been configured to support the following networks. All the
+deploy scripts expect a network parameter to know which network to deploy to.
+
+| Network            |
 |--------------------|
 | `goerli`           |
 | `optimism-mainnet` |
@@ -11,10 +47,11 @@ All the deploy scripts will expect network param to know which network the contr
 | `fantom-testnet`   |
 | `mainnet`          |
 
-
 ### Project Registry
 
-The section here shows how to set up the project registry for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
+The section here shows how to set up the project registry for the first time on
+a given network. Ideally these steps would be done once per chain. In this
+example, we would be deploying on Goerli
 
 0. Create an `.env` file
 ```sh
@@ -34,7 +71,9 @@ pnpm run deploy-builder goerli
 
 ### Program Setup
 
-The section here shows how to set up the program for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
+The section here shows how to set up the program for the first time on a given
+network. Ideally these steps would be done once per chain. In this example , we
+would be deploying on goerli
 
 0. Create an `.env` file
 ```sh
@@ -75,7 +114,10 @@ pnpm run link-program-implementation goerli
 
 ### VotingStrategy Setup
 
-The section here shows how to set up voting strategy for the first time on a given network. Ideally these steps would be done once per chain. In this example ,we would be deploying the QuadraticFundingVotingStrategyImplementation contract on goerli
+The section here shows how to set up voting strategy for the first time on
+a given network. Ideally these steps would be done once per chain. In this
+example ,we would be deploying the QuadraticFundingVotingStrategyImplementation
+contract on goerli
 
 1. Create an `.env` file and fill out
     - `INFURA_ID`               : Infura ID for deploying contract
@@ -112,8 +154,11 @@ pnpm run link-qf-implementation goerli
 
 ### PayoutStrategy Setup
 
-The section here shows how to deploy the payout strategy contract. Ideally these would be done before creating a round. In this example ,we would be deploying the MerklePayoutStrategy contract on goerli. This would have to be done before creating a round
-so that round is aware and store a reference to the voting contract during it's creation.
+The section here shows how to deploy the payout strategy contract. Ideally these
+would be done before creating a round. In this example ,we would be deploying
+the MerklePayoutStrategy contract on goerli. This would have to be done before
+creating a round so that round is aware and store a reference to the voting
+contract during it's creation.
 
 
 1. Create an `.env` file and fill out
@@ -141,7 +186,9 @@ export const PayoutParams: DeployParams = {
 
 ### Round Setup
 
-The section here shows how to set up the round manager for the first time on a given network. Ideally these steps would be done once per chain. In this example , we would be deploying on goerli
+The section here shows how to set up the round manager for the first time on
+a given network. Ideally these steps would be done once per chain. In this
+example , we would be deploying on goerli
 
 1. Create an `.env` file and fill out
     - `INFURA_ID`                     : Infura ID for deploying contract
