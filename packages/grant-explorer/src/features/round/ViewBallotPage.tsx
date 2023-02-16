@@ -1175,7 +1175,6 @@ export default function ViewBallot() {
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
-        console.error("Transaction replaced:", error);
         setTransactionReplaced(true);
       } else {
         datadogLogs.logger.error(
