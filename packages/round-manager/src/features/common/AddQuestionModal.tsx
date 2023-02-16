@@ -212,6 +212,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           value={selectedQuestion}
           name="question"
           onChange={(q: InputType) => {
+            setInputError([]);
             setSelectedQuestion(q);
             setQuestionOptions({
               ...questionOptions,
