@@ -40,7 +40,7 @@ abstract contract IPayoutStrategy {
 
     /// @notice Invoked by RoundImplementation to upload distribution to the payout strategy
     /// @dev Should be invoked by the RoundImplementation contract. Ideally IPayoutStrategy implementation should emit events after distribution is updated. Would be invoked at the end of the round.
-    /// @param calldata _encodedDistribution distribution encoded in bytes
+    /// @param _encodedDistribution distribution encoded in bytes
     function updateDistribution(
         bytes calldata _encodedDistribution
     ) external virtual;

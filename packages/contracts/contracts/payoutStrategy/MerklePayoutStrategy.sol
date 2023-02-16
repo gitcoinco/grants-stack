@@ -39,7 +39,7 @@ contract MerklePayoutStrategy is IPayoutStrategy {
     */
     /// @notice Implementation of updateDistribution function from IPayoutStrategy. Invoked by RoundImplementation contract
     /// @dev Takes a new encoded distribution and updates the merkleRoot and distributionMetaPtr
-    /// @param calldata _encodedDistribution distribution encoded in bytes
+    /// @param _encodedDistribution distribution encoded in bytes
     function updateDistribution(
         bytes calldata encodedDistribution
     ) external override isRoundContract {
