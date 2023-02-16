@@ -117,7 +117,7 @@ export type QuestionOption = {
   required: boolean;
   encrypted: boolean;
   hidden: boolean;
-  inputType: InputType;
+  type: InputType;
   options?: string[];
 };
 

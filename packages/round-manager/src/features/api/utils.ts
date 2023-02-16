@@ -342,7 +342,7 @@ export const generateApplicationSchema = (
     return {
       id: index,
       question: question.title,
-      type: question.inputType,
+      type: question.type,
       required: question.required,
       info: "",
       choices: [],

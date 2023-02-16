@@ -33,10 +33,8 @@ import { FormStepper as FS } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
-
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
-import { Switch } from "@headlessui/react";
 import BaseSwitch from "../common/BaseSwitch";
 
 const payoutQuestion: QuestionOption = {
@@ -44,7 +42,7 @@ const payoutQuestion: QuestionOption = {
   required: true,
   encrypted: false,
   hidden: true,
-  inputType: "address",
+  type: "address",
 };
 
 export const initialQuestions: QuestionOption[] = [
@@ -53,21 +51,21 @@ export const initialQuestions: QuestionOption[] = [
     required: true,
     encrypted: true,
     hidden: true,
-    inputType: "email",
+    type: "email",
   },
   {
     title: "Funding Sources",
     required: true,
     encrypted: false,
     hidden: false,
-    inputType: "short-answer",
+    type: "short-answer",
   },
   {
     title: "Team Size",
     required: true,
     encrypted: false,
     hidden: false,
-    inputType: "short-answer",
+    type: "short-answer",
   },
 ];
 
@@ -343,10 +341,10 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5 w-3 h-3" type={field.inputType} />
+              <InputIcon className="mr-1 mb-0.5 w-3 h-3" type={field.type} />
             </span>
             <span className="first-letter:capitalize">
-              {field.inputType.replace("-", " ")}
+              {field.type.replace("-", " ")}
             </span>
           </div>
           {field.title}
@@ -579,10 +577,6 @@ const ProjectSocials = ({
     )}
   </>
 );
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 function ReviewInformation() {
   return (

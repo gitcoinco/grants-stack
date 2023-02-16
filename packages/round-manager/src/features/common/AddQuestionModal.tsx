@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dialog, Listbox, Transition } from "@headlessui/react";
-import { ChevronDownIcon, PlusIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, PlusIcon, XCircleIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { Fragment, useEffect, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,9 +29,6 @@ const questions: InputType[] = [
   "dropdown",
 ]
 
-// eslint-disable-next-line
-let options: QuestionOption[] = [];
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
   const questionExists = question && question.index !== undefined;
@@ -43,15 +40,16 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     required: false,
     encrypted: false,
     hidden: false,
-    inputType: "short-answer",
+    type: "short-answer",
     options: [],
   });
 
   const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [inputError, setInputError] = useState<string[]>([]);
 
   useEffect(() => {
-    if (question && question.index !== undefined && question.field?.inputType) {
-      setSelectedQuestion(question.field.inputType);
+    if (question && question.index !== undefined && question.field?.type) {
+      setSelectedQuestion(question.field.type);
       setQuestionOptions(question.field);
     } else {
       setSelectedQuestion(INITIAL_VALUE);
@@ -218,7 +216,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             setSelectedQuestion(q);
             setQuestionOptions({
               ...questionOptions,
-              inputType: q,
+              type: q,
             });
           }}
         >
@@ -262,6 +260,48 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     )
   }
 
+  const checkForErrors = (): boolean => {
+    setInputError([]);
+    const errors = [];
+
+    if(selectedQuestion === INITIAL_VALUE) {
+      errors.push("Please select a question type.");
+    }
+    if (selectedQuestion !== INITIAL_VALUE && !questionOptions.title) {
+      errors.push("Question title is required.");
+    }
+    if (questionOptions.type === "checkbox" && questionOptions.options?.[0] === "") {
+      errors.push("Please provide at least 1 option.");
+    }
+    if ((questionOptions.type === "multiple-choice" || questionOptions.type === "dropdown")
+      && (!questionOptions.options || questionOptions.options?.length < 2 || questionOptions.options?.[1] === "")) {
+      errors.push("Please provide at least 2 options.");
+    }
+
+    setInputError(errors);
+    return (errors.length > 0);
+  }
+
+  const renderError = (errors: string[]) => {
+    return (
+      <div className="bg-pink-100 pb-3 text-sm mt-4">
+        <div className="text-red-100 pt-3 pl-3 pb-2 grid grid-flow-col grid-cols-10  flex items-center">
+          <div className="col-span-1 w-5"><XCircleIcon /></div>
+          <div className="col-span-9">
+            {`There ${errors.length === 1 ? "was 1 error" : `were ${errors.length} errors`} with your form submission:`}
+          </div>
+        </div>
+        {errors.map((error) => (<div className="text-[#0e0333] pt-1 pl-3 grid grid-flow-col grid-cols-10">
+          <div className="col-span-1"></div>
+          <div className="col-span-9">
+            <span className="text-md pr-2 pt-1">&bull;</span>{error}
+          </div>
+        </div>)
+        )}
+      </div>
+    )
+  }
+
   return (
     <div data-testid="add-question-modal">
       <Dialog open={isOpen} onClose={onClose} className="relative z-50 max-w-[628px] max-h-[557px]">
@@ -287,6 +327,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 }
               </div>
             </div>
+            {inputError.length > 0 && renderError(inputError)}
             <div className="mt-10 flex flex-row justify-end">
               <button
                 role="cancel"
@@ -302,14 +343,17 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 role="save"
                 className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
                 onClick={() => {
-                  setIsOpen(false);
-                  onSave({
-                    ...initialQuestion,
-                    field: {
-                      ...questionOptions
-                    }
-                  })
-                }}
+                  if (!checkForErrors()) {
+                    setIsOpen(false);
+                    onSave({
+                      ...initialQuestion,
+                      field: {
+                        ...questionOptions
+                      }
+                    })
+                  }
+                }
+                }
               >
                 {questionExists ? `Save` : `Add`}
               </button>
