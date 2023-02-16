@@ -341,7 +341,7 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5 w-3 h-3" type={field.type} />
+              <InputIcon className="mr-1 mb-0.5 w-6 h-6" type={field.type} />
             </span>
             <span className="first-letter:capitalize">
               {field.type.replace("-", " ")}

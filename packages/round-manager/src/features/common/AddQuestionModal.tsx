@@ -221,10 +221,12 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           }}
         >
           <div className="relative mt-1">
-            <Listbox.Button className="border rounded-[4px] border-gray-100 p-3 flex relative">
-              <InputIcon className="mt-1" type={selectedQuestion} />
-              <span className="mr-1 ml-2 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
-              <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
+            <Listbox.Button className="border rounded-md border-gray-100 p-1 flex relative items-center justify-center">
+              <div className="flex items-center justify-center">
+                <InputIcon type={selectedQuestion} color="#0E0333" />
+                <span className="mx-1 text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
+                <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
+              </div>
             </Listbox.Button>
             <Transition
               as={Fragment}
@@ -232,7 +234,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border p-2 border-grey-100 w-[208px] overflow-auto">
+              <Listbox.Options className="border rounded-md p-2 mt-2 border-grey-100 w-[208px] overflow-auto">
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
@@ -244,8 +246,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                         className={`flex ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
                           }`}
                       >
-                        <span className="w-5 h-5 mt-1 flex items-center text-grey-500 focus:text-violet-400">
-                          <InputIcon type={q} />
+                        <span className="mt-0.5 flex items-center text-grey-500 focus:text-violet-400">
+                          <InputIcon className="focus:text-white" type={q} />
                         </span>
                         <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
                       </span>

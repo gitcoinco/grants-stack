@@ -62,6 +62,7 @@
     "react-dom": "^18.1.0",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.31.3",
+    "react-icons": "^4.7.1",
     "react-redux": "^8.0.1",
     "react-router-dom": "6",
     "react-scripts": "5.0.1",

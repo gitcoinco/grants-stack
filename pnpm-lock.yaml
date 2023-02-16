@@ -598,6 +598,7 @@ importers:
       react-dom: ^18.1.0
       react-gtm-module: ^2.0.11
       react-hook-form: ^7.31.3
+      react-icons: ^4.7.1
       react-redux: ^8.0.1
       react-router-dom: '6'
       react-scripts: 5.0.1
@@ -658,6 +659,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-gtm-module: 2.0.11
       react-hook-form: 7.42.1_react@18.2.0
+      react-icons: 4.7.1_react@18.2.0
       react-redux: 8.0.5_916b334edec9b94a7685e54df39b2e8b
       react-router-dom: 6.7.0_react-dom@18.2.0+react@18.2.0
       react-scripts: 5.0.1_react@18.2.0+typescript@4.9.4
@@ -24903,6 +24905,14 @@ packages:
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-icons/4.7.1_react@18.2.0:
+    resolution: {integrity: sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==}
+    peerDependencies:
+      react: '*'
     dependencies:
       react: 18.2.0
     dev: false
