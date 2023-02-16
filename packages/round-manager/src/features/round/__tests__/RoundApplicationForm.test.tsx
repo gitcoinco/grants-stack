@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import {
   initialQuestions,
   RoundApplicationForm,
@@ -581,6 +587,248 @@ describe("Application Form Builder", () => {
         editableQuestions.length + 1
       );
     });
+  });
+});
+
+describe("Project Socials", () => {
+  beforeEach(() => {
+    (useWallet as jest.Mock).mockReturnValue({
+      chain: { name: "my blockchain" },
+      provider: {
+        getNetwork: () => ({
+          chainId: 0,
+        }),
+      },
+      signer: {
+        getChainId: () => 0,
+      },
+      address: "0x0",
+    });
+  });
+
+  it("displays the Project Socials", () => {
+    renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    expect(screen.getByText("Project Twitter")).toBeInTheDocument();
+    expect(screen.getByText("Project Github")).toBeInTheDocument();
+  });
+
+  it("render the switches initial correct", () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+
+    expect(switches.length).toBe(2);
+    // twitterVerification and githubVerification are not rendered at this point
+    expect(switches[0]).not.toBeChecked(); // twitter
+    expect(switches[1]).not.toBeChecked(); // github
+  });
+
+  it("should render twitterVerification when twitter is required", async () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+
+    await act(async () => {
+      fireEvent.click(switches[0]); // twitter required: true
+    });
+
+    const updatedSwitches = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches.length).toBe(3);
+    expect(updatedSwitches[0]).toBeChecked(); // twitter
+    expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
+    expect(updatedSwitches[2]).not.toBeChecked(); // github
+  });
+
+  it("should render githubVerification when github is required", async () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+    expect(switches.length).toBe(2);
+
+    await act(async () => {
+      fireEvent.click(switches[1]); // github required: true
+    });
+
+    const updatedSwitches = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches.length).toBe(3);
+    expect(updatedSwitches[0]).not.toBeChecked(); // twitter
+    expect(updatedSwitches[1]).toBeChecked(); // github
+    expect(updatedSwitches[2]).not.toBeChecked(); // github verification
+  });
+
+  it("should render twitterVerification and githubVerification when twitter and github are required", async () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(switches[0]); // twitter required: true
+    });
+
+    const updatedSwitches0 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches0[2]); // github required: true
+    });
+
+    const updatedSwitches = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches.length).toBe(4);
+    expect(updatedSwitches[0]).toBeChecked(); // twitter
+    expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
+    expect(updatedSwitches[2]).toBeChecked(); // github
+    expect(updatedSwitches[3]).not.toBeChecked(); // github verification
+  });
+
+  it("should toggle all switches on", async () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(switches[0]); // twitter required: true
+    });
+
+    const updatedSwitches0 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches0[2]); // github required: true
+    });
+
+    const updatedSwitches1 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
+    });
+
+    const updatedSwitches2 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches2[3]); // github verification required: true
+    });
+
+    const updatedSwitches = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches.length).toBe(4);
+    expect(updatedSwitches[0]).toBeChecked(); // twitter
+    expect(updatedSwitches[1]).toBeChecked(); // twitter verification
+    expect(updatedSwitches[2]).toBeChecked(); // github
+    expect(updatedSwitches[3]).toBeChecked(); // github verification
+  });
+
+  it("should toggle all switches off", async () => {
+    const { getAllByTestId } = renderWithContext(
+      <RoundApplicationForm
+        initialData={{
+          // @ts-expect-error Test file
+          program: {
+            operatorWallets: [],
+          },
+        }}
+        stepper={FormStepper}
+      />
+    );
+
+    const switches = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(switches[0]); // twitter required: true
+    });
+
+    const updatedSwitches0 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches0[2]); // github required: true
+    });
+
+    const updatedSwitches1 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
+    });
+
+    const updatedSwitches2 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches2[3]); // github verification required: true
+    });
+
+    const updatedSwitches = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches.length).toBe(4);
+    expect(updatedSwitches[0]).toBeChecked(); // twitter
+    expect(updatedSwitches[1]).toBeChecked(); // twitter verification
+    expect(updatedSwitches[2]).toBeChecked(); // github
+    expect(updatedSwitches[3]).toBeChecked(); // github verification
+
+    const updatedSwitches3 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches3[0]); // twitter required: false
+    });
+
+    const updatedSwitches4 = getAllByTestId("test-switch-id");
+    await act(async () => {
+      fireEvent.click(updatedSwitches4[1]); // github required: false
+    });
+
+    const updatedSwitches5 = getAllByTestId("test-switch-id");
+
+    expect(updatedSwitches5.length).toBe(2);
+    expect(updatedSwitches5[0]).not.toBeChecked(); // twitter
+    expect(updatedSwitches5[1]).not.toBeChecked(); // github
   });
 });
 

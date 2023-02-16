@@ -88,7 +88,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
         update: update,
         create: create,
@@ -112,44 +112,40 @@ export class DatabaseInstance {
       const matchData = {
         matchAmountInUSD: projectMatch.matchAmountInUSD,
         projectId: projectMatch.projectId,
-        totalContributionsInUSD: Number(
-          projectMatch.totalContributionsInUSD
-        ),
+        totalContributionsInUSD: Number(projectMatch.totalContributionsInUSD),
         matchPoolPercentage: Number(projectMatch.matchPoolPercentage),
         matchAmountInToken: Number(projectMatch.matchAmountInToken),
         projectPayoutAddress: projectMatch.projectPayoutAddress,
-        uniqueContributorsCount: Number(
-          projectMatch.uniqueContributorsCount
-        ),
-      }
+        uniqueContributorsCount: Number(projectMatch.uniqueContributorsCount),
+      };
 
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
         matches: { create: matchData },
-      }
+      };
 
       // upsert with match data
       await this.client.round.upsert({
-          where: { roundId: roundId },
-          create: roundData,
-          update: {
-            matches: {
-              upsert: {
-                where: {
-                  matchIdentifier: {
-                    projectId: projectMatch.projectId,
-                    roundId: roundId,
-                  }
+        where: { roundId: roundId },
+        create: roundData,
+        update: {
+          matches: {
+            upsert: {
+              where: {
+                matchIdentifier: {
+                  projectId: projectMatch.projectId,
+                  roundId: roundId,
                 },
-                create: matchData,
-                update: matchData,
-              }
-            }
-          }
-        }
-      );
+              },
+              create: matchData,
+              update: matchData,
+            },
+          },
+        },
+      });
       return { result: true };
     } catch (error) {
       console.error("error upserting project match", error);
@@ -171,16 +167,17 @@ export class DatabaseInstance {
         uniqueContributors: summary.uniqueContributors,
         totalContributionsInUSD: Number(summary.totalContributionsInUSD),
         averageUSDContribution: Number(summary.averageUSDContribution),
-      }
+      };
 
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
         roundSummary: {
-          create: roundSummaryData
+          create: roundSummaryData,
         },
-      }
+      };
 
       // upsert with round summary data
       await this.client.round.upsert({
@@ -189,8 +186,8 @@ export class DatabaseInstance {
         update: {
           roundSummary: {
             update: roundSummaryData,
-          }
-        }
+          },
+        },
       });
 
       return { result: true };
@@ -213,22 +210,23 @@ export class DatabaseInstance {
       const roundData = {
         roundId: roundId,
         chainId: chainIdVerbose as ChainId,
-        votingStrategyName: metadata.votingStrategy.strategyName as VotingStrategy,
-      }
+        votingStrategyName: metadata.votingStrategy
+          .strategyName as VotingStrategy,
+      };
 
       const projectSummaryData = {
         contributionCount: summary.contributionCount,
         uniqueContributors: summary.uniqueContributors,
         totalContributionsInUSD: Number(summary.totalContributionsInUSD),
         averageUSDContribution: Number(summary.averageUSDContribution),
-      }
+      };
 
       const projectData = {
         roundId: roundId,
         projectId: projectId,
         chainId: chainIdVerbose as ChainId,
         projectSummaries: { create: projectSummaryData },
-      }
+      };
 
       // check if round exists
       const roundExists = await this.client.round.findUnique({
@@ -248,7 +246,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
       });
 
@@ -261,29 +259,28 @@ export class DatabaseInstance {
 
       // upsert the project summary data
       await this.client.project.upsert({
-          where: {
-            projectIdentifier: {
-              projectId: projectId,
-              roundId: roundId,
-            }
+        where: {
+          projectIdentifier: {
+            projectId: projectId,
+            roundId: roundId,
           },
-          create: projectData,
-          update: {
-            projectSummaries: {
-              upsert: {
-                where: {
-                  projectSummaryIdentifier: {
-                    projectId: projectId,
-                    roundId: roundId,
-                  }
+        },
+        create: projectData,
+        update: {
+          projectSummaries: {
+            upsert: {
+              where: {
+                projectSummaryIdentifier: {
+                  projectId: projectId,
+                  roundId: roundId,
                 },
-                create: projectSummaryData,
-                update: projectSummaryData,
-              }
-            }
-          }
-        }
-      );
+              },
+              create: projectSummaryData,
+              update: projectSummaryData,
+            },
+          },
+        },
+      });
 
       return { result: true };
     } catch (error) {
@@ -326,7 +323,7 @@ export class DatabaseInstance {
           projectSummaryIdentifier: {
             roundId: roundId,
             projectId: projectId,
-          }
+          },
         },
       });
       return { result };
@@ -346,7 +343,7 @@ export class DatabaseInstance {
           matchIdentifier: {
             roundId: roundId,
             projectId: projectId,
-          }
+          },
         },
       });
       return { result };
@@ -395,7 +392,7 @@ export class DatabaseInstance {
           projectIdentifier: {
             projectId: projectId,
             roundId: roundId,
-          }
+          },
         },
       });
       return { result };

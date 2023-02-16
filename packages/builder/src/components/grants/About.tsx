@@ -51,13 +51,13 @@ export default function About({
   const canShowApplications =
     props.applications.length !== 0 && showApplications;
 
-  const validTwitterCredential: boolean = useValidateCredential(
+  const { isValid: validTwitterCredential } = useValidateCredential(
     project?.credentials?.twitter,
     CredentialProvider.Twitter,
     project?.projectTwitter
   );
 
-  const validGithubCredential: boolean = useValidateCredential(
+  const { isValid: validGithubCredential } = useValidateCredential(
     project?.credentials?.github,
     CredentialProvider.Github,
     project?.projectGithub

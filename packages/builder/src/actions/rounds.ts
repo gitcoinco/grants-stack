@@ -8,27 +8,10 @@ import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
-import {
-  MetaPtr,
-  ProgramMetadata,
-  Round,
-  RoundApplicationMetadata,
-  RoundMetadata,
-} from "../types";
+import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
 import { getProviderByChainId } from "../utils/utils";
-
-const projectQuestion = {
-  question: "Select a project you would like to apply for funding:",
-  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
-  required: true,
-};
-
-const recipientAddressQuestion = {
-  question: "Recipient Address",
-  type: "RECIPIENT",
-  required: true,
-  info: "Address that will receive funds",
-};
+import { RoundApplicationMetadata } from "../types/roundApplication";
+import { parseRoundApplicationMetadata } from "../utils/roundApplication";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -268,30 +251,9 @@ export const loadRound =
     });
 
     let applicationMetadata: RoundApplicationMetadata;
-    let projectQuestionId;
-    let recipientQuestionId;
     try {
       const resp = await pinataClient.fetchText(applicationMetaPtr.pointer);
-      applicationMetadata = JSON.parse(resp);
-
-      if (applicationMetadata.applicationSchema === undefined) {
-        applicationMetadata.applicationSchema =
-          applicationMetadata.application_schema;
-      }
-
-      recipientQuestionId = applicationMetadata.applicationSchema.length;
-      applicationMetadata.applicationSchema.unshift({
-        ...recipientAddressQuestion,
-        id: recipientQuestionId,
-      });
-      applicationMetadata.recipientQuestionId = recipientQuestionId;
-
-      projectQuestionId = applicationMetadata.applicationSchema.length;
-      applicationMetadata.applicationSchema.unshift({
-        ...projectQuestion,
-        id: projectQuestionId,
-      });
-      applicationMetadata.projectQuestionId = projectQuestionId;
+      applicationMetadata = parseRoundApplicationMetadata(JSON.parse(resp));
     } catch (e) {
       datadogRum.addError(e);
       datadogLogs.logger.error("ipfs: error loading application metadata");

@@ -1,18 +1,18 @@
 import {
-  ExclamationCircleIcon,
-  CheckBadgeIcon,
-  XCircleIcon,
   ArrowTopRightOnSquareIcon,
+  CheckBadgeIcon,
+  ExclamationCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi";
+import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
 import {
   fetchPassport,
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
-import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
-import { useNavigate } from "react-router-dom";
 
 export default function PassportBanner(props: {
   chainId?: string;
@@ -218,6 +218,15 @@ export default function PassportBanner(props: {
       color: "bg-red-200",
       testId: "error-loading-passport",
       body: "An error occurred while loading your Gitcoin Passport. Please try again later.",
+      button: null,
+    },
+    [PassportState.INVALID_RESPONSE]: {
+      icon: (
+        <ExclamationCircleIcon className="fill-red-500 stroke-red-200 h-7 w-7 relative text-white items-center rounded-full" />
+      ),
+      color: "bg-red-200",
+      testId: "error-loading-passport",
+      body: "Passport Profile not detected. Please open Passport to troubleshoot.",
       button: null,
     },
   };

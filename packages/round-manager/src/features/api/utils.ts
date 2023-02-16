@@ -309,6 +309,22 @@ export interface SchemaQuestion {
   encrypted: boolean;
 }
 
+export interface ProjectRequirementsSchema {
+  twitter: {
+    required: boolean;
+    verification: boolean;
+  };
+  github: {
+    required: boolean;
+    verification: boolean;
+  };
+}
+
+export interface ApplicationSchema {
+  questions: Array<SchemaQuestion>;
+  requirements: ProjectRequirementsSchema;
+}
+
 /**
  * This function generates the round application schema to be stored in a decentralized storage
  *
@@ -316,11 +332,13 @@ export interface SchemaQuestion {
  * @returns The application schema
  */
 export const generateApplicationSchema = (
-  questions: ApplicationMetadata["questions"]
-): Array<SchemaQuestion> => {
-  if (!questions) return [];
+  questions: ApplicationMetadata["questions"],
+  requirements: ApplicationMetadata["requirements"]
+): ApplicationSchema => {
+  const schema = { questions: new Array<SchemaQuestion>(), requirements };
+  if (!questions) return schema;
 
-  return questions.map((question, index) => {
+  schema.questions = questions.map((question, index) => {
     return {
       id: index,
       question: question.title,
@@ -331,6 +349,8 @@ export const generateApplicationSchema = (
       encrypted: question.encrypted,
     };
   });
+
+  return schema;
 };
 
 /* We can safely suppress the eslint warning here, since JSON.stringify accepts any*/
