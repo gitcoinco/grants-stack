@@ -21,12 +21,12 @@ type AddQuestionModalProps = {
 // test data for building out the questions
 const questions: InputType[] = [
   "short-answer",
-  "email",
-  "wallet-address",
   "paragraph",
   "multiple-choice",
   "checkbox",
   "dropdown",
+  "email",
+  "wallet-address",
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -234,22 +234,22 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border rounded-md p-2 mt-2 border-grey-100 w-[208px] overflow-auto"> 
+              <Listbox.Options className="border rounded-md my-2 border-grey-100 w-[208px] overflow-auto"> 
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
                     value={q}
-                    className="flex active:bg-violet-400 active:text-white bg-white text-black w-full"
+                    className="flex py-2 cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full"
                   >
                     {({ active }) => (
                       <span
-                        className={`flex w-full ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
+                        className={`flex w-full ${active ? 'bg-violet-400 py-2 text-white' : 'bg-white text-black'
                           }`}
                       >
                         <span className="mt-0.5 flex items-center text-grey-500 focus:text-violet-400">
-                          <InputIcon className="focus:text-white" type={q} />
+                          <InputIcon className="focus:text-white mr-3 ml-[20px]" type={q} />
                         </span>
-                        <span className="flex text-md w-full ml-1 mt-0.5 ">{typeToText(q)}</span>
+                        <span className="flex text-md w-full mt-0.5 ">{typeToText(q)}</span>
                       </span>
                     )}
                   </Listbox.Option>)
