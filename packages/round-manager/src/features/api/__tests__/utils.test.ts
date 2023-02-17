@@ -362,7 +362,7 @@ describe("generateApplicationSchema", () => {
         required: question.required,
         hidden: question.hidden,
         info: "", // TODO: is grant hub using this???
-        choices: [], // TODO: is grant hub using this???
+        choices: undefined, // TODO: is grant hub using this???
         encrypted: question.encrypted,
       })),
       requirements: {
