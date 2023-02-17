@@ -437,7 +437,7 @@ export function RoundApplicationForm(props: {
   const addOrEditQuestion = (question: EditQuestion) => {
     setOpenAddQuestionModal(false);
     if (question.field) {
-      if (!question.index) {
+      if (!question.index && question.index !== 0) {
         append({...question.field, id: fields.length});
       } else {
         update(question.index, question.field);
