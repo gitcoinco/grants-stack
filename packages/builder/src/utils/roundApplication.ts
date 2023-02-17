@@ -66,6 +66,7 @@ export const parseRoundApplicationMetadata = (
       id: q.id,
       type: q.question === "Email Address" ? "email" : q.type,
       title: q.title || q.question,
+      options: q.options,
       required: q.required,
       encrypted: q.encrypted,
       hidden: true,
