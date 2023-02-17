@@ -107,6 +107,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           <span className="mb-2 text-[14px]">Question Title</span>
           <input
             className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            data-testid="question-title-input"
             key="question-title"
             type="text"
             placeholder="Question"
@@ -221,6 +222,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         <Listbox
           value={selectedQuestion}
           name="question"
+          data-testid="select-question"
           onChange={(q: InputType) => {
             setInputError([]);
             setSelectedQuestion(q);

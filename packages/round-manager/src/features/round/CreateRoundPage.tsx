@@ -51,8 +51,8 @@ export default function CreateRound() {
           <main>
             <FormWizard
               steps={[
-                // RoundDetailForm,
-                // ApplicationEligibilityForm,
+                RoundDetailForm,
+                ApplicationEligibilityForm,
                 // @ts-expect-error Needs refactoring/typing as a whole
                 RoundApplicationForm,
               ]}

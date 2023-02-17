@@ -336,24 +336,24 @@ export function RoundApplicationForm(props: {
   );
 
   const singleQuestion = (field: QuestionOption, key: number) => (
-    <div key={key}>
+    <div key={key} data-testid="application-question">
       <div className="flex flex-row my-4 items-center">
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5" type={field.type} size={12}/>
+              <InputIcon className="mr-1 mb-0.5" type={field.type} size={12} />
             </span>
             <span className="first-letter:capitalize">
               {typeToText(field.type)}
             </span>
           </div>
           {field.title}
-          {field.options && field.options?.length > 0 && 
-          field.options.map((option, index) => (
-            <div key={index} className="ml-1 border-l border-gray-200">
-              <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{option}</span>
-            </div>
-          ))
+          {field.options && field.options?.length > 0 &&
+            field.options.map((option, index) => (
+              <div key={index} className="ml-1 border-l border-gray-200">
+                <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{option}</span>
+              </div>
+            ))
           }
         </div>
         <div className="basis-1/3 flex justify-end items-center">
@@ -384,7 +384,11 @@ export function RoundApplicationForm(props: {
             </div>
           </div>
           <div className="w-5 text-red-600">
-            {key >= 0 && <XIcon className="cursor-pointer" onClick={() => removeQuestion(key)} />}
+            {key >= 0 &&
+              <div data-testid="remove-question" onClick={() => removeQuestion(key)} >
+                <XIcon className="cursor-pointer" />
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -399,7 +403,7 @@ export function RoundApplicationForm(props: {
     ));
 
     return (
-      <div data-testid="application-question">
+      <div>
         {/* todo: update the element to reflect tests */}
         {[lockedQuestion, ...f]}
         <Button
@@ -515,7 +519,7 @@ const ProjectSocials = ({
       <div className="text-sm basis-4/5">Project Twitter</div>
       <div className="basis-1/5 flex justify-end">
         <BaseSwitch
-          testid="twitter-required"
+          testid="test-switch-id"
           activeLabel="*Required"
           inactiveLabel="*Optional"
           value={requirements.twitter.required}
@@ -536,7 +540,7 @@ const ProjectSocials = ({
         </div>
         <div className="basis-1/5 flex justify-end">
           <BaseSwitch
-            testid="twitter-verification"
+            testid="test-switch-id"
             activeLabel="*Required"
             inactiveLabel="*Optional"
             value={requirements.twitter.verification}
@@ -555,7 +559,7 @@ const ProjectSocials = ({
       <div className="text-sm basis-4/5">Project Github</div>
       <div className="basis-1/5 flex justify-end">
         <BaseSwitch
-          testid="github-required"
+          testid="test-switch-id"
           activeLabel="*Required"
           inactiveLabel="*Optional"
           value={requirements.github.required}
@@ -576,7 +580,7 @@ const ProjectSocials = ({
         </div>
         <div className="basis-1/5 flex justify-end">
           <BaseSwitch
-            testid="github-verification"
+            testid="test-switch-id"
             activeLabel="*Required"
             inactiveLabel="*Optional"
             value={requirements.github.verification}

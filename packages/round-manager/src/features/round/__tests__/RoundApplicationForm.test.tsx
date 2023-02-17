@@ -5,9 +5,11 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor
+  waitFor,
+  within
 } from "@testing-library/react";
 import { randomInt } from "crypto";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import {
   CreateRoundContext,
@@ -337,36 +339,36 @@ describe("Application Form Builder", () => {
     it("when in edit mode, saves input as question when save is clicked on that question and reverts to default ui", async () => {
       const questionIndex = randomInt(0, initialQuestions.length);
       // todo: make this a question and not just a title
-      // const newTitle = faker.lorem.sentence();
+      const newTitle = faker.lorem.sentence();
 
-      // renderWithContext(
-      //   <RoundApplicationForm
-      //     initialData={{
-      //       program: {
-      //         operatorWallets: [],
-      //         metadata: randomMetadata,
-      //       },
-      //     }}
-      //     stepper={FormStepper}
-      //   />
-      // );
-      // // edit question and save
-      // const editIcons = screen.getAllByTestId("edit-question");
-      // fireEvent.click(editIcons[questionIndex]);
-      // const questionTitleInput = await screen.findByTestId(
-      //   "question-title-input"
-      // );
-      // fireEvent.input(questionTitleInput, {
-      //   target: { value: newTitle },
-      // });
-      // const saveIcon = screen.getByTestId("save-question");
-      // fireEvent.click(saveIcon);
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+      // edit question and save
+      const editIcons = screen.getAllByTestId("edit-question");
+      fireEvent.click(editIcons[questionIndex]);
+      const questionTitleInput = await screen.findByTestId(
+        "question-title-input"
+      );
+      fireEvent.input(questionTitleInput, {
+        target: { value: newTitle },
+      });
+      const save = screen.getByTestId("save-question");
+      fireEvent.click(save);
 
-      // expect(await screen.findByText(newTitle)).toBeInTheDocument();
-      // expect(
-      //   screen.queryByTestId("question-title-input")
-      // ).not.toBeInTheDocument();
-      // expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
+      expect(await screen.findByText(newTitle)).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("question-title-input")
+      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("save-title")).not.toBeInTheDocument();
     });
   });
 
@@ -386,451 +388,490 @@ describe("Application Form Builder", () => {
         />
       );
 
-      // expect(screen.getAllByTestId("encrypted-toggle")).toHaveLength(
-      //   editableQuestions.length
-      // );
+      expect(screen.getAllByText("Not Encrypted")).toHaveLength(
+        editableQuestions.length
+      );
     });
 
-    it("toggles each encryption option when clicked", () => {
-      // const isInitiallyEncrypted = initialQuestions.map((q) => q.encrypted);
-      // const encryptionTrueClass = "bg-black";
-      // const encryptionFalseClass = "bg-white";
+    it("toggles each encryption option when clicked", async () => {
+      const isInitiallyEncrypted = initialQuestions.map((q) => q.encrypted);
+      const encryptionTrueClass = "bg-black";
+      const encryptionFalseClass = "bg-white";
 
-      // renderWithContext(
-      //   <RoundApplicationForm
-      //     initialData={{
-      //       program: {
-      //         operatorWallets: [],
-      //         metadata: randomMetadata,
-      //       },
-      //     }}
-      //     stepper={FormStepper}
-      //   />
-      // );
-      // const encryptionToggles = screen.getAllByTestId("encrypted-toggle");
-      // encryptionToggles.forEach((toggle) => {
-      //   fireEvent.click(toggle);
-      // });
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-      // const encryptionToggleLabels = screen.getAllByTestId(
-      //   "encrypted-toggle-label"
-      // );
-      // encryptionToggles.forEach((toggle, index) => {
-      //   if (isInitiallyEncrypted[index]) {
-      //     expect(toggle.childNodes[0]).toHaveClass(encryptionFalseClass);
-      //     expect(toggle).not.toBeChecked();
-      //     expect(encryptionToggleLabels[index]).toHaveTextContent(
-      //       "Unencrypted"
-      //     );
-      //   } else {
-      //     expect(toggle.childNodes[0]).toHaveClass(encryptionTrueClass);
-      //     expect(toggle).toBeChecked();
-      //     expect(encryptionToggleLabels[index]).toHaveTextContent("Encrypted");
-      //   }
-    });
-  });
-});
+      for (let i = 0; i < initialQuestions.length; i++) {
+        const editIcons = screen.getAllByTestId("edit-question");
+        fireEvent.click(editIcons[i]);
+        const encryptionToggles = screen.getAllByTestId("encrypted-toggle");
+        encryptionToggles.forEach(async (toggle) => {
+          fireEvent.click(toggle);
+        });
+        const save = screen.getByTestId("save-question");
+        fireEvent.click(save);
+      }
 
-describe("Required toggle", () => {
-  it("displays toggle for required option for each editable question", () => {
-    // const editableQuestions = initialQuestions;
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+      const encryptionToggleLabels = screen.getAllByText(
+        "Encrypted"
+      );
 
-    // expect(screen.getAllByTestId("required-toggle")).toHaveLength(
-    //   editableQuestions.length
-    // );
-  });
-
-  it("toggle each required option when clicked", () => {
-    // const isInitiallyRequired = initialQuestions.map((q) => q.required);
-    // const requiredTrueClass = "bg-violet-400";
-    // const requiredFalseClass = "bg-white";
-
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
-
-    // const requiredToggles = screen.getAllByTestId("required-toggle");
-    // requiredToggles.forEach((toggle) => {
-    //   fireEvent.click(toggle);
-    // });
-
-    // const requiredToggleLabels = screen.getAllByTestId(
-    //   "required-toggle-label"
-    // );
-    // requiredToggles.forEach((toggle, index) => {
-    //   if (isInitiallyRequired[index]) {
-    //     expect(toggle.childNodes[0]).toHaveClass(requiredFalseClass);
-    //     expect(toggle).not.toBeChecked();
-    //     expect(requiredToggleLabels[index]).toHaveTextContent("Optional");
-    //   } else {
-    //     expect(toggle.childNodes[0]).toHaveClass(requiredTrueClass);
-    //     expect(toggle).toBeChecked();
-    //     expect(requiredToggleLabels[index]).toHaveTextContent(/Required/i);
-    //   }
-    // });
-  });
-});
-
-describe("Remove question", () => {
-  it("displays remove icon for each editable question", () => {
-    // const editableQuestions = initialQuestions;
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
-
-    // expect(screen.getAllByTestId("remove-question")).toHaveLength(
-    //   editableQuestions.length
-    // );
-  });
-
-  it("removes question when remove icon is clicked", () => {
-    // const editableQuestions = initialQuestions;
-
-    // const indexToBeRemoved = randomInt(0, 3);
-
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
-
-    // const removeIcons = screen.getAllByTestId("remove-question");
-    // fireEvent.click(removeIcons[indexToBeRemoved]);
-
-    // expect(screen.getAllByTestId("remove-question")).toHaveLength(
-    //   editableQuestions.length - 1
-    // );
-
-    // expect(
-    //   screen.queryByText(editableQuestions[indexToBeRemoved].title)
-    // ).not.toBeInTheDocument();
-  });
-});
-
-describe("Add question", () => {
-  it("displays add a question on RoundApplicationForm", () => {
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
-
-    // expect(
-    //   screen.getByRole("button", {
-    //     name: /Add a Question/i,
-    //   })
-    // ).toBeInTheDocument();
-  });
-
-  it("adds a new question on clicking add a new question button", async () => {
-    // const editableQuestions = initialQuestions;
-
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       program: {
-    //         operatorWallets: [],
-    //         metadata: randomMetadata,
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
-
-    // expect(screen.getAllByTestId("application-question")).toHaveLength(
-    //   editableQuestions.length
-    // );
-
-    // const addAQuestion = screen.getByRole("button", {
-    //   name: /Add a Question/i,
-    // });
-    // fireEvent.click(addAQuestion);
-
-    // expect(screen.getAllByTestId("application-question")).toHaveLength(
-    //   editableQuestions.length + 1
-    // );
-    // });
-  });
-});
-
-describe("Project Socials", () => {
-  beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () => ({
-          chainId: 0,
-        }),
-      },
-      signer: {
-        getChainId: () => 0,
-      },
-      address: "0x0",
+      expect(encryptionToggleLabels.length).toBe(initialQuestions.length);
     });
   });
 
-  it("displays the Project Socials", () => {
-    // renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+  describe("Required toggle", () => {
+    it("displays *Required for required option for each editable question", () => {
+      const editableQuestions = initialQuestions;
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // expect(screen.getByText("Project Twitter")).toBeInTheDocument();
-    // expect(screen.getByText("Project Github")).toBeInTheDocument();
+      // +4: it also shows *Required for Project Name, Project Website, Project Description and Wallet address
+      expect(screen.getAllByText("*Required")).toHaveLength(
+        editableQuestions.length + 4
+      );
+    });
+
+    it("toggle each required option when clicked", () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      // Before:
+      // 1. Project Name Required
+      // 2. Project Website Required
+      // 3. Project Description Required
+      // 4. Wallet address Required
+      // Socials:
+      // 5. Twitter Optional
+      // 6. Github Optional
+      // Editable:
+      // 7. Email Required
+      // 8. Funding Source Required
+      // 9. Team Size Required
+      for (let i = 0; i < initialQuestions.length; i++) {
+        const editIcons = screen.getAllByTestId("edit-question");
+        fireEvent.click(editIcons[i]);
+        const requiredToggles = screen.getAllByTestId("required-toggle");
+        requiredToggles.forEach(async (toggle) => {
+          fireEvent.click(toggle);
+        });
+        const save = screen.getByTestId("save-question");
+        fireEvent.click(save);
+      }
+
+      // After:
+      // 1. Project Name Required
+      // 2. Project Website Required
+      // 3. Project Description Required
+      // 4. Wallet address Required
+      // Socials:
+      // 5. Twitter Required
+      // 6. Github Required
+      // Editable:
+      // 7. Email Optional
+      // 8. Funding Source Optional
+      // 9. Team Size Optional
+
+      const requiredToggleLabels = screen.getAllByText(
+        "*Required"
+      );
+
+      expect(requiredToggleLabels.length).toBe(5);
+    });
   });
 
-  it("render the switches initial correct", () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+  describe("Remove question", () => {
+    it("displays remove icon for each editable question", () => {
+      const editableQuestions = initialQuestions;
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // const switches = getAllByTestId("test-switch-id");
+      expect(screen.getAllByTestId("remove-question")).toHaveLength(
+        editableQuestions.length
+      );
+    });
 
-    // expect(switches.length).toBe(2);
-    // // twitterVerification and githubVerification are not rendered at this point
-    // expect(switches[0]).not.toBeChecked(); // twitter
-    // expect(switches[1]).not.toBeChecked(); // github
+    it("removes question when remove icon is clicked", () => {
+      const editableQuestions = initialQuestions;
+
+      const indexToBeRemoved = randomInt(0, 3);
+
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      const removeIcons = screen.getAllByTestId("remove-question");
+      fireEvent.click(removeIcons[indexToBeRemoved]);
+
+      expect(screen.getAllByTestId("remove-question")).toHaveLength(
+        editableQuestions.length - 1
+      );
+
+      expect(
+        screen.queryByText(editableQuestions[indexToBeRemoved].title)
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it("should render twitterVerification when twitter is required", async () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+  describe("Add question", () => {
+    it("displays add a question on RoundApplicationForm", () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // const switches = getAllByTestId("test-switch-id");
+      expect(
+        screen.getByRole("button", {
+          name: /Add question/i,
+        })
+      ).toBeInTheDocument();
+    });
 
-    // await act(async () => {
-    //   fireEvent.click(switches[0]); // twitter required: true
-    // });
+    it("adds a new question on clicking add a new question button", async () => {
+      const editableQuestions = initialQuestions;
+      const newTitle = "New Question";
 
-    // const updatedSwitches = getAllByTestId("test-switch-id");
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            program: {
+              operatorWallets: [],
+              metadata: randomMetadata,
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // expect(updatedSwitches.length).toBe(3);
-    // expect(updatedSwitches[0]).toBeChecked(); // twitter
-    // expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
-    // expect(updatedSwitches[2]).not.toBeChecked(); // github
+      // +1: Wallet Address
+      expect(screen.getAllByTestId("application-question")).toHaveLength(
+        editableQuestions.length + 1
+      );
+
+      const addAQuestion = screen.getByRole("button", {
+        name: /Add question/i,
+      });
+      fireEvent.click(addAQuestion);
+
+      let selectList = screen.getByTestId('select-question');
+      const selectButton = within(selectList).getByRole('button');
+
+      const selectOptions = within(selectList).getAllByText('Select a type')
+      fireEvent.click(selectButton);
+
+      selectList = screen.getByTestId('select-question');
+
+      const selectType = within(selectList).getAllByText('Paragraph')
+      fireEvent.click(selectType[0]);
+
+      const inputField = screen.getByTestId('question-title-input');
+      fireEvent.change(inputField, { target: { value: newTitle } });
+
+      const save = screen.getByTestId("save-question");
+      fireEvent.click(save);
+
+      expect(screen.getAllByText(newTitle)).toHaveLength(1);
+    });
   });
 
-  it("should render githubVerification when github is required", async () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+  describe("Project Socials", () => {
+    beforeEach(() => {
+      (useWallet as jest.Mock).mockReturnValue({
+        chain: { name: "my blockchain" },
+        provider: {
+          getNetwork: () => ({
+            chainId: 0,
+          }),
+        },
+        signer: {
+          getChainId: () => 0,
+        },
+        address: "0x0",
+      });
+    });
 
-    // const switches = getAllByTestId("test-switch-id");
-    // expect(switches.length).toBe(2);
+    it("displays the Project Socials", () => {
+      renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // await act(async () => {
-    //   fireEvent.click(switches[1]); // github required: true
-    // });
+      expect(screen.getByText("Project Twitter")).toBeInTheDocument();
+      expect(screen.getByText("Project Github")).toBeInTheDocument();
+    });
 
-    // const updatedSwitches = getAllByTestId("test-switch-id");
+    it("render the requirement initial correct", () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // expect(updatedSwitches.length).toBe(3);
-    // expect(updatedSwitches[0]).not.toBeChecked(); // twitter
-    // expect(updatedSwitches[1]).toBeChecked(); // github
-    // expect(updatedSwitches[2]).not.toBeChecked(); // github verification
-  });
+      // 1. Project Name Required
+      // 2. Project Website Required
+      // 3. Project Description Required
+      // 4. Wallet address Required
+      // Socials:
+      // 5. Twitter Optional <---
+      // 6. Github Optional  <---
+      // Editable:
+      // 7. Email Required
+      // 8. Funding Source Required
+      // 9. Team Size Required
 
-  it("should render twitterVerification and githubVerification when twitter and github are required", async () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+      expect(screen.getAllByText("Optional")).toHaveLength(2);
+    });
 
-    // const switches = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(switches[0]); // twitter required: true
-    // });
+    it("should render twitterVerification when twitter is required", async () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // const updatedSwitches0 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches0[2]); // github required: true
-    // });
+      const switches = getAllByTestId("test-switch-id");
 
-    // const updatedSwitches = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(switches[0]); // twitter required: true
+      });
 
-    // expect(updatedSwitches.length).toBe(4);
-    // expect(updatedSwitches[0]).toBeChecked(); // twitter
-    // expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
-    // expect(updatedSwitches[2]).toBeChecked(); // github
-    // expect(updatedSwitches[3]).not.toBeChecked(); // github verification
-  });
+      const updatedSwitches = getAllByTestId("test-switch-id");
 
-  it("should toggle all switches on", async () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+      expect(updatedSwitches.length).toBe(3);
+      expect(updatedSwitches[0]).toBeChecked(); // twitter
+      expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
+      expect(updatedSwitches[2]).not.toBeChecked(); // github
+    });
 
-    // const switches = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(switches[0]); // twitter required: true
-    // });
+    it("should render githubVerification when github is required", async () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // const updatedSwitches0 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches0[2]); // github required: true
-    // });
+      const switches = getAllByTestId("test-switch-id");
+      expect(switches.length).toBe(2);
 
-    // const updatedSwitches1 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
-    // });
+      await act(async () => {
+        fireEvent.click(switches[1]); // github required: true
+      });
 
-    // const updatedSwitches2 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches2[3]); // github verification required: true
-    // });
+      const updatedSwitches = getAllByTestId("test-switch-id");
 
-    // const updatedSwitches = getAllByTestId("test-switch-id");
+      expect(updatedSwitches.length).toBe(3);
+      expect(updatedSwitches[0]).not.toBeChecked(); // twitter
+      expect(updatedSwitches[1]).toBeChecked(); // github
+      expect(updatedSwitches[2]).not.toBeChecked(); // github verification
+    });
 
-    // expect(updatedSwitches.length).toBe(4);
-    // expect(updatedSwitches[0]).toBeChecked(); // twitter
-    // expect(updatedSwitches[1]).toBeChecked(); // twitter verification
-    // expect(updatedSwitches[2]).toBeChecked(); // github
-    // expect(updatedSwitches[3]).toBeChecked(); // github verification
-  });
+    it("should render twitterVerification and githubVerification when twitter and github are required", async () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-  it("should toggle all switches off", async () => {
-    // const { getAllByTestId } = renderWithContext(
-    //   <RoundApplicationForm
-    //     initialData={{
-    //       // @ts-expect-error Test file
-    //       program: {
-    //         operatorWallets: [],
-    //       },
-    //     }}
-    //     stepper={FormStepper}
-    //   />
-    // );
+      const switches = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(switches[0]); // twitter required: true
+      });
 
-    // const switches = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(switches[0]); // twitter required: true
-    // });
+      const updatedSwitches0 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches0[2]); // github required: true
+      });
 
-    // const updatedSwitches0 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches0[2]); // github required: true
-    // });
+      const updatedSwitches = getAllByTestId("test-switch-id");
 
-    // const updatedSwitches1 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
-    // });
+      expect(updatedSwitches.length).toBe(4);
+      expect(updatedSwitches[0]).toBeChecked(); // twitter
+      expect(updatedSwitches[1]).not.toBeChecked(); // twitter verification
+      expect(updatedSwitches[2]).toBeChecked(); // github
+      expect(updatedSwitches[3]).not.toBeChecked(); // github verification
+    });
 
-    // const updatedSwitches2 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches2[3]); // github verification required: true
-    // });
+    it("should toggle all switches on", async () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
 
-    // const updatedSwitches = getAllByTestId("test-switch-id");
+      const switches = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(switches[0]); // twitter required: true
+      });
 
-    // expect(updatedSwitches.length).toBe(4);
-    // expect(updatedSwitches[0]).toBeChecked(); // twitter
-    // expect(updatedSwitches[1]).toBeChecked(); // twitter verification
-    // expect(updatedSwitches[2]).toBeChecked(); // github
-    // expect(updatedSwitches[3]).toBeChecked(); // github verification
+      const updatedSwitches0 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches0[2]); // github required: true
+      });
 
-    // const updatedSwitches3 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches3[0]); // twitter required: false
-    // });
+      const updatedSwitches1 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
+      });
 
-    // const updatedSwitches4 = getAllByTestId("test-switch-id");
-    // await act(async () => {
-    //   fireEvent.click(updatedSwitches4[1]); // github required: false
-    // });
+      const updatedSwitches2 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches2[3]); // github verification required: true
+      });
 
-    // const updatedSwitches5 = getAllByTestId("test-switch-id");
+      const updatedSwitches = getAllByTestId("test-switch-id");
 
-    // expect(updatedSwitches5.length).toBe(2);
-    // expect(updatedSwitches5[0]).not.toBeChecked(); // twitter
-    // expect(updatedSwitches5[1]).not.toBeChecked(); // github
+      expect(updatedSwitches.length).toBe(4);
+      expect(updatedSwitches[0]).toBeChecked(); // twitter
+      expect(updatedSwitches[1]).toBeChecked(); // twitter verification
+      expect(updatedSwitches[2]).toBeChecked(); // github
+      expect(updatedSwitches[3]).toBeChecked(); // github verification
+    });
+
+    it("should toggle all switches off", async () => {
+      const { getAllByTestId } = renderWithContext(
+        <RoundApplicationForm
+          initialData={{
+            // @ts-expect-error Test file
+            program: {
+              operatorWallets: [],
+            },
+          }}
+          stepper={FormStepper}
+        />
+      );
+
+      const switches = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(switches[0]); // twitter required: true
+      });
+
+      const updatedSwitches0 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches0[2]); // github required: true
+      });
+
+      const updatedSwitches1 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches1[1]); // twitter verification required: true
+      });
+
+      const updatedSwitches2 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches2[3]); // github verification required: true
+      });
+
+      const updatedSwitches = getAllByTestId("test-switch-id");
+
+      expect(updatedSwitches.length).toBe(4);
+      expect(updatedSwitches[0]).toBeChecked(); // twitter
+      expect(updatedSwitches[1]).toBeChecked(); // twitter verification
+      expect(updatedSwitches[2]).toBeChecked(); // github
+      expect(updatedSwitches[3]).toBeChecked(); // github verification
+
+      const updatedSwitches3 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches3[0]); // twitter required: false
+      });
+
+      const updatedSwitches4 = getAllByTestId("test-switch-id");
+      await act(async () => {
+        fireEvent.click(updatedSwitches4[1]); // github required: false
+      });
+
+      const updatedSwitches5 = getAllByTestId("test-switch-id");
+
+      expect(updatedSwitches5.length).toBe(2);
+      expect(updatedSwitches5[0]).not.toBeChecked(); // twitter
+      expect(updatedSwitches5[1]).not.toBeChecked(); // github
+    });
   });
 });
 
