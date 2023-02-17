@@ -63,17 +63,20 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       {
         activeLabel: "*Required",
         inactiveLabel: "Optional",
-        value: "required"
+        value: "required",
+        testid: "required-toggle",
       },
       {
         activeLabel: "Encrypted",
         inactiveLabel: "Not Encrypted",
-        value: "encrypted"
+        value: "encrypted",
+        testid: "encrypted-toggle",
       },
       {
         activeLabel: "Shown in Explorer",
         inactiveLabel: "Hidden from Explorer",
-        value: "hidden"
+        value: "hidden",
+        testid: "hidden-toggle",
       }
     ]
 
@@ -81,6 +84,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       <div className="flex flex-row justify-between mt-6 w-[80%]">
         {switches.map(s => (
           <BaseSwitch
+            testid={s.testid}
             key={s.value}
             activeLabel={s.activeLabel}
             inactiveLabel={s.inactiveLabel}
@@ -360,6 +364,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               </button>
               <button
                 role="save"
+                data-testid="save-question"
                 className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
                 onClick={() => {
                   checkForOptions();

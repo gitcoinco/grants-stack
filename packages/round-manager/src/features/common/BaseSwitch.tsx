@@ -10,11 +10,12 @@ function classNames(...classes: string[]) {
  * @param {string} inactiveLabel - Label to show when switch is inactive
  * @param {boolean} value - Value of the switch
  * @param {function} handler - Handler function to be called when switch is toggled
+ * @param {string} testid - Test id for the switch
  * @returns {JSX.Element} - Switch component
  * @example
  * <BaseSwitch activeLabel="Active" inactiveLabel="Inactive" value={true} handler={(bool) => {console.log(bool);}} />
  */
-const BaseSwitch = ({ activeLabel, inactiveLabel, value, handler }: { activeLabel: string, inactiveLabel: string, value: boolean, handler: (a: boolean) => void }) => (
+const BaseSwitch = ({ activeLabel, inactiveLabel, value, handler, testid }: { activeLabel: string, inactiveLabel: string, value: boolean, handler: (a: boolean) => void, testid: string }) => (
   <Switch.Group
     as="div"
     className={classNames("flex items-center justify-end")}
@@ -35,7 +36,7 @@ const BaseSwitch = ({ activeLabel, inactiveLabel, value, handler }: { activeLabe
       </Switch.Label>
     </span>
     <Switch
-      data-testid={"test-switch-id"}
+      data-testid={testid}
       className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
       onChange={handler}
       value={value.toString()}

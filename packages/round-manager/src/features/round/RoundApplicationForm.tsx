@@ -28,14 +28,14 @@ import {
 } from "../api/types";
 import { generateApplicationSchema } from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
+import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import InfoModal from "../common/InfoModal";
-import ProgressModal from "../common/ProgressModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
-import BaseSwitch from "../common/BaseSwitch";
+import ProgressModal from "../common/ProgressModal";
 
 const payoutQuestion: QuestionOption = {
   title: "Payout Wallet Address",
@@ -344,7 +344,7 @@ export function RoundApplicationForm(props: {
               <InputIcon className="mr-1 mb-0.5" type={field.type} size={12}/>
             </span>
             <span className="first-letter:capitalize">
-              {field.type.replace("-", " ")}
+              {field.type?.replace("-", " ")}
             </span>
           </div>
           {field.title}
@@ -372,6 +372,7 @@ export function RoundApplicationForm(props: {
             <div className="w-5">
               {key >= 0 &&
                 <PencilIcon
+                  data-testid="edit-question"
                   className="cursor-pointer"
                   onClick={() => {
                     setToEdit({
@@ -514,6 +515,7 @@ const ProjectSocials = ({
       <div className="text-sm basis-4/5">Project Twitter</div>
       <div className="basis-1/5 flex justify-end">
         <BaseSwitch
+          testid="twitter-required"
           activeLabel="*Required"
           inactiveLabel="*Optional"
           value={requirements.twitter.required}
@@ -534,6 +536,7 @@ const ProjectSocials = ({
         </div>
         <div className="basis-1/5 flex justify-end">
           <BaseSwitch
+            testid="twitter-verification"
             activeLabel="*Required"
             inactiveLabel="*Optional"
             value={requirements.twitter.verification}
@@ -552,6 +555,7 @@ const ProjectSocials = ({
       <div className="text-sm basis-4/5">Project Github</div>
       <div className="basis-1/5 flex justify-end">
         <BaseSwitch
+          testid="github-required"
           activeLabel="*Required"
           inactiveLabel="*Optional"
           value={requirements.github.required}
@@ -572,6 +576,7 @@ const ProjectSocials = ({
         </div>
         <div className="basis-1/5 flex justify-end">
           <BaseSwitch
+            testid="github-verification"
             activeLabel="*Required"
             inactiveLabel="*Optional"
             value={requirements.github.verification}
