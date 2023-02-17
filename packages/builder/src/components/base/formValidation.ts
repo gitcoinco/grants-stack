@@ -83,9 +83,6 @@ export async function validateApplication(
     };
   }, {});
 
-  // todo: fix this
-  // const validateEmail = await object(schema).validateAt("", formInputs);
-
   const validatedInputs = await object(schema).validate(answers, {
     abortEarly: false,
   });

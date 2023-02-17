@@ -368,7 +368,7 @@ export default function Form({
             case "recipient":
               /* Radio for safe or multi-sig */
               return (
-                <Fragment key="recipient">
+                <Fragment key={input.id}>
                   {!readOnly && (
                     <div className="relative mt-2" data-testid="wallet-type">
                       <Stack>
@@ -552,7 +552,7 @@ export default function Form({
                     options={input.options.map((o) => ({ id: o, title: o }))}
                     disabled={preview}
                     changeHandler={handleInput}
-                    required
+                    required={input.required}
                     feedback={
                       feedback.find((fb) => fb.title === `${input.id}`) ?? {
                         type: "none",

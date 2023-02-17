@@ -384,7 +384,7 @@ export function Select({
         value={value}
         defaultValue={defaultValue}
       >
-        {!defaultValue && <option disabled>Choose a value</option>}
+        {!defaultValue && <option hidden>Choose a value</option>}
         {options.map((option) => (
           <option key={`key-${option.id}`} value={option.id}>
             {option.title}
