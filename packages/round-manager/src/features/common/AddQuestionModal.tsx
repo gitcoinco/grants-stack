@@ -233,7 +233,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           <div className="relative mt-1">
             <Listbox.Button className="border rounded-md border-gray-100 p-1 flex relative items-center justify-center">
               <div className="flex items-center justify-center">
-                <InputIcon type={selectedQuestion} color="#0E0333" />
+                <InputIcon type={selectedQuestion} />
                 <span className="mx-1 text-[16px] text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>
                 <ChevronDownIcon className="text-grey-400 h-5 w-5 ml-8" aria-hidden="true" />
               </div>
@@ -249,15 +249,15 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                   <Listbox.Option
                     key={index}
                     value={q}
-                    className="flex py-2 cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full"
+                    className="flex py-2 cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"
                   >
                     {({ active }) => (
                       <span
                         className={`flex w-full ${active ? 'bg-violet-400 py-2 text-white' : 'bg-white text-black'
                           }`}
                       >
-                        <span className="mt-0.5 flex items-center text-grey-500 focus:text-violet-400">
-                          <InputIcon className="focus:text-white mr-3 ml-[20px]" type={q} />
+                        <span className="mt-0.5 flex items-center">
+                          <InputIcon className="mr-3 ml-[20px]" type={q} />
                         </span>
                         <span className="flex text-md w-full mt-0.5 ">{typeToText(q)}</span>
                       </span>
