@@ -341,7 +341,7 @@ export function RoundApplicationForm(props: {
         <div className="text-sm basis-2/3">
           <div className="flex flex-row text-xs text-grey-400 items-center">
             <span>
-              <InputIcon className="mr-1 mb-0.5" type={field.type} size={12} />
+              <InputIcon className="mr-1 mb-0.5" type={field.type} size={14} />
             </span>
             <span className="first-letter:capitalize">
               {typeToText(field.type)}

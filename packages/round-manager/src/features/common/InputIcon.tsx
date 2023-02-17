@@ -1,6 +1,6 @@
 import { InputType } from "../api/types";
-import { MdOutlineShortText, MdCheckBox, MdArrowDropDownCircle, MdRadioButtonChecked, MdAccountBalanceWallet, MdNotes } from "react-icons/md";
-import { AiOutlineMail } from "react-icons/ai";
+import { MdOutlineShortText, MdCheckBox, MdArrowDropDownCircle, MdRadioButtonChecked, MdNotes } from "react-icons/md";
+import { AiOutlineMail, AiOutlineWallet } from "react-icons/ai";
 import { ReactNode } from "react";
 
 type InputIconProps = {
@@ -20,7 +20,7 @@ export const InputIcon = ({ type, className, size }: InputIconProps) => {
   }
   const icons: IconsType = {
     "email": <AiOutlineMail style={style} />,
-    "address": <MdAccountBalanceWallet style={style} />,
+    "address": <AiOutlineWallet style={style} />,
     "short-answer": <MdOutlineShortText style={style} />,
     "paragraph": <MdNotes style={style} />,
     "multiple-choice": <MdRadioButtonChecked style={style} />,
