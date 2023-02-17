@@ -425,6 +425,7 @@ export default function Form({
                   />
                 </Fragment>
               );
+            case "short-text":
             case "text":
               return (
                 <TextInput
