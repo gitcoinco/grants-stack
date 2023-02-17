@@ -93,22 +93,6 @@ function distribute(MerklePayoutStrategyImplementation.Distribution distribution
 |---|---|---|
 | distribution | MerklePayoutStrategyImplementation.Distribution | undefined |
 
-### distribute_encode
-
-```solidity
-function distribute_encode(bytes _distribution) external nonpayable
-```
-
-Util function to distribute funds to recipient
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _distribution | bytes | undefined |
-
 ### distributionMetaPtr
 
 ```solidity
@@ -204,6 +188,22 @@ merkle root generated from distribution
 | Name | Type | Description |
 |---|---|---|
 | _0 | bytes32 | undefined |
+
+### payout
+
+```solidity
+function payout(MerklePayoutStrategyImplementation.Distribution[] _distributions) external payable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _distributions | MerklePayoutStrategyImplementation.Distribution[] | undefined |
 
 ### payout
 

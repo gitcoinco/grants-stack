@@ -107,27 +107,38 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
         emit BatchPayoutSuccessful(msg.sender);
     }
 
+    /**
+     * @notice MerklePayoutStrategy implementation of payout
+   * Can be invoked only by round operator and isReadyForPayout is true
+   *
+   * @param _distributions encoded distributions
+   */
+    function payout(Distribution[] calldata _distributions) external virtual payable isRoundOperator {
+
+        require(isReadyForPayout == true, "Payout: Not ready for payout");
+
+        for (uint256 i = 0; i < _distributions.length; ++i) {
+            distribute(_distributions[i]);
+        }
+
+        emit BatchPayoutSuccessful(msg.sender);
+    }
+
     /// @notice Util function to distribute funds to recipient
     /// @param _distribution encoded distribution
     function _distribute(bytes calldata _distribution) public {
-        console.log("begin distribution");
-
         Distribution memory distribution = abi.decode(_distribution, (Distribution));
-        console.log("parsed distribution");
 
         uint256 _index = distribution.index;
         address _grantee = distribution._grantee;
         uint256 _amount = distribution.amount;
         bytes32[] memory _merkleProof = distribution.merkleProof;
-        console.log("index: ", _index);
-        console.log("grantee: ", _grantee);
-
 
         require(!hasBeenDistributed(_index), "funds already distributed");
 
         /* We need double hashing to prevent second preimage attacks */
         bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount))));
-        console.logBytes32(node);
+
         require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof.");
 
         _setDistributed(_index);
@@ -140,53 +151,16 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     /// @notice Util function to distribute funds to recipient
     /// @param distribution encoded distribution
     function distribute(Distribution calldata distribution) public {
-        console.log("begin distribution");
-
-        //        Distribution memory distribution = abi.decode(_distribution, (Distribution));
-        console.log("parsed distribution");
-
         uint256 _index = distribution.index;
         address _grantee = distribution._grantee;
         uint256 _amount = distribution.amount;
         bytes32[] memory _merkleProof = distribution.merkleProof;
-        console.log("index: ", _index);
-        console.log("grantee: ", _grantee);
-
 
         require(!hasBeenDistributed(_index), "funds already distributed");
 
         /* We need double hashing to prevent second preimage attacks */
         bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount))));
-        console.logBytes32(node);
-        require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof.");
 
-        _setDistributed(_index);
-
-        _transferAmount(payable(_grantee), _amount);
-
-        emit FundsDistributed(msg.sender, _grantee, tokenAddress, _amount);
-    }
-
-    /// @notice Util function to distribute funds to recipient
-    function distribute_encode(bytes calldata _distribution) public {
-        console.log("begin distribution");
-
-        Distribution memory distribution = abi.decode(_distribution, (Distribution));
-        console.log("parsed distribution");
-
-        uint256 _index = distribution.index;
-        address _grantee = distribution._grantee;
-        uint256 _amount = distribution.amount;
-        bytes32[] memory _merkleProof = distribution.merkleProof;
-        console.log("index: ", _index);
-        console.log("grantee: ", _grantee);
-
-
-        require(!hasBeenDistributed(_index), "funds already distributed");
-
-        /* We need double hashing to prevent second preimage attacks */
-        bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount))));
-        console.logBytes32(node);
         require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof.");
 
         _setDistributed(_index);
