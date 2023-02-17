@@ -40,7 +40,7 @@ export const parseRoundApplicationMetadata = (
         title: q.question,
         required: q.required,
         encrypted: q.encrypted,
-        hidden: true,
+        hidden: false,
       })
     );
 
@@ -69,7 +69,7 @@ export const parseRoundApplicationMetadata = (
       options: q.options || q.choices,
       required: q.required,
       encrypted: q.encrypted,
-      hidden: true,
+      hidden: q.hidden,
     })
   );
 
