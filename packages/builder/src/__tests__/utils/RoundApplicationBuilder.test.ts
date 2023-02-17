@@ -81,7 +81,7 @@ const formInputs = {
   4: "prof",
   5: "size",
   6: "999",
-  recipient: "0x000000000000000000000000000000000000bEAF",
+  7: "0x000000000000000000000000000000000000bEAF",
 };
 
 const project: Project = {
