@@ -417,7 +417,9 @@ export default function Form({
                         (answers.isSafe === "No" && addressType.isContract))
                     }
                     feedback={
-                      feedback.find((fb) => fb.title === "recipient") ?? {
+                      feedback.find(
+                        (fb) => fb.title === input.id.toString()
+                      ) ?? {
                         type: "none",
                         message: "",
                       }
@@ -425,7 +427,7 @@ export default function Form({
                   />
                 </Fragment>
               );
-            case "short-text":
+            case "short-answer":
             case "text":
               return (
                 <TextInput
