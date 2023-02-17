@@ -239,12 +239,12 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border rounded-md border-grey-100 w-[208px] overflow-auto">
+              <Listbox.Options className="border rounded-md border-grey-100 w-[208px] overflow-auto h-23 absolute">
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
                     value={q}
-                    className="flex cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"
+                    className="cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"
                   >
                     {({ active }) => (
                       <span
