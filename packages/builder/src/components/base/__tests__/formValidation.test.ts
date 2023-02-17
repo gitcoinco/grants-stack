@@ -77,6 +77,7 @@ describe("Form Validation", () => {
         encrypted: false,
       },
       {
+        id: 4,
         type: "recipient",
       },
     ];

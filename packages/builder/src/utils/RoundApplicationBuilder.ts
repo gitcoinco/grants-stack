@@ -82,10 +82,12 @@ export default class RoundApplicationBuilder {
       switch (question.type) {
         case "recipient":
           // FIXME: validate recipient here?
-          recipient = String(formInputs.recipient);
+          recipient = String(formInputs[question.id]);
           break;
+
         case "project":
           break;
+
         default:
           // eslint-disable-next-line
           let answer;

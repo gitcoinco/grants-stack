@@ -7,10 +7,12 @@ export interface BaseQuestion {
 }
 
 export type ProjectQuestion = {
+  id: number;
   type: "project";
 };
 
 export type RecipientQuestion = {
+  id: number;
   type: "recipient";
 };
 

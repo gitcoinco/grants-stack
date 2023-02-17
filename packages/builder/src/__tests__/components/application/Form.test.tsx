@@ -39,7 +39,10 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       github: { required: false, verification: false },
       twitter: { required: false, verification: false },
     },
-    questions: [{ type: "project" }, { type: "recipient" }],
+    questions: [
+      { id: 0, type: "project" },
+      { id: 1, type: "recipient" },
+    ],
   },
 };
 
@@ -72,6 +75,7 @@ const round: Round = {
       },
       questions: [
         {
+          id: 0,
           type: "recipient",
         },
       ],

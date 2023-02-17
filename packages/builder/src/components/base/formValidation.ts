@@ -24,69 +24,63 @@ export async function validateApplication(
   answers: RoundApplicationAnswers
 ) {
   const schema = questions.reduce((acc, input) => {
-    if (input.type === "recipient") {
+    let validation;
+
+    if (input.type === "project") {
+      return acc;
+    }
+
+    if (input.type === "email") {
+      validation = string().email(
+        `${input.title} must be a valid email address`
+      );
+
+      if (input.required) {
+        validation = validation.required(`${input.title} is required`);
+      }
+    } else if (input.type === "address") {
+      validation = string().matches(/^0x[a-fA-F0-9]{40}$/g, {
+        excludeEmptyString: true,
+        message: `${input.title} must be a valid Ethereum address`,
+      });
+
+      if (input.required) {
+        validation = validation.required(`${input.title} is required`);
+      }
+    } else if (input.type === "recipient") {
       return {
         ...acc,
         isSafe: string().required(
           "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"
         ),
-        recipient: string()
+        [input.id]: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
             excludeEmptyString: true,
             message: "Payout Wallet Address must be a valid Ethereum address",
           })
           .required("Payout Wallet Address is required"),
       };
-    }
+    } else if (input.type === "checkbox") {
+      validation = array(string());
 
-    if (input.type === "project") {
-      return acc;
-    }
-
-    if (input.id !== undefined) {
-      let validation;
-
-      if (input.type === "email") {
-        validation = string().email(
-          `${input.title} must be a valid email address`
+      if (input.required) {
+        validation = validation.min(
+          1,
+          `You must select at least one value for ${input.title}`
         );
-
-        if (input.required) {
-          validation = validation.required(`${input.title} is required`);
-        }
-      } else if (input.type === "address") {
-        validation = string().matches(/^0x[a-fA-F0-9]{40}$/g, {
-          excludeEmptyString: true,
-          message: `${input.title} must be a valid Ethereum address`,
-        });
-
-        if (input.required) {
-          validation = validation.required(`${input.title} is required`);
-        }
-      } else if (input.type === "checkbox") {
-        validation = array(string());
-
-        if (input.required) {
-          validation = validation.min(
-            1,
-            `You must select at least one value for ${input.title}`
-          );
-        }
-      } else {
-        validation = string();
-
-        if (input.required) {
-          validation = validation.required(`${input.title} is required`);
-        }
       }
+    } else {
+      validation = string();
 
-      return {
-        ...acc,
-        [input.id]: validation,
-      };
+      if (input.required) {
+        validation = validation.required(`${input.title} is required`);
+      }
     }
 
-    return acc;
+    return {
+      ...acc,
+      [input.id]: validation,
+    };
   }, {});
 
   // todo: fix this

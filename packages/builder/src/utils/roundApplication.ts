@@ -59,49 +59,27 @@ export const parseRoundApplicationMetadata = (
     };
   }
 
-  if (object.version === "2.0.0") {
-    metadata.applicationSchema.questions =
-      object.applicationSchema.questions.map(
-        (q: any): RoundApplicationQuestion => ({
-          id: q.id,
-          type: q.question === "Email Address" ? "email" : q.type,
-          title: q.title || q.question,
-          required: q.required,
-          encrypted: q.encrypted,
-          hidden: true,
-        })
-      );
-  }
+  // const [major, minor, patch] = object.version.split(".").map(Number);
+
+  metadata.applicationSchema.questions = object.applicationSchema.questions.map(
+    (q: any): RoundApplicationQuestion => ({
+      id: q.id,
+      type: q.question === "Email Address" ? "email" : q.type,
+      title: q.title || q.question,
+      required: q.required,
+      encrypted: q.encrypted,
+      hidden: true,
+    })
+  );
 
   metadata.applicationSchema.questions = [
-    { type: "project" },
-    { type: "recipient" },
     {
       id: metadata.applicationSchema.questions.length,
-      title: "Choose an option",
-      type: "checkbox",
-      options: ["First option", "Second option"],
-      required: true,
-      hidden: true,
-      encrypted: true,
+      type: "project",
     },
     {
       id: metadata.applicationSchema.questions.length + 1,
-      title: "Choose an option",
-      type: "multiple-choice",
-      options: ["First option", "Second option"],
-      required: true,
-      hidden: true,
-      encrypted: true,
-    },
-    {
-      id: metadata.applicationSchema.questions.length + 2,
-      title: "Choose an option",
-      type: "dropdown",
-      options: ["First option", "Second option"],
-      required: true,
-      hidden: true,
-      encrypted: true,
+      type: "recipient",
     },
     ...metadata.applicationSchema.questions,
   ];

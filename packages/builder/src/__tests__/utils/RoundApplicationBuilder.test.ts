@@ -62,9 +62,11 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
         hidden: true,
       },
       {
+        id: 6,
         type: "project",
       },
       {
+        id: 7,
         type: "recipient",
       },
     ],

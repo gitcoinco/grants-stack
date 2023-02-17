@@ -309,10 +309,10 @@ export default function Form({
             case "project":
               return readOnly ? (
                 <TextInput
-                  key="project"
+                  key={input.id.toString()}
                   label="Select a project you would like to apply for funding:"
-                  name="project"
-                  value={(answers.project as string) ?? ""}
+                  name={input.id.toString()}
+                  value={(answers[input.id] as string) ?? ""}
                   disabled={preview}
                   changeHandler={(e) => {
                     handleInput(e);
@@ -329,16 +329,18 @@ export default function Form({
                 <Fragment key="project">
                   <div className="mt-6 w-full sm:max-w-md relative">
                     <ProjectSelect
-                      key="project"
+                      key={input.id.toString()}
                       label="Select a project you would like to apply for funding:"
-                      name="project"
-                      value={(answers.project as string) ?? ""}
+                      name={input.id.toString()}
+                      value={(answers[input.id] as string) ?? ""}
                       options={projectOptions ?? []}
                       disabled={preview}
                       changeHandler={handleProjectInput}
                       required
                       feedback={
-                        feedback.find((fb) => fb.title === "project") ?? {
+                        feedback.find(
+                          (fb) => fb.title === input.id.toString()
+                        ) ?? {
                           type: "none",
                           message: "",
                         }
@@ -392,7 +394,7 @@ export default function Form({
                   {/* todo: do we need this tooltip for all networks? */}
                   <TextInputAddress
                     data-testid="address-input-wrapper"
-                    key="recipient"
+                    key={input.id}
                     label={
                       <InputLabel
                         title="Payout Wallet Address"
@@ -400,11 +402,11 @@ export default function Form({
                         hidden={false}
                       />
                     }
-                    name="recipient"
+                    name={input.id.toString()}
                     placeholder="Address that will receive funds"
                     // eslint-disable-next-line max-len
                     tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
-                    value={answers.recipient as string}
+                    value={answers[input.id.toString()] as string}
                     disabled={preview}
                     changeHandler={handleInput}
                     required
