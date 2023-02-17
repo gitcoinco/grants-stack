@@ -10,12 +10,13 @@ jest.mock("../../api/round");
 const editQuestion: EditQuestion = {
   index: 0,
   field: {
+    id: 1,
     title: "test",
     required: false,
     encrypted: false,
     hidden: false,
-    inputType: "short-answer",
-    options: [],
+    type: "short-answer",
+    choices: [],
   },
 };
 
@@ -60,7 +61,7 @@ describe("AddQuestionModal", () => {
     expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
 
     // todo: click the add option button and test that it added row for new option
-    const selectListButton = await screen.findByRole("select-list");
+    // const selectListButton = await screen.findByRole("select-list");
     // fireEvent.change(selectListButton, { target: { value: "multi-select" } });
     // fixme: this wont work until we can get the select list to open and select an option
     // const addOptionButton = await screen.findByRole("add-option");

@@ -403,7 +403,6 @@ export function RoundApplicationForm(props: {
 
     return (
       <div>
-        {/* todo: update the element to reflect tests */}
         {[lockedQuestion, ...f]}
         <Button
           type="button"
