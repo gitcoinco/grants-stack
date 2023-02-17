@@ -61,6 +61,54 @@ function VERSION() external view returns (string)
 |---|---|---|
 | _0 | string | undefined |
 
+### _distribute
+
+```solidity
+function _distribute(bytes _distribution) external nonpayable
+```
+
+Util function to distribute funds to recipient
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _distribution | bytes | encoded distribution |
+
+### distribute
+
+```solidity
+function distribute(MerklePayoutStrategyImplementation.Distribution distribution) external nonpayable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| distribution | MerklePayoutStrategyImplementation.Distribution | undefined |
+
+### distribute_encode
+
+```solidity
+function distribute_encode(bytes _distribution) external nonpayable
+```
+
+Util function to distribute funds to recipient
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _distribution | bytes | undefined |
+
 ### distributionMetaPtr
 
 ```solidity
