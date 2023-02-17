@@ -107,7 +107,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           <hr className="mb-6" />
           <span className="mb-2 text-[14px]">Question Title</span>
           <input
-            className="border border-grey-100 rounded-sm ui-active:border-violet-400"
+            className="border border-grey-100 rounded-sm"
             data-testid="question-title-input"
             key="question-title"
             type="text"
@@ -139,7 +139,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             choices: renderOptions,
           });
         }}
-        className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
+        className="bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
       >
         <span className="flex flex-row justify-center">
           <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
@@ -239,16 +239,16 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="border rounded-md my-2 border-grey-100 w-[208px] overflow-auto">
+              <Listbox.Options className="border rounded-md border-grey-100 w-[208px] overflow-auto">
                 {questions.map((q, index) => (
                   <Listbox.Option
                     key={index}
                     value={q}
-                    className="flex py-2 cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"
+                    className="flex cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"
                   >
                     {({ active }) => (
                       <span
-                        className={`flex w-full ${active ? 'bg-violet-400 py-2 text-white' : 'bg-white text-black'
+                        className={`flex w-full py-2 ${active ? 'bg-violet-400 text-white' : 'bg-white text-black'
                           }`}
                       >
                         <span className="mt-0.5 flex items-center">
