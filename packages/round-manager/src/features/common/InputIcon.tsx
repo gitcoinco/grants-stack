@@ -13,7 +13,7 @@ export const InputIcon = ({ type, className, color, size }: InputIconProps) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const icons: any = {
     "email": <AiOutlineMail color={color} style={{ fontSize: size ? size: 20 }} />,
-    "wallet-address": <MdAccountBalanceWallet color={color} style={{ fontSize: size ? size: 20 }} />,
+    "address": <MdAccountBalanceWallet color={color} style={{ fontSize: size ? size: 20 }} />,
     "short-answer": <MdOutlineShortText color={color} style={{ fontSize: size ? size: 20 }} />,
     "paragraph": <MdNotes color={color} style={{ fontSize: size ? size: 20 }} />,
     "multiple-choice": <MdRadioButtonChecked color={color} style={{ fontSize: size ? size: 20 }} />,

@@ -103,7 +103,7 @@ export interface Program {
 
 export type InputType =
   | "email"
-  | "wallet-address"
+  | "address"
   | "number"
   | "text"
   | "short-answer"

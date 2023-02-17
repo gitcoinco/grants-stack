@@ -26,7 +26,7 @@ import {
   QuestionOption,
   Round
 } from "../api/types";
-import { generateApplicationSchema } from "../api/utils";
+import { generateApplicationSchema, typeToText } from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
 import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
@@ -42,7 +42,7 @@ const payoutQuestion: QuestionOption = {
   required: true,
   encrypted: false,
   hidden: true,
-  type: "wallet-address",
+  type: "address",
 };
 
 export const initialQuestions: QuestionOption[] = [
@@ -344,7 +344,7 @@ export function RoundApplicationForm(props: {
               <InputIcon className="mr-1 mb-0.5" type={field.type} size={12}/>
             </span>
             <span className="first-letter:capitalize">
-              {field.type?.replace("-", " ")}
+              {typeToText(field.type)}
             </span>
           </div>
           {field.title}

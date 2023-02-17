@@ -5,6 +5,7 @@ import { Button } from "common/src/styles";
 import { Fragment, useEffect, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { EditQuestion, InputType, QuestionOption } from "../api/types";
+import { typeToText } from "../api/utils";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
@@ -26,7 +27,7 @@ const questions: InputType[] = [
   "checkbox",
   "dropdown",
   "email",
-  "wallet-address",
+  "address",
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -150,9 +151,16 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
     const renderOptions = questionOptions.options || [];
 
-    if (renderOptions.length === 0) {
+    if (renderOptions.length === 0 || (selectedQuestion === "multiple-choice" || selectedQuestion === "dropdown") && renderOptions.length === 1) {
       renderOptions.push("");
+      setQuestionOptions({
+        ...questionOptions,
+        options: renderOptions,
+      })
+    }
 
+    if(selectedQuestion === "checkbox" && renderOptions.length === 2 && renderOptions[1] === "") {
+      renderOptions.pop();
       setQuestionOptions({
         ...questionOptions,
         options: renderOptions,
@@ -205,10 +213,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         <AddOptionButton />
       </>
     );
-  }
-
-  function typeToText(s: string) {
-    return (s.charAt(0).toUpperCase() + s.slice(1)).replace("-", " ");
   }
 
   function QuestionSelectList() {
@@ -294,7 +298,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     switch (questionOptions.type) {
       case "short-answer":
       case "email":
-      case "wallet-address":
+      case "address":
       case "paragraph":
         setQuestionOptions(
           {

@@ -399,3 +399,9 @@ export const getUTCTime = (date: Date): string => {
 
   return utcTime.join(":") + " UTC";
 };
+
+export function typeToText(s: string) {
+  if(s == "address") return "Wallet address"
+  if(s == "checkbox") return "Checkboxes"
+  return (s.charAt(0).toUpperCase() + s.slice(1)).replace("-", " ");
+}
