@@ -4,8 +4,8 @@ import { ChevronDownIcon, PlusIcon, XCircleIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { Fragment, useEffect, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { EditQuestion, InputType, QuestionOption } from "../api/types";
-import { typeToText } from "../api/utils";
+import { EditQuestion, InputType } from "../api/types";
+import { SchemaQuestion, typeToText } from "../api/utils";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
@@ -36,13 +36,14 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
   const [isOpen, setIsOpen] = useState(show);
   const initialQuestion = question;
-  const [questionOptions, setQuestionOptions] = useState<QuestionOption>({
+  const [questionOptions, setQuestionOptions] = useState<SchemaQuestion>({
+    id: 0,
     title: "",
     required: false,
     encrypted: false,
     hidden: false,
     type: "short-answer",
-    options: [],
+    choices: [],
   });
 
   const [selectedQuestion, setSelectedQuestion] = useState("");
@@ -89,7 +90,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
             key={s.value}
             activeLabel={s.activeLabel}
             inactiveLabel={s.inactiveLabel}
-            value={Boolean(questionOptions[s.value as keyof QuestionOption]) || false}
+            value={Boolean(questionOptions[s.value as keyof SchemaQuestion]) || false}
             handler={(b: boolean) =>
               setQuestionOptions({ ...questionOptions, [s.value]: b })
             }
@@ -131,11 +132,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       <Button
         role="add-option"
         onClick={() => {
-          const renderOptions = questionOptions.options || [];
+          const renderOptions = questionOptions.choices || [];
           renderOptions.push("");
           setQuestionOptions({
             ...questionOptions,
-            options: renderOptions,
+            choices: renderOptions,
           });
         }}
         className="border border-violet-100 bg-violet-100 py-[6px] px=2 w-[336px] rounded mt-2"
@@ -150,21 +151,13 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
   function addOptions() {
 
-    const renderOptions = questionOptions.options || [];
+    const renderOptions = questionOptions.choices || [];
 
     if (renderOptions.length === 0 || (selectedQuestion === "multiple-choice" || selectedQuestion === "dropdown") && renderOptions.length === 1) {
       renderOptions.push("");
       setQuestionOptions({
         ...questionOptions,
-        options: renderOptions,
-      })
-    }
-
-    if(selectedQuestion === "checkbox" && renderOptions.length === 2 && renderOptions[1] === "") {
-      renderOptions.pop();
-      setQuestionOptions({
-        ...questionOptions,
-        options: renderOptions,
+        choices: renderOptions,
       })
     }
 
@@ -175,28 +168,28 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         <div role="option" key={i + 1} className="flex flex-col">
           <Option
             index={i + 1}
-            value={questionOptions.options?.[i] || ""}
+            value={questionOptions.choices?.[i] || ""}
             onChange={(event: any) => {
               event.preventDefault();
-              if (questionOptions.options?.length)
+              if (questionOptions.choices?.length)
                 setQuestionOptions({
                   ...questionOptions,
-                  options: [
-                    ...questionOptions.options.slice(0, i),
+                  choices: [
+                    ...questionOptions.choices.slice(0, i),
                     event.target.value,
-                    ...questionOptions.options.slice(i + 1),
+                    ...questionOptions.choices.slice(i + 1),
                   ]
                 })
             }
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onDeleteOption={() => {
-              if (questionOptions.options?.length)
+              if (questionOptions.choices?.length)
                 setQuestionOptions({
                   ...questionOptions,
-                  options: [
-                    ...questionOptions.options.slice(0, i),
-                    ...questionOptions.options.slice(i + 1),
+                  choices: [
+                    ...questionOptions.choices.slice(0, i),
+                    ...questionOptions.choices.slice(i + 1),
                   ]
                 })
             }}
@@ -284,11 +277,11 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     if (selectedQuestion !== INITIAL_VALUE && !questionOptions.title) {
       errors.push("Question title is required.");
     }
-    if (questionOptions.type === "checkbox" && questionOptions.options?.[0] === "") {
+    if (questionOptions.type === "checkbox" && questionOptions.choices?.[0] === "") {
       errors.push("Please provide at least 1 option.");
     }
     if ((questionOptions.type === "multiple-choice" || questionOptions.type === "dropdown")
-      && (!questionOptions.options || questionOptions.options?.length < 2 || questionOptions.options?.[1] === "")) {
+      && (!questionOptions.choices || questionOptions.choices?.length < 2 || questionOptions.choices?.[1] === "")) {
       errors.push("Please provide at least 2 options.");
     }
 
@@ -296,20 +289,19 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     return (errors.length > 0);
   }
 
-  const checkForOptions = () => {
+  const checkForOptions = (): SchemaQuestion => {
+    let result: SchemaQuestion = {...questionOptions};
+
     switch (questionOptions.type) {
       case "short-answer":
       case "email":
       case "address":
       case "paragraph":
-        setQuestionOptions(
-          {
-            ...questionOptions,
-            options: [],
-          }
-        )
+        result = { ...questionOptions, choices: [] };
         break;
     }
+
+    return result;
   }
 
   const renderError = (errors: string[]) => {
@@ -372,14 +364,13 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 role="save"
                 data-testid="save-question"
                 className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-                onClick={() => {
-                  checkForOptions();
+                onClick={ async () => {
                   if (!checkForErrors()) {
                     setIsOpen(false);
                     onSave({
                       ...initialQuestion,
                       field: {
-                        ...questionOptions
+                        ...checkForOptions()
                       }
                     })
                   }

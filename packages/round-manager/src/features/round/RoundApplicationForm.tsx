@@ -23,10 +23,9 @@ import {
   Program,
   ProgressStatus,
   ProjectRequirements,
-  QuestionOption,
   Round
 } from "../api/types";
-import { generateApplicationSchema, typeToText } from "../api/utils";
+import { generateApplicationSchema, SchemaQuestion, typeToText } from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
 import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
@@ -37,7 +36,8 @@ import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 
-const payoutQuestion: QuestionOption = {
+const payoutQuestion: SchemaQuestion = {
+  id: 0,
   title: "Payout Wallet Address",
   required: true,
   encrypted: false,
@@ -45,8 +45,9 @@ const payoutQuestion: QuestionOption = {
   type: "address",
 };
 
-export const initialQuestions: QuestionOption[] = [
+export const initialQuestions: SchemaQuestion[] = [
   {
+    id: 1,
     title: "Email Address",
     required: true,
     encrypted: true,
@@ -54,6 +55,7 @@ export const initialQuestions: QuestionOption[] = [
     type: "email",
   },
   {
+    id: 2,
     title: "Funding Sources",
     required: true,
     encrypted: false,
@@ -61,6 +63,7 @@ export const initialQuestions: QuestionOption[] = [
     type: "short-answer",
   },
   {
+    id: 3,
     title: "Team Size",
     required: true,
     encrypted: false,
@@ -131,10 +134,6 @@ export function RoundApplicationForm(props: {
     control,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isInEditState, setIsInEditState] = useState<boolean[]>(
-    fields.map(() => false)
-  );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [projectRequirements, setProjectRequirements] =
     useState<ProjectRequirements>({ ...initialRequirements });
@@ -214,7 +213,7 @@ export function RoundApplicationForm(props: {
       const applicationQuestions = {
         lastUpdatedOn: Date.now(),
         applicationSchema: generateApplicationSchema(
-          data.applicationMetadata?.questions,
+          fields,
           projectRequirements
         ),
         version: VERSION,
@@ -335,7 +334,7 @@ export function RoundApplicationForm(props: {
     </InfoModal>
   );
 
-  const singleQuestion = (field: QuestionOption, key: number) => (
+  const singleQuestion = (field: SchemaQuestion, key: number) => (
     <div key={key} data-testid="application-question">
       <div className="flex flex-row my-4 items-center">
         <div className="text-sm basis-2/3">
@@ -348,10 +347,10 @@ export function RoundApplicationForm(props: {
             </span>
           </div>
           {field.title}
-          {field.options && field.options?.length > 0 &&
-            field.options.map((option, index) => (
+          {field.choices && field.choices?.length > 0 &&
+            field.choices.map((choice, index) => (
               <div key={index} className="ml-1 border-l border-gray-200">
-                <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{option}</span>
+                <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{choice}</span>
               </div>
             ))
           }
@@ -439,7 +438,7 @@ export function RoundApplicationForm(props: {
     setOpenAddQuestionModal(false);
     if (question.field) {
       if (!question.index) {
-        append(question.field);
+        append({...question.field, id: fields.length});
       } else {
         update(question.index, question.field);
       }

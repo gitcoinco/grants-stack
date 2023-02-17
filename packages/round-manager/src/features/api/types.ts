@@ -4,6 +4,7 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { SchemaQuestion } from "./utils";
 
 export type Network = "goerli" | "optimism";
 
@@ -112,18 +113,9 @@ export type InputType =
   | "checkbox"
   | "dropdown";
 
-export type QuestionOption = {
-  title: string;
-  required: boolean;
-  encrypted: boolean;
-  hidden: boolean;
-  type: InputType;
-  options?: string[];
-};
-
 export type EditQuestion = {
   index?: number;
-  field?: QuestionOption;
+  field?: SchemaQuestion;
 };
 
 export type ProjectRequirements = {
@@ -138,7 +130,7 @@ export type ProjectRequirements = {
 };
 
 export interface ApplicationMetadata {
-  questions?: QuestionOption[];
+  questions?: SchemaQuestion[];
   requirements: ProjectRequirements;
 }
 

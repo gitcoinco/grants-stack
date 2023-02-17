@@ -255,6 +255,7 @@ describe("Application Form Builder", () => {
   it("displays the existing questions if present in form data", () => {
     const expectedQuestions: ApplicationMetadata["questions"] = [
       {
+        id: 0,
         title: "Some question",
         required: false,
         encrypted: false,

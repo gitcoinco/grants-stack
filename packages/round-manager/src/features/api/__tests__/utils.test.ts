@@ -357,9 +357,10 @@ describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
       questions: initialQuestions.map((question) => ({
-        question: question.title,
+        title: question.title,
         type: question.type,
         required: question.required,
+        hidden: question.hidden,
         info: "", // TODO: is grant hub using this???
         choices: [], // TODO: is grant hub using this???
         encrypted: question.encrypted,

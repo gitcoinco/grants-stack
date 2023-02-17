@@ -1,8 +1,8 @@
 import { XIcon } from "@heroicons/react/solid";
-import { QuestionOption } from "../api/types";
+import { SchemaQuestion } from "../api/utils";
 
 // eslint-disable-next-line
-function Option({ index, value, onChange, onDeleteOption, options }: { index: number, value: string, onChange: (event: any) => void, onDeleteOption: (index: number) => void, options: QuestionOption[] }) {
+function Option({ index, value, onChange, onDeleteOption, options }: { index: number, value: string, onChange: (event: any) => void, onDeleteOption: (index: number) => void, options: SchemaQuestion[] }) {
   const renderDeleteOption = (index: number) => {
     return (
       <button onClick={() => onDeleteOption(index)}>
