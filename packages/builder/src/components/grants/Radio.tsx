@@ -32,7 +32,9 @@ export default function Radio({
         </div>
         <div className="shrink ml-2">
           {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
+            <span className="text-sm text-purple-700 inset-y-0 right-0">
+              *Required
+            </span>
           )}
         </div>
       </div>

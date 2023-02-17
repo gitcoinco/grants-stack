@@ -341,6 +341,7 @@ export function Select({
   info,
   name,
   options,
+  value,
   disabled,
   changeHandler,
   required,
@@ -375,11 +376,12 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames(`w-full `, {
+        className={classNames(`text-base w-full `, {
           "bg-transparent": !disabled,
           borderClass,
         })}
         onChange={(e) => changeHandler(e)}
+        value={value}
         defaultValue={defaultValue}
       >
         {!defaultValue && <option disabled>Choose a value</option>}

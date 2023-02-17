@@ -162,7 +162,23 @@ export const submitApplication =
       return;
     }
 
-    const projectID = formInputs.project as string;
+    const projectQuestion =
+      roundApplicationMetadata.applicationSchema.questions.find(
+        (q) => q.type === "project"
+      );
+
+    if (!projectQuestion) {
+      dispatchAndLogApplicationError(
+        dispatch,
+        roundAddress,
+        "cannot find project question id",
+        Status.BuildingApplication
+      );
+      return;
+    }
+
+    const projectID = formInputs[projectQuestion.id] as string;
+
     const {
       id: projectNumber,
       registryAddress: projectRegistryAddress,
