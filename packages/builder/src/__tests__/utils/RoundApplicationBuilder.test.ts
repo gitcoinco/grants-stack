@@ -15,7 +15,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
     questions: [
       {
         id: 0,
-        inputType: "text",
+        type: "text",
         title: "Email",
         required: true,
         encrypted: true,
@@ -23,7 +23,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       },
       {
         id: 1,
-        inputType: "text",
+        type: "text",
         title: "Twitter",
         required: true,
         encrypted: true,
@@ -31,7 +31,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       },
       {
         id: 2,
-        inputType: "text",
+        type: "text",
         title: "Github",
         required: true,
         encrypted: true,
@@ -39,7 +39,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       },
       {
         id: 3,
-        inputType: "text",
+        type: "text",
         title: "Funding Source",
         required: true,
         encrypted: true,
@@ -47,7 +47,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       },
       {
         id: 4,
-        inputType: "text",
+        type: "text",
         title: "Profit2022",
         required: true,
         encrypted: true,
@@ -55,17 +55,17 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       },
       {
         id: 5,
-        inputType: "text",
+        type: "text",
         title: "Team Size",
         required: true,
         encrypted: true,
         hidden: true,
       },
       {
-        inputType: "project",
+        type: "project",
       },
       {
-        inputType: "recipient",
+        type: "recipient",
       },
     ],
   },

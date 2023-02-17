@@ -9,10 +9,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
-import {
-  resetApplicationError,
-  submitApplication,
-} from "../../actions/roundApplication";
+import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import { editProjectPathByID } from "../../routes";
@@ -20,25 +17,30 @@ import {
   AddressType,
   ChangeHandlers,
   CredentialProvider,
-  DynamicFormInputs,
   Metadata,
   ProjectOption,
   Round,
 } from "../../types";
-import { RoundApplicationMetadata } from "../../types/roundApplication";
+import {
+  RoundApplicationMetadata,
+  RoundApplicationAnswers,
+} from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
 import {
-  CustomSelect,
+  ProjectSelect,
+  Select,
   TextArea,
   TextInput,
   TextInputAddress,
 } from "../grants/inputs";
 import Radio from "../grants/Radio";
+import Checkbox from "../grants/Checkbox";
 import Toggle from "../grants/Toggle";
+import InputLabel from "../base/InputLabel";
 
 const validation = {
   messages: [""],
@@ -55,13 +57,15 @@ export default function Form({
   roundApplication,
   round,
   onSubmit,
+  onChange,
   showErrorModal,
   readOnly,
   publishedApplication,
 }: {
   roundApplication: RoundApplicationMetadata;
   round: Round;
-  onSubmit: () => void;
+  onSubmit?: (answers: RoundApplicationAnswers) => void;
+  onChange?: (answers: RoundApplicationAnswers) => void;
   showErrorModal: boolean;
   readOnly?: boolean;
   publishedApplication?: any;
@@ -69,7 +73,7 @@ export default function Form({
   const dispatch = useDispatch();
   const { chains } = useNetwork();
 
-  const [formInputs, setFormInputs] = useState<DynamicFormInputs>({});
+  const [answers, setAnswers] = useState<RoundApplicationAnswers>({});
   const [preview, setPreview] = useState(readOnly || false);
   const [formValidation, setFormValidation] = useState(validation);
   const [projectOptions, setProjectOptions] = useState<ProjectOption[]>();
@@ -123,7 +127,7 @@ export default function Form({
       return;
     }
 
-    const inputValues: DynamicFormInputs = {};
+    const inputValues: RoundApplicationAnswers = {};
     publishedApplication.application.answers.forEach((answer: any) => {
       inputValues[answer.questionId] = answer.answer ?? "***";
     });
@@ -131,10 +135,10 @@ export default function Form({
       publishedApplication.application.recipient;
     inputValues[Object.keys(inputValues).length] =
       publishedApplication.application.project.title;
-    setFormInputs(inputValues);
+    setAnswers(inputValues);
   }, [publishedApplication]);
 
-  const validate = async (inputs: DynamicFormInputs) => {
+  const validate = async (inputs: RoundApplicationAnswers) => {
     try {
       await validateApplication(schema.questions, inputs);
       setFormValidation({
@@ -177,13 +181,20 @@ export default function Form({
     }
   };
 
+  const setAnswer = (key: string | number, value: string | string[]) => {
+    const newAnswers = { ...answers, [key]: value };
+    setAnswers(newAnswers);
+    if (onChange) {
+      onChange(newAnswers);
+    }
+    if (submitted) {
+      validate(newAnswers);
+    }
+  };
+
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
-    const inputs = { ...formInputs, [e.target.name]: value };
-    setFormInputs(inputs);
-    if (submitted) {
-      validate(inputs);
-    }
+    setAnswer(e.target.name, value);
   };
 
   const handleProjectInput = (e: ChangeHandlers) => {
@@ -194,7 +205,7 @@ export default function Form({
 
   const handlePreviewClick = async () => {
     setSubmitted(true);
-    const valid = await validate(formInputs);
+    const valid = await validate(answers);
     if (valid === ValidationStatus.Valid) {
       setPreview(true);
       setShowError(false);
@@ -206,8 +217,9 @@ export default function Form({
 
   const handleSubmitApplication = async () => {
     if (formValidation.valid) {
-      onSubmit();
-      dispatch(submitApplication(round.address, formInputs));
+      if (onSubmit) {
+        onSubmit(answers);
+      }
     }
   };
 
@@ -279,22 +291,28 @@ export default function Form({
   const isValidProjectSelected =
     selectedProjectID && projectRequirementsResult.length === 0;
 
+  const needsProject = schema.questions.find((q) => q.type === "project");
+
   return (
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
       <form onSubmit={(e) => e.preventDefault()}>
         {schema.questions.map((input) => {
-          if (input.inputType !== "project" && !isValidProjectSelected) {
+          if (
+            needsProject &&
+            input.type !== "project" &&
+            !isValidProjectSelected
+          ) {
             return null;
           }
 
-          switch (input.inputType) {
+          switch (input.type) {
             case "project":
               return readOnly ? (
                 <TextInput
                   key="project"
                   label="Select a project you would like to apply for funding:"
                   name="project"
-                  value={formInputs.project ?? ""}
+                  value={(answers.project as string) ?? ""}
                   disabled={preview}
                   changeHandler={(e) => {
                     handleInput(e);
@@ -309,12 +327,12 @@ export default function Form({
                 />
               ) : (
                 <Fragment key="project">
-                  <div className="mt-6 w-full sm:w-1/2 relative">
-                    <CustomSelect
+                  <div className="mt-6 w-full sm:max-w-md relative">
+                    <ProjectSelect
                       key="project"
                       label="Select a project you would like to apply for funding:"
                       name="project"
-                      value={formInputs.project ?? ""}
+                      value={(answers.project as string) ?? ""}
                       options={projectOptions ?? []}
                       disabled={preview}
                       changeHandler={handleProjectInput}
@@ -335,7 +353,7 @@ export default function Form({
                   </div>
                   {isValidProjectSelected && (
                     <div>
-                      <p className="text-xs mt-4 mb-1 whitespace-normal sm:w-1/2">
+                      <p className="text-xs mt-4 mb-1 whitespace-normal sm:max-w-md">
                         To complete your application to{" "}
                         {round.roundMetadata.name}, a little more info is
                         needed:
@@ -357,7 +375,7 @@ export default function Form({
                           choices={["Yes", "No"]}
                           changeHandler={handleInput}
                           name="isSafe"
-                          value={formInputs.isSafe}
+                          value={answers.isSafe as string}
                           info=""
                           required
                           disabled={preview}
@@ -375,21 +393,26 @@ export default function Form({
                   <TextInputAddress
                     data-testid="address-input-wrapper"
                     key="recipient"
-                    label="Payout Wallet Address"
+                    label={
+                      <InputLabel
+                        title="Payout Wallet Address"
+                        encrypted={false}
+                        hidden={false}
+                      />
+                    }
                     name="recipient"
                     placeholder="Address that will receive funds"
                     // eslint-disable-next-line max-len
                     tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
-                    value={formInputs.recipient}
+                    value={answers.recipient as string}
                     disabled={preview}
                     changeHandler={handleInput}
                     required
                     onAddressType={(v) => setAddressType(v)}
                     warningHighlight={
                       addressType &&
-                      ((formInputs.isSafe === "Yes" &&
-                        !addressType.isContract) ||
-                        (formInputs.isSafe === "No" && addressType.isContract))
+                      ((answers.isSafe === "Yes" && !addressType.isContract) ||
+                        (answers.isSafe === "No" && addressType.isContract))
                     }
                     feedback={
                       feedback.find((fb) => fb.title === "recipient") ?? {
@@ -404,9 +427,70 @@ export default function Form({
               return (
                 <TextInput
                   key={input.id}
-                  label={input.title}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
                   name={`${input.id}`}
-                  value={formInputs[`${input.id}`] ?? ""}
+                  value={(answers[input.id] as string) ?? ""}
+                  disabled={preview}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              );
+            case "email":
+              return (
+                <TextInput
+                  inputType="email"
+                  key={input.id}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
+                  placeholder="name@example.com"
+                  name={`${input.id}`}
+                  value={(answers[input.id] as string) ?? ""}
+                  disabled={preview}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              );
+            case "address":
+              return (
+                <TextInput
+                  inputType="text"
+                  key={input.id}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
+                  name={`${input.id}`}
+                  value={(answers[input.id] as string) ?? ""}
                   disabled={preview}
                   changeHandler={(e) => {
                     handleInput(e);
@@ -424,9 +508,15 @@ export default function Form({
               return (
                 <TextArea
                   key={input.id}
-                  label={input.title}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
                   name={`${input.id}`}
-                  value={formInputs[`${input.id}`] ?? ""}
+                  value={(answers[input.id] as string) ?? ""}
                   disabled={preview}
                   changeHandler={handleInput}
                   required={input.required ?? false}
@@ -438,16 +528,48 @@ export default function Form({
                   }
                 />
               );
+            case "dropdown":
+              return (
+                <div
+                  key={input.id}
+                  className="mt-6 w-full sm:max-w-md relative"
+                >
+                  <Select
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    name={`${input.id}`}
+                    value={answers[input.id] as string}
+                    options={input.options.map((o) => ({ id: o, title: o }))}
+                    disabled={preview}
+                    changeHandler={handleInput}
+                    required
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                </div>
+              );
             case "multiple-choice":
               return (
                 <Radio
                   key={input.id}
-                  label={input.title}
-                  name={`${input.id}`}
-                  value={
-                    formInputs[`${input.id}`] ??
-                    (input.options && input.options[0])
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
                   }
+                  name={`${input.id}`}
+                  value={answers[input.id] as string}
                   choices={input.options}
                   disabled={preview}
                   changeHandler={handleInput}
@@ -460,8 +582,37 @@ export default function Form({
                   }
                 />
               );
+            case "checkbox":
+              return (
+                <Checkbox
+                  key={input.id}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
+                  name={`${input.id}`}
+                  values={(answers[input.id] as string[]) ?? []}
+                  choices={input.options}
+                  disabled={preview}
+                  onChange={(newValues: string[]) => {
+                    setAnswer(input.id, newValues);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              );
+
+            default:
+              return null;
           }
-          return null;
         })}
         {selectedProjectID && projectRequirementsResult.length > 0 && (
           <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
@@ -492,8 +643,8 @@ export default function Form({
           </div>
         )}
         {addressType &&
-          ((formInputs.isSafe === "Yes" && !addressType.isContract) ||
-            (formInputs.isSafe === "No" && addressType.isContract)) && (
+          ((answers.isSafe === "Yes" && !addressType.isContract) ||
+            (answers.isSafe === "No" && addressType.isContract)) && (
             <div
               className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
               role="alert"
@@ -508,11 +659,11 @@ export default function Form({
                 </strong>
                 <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
                   <li className="text-black">
-                    {formInputs.isSafe === "Yes" &&
+                    {answers.isSafe === "Yes" &&
                       (!addressType.isContract || !addressType.isSafe) &&
                       // eslint-disable-next-line max-len
                       `It looks like the payout wallet address you have provided may not be a valid multi-sig on the ${chainInfo?.name} network. Please update your payout wallet address before proceeding.`}
-                    {formInputs.isSafe === "No" &&
+                    {answers.isSafe === "No" &&
                       (addressType.isSafe || addressType.isContract) &&
                       // eslint-disable-next-line max-len
                       `It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.`}

@@ -52,7 +52,7 @@ describe("Form Validation", () => {
 
     const defaultInputs: RoundApplicationQuestion[] = [
       {
-        inputType: "text",
+        type: "text",
         id: 1,
         title: "Text Question",
         required: true,
@@ -60,7 +60,7 @@ describe("Form Validation", () => {
         encrypted: false,
       },
       {
-        inputType: "text",
+        type: "text",
         id: 2,
         title: "Text Area Question",
         required: true,
@@ -69,7 +69,7 @@ describe("Form Validation", () => {
       },
       {
         id: 3,
-        inputType: "multiple-choice",
+        type: "multiple-choice",
         title: "Radio Input Question",
         required: false,
         options: ["Option 1", "Option 2"],
@@ -77,7 +77,7 @@ describe("Form Validation", () => {
         encrypted: false,
       },
       {
-        inputType: "recipient",
+        type: "recipient",
       },
     ];
     try {

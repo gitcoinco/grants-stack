@@ -1,5 +1,6 @@
 import Lit from "../services/lit";
 import { RoundApplicationMetadata, Project, RoundApplication } from "../types";
+import { RoundApplicationAnswers } from "../types/roundApplication";
 
 export default class RoundApplicationBuilder {
   enableEncryption: boolean;
@@ -69,7 +70,7 @@ export default class RoundApplicationBuilder {
 
   async build(
     roundAddress: string,
-    formInputs: { [id: number | string]: string }
+    formInputs: RoundApplicationAnswers
   ): Promise<RoundApplication> {
     const answers = [];
     let recipient: string;
@@ -78,7 +79,7 @@ export default class RoundApplicationBuilder {
     for (let i = 0; i < this.ram.applicationSchema.questions.length; i++) {
       const question = this.ram.applicationSchema.questions[i];
 
-      switch (question.inputType) {
+      switch (question.type) {
         case "recipient":
           // FIXME: validate recipient here?
           recipient = String(formInputs.recipient);
@@ -93,7 +94,7 @@ export default class RoundApplicationBuilder {
           if (question.encrypted) {
             // eslint-disable-next-line
             encryptedAnswer = await this.encryptAnswer(
-              formInputs[question.id] ?? ""
+              (formInputs[question.id] as string) ?? ""
             );
           } else {
             answer = formInputs[question.id];

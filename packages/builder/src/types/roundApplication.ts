@@ -7,41 +7,46 @@ export interface BaseQuestion {
 }
 
 export type ProjectQuestion = {
-  inputType: "project";
+  type: "project";
 };
 
 export type RecipientQuestion = {
-  inputType: "recipient";
+  type: "recipient";
 };
 
 export type EmailQuestion = BaseQuestion & {
-  inputType: "email";
+  type: "email";
+};
+
+export type AddressQuestion = BaseQuestion & {
+  type: "address";
 };
 
 export type TextQuestion = BaseQuestion & {
-  inputType: "text";
+  type: "text";
 };
 
 export type ParagraphQuestion = BaseQuestion & {
-  inputType: "paragraph";
+  type: "paragraph";
 };
 
 export type MultipleChoiceQuestion = BaseQuestion & {
-  inputType: "multiple-choice";
+  type: "multiple-choice";
   options: string[];
 };
 
 export type CheckboxQuestion = BaseQuestion & {
-  inputType: "checkbox";
+  type: "checkbox";
   options: string[];
 };
 
 export type DropdownQuestion = BaseQuestion & {
-  inputType: "checkbox";
+  type: "dropdown";
   options: string[];
 };
 
 export type RoundApplicationQuestion =
+  | AddressQuestion
   | ProjectQuestion
   | RecipientQuestion
   | EmailQuestion
@@ -70,3 +75,7 @@ export interface RoundApplicationMetadata {
     requirements: ProjectRequirements;
   };
 }
+
+export type RoundApplicationAnswers = {
+  [key: string | number]: string | string[];
+};

@@ -39,7 +39,7 @@ const roundApplicationMetadata: RoundApplicationMetadata = {
       github: { required: false, verification: false },
       twitter: { required: false, verification: false },
     },
-    questions: [{ inputType: "project" }, { inputType: "recipient" }],
+    questions: [{ type: "project" }, { type: "recipient" }],
   },
 };
 
@@ -72,7 +72,7 @@ const round: Round = {
       },
       questions: [
         {
-          inputType: "recipient",
+          type: "recipient",
         },
       ],
     },
@@ -418,5 +418,153 @@ describe("<Form/>", () => {
     expect(
       screen.queryByText("Project Github is required.")
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("Form questions", () => {
+  let store: Store;
+
+  beforeEach(() => {
+    store = setupStore();
+    store.dispatch(web3ChainIDLoaded(5));
+  });
+
+  test("checkbox", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "checkbox",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    act(() => {
+      const choice = screen.getByLabelText("Second option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: ["Second option"] });
+
+    act(() => {
+      const choice = screen.getByLabelText("First option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({
+      0: ["Second option", "First option"],
+    });
+  });
+
+  test("multiple-choice", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "multiple-choice",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    act(() => {
+      const choice = screen.getByLabelText("Second option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
+
+    act(() => {
+      const choice = screen.getByLabelText("First option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({
+      0: "First option",
+    });
+  });
+
+  test("dropdown", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "dropdown",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    const select = screen.getByLabelText(/This is the title/);
+
+    expect(screen.getByText("First option")).toBeInTheDocument();
+    expect(screen.getByText("Second option")).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.change(select, { target: { value: "First option" } });
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "First option" });
+
+    act(() => {
+      fireEvent.change(select, { target: { value: "Second option" } });
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
   });
 });
