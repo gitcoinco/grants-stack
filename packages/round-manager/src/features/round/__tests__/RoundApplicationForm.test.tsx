@@ -392,6 +392,9 @@ describe("Application Form Builder", () => {
     });
 
     it("toggles each encryption option when clicked", async () => {
+      const initialEncriptionValues = initialQuestions.map((q) => q.encrypted);
+      const isNotEncrypted = initialEncriptionValues.filter((value) => value === false);
+
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -419,7 +422,9 @@ describe("Application Form Builder", () => {
         "Encrypted"
       );
 
-      // expect(encryptionToggleLabels.length).toBe(initialQuestions.length);
+      // Amount of encrypted switches is after toggling equal to 
+      // the amount of questions that were not encrypted before
+      expect(encryptionToggleLabels.length).toBe(isNotEncrypted.length);
     });
   });
 
@@ -486,8 +491,8 @@ describe("Application Form Builder", () => {
       // 3. Project Description Required
       // 4. Wallet address Required
       // Socials:
-      // 5. Twitter Required
-      // 6. Github Required
+      // 5. Twitter Optional
+      // 6. Github Optional
       // Editable:
       // 7. Email Optional
       // 8. Funding Source Optional
@@ -497,7 +502,7 @@ describe("Application Form Builder", () => {
         "*Required"
       );
 
-      // expect(requiredToggleLabels.length).toBe(5);
+      expect(requiredToggleLabels.length).toBe(4);
     });
   });
 
