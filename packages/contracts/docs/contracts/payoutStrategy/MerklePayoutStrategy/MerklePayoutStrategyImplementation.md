@@ -160,10 +160,10 @@ merkle root generated from distribution
 ### payout
 
 ```solidity
-function payout(bytes[] _distributions) external payable
+function payout(MerklePayoutStrategyImplementation.Distribution[] _distributions) external payable
 ```
 
-MerklePayoutStrategy implementation of payout Can be invoked only by round operator and isReadyForPayout is true
+
 
 
 
@@ -171,7 +171,23 @@ MerklePayoutStrategy implementation of payout Can be invoked only by round opera
 
 | Name | Type | Description |
 |---|---|---|
-| _distributions | bytes[] | encoded distributions |
+| _distributions | MerklePayoutStrategyImplementation.Distribution[] | undefined |
+
+### payout
+
+```solidity
+function payout(bytes[] _distributions) external payable
+```
+
+payout function defined in IPayoutStrategy
+
+*NOT IMPLEMENTED. Use payout(Distribution[] calldata _distributions) instead*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _distributions | bytes[] | encoded distribution |
 
 ### reclaimLockEndTime
 
@@ -241,7 +257,7 @@ Token address
 function updateDistribution(bytes encodedDistribution) external nonpayable
 ```
 
-Invoked by round operator to update the - merkle root - distribution MetaPtr
+Invoked by round operator to update the merkle root and distribution MetaPtr
 
 
 
@@ -307,7 +323,7 @@ Emitted when the distribution is updated
 ### FundsDistributed
 
 ```solidity
-event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount)
+event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee)
 ```
 
 Emitted when funds are distributed
@@ -318,10 +334,11 @@ Emitted when funds are distributed
 
 | Name | Type | Description |
 |---|---|---|
+| index  | uint256 | undefined |
+| amount  | uint256 | undefined |
+| token `indexed` | address | undefined |
 | sender `indexed` | address | undefined |
 | grantee `indexed` | address | undefined |
-| token `indexed` | address | undefined |
-| amount  | uint256 | undefined |
 
 ### FundsWithdrawn
 
