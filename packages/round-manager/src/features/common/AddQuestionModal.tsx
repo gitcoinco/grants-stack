@@ -41,7 +41,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     title: "",
     required: false,
     encrypted: false,
-    hidden: false,
+    hidden: true,
     type: "short-answer",
     choices: [],
   });
@@ -60,42 +60,38 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
   // renders the toggles in a group for ui
   const renderSwitches = () => {
-
-    const switches = [
-      {
-        activeLabel: "*Required",
-        inactiveLabel: "Optional",
-        value: "required",
-        testid: "required-toggle",
-      },
-      {
-        activeLabel: "Encrypted",
-        inactiveLabel: "Not Encrypted",
-        value: "encrypted",
-        testid: "encrypted-toggle",
-      },
-      {
-        activeLabel: "Hidden from Explorer",
-        inactiveLabel: "Shown in Explorer",
-        value: "hidden",
-        testid: "hidden-toggle",
-      }
-    ]
-
     return (
       <div className="flex flex-row justify-between mt-6 w-[80%]">
-        {switches.map(s => (
-          <BaseSwitch
-            testid={s.testid}
-            key={s.value}
-            activeLabel={s.activeLabel}
-            inactiveLabel={s.inactiveLabel}
-            value={Boolean(questionOptions[s.value as keyof SchemaQuestion]) || false}
-            handler={(b: boolean) =>
-              setQuestionOptions({ ...questionOptions, [s.value]: b })
-            }
-          />
-        ))}
+        <BaseSwitch
+          testid="required-toggle"
+          key="required"
+          activeLabel="*Required"
+          inactiveLabel="Optional"
+          value={questionOptions["required" as keyof SchemaQuestion] as boolean || false}
+          handler={(b: boolean) =>
+            setQuestionOptions({ ...questionOptions, ["required"]: b })
+          }
+        />
+        <BaseSwitch
+          testid="encrypted-toggle"
+          key="encrypted"
+          activeLabel="Encrypted"
+          inactiveLabel="Not Encrypted"
+          value={questionOptions["encrypted" as keyof SchemaQuestion] as boolean || false}
+          handler={(b: boolean) =>
+            setQuestionOptions({ ...questionOptions, ["encrypted"]: b })
+          }
+        />
+        <BaseSwitch
+          testid="hidden-toggle"
+          key="hidden"
+          activeLabel="Shown in Explorer"
+          inactiveLabel="Hidden from Explorer"
+          value={!(questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
+          handler={(b: boolean) =>
+            setQuestionOptions({ ...questionOptions, ["hidden"]: !b })
+          }
+        />
       </div>
     );
   }
@@ -290,7 +286,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   }
 
   const checkForOptions = (): SchemaQuestion => {
-    let result: SchemaQuestion = {...questionOptions};
+    let result: SchemaQuestion = { ...questionOptions };
 
     switch (questionOptions.type) {
       case "short-answer":
@@ -364,7 +360,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
                 role="save"
                 data-testid="save-question"
                 className="border rounded-[4px] bg-violet-400 p-3 mr-6 w-[140px] text-white"
-                onClick={ async () => {
+                onClick={async () => {
                   if (!checkForErrors()) {
                     setIsOpen(false);
                     onSave({
