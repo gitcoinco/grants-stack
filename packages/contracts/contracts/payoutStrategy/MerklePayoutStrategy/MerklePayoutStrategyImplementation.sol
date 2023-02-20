@@ -26,7 +26,6 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   /// @notice packed array of booleans to keep track of claims
   mapping(uint256 => uint256) private distributedBitMap;
 
-
   // --- Events ---
 
   /// @notice Emitted when the distribution is updated
@@ -36,7 +35,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount);
 
   /// @notice Emitted when funds are distributed
-  event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount);
+  event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee);
 
   /// @notice Emitted when batch payout is successful
   event BatchPayoutSuccessful(address indexed sender);
@@ -44,7 +43,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   // --- Types ---
   struct Distribution {
     uint256 index;
-    address _grantee;
+    address grantee;
     uint256 amount;
     bytes32[] merkleProof;
   }
@@ -55,16 +54,11 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
   // --- Core methods ---
 
-  /**
-   * @notice Invoked by round operator to update the
-   * - merkle root
-   * - distribution MetaPtr
-   *
-   * @param encodedDistribution encoded distribution
-   */
+  /// @notice Invoked by round operator to update the merkle root and distribution MetaPtr
+  /// @param encodedDistribution encoded distribution
   function updateDistribution(bytes calldata encodedDistribution) external override roundHasEnded isRoundOperator {
 
-    require(isReadyForPayout == false, "Payout: Cannot update dsitribution once ready for payout");
+    require(isReadyForPayout == false, "Payout: Already ready for payout");
 
     (bytes32 _merkleRoot, MetaPtr memory _distributionMetaPtr) = abi.decode(
       encodedDistribution,
@@ -89,14 +83,18 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     return distributedWord & mask == mask;
   }
 
-  /**
-   * @notice MerklePayoutStrategy implementation of payout
-   * Can be invoked only by round operator and isReadyForPayout is true
-   *
-   * @param _distributions encoded distributions
-   */
+  /// @notice payout function defined in IPayoutStrategy
+  /// @dev NOT IMPLEMENTED. Use payout(Distribution[] calldata _distributions) instead
+  /// @param _distributions encoded distribution
   function payout(bytes[] calldata _distributions) external virtual override payable isRoundOperator {
+    /// Not implemented from IPayoutStrategy due as encoding of struct with dynamic array is
+    // different in solidity 0.8.17 (more padding while encoding) and ethers
+  }
 
+  /// @notice function to distribute funds to recipient
+  /// @dev can be invoked only by round operator
+  /// @param _distributions encoded distribution
+  function payout(Distribution[] calldata _distributions) external virtual payable isRoundOperator {
     require(isReadyForPayout == true, "Payout: Not ready for payout");
 
     for (uint256 i = 0; i < _distributions.length; ++i) {
@@ -108,25 +106,24 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
   /// @notice Util function to distribute funds to recipient
   /// @param _distribution encoded distribution
-  function _distribute(bytes calldata _distribution) private {
-    
-    Distribution memory distribution = abi.decode(_distribution, (Distribution));
+  function _distribute(Distribution calldata _distribution) private {
+    uint256 _index = _distribution.index;
+    address _grantee = _distribution.grantee;
+    uint256 _amount = _distribution.amount;
+    bytes32[] memory _merkleProof = _distribution.merkleProof;
 
-    uint256 _index = distribution.index;
-    address _grantee = distribution._grantee;
-    uint256 _amount = distribution.amount;
-    bytes32[] memory _merkleProof = distribution.merkleProof;
+    require(!hasBeenDistributed(_index), "Payout: Already distributed");
 
-    require(!hasBeenDistributed(_index), "funds already distributed");
+    /* We need double hashing to prevent second preimage attacks */
+    bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount))));
 
-    bytes32 node = keccak256(abi.encodePacked(_index, _grantee, _amount));
-    require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof.");
+    require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof");
 
     _setDistributed(_index);
 
     _transferAmount(payable(_grantee), _amount);
 
-    emit FundsDistributed(msg.sender, _grantee, tokenAddress, _amount);
+    emit FundsDistributed(_index, _amount, tokenAddress, msg.sender, _grantee);
   }
 
   /// @notice Util function to mark distribution as done
@@ -148,4 +145,3 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     }
   }
 }
-

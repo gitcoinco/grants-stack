@@ -294,6 +294,7 @@ importers:
       '@openzeppelin/contracts': ^4.6.0
       '@openzeppelin/contracts-upgradeable': ^4.6.0
       '@openzeppelin/hardhat-upgrades': ^1.18.0
+      '@openzeppelin/merkle-tree': ^1.0.2
       '@primitivefi/hardhat-dodoc': ^0.2.3
       '@typechain/ethers-v5': ^7.2.0
       '@typechain/hardhat': ^2.3.1
@@ -332,6 +333,7 @@ importers:
       '@ledgerhq/hw-app-eth': 6.30.5
       '@openzeppelin/contracts': 4.8.1
       '@openzeppelin/contracts-upgradeable': 4.8.1
+      '@openzeppelin/merkle-tree': 1.0.2
       hardhat-contract-sizer: 2.8.0_hardhat@2.12.6
     devDependencies:
       '@ethersproject/constants': 5.7.0
@@ -5885,6 +5887,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@openzeppelin/merkle-tree/1.0.2:
+    resolution: {integrity: sha512-qD+HmLTTEy9Nwgh0Amr6Rzhfq6yMC5rV43aMnxKtFh6PhZUUiiZRXFjpausNc6sxqrCi82/mGlz5xi5M1WfUrQ==}
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      ethereum-cryptography: 1.1.2
+    dev: false
 
   /@openzeppelin/upgrades-core/1.22.0:
     resolution: {integrity: sha512-TcTabzRbYOzWJnwiToj0LRzje25d9QbDPe2dOT9eHlLDRhOMiep39FDibJjkYd5IdF3s8M9IcK+YSnf49renEg==}
@@ -15016,6 +15025,17 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -25144,7 +25164,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 3.0.2
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       fs-extra: 0.30.0
       js-sha3: 0.8.0
       memorystream: 0.3.1

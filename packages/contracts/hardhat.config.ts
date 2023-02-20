@@ -25,7 +25,7 @@ const chainIds = {
   // mainnet
   mainnet: 1,
   "optimism-mainnet": 10,
-  "fantom-mainnet"  : 250
+  "fantom-mainnet": 250,
 };
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -77,7 +77,7 @@ function createMainnetConfig(
   network: keyof typeof chainIds,
   url?: string
 ): NetworkUserConfig {
-  if(!url) {
+  if (!url) {
     url = `https://${network}.infura.io/v3/${infuraIdKey}`;
   }
   return {
@@ -103,11 +103,12 @@ const abiExporter = [
 
 const dodoc = {
   outputDir: "./docs/contracts",
-  exclude: ["contracts/dummy", "contracts/utils/MockERC20.sol"],
+  exclude: ["contracts/dummy", "contracts/mocks"],
 };
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
+  // @ts-ignore
   optimizer: {
     enabled: true,
   },
@@ -115,7 +116,10 @@ const config: HardhatUserConfig = {
     // Main Networks
     mainnet: createMainnetConfig("mainnet"),
     "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
-    "fantom-mainnet": createMainnetConfig("fantom-mainnet", "https://rpc.ftm.tools"),
+    "fantom-mainnet": createMainnetConfig(
+      "fantom-mainnet",
+      "https://rpc.ftm.tools"
+    ),
 
     // Test Networks
     goerli: createTestnetConfig("goerli"),
@@ -131,10 +135,15 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      // @ts-ignore
       mainnet: process.env.ETHERSCAN_API_KEY,
+      // @ts-ignore
       goerli: process.env.ETHERSCAN_API_KEY,
+      // @ts-ignore
       optimisticEthereum: process.env.OPTIMISTIC_ETHERSCAN_API_KEY,
+      // @ts-ignore
       ftmTestnet: process.env.FTMSCAN_API_KEY,
+      // @ts-ignore
       opera: process.env.FTMSCAN_API_KEY,
     },
   },
