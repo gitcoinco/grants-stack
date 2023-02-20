@@ -31,7 +31,7 @@ import {
 } from "../api/types";
 import { Button } from "common/src/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
-import ViewFundingAdmin from "./ViewFundingAdmin";
+import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
 import { getUTCDate, getUTCTime } from "../api/utils";
 
@@ -170,9 +170,9 @@ export default function ViewRoundPage() {
                             <DocumentReportIcon className="h-6 w-6 mr-2" />
                             <span
                               className="mt-0.5"
-                              data-testid="funding-admin"
+                              data-testid="round-results"
                             >
-                              Funding Admin
+                              Round Results
                             </span>
                           </div>
                         )}
@@ -196,7 +196,7 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewFundingAdmin
+                      <ViewRoundResults
                         round={round}
                         chainId={`${chain.id}`}
                         roundId={id}
