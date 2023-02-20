@@ -4,7 +4,12 @@ import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
+import {
+  GrantApplicationFormAnswer,
+  Project,
+  ProjectCredentials,
+  ProjectMetadata,
+} from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
   ChevronLeftIcon,
@@ -104,6 +109,9 @@ export default function ViewProjectDetails() {
                     <Detail
                       text={projectToRender.projectMetadata.description}
                       testID="project-metadata"
+                    />
+                    <ApplicationFormAnswers
+                      answers={projectToRender.grantApplicationFormAnswers}
                     />
                   </div>
                 </div>
@@ -329,6 +337,49 @@ function Detail(props: { text: string; testID: string }) {
       className="text-base font-normal text-black"
       data-testid={props.testID}
     />
+  );
+}
+
+function ApplicationFormAnswers(props: {
+  answers: GrantApplicationFormAnswer[];
+}) {
+  // only show answers that are not empty and are not marked as hidden
+  const answers = props.answers.filter((a) => !!a.answer && !a.hidden);
+
+  if (answers.length === 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h1 className="text-2xl mt-8 font-thin text-black">
+        Additional information
+      </h1>
+      <div>
+        {answers.map((answer) => {
+          const answerText = Array.isArray(answer.answer)
+            ? answer.answer.join(", ")
+            : answer.answer;
+          return (
+            <div key={answer.questionId}>
+              <p className="text-md mt-8 mb-3 font-semibold text-black">
+                {answer.question}
+              </p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: markdown.renderToHTML(
+                    answerText
+                      .replace(/\n/g, "<br/>")
+                      .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+                  ),
+                }}
+                className="text-base font-normal text-black"
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

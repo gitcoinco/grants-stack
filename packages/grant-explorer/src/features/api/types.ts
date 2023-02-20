@@ -137,11 +137,19 @@ export interface Round {
   approvedProjects?: Project[];
 }
 
+export type GrantApplicationFormAnswer = {
+  questionId: number;
+  question: string;
+  answer: string | string[];
+  hidden: boolean;
+};
+
 export type Project = {
   grantApplicationId: GrantApplicationId;
   projectRegistryId: ProjectRegistryId;
   recipient: recipient;
   projectMetadata: ProjectMetadata;
+  grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
 };
 export type GrantApplicationId = string;
