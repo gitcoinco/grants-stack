@@ -88,6 +88,7 @@
     "@ledgerhq/hw-app-eth": "^6.30.5",
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/merkle-tree": "^1.0.2",
     "hardhat-contract-sizer": "^2.8.0"
   }
 }
