@@ -75,8 +75,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
         testid: "encrypted-toggle",
       },
       {
-        activeLabel: "Shown in Explorer",
-        inactiveLabel: "Hidden from Explorer",
+        activeLabel: "Hidden from Explorer",
+        inactiveLabel: "Shown in Explorer",
         value: "hidden",
         testid: "hidden-toggle",
       }
