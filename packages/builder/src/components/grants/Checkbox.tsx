@@ -33,8 +33,14 @@ export default function Checkbox({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
+          {required ? (
+            <span className="text-sm text-purple-700 inset-y-0 right-0">
+              *Required
+            </span>
+          ) : (
+            <span className="text-gray-400 inset-y-0 right-0 text-sm">
+              Optional
+            </span>
           )}
         </div>
       </div>
