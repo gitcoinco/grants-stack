@@ -4,7 +4,7 @@ import "../round/RoundImplementation.sol";
 
 contract MockRoundImplementation is RoundImplementation {
 
-    function mockSetReadyForPayout() external payable {
-        payoutStrategy.setReadyForPayout();
-    }
+  function mockSetReadyForPayout() external payable {
+    payoutStrategy.setReadyForPayout();
+  }
 }

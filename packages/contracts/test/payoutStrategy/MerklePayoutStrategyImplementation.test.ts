@@ -4,7 +4,6 @@ import { expect } from "chai";
 import { deployContract } from "ethereum-waffle";
 import { Wallet } from "ethers";
 import { BytesLike, hexlify, isAddress, randomBytes } from "ethers/lib/utils";
-// @ts-expect-error ethers and upgrades is there, typescript just acting up
 import { artifacts, upgrades, ethers } from "hardhat";
 import { Artifact } from "hardhat/types";
 import { encodeRoundParameters } from "../../scripts/utils";
@@ -17,6 +16,16 @@ import {
   RoundFactory__factory,
   RoundImplementation,
 } from "../../typechain";
+
+type Distribution = {
+  index: number;
+  grantee: string;
+  amount: number;
+};
+
+type DistributionWithMerkleProof = Distribution & {
+  merkleProof: string[];
+};
 
 const RANDOM_BYTES32 = randomBytes(32);
 
@@ -217,7 +226,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           const tx = merklePayoutStrategy.updateDistribution(RANDOM_BYTES32);
 
           await expect(tx).to.revertedWith(
-            "Payout: Cannot update dsitribution once ready for payout"
+            "Payout: Already ready for payout"
           );
         });
 
@@ -281,7 +290,7 @@ describe("MerklePayoutStrategyImplementation", function () {
         ]([
           {
             index: 0,
-            _grantee: distributions[0][1],
+            grantee: distributions[0][1],
             amount: distributions[0][2],
             merkleProof: validMerkleProof,
           },
@@ -379,7 +388,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           merklePayoutStrategy["payout((uint256,address,uint256,bytes32[])[])"](
             distribution
           )
-        ).to.be.revertedWith("Payout: Invalid proof.");
+        ).to.be.revertedWith("Payout: Invalid proof");
       });
 
       it("SHOULD payout successfully using ERC20", async () => {
@@ -401,7 +410,12 @@ describe("MerklePayoutStrategyImplementation", function () {
           await merklePayoutStrategy[
             "payout((uint256,address,uint256,bytes32[])[])"
           ](distribution);
-        await expect(tx).to.emit(merklePayoutStrategy, "BatchPayoutSuccessful");
+
+        await expect(tx).to.emit(
+          merklePayoutStrategy, "BatchPayoutSuccessful"
+        ).withArgs(
+          user.address
+        );
 
         /* Verify balance */
         const balance = await mockERC20.balanceOf(user2.address);
@@ -464,7 +478,12 @@ describe("MerklePayoutStrategyImplementation", function () {
           await merklePayoutStrategy[
             "payout((uint256,address,uint256,bytes32[])[])"
           ](distribution);
-        await expect(tx).to.emit(merklePayoutStrategy, "BatchPayoutSuccessful");
+
+        await expect(tx).to.emit(
+          merklePayoutStrategy, "BatchPayoutSuccessful")
+        .withArgs(
+          user.address
+        );
 
         /* Verify balance */
         const balance = await randomWallet
@@ -494,7 +513,12 @@ describe("MerklePayoutStrategyImplementation", function () {
           await merklePayoutStrategy[
             "payout((uint256,address,uint256,bytes32[])[])"
           ](distribution);
-        await expect(tx).to.emit(merklePayoutStrategy, "BatchPayoutSuccessful");
+
+        await expect(tx).to.emit(
+          merklePayoutStrategy, "BatchPayoutSuccessful")
+        .withArgs(
+          user.address
+        );
 
         /* Verify balance */
         const balance2 = await mockERC20.balanceOf(user2.address);
@@ -523,8 +547,23 @@ describe("MerklePayoutStrategyImplementation", function () {
             "payout((uint256,address,uint256,bytes32[])[])"
           ](distribution);
 
-        await expect(tx).to.emit(merklePayoutStrategy, "FundsDistributed");
-        await expect(tx).to.emit(merklePayoutStrategy, "FundsDistributed");
+        await expect(tx).to.emit(
+          merklePayoutStrategy, "FundsDistributed"
+        ).withArgs(
+          distributions[1][0], // index
+          distributions[1][2], // amount
+          mockERC20.address, // token
+          user.address, // sender
+          distributions[1][1], // recipient
+        );
+
+        await expect(tx).to.emit(merklePayoutStrategy, "FundsDistributed").withArgs(
+          distributions[2][0], // index
+          distributions[2][2], // amount
+          mockERC20.address, // token
+          user.address, // sender
+          distributions[2][1], // recipient
+        );
       });
 
       it("SHOULD revert if contract has not enough funds", async () => {
@@ -576,7 +615,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           merklePayoutStrategy["payout((uint256,address,uint256,bytes32[])[])"](
             distribution
           )
-        ).to.be.revertedWith("funds already distributed");
+        ).to.be.revertedWith("Payout: Already distributed");
       });
 
       it("SHOULD revert transaction when user tries to claim the same distribution in two batches", async () => {
@@ -597,7 +636,12 @@ describe("MerklePayoutStrategyImplementation", function () {
           await merklePayoutStrategy[
             "payout((uint256,address,uint256,bytes32[])[])"
           ](distribution);
-        await expect(tx).to.emit(merklePayoutStrategy, "BatchPayoutSuccessful");
+
+        await expect(tx).to.emit(
+          merklePayoutStrategy, "BatchPayoutSuccessful")
+        .withArgs(
+          user.address
+        );
 
         /* Verify balance */
         const balance = await mockERC20.balanceOf(user2.address);
@@ -608,7 +652,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           merklePayoutStrategy["payout((uint256,address,uint256,bytes32[])[])"](
             distribution
           )
-        ).to.be.revertedWith("funds already distributed");
+        ).to.be.revertedWith("Payout: Already distributed");
       });
 
       it("SHOULD revert when user tries to distribute more than the proof", async () => {
@@ -628,7 +672,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           merklePayoutStrategy["payout((uint256,address,uint256,bytes32[])[])"](
             distribution
           )
-        ).to.be.revertedWith("Payout: Invalid proof.");
+        ).to.be.revertedWith("Payout: Invalid proof");
       });
 
       it("SHOULD revert when user tries to distribute funds to another address than the proof", async () => {
@@ -649,7 +693,7 @@ describe("MerklePayoutStrategyImplementation", function () {
           merklePayoutStrategy["payout((uint256,address,uint256,bytes32[])[])"](
             distribution
           )
-        ).to.be.revertedWith("Payout: Invalid proof.");
+        ).to.be.revertedWith("Payout: Invalid proof");
       });
     });
   });
@@ -663,6 +707,7 @@ async function preparePayoutContract(
   const [user, user2, user3] = await ethers.getSigners();
 
   /* Generate a simple distribution */
+  // [index, address, amount]
   const distributions: [number, string, number][] = [
     [0, user.address, 100],
     [1, user2.address, 200],
@@ -707,36 +752,11 @@ function encodeDistributionParameters(
   );
 }
 
-/** Encode Payout Parameters
- /* payout: [index, grantAddress, amount, merkleProof]
- */
-// eslint-disable-next-line no-unused-vars
-function encodeMerklePayoutParameters(payouts: any[]) {
-  const encodedPayoutData: BytesLike[] = payouts.map((payout) =>
-    ethers.utils.defaultAbiCoder.encode(
-      ["uint256", "address", "uint256", "bytes32[]"],
-      payout
-    )
-  );
-
-  return encodedPayoutData;
-}
-
-type Distribution = {
-  index: number;
-  _grantee: string;
-  amount: number;
-};
-
-type DistributionWithMerkleProof = Distribution & {
-  merkleProof: string[];
-};
-
 function arrayToDistribution(array: any[]): DistributionWithMerkleProof[] {
   return array.map((elem) => {
     return {
       index: elem[0],
-      _grantee: elem[1],
+      grantee: elem[1],
       amount: elem[2],
       merkleProof: elem[3],
     };

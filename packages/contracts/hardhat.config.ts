@@ -110,7 +110,7 @@ const config: HardhatUserConfig = {
   solidity: "0.8.17",
   // @ts-ignore
   optimizer: {
-    enabled: false,
+    enabled: true,
   },
   networks: {
     // Main Networks

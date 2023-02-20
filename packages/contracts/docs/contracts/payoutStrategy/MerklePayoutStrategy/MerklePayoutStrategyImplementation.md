@@ -61,38 +61,6 @@ function VERSION() external view returns (string)
 |---|---|---|
 | _0 | string | undefined |
 
-### _distribute
-
-```solidity
-function _distribute(bytes _distribution) external nonpayable
-```
-
-Util function to distribute funds to recipient
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _distribution | bytes | encoded distribution |
-
-### distribute
-
-```solidity
-function distribute(MerklePayoutStrategyImplementation.Distribution distribution) external nonpayable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| distribution | MerklePayoutStrategyImplementation.Distribution | undefined |
-
 ### distributionMetaPtr
 
 ```solidity
@@ -211,15 +179,15 @@ function payout(MerklePayoutStrategyImplementation.Distribution[] _distributions
 function payout(bytes[] _distributions) external payable
 ```
 
-MerklePayoutStrategy implementation of payout Can be invoked only by round operator and isReadyForPayout is true
+payout function defined in IPayoutStrategy
 
-
+*NOT IMPLEMENTED. Use payout(Distribution[] calldata _distributions) instead*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| _distributions | bytes[] | encoded distributions |
+| _distributions | bytes[] | encoded distribution |
 
 ### reclaimLockEndTime
 
@@ -289,7 +257,7 @@ Token address
 function updateDistribution(bytes encodedDistribution) external nonpayable
 ```
 
-Invoked by round operator to update the - merkle root - distribution MetaPtr
+Invoked by round operator to update the merkle root and distribution MetaPtr
 
 
 
@@ -355,7 +323,7 @@ Emitted when the distribution is updated
 ### FundsDistributed
 
 ```solidity
-event FundsDistributed(address indexed sender, address indexed grantee, address indexed token, uint256 amount)
+event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee)
 ```
 
 Emitted when funds are distributed
@@ -366,10 +334,11 @@ Emitted when funds are distributed
 
 | Name | Type | Description |
 |---|---|---|
+| index  | uint256 | undefined |
+| amount  | uint256 | undefined |
+| token `indexed` | address | undefined |
 | sender `indexed` | address | undefined |
 | grantee `indexed` | address | undefined |
-| token `indexed` | address | undefined |
-| amount  | uint256 | undefined |
 
 ### FundsWithdrawn
 
