@@ -1326,8 +1326,7 @@ describe("RoundImplementation", function () {
           ).withArgs(
             payoutContractBalance,
             newProtocolTreasuryBalance,
-            newRoundFeeAddressBalance,
-            roundFeeAddress
+            newRoundFeeAddressBalance
           );
 
           expect(newProtocolTreasuryBalance).to.be.equal(
@@ -1404,13 +1403,10 @@ describe("RoundImplementation", function () {
         });
 
         it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
-
-          let roundFeeAddress = await roundImplementation.roundFeeAddress();
-
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
-          ).withArgs(100, 10, 0, roundFeeAddress);
+          ).withArgs(100, 10, 0);
         });
 
         it("SHOULD transfer fee to protocolTreasury", async () => {
@@ -1482,7 +1478,7 @@ describe("RoundImplementation", function () {
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
-          ).withArgs(100, 0, 10, roundFeeAddress);
+          ).withArgs(100, 0, 10);
         });
 
         it("SHOULD NOT transfer fee to protocolTreasury", async () => {
@@ -1555,12 +1551,10 @@ describe("RoundImplementation", function () {
         });
 
         it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
-          let roundFeeAddress = await roundImplementation.roundFeeAddress();
-
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
-          ).withArgs(100, 0, 0, roundFeeAddress);
+          ).withArgs(100, 0, 0);
         });
 
         it("SHOULD NOT transfer fee to protocolTreasury", async () => {

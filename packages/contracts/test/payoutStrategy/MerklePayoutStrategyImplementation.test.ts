@@ -146,7 +146,10 @@ describe("MerklePayoutStrategyImplementation", function () {
       votingStrategyContract = <QuadraticFundingVotingStrategyImplementation>(
         await deployContract(user, votingStrategyArtifact, [])
       );
-      const amount = 100;
+  
+      let roundFeeAddress = overrides && overrides.hasOwnProperty('roundFeeAddress') ? overrides.roundFeeAddress : Wallet.createRandom().address;
+      let matchAmount = overrides && overrides.hasOwnProperty('matchAmount') ? overrides.matchAmount : 100;
+      let roundFeePercentage = overrides && overrides.hasOwnProperty('roundFeePercentage') ? overrides.roundFeePercentage : 0;
 
       const initAddress = [
         votingStrategyContract.address, // votingStrategy
@@ -167,10 +170,12 @@ describe("MerklePayoutStrategyImplementation", function () {
       const params = [
         initAddress,
         initRoundTime,
-        amount,
+        matchAmount,
         token,
+        roundFeePercentage,
+        roundFeeAddress,
         initMetaPtr,
-        initRoles,
+        initRoles,        
       ];
 
       await roundImplementation.initialize(
@@ -183,6 +188,7 @@ describe("MerklePayoutStrategyImplementation", function () {
       beforeEach(async () => {
         const protocolTreasury = Wallet.createRandom().address;
         await roundFactoryContract.updateProtocolTreasury(protocolTreasury);
+        await roundFactoryContract.updateProtocolFeePercentage(0);
 
         [user] = await ethers.getSigners();
 
@@ -251,6 +257,7 @@ describe("MerklePayoutStrategyImplementation", function () {
       beforeEach(async () => {
         const protocolTreasury = Wallet.createRandom().address;
         await roundFactoryContract.updateProtocolTreasury(protocolTreasury);
+        await roundFactoryContract.updateProtocolFeePercentage(0);
 
         [user] = await ethers.getSigners();
 
@@ -592,7 +599,7 @@ describe("MerklePayoutStrategyImplementation", function () {
 
         /* Mark ready for payouts */
         const tx = roundImplementation.setReadyForPayout();
-        await expect(tx).to.be.revertedWith("not enough funds");
+        await expect(tx).to.be.revertedWith("Round: Not enough funds in contract");
       });
 
       it("SHOULD revert when user tries to claim the same distributions twice on one call", async () => {
