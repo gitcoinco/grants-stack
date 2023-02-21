@@ -87,7 +87,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           key="hidden"
           activeLabel="Shown in Explorer"
           inactiveLabel="Hidden from Explorer"
-          value={!(questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
+          value={(!questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
           handler={(b: boolean) =>
             setQuestionOptions({ ...questionOptions, ["hidden"]: !b })
           }
@@ -267,6 +267,8 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     setInputError([]);
     const errors = [];
 
+    console.log("JER", questionOptions);
+
     if (selectedQuestion === INITIAL_VALUE) {
       errors.push("Please select a question type.");
     }
@@ -280,7 +282,9 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       && (!questionOptions.choices || questionOptions.choices?.length < 2 || questionOptions.choices?.[1] === "")) {
       errors.push("Please provide at least 2 options.");
     }
-    if (questionOptions.encrypted && questionOptions.hidden) {
+    // FIXME: This is a temporary fix for the issue where the user can select both encrypted and hidden
+    // the value should be true for both but hacked to false for now
+    if (questionOptions.encrypted === true && questionOptions.hidden === false) {
       errors.push("Questions cannot be marked as encrypted and shown in explorer. Please select one.");
     }
 
