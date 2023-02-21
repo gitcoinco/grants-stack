@@ -69,7 +69,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
 
   /// @notice Emitted when protocol & round fees are paid
-  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount, address roundFeeAddress);
+  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount);
 
   // --- Modifier ---
 
@@ -317,22 +317,34 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     require(newApplicationsEndTime <= newRoundEndTime, "Round: Round end is before application end");
     require(block.timestamp <= newApplicationsStartTime, "Round: Time has already passed");
 
-    if (newApplicationsStartTime != applicationsStartTime) {
+    if (
+      applicationsStartTime >= block.timestamp &&
+      newApplicationsStartTime != applicationsStartTime
+    ) {
       emit ApplicationsStartTimeUpdated(applicationsStartTime, newApplicationsStartTime);
       applicationsStartTime = newApplicationsStartTime;
     }
 
-    if (newApplicationsEndTime != applicationsEndTime) {
+    if (
+      applicationsEndTime >= block.timestamp &&
+      newApplicationsEndTime != applicationsEndTime
+    ) {
       emit ApplicationsEndTimeUpdated(applicationsEndTime, newApplicationsEndTime);
       applicationsEndTime = newApplicationsEndTime;
     }
 
-    if (newRoundStartTime != roundStartTime) {
+    if (
+      roundStartTime >= block.timestamp &&
+      newRoundStartTime != roundStartTime
+    ) {
       emit RoundStartTimeUpdated(roundStartTime, newRoundStartTime);
       roundStartTime = newRoundStartTime;
     }
 
-    if (newRoundEndTime != roundEndTime) {
+    if (
+      roundEndTime >= block.timestamp &&
+      newRoundEndTime != roundEndTime
+    ) {
       emit RoundEndTimeUpdated(roundEndTime, newRoundEndTime);
       roundEndTime = newRoundEndTime;
     }
@@ -398,15 +410,18 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
       _transferAmount(roundFeeAddress, roundFeeAmount, token);
     }
 
+    // update funds in contract after fee deduction
+    fundsInContract = _getTokenBalance(token);
+
     // transfer funds to payout contract
     if (token == address(0)) {
-      payoutStrategy.setReadyForPayout{value: matchAmount}();
+      payoutStrategy.setReadyForPayout{value: fundsInContract}();
     } else {
-      IERC20(token).safeTransfer(address(payoutStrategy), matchAmount);
+      IERC20(token).safeTransfer(address(payoutStrategy), fundsInContract);
       payoutStrategy.setReadyForPayout();
     }
 
-    emit PayFeeAndEscrowFundsToPayoutContract(matchAmount, protocolFeeAmount, roundFeeAmount, roundFeeAddress);
+    emit PayFeeAndEscrowFundsToPayoutContract(fundsInContract, protocolFeeAmount, roundFeeAmount);
   }
 
   /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
