@@ -309,32 +309,34 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
     uint256 newRoundStartTime,
     uint256 newRoundEndTime
   ) external roundHasNotEnded onlyRole(ROUND_OPERATOR_ROLE) {
+
     // slither-disable-next-line timestamp
     require(newApplicationsStartTime < newApplicationsEndTime, "Round: Application end is before application start");
     require(newRoundStartTime < newRoundEndTime, "Round: Round end is before round start");
-    require(newApplicationsStartTime < newRoundStartTime, "Round: Round start is before application start");
-    require(newApplicationsEndTime < newRoundEndTime, "Round: Round end is before application end");
+    require(newApplicationsStartTime <= newRoundStartTime, "Round: Round start is before application start");
+    require(newApplicationsEndTime <= newRoundEndTime, "Round: Round end is before application end");
+    require(block.timestamp <= newApplicationsStartTime, "Round: Time has already passed");
 
-    if(newApplicationsStartTime > block.timestamp && applicationsStartTime > block.timestamp) {
+    if (newApplicationsStartTime != applicationsStartTime) {
       emit ApplicationsStartTimeUpdated(applicationsStartTime, newApplicationsStartTime);
       applicationsStartTime = newApplicationsStartTime;
     }
 
-    if (newApplicationsEndTime > block.timestamp && applicationsEndTime > block.timestamp) {
+    if (newApplicationsEndTime != applicationsEndTime) {
       emit ApplicationsEndTimeUpdated(applicationsEndTime, newApplicationsEndTime);
       applicationsEndTime = newApplicationsEndTime;
     }
 
-    if (newRoundStartTime > block.timestamp && roundStartTime > block.timestamp) {
+    if (newRoundStartTime != roundStartTime) {
       emit RoundStartTimeUpdated(roundStartTime, newRoundStartTime);
       roundStartTime = newRoundStartTime;
     }
 
-    if (newRoundEndTime > block.timestamp && roundEndTime > block.timestamp) {
+    if (newRoundEndTime != roundEndTime) {
       emit RoundEndTimeUpdated(roundEndTime, newRoundEndTime);
       roundEndTime = newRoundEndTime;
     }
-  
+
   }
 
   /// @notice Update projectsMetaPtr (only by ROUND_OPERATOR_ROLE)
