@@ -765,7 +765,7 @@ Emitted when a project has applied to the round
 ### PayFeeAndEscrowFundsToPayoutContract
 
 ```solidity
-event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint256 protocolFeeAmount, uint256 roundFeeAmount)
+event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint256 protocolFeeAmount, uint256 roundFeeAmount, address roundFeeAddress)
 ```
 
 Emitted when protocol &amp; round fees are paid
@@ -779,6 +779,7 @@ Emitted when protocol &amp; round fees are paid
 | matchAmountAfterFees  | uint256 | undefined |
 | protocolFeeAmount  | uint256 | undefined |
 | roundFeeAmount  | uint256 | undefined |
+| roundFeeAddress  | address | undefined |
 
 ### ProjectsMetaPtrUpdated
 

@@ -69,7 +69,7 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
   event NewProjectApplication(bytes32 indexed project, MetaPtr applicationMetaPtr);
 
   /// @notice Emitted when protocol & round fees are paid
-  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount);
+  event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint protocolFeeAmount, uint roundFeeAmount, address roundFeeAddress);
 
   // --- Modifier ---
 
@@ -379,13 +379,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     uint256 fundsInContract = _getTokenBalance(token);
 
-    require(fundsInContract >= matchAmount, "Round: Not enough funds in contract");
-
     uint256 protocolFeeAmount = (matchAmount * roundFactory.protocolFeePercentage() / 100);
     uint256 roundFeeAmount = (matchAmount * roundFeePercentage / 100);
 
-    // match amount after fees
-    uint256 matchAmountAfterFees = matchAmount - (protocolFeeAmount + roundFeeAmount);
+    // total funds needed for payout
+    uint256 neededFunds = matchAmount + protocolFeeAmount + roundFeeAmount;
+
+    require(fundsInContract >= neededFunds, "Round: Not enough funds in contract");
 
     // deduct protocol fee
     if (protocolFeeAmount > 0) {
@@ -400,13 +400,13 @@ contract RoundImplementation is AccessControlEnumerable, Initializable {
 
     // transfer funds to payout contract
     if (token == address(0)) {
-      payoutStrategy.setReadyForPayout{value: matchAmountAfterFees}();
+      payoutStrategy.setReadyForPayout{value: matchAmount}();
     } else {
-      IERC20(token).safeTransfer(address(payoutStrategy), matchAmountAfterFees);
+      IERC20(token).safeTransfer(address(payoutStrategy), matchAmount);
       payoutStrategy.setReadyForPayout();
     }
 
-    emit PayFeeAndEscrowFundsToPayoutContract(matchAmountAfterFees, protocolFeeAmount, roundFeeAmount);
+    emit PayFeeAndEscrowFundsToPayoutContract(matchAmount, protocolFeeAmount, roundFeeAmount, roundFeeAddress);
   }
 
   /// @notice Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
