@@ -833,7 +833,6 @@ describe("RoundImplementation", function () {
         );
       });
 
-
       it ('SHOULD revert if newApplicationStartTime is after newApplicationsEndTime', async () => {
 
         const _newApplicationsStartTime = _currentBlockTimestamp + 400;
@@ -891,7 +890,7 @@ describe("RoundImplementation", function () {
         );
       });
 
-      it ('SHOULD update start & end times value IF called is round operator', async () => {
+      it('SHOULD update start & end times value IF called is round operator', async () => {
 
         const txn = await roundImplementation.updateStartAndEndTimes(
           newApplicationsStartTime,
@@ -910,44 +909,83 @@ describe("RoundImplementation", function () {
         expect(applicationsEndTime).equals(newApplicationsEndTime);
         expect(roundStartTime).equals(newRoundStartTime);
         expect(roundEndTime).equals(newRoundEndTime);
+
       });
 
-      it('SHOULD emit ApplicationsStartTimeUpdated event', async() => {
+      it('SHOULD emit all TimeUpdated event', async() => {
 
-        expect(await roundImplementation.updateStartAndEndTimes(
+        const oldApplicationStartTime = await roundImplementation.applicationsStartTime();
+        const oldApplicationEndTime = await roundImplementation.applicationsEndTime();
+        const oldRoundStartTime = await roundImplementation.roundStartTime();
+        const oldRoundEndTime = await roundImplementation.roundEndTime();
+
+        const tx = await roundImplementation.updateStartAndEndTimes(
           newApplicationsStartTime,
           newApplicationsEndTime,
           newRoundStartTime,
           newRoundEndTime
-        ))
+        );
+
+        expect(tx)
           .to.emit(roundImplementation, 'ApplicationsStartTimeUpdated')
-          .withArgs(_currentBlockTimestamp + 100, newApplicationsStartTime);
+          .withArgs(oldApplicationStartTime, newApplicationsStartTime);
+
+        expect(tx)
+          .to.emit(roundImplementation, 'ApplicationsEndTimeUpdated')
+          .withArgs(oldApplicationEndTime, newApplicationsEndTime);
+
+        expect(tx)
+          .to.emit(roundImplementation, 'RoundStartTimeUpdated')
+          .withArgs(oldRoundStartTime, newRoundStartTime);
+
+        expect(tx)
+          .to.emit(roundImplementation, 'RoundEndTimeUpdated')
+          .withArgs(oldRoundEndTime, newRoundEndTime);
       });
 
-      it('SHOULD not emit ApplicationsStartTimeUpdated event if newApplicationsStartTime has passed current timestamp', async() => {
+      it('SHOULD revert if newApplicationsStartTime has passed current timestamp', async() => {
 
         const _newApplicationsStartTime = _currentBlockTimestamp - 100;
-        
-        expect(await roundImplementation.updateStartAndEndTimes(
+
+        const tx = roundImplementation.updateStartAndEndTimes(
           _newApplicationsStartTime,
           newApplicationsEndTime,
           newRoundStartTime,
           newRoundEndTime
-        ))
-          .not.to.emit(roundImplementation, 'ApplicationsStartTimeUpdated');
+        )
+
+        await expect(tx).to.revertedWith("Round: Time has already passed");
+
       });
 
-      it('SHOULD not emit ApplicationsStartTimeUpdated event if current time has passed applicationStartTime', async() => {
+      it('SHOULD emit event only for updated timestamp', async() => {
 
-        await ethers.provider.send("evm_mine", [_currentBlockTimestamp + 200])
-        
-        expect(await roundImplementation.updateStartAndEndTimes(
+        const oldApplicationStartTime = await roundImplementation.applicationsStartTime();
+        const oldApplicationEndTime = await roundImplementation.applicationsEndTime();
+        const oldRoundStartTime = await roundImplementation.roundStartTime();
+        const oldRoundEndTime = await roundImplementation.roundEndTime();
+
+        const tx = await roundImplementation.updateStartAndEndTimes(
           newApplicationsStartTime,
           newApplicationsEndTime,
           newRoundStartTime,
-          newRoundEndTime
-        ))
-          .not.to.emit(roundImplementation, 'ApplicationsStartTimeUpdated');
+          oldRoundEndTime
+        );
+
+        expect(tx)
+          .to.emit(roundImplementation, 'ApplicationsStartTimeUpdated')
+          .withArgs(oldApplicationStartTime, newApplicationsStartTime);
+
+        expect(tx)
+          .to.emit(roundImplementation, 'ApplicationsEndTimeUpdated')
+          .withArgs(oldApplicationEndTime, newApplicationsEndTime);
+
+        expect(tx)
+          .to.emit(roundImplementation, 'RoundStartTimeUpdated')
+          .withArgs(oldRoundStartTime, newRoundStartTime);
+
+        expect(tx)
+          .not.to.emit(roundImplementation, 'RoundEndTimeUpdated');
       });
 
       it('SHOULD revert if invoked after roundEndTime', async () => {
@@ -1224,7 +1262,7 @@ describe("RoundImplementation", function () {
           await roundFactoryContract.updateProtocolTreasury(protocolTreasury);
 
           // get protocol fee percentage
-          protocolFeePercentage = await roundFactoryContract.protocolFeePercentage();          
+          protocolFeePercentage = await roundFactoryContract.protocolFeePercentage();
 
           // Deploy RoundImplementation contract
           roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
@@ -1254,7 +1292,7 @@ describe("RoundImplementation", function () {
           let roundFeeAddress = await roundImplementation.roundFeeAddress();
           let roundFeeAddressBalance = await ethers.provider.getBalance(roundFeeAddress);
 
-          
+
           // send funds to contract
           await user.sendTransaction({
             to: roundImplementation.address,
@@ -1275,7 +1313,7 @@ describe("RoundImplementation", function () {
           let roundFeeAddress = await roundImplementation.roundFeeAddress();
           let payoutContractBalance = await ethers.provider.getBalance(payoutContract);
           let newRoundFeeAddressBalance = await ethers.provider.getBalance(roundFeeAddress);
-          
+
           expect(tx).to.emit(
             roundImplementation,
             'PayFeeAndEscrowFundsToPayoutContract'
@@ -1323,7 +1361,7 @@ describe("RoundImplementation", function () {
           // update protocol treasury
           protocolTreasury = Wallet.createRandom().address;
           await roundFactoryContract.updateProtocolTreasury(protocolTreasury);
-          
+
           // Deploy RoundImplementation contract
           roundImplementationArtifact = await artifacts.readArtifact('RoundImplementation');
           roundImplementation = <RoundImplementation>await deployContract(user, roundImplementationArtifact, []);
@@ -1357,7 +1395,7 @@ describe("RoundImplementation", function () {
           tx = await roundImplementation.setReadyForPayout();
 
         });
-       
+
         it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
           expect(tx).to.emit(
             roundImplementation,
@@ -1426,7 +1464,7 @@ describe("RoundImplementation", function () {
           // invoke setReadyForPayout
           tx = await roundImplementation.setReadyForPayout();
         });
-       
+
         it("SHOULD emit PayFeeAndEscrowFundsToPayoutContract", async () => {
           expect(tx).to.emit(
             roundImplementation,
