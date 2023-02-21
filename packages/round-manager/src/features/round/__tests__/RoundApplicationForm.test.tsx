@@ -392,9 +392,6 @@ describe("Application Form Builder", () => {
     });
 
     it("toggles each encryption option when clicked", async () => {
-      const initialEncriptionValues = initialQuestions.map((q) => q.encrypted);
-      const isNotEncrypted = initialEncriptionValues.filter((value) => value === false);
-
       renderWithContext(
         <RoundApplicationForm
           initialData={{
@@ -422,10 +419,7 @@ describe("Application Form Builder", () => {
         "Encrypted"
       );
 
-      // Amount of encrypted switches is after toggling equal to 
-      // the amount of questions that were not encrypted before
-      //!FIXME: this test is failing
-      // expect(encryptionToggleLabels.length).toBe(isNotEncrypted.length);
+      expect(encryptionToggleLabels.length).toBe(1);
     });
   });
 

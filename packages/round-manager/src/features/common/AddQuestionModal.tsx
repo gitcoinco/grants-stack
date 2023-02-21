@@ -87,7 +87,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           key="hidden"
           activeLabel="Shown in Explorer"
           inactiveLabel="Hidden from Explorer"
-          value={(!questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
+          value={!(questionOptions["hidden" as keyof SchemaQuestion] as boolean) || false}
           handler={(b: boolean) =>
             setQuestionOptions({ ...questionOptions, ["hidden"]: !b })
           }
