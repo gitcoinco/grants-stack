@@ -280,6 +280,9 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       && (!questionOptions.choices || questionOptions.choices?.length < 2 || questionOptions.choices?.[1] === "")) {
       errors.push("Please provide at least 2 options.");
     }
+    if (questionOptions.encrypted && questionOptions.hidden) {
+      errors.push("Questions cannot be marked as encrypted and shown in explorer. Please select one.");
+    }
 
     setInputError(errors);
     return (errors.length > 0);

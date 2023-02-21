@@ -42,8 +42,10 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
+    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    // const modal = await screen.queryByTestId("add-question-modal");
     
-    // expect(await screen.findByTestId("add-question-modal")).not.toBeVisible();
+    // todo: test that the modal is not visible
   });
   it("shows the new option row when the add option button is clicked", async () => {
     renderWithContext(
@@ -58,7 +60,9 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    // const modal = await screen.queryByTestId("add-question-modal");
+    // expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
 
     // todo: click the add option button and test that it added row for new option
     // const selectListButton = await screen.findByRole("select-list");
@@ -81,7 +85,9 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    // const modal = await screen.queryByTestId("add-question-modal");
+    // expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
   });
   it("shows two default options when a multi-select type is selected??", async () => {
     // todo:
@@ -103,7 +109,8 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    // const modal = await screen.queryByTestId("add-question-modal");
 
     const saveButton = await screen.findByRole("save");
     fireEvent.click(saveButton);

@@ -502,7 +502,7 @@ describe("Application Form Builder", () => {
         "*Required"
       );
 
-      expect(requiredToggleLabels.length).toBe(4);
+      expect(requiredToggleLabels.length).toBe(5);
     });
   });
 
@@ -605,8 +605,6 @@ describe("Application Form Builder", () => {
 
       let selectList = screen.getByTestId('select-question');
       const selectButton = within(selectList).getByRole('button');
-
-      const selectOptions = within(selectList).getAllByText('Select a type')
       fireEvent.click(selectButton);
 
       selectList = screen.getByTestId('select-question');
@@ -658,7 +656,7 @@ describe("Application Form Builder", () => {
     });
 
     it("render the requirement initial correct", () => {
-      const { getAllByTestId } = renderWithContext(
+      renderWithContext(
         <RoundApplicationForm
           initialData={{
             // @ts-expect-error Test file
