@@ -126,7 +126,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
   const AddOptionButton = () => {
     return (
       <Button
-        role="add-option"
+        data-testid="add-option"
         onClick={() => {
           const renderOptions = questionOptions.choices || [];
           renderOptions.push("");
@@ -207,7 +207,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
 
   function QuestionSelectList() {
     return (
-      <div role="select-list" className="w-[208px]">
+      <div data-testid="select-list" className="w-[208px]">
         <Listbox
           value={selectedQuestion}
           name="question"
@@ -222,7 +222,10 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
           }}
         >
           <div className="relative mt-1">
-            <Listbox.Button className="border rounded-md border-gray-100 p-1 flex relative items-center justify-center">
+            <Listbox.Button
+              data-testid="select-list-button"
+              className="border rounded-md border-gray-100 p-1 flex relative items-center justify-center"
+            >
               <div className="flex items-center justify-center">
                 <InputIcon type={selectedQuestion} />
                 <span className="mx-1 text-[16px] text-grey-400 font-medium">{typeToText(selectedQuestion)}</span>

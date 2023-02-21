@@ -25,10 +25,6 @@ beforeEach(() => {
 });
 
 describe("AddQuestionModal", () => {
-  beforeEach(() => {
-    // todo:
-  });
-
   it("does not show the modal when the modal is not open", async () => {
     renderWithContext(
       <AddQuestionModal
@@ -42,10 +38,9 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
-    // const modal = await screen.queryByTestId("add-question-modal");
-    
-    // todo: test that the modal is not visible
+    const modalDiv = await screen.queryByTestId("add-question-modal");
+    expect(modalDiv).toBeInTheDocument();
+    expect(modalDiv?.children[0]).toBeEmptyDOMElement;
   });
   it("shows the new option row when the add option button is clicked", async () => {
     renderWithContext(
@@ -60,19 +55,15 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
-    // const modal = await screen.queryByTestId("add-question-modal");
-    // expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    const modalDiv = screen.queryByTestId("add-question-modal");
+    expect(modalDiv).toBeInTheDocument();
 
-    // todo: click the add option button and test that it added row for new option
-    // const selectListButton = await screen.findByRole("select-list");
-    // fireEvent.change(selectListButton, { target: { value: "multi-select" } });
-    // fixme: this wont work until we can get the select list to open and select an option
-    // const addOptionButton = await screen.findByRole("add-option");
-    // fireEvent.click(addOptionButton);
+    const selectListButton = await screen.findByTestId("select-list-button");
+    fireEvent.click(selectListButton, { target: { value: "multiple-choice" } });
+    const addOptionButton = await screen.findByTestId("add-option");
+    fireEvent.click(addOptionButton);
   });
   it("shows proper question type when selected from menu", async () => {
-    // todo:
     renderWithContext(
       <AddQuestionModal
         show={true}
@@ -85,18 +76,15 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
-    // const modal = await screen.queryByTestId("add-question-modal");
-    // expect(await screen.queryByTestId("add-question-modal")).toBeInTheDocument();
-  });
-  it("shows two default options when a multi-select type is selected??", async () => {
-    // todo:
-  });
-  it("shows proper switch values", async () => {
-    // todo:
+    const modalDiv = screen.queryByTestId("add-question-modal");
+    expect(modalDiv).toBeInTheDocument();
+
+    const selectListButton = await screen.findByTestId("select-list-button");
+    fireEvent.click(selectListButton, { target: { value: "dropdown" } });
+    const multiSelectOption = await screen.findByText("Dropdown");
+    expect(multiSelectOption).toBeInTheDocument();
   });
   it("saves question to form when Add is clicked", async () => {
-    // todo:
     renderWithContext(
       <AddQuestionModal
         show={true}
@@ -109,17 +97,16 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
-    // const modal = await screen.queryByTestId("add-question-modal");
+    const modalDiv = screen.queryByTestId("add-question-modal");
+    expect(modalDiv).toBeInTheDocument();
 
     const saveButton = await screen.findByRole("save");
     fireEvent.click(saveButton);
+    expect(modalDiv?.children[0]).toBeEmptyDOMElement;
 
-    // not sure why this isn't working after the click event, the modal should be hidden
-    // expect(screen.queryByTestId("add-question-modal")).not.toBeInTheDocument();
+    // todo: check the form state to make sure the question was added
   });
   it("closes modal when cancel is clicked", async () => {
-    // todo:
     renderWithContext(
       <AddQuestionModal
         show={true}
@@ -132,12 +119,13 @@ describe("AddQuestionModal", () => {
         question={editQuestion}
       />
     );
-    expect(screen.queryByTestId("add-question-modal")).toBeInTheDocument();
+    const modalDiv = screen.queryByTestId("add-question-modal");
+    expect(modalDiv).toBeInTheDocument();
 
     const cancelButton = await screen.findByRole("cancel");
     fireEvent.click(cancelButton);
 
-    // expect(await screen.queryByTestId("add-question-modal")).not.toBeInTheDocument();
+    expect(modalDiv?.children[0]).toBeEmptyDOMElement;
   });
 });
 
