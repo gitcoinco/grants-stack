@@ -353,7 +353,7 @@ function ApplicationFormAnswers(props: {
   return (
     <div>
       <h1 className="text-2xl mt-8 font-thin text-black">
-        Additional information
+        Additional Information
       </h1>
       <div>
         {answers.map((answer) => {
