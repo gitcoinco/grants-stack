@@ -31,6 +31,7 @@
     "create-round": "pnpm hardhat run scripts/round/createRound.ts --network",
     "apply-to-round": "pnpm hardhat run scripts/round/applyToRound.ts --network",
     "update-project-metaptr": "pnpm hardhat run scripts/round/updateProjectMetaPtr.ts --network",
+    "set-protocol-fee": "pnpm hardhat run scripts/round/setProtocolFee.ts --network",
     "upgrade-round-factory": "pnpm hardhat run scripts/round/upgradeRoundFactory.ts --network",
     "// vote-deploy-scripts": "echo '//-- Voting deploy Script --//'",
     "deploy-qf-factory": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/deployQFVotingStrategyFactory.ts --network",
