@@ -112,7 +112,7 @@ Invoked by RoundImplementation to trigger payout
 function reclaimLockEndTime() external view returns (uint256)
 ```
 
-Relclaim lock end time
+Reclaim lock end time
 
 
 
