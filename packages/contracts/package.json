@@ -38,6 +38,7 @@
     "link-qf-implementation": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/linkQFVotingStrategyImplementation.ts --network",
     "create-qf-contract": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
     "cast-qf-vote": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network",
+    "upgrade-qf-factory": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/upgradeQFFactory.ts --network",
     "// payout-deploy-scripts": "echo '//-- Payout deploy Script --//'",
     "deploy-merkle-factory": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategyFactory.ts --network",
     "deploy-merkle-implementation": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategyImplementation.ts --network",
