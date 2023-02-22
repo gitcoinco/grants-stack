@@ -31,9 +31,6 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   /// @notice Emitted when the distribution is updated
   event DistributionUpdated(bytes32 merkleRoot, MetaPtr distributionMetaPtr);
 
-  /// @notice Emitted when funds are reclaimed
-  event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount);
-
   /// @notice Emitted when funds are distributed
   event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee);
 

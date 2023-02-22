@@ -33,7 +33,7 @@ abstract contract IPayoutStrategy {
   bytes32 public constant ROUND_OPERATOR_ROLE = keccak256("ROUND_OPERATOR");
 
   /// @notice Locking duration
-  uint256 public constant LOCK_DURATION = 60 days;
+  uint256 public constant LOCK_DURATION = 0 days;
 
   // --- Data ---
 
@@ -46,7 +46,7 @@ abstract contract IPayoutStrategy {
   /// MetaPtr containing the distribution
   MetaPtr public distributionMetaPtr;
 
-  /// @notice Relclaim lock end time
+  /// @notice Reclaim lock end time
   uint256 public reclaimLockEndTime;
 
   // @notice

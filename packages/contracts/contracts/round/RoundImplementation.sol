@@ -21,7 +21,7 @@ import "../utils/MetaPtr.sol";
  */
 contract RoundImplementation is AccessControlEnumerable, Initializable {
 
-  string public constant VERSION = "0.2.0";
+  string public constant VERSION = "1.0.0";
 
   // --- Libraries ---
   using Address for address;
