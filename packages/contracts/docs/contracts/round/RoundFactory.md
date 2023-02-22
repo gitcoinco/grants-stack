@@ -247,7 +247,7 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 event ProtocolFeePercentageUpdated(uint8 protocolFeePercentage)
 ```
 
-Emitted when a protocol wallet address is updated
+Emitted when protocol fee percentage is updated
 
 
 
