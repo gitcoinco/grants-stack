@@ -131,10 +131,22 @@ export default function Form({
     publishedApplication.application.answers.forEach((answer: any) => {
       inputValues[answer.questionId] = answer.answer ?? "***";
     });
-    inputValues[Object.keys(inputValues).length] =
-      publishedApplication.application.recipient;
-    inputValues[Object.keys(inputValues).length] =
-      publishedApplication.application.project.title;
+
+    const recipientQuestion = schema.questions.find(
+      (q) => q.type === "recipient"
+    );
+
+    if (recipientQuestion) {
+      inputValues[recipientQuestion.id] =
+        publishedApplication.application.recipient;
+    }
+
+    const projectQuestion = schema.questions.find((q) => q.type === "project");
+
+    if (projectQuestion) {
+      inputValues[projectQuestion.id] =
+        publishedApplication.application.project.title;
+    }
     setAnswers(inputValues);
   }, [publishedApplication]);
 
@@ -289,7 +301,8 @@ export default function Form({
   }
 
   const isValidProjectSelected =
-    selectedProjectID && projectRequirementsResult.length === 0;
+    (selectedProjectID && projectRequirementsResult.length === 0) ||
+    publishedApplication !== undefined;
 
   const needsProject = schema.questions.find((q) => q.type === "project");
 
@@ -319,7 +332,7 @@ export default function Form({
                   }}
                   required
                   feedback={
-                    feedback.find((fb) => fb.title === "project") ?? {
+                    feedback.find((fb) => fb.title === input.id.toString()) ?? {
                       type: "none",
                       message: "",
                     }
