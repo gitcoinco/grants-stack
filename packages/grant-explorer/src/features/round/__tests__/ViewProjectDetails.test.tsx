@@ -213,7 +213,7 @@ describe("<ViewProjectDetails/>", () => {
 
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    expect(screen.getByText("Additional information")).toBeInTheDocument();
+    expect(screen.getByText("Additional Information")).toBeInTheDocument();
 
     expect(screen.getByText("What is love?")).toBeInTheDocument();
     expect(screen.getByText("baby don't hurt me")).toBeInTheDocument();
@@ -248,7 +248,7 @@ describe("<ViewProjectDetails/>", () => {
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
     expect(
-      screen.queryByText("Additional information")
+      screen.queryByText("Additional Information")
     ).not.toBeInTheDocument();
 
     expect(
