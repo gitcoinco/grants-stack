@@ -9,6 +9,7 @@ import {
   InboxIcon,
   ChartBarIcon,
   DocumentReportIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
 import ApplicationsReceived from "./ApplicationsReceived";
@@ -32,6 +33,7 @@ import {
 import { Button } from "common/src/styles";
 import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import ViewRoundResults from "./ViewRoundResults";
+import FundContract from "./FundContract";
 import ViewRoundStats from "./ViewRoundStats";
 import { getUTCDate, getUTCTime } from "../api/utils";
 
@@ -177,6 +179,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <DocumentTextIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="round-results"
+                            >
+                              Fund Contract
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -197,6 +218,13 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundResults
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <FundContract
                         round={round}
                         chainId={`${chain.id}`}
                         roundId={id}
