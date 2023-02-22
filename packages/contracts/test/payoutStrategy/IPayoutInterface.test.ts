@@ -170,9 +170,9 @@ describe("IPayoutInterface", function () {
       it("SHOULD set default value", async() => {
         expect(await merklePayoutStrategy.isReadyForPayout()).to.equal(false);
 
-        const LOCK_DURATION = 5185000; // 60 days
+        const roundEndTime = await roundImplementation.roundEndTime();
         const endLockingTime = await merklePayoutStrategy.reclaimLockEndTime();
-        expect(endLockingTime).to.equal(_currentBlockTimestamp + LOCK_DURATION);
+        expect(endLockingTime).to.equal(roundEndTime);
       });
 
     });
