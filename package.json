@@ -15,6 +15,7 @@
     "// contracts script": "====== packages/contract specific ======",
     "hh-test": "pnpm --filter contracts run test",
     "hh-compile": "pnpm --filter contracts run compile",
+    "hh-node": "pnpm --filter contracts run node",
     "// graph script": "====== packages/graph specific ======",
     "graph-test": "pnpm --filter graph test",
     "// round manager script": "====== packages/round-manager specific ======",

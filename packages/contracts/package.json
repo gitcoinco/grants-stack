@@ -14,6 +14,7 @@
     "export-abi": "pnpm run hardhat export-abi",
     "clear-abi": "pnpm run hardhat clear-abi",
     "lint:sol": "npx hardhat check",
+    "node": "npx hardhat node",
     "// project-registry-deploy-scripts": "echo '//-- Project Registry deploy Script --//'",
     "deploy-project-registry": "yarn hardhat run scripts/projectRegistry/deployProjectRegistry.ts --network",
     "upgrade-project-registry": "yarn hardhat run scripts/projectRegistry/upgradeProjectRegistry.ts --network",
