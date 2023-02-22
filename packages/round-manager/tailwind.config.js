@@ -5,6 +5,9 @@ module.exports = {
       animation: {
         "pulse-scale": "pulse-scale 2s ease-in-out infinite",
       },
+      fontSize: {
+        md: "16px",
+      },
       colors: {
         transparent: "transparent",
         black: "#000",

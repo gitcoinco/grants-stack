@@ -5,15 +5,15 @@ import {
   fetchFromIPFS,
   generateApplicationSchema,
   graphql_fetch,
-  pinToIPFS,
+  pinToIPFS
 } from "../utils";
 
-import { MetadataPointer } from "../types";
-import { checkGrantApplicationStatus } from "../application";
 import {
   initialQuestions,
-  initialRequirements,
+  initialRequirements
 } from "../../round/RoundApplicationForm";
+import { checkGrantApplicationStatus } from "../application";
+import { MetadataPointer } from "../types";
 
 enableFetchMocks();
 
@@ -357,11 +357,12 @@ describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
       questions: initialQuestions.map((question) => ({
-        question: question.title,
-        type: question.inputType,
+        title: question.title,
+        type: question.type,
         required: question.required,
+        hidden: question.hidden,
         info: "", // TODO: is grant hub using this???
-        choices: [], // TODO: is grant hub using this???
+        choices: undefined, // TODO: is grant hub using this???
         encrypted: question.encrypted,
       })),
       requirements: {

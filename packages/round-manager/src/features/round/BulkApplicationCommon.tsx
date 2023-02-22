@@ -93,7 +93,7 @@ function MarkForRejection(props: {
     <Button
       type="button"
       $variant="solid"
-      className={`border border-grey-400 w-9 h-8 p-2.5 ${
+      className={`border border-grey-400 w-9 h-8 p-2.5 px-3.5 py-2 ${
         props.checkSelection === "REJECTED"
           ? "bg-white text-pink-500"
           : "bg-grey-500 text-white"
@@ -114,7 +114,7 @@ function MarkForApproval(props: {
     <Button
       type="button"
       $variant="solid"
-      className={`border border-grey-400 w-9 h-8 p-2.5 ${
+      className={`border border-grey-400 w-9 h-8 p-2.5 px-3.5 py-2 ${
         props.applicationStatus === "APPROVED"
           ? "bg-teal-400 text-grey-500"
           : "bg-grey-500 text-white"
@@ -174,7 +174,7 @@ export function Cancel(props: { onClick: () => void }) {
     <Button
       type="button"
       $variant="outline"
-      className="text-xs text-pink-500"
+      className="text-xs text-pink-500 px-3.5 py-2"
       onClick={props.onClick}
     >
       Cancel
@@ -187,7 +187,7 @@ export function Select(props: { onClick: () => void }) {
     <Button
       type="button"
       $variant="outline"
-      className="text-xs bg-grey-150 border-none"
+      className="text-xs bg-grey-150 border-none px-3.5 py-2"
       onClick={props.onClick}
       data-testid="select"
     >
@@ -217,7 +217,7 @@ export function Continue(props: {
         <Button
           type="button"
           $variant="solid"
-          className="text-sm px-5"
+          className="text-sm px-3.5 py-2"
           onClick={props.onClick}
           data-testid="continue-button"
         >

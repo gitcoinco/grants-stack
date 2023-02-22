@@ -301,11 +301,11 @@ export const abbreviateAddress = (address: string) =>
 
 export interface SchemaQuestion {
   id: number;
-  question: string;
+  title: string;
   type: InputType;
   required: boolean;
-  info: string;
-  choices: [];
+  hidden: boolean;
+  choices?: string[];
   encrypted: boolean;
 }
 
@@ -341,11 +341,12 @@ export const generateApplicationSchema = (
   schema.questions = questions.map((question, index) => {
     return {
       id: index,
-      question: question.title,
-      type: question.inputType,
+      title: question.title,
+      type: question.type,
       required: question.required,
       info: "",
-      choices: [],
+      choices: question.choices,
+      hidden: question.hidden,
       encrypted: question.encrypted,
     };
   });
@@ -399,3 +400,9 @@ export const getUTCTime = (date: Date): string => {
 
   return utcTime.join(":") + " UTC";
 };
+
+export function typeToText(s: string) {
+  if (s == "address") return "Wallet address";
+  if (s == "checkbox") return "Checkboxes";
+  return (s.charAt(0).toUpperCase() + s.slice(1)).replace("-", " ");
+}
