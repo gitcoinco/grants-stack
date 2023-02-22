@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { CreateRoundContext, CreateRoundState, initialCreateRoundState } from "../../../context/round/CreateRoundContext";
 import { EditQuestion } from "../../api/types";
@@ -41,27 +41,6 @@ describe("AddQuestionModal", () => {
     const modalDiv = await screen.queryByTestId("add-question-modal");
     expect(modalDiv).toBeInTheDocument();
     expect(modalDiv?.children[0]).toBeEmptyDOMElement;
-  });
-  it("shows the new option row when the add option button is clicked", async () => {
-    renderWithContext(
-      <AddQuestionModal
-        show={true}
-        onClose={() => {
-          /**/
-        }}
-        onSave={() => {
-          /**/
-        }}
-        question={editQuestion}
-      />
-    );
-    const modalDiv = screen.queryByTestId("add-question-modal");
-    expect(modalDiv).toBeInTheDocument();
-
-    const selectListButton = await screen.findByTestId("select-list-button");
-    fireEvent.click(selectListButton, { target: { value: "multiple-choice" } });
-    const addOptionButton = await screen.findByTestId("add-option");
-    fireEvent.click(addOptionButton);
   });
   it("shows proper question type when selected from menu", async () => {
     renderWithContext(

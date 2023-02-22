@@ -19,7 +19,6 @@ type AddQuestionModalProps = {
   onClose: () => void;
 };
 
-// test data for building out the questions
 const questions: InputType[] = [
   "short-answer",
   "paragraph",
@@ -241,6 +240,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
               <Listbox.Options className="border rounded-md border-grey-100 w-[208px] overflow-auto h-23 absolute z-40">
                 {questions.map((q, index) => (
                   <Listbox.Option
+                    data-testid="select-list-option"
                     key={index}
                     value={q}
                     className="cursor-pointer active:bg-violet-400 active:text-white bg-white text-black w-full hover:text-white"

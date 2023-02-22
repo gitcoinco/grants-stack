@@ -598,16 +598,16 @@ describe("Application Form Builder", () => {
       });
       fireEvent.click(addAQuestion);
 
-      let selectList = screen.getByTestId('select-question');
-      const selectButton = within(selectList).getByRole('button');
+      let selectList = screen.getByTestId("select-question");
+      const selectButton = within(selectList).getByRole("button");
       fireEvent.click(selectButton);
 
-      selectList = screen.getByTestId('select-question');
+      selectList = screen.getByTestId("select-question");
 
-      const selectType = within(selectList).getAllByText('Paragraph')
+      const selectType = within(selectList).getAllByText("Paragraph")
       fireEvent.click(selectType[0]);
 
-      const inputField = screen.getByTestId('question-title-input');
+      const inputField = screen.getByTestId("question-title-input");
       fireEvent.change(inputField, { target: { value: newTitle } });
 
       const save = screen.getByTestId("save-question");
@@ -616,7 +616,6 @@ describe("Application Form Builder", () => {
       expect(screen.getAllByText(newTitle)).toHaveLength(1);
     });
   });
-
   describe("Project Socials", () => {
     beforeEach(() => {
       (useWallet as jest.Mock).mockReturnValue({
