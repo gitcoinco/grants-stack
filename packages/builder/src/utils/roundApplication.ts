@@ -60,18 +60,19 @@ export const parseRoundApplicationMetadata = (
   }
 
   // const [major, minor, patch] = object.version.split(".").map(Number);
-
-  metadata.applicationSchema.questions = object.applicationSchema.questions.map(
-    (q: any): RoundApplicationQuestion => ({
-      id: q.id,
-      type: q.question === "Email Address" ? "email" : q.type,
-      title: q.title || q.question,
-      options: q.options || q.choices,
-      required: q.required,
-      encrypted: q.encrypted,
-      hidden: q.hidden,
-    })
-  );
+  //
+  metadata.applicationSchema.questions =
+    metadata.applicationSchema.questions.map(
+      (q: any): RoundApplicationQuestion => ({
+        id: q.id,
+        type: q.question === "Email Address" ? "email" : q.type,
+        title: q.title || q.question,
+        options: q.options || q.choices,
+        required: q.required,
+        encrypted: q.encrypted,
+        hidden: q.hidden,
+      })
+    );
 
   metadata.applicationSchema.questions = [
     {
