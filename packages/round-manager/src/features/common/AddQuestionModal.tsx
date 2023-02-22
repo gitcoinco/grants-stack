@@ -3,7 +3,6 @@ import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon, XCircleIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { Fragment, useEffect, useState } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { EditQuestion, InputType } from "../api/types";
 import { SchemaQuestion, typeToText } from "../api/utils";
 import BaseSwitch from "./BaseSwitch";
@@ -29,7 +28,6 @@ const questions: InputType[] = [
   "address",
 ]
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
   const questionExists = question && question.index !== undefined;
 
@@ -285,8 +283,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       && (!questionOptions.choices || questionOptions.choices?.length < 2 || questionOptions.choices?.[1] === "")) {
       errors.push("Please provide at least 2 options.");
     }
-    // FIXME: This is a temporary fix for the issue where the user can select both encrypted and hidden
-    // the value should be true for both but hacked to false for now
     if (questionOptions.encrypted === true && questionOptions.hidden === false) {
       errors.push("Questions cannot be marked as encrypted and shown in explorer. Please select one.");
     }

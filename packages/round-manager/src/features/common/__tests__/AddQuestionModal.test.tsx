@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { CreateRoundContext, CreateRoundState, initialCreateRoundState } from "../../../context/round/CreateRoundContext";
 import { EditQuestion } from "../../api/types";
@@ -6,7 +6,6 @@ import AddQuestionModal from "../AddQuestionModal";
 
 jest.mock("../../api/round");
 
-// test data for building out the questions
 const editQuestion: EditQuestion = {
   index: 0,
   field: {
