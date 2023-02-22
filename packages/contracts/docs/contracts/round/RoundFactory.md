@@ -126,7 +126,7 @@ function renounceOwnership() external nonpayable
 ### roundContract
 
 ```solidity
-function roundContract() external view returns (address payable)
+function roundContract() external view returns (address)
 ```
 
 Address of the RoundImplementation contract
@@ -138,7 +138,7 @@ Address of the RoundImplementation contract
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address payable | undefined |
+| _0 | address | undefined |
 
 ### transferOwnership
 

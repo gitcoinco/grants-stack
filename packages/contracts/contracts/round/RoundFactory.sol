@@ -26,14 +26,14 @@ contract RoundFactory is OwnableUpgradeable {
 
   // --- Data ---
 
-  /// @notice Protocol fee percentage
-  uint8 public protocolFeePercentage;
+  /// @notice Address of the RoundImplementation contract
+  address public roundContract;
 
   /// @notice Address of the protocol treasury
   address payable public protocolTreasury;
 
-  /// @notice Address of the RoundImplementation contract
-  address payable public roundContract;
+  /// @notice Protocol fee percentage
+  uint8 public protocolFeePercentage;
 
   // --- Event ---
 
@@ -118,7 +118,7 @@ contract RoundFactory is OwnableUpgradeable {
 
     address clone = ClonesUpgradeable.clone(roundContract);
 
-    emit RoundCreated(clone, ownedBy, roundContract);
+    emit RoundCreated(clone, ownedBy, payable(roundContract));
 
     RoundImplementation(payable(clone)).initialize(
       encodedParameters,
