@@ -37,7 +37,7 @@ contract RoundFactory is OwnableUpgradeable {
 
   // --- Event ---
 
-  /// @notice Emitted when a protocol wallet address is updated
+  /// @notice Emitted when protocol fee percentage is updated
   event ProtocolFeePercentageUpdated(uint8 protocolFeePercentage);
 
   /// @notice Emitted when a protocol wallet address is updated
