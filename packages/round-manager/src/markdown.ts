@@ -21,12 +21,12 @@ markdownIt.renderer.rules.link_open = function linkOpen(
   self
 ) {
   tokens[idx].attrPush(["target", "_blank"]);
-  tokens[idx].attrPush(["rel", "nofollow"]);
+  tokens[idx].attrPush(["rel", "nofollow noopener noreferrer"]);
   return defaultLinkOpen(tokens, idx, options, env, self);
 };
 
 export function renderToHTML(value: string) {
-  return sanitize(markdownIt.render(value), {
+  return sanitize(markdownIt.render(value.replace(/\n/g, "\n\n")), {
     ADD_ATTR: ["target"],
   });
 }

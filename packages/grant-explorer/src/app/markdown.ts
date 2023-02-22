@@ -3,7 +3,7 @@ import { sanitize } from "dompurify";
 
 const markdownIt = new MarkdownIt({
   linkify: true,
-  html: true,
+  html: false,
 });
 
 const defaultLinkOpen =
@@ -21,7 +21,7 @@ markdownIt.renderer.rules.link_open = function linkOpen(
   self
 ) {
   tokens[idx].attrPush(["target", "_blank"]);
-  tokens[idx].attrPush(["rel", "nofollow"]);
+  tokens[idx].attrPush(["rel", "nofollow noopener noreferrer"]);
   return defaultLinkOpen(tokens, idx, options, env, self);
 };
 
@@ -35,9 +35,12 @@ markdownIt.renderer.rules.link_open = function linkOpen(
  * @param markdownSourceText
  */
 export function renderToHTML(markdownSourceText: string) {
-  return sanitize(markdownIt.render(markdownSourceText), {
-    ADD_ATTR: ["target"],
-  });
+  return sanitize(
+    markdownIt.render(markdownSourceText.replace(/\n/g, "\n\n")),
+    {
+      ADD_ATTR: ["target"],
+    }
+  );
 }
 
 /**

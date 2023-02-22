@@ -461,21 +461,24 @@ export default function ViewApplicationPage() {
                   <p
                     dangerouslySetInnerHTML={{
                       __html: markdown.renderToHTML(
-                        application?.project?.description
-                          .replace(/\n/g, "<br/>")
-                          .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;") ?? ""
+                        application?.project?.description ?? ""
                       ),
                     }}
-                    className="text-base"
+                    className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
                   ></p>
 
                   <hr className="my-6" />
 
                   {answerBlocks &&
                     answerBlocks?.map((block: AnswerBlock) => (
-                      <div key={block.questionId}>
+                      <div key={block.questionId} className="pb-5">
                         <h2 className="text-xs mb-2">{block.question}</h2>
-                        <p className="text-base mb-6">{block.answer}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: markdown.renderToHTML(block.answer ?? ""),
+                          }}
+                          className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                        ></p>
                       </div>
                     ))}
                 </div>

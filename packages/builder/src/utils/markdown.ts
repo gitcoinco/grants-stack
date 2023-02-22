@@ -26,7 +26,7 @@ markdownIt.renderer.rules.link_open = function linkOpen(
 };
 
 export function renderToHTML(value: string) {
-  return sanitize(markdownIt.render(value), {
+  return sanitize(markdownIt.render(value.replace(/\n/g, "\n\n")), {
     ADD_ATTR: ["target"],
   });
 }
