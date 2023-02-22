@@ -195,7 +195,7 @@ payout function defined in IPayoutStrategy
 function reclaimLockEndTime() external view returns (uint256)
 ```
 
-Relclaim lock end time
+Reclaim lock end time
 
 
 
@@ -384,24 +384,6 @@ Emitted when contract is ready for payout
 
 
 
-
-### ReclaimFunds
-
-```solidity
-event ReclaimFunds(address indexed sender, address indexed token, uint256 indexed amount)
-```
-
-Emitted when funds are reclaimed
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| sender `indexed` | address | undefined |
-| token `indexed` | address | undefined |
-| amount `indexed` | uint256 | undefined |
 
 
 
