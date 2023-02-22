@@ -328,7 +328,7 @@ function Detail(props: { text: string; testID: string }) {
   return (
     <p
       dangerouslySetInnerHTML={{
-        __html: markdown.renderToHTML(props.text),
+        __html: markdown.renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
       className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
       data-testid={props.testID}
@@ -361,12 +361,20 @@ function ApplicationFormAnswers(props: {
               <p className="text-md mt-8 mb-3 font-semibold text-black">
                 {answer.question}
               </p>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: markdown.renderToHTML(answerText),
-                }}
-                className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
-              />
+              {answer.type === "paragraph" ? (
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: markdown.renderToHTML(
+                      answerText.replace(/\n/g, "\n\n")
+                    ),
+                  }}
+                  className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                ></p>
+              ) : (
+                <p className="text-base text-black">
+                  {answerText.replace(/\n/g, "<br/>")}
+                </p>
+              )}
             </div>
           );
         })}

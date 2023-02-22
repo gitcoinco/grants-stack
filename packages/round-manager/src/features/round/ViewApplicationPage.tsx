@@ -461,7 +461,10 @@ export default function ViewApplicationPage() {
                   <p
                     dangerouslySetInnerHTML={{
                       __html: markdown.renderToHTML(
-                        application?.project?.description ?? ""
+                        application?.project?.description.replace(
+                          /\n/g,
+                          "\n\n"
+                        ) ?? ""
                       ),
                     }}
                     className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
@@ -470,17 +473,31 @@ export default function ViewApplicationPage() {
                   <hr className="my-6" />
 
                   {answerBlocks &&
-                    answerBlocks?.map((block: AnswerBlock) => (
-                      <div key={block.questionId} className="pb-5">
-                        <h2 className="text-xs mb-2">{block.question}</h2>
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: markdown.renderToHTML(block.answer ?? ""),
-                          }}
-                          className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
-                        ></p>
-                      </div>
-                    ))}
+                    answerBlocks?.map((block: AnswerBlock) => {
+                      const answerText = Array.isArray(block.answer)
+                        ? block.answer.join(", ")
+                        : block.answer ?? "";
+
+                      return (
+                        <div key={block.questionId} className="pb-5">
+                          <h2 className="text-xs mb-2">{block.question}</h2>
+                          {block.type === "paragraph" ? (
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: markdown.renderToHTML(
+                                  answerText.replace(/\n/g, "\n\n")
+                                ),
+                              }}
+                              className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                            ></p>
+                          ) : (
+                            <p className="text-base text-black">
+                              {answerText.replace(/\n/g, "<br/>")}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
                 <div className="sm:basis-1/4 text-center sm:ml-3"></div>
               </div>

@@ -142,6 +142,7 @@ export type GrantApplicationFormAnswer = {
   question: string;
   answer: string | string[];
   hidden: boolean;
+  type?: string;
 };
 
 export type Project = {

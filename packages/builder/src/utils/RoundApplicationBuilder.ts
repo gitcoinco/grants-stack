@@ -105,6 +105,7 @@ export default class RoundApplicationBuilder {
           answers.push({
             questionId: question.id,
             question: question.title,
+            type: question.type,
             hidden: question.hidden,
             answer,
             encryptedAnswer,

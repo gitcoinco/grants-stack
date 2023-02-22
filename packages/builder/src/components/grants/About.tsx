@@ -185,7 +185,9 @@ export default function About({
               <div
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
-                  __html: markdown.renderToHTML(project.description),
+                  __html: markdown.renderToHTML(
+                    project.description.replace(/\n/g, "\n\n")
+                  ),
                 }}
               />
             )}
