@@ -15,6 +15,8 @@ These are contracts that are created/deployed once for ethereum mainnet
 | RoundFactory                          | 0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe |
 | RoundImplementation                   | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
 | ProjectRegistry                       | 0x03506eD3f57892C85DB20C36846e9c808aFe9ef4 |
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 **Sample contracts unique to a round **
 
@@ -40,7 +42,8 @@ These are contracts that are created/deployed once for optimism mainnet
 | RoundFactory                          | 0x0f0A4961274A578443089D06AfB9d1fC231A5a4D |
 | RoundImplementation                   | 0xCd5AbD09ee34BA604795F7f69413caf20ee0Ab60 |
 | ProjectRegistry                       | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
-
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 **Sample contracts unique to a round **
 
@@ -52,6 +55,8 @@ These are contracts that are created/deployed for every round created on optimis
 | QFVotingContract                      | 0x2D3Abb193d5118A2F96004A9316830d9E96f44Aa |
 | MerklePayoutContract                  | 0x835A581472Ce6a1f1108d9484567a2162C9959C8 |
 | Round                                 | 0xe0883e6F3113FC4C2d9539b9eE1659E59531e312 |
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 ## Fantom Mainnet
 
@@ -66,7 +71,8 @@ These are contracts that are created/deployed once for fantom mainnet
 | RoundFactory                          | 0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E |
 | RoundImplementation                   | 0xC2B0d8dAdB88100d8509534BB8B5778d1901037d |
 | ProjectRegistry                       | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
-
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 **Sample contracts unique to a round **
 
@@ -92,7 +98,8 @@ These are contracts that are created/deployed once for goerli
 | RoundFactory                          | 0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48 |
 | RoundImplementation                   | 0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A |
 | ProjectRegistry                       | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
-
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 **Sample contracts unique to a round **
 
@@ -119,7 +126,8 @@ These are contracts that are created/deployed once for fantom testnet
 | RoundFactory                          | 0x00F51ba2Cd201F4bFac0090F450de0992a838762 |
 | RoundImplementation                   | 0x635E69237C0428861EC8c5D8083e9616022c89Ea |
 | ProjectRegistry                       | 0x984749e408FF0446d8ADaf20E293F2F299396631 |
-
+| MerklePayoutStrategyFactory           |  |
+| MerklePayouStrategyImplementation     |  |
 
 **Sample contracts unique to a round **
 
