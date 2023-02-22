@@ -268,7 +268,6 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
     setInputError([]);
     const errors = [];
 
-    console.log("JER", questionOptions);
 
     if (selectedQuestion === INITIAL_VALUE) {
       errors.push("Please select a question type.");
