@@ -1,5 +1,6 @@
 // This script deals with upgrading the RoundFactory on a given network
 // https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies
+// https://github.com/ericglau/hardhat-deployer/blob/master/scripts/upgrade.js
 import { ethers, upgrades } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
@@ -10,8 +11,8 @@ utils.assertEnvironment();
 
 // note: update anytime the round contract is to be upgraded
 const config = {
-  currentRoundFactoryContract: "RoundFactory",
-  newRoundFactoryContract: "DummyRoundFactory"
+  currentContract: "RoundFactoryV0", // needed only for forceful import
+  newContract: "RoundFactory",
 }
 
 export async function main() {
@@ -22,32 +23,43 @@ export async function main() {
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
   }
-
-  const roundFactoryContract = networkParams.roundFactoryContract;
-
-  if (!config.newRoundFactoryContract || config.newRoundFactoryContract == '') {
-    console.log("error: set config.newRoundFactoryContract with the new contract to be deployed");
+  
+  if (config.currentContract == '' || config.newContract == '') {
+    console.log("error: config is missing values");
     return;
   }
   
+  const proxyAddress = networkParams.roundFactoryContract;
+  const implementationAddress = await upgrades.erc1967.getImplementationAddress(proxyAddress);
+  const adminAddress = await upgrades.erc1967.getAdminAddress(proxyAddress);
+
   await confirmContinue({
     "contract"  : "Upgrading RoundFactory to new version",
-    "factory contract": roundFactoryContract,
-    "currentRoundFactoryContract": config.currentRoundFactoryContract,
-    "newRoundFactoryContract": config.newRoundFactoryContract,
+    "currentContract": config.currentContract,
+    "newContract": config.newContract,
     "network"   : hre.network.name,
-    "chainId"   : hre.network.config.chainId
+    "chainId"   : hre.network.config.chainId,
+    "proxyAddress": proxyAddress,
+    "implementationAddress": implementationAddress,
+    "adminAddress": adminAddress,
   });
+
+  // const currentRoundFactory = await ethers.getContractFactory(config.currentContract);
+
+  // console.log("Forcing import...");
+
+  // const roundFactory = await upgrades.forceImport(
+  //   proxyAddress, currentRoundFactory, { kind: 'transparent' }
+  // );
 
   console.log("Upgrading RoundFactory...");
 
-  const newContractFactory = await ethers.getContractFactory(config.newRoundFactoryContract);
+  const newRoundFactory = await ethers.getContractFactory(config.newContract);
 
-  const contract = await upgrades.upgradeProxy(roundFactoryContract, newContractFactory);
+  const newContract = await upgrades.upgradeProxy(proxyAddress, newRoundFactory);
+  console.log("RoundFactory upgraded");
 
-  console.log(`RoundFactory is now upgraded. Check ${roundFactoryContract}`);
-
-  return contract.address;
+  console.log("Version: "+ await newContract.VERSION());
 }
 
 main().catch((error) => {

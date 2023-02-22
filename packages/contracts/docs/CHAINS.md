@@ -96,10 +96,10 @@ These are contracts that are created/deployed once for goerli
 | QuadraticFundingVotingStrategyFactory | 0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab |
 | QFVotingStrategyImplementation        | 0xcaBE5370293addA85e961bc46fE5ec6D3c6aab28 |
 | RoundFactory                          | 0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48 |
-| RoundImplementation                   | 0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A |
+| RoundImplementation                   | 0x0bbB660E151F4A404AA5692445465291A95400C4 |
 | ProjectRegistry                       | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
-| MerklePayoutStrategyFactory           |  |
-| MerklePayouStrategyImplementation     |  |
+| MerklePayoutStrategyFactory           | 0xBb380EEEF1D33e9B993CEDbb77A6753EbA0d2F9f |
+| MerklePayouStrategyImplementation     | 0x50f1114aBaB1B753E21e326Bb27D26b17b6284A3 |
 
 **Sample contracts unique to a round **
 
@@ -139,51 +139,3 @@ These are contracts that are created/deployed for every round created on fantom 
 | QFVotingContract                      | 0x02B52C3a398567AdFffb3396d6eE3d3c2bff37fE |
 | MerklePayoutContract                  | 0xcaC94621584a1a0121c0B5664A9FFB0B86588B8a |
 | Round                                 | 0xd3E45c78050a6472e28b9E02AA8596F7868e63d6 |
-
-
-
-
-# Project Registry
-
-This section lists the proxy, current implementation and admin contracts of the project registry.
-This information is useful for contract upgrades.
-
-### Ethereum Mainnet
-
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| ProjectRegistry (Proxy)           | 0x03506eD3f57892C85DB20C36846e9c808aFe9ef4 |
-| ProjectRegistry Implementation    | 0x15fa08599EB017F89c1712d0Fe76138899FdB9db |
-| Proxy Admin                       | 0x1139c2F5e7C7EDd6Fc62d1105eCC5650E7168bF0 |
-
-### Optimism
-
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| ProjectRegistry (Proxy)           | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
-| ProjectRegistry Implementation    | 0xbce556cf365E631fF50449211A6f2CB8936f40D1 |
-| Proxy Admin                       | 0xec77FccE4f0396BaB43BC66a513157Ee59EE07c7 |
-
-### Fantom mainnet
-
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| ProjectRegistry (Proxy)           | 0x8e1bD5Da87C14dd8e08F7ecc2aBf9D1d558ea174 |
-| ProjectRegistry Implementation    | 0xbce556cf365E631fF50449211A6f2CB8936f40D1 |
-
-### Fantom testnet
-
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| ProjectRegistry (Proxy)           | 0xCA73C80BA8E64161EA79583c43eBF9A6424D9c19 |
-| ProjectRegistry Implementation    | 0x5C5ebf52f2eAC42d1640714abed069F9E573D805 |
-| Proxy Admin                       | 0x4fE3Ce42BB2373C8fD2f59A59EdC397656EE142e |
-
-### Goerli
-
-| Contract                          | Address                                    |
-|-----------------------------------|--------------------------------------------|
-| ProjectRegistry (Proxy)           | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
-| ProjectRegistry Implementation    | 0x85CB556ED339aa7f5B46D704B2fF5F5c1FFBEb49 |
-| Proxy Admin                       | 0x2dB4d492301E42Ad746eEA2B63E67B0132796493 |
-| Proxy Admin                       | 0xec77FccE4f0396BaB43BC66a513157Ee59EE07c7 |
