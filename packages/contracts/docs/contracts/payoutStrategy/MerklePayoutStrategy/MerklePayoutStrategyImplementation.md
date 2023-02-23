@@ -189,23 +189,6 @@ payout function defined in IPayoutStrategy
 |---|---|---|
 | _distributions | bytes[] | encoded distribution |
 
-### reclaimLockEndTime
-
-```solidity
-function reclaimLockEndTime() external view returns (uint256)
-```
-
-Reclaim lock end time
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
 ### roundAddress
 
 ```solidity

@@ -46,9 +46,6 @@ abstract contract IPayoutStrategy {
   /// MetaPtr containing the distribution
   MetaPtr public distributionMetaPtr;
 
-  /// @notice Reclaim lock end time
-  uint256 public reclaimLockEndTime;
-
   // @notice
   bool public isReadyForPayout;
 
@@ -85,13 +82,6 @@ abstract contract IPayoutStrategy {
     _;
   }
 
-  /// @notice modifier to check if lock duration has ended.
-  modifier reclaimTimelockHasEnded() {
-    uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    require(block.timestamp >= reclaimLockEndTime, "reclaim lockDuration not ended");
-    _;
-  }
-
   // --- Core methods ---
 
   /**
@@ -102,10 +92,6 @@ abstract contract IPayoutStrategy {
   function init() external {
     require(roundAddress == address(0x0), "roundAddress already set");
     roundAddress = payable(msg.sender);
-
-    // set the reclaim lock end time
-    uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
-    reclaimLockEndTime = roundEndTime + LOCK_DURATION;
 
     // set the token address
     tokenAddress = RoundImplementation(roundAddress).token();
@@ -155,7 +141,11 @@ abstract contract IPayoutStrategy {
    *
    * @param withdrawAddress withdraw funds address
    */
-  function withdrawFunds(address payable withdrawAddress) external payable virtual isRoundOperator reclaimTimelockHasEnded {
+  function withdrawFunds(address payable withdrawAddress) external payable virtual isRoundOperator {
+
+    uint roundEndTime = RoundImplementation(roundAddress).roundEndTime();
+    require(block.timestamp >= roundEndTime + LOCK_DURATION, "Lock duration has not ended");
+
 
     uint balance = _getTokenBalance();
 
