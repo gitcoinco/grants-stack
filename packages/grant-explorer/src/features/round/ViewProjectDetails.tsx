@@ -4,7 +4,12 @@ import { useRoundById } from "../../context/RoundContext";
 import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
-import { Project, ProjectCredentials, ProjectMetadata } from "../api/types";
+import {
+  Project,
+  ProjectCredentials,
+  ProjectMetadata,
+  Round,
+} from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
   ChevronLeftIcon,
@@ -22,11 +27,25 @@ import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
+import {
+  getUserPgpKeys,
+  getGroupChatID,
+  verifyPushChatUser,
+  createPushGroup,
+  joinGroup,
+  fetchHistoryMsgs,
+  sendMsg,
+  getGroupInfo,
+} from "../api/pushChat";
 import useSWR from "swr";
-import { formatDistanceToNowStrict } from "date-fns";
+import { add, formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import markdown from "../../app/markdown";
+import * as PushApi from "@pushprotocol/restapi";
+import Auth from "../common/Auth";
+import { getQFVotesForProject } from "../api/round";
+import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
 
 enum VerifiedCredentialState {
   VALID,
@@ -70,6 +89,33 @@ export default function ViewProjectDetails() {
   const isAddedToFinalBallot = finalBallot.some(
     (project) => project.grantApplicationId === applicationId
   );
+  const wallet = Auth();
+
+  const [pgpKeys, setPgpKeys] = useState<string>("");
+  // const [isGroupMember, setIsGroupMember] = useState<boolean>(false);
+  // const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [pushChatId, setPushChatID] = useState<string | null>(null);
+  const [position, setPosition] = useState<string>("None");
+  // const [isPresent, setIsPresent] = useState<boolean>(true);
+
+  // taking the case of none
+
+  useEffect(() => {
+    handlePgpKeys();
+  }, []);
+
+  const handlePgpKeys = async () => {
+    const decryptedKeys = await getUserPgpKeys(wallet.props.context.address);
+    if (!decryptedKeys) {
+      return;
+    }
+    setPgpKeys(decryptedKeys);
+    return;
+  };
+
+  const handlePushChatID = (chatId: string) => {
+    setPushChatID(chatId);
+  };
 
   return (
     <>
@@ -106,8 +152,19 @@ export default function ViewProjectDetails() {
                       testID="project-metadata"
                     />
                   </div>
+                  <PushChat
+                    handlePushChatID={handlePushChatID}
+                    pushChatId={pushChatId}
+                    pgpKeys={pgpKeys}
+                    position={position}
+                    setPosition={setPosition}
+                  />
                 </div>
                 <Sidebar
+                  pushChatId={pushChatId}
+                  handlePushChatID={handlePushChatID}
+                  position={position}
+                  setPosition={setPosition}
                   isAdded={isAddedToShortlist || isAddedToFinalBallot}
                   removeFromShortlist={() => {
                     handleRemoveProjectsFromShortlist([projectToRender]);
@@ -361,14 +418,104 @@ export function ProjectLogo(props: {
 }
 
 function Sidebar(props: {
+  pushChatId: string | null;
   isAdded: boolean;
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
   addToShortlist: () => void;
+  handlePushChatID: any;
+  position: string;
+  setPosition: any;
 }) {
+  const wallet = Auth();
+  const [isPresent, setIsPresent] = useState<boolean>(true);
+  const { chainId, roundId, applicationId } = useParams();
+  const { round } = useRoundById(chainId!, roundId!);
+  const project = round?.approvedProjects?.find(
+    (project) => project.grantApplicationId === applicationId
+  );
+
+  const { position, setPosition } = props;
+
+  useEffect(() => {
+    handlePositions(wallet, project as Project);
+  }, []);
+
+  const handlePositions = async (wallet: any, project: Project) => {
+    if (!wallet || !project) {
+      return;
+    }
+    const { isMember, isOwner, chatId, isContributor } =
+      await verifyPushChatUser(project, wallet);
+
+    if (!chatId) {
+      setIsPresent(false);
+    }
+    if (chatId) {
+      props.handlePushChatID(chatId);
+    }
+    if (isContributor && !isMember) {
+      setPosition("Contributor");
+      setIsPresent(false);
+      return;
+    }
+    if (isMember && isOwner) {
+      setPosition("Owner");
+      return;
+    }
+    if (isOwner) {
+      setPosition("Owner");
+      return;
+    }
+    if (isContributor) {
+      setPosition("Contributor");
+      return;
+    }
+  };
+
+  const handleGroupCreation = async () => {
+    if (position === "Owner") {
+      const groupChatId = await createPushGroup(
+        project as Project,
+        wallet.props.context.address,
+        round as Round
+      );
+      if (!groupChatId) return;
+      props.handlePushChatID(groupChatId);
+      setPosition("Owner");
+      setIsPresent(true);
+      return;
+    }
+    if (position === "Contributor") {
+      const chatId = await joinGroup(
+        wallet.props.context.address,
+        project as Project
+      );
+      props.handlePushChatID(null);
+      setPosition("Contributor");
+      setIsPresent(true);
+
+      return;
+    }
+  };
+
   return (
-    <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
+    <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6 flex flex-col">
       <ProjectStats />
+      {!isPresent && position !== "None" && (
+        <Button
+          onClick={() => handleGroupCreation()}
+          className={
+            "w-80 self-center justify-center bg-[#6F3FF5] text-white font-semibold py-2 px-4 border border-[#A283F9] rounded my-2 box-border"
+          }
+        >
+          {position === "Owner"
+            ? "Create Group"
+            : position === "Contributor"
+            ? "Join group"
+            : "None"}
+        </Button>
+      )}
       <BallotSelectionToggle
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
@@ -423,6 +570,226 @@ export function ProjectStats() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+export function PushChat(props: {
+  pgpKeys: string;
+  pushChatId: any;
+  position: string;
+  setPosition: any;
+  handlePushChatID: any;
+}) {
+  const { chainId, roundId, applicationId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { round } = useRoundById(chainId!, roundId!);
+  const project = round?.approvedProjects?.find(
+    (project) => project.grantApplicationId === applicationId
+  );
+  const [msgs, setMsgs] = useState<any[]>([]);
+  const [inputMsg, setInputMsg] = useState<string>("");
+  const [isPresent, setIsPreset] = useState<boolean>(false);
+
+  const wallet = Auth();
+
+  useEffect(() => {
+    fetchMsgs();
+    handleWebSockets();
+  }, []);
+
+  useEffect(() => {
+    fetchMsgs();
+  }, [props.pushChatId]);
+
+  useEffect(() => {
+    const scrollDiv = document.getElementById("chat-scroll");
+    if (scrollDiv) {
+      scrollDiv.scrollTop = 0;
+    }
+  }, [msgs]);
+
+  const fetchMsgs = async () => {
+    const { props: walletProps } = wallet;
+    const {
+      context: {
+        address,
+        chain: { id: chainID },
+      },
+    } = walletProps;
+    if (!wallet) {
+      return;
+    }
+
+    if (!project) {
+      return;
+    }
+
+    const pushChatId =
+      (await getGroupChatID(project.projectMetadata.title, address)) || null;
+    const chatHistory = await fetchHistoryMsgs(
+      address,
+      pushChatId as string,
+      props.pgpKeys
+    );
+    let isMem = false;
+    const groupInfo = await getGroupInfo(pushChatId as string, address);
+    groupInfo?.members.forEach((mem) => {
+      if (mem.wallet === `eip155:${address}`) {
+        isMem = true;
+      }
+    });
+    setIsPreset(isMem);
+    setMsgs(chatHistory);
+  };
+
+  const handleMsgSent = async () => {
+    if (project) {
+      const oldMsgs = [...msgs];
+      const { props: walletProps } = wallet;
+      const {
+        context: {
+          address,
+          chain: { id: chainID },
+        },
+      } = walletProps;
+
+      const pushChatId =
+        (await getGroupChatID(project.projectMetadata.title, address)) || null;
+      const res = await sendMsg(
+        inputMsg,
+        address,
+        props.pgpKeys,
+        pushChatId as string
+      );
+      if (res) {
+        setMsgs([
+          { fromCAIP10: `eip155:${address}`, messageContent: inputMsg },
+          ...oldMsgs,
+        ]);
+      }
+      setInputMsg("");
+    }
+  };
+
+  const handleInputMsg = (e: any) => {
+    setInputMsg(e.target.value);
+  };
+
+  const handleWebSockets = () => {
+    const { props: walletProps } = wallet;
+    const {
+      context: {
+        address,
+        chain: { id: chainID },
+      },
+    } = walletProps;
+    const pushSDKSocket = createSocketConnection({
+      user: `eip155:${address}`, // Not CAIP-10 format
+      env: "dev",
+      apiKey:
+        "jVPMCRom1B.iDRMswdehJG7NpHDiECIHwYMMv6k2KzkPJscFIDyW8TtSnk4blYnGa8DIkfuacU0",
+      socketType: "chat",
+      socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
+    });
+
+    pushSDKSocket?.on(EVENTS.CHAT_RECEIVED_MESSAGE, async (message) => {
+      await fetchMsgs();
+    });
+  };
+
+  const textBoxLeft = (e: any) => {
+    const addOfUser = e.fromCAIP10
+      ? `${e.fromCAIP10.substring(7, 12)}...${e.fromCAIP10.substring(
+          e.fromCAIP10.length - 5,
+          e.fromCAIP10.length
+        )} `
+      : null;
+    return (
+      <div className={`flex flex-row`}>
+        <div className="rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+        <div
+          className={`flex flex-col my-2 rounded hover:cursor-pointer ml-2.5 ${
+            e.fromCAIP10 === `eip155:${wallet.props.context.address}`
+              ? "self-end"
+              : "self-start"
+          }`}
+        >
+          <p className="text-xs">{addOfUser}</p>
+          <p className="text-sm rounded-tr-2xl border border-solid  rounded-br-2xl rounded-bl-2xl py-1 px-3 pb-3">
+            {e.messageContent}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const textBoxRight = (e: any) => {
+    const addOfUser = e.fromCAIP10
+      ? `${e.fromCAIP10.substring(7, 12)}...${e.fromCAIP10.substring(
+          e.fromCAIP10.length - 5,
+          e.fromCAIP10.length
+        )} `
+      : null;
+    return (
+      <div className={`flex flex-row self-end`}>
+        <div
+          className={`flex flex-col my-2 rounded hover:cursor-pointer mr-2.5 self-end`}
+        >
+          <p className="text-xs text-[#6F3FF5] self-end">{addOfUser}</p>
+          <p className="text-xs bg-[#6F3FF5] text-white rounded-tl-2xl border border-solid  rounded-br-2xl rounded-bl-2xl pt-2 px-3 pb-3">
+            {e.messageContent}
+          </p>
+        </div>
+        <div className="rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="p-4 ">
+      <h4 className="text-2xl mb-4">Grant Group Chat</h4>
+      {props.pushChatId ? (
+        <>
+          {isPresent && (
+            <div className="w-100 flex flex-col relative">
+              <input
+                className="h-16 border rounded-xl relative border-[#DEE2E6] flex flex-row text-xs w-100 p-2 outline-none"
+                onChange={(e) => {
+                  handleInputMsg(e);
+                }}
+                value={inputMsg}
+                onKeyDown={({ key }) => {
+                  if (key === "Enter") handleMsgSent();
+                }}
+              />
+              <span className="absolute top-2 left-2 text-xs text-[#DEE2E6]">
+                Write on a grants group chat...
+              </span>
+              <button
+                onClick={handleMsgSent}
+                className={
+                  "self-end bg-[#6F3FF5] mt-3.5 rounded-sm text-white text-xs cursor-pointer px-4 py-2"
+                }
+              >
+                Send Message
+              </button>
+            </div>
+          )}
+          <div
+            id="chat-scroll"
+            className="h-96 flex flex-auto flex-col overflow-auto mt-6"
+          >
+            {msgs?.map((e) => {
+              const newAdd = "eip155:" + wallet.props.context.address;
+              return newAdd === e.fromCAIP10 ? textBoxRight(e) : textBoxLeft(e);
+            })}
+          </div>
+          <div className="flex flex-row"></div>
+        </>
+      ) : (
+        <div>Chat group hasn't been created yet!</div>
+      )}
     </div>
   );
 }

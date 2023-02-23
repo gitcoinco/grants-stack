@@ -250,3 +250,37 @@ export async function getProjectOwners(
     throw Error("Unable to fetch project owners");
   }
 }
+
+export async function getQFVotesForProject(
+  chainId: any,
+  projectRegistryId: string
+) {
+  try {
+    let skipAmount = 0;
+    let isPause = 0;
+    const totalVotes = [];
+    while (!isPause) {
+      const res = await graphql_fetch(
+        `
+      query GetQFVotes($projectRegistryId: String){
+          qfvotes(where: {projectId:$projectRegistryId}, first: 1000, skip: $skipAmount){
+          id
+            from
+          }
+      }
+      `,
+        chainId,
+        { projectRegistryId, skipAmount },
+        true
+      );
+
+      isPause = res?.data?.qfvotes.length;
+      skipAmount = skipAmount + 1000;
+      totalVotes.push(res?.data?.qfvotes || []);
+    }
+    return totalVotes;
+  } catch (e) {
+    console.log("getQFVotesForProject", e);
+    throw Error("Unable to fetch votes for project.");
+  }
+}
