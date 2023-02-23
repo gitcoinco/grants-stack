@@ -106,23 +106,6 @@ Invoked by RoundImplementation to trigger payout
 |---|---|---|
 | _encodedPayoutData | bytes[] | encoded payout data |
 
-### reclaimLockEndTime
-
-```solidity
-function reclaimLockEndTime() external view returns (uint256)
-```
-
-Reclaim lock end time
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
 ### roundAddress
 
 ```solidity

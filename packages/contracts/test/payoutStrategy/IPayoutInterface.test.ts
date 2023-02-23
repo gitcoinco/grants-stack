@@ -166,15 +166,6 @@ describe("IPayoutInterface", function () {
         const tx = merklePayoutStrategy.init();
         await expect(tx).to.revertedWith('roundAddress already set');
       });
-
-      it("SHOULD set default value", async() => {
-        expect(await merklePayoutStrategy.isReadyForPayout()).to.equal(false);
-
-        const roundEndTime = await roundImplementation.roundEndTime();
-        const endLockingTime = await merklePayoutStrategy.reclaimLockEndTime();
-        expect(endLockingTime).to.equal(roundEndTime);
-      });
-
     });
 
     describe('test: setReadyForPayout', () => {
@@ -294,7 +285,7 @@ describe("IPayoutInterface", function () {
         params = await initPayoutStrategy(_currentBlockTimestamp, merklePayoutStrategy);
 
         const tx = merklePayoutStrategy.withdrawFunds(Wallet.createRandom().address);        
-        await expect(tx).to.revertedWith('reclaim lockDuration not ended');
+        await expect(tx).to.revertedWith('Lock duration has not ended');
       });
 
       it("SHOULD not revert WHEN invoked when the contract has no funds", async() => {
