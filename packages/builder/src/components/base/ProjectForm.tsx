@@ -75,6 +75,7 @@ function ProjectForm({
         errorCount: 0,
       });
       setFeedback([{ title: "", type: "none", message: "" }]);
+      return true;
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -101,6 +102,8 @@ function ProjectForm({
           };
         }),
       ]);
+
+      return false;
     }
   };
 
@@ -113,10 +116,10 @@ function ProjectForm({
     didMountRef.current = true;
   }, [props.formMetaData]);
 
-  const nextStep = () => {
-    validate();
+  const nextStep = async () => {
     setSubmitted(true);
-    if (formValidation.valid) {
+    const valid = await validate();
+    if (valid) {
       setVerifying(ProjectFormStatus.Verification);
     }
   };
