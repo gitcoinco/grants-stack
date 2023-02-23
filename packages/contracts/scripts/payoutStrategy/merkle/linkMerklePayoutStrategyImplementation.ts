@@ -1,8 +1,8 @@
 // This script deals with linking the implemention to the factory contract
 import hre, { ethers } from "hardhat";
-import { confirmContinue } from "../../utils/script-utils";
-import { MerklePayoutParams } from "../config/payoutStrategy.config";
-import * as utils from "../utils";
+import { confirmContinue } from "../../../utils/script-utils";
+import { MerklePayoutParams } from "../../config/payoutStrategy.config";
+import * as utils from "../../utils";
 
 utils.assertEnvironment();
 

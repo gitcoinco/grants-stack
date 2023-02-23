@@ -99,7 +99,7 @@ These are contracts that are created/deployed once for goerli
 | RoundImplementation                   | 0x0bbB660E151F4A404AA5692445465291A95400C4 |
 | ProjectRegistry                       | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
 | MerklePayoutStrategyFactory           | 0xBb380EEEF1D33e9B993CEDbb77A6753EbA0d2F9f |
-| MerklePayouStrategyImplementation     | 0x50f1114aBaB1B753E21e326Bb27D26b17b6284A3 |
+| MerklePayouStrategyImplementation     | 0xaF15533e0d5D35B9Bf4B4230ED9601676107bBA4 |
 
 **Sample contracts unique to a round **
 
@@ -110,7 +110,7 @@ These are contracts that are created/deployed for every round created on goerli
 | Program                               | 0x86DceaCc03A52b7914b72eB4E10290f72BD99e68 |
 | QFVotingContract                      | 0xBF539cD4024Ab2140aA864ba2C6A430201b19318 |
 | MerklePayoutContract                  | 0xEC041ea461a59B355671CC1F87c904519375A6FD |
-| Round                                 | 0x4cd115cBe7C37ab12dA2e4f4b6f3A9AdF3c26701 |
+| Round                                 | 0x9aCcdbf1805088145a168f2D496e9F775222a82C |
 
 
 ## Fantom Testnetwork

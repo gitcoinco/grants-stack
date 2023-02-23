@@ -3,9 +3,9 @@
 // https://github.com/ericglau/hardhat-deployer/blob/master/scripts/upgrade.js
 import { ethers, upgrades } from "hardhat";
 import hre from "hardhat";
-import { confirmContinue } from "../../utils/script-utils";
-import { MerklePayoutParams } from "../config/payoutStrategy.config";
-import * as utils from "../utils";
+import { confirmContinue } from "../../../utils/script-utils";
+import { MerklePayoutParams } from "../../config/payoutStrategy.config";
+import * as utils from "../../utils";
 
 utils.assertEnvironment();
 

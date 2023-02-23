@@ -1,7 +1,7 @@
 // This script deals with deploying the MerklePayoutStrategyImplementation on a given network
 import hre, { ethers } from "hardhat";
-import { confirmContinue } from "../../utils/script-utils";
-import * as utils from "../utils";
+import { confirmContinue } from "../../../utils/script-utils";
+import * as utils from "../../utils";
 
 utils.assertEnvironment();
 
