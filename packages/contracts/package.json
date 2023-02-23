@@ -11,9 +11,10 @@
     "clean": "pnpm hardhat clean",
     "test": "pnpm hardhat test",
     "coverage": "pnpm hardhat coverage",
-    "export-abi": "pnpm run hardhat export-abi",
-    "clear-abi": "pnpm run hardhat clear-abi",
-    "lint:sol": "npx hardhat check",
+    "export-abi": "pnpm hardhat export-abi",
+    "clear-abi": "pnpm hardhat clear-abi",
+    "lint:sol": "pnpm hardhat check",
+    "force-import": "pnpm hardhat run scripts/forceImport.ts --network",
     "// project-registry-deploy-scripts": "echo '//-- Project Registry deploy Script --//'",
     "deploy-project-registry": "yarn hardhat run scripts/projectRegistry/deployProjectRegistry.ts --network",
     "upgrade-project-registry": "yarn hardhat run scripts/projectRegistry/upgradeProjectRegistry.ts --network",
@@ -30,6 +31,7 @@
     "create-round": "pnpm hardhat run scripts/round/createRound.ts --network",
     "apply-to-round": "pnpm hardhat run scripts/round/applyToRound.ts --network",
     "update-project-metaptr": "pnpm hardhat run scripts/round/updateProjectMetaPtr.ts --network",
+    "set-protocol-fee": "pnpm hardhat run scripts/round/setProtocolFee.ts --network",
     "upgrade-round-factory": "pnpm hardhat run scripts/round/upgradeRoundFactory.ts --network",
     "// vote-deploy-scripts": "echo '//-- Voting deploy Script --//'",
     "deploy-qf-factory": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/deployQFVotingStrategyFactory.ts --network",
@@ -37,8 +39,13 @@
     "link-qf-implementation": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/linkQFVotingStrategyImplementation.ts --network",
     "create-qf-contract": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/createQFVotingStrategy.ts --network",
     "cast-qf-vote": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/castQFVoteViaRound.ts --network",
+    "upgrade-qf-factory": "pnpm hardhat run scripts/votingStrategy/quadraticFunding/upgradeQFFactory.ts --network",
     "// payout-deploy-scripts": "echo '//-- Payout deploy Script --//'",
-    "deploy-merkle-contract": "pnpm hardhat run scripts/payoutStrategy/deployMerklePayoutStrategy.ts --network"
+    "deploy-merkle-factory": "pnpm hardhat run scripts/payoutStrategy/merkle/deployMerklePayoutStrategyFactory.ts --network",
+    "deploy-merkle-implementation": "pnpm hardhat run scripts/payoutStrategy/merkle/deployMerklePayoutStrategyImplementation.ts --network",
+    "link-merkle-implementation": "pnpm hardhat run scripts/payoutStrategy/merkle/linkMerklePayoutStrategyImplementation.ts --network",
+    "create-merkle-contract": "pnpm hardhat run scripts/payoutStrategy/merkle/createMerklePayoutStrategy.ts --network",
+    "upgrade-merkle-factory": "pnpm hardhat run scripts/payoutStrategy/merkle/upgradeMerkleFactory.ts --network"
   },
   "devDependencies": {
     "@ethersproject/constants": "^5.6.1",
@@ -84,6 +91,8 @@
     "@ethersproject/hardware-wallets": "^5.7.0",
     "@ledgerhq/hw-app-eth": "^6.30.5",
     "@openzeppelin/contracts": "^4.6.0",
-    "@openzeppelin/contracts-upgradeable": "^4.6.0"
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/merkle-tree": "^1.0.2",
+    "hardhat-contract-sizer": "^2.8.0"
   }
 }
