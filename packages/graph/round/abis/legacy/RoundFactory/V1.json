@@ -36,32 +36,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint8",
-        "name": "protocolFeePercentage",
-        "type": "uint8"
-      }
-    ],
-    "name": "ProtocolFeePercentageUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "protocolTreasuryAddress",
-        "type": "address"
-      }
-    ],
-    "name": "ProtocolTreasuryUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "roundAddress",
         "type": "address"
@@ -94,19 +68,6 @@
     ],
     "name": "RoundCreated",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "VERSION",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -154,32 +115,6 @@
   },
   {
     "inputs": [],
-    "name": "protocolFeePercentage",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "protocolTreasury",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -214,33 +149,7 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
-        "name": "newProtocolFeePercentage",
-        "type": "uint8"
-      }
-    ],
-    "name": "updateProtocolFeePercentage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "newProtocolTreasury",
-        "type": "address"
-      }
-    ],
-    "name": "updateProtocolTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address payable",
+        "internalType": "address",
         "name": "newRoundContract",
         "type": "address"
       }

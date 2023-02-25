@@ -97,19 +97,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "MatchAmountUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "project",
@@ -135,31 +122,6 @@
       }
     ],
     "name": "NewProjectApplication",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "matchAmountAfterFees",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "protocolFeeAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "roundFeeAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "PayFeeAndEscrowFundsToPayoutContract",
     "type": "event"
   },
   {
@@ -303,32 +265,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "roundFeeAddress",
-        "type": "address"
-      }
-    ],
-    "name": "RoundFeeAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint8",
-        "name": "roundFeePercentage",
-        "type": "uint8"
-      }
-    ],
-    "name": "RoundFeePercentageUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "components": [
           {
             "internalType": "uint256",
@@ -408,19 +344,6 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "VERSION",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -610,29 +533,11 @@
         "internalType": "bytes",
         "name": "encodedParameters",
         "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "_roundFactory",
-        "type": "address"
       }
     ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "matchAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -717,45 +622,6 @@
   },
   {
     "inputs": [],
-    "name": "roundFactory",
-    "outputs": [
-      {
-        "internalType": "contract RoundFactory",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "roundFeeAddress",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "roundFeePercentage",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "roundMetaPtr",
     "outputs": [
       {
@@ -786,13 +652,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "setReadyForPayout",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes4",
@@ -816,7 +675,7 @@
     "name": "token",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -853,11 +712,37 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newAmount",
+        "name": "newApplicationsEndTime",
         "type": "uint256"
       }
     ],
-    "name": "updateMatchAmount",
+    "name": "updateApplicationsEndTime",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newApplicationsStartTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateApplicationsStartTime",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "encodedDistribution",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateDistribution",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -890,25 +775,12 @@
   {
     "inputs": [
       {
-        "internalType": "address payable",
-        "name": "newFeeAddress",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "newRoundEndTime",
+        "type": "uint256"
       }
     ],
-    "name": "updateRoundFeeAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "newFeePercentage",
-        "type": "uint8"
-      }
-    ],
-    "name": "updateRoundFeePercentage",
+    "name": "updateRoundEndTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -942,26 +814,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newApplicationsStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newApplicationsEndTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "newRoundStartTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newRoundEndTime",
         "type": "uint256"
       }
     ],
-    "name": "updateStartAndEndTimes",
+    "name": "updateRoundStartTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -991,27 +848,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address payable",
-        "name": "recipent",
-        "type": "address"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

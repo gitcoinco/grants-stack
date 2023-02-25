@@ -154,9 +154,48 @@ templates:
 
       file: ./src/votingStrategy/quadraticFunding/implementation.ts
 
-  ####################
-  # == LEGACY ABI == #
-  ####################
+  ##########################
+  # == LEGACY TEMPLATES == #
+  ##########################
+
+  ##############################################
+  # == RoundImplementation LEGACY TEMPLATES == #
+  ##############################################
+
+  # RoundImplementation/V1.json
+  - kind: ethereum/contract
+    name: RoundImplementationLegacyV1
+    network: {{ network }}
+    source:
+      abi: RoundImplementationLegacyV1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - RoundRole
+      abis:
+        - name: RoundImplementationLegacyV1
+          file: ./abis/legacy/RoundImplementation/V1.json
+      eventHandlers:
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: NewProjectApplication(indexed bytes32,(uint256,string))
+          handler: handleNewProjectApplication
+        - event: ProjectsMetaPtrUpdated((uint256,string),(uint256,string))
+          handler: handleProjectsMetaPtrUpdated
+      file: ./src/legacy/round/implementationLegacyV1.ts
+
+  ##################################################
+  # == END RoundImplementation LEGACY TEMPLATES == #
+  ##################################################
+
+
+  #######################################################################
+  # == QuadraticFundingVotingStrategyImplementation LEGACY TEMPLATES == #
+  #######################################################################
 
   # QuadraticFundingVotingStrategyImplementation/V1.json
   - kind: ethereum/contract
@@ -179,3 +218,7 @@ templates:
           receipt: true
 
       file: ./src/legacy/votingStrategy/quadraticFunding/implementationLegacyV1.ts
+
+  ###########################################################################
+  # == END QuadraticFundingVotingStrategyImplementation LEGACY TEMPLATES == #
+  ###########################################################################

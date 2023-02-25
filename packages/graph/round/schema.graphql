@@ -64,6 +64,7 @@ type Round @entity {
   projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
   createdAt: BigInt!
   updatedAt: BigInt!
+  version: String!
 }
 
 # id = round.toHex()-role.toHex()
@@ -124,5 +125,33 @@ type QFVote @entity {
   projectId: String!
   version: String!
   createdAt: BigInt!
+  # round: Round!
+}
+
+######################
+# = PayoutStrategy = #
+######################
+
+# id = payoutContractAddress.toHex()
+type PayoutStrategy @entity {
+  id: ID!
+  strategyName: String!
+  strategyAddress: String!
+  round: Round @derivedFrom(field: "payoutStrategy")
+  payouts: [Payout!] @derivedFrom(field: "payoutStrategy")
+  version: String!
+}
+
+# id = keccak256(event.receipt.transactionHash.toHex(), Payout.projectId)
+type Payout @entity {
+  id: ID!
+  payoutStrategy: PayoutStrategy!
+  version: String!
+  createdAt: BigInt!
+  amount: BigInt!
+  token: String!
+  sender: String!
+  grantee: String!
+  projectId: String!
   # round: Round!
 }
