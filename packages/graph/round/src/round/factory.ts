@@ -5,8 +5,9 @@ import {
 import { Program, Round, VotingStrategy } from "../../generated/schema";
 import { RoundImplementation } from  "../../generated/templates";
 import {
-  RoundImplementation  as RoundImplementationContract
+  RoundImplementation as RoundImplementationContract
 } from "../../generated/templates/RoundImplementation/RoundImplementation";
+
 import { updateMetaPtr } from "../utils";
 import { log } from "@graphprotocol/graph-ts";
 
@@ -38,6 +39,7 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   round.applicationsEndTime = roundContract.applicationsEndTime().toString();
   round.roundStartTime = roundContract.roundStartTime().toString();
   round.roundEndTime = roundContract.roundEndTime().toString();
+
 
   // set roundMetaPtr
   const roundMetaPtrId = ['roundMetaPtr', roundContractAddress.toHex()].join('-');
@@ -83,6 +85,15 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   // set timestamp
   round.createdAt = event.block.timestamp;
   round.updatedAt = event.block.timestamp;
+
+  const version = roundContract.try_VERSION();
+  
+  if (version.reverted) {
+    round.version = "0.1.0";
+  } else {
+    round.version = version.value.toString();
+  }
+  
 
   round.save();
 
