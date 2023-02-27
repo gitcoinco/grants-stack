@@ -32,13 +32,13 @@ import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
 
 // Initialize sentry
-// initSentry();
+initSentry();
 
 // // Initialize datadog
-// initDatadog();
+initDatadog();
 
 // // Initialize tagmanager
-// initTagmanager();
+initTagmanager();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
