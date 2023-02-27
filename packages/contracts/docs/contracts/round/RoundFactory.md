@@ -10,6 +10,23 @@ Invoked by a RoundOperator to enable creation of a round by cloning the RoundImp
 
 ## Methods
 
+### VERSION
+
+```solidity
+function VERSION() external view returns (string)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | string | undefined |
+
 ### create
 
 ```solidity
@@ -61,6 +78,40 @@ function owner() external view returns (address)
 |---|---|---|
 | _0 | address | undefined |
 
+### protocolFeePercentage
+
+```solidity
+function protocolFeePercentage() external view returns (uint8)
+```
+
+Protocol fee percentage
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint8 | undefined |
+
+### protocolTreasury
+
+```solidity
+function protocolTreasury() external view returns (address payable)
+```
+
+Address of the protocol treasury
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address payable | undefined |
+
 ### renounceOwnership
 
 ```solidity
@@ -78,7 +129,7 @@ function renounceOwnership() external nonpayable
 function roundContract() external view returns (address)
 ```
 
-
+Address of the RoundImplementation contract
 
 
 
@@ -105,10 +156,42 @@ function transferOwnership(address newOwner) external nonpayable
 |---|---|---|
 | newOwner | address | undefined |
 
+### updateProtocolFeePercentage
+
+```solidity
+function updateProtocolFeePercentage(uint8 newProtocolFeePercentage) external nonpayable
+```
+
+Allows the owner to update the overall protocol fee percentage
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newProtocolFeePercentage | uint8 | New protocol fee percentage |
+
+### updateProtocolTreasury
+
+```solidity
+function updateProtocolTreasury(address payable newProtocolTreasury) external nonpayable
+```
+
+Allows the owner to update the protocol treasury. This provides us the flexibility to update protocol treasury.
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newProtocolTreasury | address payable | New protocol treasury address |
+
 ### updateRoundContract
 
 ```solidity
-function updateRoundContract(address newRoundContract) external nonpayable
+function updateRoundContract(address payable newRoundContract) external nonpayable
 ```
 
 Allows the owner to update the RoundImplementation. This provides us the flexibility to upgrade RoundImplementation contract while relying on the same RoundFactory to get the list of rounds.
@@ -119,7 +202,7 @@ Allows the owner to update the RoundImplementation. This provides us the flexibi
 
 | Name | Type | Description |
 |---|---|---|
-| newRoundContract | address | undefined |
+| newRoundContract | address payable | New RoundImplementation contract address |
 
 
 
@@ -157,6 +240,38 @@ event OwnershipTransferred(address indexed previousOwner, address indexed newOwn
 |---|---|---|
 | previousOwner `indexed` | address | undefined |
 | newOwner `indexed` | address | undefined |
+
+### ProtocolFeePercentageUpdated
+
+```solidity
+event ProtocolFeePercentageUpdated(uint8 protocolFeePercentage)
+```
+
+Emitted when protocol fee percentage is updated
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| protocolFeePercentage  | uint8 | undefined |
+
+### ProtocolTreasuryUpdated
+
+```solidity
+event ProtocolTreasuryUpdated(address protocolTreasuryAddress)
+```
+
+Emitted when a protocol wallet address is updated
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| protocolTreasuryAddress  | address | undefined |
 
 ### RoundContractUpdated
 

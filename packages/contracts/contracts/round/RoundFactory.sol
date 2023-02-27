@@ -22,11 +22,28 @@ import "../utils/MetaPtr.sol";
  */
 contract RoundFactory is OwnableUpgradeable {
 
+  string public constant VERSION = "0.2.0";
+
+  // --- Data ---
+
+  /// @notice Address of the RoundImplementation contract
   address public roundContract;
+
+  /// @notice Address of the protocol treasury
+  address payable public protocolTreasury;
+
+  /// @notice Protocol fee percentage
+  uint8 public protocolFeePercentage;
 
   // --- Event ---
 
-  /// @notice Emitted when a Round contract is updated
+  /// @notice Emitted when protocol fee percentage is updated
+  event ProtocolFeePercentageUpdated(uint8 protocolFeePercentage);
+
+  /// @notice Emitted when a protocol wallet address is updated
+  event ProtocolTreasuryUpdated(address protocolTreasuryAddress);
+
+    /// @notice Emitted when a Round contract is updated
   event RoundContractUpdated(address roundAddress);
 
   /// @notice Emitted when a new Round is created
@@ -42,13 +59,44 @@ contract RoundFactory is OwnableUpgradeable {
   // --- Core methods ---
 
   /**
+   * @notice Allows the owner to update the overall protocol fee percentage
+   *
+   * @param newProtocolFeePercentage New protocol fee percentage
+   */
+  function updateProtocolFeePercentage(uint8 newProtocolFeePercentage) public onlyOwner {
+
+    protocolFeePercentage = newProtocolFeePercentage;
+
+    emit ProtocolFeePercentageUpdated(protocolFeePercentage);
+  }
+
+  /**
+   * @notice Allows the owner to update the protocol treasury.
+   * This provides us the flexibility to update protocol treasury.
+   *
+   * @param newProtocolTreasury New protocol treasury address
+   */
+  function updateProtocolTreasury(address payable newProtocolTreasury) external onlyOwner {
+
+    require(newProtocolTreasury != address(0), "protocolTreasury is 0x");   
+
+    protocolTreasury = newProtocolTreasury;
+
+    emit ProtocolTreasuryUpdated(protocolTreasury);
+  }
+
+  /**
    * @notice Allows the owner to update the RoundImplementation.
    * This provides us the flexibility to upgrade RoundImplementation
    * contract while relying on the same RoundFactory to get the list of
    * rounds.
+   *
+   * @param newRoundContract New RoundImplementation contract address
    */
-  function updateRoundContract(address newRoundContract) external onlyOwner {
-    // slither-disable-next-line missing-zero-check
+  function updateRoundContract(address payable newRoundContract) external onlyOwner {
+
+    require(newRoundContract != address(0), "roundContract is 0x");   
+
     roundContract = newRoundContract;
 
     emit RoundContractUpdated(newRoundContract);
@@ -65,12 +113,16 @@ contract RoundFactory is OwnableUpgradeable {
     address ownedBy
   ) external returns (address) {
 
+    require(roundContract != address(0), "roundContract is 0x");
+    require(protocolTreasury != address(0), "protocolTreasury is 0x");
+
     address clone = ClonesUpgradeable.clone(roundContract);
 
-    emit RoundCreated(clone, ownedBy, roundContract);
+    emit RoundCreated(clone, ownedBy, payable(roundContract));
 
-    RoundImplementation(clone).initialize(
-      encodedParameters
+    RoundImplementation(payable(clone)).initialize(
+      encodedParameters,
+      address(this)
     );
 
     return clone;
