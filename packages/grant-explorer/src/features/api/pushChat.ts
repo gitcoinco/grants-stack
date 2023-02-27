@@ -4,7 +4,6 @@ import { getQFVotesForProject } from "./round";
 
 export async function getUserPgpKeys(address: string) {
   try {
-    // fetching user pgp keys and returning decrypted keys
     let { encryptedPrivateKey: pgpKeys } =
       (await PushApi.user.get({
         account: address,
@@ -24,7 +23,7 @@ export async function getUserPgpKeys(address: string) {
     return decryptedPgpKeys || null;
   } catch (e) {
     console.error("Fetching user pgp keys", e);
-    throw Error("Unable to fetch users PGP keys");
+    return null;
   }
 }
 
@@ -32,11 +31,10 @@ export async function getGroupChatID(groupName: string, account: string) {
   try {
     const groupChatID = await PushApi.chat.getGroupByName({
       groupName,
-
       env: "dev",
     });
 
-    return groupChatID.chatId; // have to check what is the response in case group is not present
+    return groupChatID.chatId;
   } catch (e) {
     console.log("Fetching Chat id for group", e);
     throw Error("Unable to fetch group ID");
@@ -48,7 +46,6 @@ export async function getGroupInfo(chatId: string, account: string) {
     const groupInfo = await PushApi.chat.getGroup({
       chatId,
       env: "dev",
-      // account,
     });
     return groupInfo ? groupInfo : null;
   } catch (e) {
@@ -58,7 +55,6 @@ export async function getGroupInfo(chatId: string, account: string) {
 
 export async function verifyPushChatUser(project: Project, wallet: any) {
   try {
-    // query based on group name to get chatID
     const {
       props: {
         context: {
@@ -77,9 +73,8 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       console.log("Error in fetching group name", err);
       chatId = null;
     }
-    console.log(chatId, "from verifier");
     if (chatId === null) {
-      if (project.recipient === account || account.length) {
+      if (project.recipient === account) {
         return {
           isOwner: true,
           isMember: false,
@@ -87,10 +82,6 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
           isContributor: false,
         };
       }
-      // const totalVotes = await getQFVotesForProject(project, chainID);
-      // const isContri = totalVotes.find((contri) => {
-      //   if (contri.from === account) isContributor = true;
-      // });
       const totalVotes = await getQFVotesForProject(project, chainID);
       const isContri = totalVotes.find((contri) => {
         if (contri.from === account) isContributor = true;
@@ -100,7 +91,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
           isOwner: false,
           isMember: false,
           chatId: null,
-          isContributor: true,
+          isContributor,
         };
       }
     }
@@ -131,12 +122,16 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       isMember,
       isOwner,
       chatId,
-      isContributor: true,
+      isContributor: false,
     };
   } catch (e) {
     console.log("Verifying Push User", e);
-
-    throw Error("Error while verifying user");
+    return {
+      isMember: false,
+      isOwner: false,
+      chatId: false,
+      isContributor: false,
+    };
   }
 }
 
@@ -149,9 +144,9 @@ export async function createPushGroup(
     const decryptedPgpKeys = await getUserPgpKeys(account);
     const response = await PushApi.chat.createGroup({
       groupName: project.projectMetadata.title,
-      groupDescription: "hey",
-      members: ["0x8B786F4f9460A9e3E4238247FA520c73Ff6220B2"],
-      groupImage: "https://picsum.photos/200/300",
+      groupDescription: project.projectMetadata.description.slice(0, 149),
+      members: [],
+      groupImage: `https://ipfs.io/ipfs/${project.projectMetadata.logoImg}`,
       admins: [],
       isPublic: true,
       account: account,
@@ -192,7 +187,6 @@ export async function joinGroup(account: string, project: Project) {
     return response ? response.chatId : null;
   } catch (e) {
     console.log("Joining chat Push group", e);
-    throw Error("Unable to join group");
   }
 }
 
@@ -242,6 +236,5 @@ export async function sendMsg(
     return response;
   } catch (e) {
     console.log("Sending msg in PUSH chat", e);
-    throw Error("Unable to send msg");
   }
 }

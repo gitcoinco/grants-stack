@@ -92,25 +92,22 @@ export default function ViewProjectDetails() {
   const wallet = Auth();
 
   const [pgpKeys, setPgpKeys] = useState<string>("");
-  // const [isGroupMember, setIsGroupMember] = useState<boolean>(false);
-  // const [isOwner, setIsOwner] = useState<boolean>(false);
   const [pushChatId, setPushChatID] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("None");
-  // const [isPresent, setIsPresent] = useState<boolean>(true);
-
-  // taking the case of none
 
   useEffect(() => {
     handlePgpKeys();
   }, []);
 
   const handlePgpKeys = async () => {
-    const decryptedKeys = await getUserPgpKeys(wallet.props.context.address);
-    if (!decryptedKeys) {
+    if (wallet.props.context) {
+      const decryptedKeys = await getUserPgpKeys(wallet.props.context.address);
+      if (!decryptedKeys) {
+        return;
+      }
+      setPgpKeys(decryptedKeys);
       return;
     }
-    setPgpKeys(decryptedKeys);
-    return;
   };
 
   const handlePushChatID = (chatId: string) => {
@@ -454,15 +451,6 @@ function Sidebar(props: {
     if (chatId) {
       props.handlePushChatID(chatId);
     }
-    if (isContributor && !isMember) {
-      setPosition("Contributor");
-      setIsPresent(false);
-      return;
-    }
-    if (isMember && isOwner) {
-      setPosition("Owner");
-      return;
-    }
     if (isOwner) {
       setPosition("Owner");
       return;
@@ -582,7 +570,6 @@ export function PushChat(props: {
   handlePushChatID: any;
 }) {
   const { chainId, roundId, applicationId } = useParams();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
   const project = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -610,20 +597,13 @@ export function PushChat(props: {
   }, [msgs]);
 
   const fetchMsgs = async () => {
+    if (!wallet.props.context || !project) {
+      return;
+    }
     const { props: walletProps } = wallet;
     const {
-      context: {
-        address,
-        chain: { id: chainID },
-      },
+      context: { address },
     } = walletProps;
-    if (!wallet) {
-      return;
-    }
-
-    if (!project) {
-      return;
-    }
 
     const pushChatId =
       (await getGroupChatID(project.projectMetadata.title, address)) || null;
@@ -648,10 +628,7 @@ export function PushChat(props: {
       const oldMsgs = [...msgs];
       const { props: walletProps } = wallet;
       const {
-        context: {
-          address,
-          chain: { id: chainID },
-        },
+        context: { address },
       } = walletProps;
 
       const pushChatId =
@@ -678,11 +655,11 @@ export function PushChat(props: {
 
   const handleWebSockets = () => {
     const { props: walletProps } = wallet;
+    if (!wallet.props.context) {
+      return;
+    }
     const {
-      context: {
-        address,
-        chain: { id: chainID },
-      },
+      context: { address },
     } = walletProps;
     const pushSDKSocket = createSocketConnection({
       user: `eip155:${address}`, // Not CAIP-10 format
