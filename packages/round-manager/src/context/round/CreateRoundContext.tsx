@@ -41,9 +41,9 @@ export type CreateRoundData = {
     version: string;
     lastUpdatedOn: number;
     applicationSchema: {
-      questions: SchemaQuestion[],
-      requirements: ProjectRequirements,
-    },
+      questions: SchemaQuestion[];
+      requirements: ProjectRequirements;
+    };
   };
   round: Round;
 };

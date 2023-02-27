@@ -2,23 +2,25 @@ import classNames from "classnames";
 import { InputProps } from "../../types";
 import { Feedback, getStyleInfoForFeedback } from "./inputs";
 
-type RadioInputProps = InputProps & {
+type CheckboxInputProps = Omit<InputProps, "value" | "changeHandler"> & {
   choices?: string[];
+  values: string[];
   required: boolean;
   feedback: Feedback;
+  onChange: (newValue: string[]) => void;
 };
 
-export default function Radio({
+export default function Checkbox({
   label,
   name,
-  value,
+  values,
   info,
   choices = [],
-  changeHandler,
+  onChange,
   required,
   disabled,
   feedback,
-}: RadioInputProps) {
+}: CheckboxInputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
 
@@ -55,11 +57,21 @@ export default function Radio({
                   value={choice}
                   name={name}
                   id={choiceId}
-                  checked={choice === value}
-                  onChange={changeHandler}
-                  type="radio"
+                  checked={values.includes(choice)}
+                  onChange={(e) => {
+                    const newValues = values.filter(
+                      (v) => v !== e.target.value
+                    );
+
+                    if (e.target.checked) {
+                      onChange([...newValues, e.target.value]);
+                    } else {
+                      onChange(newValues);
+                    }
+                  }}
+                  type="checkbox"
                   className={classNames(
-                    "checked:text-violet-400 focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
+                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
                   )}
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">

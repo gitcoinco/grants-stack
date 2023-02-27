@@ -388,7 +388,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.48.2_2l6piu6guil2f63lj3qmhzbnn4
       '@typescript-eslint/parser': 5.48.2_eslint@8.32.0
       eslint: 8.32.0
-      eslint-config-turbo: 0.0.8_eslint@8.32.0
+      eslint-config-turbo: 0.0.9_eslint@8.32.0
       eslint-plugin-react: 7.32.1_eslint@8.32.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.32.0
 
@@ -565,6 +565,7 @@ importers:
       '@sentry/webpack-plugin': ^1.20.0
       '@tailwindcss/forms': ^0.5.2
       '@tailwindcss/line-clamp': ^0.4.0
+      '@tailwindcss/typography': ^0.5.9
       '@testing-library/jest-dom': ^5.16.4
       '@testing-library/react': ^13.0.1
       '@testing-library/user-event': ^14.1.1
@@ -638,6 +639,7 @@ importers:
       '@sentry/tracing': 7.31.1
       '@sentry/webpack-plugin': 1.20.0
       '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
+      '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
       '@testing-library/jest-dom': 5.16.5
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       '@testing-library/user-event': 14.4.3
@@ -13334,13 +13336,13 @@ packages:
       eslint-plugin-promise: 5.2.0_eslint@7.32.0
     dev: true
 
-  /eslint-config-turbo/0.0.8_eslint@8.32.0:
-    resolution: {integrity: sha512-ijj6uv0QX2kWahg3OYnTK1/q4MueXsqY2uE4MP9yeUA5CzVhL7GU+biKlv1BfMMqPltixHUcpZoW4yyNLCnMiw==}
+  /eslint-config-turbo/0.0.9_eslint@8.32.0:
+    resolution: {integrity: sha512-j1cTdx3tRmKo0csyfQKhpuT8dynK9oddbK5nmrShoMpXI2qMbxHLYH7MWAid4FmJN8rYympy3VKw5U63Yazycg==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 8.32.0
-      eslint-plugin-turbo: 0.0.8_eslint@8.32.0
+      eslint-plugin-turbo: 0.0.9_eslint@8.32.0
     dev: false
 
   /eslint-import-resolver-node/0.3.7:
@@ -13799,8 +13801,8 @@ packages:
       - supports-color
       - typescript
 
-  /eslint-plugin-turbo/0.0.8_eslint@8.32.0:
-    resolution: {integrity: sha512-pExSCmjWw/KFKb3/0PVqxiWb30FbcwDEf6kKv3alvNBSVEzDHalyAGHc9klbLSG+nFmbkfNE3Ky/UHDryCqt8g==}
+  /eslint-plugin-turbo/0.0.9_eslint@8.32.0:
+    resolution: {integrity: sha512-fEsuSnYU3GLtT+s66mUuzDL1LaSieIx5uk3tPO0ToGv7hI2XzOfP24aPkQItTBGl7kq2JaVkRzPwcnfz8hkp0w==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
