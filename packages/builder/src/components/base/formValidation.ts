@@ -1,9 +1,9 @@
-import { object, array, string } from "yup";
-import { FormInputs } from "../../types";
+import { object, string } from "yup";
 import {
-  RoundApplicationAnswers,
+  DynamicFormInputs,
+  FormInputs,
   RoundApplicationQuestion,
-} from "../../types/roundApplication";
+} from "../../types";
 
 export async function validateProjectForm(inputs: FormInputs) {
   const schema = object({
@@ -20,70 +20,40 @@ export async function validateProjectForm(inputs: FormInputs) {
 }
 
 export async function validateApplication(
-  questions: RoundApplicationQuestion[],
-  answers: RoundApplicationAnswers
+  defaultInputs: RoundApplicationQuestion[],
+  formInputs: DynamicFormInputs
 ) {
-  const schema = questions.reduce((acc, input) => {
-    let validation;
-
-    if (input.type === "project") {
-      return acc;
-    }
-
-    if (input.type === "email") {
-      validation = string().email(
-        `${input.title} must be a valid email address`
-      );
-
-      if (input.required) {
-        validation = validation.required(`${input.title} is required`);
-      }
-    } else if (input.type === "address") {
-      validation = string().matches(/^0x[a-fA-F0-9]{40}$/g, {
-        excludeEmptyString: true,
-        message: `${input.title} must be a valid Ethereum address`,
-      });
-
-      if (input.required) {
-        validation = validation.required(`${input.title} is required`);
-      }
-    } else if (input.type === "recipient") {
+  const schema = defaultInputs.reduce((acc, input) => {
+    const { id, required, type } = input;
+    if (type === "RECIPIENT") {
       return {
         ...acc,
-        isSafe: string().required(
-          "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"
-        ),
-        [input.id]: string()
+        [id]: string()
           .matches(/^0x[a-fA-F0-9]{40}$/g, {
             excludeEmptyString: true,
             message: "Payout Wallet Address must be a valid Ethereum address",
           })
           .required("Payout Wallet Address is required"),
       };
-    } else if (input.type === "checkbox") {
-      validation = array(string());
-
-      if (input.required) {
-        validation = validation.min(
-          1,
-          `You must select at least one value for ${input.title}`
-        );
-      }
-    } else {
-      validation = string();
-
-      if (input.required) {
-        validation = validation.required(`${input.title} is required`);
-      }
     }
-
-    return {
-      ...acc,
-      [input.id]: validation,
-    };
+    if (id !== undefined) {
+      return {
+        ...acc,
+        [id]: required
+          ? string().required(`${input.question} is required`)
+          : string(),
+        isSafe: string().required(
+          "You must select an answer to whether your payout wallet is a Gnosis Safe or multisig"
+        ),
+      };
+    }
+    return acc;
   }, {});
 
-  const validatedInputs = await object(schema).validate(answers, {
+  // todo: fix this
+  // const validateEmail = await object(schema).validateAt("", formInputs);
+
+  const validatedInputs = await object(schema).validate(formInputs, {
     abortEarly: false,
   });
 

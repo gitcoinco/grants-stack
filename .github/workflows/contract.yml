@@ -1,12 +1,9 @@
 name: package/contracts - Build -> Test
 on:
   push:
-    branches:
-      - main
-      - release
   pull_request:
     branches:
-      - "**"
+      - main
 jobs:
   tests:
     concurrency: ci-contract-${{ github.head_ref || github.run_id }}

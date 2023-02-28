@@ -51,13 +51,13 @@ export default function About({
   const canShowApplications =
     props.applications.length !== 0 && showApplications;
 
-  const { isValid: validTwitterCredential } = useValidateCredential(
+  const validTwitterCredential: boolean = useValidateCredential(
     project?.credentials?.twitter,
     CredentialProvider.Twitter,
     project?.projectTwitter
   );
 
-  const { isValid: validGithubCredential } = useValidateCredential(
+  const validGithubCredential: boolean = useValidateCredential(
     project?.credentials?.github,
     CredentialProvider.Github,
     project?.projectGithub
@@ -180,14 +180,12 @@ export default function About({
           <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
             Description
           </p>
-          <div className="pt-6 mb-12 ml-2 prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600">
+          <div className="pt-6 mb-12 ml-2 prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base">
             {project?.description && (
               <div
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
-                  __html: markdown.renderToHTML(
-                    project.description.replace(/\n/g, "\n\n")
-                  ),
+                  __html: markdown.renderToHTML(project.description),
                 }}
               />
             )}

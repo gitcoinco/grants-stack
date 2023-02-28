@@ -124,29 +124,18 @@ so that round is aware and store a reference to the voting contract during it's 
 
 2. Deploy the `MerklePayoutStrategyFactory` contract
 ```shell
-pnpm run deploy-merkle-factory goerli
+pnpm run deploy-merkle-contract goerli
 ```
 
-3. Deploy the `MerklePayoutStrategyImplementation` contract
-```shell
-pnpm run deploy-merkle-implementation goerli
-```
-
-4. Update `payoutStrategy.config.ts` with deployed contract based on your network
+3. Update `payoutStrategy.config.ts` with deployed contract based on your network
 ```javascript
 export const PayoutParams: DeployParams = {
   "goerli": {
-    factory: 'DEPLOYED_MERKLE_FACTORY_CONTRACT',
-    implementation: 'DEPLOYED_MERKLE_IMPLEMENTATION_CONTRACT',
+    merklePayoutContract: 'DEPLOYED_MERKLE_CONTRACT',
     ...
   },
   ...
 };
-```
-
-5. Update `MerklePayoutStrategyFactory` to reference the `MerklePayoutStrategyImplementation` contract
-```shell
-pnpm run link-merkle-implementation goerli
 ```
 
 
@@ -188,6 +177,9 @@ export const params: DeployParams = {
 pnpm run link-round-implementation goerli
 ```
 
+### Payout Setup
+<!-- TODO -->
+
 
 ### Contract Verification on etherscan
 
@@ -212,8 +204,6 @@ pnpm run link-qf-implementation goerli
 
 # Payout
 pnpm run deploy-merkle-contract goerli
-pnpm run deploy-merkle-implementation goerli
-pnpm run link-merkle-implementation goerli
 
 # Round
 pnpm run deploy-round-factory goerli

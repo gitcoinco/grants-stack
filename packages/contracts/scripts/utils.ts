@@ -25,14 +25,17 @@ export const encodeProgramParameters = (params: any[]): string => {
 export const encodeRoundParameters = (params: any[]): string => {
   return ethers.utils.defaultAbiCoder.encode(
     [
-      "tuple(address votingStrategy, address payoutStrategy)",
-      "tuple(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
+      "address",
+      "address",
+      "uint256",
+      "uint256",
+      "uint256",
       "uint256",
       "address",
-      "uint8",
-      "address",
-      "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
-      "tuple(address[] adminRoles, address[] roundOperators)"
+      "tuple(uint256 protocol, string pointer)",
+      "tuple(uint256 protocol, string pointer)",
+      "address[]",
+      "address[]"
     ],
     params
   );

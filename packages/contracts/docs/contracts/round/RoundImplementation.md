@@ -44,23 +44,6 @@ round operator role
 |---|---|---|
 | _0 | bytes32 | undefined |
 
-### VERSION
-
-```solidity
-function VERSION() external view returns (string)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
-
 ### applicationMetaPtr
 
 ```solidity
@@ -240,36 +223,18 @@ function hasRole(bytes32 role, address account) external view returns (bool)
 ### initialize
 
 ```solidity
-function initialize(bytes encodedParameters, address _roundFactory) external nonpayable
+function initialize(bytes encodedParameters) external nonpayable
 ```
 
 Instantiates a new round
 
-*encodedParameters  - _initAddress Related contract / wallet addresses  - _initRoundTime Round timestamps  - _feePercentage Fee percentage  - _matchAmount Amount of tokens in the matching pool  - _token Address of the ERC20/native token for accepting matching pool contributions  - _initMetaPtr Round metaPtrs  - _initRoles Round roles*
+*encodedParameters  - _votingStrategy Deployed voting strategy contract  - _payoutStrategy Deployed payout strategy contract  - _applicationsStartTime Unix timestamp from when round can accept applications  - _applicationsEndTime Unix timestamp from when round stops accepting applications  - _roundStartTime Unix timestamp of the start of the round  - _roundEndTime Unix timestamp of the end of the round  - _token Address of the ERC20 token for accepting matching pool contributions  - _roundMetaPtr MetaPtr to the round metadata  - _applicationMetaPtr MetaPtr to the application form schema  - _adminRoles Addresses to be granted DEFAULT_ADMIN_ROLE  - _roundOperators Addresses to be granted ROUND_OPERATOR_ROLE*
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
 | encodedParameters | bytes | Encoded parameters for program creation |
-| _roundFactory | address | undefined |
-
-### matchAmount
-
-```solidity
-function matchAmount() external view returns (uint256)
-```
-
-Match Amount (excluding protocol fee &amp; round fee)
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
 
 ### payoutStrategy
 
@@ -357,57 +322,6 @@ Unix timestamp of the end of the round
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### roundFactory
-
-```solidity
-function roundFactory() external view returns (contract RoundFactory)
-```
-
-Round Factory Contract Address
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | contract RoundFactory | undefined |
-
-### roundFeeAddress
-
-```solidity
-function roundFeeAddress() external view returns (address payable)
-```
-
-Round fee address
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address payable | undefined |
-
-### roundFeePercentage
-
-```solidity
-function roundFeePercentage() external view returns (uint8)
-```
-
-Round fee percentage
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint8 | undefined |
-
 ### roundMetaPtr
 
 ```solidity
@@ -443,17 +357,6 @@ Unix timestamp of the start of the round
 |---|---|---|
 | _0 | uint256 | undefined |
 
-### setReadyForPayout
-
-```solidity
-function setReadyForPayout() external payable
-```
-
-Pay Protocol &amp; Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
-
-
-
-
 ### supportsInterface
 
 ```solidity
@@ -479,7 +382,7 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 ### token
 
 ```solidity
-function token() external view returns (address)
+function token() external view returns (contract IERC20)
 ```
 
 Token used to payout match amounts at the end of a round
@@ -491,7 +394,7 @@ Token used to payout match amounts at the end of a round
 
 | Name | Type | Description |
 |---|---|---|
-| _0 | address | undefined |
+| _0 | contract IERC20 | undefined |
 
 ### updateApplicationMetaPtr
 
@@ -509,13 +412,13 @@ function updateApplicationMetaPtr(MetaPtr newApplicationMetaPtr) external nonpay
 |---|---|---|
 | newApplicationMetaPtr | MetaPtr | undefined |
 
-### updateMatchAmount
+### updateApplicationsEndTime
 
 ```solidity
-function updateMatchAmount(uint256 newAmount) external nonpayable
+function updateApplicationsEndTime(uint256 newApplicationsEndTime) external nonpayable
 ```
 
-
+Update applicationsEndTime (only by ROUND_OPERATOR_ROLE)
 
 
 
@@ -523,7 +426,39 @@ function updateMatchAmount(uint256 newAmount) external nonpayable
 
 | Name | Type | Description |
 |---|---|---|
-| newAmount | uint256 | new Amount |
+| newApplicationsEndTime | uint256 | new applicationsEndTime |
+
+### updateApplicationsStartTime
+
+```solidity
+function updateApplicationsStartTime(uint256 newApplicationsStartTime) external nonpayable
+```
+
+Update applicationsStartTime (only by ROUND_OPERATOR_ROLE)
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| newApplicationsStartTime | uint256 | new applicationsStartTime |
+
+### updateDistribution
+
+```solidity
+function updateDistribution(bytes encodedDistribution) external nonpayable
+```
+
+Invoked by round operator to update distribution on payout contract
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| encodedDistribution | bytes | encoded distribution |
 
 ### updateProjectsMetaPtr
 
@@ -541,13 +476,13 @@ function updateProjectsMetaPtr(MetaPtr newProjectsMetaPtr) external nonpayable
 |---|---|---|
 | newProjectsMetaPtr | MetaPtr | undefined |
 
-### updateRoundFeeAddress
+### updateRoundEndTime
 
 ```solidity
-function updateRoundFeeAddress(address payable newFeeAddress) external nonpayable
+function updateRoundEndTime(uint256 newRoundEndTime) external nonpayable
 ```
 
-
+Update roundEndTime (only by ROUND_OPERATOR_ROLE)
 
 
 
@@ -555,23 +490,7 @@ function updateRoundFeeAddress(address payable newFeeAddress) external nonpayabl
 
 | Name | Type | Description |
 |---|---|---|
-| newFeeAddress | address payable | new fee address |
-
-### updateRoundFeePercentage
-
-```solidity
-function updateRoundFeePercentage(uint8 newFeePercentage) external nonpayable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| newFeePercentage | uint8 | new fee percentage |
+| newRoundEndTime | uint256 | new roundEndTime |
 
 ### updateRoundMetaPtr
 
@@ -589,24 +508,21 @@ function updateRoundMetaPtr(MetaPtr newRoundMetaPtr) external nonpayable
 |---|---|---|
 | newRoundMetaPtr | MetaPtr | undefined |
 
-### updateStartAndEndTimes
+### updateRoundStartTime
 
 ```solidity
-function updateStartAndEndTimes(uint256 newApplicationsStartTime, uint256 newApplicationsEndTime, uint256 newRoundStartTime, uint256 newRoundEndTime) external nonpayable
+function updateRoundStartTime(uint256 newRoundStartTime) external nonpayable
 ```
 
-Update application, round start &amp; end times (only by ROUND_OPERATOR_ROLE)
+Update roundStartTime (only by ROUND_OPERATOR_ROLE)
 
-*Only updates if new time is in the future and current set time is also in the future*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| newApplicationsStartTime | uint256 | new applicationsStartTime |
-| newApplicationsEndTime | uint256 | new applicationsEndTime |
 | newRoundStartTime | uint256 | new roundStartTime |
-| newRoundEndTime | uint256 | new roundEndTime |
 
 ### vote
 
@@ -616,7 +532,7 @@ function vote(bytes[] encodedVotes) external payable
 
 Invoked by voter to cast votes
 
-
+*value is to handle native token voting*
 
 #### Parameters
 
@@ -640,23 +556,6 @@ Voting Strategy Contract Address
 | Name | Type | Description |
 |---|---|---|
 | _0 | contract IVotingStrategy | undefined |
-
-### withdraw
-
-```solidity
-function withdraw(address tokenAddress, address payable recipent) external nonpayable
-```
-
-Withdraw funds from the contract (only by ROUND_OPERATOR_ROLE)
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| tokenAddress | address | token address |
-| recipent | address payable | undefined |
 
 
 
@@ -729,22 +628,6 @@ event Initialized(uint8 version)
 |---|---|---|
 | version  | uint8 | undefined |
 
-### MatchAmountUpdated
-
-```solidity
-event MatchAmountUpdated(uint256 newAmount)
-```
-
-Emitted when match amount is updated
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| newAmount  | uint256 | undefined |
-
 ### NewProjectApplication
 
 ```solidity
@@ -761,24 +644,6 @@ Emitted when a project has applied to the round
 |---|---|---|
 | project `indexed` | bytes32 | undefined |
 | applicationMetaPtr  | MetaPtr | undefined |
-
-### PayFeeAndEscrowFundsToPayoutContract
-
-```solidity
-event PayFeeAndEscrowFundsToPayoutContract(uint256 matchAmountAfterFees, uint256 protocolFeeAmount, uint256 roundFeeAmount)
-```
-
-Emitted when protocol &amp; round fees are paid
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| matchAmountAfterFees  | uint256 | undefined |
-| protocolFeeAmount  | uint256 | undefined |
-| roundFeeAmount  | uint256 | undefined |
 
 ### ProjectsMetaPtrUpdated
 
@@ -867,38 +732,6 @@ Emitted when a round end time is updated
 |---|---|---|
 | oldTime  | uint256 | undefined |
 | newTime  | uint256 | undefined |
-
-### RoundFeeAddressUpdated
-
-```solidity
-event RoundFeeAddressUpdated(address roundFeeAddress)
-```
-
-Emitted when a Round wallet address is updated
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| roundFeeAddress  | address | undefined |
-
-### RoundFeePercentageUpdated
-
-```solidity
-event RoundFeePercentageUpdated(uint8 roundFeePercentage)
-```
-
-Emitted when a Round fee percentage is updated
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| roundFeePercentage  | uint8 | undefined |
 
 ### RoundMetaPtrUpdated
 

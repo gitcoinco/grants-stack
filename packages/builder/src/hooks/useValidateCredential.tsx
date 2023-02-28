@@ -10,32 +10,21 @@ export default function useValidateCredential(
   vc: VerifiableCredential | undefined,
   providerId: CredentialProvider,
   handle: string | undefined
-): { isValid: boolean; isLoading: boolean; error: any | null } {
+) {
   const [isValid, setIsValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   async function validateCredential() {
-    setIsLoading(true);
-
-    try {
-      if (vc && providerId && handle) {
-        const credential = vc;
-        const validCredentialProvider =
-          credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
-          handle.toLowerCase();
-        const validCredential = await verifier.verifyCredential(credential);
-        const validIssuer = IAM_SERVER === credential.issuer;
-        // TODO: add owner check
-        // address of vc.credentialSubject.id should be a project owner
-        setIsValid(validCredentialProvider && validCredential && validIssuer);
-      } else {
-        setIsValid(false);
-      }
-    } catch (e: any) {
-      setError(e);
-    } finally {
-      setIsLoading(false);
+    if (vc && providerId && handle) {
+      const credential = vc;
+      const validCredentialProvider =
+        credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
+        handle.toLowerCase();
+      const validCredential = await verifier.verifyCredential(credential);
+      const validIssuer = IAM_SERVER === credential.issuer;
+      // TODO: add owner check
+      // address of vc.credentialSubject.id should be a project owner
+      setIsValid(validCredentialProvider && validCredential && validIssuer);
+    } else {
+      setIsValid(false);
     }
   }
 
@@ -43,5 +32,5 @@ export default function useValidateCredential(
     validateCredential();
   }, [vc, providerId, handle]);
 
-  return { isValid, isLoading, error };
+  return isValid;
 }

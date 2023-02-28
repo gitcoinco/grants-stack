@@ -62,18 +62,3 @@ export const projectPathByID = (projectID: string) => {
 
   return path;
 };
-
-export const editProjectPathByID = (projectID: string) => {
-  let path: string | undefined;
-
-  try {
-    const { chainId, registryAddress, id } = getProjectURIComponents(projectID);
-    path = editPath(chainId, registryAddress, id);
-  } catch (e) {
-    // in case projectID has a bad format, getProjectURIComponents
-    // will throw an exception and log the errors.
-    console.error(e);
-  }
-
-  return path;
-};

@@ -83,7 +83,7 @@ export default function InfoModal({
                     <Button
                       type="button"
                       $variant="outline"
-                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
+                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                       onClick={cancelButtonAction}
                       ref={cancelButtonRef}
                     >
@@ -91,7 +91,7 @@ export default function InfoModal({
                     </Button>
                     <Button
                       type="button"
-                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
+                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
                       onClick={continueButtonAction}
                       data-testid="info-continue"
                     >

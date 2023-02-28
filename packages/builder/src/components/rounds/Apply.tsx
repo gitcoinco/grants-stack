@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  resetApplication,
-  submitApplication,
-} from "../../actions/roundApplication";
+import { resetApplication } from "../../actions/roundApplication";
 import { addAlert } from "../../actions/ui";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { RootState } from "../../reducers";
@@ -24,7 +21,6 @@ import ErrorModal from "../base/ErrorModal";
 import ExitModal from "../base/ExitModal";
 import Cross from "../icons/Cross";
 import StatusModal from "../base/StatusModal";
-import { RoundApplicationAnswers } from "../../types/roundApplication";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -263,8 +259,7 @@ function Apply() {
                 roundApplication={props.applicationMetadata}
                 showErrorModal={props.showErrorModal || false}
                 round={props.round}
-                onSubmit={(answers: RoundApplicationAnswers) => {
-                  dispatch(submitApplication(props.round!.address, answers));
+                onSubmit={() => {
                   toggleStatusModal(true);
                 }}
               />

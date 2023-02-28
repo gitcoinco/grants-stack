@@ -75,7 +75,6 @@ function ProjectForm({
         errorCount: 0,
       });
       setFeedback([{ title: "", type: "none", message: "" }]);
-      return true;
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -102,8 +101,6 @@ function ProjectForm({
           };
         }),
       ]);
-
-      return false;
     }
   };
 
@@ -116,10 +113,10 @@ function ProjectForm({
     didMountRef.current = true;
   }, [props.formMetaData]);
 
-  const nextStep = async () => {
+  const nextStep = () => {
+    validate();
     setSubmitted(true);
-    const valid = await validate();
-    if (valid) {
+    if (formValidation.valid) {
       setVerifying(ProjectFormStatus.Verification);
     }
   };
@@ -130,7 +127,7 @@ function ProjectForm({
         <div className="relative mt-4 w-full sm:w-1/2">
           <Select
             name="network"
-            defaultValue={props.currentChain?.toString()}
+            defaultValue={props.currentChain}
             label="Project Deployment Network:"
             options={chains.map((i) => ({
               id: i.id.toString(),

@@ -49,7 +49,7 @@ export default function Github({
   const dispatch = useDispatch();
   const [GHID, setGHID] = useState("");
 
-  const { isValid: validGithubCredential } = useValidateCredential(
+  const validGithubCredential: boolean = useValidateCredential(
     props.vc,
     CredentialProvider.Github,
     props.formMetaData.projectGithub

@@ -8,10 +8,10 @@ import * as utils from "../utils";
 
 utils.assertEnvironment();
 
-// note: update anytime the program factory contract is to be upgraded
+// note: update anytime the program contract is to be upgraded
 const config = {
-  currentContract: "ProgramFactory", // needed only for forceful import
-  newContract: "ProgramFactory",
+  currentProgramFactoryContract: "ProgramFactory",
+  newProgramFactoryContract: "DummyProgramFactory"
 }
 
 export async function main() {
@@ -23,47 +23,31 @@ export async function main() {
     throw new Error(`Invalid network ${network.name}`);
   }
 
-  if (config.currentContract == '' || config.newContract == '') {
-    console.log("error: config is missing values");
+  const programFactoryContract = networkParams.programFactoryContract;
+
+  if (!config.newProgramFactoryContract || config.newProgramFactoryContract == '') {
+    console.log("error: set config.newProgramFactoryContract with the new contract to be deployed");
     return;
   }
-
-  const proxyAddress = networkParams.programFactoryContract;
-  const implementationAddress = await upgrades.erc1967.getImplementationAddress(proxyAddress);
-  const adminAddress = await upgrades.erc1967.getAdminAddress(proxyAddress);
-
+  
   await confirmContinue({
     "contract"  : "Upgrading ProgramFactory to new version",
-    "currentContract": config.currentContract,
-    "newContract": config.newContract,
+    "factory contract": programFactoryContract,
+    "currentProgramFactoryContract": config.currentProgramFactoryContract,
+    "newProgramFactoryContract": config.newProgramFactoryContract,
     "network"   : hre.network.name,
-    "chainId"   : hre.network.config.chainId,
-    "proxyAddress": proxyAddress,
-    "implementationAddress": implementationAddress,
-    "adminAddress": adminAddress,
+    "chainId"   : hre.network.config.chainId
   });
-  
-
-  // const currentProgramFactory = await ethers.getContractFactory(config.currentContract);
-
-  // console.log("Forcing import...");
-
-  // await upgrades.forceImport(
-  //   proxyAddress, currentProgramFactory, { kind: 'transparent' }
-  // );
 
   console.log("Upgrading ProgramFactory...");
 
-  const newProgramFactory = await ethers.getContractFactory(config.newContract);
+  const newContractFactory = await ethers.getContractFactory(config.newProgramFactoryContract);
 
-  const newContract = await upgrades.upgradeProxy(proxyAddress, newProgramFactory);
-  console.log("ProgramFactory upgraded");
+  const contract = await upgrades.upgradeProxy(programFactoryContract, newContractFactory);
 
-  console.log("Version: "+ await newContract.VERSION());
+  console.log(`ProgramFactory is now upgraded. Check ${programFactoryContract}`);
 
-  console.log(`ProgramFactory is now upgraded. Check ${proxyAddress}`);
-
-  return newContract.address;
+  return contract.address;
 }
 
 main().catch((error) => {

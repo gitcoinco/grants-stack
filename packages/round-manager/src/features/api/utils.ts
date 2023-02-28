@@ -301,28 +301,12 @@ export const abbreviateAddress = (address: string) =>
 
 export interface SchemaQuestion {
   id: number;
-  title: string;
+  question: string;
   type: InputType;
   required: boolean;
-  hidden: boolean;
-  choices?: string[];
+  info: string;
+  choices: [];
   encrypted: boolean;
-}
-
-export interface ProjectRequirementsSchema {
-  twitter: {
-    required: boolean;
-    verification: boolean;
-  };
-  github: {
-    required: boolean;
-    verification: boolean;
-  };
-}
-
-export interface ApplicationSchema {
-  questions: Array<SchemaQuestion>;
-  requirements: ProjectRequirementsSchema;
 }
 
 /**
@@ -332,26 +316,21 @@ export interface ApplicationSchema {
  * @returns The application schema
  */
 export const generateApplicationSchema = (
-  questions: ApplicationMetadata["questions"],
-  requirements: ApplicationMetadata["requirements"]
-): ApplicationSchema => {
-  const schema = { questions: new Array<SchemaQuestion>(), requirements };
-  if (!questions) return schema;
+  questions: ApplicationMetadata["questions"]
+): Array<SchemaQuestion> => {
+  if (!questions) return [];
 
-  schema.questions = questions.map((question, index) => {
+  return questions.map((question, index) => {
     return {
       id: index,
-      title: question.title,
-      type: question.type,
+      question: question.title,
+      type: question.inputType,
       required: question.required,
       info: "",
-      choices: question.choices,
-      hidden: question.hidden,
+      choices: [],
       encrypted: question.encrypted,
     };
   });
-
-  return schema;
 };
 
 /* We can safely suppress the eslint warning here, since JSON.stringify accepts any*/
@@ -400,9 +379,3 @@ export const getUTCTime = (date: Date): string => {
 
   return utcTime.join(":") + " UTC";
 };
-
-export function typeToText(s: string) {
-  if (s == "address") return "Wallet address";
-  if (s == "checkbox") return "Checkboxes";
-  return (s.charAt(0).toUpperCase() + s.slice(1)).replace("-", " ");
-}

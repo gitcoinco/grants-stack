@@ -49,7 +49,7 @@ function NetworkForm({
           </div>
           <Select
             name="network"
-            defaultValue={props.currentChain?.toString()}
+            defaultValue={props.currentChain}
             label={
               <span className="text-xs">
                 For more details on network selection,{" "}

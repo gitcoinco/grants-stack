@@ -68,7 +68,6 @@ export const makeApprovedProjectData = (
 ): Project => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
-    grantApplicationFormAnswers: [],
     projectRegistryId: faker.datatype.number().toString(),
     recipient: faker.finance.ethereumAddress(),
     projectMetadata: {

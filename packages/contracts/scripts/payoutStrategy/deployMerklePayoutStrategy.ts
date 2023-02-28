@@ -1,7 +1,8 @@
-// This script deals with deploying the MerklePayoutStrategyFactory on a given network
-import hre, { ethers, upgrades } from "hardhat";
-import { confirmContinue } from "../../../utils/script-utils";
-import * as utils from "../../utils";
+// This script deals with deploying the QuadraticFundingVotingStrategyFactory on a given network
+import { ethers } from "hardhat";
+import hre from "hardhat";
+import { confirmContinue } from "../../utils/script-utils";
+import * as utils from "../utils";
 
 utils.assertEnvironment();
 
@@ -10,23 +11,20 @@ export async function main() {
   const blocksToWait = hre.network.name === "localhost" ? 0 : 10;
 
   await confirmContinue({
-    contract: "MerklePayoutStrategyFactory",
+    contract: "MerklePayoutStrategy",
     network: hre.network.name,
     chainId: hre.network.config.chainId,
   });
 
-  // Deploy MerklePayoutStrategyFactory
+  // Deploy MerklePayoutStrategy
   const contractFactory = await ethers.getContractFactory(
-    "MerklePayoutStrategyFactory"
+    "MerklePayoutStrategy"
   );
-  const contract = await upgrades.deployProxy(contractFactory);
+  const contract = await contractFactory.deploy();
 
-  console.log(
-    `Deploying Upgradable MerklePayoutStrategyFactory to ${contract.address}`
-  );
+  console.log(`Deploying MerklePayoutStrategy to ${contract.address}`);
 
   await contract.deployTransaction.wait(blocksToWait);
-
   console.log("✅ Deployed.");
 
   return contract.address;

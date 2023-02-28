@@ -1,14 +1,14 @@
+import { useEffect, useRef, useState } from "react";
 import {
+  QuestionMarkCircleIcon,
   BookOpenIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
-  QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "common/src/styles";
-import { useEffect, useRef, useState } from "react";
 
 type Menu = {
-  Icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  Icon: (props: React.ComponentProps<"svg">) => JSX.Element;
   title: string;
   subTitle: string;
   link: string;

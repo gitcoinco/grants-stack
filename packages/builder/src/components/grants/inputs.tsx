@@ -79,13 +79,12 @@ export function TextInput({
   encrypted,
   tooltip,
   feedback,
-  inputType,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
 
   return (
-    <div className="relative mt-6 w-full sm:max-w-md">
+    <div className="relative mt-6 w-full sm:w-1/2">
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -112,7 +111,7 @@ export function TextInput({
       </div>
       <legend>{info}</legend>
       <input
-        type={inputType ?? "text"}
+        type="text"
         id={name}
         name={name}
         value={value ?? ""}
@@ -164,7 +163,7 @@ export function TextInputAddress({
 
   return (
     <div
-      className="relative mt-6 w-full sm:max-w-md"
+      className="relative mt-6 w-full sm:w-1/2"
       data-testid="address-input-wrapper"
     >
       <div className="flex">
@@ -190,7 +189,7 @@ export function TextInputAddress({
       <legend>{info}</legend>
       <input
         type="text"
-        id={name}
+        id={label}
         name={name}
         value={value ?? ""}
         placeholder={placeholder}
@@ -234,7 +233,7 @@ export function WebsiteInput({
   const sanitizedInput = (value as string).replace(/(^\w+:|^)\/\//, "");
 
   return (
-    <div className="mt-6 w-full sm:max-w-md relative">
+    <div className="mt-6 w-full sm:w-1/2 relative">
       <div className=" flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -296,7 +295,7 @@ export function TextArea({
   }
 
   return (
-    <div className={`mt-6 w-full sm:max-w-md relative ${containerClass}`}>
+    <div className={`mt-6 w-full sm:w-1/2 relative ${containerClass}`}>
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -329,11 +328,8 @@ export function TextArea({
 }
 
 type SelectInputProps = InputProps & {
-  defaultValue?: string;
-  options: {
-    id: string;
-    title: string;
-  }[];
+  defaultValue?: number;
+  options: ProjectOption[];
 };
 
 export function Select({
@@ -341,7 +337,6 @@ export function Select({
   info,
   name,
   options,
-  value,
   disabled,
   changeHandler,
   required,
@@ -376,15 +371,13 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames(`text-base w-full `, {
+        className={classNames(`w-full `, {
           "bg-transparent": !disabled,
           borderClass,
         })}
         onChange={(e) => changeHandler(e)}
-        value={value}
         defaultValue={defaultValue}
       >
-        {!defaultValue && <option hidden>Choose a value</option>}
         {options.map((option) => (
           <option key={`key-${option.id}`} value={option.id}>
             {option.title}
@@ -400,12 +393,7 @@ export function Select({
   );
 }
 
-type ProjectInputProps = InputProps & {
-  defaultValue?: number;
-  options: ProjectOption[];
-};
-
-export function ProjectSelect({
+export function CustomSelect({
   label,
   info,
   name,
@@ -416,7 +404,7 @@ export function ProjectSelect({
   encrypted,
   defaultValue,
   feedback,
-}: ProjectInputProps) {
+}: SelectInputProps) {
   let borderClass = "";
   let feedbackColor = "";
 

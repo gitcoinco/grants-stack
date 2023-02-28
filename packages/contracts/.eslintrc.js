@@ -6,7 +6,11 @@ module.exports = {
     node: true,
   },
   plugins: ["@typescript-eslint"],
-  extends: ["plugin:node/recommended"],
+  extends: [
+    "standard",
+    "plugin:prettier/recommended",
+    "plugin:node/recommended",
+  ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 12,
@@ -16,9 +20,5 @@ module.exports = {
       "error",
       { ignores: ["modules"] },
     ],
-    "no-unused-vars": ["error", { varsIgnorePattern: "_" }],
-    "no-prototype-builtins": ["off"],
-    "node/no-missing-import": ["off"],
-    "no-unused-expressions": ["off"],
   },
 };

@@ -41,7 +41,6 @@ import Navbar from "../common/Navbar";
 import PassportBanner from "../common/PassportBanner";
 import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
-import { Logger } from "ethers/lib.esm/utils";
 
 export default function ViewBallot() {
   const { chainId, roundId } = useParams();
@@ -82,10 +81,7 @@ export default function ViewBallot() {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
-    string | undefined
-  >();
-  const [transactionReplaced, setTransactionReplaced] = useState(false);
+
   const [shortlist, finalBallot] = useBallot();
 
   const { openConnectModal } = useConnectModal();
@@ -132,9 +128,6 @@ export default function ViewBallot() {
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        if (transactionReplaced) {
-          setErrorModalSubHeading("Transaction cancelled. Please try again.");
-        }
         setOpenErrorModal(true);
       }, modalDelayMs);
     }
@@ -163,7 +156,6 @@ export default function ViewBallot() {
     chainId,
     roundId,
     txHash,
-    transactionReplaced,
   ]);
 
   const [, setPassport] = useState<PassportResponse | undefined>();
@@ -1090,7 +1082,6 @@ export default function ViewBallot() {
           isOpen={openErrorModal}
           setIsOpen={setOpenErrorModal}
           tryAgainFn={handleSubmitDonation}
-          subheading={errorModalSubHeading}
         />
         {/*Passport not connected warning modal*/}
         <ErrorModal
@@ -1174,14 +1165,10 @@ export default function ViewBallot() {
         votingStrategy: round.votingStrategy,
       });
     } catch (error) {
-      if (error === Logger.errors.TRANSACTION_REPLACED) {
-        setTransactionReplaced(true);
-      } else {
-        datadogLogs.logger.error(
-          `error: handleSubmitDonation - ${error}, id: ${roundId}`
-        );
-        console.error("handleSubmitDonation - roundId", roundId, error);
-      }
+      datadogLogs.logger.error(
+        `error: handleSubmitDonation - ${error}, id: ${roundId}`
+      );
+      console.error("handleSubmitDonation - roundId", roundId, error);
     }
   }
 }

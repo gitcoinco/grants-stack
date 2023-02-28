@@ -2,9 +2,6 @@ name: package/builder - Build -> Test
 
 on:
   push:
-    branches:
-      - main
-      - release
   pull_request:
     branches:
       - "**"
