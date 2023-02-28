@@ -3,6 +3,8 @@ type RoundParams = {
   roundImplementationContract: string;
   roundFactoryContract: string;
   roundContract ?: string;
+  newProtocolFeePercentage?: number;
+  newProtocolTreasury?: string;
 };
 
 type DeployParams = Record<string, RoundParams>;
@@ -11,12 +13,14 @@ export const roundParams: DeployParams = {
   "mainnet": {
     roundFactoryContract: '0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe',
     roundImplementationContract: '0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E',
-    roundContract: '0x3172a6cCE26529e7DD2B533e7c3622a0b544f349'
+    roundContract: '0x3172a6cCE26529e7DD2B533e7c3622a0b544f349',
   },
   "goerli": {
     roundFactoryContract: '0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48',
-    roundImplementationContract: '0x0fF5962Bc56BA0Cf6D7d6EF90df274AE5dC4D16A',
-    roundContract: '0x84c3445D33488Dc0dd94694F6299ea3b37aB3cB6'
+    roundImplementationContract: '0x0bbB660E151F4A404AA5692445465291A95400C4',
+    roundContract: '0x9aCcdbf1805088145a168f2D496e9F775222a82C',
+    newProtocolFeePercentage : 1,
+    newProtocolTreasury: '0x5FbDB2315678afecb367f032d93F642f64180aa3'
   },
   "optimism-mainnet": {
     roundFactoryContract: '0x0f0A4961274A578443089D06AfB9d1fC231A5a4D',

@@ -4,7 +4,11 @@ import { Store } from "redux";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
-import { Metadata, Round } from "../../../types/index";
+import {
+  Metadata,
+  Round,
+  RoundApplicationMetadata,
+} from "../../../types/index";
 import { renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
@@ -27,19 +31,19 @@ const projectsMetadata: Metadata[] = [
   },
 ];
 
-const roundApplicationMetadata = {
+const roundApplicationMetadata: RoundApplicationMetadata = {
+  version: "2.0.0",
   lastUpdatedOn: 1657817494040,
-  application_schema: [],
-  applicationSchema: [
-    {
-      id: 0,
-      question: "Recipient Address",
-      type: "RECIPIENT",
-      required: true,
-      info: "",
-      choices: [],
+  applicationSchema: {
+    requirements: {
+      github: { required: false, verification: false },
+      twitter: { required: false, verification: false },
     },
-  ],
+    questions: [
+      { id: 0, type: "project" },
+      { id: 1, type: "recipient" },
+    ],
+  },
 };
 
 const round: Round = {
@@ -62,27 +66,20 @@ const round: Round = {
     pointer: "metaPointer",
   },
   applicationMetadata: {
+    version: "2.0.0",
     lastUpdatedOn: 1234,
-    applicationSchema: [
-      {
-        id: 0,
-        question: "Recipient Address",
-        type: "RECIPIENT",
-        required: true,
-        info: "",
-        choices: [],
+    applicationSchema: {
+      requirements: {
+        twitter: { required: false, verification: false },
+        github: { required: false, verification: false },
       },
-    ],
-    application_schema: [
-      {
-        id: 0,
-        question: "Recipient Address",
-        type: "RECIPIENT",
-        required: true,
-        info: "",
-        choices: [],
-      },
-    ],
+      questions: [
+        {
+          id: 0,
+          type: "recipient",
+        },
+      ],
+    },
   },
   programName: "sample program",
 };
@@ -101,30 +98,30 @@ jest.mock("wagmi", () => ({
 }));
 
 describe("<Form />", () => {
-  describe("addressInput valid address change", () => {
-    let store: Store;
+  let store: Store;
 
-    beforeEach(() => {
-      store = setupStore();
-      store.dispatch(web3ChainIDLoaded(5));
-      store.dispatch({
-        type: "PROJECTS_LOADED",
-        payload: {
-          chainID: 5,
-          events: {
-            "1:1:1": {
-              createdAtBlock: 1111,
-              updatedAtBlock: 1112,
-            },
+  beforeEach(() => {
+    store = setupStore();
+    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch({
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 5,
+        events: {
+          "1:1:1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
           },
         },
-      });
-      store.dispatch({
-        type: "GRANT_METADATA_FETCHED",
-        data: projectsMetadata[0],
-      });
+      },
     });
+    store.dispatch({
+      type: "GRANT_METADATA_FETCHED",
+      data: projectsMetadata[0],
+    });
+  });
 
+  describe("addressInput valid address change", () => {
     test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
       // const setState = jest.fn();
       const returnValue = {
@@ -145,6 +142,11 @@ describe("<Form />", () => {
         />,
         store
       );
+
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
@@ -193,6 +195,12 @@ describe("<Form />", () => {
         />,
         store
       );
+
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -241,6 +249,11 @@ describe("<Form />", () => {
         store
       );
 
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -288,6 +301,12 @@ describe("<Form />", () => {
         />,
         store
       );
+
+      const selectProject = screen.getByLabelText(
+        "Select a project you would like to apply for funding:"
+      );
+      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -316,5 +335,240 @@ describe("<Form />", () => {
       //   expect(setState).toHaveBeenCalledWith(returnValue)
       // );
     });
+  });
+
+  it("shows a project details section", async () => {
+    renderWrapped(
+      <Form
+        roundApplication={roundApplicationMetadata}
+        round={round}
+        onSubmit={jest.fn()}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
+    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
+    const toggleButton = screen.getByText("View your Project Details");
+
+    expect(screen.getByLabelText("Project Website")).toBeInTheDocument();
+    expect(screen.getByLabelText("Project Website")).not.toBeVisible();
+
+    global.scrollTo = jest.fn();
+
+    fireEvent.click(toggleButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Project Website")).toBeVisible();
+    });
+  });
+});
+
+describe("<Form/>", () => {
+  it("prevents appliying when requirements are not met", async () => {
+    const store = setupStore();
+
+    store.dispatch(web3ChainIDLoaded(5));
+    store.dispatch({
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 5,
+        events: {
+          "1:1:1": {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
+          },
+        },
+      },
+    });
+
+    store.dispatch({
+      type: "GRANT_METADATA_FETCHED",
+      data: { ...projectsMetadata[0], projectGithub: "mygithub" },
+    });
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            requirements: {
+              github: { required: true, verification: false },
+              twitter: { required: true, verification: false },
+            },
+          },
+        }}
+        round={round}
+        onSubmit={jest.fn()}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
+    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+
+    expect(
+      screen.getByText("Project Twitter is required.")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Project Github is required.")
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("Form questions", () => {
+  let store: Store;
+
+  beforeEach(() => {
+    store = setupStore();
+    store.dispatch(web3ChainIDLoaded(5));
+  });
+
+  test("checkbox", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "checkbox",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    act(() => {
+      const choice = screen.getByLabelText("Second option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: ["Second option"] });
+
+    act(() => {
+      const choice = screen.getByLabelText("First option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({
+      0: ["Second option", "First option"],
+    });
+  });
+
+  test("multiple-choice", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "multiple-choice",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    act(() => {
+      const choice = screen.getByLabelText("Second option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
+
+    act(() => {
+      const choice = screen.getByLabelText("First option");
+      choice.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith({
+      0: "First option",
+    });
+  });
+
+  test("dropdown", async () => {
+    const onChange = jest.fn();
+
+    renderWrapped(
+      <Form
+        roundApplication={{
+          ...roundApplicationMetadata,
+          applicationSchema: {
+            ...roundApplicationMetadata.applicationSchema,
+            questions: [
+              {
+                id: 0,
+                type: "dropdown",
+                title: "This is the title",
+                required: true,
+                encrypted: true,
+                hidden: true,
+                options: ["First option", "Second option"],
+              },
+            ],
+          },
+        }}
+        round={round}
+        onChange={onChange}
+        showErrorModal={false}
+      />,
+      store
+    );
+
+    const select = screen.getByLabelText(/This is the title/);
+
+    expect(screen.getByText("First option")).toBeInTheDocument();
+    expect(screen.getByText("Second option")).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.change(select, { target: { value: "First option" } });
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "First option" });
+
+    act(() => {
+      fireEvent.change(select, { target: { value: "Second option" } });
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
   });
 });

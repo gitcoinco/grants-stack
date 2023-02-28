@@ -1,5 +1,6 @@
 import Lit from "../services/lit";
 import { RoundApplicationMetadata, Project, RoundApplication } from "../types";
+import { RoundApplicationAnswers } from "../types/roundApplication";
 
 export default class RoundApplicationBuilder {
   enableEncryption: boolean;
@@ -69,22 +70,24 @@ export default class RoundApplicationBuilder {
 
   async build(
     roundAddress: string,
-    formInputs: { [id: number]: string }
+    formInputs: RoundApplicationAnswers
   ): Promise<RoundApplication> {
     const answers = [];
     let recipient: string;
 
     // eslint-disable-next-line
-    for (let i = 0; i < this.ram.applicationSchema.length; i++) {
-      const question = this.ram.applicationSchema[i];
+    for (let i = 0; i < this.ram.applicationSchema.questions.length; i++) {
+      const question = this.ram.applicationSchema.questions[i];
 
       switch (question.type) {
-        case "RECIPIENT":
+        case "recipient":
           // FIXME: validate recipient here?
           recipient = String(formInputs[question.id]);
           break;
-        case "PROJECT":
+
+        case "project":
           break;
+
         default:
           // eslint-disable-next-line
           let answer;
@@ -93,7 +96,7 @@ export default class RoundApplicationBuilder {
           if (question.encrypted) {
             // eslint-disable-next-line
             encryptedAnswer = await this.encryptAnswer(
-              formInputs[question.id] ?? ""
+              (formInputs[question.id] as string) ?? ""
             );
           } else {
             answer = formInputs[question.id];
@@ -101,7 +104,9 @@ export default class RoundApplicationBuilder {
 
           answers.push({
             questionId: question.id,
-            question: question.question,
+            question: question.title,
+            type: question.type,
+            hidden: question.hidden,
             answer,
             encryptedAnswer,
           });

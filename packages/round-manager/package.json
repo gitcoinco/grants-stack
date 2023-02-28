@@ -11,6 +11,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test --watchAll=false --silent",
+    "test:dev": "craco test --watchAll=true --silent",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "format": "prettier . --write",
@@ -19,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@craco/craco": "^6.4.3",
+    "@craco/craco": "^6.4.5",
     "@datadog/browser-logs": "^4.17.1",
     "@datadog/browser-rum": "^4.17.1",
     "@ethersproject/abstract-signer": "^5.7.0",
@@ -36,6 +37,7 @@
     "@sentry/tracing": "^7.26.0",
     "@sentry/webpack-plugin": "^1.20.0",
     "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.9",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.0.1",
     "@testing-library/user-event": "^14.1.1",
@@ -61,6 +63,7 @@
     "react-dom": "^18.1.0",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.31.3",
+    "react-icons": "^4.7.1",
     "react-redux": "^8.0.1",
     "react-router-dom": "6",
     "react-scripts": "5.0.1",

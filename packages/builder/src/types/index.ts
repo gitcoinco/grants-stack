@@ -1,5 +1,6 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReactNode } from "react";
+import { RoundApplicationMetadata } from "./roundApplication";
 
 export type Images = {
   bannerImg?: Blob;
@@ -70,6 +71,7 @@ export type InputProps = {
   encrypted?: boolean;
   containerClass?: string;
   tooltip?: ReactNode;
+  inputType?: string;
   feedback: {
     type: string;
     message: string;
@@ -79,7 +81,7 @@ export type InputProps = {
 export type TextAreaProps = InputProps & { rows?: number };
 
 export type AddressInputProps = {
-  label: string;
+  label: string | ReactNode;
   name: string;
   info?: string;
   tooltipValue?: string;
@@ -126,16 +128,6 @@ export interface ProgramMetadata {
   name: string;
 }
 
-export interface RoundApplicationQuestion {
-  id: number;
-  question: string;
-  type: string;
-  required: boolean;
-  info?: string;
-  choices?: string[];
-  encrypted?: boolean;
-}
-
 export interface JWK {
   alg: string;
   e: string;
@@ -143,14 +135,6 @@ export interface JWK {
   key_ops: string[];
   kty: string;
   n: string;
-}
-
-export interface RoundApplicationMetadata {
-  lastUpdatedOn: number;
-  applicationSchema: RoundApplicationQuestion[];
-  application_schema: RoundApplicationQuestion[];
-  projectQuestionId?: number;
-  recipientQuestionId?: number;
 }
 
 export type Round = {
@@ -201,7 +185,7 @@ export interface RoundApplication {
   answers: Array<{
     questionId: Number;
     question: string;
-    answer: string | undefined;
+    answer: string | undefined | string[];
     encryptedAnswer:
       | {
           ciphertext: string;
@@ -250,3 +234,9 @@ export enum CredentialProvider {
   Twitter = "ClearTextTwitter",
   Github = "ClearTextGithubOrg",
 }
+
+export type {
+  RoundApplicationMetadata,
+  RoundApplicationQuestion,
+  ProjectRequirements,
+} from "./roundApplication";

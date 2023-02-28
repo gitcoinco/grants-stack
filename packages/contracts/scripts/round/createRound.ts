@@ -1,15 +1,16 @@
 // This is a helper script to create a round. 
 // This should be created via the frontend and this script is meant to be used for quick test
-// NOTE: this script deploys a round with a QF voting strategy
+// NOTE: this script deploys a round with a QF voting strategy an Merkle payout strategy
 import { ethers } from "hardhat";
 import hre from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
 import { roundParams } from '../config/round.config';
 import { programParams } from "../config/program.config";
 import { QFVotingParams } from "../config/votingStrategy.config";
-import { PayoutParams } from "../config/payoutStrategy.config";
+import { MerklePayoutParams } from "../config/payoutStrategy.config";
 import { encodeRoundParameters } from "../utils";
 import * as utils from "../utils";
+import { AddressZero } from "@ethersproject/constants";
 
 utils.assertEnvironment();
   
@@ -20,7 +21,7 @@ export async function main() {
   const networkParams = roundParams[network.name];
   const programNetworkParams = programParams[network.name];
   const votingNetworkParams = QFVotingParams[network.name];
-  const payoutNetworkParams = PayoutParams[network.name];
+  const payoutNetworkParams = MerklePayoutParams[network.name];
 
   if (!networkParams) {
     throw new Error(`Invalid network ${network.name}`);
@@ -31,7 +32,7 @@ export async function main() {
   const programContract = programNetworkParams.programContract;
 
   const votingContract = votingNetworkParams.contract;
-  const payoutContract = payoutNetworkParams.merklePayoutContract;
+  const payoutContract = payoutNetworkParams.contract;
   
   if (!roundFactoryContract) {
     throw new Error(`error: missing roundFactoryContract`);
@@ -43,6 +44,10 @@ export async function main() {
 
   if (!votingContract) {
     throw new Error(`error: missing votingContract`);
+  }
+
+  if (!payoutContract) {
+    throw new Error(`error: missing payoutContract`);
   }
 
   const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
@@ -58,37 +63,7 @@ export async function main() {
     "chainId"                      : network.config.chainId
   });
 
-  const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 50); // 1 hour later
-  const applicationsEndTime = Math.round(new Date().getTime() / 1000 + 86400); // 1 day later
-  const roundStartTime = Math.round(new Date().getTime() / 1000 + 100); // 2 days later
-  const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
-    
-  const params = [
-    votingContract, // _votingStrategyAddress
-    payoutContract, // _payoutStrategyAddress
-    applicationsStartTime, // _applicationsStartTime
-    applicationsEndTime, // _applicationsEndTime
-    roundStartTime, // _roundStartTime
-    roundEndTime, // _roundEndTime
-    '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
-    { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
-    { protocol: 1, pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia" }, // _applicationMetaPtr
-    [
-      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
-      '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
-      '0xA2A6460f20E43dcC5F8f55714A969500c342d7CE'
-    ], // _adminRoles
-    [
-      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
-      '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
-      '0xA2A6460f20E43dcC5F8f55714A969500c342d7CE',
-      '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB',
-      '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017',
-      '0x6e8C1ADaEDb9A0A801dD50aFD95b5c07e9629C1E'
-    ] // _roundOperators
-  ];
-  
-  const encodedParameters = encodeRoundParameters(params);
+  const encodedParameters = generateAndEncodeRoundParam(votingContract, payoutContract);
   
   const roundTx = await roundFactory.create(
     encodedParameters,
@@ -107,6 +82,73 @@ export async function main() {
 
   console.log("Txn hash: " + roundTx.hash);
   console.log("✅ Round created: ", roundAddress);
+}
+
+const generateAndEncodeRoundParam = async (votingContract: string, payoutContract: string) => {
+
+  const _currentTimestamp = (await ethers.provider.getBlock(
+    await ethers.provider.getBlockNumber())
+  ).timestamp;
+
+  const roundMetaPtr = {
+    protocol: 1,
+    pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi"
+  };
+
+  const applicationMetaPtr = {
+    protocol: 1,
+    pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia"
+  };
+
+  const roles = [
+    '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
+    '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
+    '0xA2A6460f20E43dcC5F8f55714A969500c342d7CE',
+    '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB',
+    '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017',
+    '0x6e8C1ADaEDb9A0A801dD50aFD95b5c07e9629C1E'
+  ]
+
+  const matchAmount = 1;
+  const token = AddressZero;
+  const roundFeePercentage = 0;
+  const roundFeeAddress = '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA';
+
+  const initAddress = [
+    votingContract, // votingStrategy
+    payoutContract, // payoutStrategy
+  ];
+
+  const initRoundTime = [
+    _currentTimestamp + 50,     // 1 hour later   appStartTime
+    _currentTimestamp + 432000, // 5 days later   appEndTime
+    _currentTimestamp + 7200,   // 2 hours later  roundStartTime
+    _currentTimestamp + 864000, // 10 days later  roundEndTime
+  ];
+
+  const initMetaPtr = [
+    roundMetaPtr,
+    applicationMetaPtr,
+  ];
+
+  const initRoles = [
+    roles,  // adminRoles
+    roles   // roundOperators
+  ];
+
+  let params = [
+    initAddress,
+    initRoundTime,
+    matchAmount,
+    token,
+    roundFeePercentage,
+    roundFeeAddress,
+    initMetaPtr,
+    initRoles
+  ];
+
+  return encodeRoundParameters(params);
+
 }
 
 main().catch((error) => {

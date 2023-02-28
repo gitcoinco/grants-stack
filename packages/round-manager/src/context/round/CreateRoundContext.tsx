@@ -1,5 +1,6 @@
 import {
   ProgressStatus,
+  ProjectRequirements,
   Round,
   StorageProtocolID,
 } from "../../features/api/types";
@@ -37,8 +38,12 @@ export interface CreateRoundState {
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
   applicationQuestions: {
+    version: string;
     lastUpdatedOn: number;
-    applicationSchema: SchemaQuestion[];
+    applicationSchema: {
+      questions: SchemaQuestion[];
+      requirements: ProjectRequirements;
+    };
   };
   round: Round;
 };
