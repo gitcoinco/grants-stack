@@ -73,8 +73,17 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       console.log("Error in fetching group name", err);
       chatId = null;
     }
+    const totalVotes = await getQFVotesForProject(
+      chainID,
+      project.projectRegistryId,
+      account as string
+    );
+
+    if (totalVotes.length) {
+      isContributor = true;
+    }
     if (chatId === null) {
-      if (project.recipient === account) {
+      if (project.recipient === account || account.length) {
         return {
           isOwner: true,
           isMember: false,
@@ -82,10 +91,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
           isContributor: false,
         };
       }
-      const totalVotes = await getQFVotesForProject(project, chainID);
-      const isContri = totalVotes.find((contri) => {
-        if (contri.from === account) isContributor = true;
-      });
+
       if (isContributor) {
         return {
           isOwner: false,
@@ -95,20 +101,19 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
         };
       }
     }
-
     const groupInfo = await getGroupInfo(chatId as string, account);
     if (!groupInfo) {
       return {
         isOwner,
         isMember,
         chatId,
-        isContributor: false,
+        isContributor,
       };
     }
     if (groupInfo.groupCreator === `eip155:${account}`) {
       return {
         isOwner: true,
-        isMember: false,
+        isMember: true,
         chatId,
         isContributor: false,
       };
@@ -122,7 +127,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       isMember,
       isOwner,
       chatId,
-      isContributor: false,
+      isContributor,
     };
   } catch (e) {
     console.log("Verifying Push User", e);
@@ -142,6 +147,7 @@ export async function createPushGroup(
 ) {
   try {
     const decryptedPgpKeys = await getUserPgpKeys(account);
+    console.log(decryptedPgpKeys, "decrypted keys");
     const response = await PushApi.chat.createGroup({
       groupName: project.projectMetadata.title,
       groupDescription: project.projectMetadata.description.slice(0, 149),
@@ -236,5 +242,18 @@ export async function sendMsg(
     return response;
   } catch (e) {
     console.log("Sending msg in PUSH chat", e);
+  }
+}
+
+export async function getUserDetails(account: string) {
+  try {
+    const user = await PushApi.user.get({
+      account,
+      env: "dev",
+    });
+    // return user;
+    return user.profilePicture;
+  } catch (e) {
+    console.log(e);
   }
 }

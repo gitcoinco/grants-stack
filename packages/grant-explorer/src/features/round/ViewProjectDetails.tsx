@@ -27,6 +27,7 @@ import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
+import { ReactComponent as PushLogo } from "../../assets/push-gitcoin-scroll-logo.svg";
 import {
   getUserPgpKeys,
   getGroupChatID,
@@ -36,6 +37,7 @@ import {
   fetchHistoryMsgs,
   sendMsg,
   getGroupInfo,
+  getUserDetails
 } from "../api/pushChat";
 import useSWR from "swr";
 import { add, formatDistanceToNowStrict } from "date-fns";
@@ -95,9 +97,9 @@ export default function ViewProjectDetails() {
   const [pushChatId, setPushChatID] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("None");
 
-  useEffect(() => {
-    handlePgpKeys();
-  }, []);
+  // useEffect(() => {
+  //   handlePgpKeys();
+  // }, []);
 
   const handlePgpKeys = async () => {
     if (wallet.props.context) {
@@ -125,11 +127,13 @@ export default function ViewProjectDetails() {
       )}
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
-          <div className="flex flex-row items-center gap-3 text-sm">
-            <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
-            <Link to={`/round/${chainId}/${roundId}`}>
-              <span className="font-normal">Back to Grants</span>
-            </Link>
+          <div className="flex flex-row items-center gap-3 text-sm justify-between">
+            <div className="flex flex-row items-center gap-3 text-sm">
+              <ChevronLeftIcon className="h-5 w-5 mt-6 mb-6" />
+              <Link to={`/round/${chainId}/${roundId}`}>
+                <span className="font-normal">Back to Grants</span>
+              </Link>
+            </div>
           </div>
           {!isLoading && projectToRender && (
             <>
@@ -155,10 +159,12 @@ export default function ViewProjectDetails() {
                     pgpKeys={pgpKeys}
                     position={position}
                     setPosition={setPosition}
+                    handlePgpKeys={handlePgpKeys}
                   />
                 </div>
                 <Sidebar
                   pushChatId={pushChatId}
+                  pgpKeys={pgpKeys}
                   handlePushChatID={handlePushChatID}
                   position={position}
                   setPosition={setPosition}
@@ -177,6 +183,7 @@ export default function ViewProjectDetails() {
             </>
           )}
         </main>
+
         <Footer />
       </div>
     </>
@@ -423,6 +430,7 @@ function Sidebar(props: {
   handlePushChatID: any;
   position: string;
   setPosition: any;
+  pgpKeys: string;
 }) {
   const wallet = Auth();
   const [isPresent, setIsPresent] = useState<boolean>(true);
@@ -448,6 +456,9 @@ function Sidebar(props: {
     if (!chatId) {
       setIsPresent(false);
     }
+    if (!isMember && !isOwner) {
+      setIsPresent(false);
+    }
     if (chatId) {
       props.handlePushChatID(chatId);
     }
@@ -461,17 +472,25 @@ function Sidebar(props: {
     }
   };
 
+  const handleClickScroll = () => {
+    const pushChatElement = document.getElementById("push-chat");
+    if (pushChatElement) {
+      pushChatElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const handleGroupCreation = async () => {
     if (position === "Owner") {
       const groupChatId = await createPushGroup(
         project as Project,
         wallet.props.context.address,
-        round as Round
+        round as Round,
       );
       if (!groupChatId) return;
       props.handlePushChatID(groupChatId);
       setPosition("Owner");
       setIsPresent(true);
+      handleClickScroll();
       return;
     }
     if (position === "Contributor") {
@@ -482,7 +501,7 @@ function Sidebar(props: {
       props.handlePushChatID(null);
       setPosition("Contributor");
       setIsPresent(true);
-
+      handleClickScroll();
       return;
     }
   };
@@ -498,7 +517,7 @@ function Sidebar(props: {
           }
         >
           {position === "Owner"
-            ? "Create Group"
+            ? "Create Group Chat"
             : position === "Contributor"
             ? "Join group"
             : "None"}
@@ -511,6 +530,7 @@ function Sidebar(props: {
         addToBallot={props.addToShortlist}
       />
       <ShortlistTooltip />
+      <ScollComponent handleClickScroll={handleClickScroll} />
     </div>
   );
 }
@@ -568,6 +588,7 @@ export function PushChat(props: {
   position: string;
   setPosition: any;
   handlePushChatID: any;
+  handlePgpKeys: any;
 }) {
   const { chainId, roundId, applicationId } = useParams();
   const { round } = useRoundById(chainId!, roundId!);
@@ -612,6 +633,18 @@ export function PushChat(props: {
       pushChatId as string,
       props.pgpKeys
     );
+    const newMsgArr = []
+      if(chatHistory.length){
+        for(let i =0; i< chatHistory.length ; i++){
+          const userDetails = await getUserDetails(chatHistory[i].fromCAIP10)
+          newMsgArr.push({
+            ...chatHistory[i],
+            profile: userDetails
+          })
+        }
+      }
+    
+
     let isMem = false;
     const groupInfo = await getGroupInfo(pushChatId as string, address);
     groupInfo?.members.forEach((mem) => {
@@ -620,7 +653,7 @@ export function PushChat(props: {
       }
     });
     setIsPreset(isMem);
-    setMsgs(chatHistory);
+    setMsgs(newMsgArr);
   };
 
   const handleMsgSent = async () => {
@@ -639,9 +672,13 @@ export function PushChat(props: {
         props.pgpKeys,
         pushChatId as string
       );
+
+      const profileImage = await getUserDetails(`eip155:${address}`)
+
+
       if (res) {
         setMsgs([
-          { fromCAIP10: `eip155:${address}`, messageContent: inputMsg },
+          { fromCAIP10: `eip155:${address}`, messageContent: inputMsg, profile: profileImage },
           ...oldMsgs,
         ]);
       }
@@ -684,7 +721,9 @@ export function PushChat(props: {
       : null;
     return (
       <div className={`flex flex-row`}>
-        <div className="rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+        <div className="flex justify-center align-center rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+        <img className="rounded-full" src={e.profile} />
+        </div>
         <div
           className={`flex flex-col my-2 rounded hover:cursor-pointer ml-2.5 ${
             e.fromCAIP10 === `eip155:${wallet.props.context.address}`
@@ -702,12 +741,14 @@ export function PushChat(props: {
   };
 
   const textBoxRight = (e: any) => {
+
     const addOfUser = e.fromCAIP10
       ? `${e.fromCAIP10.substring(7, 12)}...${e.fromCAIP10.substring(
           e.fromCAIP10.length - 5,
           e.fromCAIP10.length
         )} `
       : null;
+
     return (
       <div className={`flex flex-row self-end`}>
         <div
@@ -718,55 +759,83 @@ export function PushChat(props: {
             {e.messageContent}
           </p>
         </div>
-        <div className="rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+        <div className="rounded-full flex justify-center align-center w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+          <img className="rounded-full" src={e.profile} />
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="p-4 ">
-      <h4 className="text-2xl mb-4">Grant Group Chat</h4>
-      {props.pushChatId ? (
-        <>
-          {isPresent && (
-            <div className="w-100 flex flex-col relative">
-              <input
-                className="h-16 border rounded-xl relative border-[#DEE2E6] flex flex-row text-xs w-100 p-2 outline-none"
-                onChange={(e) => {
-                  handleInputMsg(e);
-                }}
-                value={inputMsg}
-                onKeyDown={({ key }) => {
-                  if (key === "Enter") handleMsgSent();
-                }}
-              />
-              <span className="absolute top-2 left-2 text-xs text-[#DEE2E6]">
-                Write on a grants group chat...
-              </span>
-              <button
-                onClick={handleMsgSent}
-                className={
-                  "self-end bg-[#6F3FF5] mt-3.5 rounded-sm text-white text-xs cursor-pointer px-4 py-2"
-                }
-              >
-                Send Message
-              </button>
-            </div>
-          )}
-          <div
-            id="chat-scroll"
-            className="h-96 flex flex-auto flex-col overflow-auto mt-6"
+    <div className="py-4 mt-4" id="push-chat">
+      <div className="flex flex-row justify-between">
+        <h4 className="text-2xl mb-2">Grant Group Chat</h4>
+        {!props.pgpKeys && (
+          <Button
+            className="text-sm px-10 py-2.5"
+            onClick={props.handlePgpKeys}
           >
-            {msgs?.map((e) => {
-              const newAdd = "eip155:" + wallet.props.context.address;
-              return newAdd === e.fromCAIP10 ? textBoxRight(e) : textBoxLeft(e);
-            })}
-          </div>
-          <div className="flex flex-row"></div>
-        </>
-      ) : (
-        <div>Chat group hasn't been created yet!</div>
+            Decrypt keys to view group chat
+          </Button>
+        )}
+      </div>
+
+      {!props.pgpKeys && (
+        <div>Get Decrypted PGP keys first to see the chat!</div>
       )}
+      {props.pgpKeys ? (
+        props.pushChatId ? (
+          // return chats for the user
+          <>
+            {isPresent && (
+              <div className="w-100 flex flex-col relative">
+                <div className="border h-16 px-2 rounded-xl relative border-[#DEE2E6]">
+                  <input
+                    className="pt-0 px-1 h-8 w-full bg-transparent relative z-10 flex flex-row text-xs  outline-none"
+                    onChange={(e) => {
+                      handleInputMsg(e);
+                    }}
+                    value={inputMsg}
+                    onKeyDown={({ key }) => {
+                      if (key === "Enter") handleMsgSent();
+                    }}
+                  />
+
+                  {!inputMsg.length && (
+                    <span className="px-2 absolute top-2 left-2 text-xs text-[#DEE2E6]">
+                      Write on a grants group chat...
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleMsgSent}
+                  className={
+                    "self-end bg-[#6F3FF5] mt-3.5 rounded-sm text-white text-xs cursor-pointer px-4 py-2"
+                  }
+                >
+                  Send Message
+                </button>
+              </div>
+            )}
+            <div
+              id="chat-scroll"
+              className="h-96 flex flex-auto flex-col overflow-auto mt-6"
+            >
+              {msgs?.map((e) => {
+                const newAdd = "eip155:" + wallet.props.context.address;
+                return newAdd === e.fromCAIP10
+                  ? textBoxRight(e)
+                  : textBoxLeft(e);
+              })}
+            </div>
+            <div className="flex flex-row"></div>
+          </>
+        ) : (
+          // return no group has present
+          <div>Chat group hasn't been created yet!</div>
+        )
+      ) : null}
     </div>
   );
 }
@@ -863,6 +932,16 @@ function ShortlistTooltip() {
         What is the Shortlist?
       </p>
     </span>
+  );
+}
+
+function ScollComponent(props: { handleClickScroll: any }) {
+  return (
+    <div className="fixed bottom-10 right-2">
+      <Button className="py-2 px-2" onClick={props.handleClickScroll}>
+        <PushLogo/>
+      </Button>
+    </div>
   );
 }
 

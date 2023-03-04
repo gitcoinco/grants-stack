@@ -253,32 +253,29 @@ export async function getProjectOwners(
 
 export async function getQFVotesForProject(
   chainId: any,
-  projectRegistryId: string
+  projectRegistryId: string,
+  account: string
 ) {
   try {
-    let skipAmount = 0;
-    let isPause = 0;
-    const totalVotes = [];
-    while (!isPause) {
-      const res = await graphql_fetch(
-        `
-      query GetQFVotes($projectRegistryId: String){
-          qfvotes(where: {projectId:$projectRegistryId}, first: 1000, skip: $skipAmount){
-          id
+    const res = await graphql_fetch(
+      `
+      query GetQFVotes($projectRegistryId: String, $from: String) {
+          qfvotes(where: {
+            projectId: $projectRegistryId
+            from: $from
+          }) {
+            id
             from
+            amount
           }
-      }
+        }
       `,
-        chainId,
-        { projectRegistryId, skipAmount },
-        true
-      );
+      chainId.toString(),
+      { projectRegistryId, from: account },
+      true
+    );
 
-      isPause = res?.data?.qfvotes.length;
-      skipAmount = skipAmount + 1000;
-      totalVotes.push(res?.data?.qfvotes || []);
-    }
-    return totalVotes;
+    return res?.data?.qfvotes || [];
   } catch (e) {
     console.log("getQFVotesForProject", e);
     throw Error("Unable to fetch votes for project.");
