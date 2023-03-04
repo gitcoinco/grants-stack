@@ -1,5 +1,8 @@
 import { ethers } from "ethers";
-import { RoundApplicationMetadata } from "../types/roundApplication";
+import {
+  RoundApplicationMetadata,
+  RoundApplicationQuestion,
+} from "../types/roundApplication";
 
 const generateUniqueRoundApplicationID = (
   projectChainId: number,
@@ -12,19 +15,6 @@ const generateUniqueRoundApplicationID = (
   );
 
 export default generateUniqueRoundApplicationID;
-
-const projectQuestion = {
-  question: "Select a project you would like to apply for funding:",
-  type: "PROJECT", // this will be a limited set [TEXT, TEXTAREA, RADIO, MULTIPLE]
-  required: true,
-};
-
-const recipientAddressQuestion = {
-  question: "Recipient Address",
-  type: "RECIPIENT",
-  required: true,
-  info: "Address that will receive funds",
-};
 
 export const parseRoundApplicationMetadata = (
   object: any
@@ -43,6 +33,17 @@ export const parseRoundApplicationMetadata = (
       applicationSchema = object.application_schema;
     }
 
+    applicationSchema = applicationSchema.map(
+      (q: any): RoundApplicationQuestion => ({
+        id: q.id,
+        type: q.question === "Email Address" ? "email" : q.type,
+        title: q.question,
+        required: q.required,
+        encrypted: q.encrypted,
+        hidden: false,
+      })
+    );
+
     metadata.applicationSchema = {
       questions: applicationSchema,
       requirements: {
@@ -58,22 +59,32 @@ export const parseRoundApplicationMetadata = (
     };
   }
 
-  const recipientQuestionId = metadata.applicationSchema.questions.length;
+  // const [major, minor, patch] = object.version.split(".").map(Number);
+  //
+  metadata.applicationSchema.questions =
+    metadata.applicationSchema.questions.map(
+      (q: any): RoundApplicationQuestion => ({
+        id: q.id,
+        type: q.question === "Email Address" ? "email" : q.type,
+        title: q.title || q.question,
+        options: q.options || q.choices,
+        required: q.required,
+        encrypted: q.encrypted,
+        hidden: q.hidden,
+      })
+    );
 
-  metadata.applicationSchema.questions.unshift({
-    ...recipientAddressQuestion,
-    id: recipientQuestionId,
-  });
-  metadata.recipientQuestionId = recipientQuestionId;
-
-  const projectQuestionId = metadata.applicationSchema.questions.length;
-
-  metadata.applicationSchema.questions.unshift({
-    ...projectQuestion,
-    id: projectQuestionId,
-  });
-
-  metadata.projectQuestionId = projectQuestionId;
+  metadata.applicationSchema.questions = [
+    {
+      id: metadata.applicationSchema.questions.length,
+      type: "project",
+    },
+    {
+      id: metadata.applicationSchema.questions.length + 1,
+      type: "recipient",
+    },
+    ...metadata.applicationSchema.questions,
+  ];
 
   return metadata;
 };

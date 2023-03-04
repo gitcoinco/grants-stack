@@ -130,7 +130,7 @@ function ProjectForm({
         <div className="relative mt-4 w-full sm:w-1/2">
           <Select
             name="network"
-            defaultValue={props.currentChain}
+            defaultValue={props.currentChain?.toString()}
             label="Project Deployment Network:"
             options={chains.map((i) => ({
               id: i.id.toString(),

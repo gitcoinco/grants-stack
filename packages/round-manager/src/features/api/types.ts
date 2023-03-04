@@ -295,6 +295,7 @@ export type AnswerBlock = {
   questionId: number;
   question: string;
   answer?: string;
+  type?: string;
   encryptedAnswer?: {
     ciphertext: string;
     encryptedSymmetricKey: string;

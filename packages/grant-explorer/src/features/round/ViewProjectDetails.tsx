@@ -5,10 +5,11 @@ import { ProjectBanner } from "../common/ProjectBanner";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import {
+  GrantApplicationFormAnswer,
   Project,
   ProjectCredentials,
   ProjectMetadata,
-  Round,
+  Round
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
@@ -151,6 +152,9 @@ export default function ViewProjectDetails() {
                     <Detail
                       text={projectToRender.projectMetadata.description}
                       testID="project-metadata"
+                    />
+                    <ApplicationFormAnswers
+                      answers={projectToRender.grantApplicationFormAnswers}
                     />
                   </div>
                   <PushChat
@@ -381,15 +385,58 @@ function Detail(props: { text: string; testID: string }) {
   return (
     <p
       dangerouslySetInnerHTML={{
-        __html: markdown.renderToHTML(
-          props.text
-            .replace(/\n/g, "<br/>")
-            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
-        ),
+        __html: markdown.renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
-      className="text-base font-normal text-black"
+      className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
       data-testid={props.testID}
     />
+  );
+}
+
+function ApplicationFormAnswers(props: {
+  answers: GrantApplicationFormAnswer[];
+}) {
+  // only show answers that are not empty and are not marked as hidden
+  const answers = props.answers.filter((a) => !!a.answer && !a.hidden);
+
+  if (answers.length === 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h1 className="text-2xl mt-8 font-thin text-black">
+        Additional Information
+      </h1>
+      <div>
+        {answers.map((answer) => {
+          const answerText = Array.isArray(answer.answer)
+            ? answer.answer.join(", ")
+            : answer.answer;
+          return (
+            <div key={answer.questionId}>
+              <p className="text-md mt-8 mb-3 font-semibold text-black">
+                {answer.question}
+              </p>
+              {answer.type === "paragraph" ? (
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: markdown.renderToHTML(
+                      answerText.replace(/\n/g, "\n\n")
+                    ),
+                  }}
+                  className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                ></p>
+              ) : (
+                <p className="text-base text-black">
+                  {answerText.replace(/\n/g, "<br/>")}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
