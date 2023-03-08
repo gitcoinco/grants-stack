@@ -2,7 +2,7 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "txHash": "0x100021ef72ada8c52a09f3f09c6daf2fb76108376b682a6d159653a2be26108a"
+    "txHash": "0x69b1b93ebc7f56131d7503382414dd62fe1daf98b8058224922a1b8936355060"
   },
   "proxies": [
     {
@@ -108,11 +108,6 @@
     {
       "address": "0x21dF544947ba3E8b3c32561399E88B52Dc8b2823",
       "txHash": "0xbcb2b2e8c40017052eecb403ea8de8e2f1b79c108de388895438ce33b307649f",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0xa1190fcaa8625f4d202c64a8610501d22d4f0a18dc69ceb8bea826a6150dea67",
       "kind": "transparent"
     },
     {
@@ -339,96 +334,17 @@
       "address": "0xC0BF43A4Ca27e0976195E6661b099742f10507e5",
       "txHash": "0x31ba2014e8e569745ce1b7a1be7cef33330bdbf8c6b9e54aabd368e52598543e",
       "kind": "transparent"
+    },
+    {
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "txHash": "0x7f3d5b07b02dc077a8d33a97768c25c6dcdc5dc0cda9b6fc906f73dcd9aeb517",
+      "kind": "transparent"
     }
   ],
   "impls": {
-    "9aeddf0d429311eda152f435428ba62eea09afa0af1dbc99afd068d9c9ebef3e": {
-      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xea72c796fe9f0b5a2dd0d0d08135442f7e1d2a665cd0580a8df1597e8e6d886e",
-      "layout": {
-        "solcVersion": "0.8.17",
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "_owner",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_address",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "52",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
-          },
-          {
-            "label": "votingContract",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_address",
-            "contract": "QuadraticFundingVotingStrategyFactory",
-            "src": "contracts/votingStrategy/QuadraticFundingStrategy/QuadraticFundingVotingStrategyFactory.sol:12"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    },
     "a305a117446dca6870e3c60050d4f1ac35dc6251d76823b4d8e80c2f7e999811": {
-      "address": "0xf4B146FbA71F41E0592668ffbF264F1D186b2Ca8",
-      "txHash": "0x809fc733d00bc5ba02f18ec3b42c526dd1035ed2d3b2c879b4be08f9df399bb2",
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "txHash": "0x7f197c7cebdfb890def37a6b4fab0df0a6e2be5f7017892d35f572bfe0fcc966",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
