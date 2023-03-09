@@ -16,7 +16,7 @@ type MetaPtr @entity {
 # id = programAddress.toHex()
 type Program @entity {
   id: ID!
-  roles: [ProgramRole!]! @derivedFrom(field: "program") 
+  roles: [ProgramRole!]! @derivedFrom(field: "program")
   accounts: [ProgramAccount!]! @derivedFrom(field: "program")
   rounds: [Round!]! @derivedFrom(field: "program")
   metaPtr: MetaPtr! # id = "metaPtr-{programAddress.toHex()}"
@@ -49,11 +49,11 @@ type ProgramAccount @entity {
 type Round @entity {
   id: ID!
   program: Program!
-  roles: [RoundRole!]! @derivedFrom(field: "round") 
+  roles: [RoundRole!]! @derivedFrom(field: "round")
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
   votingStrategy: VotingStrategy!
-  payoutStrategy: String!
+  payoutStrategy: PayoutStrategy
   applicationsStartTime: String!
   applicationsEndTime: String!
   roundStartTime: String!
@@ -65,6 +65,9 @@ type Round @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   version: String!
+
+  # legacy
+  payoutStrategyV0: String
 }
 
 # id = round.toHex()-role.toHex()
