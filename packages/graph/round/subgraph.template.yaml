@@ -83,6 +83,30 @@ dataSources:
           handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFunding/factory.ts
 
+  # MerklePayoutStrategyFactory
+  - kind: ethereum/contract
+    name: MerklePayoutStrategyFactory
+    network: {{ network }}
+    source:
+      address: '{{ merklePayoutStrategyFactoryAddress }}'
+      abi: MerklePayoutStrategyFactory
+      startBlock: {{ startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PayoutStrategy
+      abis:
+        - name: MerklePayoutStrategyFactory
+          file: ./abis/MerklePayoutStrategyFactory.json
+        - name: MerklePayoutStrategyImplementation
+          file: ./abis/MerklePayoutStrategyImplementation.json
+      eventHandlers:
+        - event: PayoutContractCreated(indexed address,indexed address)
+          handler: handlePayoutContractCreated
+      file: ./src/payoutStrategy/merkle/factory.ts
+
 templates:
   # ProgramImplementation AccessControl
   - kind: ethereum/contract
@@ -153,6 +177,28 @@ templates:
           receipt: true
 
       file: ./src/votingStrategy/quadraticFunding/implementation.ts
+
+  # MerklePayoutStrategyImplementation
+  - kind: ethereum/contract
+    name: MerklePayoutStrategyImplementation
+    network: {{ network }}
+    source:
+      abi: MerklePayoutStrategyImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Payout
+      abis:
+        - name: MerklePayoutStrategyImplementation
+          file: ./abis/MerklePayoutStrategyImplementation.json
+      eventHandlers:
+        - event: FundsDistributed(uint256,address,indexed address,indexed address,indexed bytes32)
+          handler: handleFundsDistributed
+          receipt: true
+
+      file: ./src/payoutStrategy/merkle/implementation.ts
 
   ##########################
   # == LEGACY TEMPLATES == #

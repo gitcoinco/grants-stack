@@ -2,7 +2,7 @@ import {
   RoundCreated as RoundCreatedEvent
 } from "../../generated/Round/RoundFactory"
 
-import { Program, Round, VotingStrategy } from "../../generated/schema";
+import { PayoutStrategy, Program, Round, VotingStrategy } from "../../generated/schema";
 import { RoundImplementation } from  "../../generated/templates";
 import {
   RoundImplementation as RoundImplementationContract
@@ -34,7 +34,6 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
 
   // index global variables
   round.token = roundContract.token().toHex();
-  round.payoutStrategy = roundContract.payoutStrategy().toHex();
   round.applicationsStartTime = roundContract.applicationsStartTime().toString();
   round.applicationsEndTime = roundContract.applicationsEndTime().toString();
   round.roundStartTime = roundContract.roundStartTime().toString();
@@ -72,6 +71,17 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   }
   round.program = program.id;
 
+  // link round to payoutStrategy
+  const payoutStrategyAddress = roundContract.payoutStrategy().toHex();
+  const payoutStrategy = PayoutStrategy.load(payoutStrategyAddress);
+
+  if (payoutStrategy) {
+    round.payoutStrategy = payoutStrategy.id;
+  } else {
+    // V0 where payoutStrategy was simply an address
+    round.payoutStrategyV0 = roundContract.payoutStrategy().toHex();
+  }
+
   // link round to votingStrategy
   const votingStrategyAddress = roundContract.votingStrategy().toHex();
   const votingStrategy = VotingStrategy.load(votingStrategyAddress);
@@ -87,13 +97,13 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
   round.updatedAt = event.block.timestamp;
 
   const version = roundContract.try_VERSION();
-  
+
   if (version.reverted) {
     round.version = "0.1.0";
   } else {
     round.version = version.value.toString();
   }
-  
+
 
   round.save();
 
