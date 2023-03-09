@@ -153,8 +153,8 @@ type Payout @entity {
   createdAt: BigInt!
   amount: BigInt!
   token: String!
-  sender: String!
   grantee: String!
   projectId: String!
+  txnHash: String!
   # round: Round!
 }

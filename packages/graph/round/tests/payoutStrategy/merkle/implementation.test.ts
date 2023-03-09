@@ -9,7 +9,6 @@ import { Bytes } from '@graphprotocol/graph-ts'
 let amount: BigInt;
 let grantee: Address;
 let token: Address;
-let sender: Address;
 let projectId: Bytes;
 let roundAddress: Address;
 
@@ -21,7 +20,6 @@ function createNewFundsDistributedEvent(
   amount: BigInt,
   grantee: Address,
   token: Address,
-  sender: Address,
   projectId: Bytes,
 ): FundsDistributedEvent {
   const newFundsDistributedEvent = changetype<FundsDistributedEvent>(newMockEvent());
@@ -29,13 +27,11 @@ function createNewFundsDistributedEvent(
   const amountParam = new ethereum.EventParam("amount", ethereum.Value.fromUnsignedBigInt(amount));
   const granteeParam = new ethereum.EventParam("grantee", ethereum.Value.fromAddress(grantee));
   const tokenParam = new ethereum.EventParam("token", ethereum.Value.fromAddress(token));
-  const senderParam = new ethereum.EventParam("sender", ethereum.Value.fromAddress(sender));
   const projectIdParam = new ethereum.EventParam("projectId",ethereum.Value.fromBytes(projectId));
 
   newFundsDistributedEvent.parameters.push(amountParam);
   newFundsDistributedEvent.parameters.push(granteeParam);
   newFundsDistributedEvent.parameters.push(tokenParam);
-  newFundsDistributedEvent.parameters.push(senderParam);
   newFundsDistributedEvent.parameters.push(projectIdParam);
 
   newFundsDistributedEvent.address = payoutStrategyAddress;
@@ -50,7 +46,6 @@ describe("handleFundsDistributed", () => {
     amount = new BigInt(1);
     grantee = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
     token = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2A");
-    sender = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2D");
     projectId = Bytes.fromHexString("0x72616e646f6d50726f6a6563744964"); // bytes32 projectId
 
     roundAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2E");
@@ -87,7 +82,6 @@ describe("handleFundsDistributed", () => {
       amount,
       grantee,
       token,
-      sender,
       projectId
     );
 
@@ -127,7 +121,6 @@ describe("handleFundsDistributed", () => {
     assert.bigIntEquals(payout!.amount, amount);
     assert.stringEquals(payout!.token, token.toHex());
     assert.stringEquals(payout!.grantee, grantee.toHex());
-    assert.stringEquals(payout!.sender, sender.toHex());
     assert.bytesEquals(Bytes.fromHexString(payout!.projectId), projectId);
     assert.stringEquals(payout!.version, "0.1.0");
 
@@ -156,7 +149,6 @@ describe("handleFundsDistributed", () => {
       anotherAmount,
       grantee,
       token,
-      sender,
       anotherProjectId
     );
 

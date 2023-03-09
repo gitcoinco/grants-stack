@@ -563,7 +563,6 @@ describe("MerklePayoutStrategyImplementation", function () {
           distributions[1][2], // amount
           distributions[1][1], // recipient
           mockERC20.address, // token
-          user.address, // sender
           distributions[1][3] // projectId
         );
 
@@ -571,7 +570,6 @@ describe("MerklePayoutStrategyImplementation", function () {
           distributions[2][2], // amount
           distributions[2][1], // recipient
           mockERC20.address, // token
-          user.address, // sender
           distributions[2][3] // projectId
         );
       });

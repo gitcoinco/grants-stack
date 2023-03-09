@@ -36,7 +36,6 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     uint256 amount,
     address grantee,
     address indexed token,
-    address indexed sender,
     bytes32 indexed projectId
   );
 
@@ -132,7 +131,6 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
       _amount,
       _grantee,
       tokenAddress,
-      msg.sender,
       _projectId
     );
   }

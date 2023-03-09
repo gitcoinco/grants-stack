@@ -306,7 +306,7 @@ Emitted when the distribution is updated
 ### FundsDistributed
 
 ```solidity
-event FundsDistributed(uint256 amount, address grantee, address indexed token, address indexed sender, bytes32 indexed projectId)
+event FundsDistributed(uint256 amount, address grantee, address indexed token, bytes32 indexed projectId)
 ```
 
 Emitted when funds are distributed
@@ -320,7 +320,6 @@ Emitted when funds are distributed
 | amount  | uint256 | undefined |
 | grantee  | address | undefined |
 | token `indexed` | address | undefined |
-| sender `indexed` | address | undefined |
 | projectId `indexed` | bytes32 | undefined |
 
 ### FundsWithdrawn

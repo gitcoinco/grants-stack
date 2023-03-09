@@ -194,7 +194,7 @@ templates:
         - name: MerklePayoutStrategyImplementation
           file: ./abis/MerklePayoutStrategyImplementation.json
       eventHandlers:
-        - event: FundsDistributed(uint256,address,indexed address,indexed address,indexed bytes32)
+        - event: FundsDistributed(uint256,address,indexed address,indexed bytes32)
           handler: handleFundsDistributed
           receipt: true
 
