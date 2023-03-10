@@ -748,8 +748,7 @@ export default function Form({
         onRetry={handleSubmitApplicationRetry}
       >
         <div>
-          There has been a systems error during the deployment of your
-          application.
+        There was a problem with your transaction during your round application.
         </div>
       </ErrorModal>
     </div>
