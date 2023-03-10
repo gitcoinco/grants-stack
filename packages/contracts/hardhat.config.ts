@@ -1,16 +1,16 @@
 import * as dotenv from "dotenv";
 
-import { HardhatUserConfig, task } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-solhint";
+import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
 import "@primitivefi/hardhat-dodoc";
-import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
 import "hardhat-abi-exporter";
+import "hardhat-gas-reporter";
+import { HardhatUserConfig, task } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
+import "solidity-coverage";
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ const chainIds = {
   // mainnet
   mainnet: 1,
   "optimism-mainnet": 10,
-  "fantom-mainnet"  : 250
+  "fantom-mainnet": 250,
 };
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -76,7 +76,7 @@ function createMainnetConfig(
   network: keyof typeof chainIds,
   url?: string
 ): NetworkUserConfig {
-  if(!url) {
+  if (!url) {
     url = `https://${network}.infura.io/v3/${infuraIdKey}`;
   }
   return {
@@ -111,7 +111,10 @@ const config: HardhatUserConfig = {
     // Main Networks
     mainnet: createMainnetConfig("mainnet"),
     "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
-    "fantom-mainnet": createMainnetConfig("fantom-mainnet", "https://rpc.ftm.tools"),
+    "fantom-mainnet": createMainnetConfig(
+      "fantom-mainnet",
+      "https://rpc.ftm.tools"
+    ),
 
     // Test Networks
     goerli: createTestnetConfig("goerli"),

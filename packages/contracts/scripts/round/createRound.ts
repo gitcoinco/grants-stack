@@ -1,20 +1,18 @@
-// This is a helper script to create a round. 
+// This is a helper script to create a round.
 // This should be created via the frontend and this script is meant to be used for quick test
 // NOTE: this script deploys a round with a QF voting strategy
-import { ethers } from "hardhat";
-import hre from "hardhat";
+import hre, { ethers } from "hardhat";
 import { confirmContinue } from "../../utils/script-utils";
-import { roundParams } from '../config/round.config';
-import { programParams } from "../config/program.config";
-import { QFVotingParams } from "../config/votingStrategy.config";
 import { PayoutParams } from "../config/payoutStrategy.config";
-import { encodeRoundParameters } from "../utils";
+import { programParams } from "../config/program.config";
+import { roundParams } from "../config/round.config";
+import { QFVotingParams } from "../config/votingStrategy.config";
 import * as utils from "../utils";
+import { encodeRoundParameters } from "../utils";
 
 utils.assertEnvironment();
-  
-export async function main() {
 
+export async function main() {
   const network = hre.network;
 
   const networkParams = roundParams[network.name];
@@ -32,7 +30,7 @@ export async function main() {
 
   const votingContract = votingNetworkParams.contract;
   const payoutContract = payoutNetworkParams.merklePayoutContract;
-  
+
   if (!roundFactoryContract) {
     throw new Error(`error: missing roundFactoryContract`);
   }
@@ -45,24 +43,27 @@ export async function main() {
     throw new Error(`error: missing votingContract`);
   }
 
-  const roundFactory = await ethers.getContractAt('RoundFactory', roundFactoryContract);
-  
+  const roundFactory = await ethers.getContractAt(
+    "RoundFactory",
+    roundFactoryContract
+  );
+
   await confirmContinue({
-    "info"                         : "create a Round",
-    "roundFactoryContract"         : roundFactoryContract,
-    "roundImplementationContract"  : roundImplementationContract,
-    "programContractAddress"       : programContract,
-    "votingContractAddress"        : votingContract,
-    "payoutContractAddress"        : payoutContract,
-    "network"                      : network.name,
-    "chainId"                      : network.config.chainId
+    info: "create a Round",
+    roundFactoryContract: roundFactoryContract,
+    roundImplementationContract: roundImplementationContract,
+    programContractAddress: programContract,
+    votingContractAddress: votingContract,
+    payoutContractAddress: payoutContract,
+    network: network.name,
+    chainId: network.config.chainId,
   });
 
   const applicationsStartTime = Math.round(new Date().getTime() / 1000 + 50); // 1 hour later
   const applicationsEndTime = Math.round(new Date().getTime() / 1000 + 86400); // 1 day later
   const roundStartTime = Math.round(new Date().getTime() / 1000 + 100); // 2 days later
   const roundEndTime = Math.round(new Date().getTime() / 1000 + 864000); // 10 days later
-    
+
   const params = [
     votingContract, // _votingStrategyAddress
     payoutContract, // _payoutStrategyAddress
@@ -70,36 +71,46 @@ export async function main() {
     applicationsEndTime, // _applicationsEndTime
     roundStartTime, // _roundStartTime
     roundEndTime, // _roundEndTime
-    '0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D', // _token
-    { protocol: 1, pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi" }, // _roundMetaPtr
-    { protocol: 1, pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia" }, // _applicationMetaPtr
+    "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D", // _token
+    {
+      protocol: 1,
+      pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi",
+    }, // _roundMetaPtr
+    {
+      protocol: 1,
+      pointer: "bafkreih3mbwctlrnimkiizqvu3zu3blszn5uylqts22yvsrdh5y2kbxaia",
+    }, // _applicationMetaPtr
     [
-      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
-      '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
-      '0xA2A6460f20E43dcC5F8f55714A969500c342d7CE'
+      "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA",
+      "0xB8cEF765721A6da910f14Be93e7684e9a3714123",
+      "0xA2A6460f20E43dcC5F8f55714A969500c342d7CE",
+      "0x523d007855B3543797E0d3D462CB44B601274819",
+      "0x0B9da0fF0a507183c41c2580e1a1020ddfEAdF42",
     ], // _adminRoles
     [
-      '0x5cdb35fADB8262A3f88863254c870c2e6A848CcA',
-      '0xB8cEF765721A6da910f14Be93e7684e9a3714123',
-      '0xA2A6460f20E43dcC5F8f55714A969500c342d7CE',
-      '0xf4c5c4deDde7A86b25E7430796441e209e23eBFB',
-      '0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017',
-      '0x6e8C1ADaEDb9A0A801dD50aFD95b5c07e9629C1E'
-    ] // _roundOperators
+      "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA",
+      "0xB8cEF765721A6da910f14Be93e7684e9a3714123",
+      "0xA2A6460f20E43dcC5F8f55714A969500c342d7CE",
+      "0xf4c5c4deDde7A86b25E7430796441e209e23eBFB",
+      "0x4873178BeA2DCd7022f0eF6c70048b0e05Bf9017",
+      "0x6e8C1ADaEDb9A0A801dD50aFD95b5c07e9629C1E",
+      "0x523d007855B3543797E0d3D462CB44B601274819",
+      "0x0B9da0fF0a507183c41c2580e1a1020ddfEAdF42",
+    ], // _roundOperators
   ];
-  
+
   const encodedParameters = encodeRoundParameters(params);
-  
+
   const roundTx = await roundFactory.create(
     encodedParameters,
-    programContract, // _ownedBy (Program)
+    programContract // _ownedBy (Program)
   );
 
   const receipt = await roundTx.wait();
   let roundAddress;
 
   if (receipt.events) {
-    const event = receipt.events.find(e => e.event === 'RoundCreated');
+    const event = receipt.events.find((e) => e.event === "RoundCreated");
     if (event && event.args) {
       roundAddress = event.args.roundAddress;
     }
