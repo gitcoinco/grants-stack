@@ -748,7 +748,8 @@ export default function Form({
         onRetry={handleSubmitApplicationRetry}
       >
         <div>
-        There was a problem with your transaction during your round application.
+          There was a problem with your transaction during your round
+          application.
         </div>
       </ErrorModal>
     </div>
