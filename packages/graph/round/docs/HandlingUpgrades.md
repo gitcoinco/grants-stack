@@ -17,7 +17,7 @@ Note: Anytime an enitity is updated with a new property. Increment the version p
 Let's assume we are updating `QuadraticFundingVotingStrategyImplementation`
 
 **PreRequisites**
-1. Ensure the `QuadraticFundingVotingStrategyImplementation` contract changes are done and abi is genered from `packages/contract`
+1. Ensure the `QuadraticFundingVotingStrategyImplementation` contract changes are done and abi is genered from `contract`
 
 **Update schema.graphql**
 1. Make changes to the schema.graphql (if applicable) BUT this would mean the old handlers would need to be updated with logic on how to populate the new enitity / new property of an enitity

@@ -14,7 +14,6 @@ Package manager         : `pnpm`
 .
 ├── .github                     # github specific configuration
 ├── packages
-│   ├── contracts               # contracts built using hardhat
 │   ├── graph                   # graph which indexes data from contracts
 │   ├── round-manager           # react-frontend for round-manager
 │   ├── grant-explorer          # react-frontend for grant-explorer
@@ -24,28 +23,12 @@ Package manager         : `pnpm`
 └── README.md
 ```
 
+
+## contracts
+
+The contracts needed for running a round can be found within the [contracts package](https://github.com/Allo-Protocol/contracts)
+
 ## Packages
-
-### contracts
-
-The contracts needed for running a round can be found within the [contracts package](packages/contracts)
-
-##### Deploy Steps
-
-To know how the contracts should be setup, refer [DEPLOY_STEPS.md](packages/contracts/docs/DEPLOY_STEPS.md)
-
-
-##### Chain Deployment List
-
-To know the addresses are deployed on which network. refer [CHAINS.md](packages/contracts/docs/CHAINS.md)
-
-##### Development
-
-We welcome external contributions. Please make sure to familiarize yourself with the [Contribution Guide](CONTRIBUTING.md).
-
-To contribute to this project, fork the project and follow the instructions at [DEV.md](packages/contracts/docs/DEV.md)
-
-This is built and maintained using [hardhat](https://hardhat.org)
 
 ### graph
 
