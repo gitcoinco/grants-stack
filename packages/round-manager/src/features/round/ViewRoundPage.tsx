@@ -9,6 +9,7 @@ import {
   InboxIcon,
   ChartBarIcon,
   DocumentReportIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
 import ApplicationsReceived from "./ApplicationsReceived";
@@ -34,6 +35,8 @@ import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-
 import ViewFundingAdmin from "./ViewFundingAdmin";
 import ViewRoundStats from "./ViewRoundStats";
 import { getUTCDate, getUTCTime } from "../api/utils";
+import FundContract from "./FundContract";
+import { isLocalhost } from "common";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -73,8 +76,8 @@ export default function ViewRoundPage() {
   return (
     <>
       {!roundExists && <NotFoundPage />}
-      {!hasAccess && <AccessDenied />}
-      {roundExists && hasAccess && (
+      {!hasAccess && !isLocalhost() && <AccessDenied />}
+      {roundExists && (hasAccess || isLocalhost()) && (
         <>
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
@@ -177,6 +180,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <DocumentTextIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="funding-admin"
+                            >
+                              Fund Contract
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -197,6 +219,13 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundingAdmin
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <FundContract
                         round={round}
                         chainId={`${chain.id}`}
                         roundId={id}

@@ -121,6 +121,7 @@ function InformationContent(props: {
       matchPoolPercentage: data.matchPoolPercentage,
     };
   });
+
   return (
     <>
       <div>
