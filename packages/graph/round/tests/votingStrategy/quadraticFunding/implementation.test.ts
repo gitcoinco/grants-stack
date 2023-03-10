@@ -2,7 +2,7 @@ import { test, assert, newMockEvent, describe, beforeEach, clearStore, afterEach
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { handleVote } from "../../../src/votingStrategy/quadraticFunding/implementation";
 import { Voted as VotedEvent } from "../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementation";
-import { QFVote, Round, VotingStrategy } from "../../../generated/schema";
+import { PayoutStrategy, QFVote, Round, VotingStrategy } from "../../../generated/schema";
 import { generateID } from "../../../src/utils";
 import { Bytes } from '@graphprotocol/graph-ts'
 
@@ -67,11 +67,19 @@ describe("handleVote", () => {
     votingStrategyEntity.version = "0.2.0";
     votingStrategyEntity.save();
 
+    // Create PayoutStrategy entity
+    let payoutStrategyAddress = Address.fromString("0xB16081F360e3847006dB660bae1c6d1b2e17eC2C");
+    const payoutStrategyEntity = new PayoutStrategy(payoutStrategyAddress.toHex());
+    payoutStrategyEntity.strategyName = "MERKLE";
+    payoutStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eB1A";
+    payoutStrategyEntity.version = "0.1.0";
+    payoutStrategyEntity.save();
+
     // Create Round entity
     const roundEntity = new Round(roundAddress.toHex());
     roundEntity.program = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2B";
     roundEntity.votingStrategy = votingStrategyEntity.id;
-    roundEntity.payoutStrategy = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2C";
+    roundEntity.payoutStrategy = payoutStrategyEntity.id;
     roundEntity.applicationsStartTime = new BigInt(10).toString();
     roundEntity.applicationsEndTime = new BigInt(20).toString();
     roundEntity.roundStartTime = new BigInt(30).toString();
@@ -79,7 +87,9 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
-
+    roundEntity.createdAt = new BigInt(50);
+    roundEntity.updatedAt = new BigInt(60);
+    roundEntity.version = "1.0.0";
     roundEntity.save();
 
     // Link VotingStrategy to Round entity
