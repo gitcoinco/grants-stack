@@ -2,7 +2,7 @@ import { test, assert, newMockEvent , createMockedFunction, describe, beforeEach
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { handleRoundCreated } from "../../src/round/factory";
 import { RoundCreated  as RoundCreatedEvent } from "../../generated/Round/RoundFactory";
-import { MetaPtr, Program, Round, VotingStrategy } from "../../generated/schema";
+import { MetaPtr, PayoutStrategy, Program, Round, VotingStrategy } from "../../generated/schema";
 
 let roundContractAddress: Address;
 let roundImplementation: Address;
@@ -39,7 +39,6 @@ describe("handleRoundCreated", () => {
 
   beforeEach(() => {
 
-
     votingStrategy = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2A");
     program = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2B");
     roundContractAddress = Address.fromString("0xA16081F360e3847006dB660bae1c6d1b2e17eC2C");
@@ -63,13 +62,24 @@ describe("handleRoundCreated", () => {
     votingStrategyEntity.version = "0.1.0";
     votingStrategyEntity.save();
 
+    // Create PayoutStrategy entity
+    let payoutStrategyEntity = new PayoutStrategy(payoutStrategy.toHex());
+    payoutStrategyEntity.strategyName = "MERKLE";
+    payoutStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eB1A";
+    payoutStrategyEntity.version = "0.1.0";
+    payoutStrategyEntity.save();
+
     // Create Program entity
     let programMetaPtr = new MetaPtr("program-metadata");
     programMetaPtr.protocol = protocol.toI32();
     programMetaPtr.pointer = "randomProgramIPFSHash"
     programMetaPtr.save();
+
     let programEntity = new Program(program.toHex());
     programEntity.metaPtr = programMetaPtr.id;
+    programEntity.createdAt = new BigInt(10);
+    programEntity.updatedAt = new BigInt(10);
+
     programEntity.save();
 
     // mock global variables
@@ -166,7 +176,6 @@ describe("handleRoundCreated", () => {
     assert.assertNotNull(round);
 
     // global variables
-    assert.stringEquals(round!.payoutStrategy, payoutStrategy.toHex());
     assert.stringEquals(round!.token, token.toHex());
     assert.stringEquals(round!.applicationsStartTime, applicationsStartTime.toString());
     assert.stringEquals(round!.applicationsEndTime, applicationsEndTime.toString());
@@ -189,6 +198,11 @@ describe("handleRoundCreated", () => {
     const programEntity = Program.load(round!.program);
     assert.assertNotNull(programEntity);
     assert.stringEquals(programEntity!.id, program.toHex());
+
+    // payoutStrategys
+    const payoutStrategyEntity = PayoutStrategy.load(round!.payoutStrategy!);
+    assert.assertNotNull(payoutStrategyEntity);
+    assert.stringEquals(payoutStrategyEntity!.id, payoutStrategy.toHex());
 
     // votingStrategy
     const votingStrategyEntity = VotingStrategy.load(round!.votingStrategy);
