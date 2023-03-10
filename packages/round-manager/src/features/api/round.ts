@@ -7,7 +7,7 @@ import {
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 import {
-  payoutStrategyContract,
+  merklePayoutStrategyImplementationContract,
   roundFactoryContract,
   roundImplementationContract,
 } from "./contracts";
@@ -496,7 +496,7 @@ export async function fetchMatchingDistribution(
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
-      payoutStrategyContract.abi,
+      merklePayoutStrategyImplementationContract.abi,
       signerOrProvider
     );
     const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
