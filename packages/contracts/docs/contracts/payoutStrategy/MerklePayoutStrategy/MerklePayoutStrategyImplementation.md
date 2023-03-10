@@ -160,22 +160,6 @@ merkle root generated from distribution
 ### payout
 
 ```solidity
-function payout(MerklePayoutStrategyImplementation.Distribution[] _distributions) external payable
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| _distributions | MerklePayoutStrategyImplementation.Distribution[] | undefined |
-
-### payout
-
-```solidity
 function payout(bytes[] _distributions) external payable
 ```
 
@@ -188,6 +172,22 @@ payout function defined in IPayoutStrategy
 | Name | Type | Description |
 |---|---|---|
 | _distributions | bytes[] | encoded distribution |
+
+### payout
+
+```solidity
+function payout(MerklePayoutStrategyImplementation.Distribution[] _distributions) external payable
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| _distributions | MerklePayoutStrategyImplementation.Distribution[] | undefined |
 
 ### roundAddress
 
@@ -306,7 +306,7 @@ Emitted when the distribution is updated
 ### FundsDistributed
 
 ```solidity
-event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee)
+event FundsDistributed(uint256 amount, address grantee, address indexed token, bytes32 indexed projectId)
 ```
 
 Emitted when funds are distributed
@@ -317,11 +317,10 @@ Emitted when funds are distributed
 
 | Name | Type | Description |
 |---|---|---|
-| index  | uint256 | undefined |
 | amount  | uint256 | undefined |
+| grantee  | address | undefined |
 | token `indexed` | address | undefined |
-| sender `indexed` | address | undefined |
-| grantee `indexed` | address | undefined |
+| projectId `indexed` | bytes32 | undefined |
 
 ### FundsWithdrawn
 

@@ -16,7 +16,7 @@ type MetaPtr @entity {
 # id = programAddress.toHex()
 type Program @entity {
   id: ID!
-  roles: [ProgramRole!]! @derivedFrom(field: "program") 
+  roles: [ProgramRole!]! @derivedFrom(field: "program")
   accounts: [ProgramAccount!]! @derivedFrom(field: "program")
   rounds: [Round!]! @derivedFrom(field: "program")
   metaPtr: MetaPtr! # id = "metaPtr-{programAddress.toHex()}"
@@ -49,11 +49,11 @@ type ProgramAccount @entity {
 type Round @entity {
   id: ID!
   program: Program!
-  roles: [RoundRole!]! @derivedFrom(field: "round") 
+  roles: [RoundRole!]! @derivedFrom(field: "round")
   accounts: [RoundAccount!]! @derivedFrom(field: "round")
   projects: [RoundProject!] @derivedFrom(field: "round")
   votingStrategy: VotingStrategy!
-  payoutStrategy: String!
+  payoutStrategy: PayoutStrategy
   applicationsStartTime: String!
   applicationsEndTime: String!
   roundStartTime: String!
@@ -64,6 +64,10 @@ type Round @entity {
   projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
   createdAt: BigInt!
   updatedAt: BigInt!
+  version: String!
+
+  # legacy
+  payoutStrategyV0: String
 }
 
 # id = round.toHex()-role.toHex()
@@ -124,5 +128,33 @@ type QFVote @entity {
   projectId: String!
   version: String!
   createdAt: BigInt!
+  # round: Round!
+}
+
+######################
+# = PayoutStrategy = #
+######################
+
+# id = payoutContractAddress.toHex()
+type PayoutStrategy @entity {
+  id: ID!
+  strategyName: String!
+  strategyAddress: String!
+  round: Round @derivedFrom(field: "payoutStrategy")
+  payouts: [Payout!] @derivedFrom(field: "payoutStrategy")
+  version: String!
+}
+
+# id = keccak256(event.receipt.transactionHash.toHex(), Payout.projectId)
+type Payout @entity {
+  id: ID!
+  payoutStrategy: PayoutStrategy!
+  version: String!
+  createdAt: BigInt!
+  amount: BigInt!
+  token: String!
+  grantee: String!
+  projectId: String!
+  txnHash: String!
   # round: Round!
 }

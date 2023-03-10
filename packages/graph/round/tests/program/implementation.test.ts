@@ -1,5 +1,5 @@
 import { test, newMockEvent , createMockedFunction, describe, beforeEach, clearStore, afterEach, logStore, assert } from "matchstick-as/assembly/index";
-import { Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Program, ProgramRole, ProgramAccount } from "../../generated/schema";
 import { handleRoleGranted, handleRoleRevoked } from "../../src/program/implementation";
 import { 
@@ -56,6 +56,9 @@ describe("handleRoleGranted", () => {
     // Create ProgramRole entity
     let programEntity = new Program(program.toHex());
     programEntity.metaPtr = "programMetaPtr";
+    programEntity.createdAt = new BigInt(10);
+    programEntity.updatedAt = new BigInt(10);
+
     programEntity.save();
 
     newRoleGrantedEvent = createNewRoleGrantedEvent(

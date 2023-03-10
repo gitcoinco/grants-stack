@@ -32,7 +32,12 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
   event DistributionUpdated(bytes32 merkleRoot, MetaPtr distributionMetaPtr);
 
   /// @notice Emitted when funds are distributed
-  event FundsDistributed(uint256 index, uint256 amount, address indexed token, address indexed sender, address indexed grantee);
+  event FundsDistributed(
+    uint256 amount,
+    address grantee,
+    address indexed token,
+    bytes32 indexed projectId
+  );
 
   /// @notice Emitted when batch payout is successful
   event BatchPayoutSuccessful(address indexed sender);
@@ -43,6 +48,7 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     address grantee;
     uint256 amount;
     bytes32[] merkleProof;
+    bytes32 projectId;
   }
 
   function initialize() external initializer {
@@ -107,12 +113,13 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
     uint256 _index = _distribution.index;
     address _grantee = _distribution.grantee;
     uint256 _amount = _distribution.amount;
+    bytes32 _projectId = _distribution.projectId;
     bytes32[] memory _merkleProof = _distribution.merkleProof;
 
     require(!hasBeenDistributed(_index), "Payout: Already distributed");
 
     /* We need double hashing to prevent second preimage attacks */
-    bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount))));
+    bytes32 node = keccak256(bytes.concat(keccak256(abi.encode(_index, _grantee, _amount, _projectId))));
 
     require(MerkleProof.verify(_merkleProof, merkleRoot, node), "Payout: Invalid proof");
 
@@ -120,7 +127,12 @@ contract MerklePayoutStrategyImplementation is IPayoutStrategy, Initializable {
 
     _transferAmount(payable(_grantee), _amount);
 
-    emit FundsDistributed(_index, _amount, tokenAddress, msg.sender, _grantee);
+    emit FundsDistributed(
+      _amount,
+      _grantee,
+      tokenAddress,
+      _projectId
+    );
   }
 
   /// @notice Util function to mark distribution as done
