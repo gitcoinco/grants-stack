@@ -59,9 +59,16 @@ type Round @entity {
   roundStartTime: String!
   roundEndTime: String!
   token: String!
+  matchAmount: BigInt!
+  matchAmountFunded: BigInt!
+  protocolFee: BigInt!
+  protocolTreasury: String!
+  roundFee: BigInt!
+  roundFeeAddress: String!
   roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
   applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
   projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
+  distributionMetaPtr: MetaPtr # id = "distributionMetaPtr-{roundAddress.toHex()}"
   createdAt: BigInt!
   updatedAt: BigInt!
   version: String!
