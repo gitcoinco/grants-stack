@@ -1,5 +1,5 @@
 import { ethers, Signer } from "ethers";
-import { merklePayoutStrategy } from "../contracts";
+import { merklePayoutStrategyFactoryContract } from "../contracts";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -12,10 +12,15 @@ export const deployMerklePayoutStrategyContract = async (
   signerOrProvider: Signer
 ): Promise<{ payoutContractAddress: string }> => {
   try {
+    const chainId = await signerOrProvider.getChainId();
+
+    const _merklePayoutStrategyFactoryContract =
+      merklePayoutStrategyFactoryContract(chainId);
+
     const payoutStrategyFactory = new ethers.ContractFactory(
-      merklePayoutStrategy.abi,
+      _merklePayoutStrategyFactoryContract.abi,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      merklePayoutStrategy.bytecode!,
+      _merklePayoutStrategyFactoryContract.bytecode!,
       signerOrProvider
     );
 
