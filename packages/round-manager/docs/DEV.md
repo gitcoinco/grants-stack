@@ -23,7 +23,7 @@ For `REACT_APP_PINATA_JWT` and `REACT_APP_PINATA_GATEWAY`, create your own Pinat
 The `REACT_APP_INFURA_ID` can be filled by creating a free Infura account
 
 `REACT_APP_SUBGRAPH_GOERLI_API` and `REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API` can be found at
-`grants-round/blob/main/packages/graph/README.md`
+`https://github.com/Allo-Protocol/graph/blob/main/round/README.md`
 
 ### Run in Development
 

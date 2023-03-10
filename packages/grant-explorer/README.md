@@ -7,7 +7,7 @@ This package serves the app which holds all the features w.r.t to
 
 This package is meant to be used by the users who would wnat to explore rounds and contribute to the projects within a round
 It relies on the contracts deployed from the [contracts](../contracts) package.
-Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
+Indexed data can be queried by the graphs deployed from the Allo's [graph](https://github.com/Allo-Protocol/graph/blob/main/round/README.md) repository.
 
 ## Live Links
 

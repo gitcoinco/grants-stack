@@ -26,19 +26,19 @@ Package manager         : `pnpm`
 
 ## contracts
 
-The contracts needed for running a round can be found within the [contracts package](https://github.com/Allo-Protocol/contracts)
-
-## Packages
+The contracts needed for running a round can be found within the [Allo contracts repositort](https://github.com/Allo-Protocol/contracts)
 
 ### graph
 
-This package holds the subgraph which indexs data with regard the
+The subgraph which indexs data with regard the
 - ProgramFactory
 - ProgramImplementation
 - RoundFactory
 - RoundImplementation
 
-More information can be found within the [graph package](packages/graph)
+More information can be found within the [Allo graph repository](https://github.com/Allo-Protocol/graph)
+
+## Packages
 
 ### round-manager
 
