@@ -60,15 +60,11 @@ type Round @entity {
   roundEndTime: String!
   token: String!
   matchAmount: BigInt!
-  matchAmountFunded: BigInt!
-  protocolFee: BigInt!
-  protocolTreasury: String!
-  roundFee: BigInt!
+  roundFeePercentage: Int!
   roundFeeAddress: String!
   roundMetaPtr: MetaPtr! # id = "roundMetaPtr-{roundAddress.toHex()}"
   applicationMetaPtr: MetaPtr! # id = "applicationMetaPtr-{roundAddress.toHex()}"
   projectsMetaPtr: MetaPtr # id = "projectsMetaPtr-{roundAddress.toHex()}"
-  distributionMetaPtr: MetaPtr # id = "distributionMetaPtr-{roundAddress.toHex()}"
   createdAt: BigInt!
   updatedAt: BigInt!
   version: String!
@@ -149,7 +145,11 @@ type PayoutStrategy @entity {
   strategyAddress: String!
   round: Round @derivedFrom(field: "payoutStrategy")
   payouts: [Payout!] @derivedFrom(field: "payoutStrategy")
+  isReadyForPayout: Boolean!
+  distributionMetaPtr: MetaPtr # id = "distributionMetaPtr-{payoutContractAddress.toHex()}"
   version: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 # id = keccak256(event.receipt.transactionHash.toHex(), Payout.projectId)

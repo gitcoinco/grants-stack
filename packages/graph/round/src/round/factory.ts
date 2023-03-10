@@ -102,6 +102,11 @@ export function handleRoundCreated(event: RoundCreatedEvent): void {
     round.version = "0.1.0";
   } else {
     round.version = version.value.toString();
+
+    // index variables introduced in v0.1.0
+    round.matchAmount = roundContract.matchAmount();
+    round.roundFeePercentage = roundContract.roundFeePercentage();
+    round.roundFeeAddress = roundContract.roundFeeAddress().toHex();
   }
 
 
