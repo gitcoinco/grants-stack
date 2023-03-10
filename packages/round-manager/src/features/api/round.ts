@@ -1,3 +1,11 @@
+import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider } from "@ethersproject/providers";
+import { ethers } from "ethers";
+import {
+  merklePayoutStrategyImplementationContract,
+  roundFactoryContract,
+  roundImplementationContract,
+} from "./contracts";
 import {
   ApplicationStatus,
   ApprovedProject,
@@ -6,14 +14,6 @@ import {
   Round,
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
-import {
-  merklePayoutStrategyImplementationContract,
-  roundFactoryContract,
-  roundImplementationContract,
-} from "./contracts";
-import { ethers } from "ethers";
-import { Web3Provider } from "@ethersproject/providers";
-import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * Fetch a round by ID
@@ -239,34 +239,44 @@ export async function deployRoundContract(
 
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
-    // encode input parameters
-    const params = [
-      round.votingStrategy,
-      round.payoutStrategy,
+    const initAddresses = [round.votingStrategy, round.payoutStrategy];
+
+    const initRoundTimes = [
       new Date(round.applicationsStartTime).getTime() / 1000,
       new Date(round.applicationsEndTime).getTime() / 1000,
       new Date(round.roundStartTime).getTime() / 1000,
       new Date(round.roundEndTime).getTime() / 1000,
-      round.token,
-      round.store,
-      round.applicationStore,
+    ];
+
+    const initMetaPtr = [round.store, round.applicationStore];
+
+    const initRoles = [
       round.operatorWallets?.slice(0, 1),
       round.operatorWallets,
     ];
 
+    // encode input parameters
+    const params = [
+      initAddresses,
+      initRoundTimes,
+      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0,
+      round.token,
+      round.feesPercentage || 0,
+      round.feesAddress || ethers.constants.AddressZero,
+      initMetaPtr,
+      initRoles,
+    ];
+
     const encodedParameters = ethers.utils.defaultAbiCoder.encode(
       [
-        "address",
-        "address",
-        "uint256",
-        "uint256",
-        "uint256",
+        "tuple(address votingStrategy, address payoutStrategy)",
+        "tuple(uint256 applicationsStartTime, uint256 applicationsEndTime, uint256 roundStartTime, uint256 roundEndTime)",
         "uint256",
         "address",
-        "tuple(uint256 protocol, string pointer)",
-        "tuple(uint256 protocol, string pointer)",
-        "address[]",
-        "address[]",
+        "uint8",
+        "address",
+        "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
+        "tuple(address[] adminRoles, address[] roundOperators)",
       ],
       params
     );

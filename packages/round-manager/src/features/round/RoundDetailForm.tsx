@@ -1,5 +1,8 @@
 import { Fragment, useContext, useState } from "react";
 
+import { yupResolver } from "@hookform/resolvers/yup";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 import {
   Control,
   Controller,
@@ -9,25 +12,22 @@ import {
   useForm,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import Datetime from "react-datetime";
-import "react-datetime/css/react-datetime.css";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Program, Round } from "../api/types";
-import { FormContext } from "../common/FormWizard";
-import { Input } from "common/src/styles";
-import { FormStepper } from "../common/FormStepper";
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
-  SelectorIcon,
   InformationCircleIcon,
+  SelectorIcon,
 } from "@heroicons/react/solid";
-import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
-import { useWallet } from "../common/Auth";
+import { Input } from "common/src/styles";
 import moment from "moment";
 import ReactTooltip from "react-tooltip";
+import { Program, Round } from "../api/types";
+import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
+import { useWallet } from "../common/Auth";
+import { FormStepper } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -125,6 +125,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
       matchingCap: false,
     },
     ...((formData as Partial<Round>)?.roundMetadata ?? {}),
+    feesPercentage: 0,
+    feesAddress: "",
   };
   const {
     control,

@@ -1,6 +1,6 @@
+import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "ethers";
 import { qfVotingStrategyFactoryContract } from "../contracts";
-import { Signer } from "@ethersproject/abstract-signer";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the

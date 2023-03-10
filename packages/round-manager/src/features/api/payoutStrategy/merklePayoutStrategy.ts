@@ -17,20 +17,32 @@ export const deployMerklePayoutStrategyContract = async (
     const _merklePayoutStrategyFactoryContract =
       merklePayoutStrategyFactoryContract(chainId);
 
-    const payoutStrategyFactory = new ethers.ContractFactory(
-      _merklePayoutStrategyFactoryContract.abi,
+    const payoutStrategyFactory = new ethers.Contract(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      _merklePayoutStrategyFactoryContract.bytecode!,
+      _merklePayoutStrategyFactoryContract.address!,
+      _merklePayoutStrategyFactoryContract.abi,
       signerOrProvider
     );
 
     // Deploy a new MerklePayoutStrategy contract
-    const payoutStrategyContract = await payoutStrategyFactory.deploy();
+    const tx = await payoutStrategyFactory.create();
 
-    const receipt = await payoutStrategyContract.deployTransaction.wait();
-    const payoutContractAddress = payoutStrategyContract.address;
+    const receipt = await tx.wait();
 
-    console.log("✅ Merkle Payout Transaction hash: ", receipt.transactionHash);
+    let payoutContractAddress;
+
+    if (receipt.events) {
+      const event = receipt.events.find(
+        (e: { event: string }) => e.event === "PayoutContractCreated"
+      );
+      if (event && event.args) {
+        payoutContractAddress = event.args.payoutContractAddress;
+      }
+    } else {
+      throw new Error("No PayoutContractCreated event");
+    }
+
+    console.log("✅ Merkle Payout Transaction hash: ", tx.hash);
     console.log("✅ Merkle Payout Strategy address: ", payoutContractAddress);
 
     return { payoutContractAddress };
