@@ -27,7 +27,7 @@ export async function getUserPgpKeys(address: string) {
   }
 }
 
-export async function getGroupChatID(groupName: string, account: string) {
+export async function getGroupChatID(groupName: string) {
   try {
     const groupChatID = await PushApi.chat.getGroupByName({
       groupName,
@@ -37,11 +37,12 @@ export async function getGroupChatID(groupName: string, account: string) {
     return groupChatID.chatId;
   } catch (e) {
     console.log("Fetching Chat id for group", e);
-    throw Error("Unable to fetch group ID");
+    return "";
+    // throw Error("Unable to fetch group ID");
   }
 }
 
-export async function getGroupInfo(chatId: string, account: string) {
+export async function getGroupInfo(chatId: string) {
   try {
     const groupInfo = await PushApi.chat.getGroup({
       chatId,
@@ -52,7 +53,7 @@ export async function getGroupInfo(chatId: string, account: string) {
     console.log(e);
   }
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function verifyPushChatUser(project: Project, wallet: any) {
   try {
     const {
@@ -63,18 +64,18 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
         },
       },
     } = wallet;
-    let isMember: any = false;
-    const isOwner: any = false;
-    let isContributor: any = false;
+    let isMember = false;
+    const isOwner = false;
+    let isContributor = false;
     let chatId: string | null = null;
     try {
-      chatId = await getGroupChatID(project.projectMetadata.title, account);
+      chatId = await getGroupChatID(project.projectMetadata.title);
     } catch (err) {
       console.log("Error in fetching group name", err);
       chatId = null;
     }
     const totalVotes = await getQFVotesForProject(
-      chainID,
+      chainID.toString(),
       project.projectRegistryId,
       account as string
     );
@@ -82,8 +83,8 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
     if (totalVotes.length) {
       isContributor = true;
     }
-    if (chatId === null) {
-      if (project.recipient === account || account.length) {
+    if (!chatId) {
+      if (project.recipient === account) {
         return {
           isOwner: true,
           isMember: false,
@@ -101,7 +102,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
         };
       }
     }
-    const groupInfo = await getGroupInfo(chatId as string, account);
+    const groupInfo = await getGroupInfo(chatId as string);
     if (!groupInfo) {
       return {
         isOwner,
@@ -147,7 +148,6 @@ export async function createPushGroup(
 ) {
   try {
     const decryptedPgpKeys = await getUserPgpKeys(account);
-    console.log(decryptedPgpKeys, "decrypted keys");
     const response = await PushApi.chat.createGroup({
       groupName: project.projectMetadata.title,
       groupDescription: project.projectMetadata.description.slice(0, 149),
@@ -170,22 +170,22 @@ export async function createPushGroup(
 export async function joinGroup(account: string, project: Project) {
   try {
     const decryptedPgpKeys = await getUserPgpKeys(account);
-    const chatId = await getGroupChatID(project.projectMetadata.title, account);
-    const groupInfo = await getGroupInfo(chatId, account);
+    const chatId = await getGroupChatID(project.projectMetadata.title);
+    const groupInfo = await getGroupInfo(chatId);
     //
-    const membersArray: any = groupInfo?.members.map((member) => {
+    const membersArray = groupInfo?.members.map((member) => {
       return member.wallet;
     });
-    const adminsArray: any = groupInfo?.members.map(({ isAdmin, wallet }) => {
+    const adminsArray = groupInfo?.members.map(({ isAdmin, wallet }) => {
       return isAdmin && wallet;
     });
     const response = await PushApi.chat.updateGroup({
       chatId: chatId,
       groupName: groupInfo?.groupName as string,
       groupDescription: groupInfo?.groupDescription as string,
-      members: [...membersArray, `eip155:${account}`],
+      members: [...(membersArray as string[]), `eip155:${account}`],
       groupImage: groupInfo?.groupImage as string,
-      admins: [...adminsArray, `eip155:${account}`],
+      admins: [...(adminsArray as string[]), `eip155:${account}`],
       account: `eip155:${account}`,
       env: "dev",
       pgpPrivateKey: decryptedPgpKeys, //decrypted private key
@@ -199,9 +199,10 @@ export async function joinGroup(account: string, project: Project) {
 export async function fetchHistoryMsgs(
   account: string,
   chatId: string,
-  pgpKeys: any
+  pgpKeys: string
 ) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const threadhash: any = await PushApi.chat.conversationHash({
       account: account,
       conversationId: chatId, // receiver's address or chatId of a group
@@ -225,7 +226,7 @@ export async function fetchHistoryMsgs(
 export async function sendMsg(
   inputMsg: string,
   account: string,
-  pgpKeys: any,
+  pgpKeys: string,
   chatId: string
 ) {
   try {

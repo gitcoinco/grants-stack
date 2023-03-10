@@ -9,7 +9,7 @@ import {
   Project,
   ProjectCredentials,
   ProjectMetadata,
-  Round
+  Round,
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
@@ -25,7 +25,7 @@ import { Button } from "common/src/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
-import { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
 import { ReactComponent as PushLogo } from "../../assets/push-gitcoin-scroll-logo.svg";
@@ -38,16 +38,14 @@ import {
   fetchHistoryMsgs,
   sendMsg,
   getGroupInfo,
-  getUserDetails
+  getUserDetails,
 } from "../api/pushChat";
 import useSWR from "swr";
-import { add, formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import markdown from "../../app/markdown";
-import * as PushApi from "@pushprotocol/restapi";
 import Auth from "../common/Auth";
-import { getQFVotesForProject } from "../api/round";
 import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
 
 enum VerifiedCredentialState {
@@ -95,7 +93,7 @@ export default function ViewProjectDetails() {
   const wallet = Auth();
 
   const [pgpKeys, setPgpKeys] = useState<string>("");
-  const [pushChatId, setPushChatID] = useState<string | null>(null);
+  const [pushChatId, setPushChatID] = useState<string>("");
   const [position, setPosition] = useState<string>("None");
 
   // useEffect(() => {
@@ -469,19 +467,20 @@ export function ProjectLogo(props: {
 }
 
 function Sidebar(props: {
-  pushChatId: string | null;
+  pushChatId: string;
   isAdded: boolean;
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
   addToShortlist: () => void;
-  handlePushChatID: any;
+  handlePushChatID: (e: string) => void;
   position: string;
-  setPosition: any;
+  setPosition: (e: string) => void;
   pgpKeys: string;
 }) {
   const wallet = Auth();
   const [isPresent, setIsPresent] = useState<boolean>(true);
   const { chainId, roundId, applicationId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
   const project = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
@@ -491,12 +490,15 @@ function Sidebar(props: {
 
   useEffect(() => {
     handlePositions(wallet, project as Project);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const handlePositions = async (wallet: any, project: Project) => {
     if (!wallet || !project) {
+      console.log("Inside the section");
       return;
     }
+    console.log("Out of section");
     const { isMember, isOwner, chatId, isContributor } =
       await verifyPushChatUser(project, wallet);
 
@@ -507,7 +509,7 @@ function Sidebar(props: {
       setIsPresent(false);
     }
     if (chatId) {
-      props.handlePushChatID(chatId);
+      props.handlePushChatID(chatId as string);
     }
     if (isOwner) {
       setPosition("Owner");
@@ -527,11 +529,16 @@ function Sidebar(props: {
   };
 
   const handleGroupCreation = async () => {
+    const {
+      props: {
+        context: { address: account },
+      },
+    } = wallet;
     if (position === "Owner") {
       const groupChatId = await createPushGroup(
         project as Project,
-        wallet.props.context.address,
-        round as Round,
+        account,
+        round as Round
       );
       if (!groupChatId) return;
       props.handlePushChatID(groupChatId);
@@ -541,11 +548,8 @@ function Sidebar(props: {
       return;
     }
     if (position === "Contributor") {
-      const chatId = await joinGroup(
-        wallet.props.context.address,
-        project as Project
-      );
-      props.handlePushChatID(null);
+      await joinGroup(account, project as Project);
+      props.handlePushChatID("");
       setPosition("Contributor");
       setIsPresent(true);
       handleClickScroll();
@@ -631,18 +635,21 @@ export function ProjectStats() {
 
 export function PushChat(props: {
   pgpKeys: string;
-  pushChatId: any;
+  pushChatId: string;
   position: string;
-  setPosition: any;
-  handlePushChatID: any;
-  handlePgpKeys: any;
+  setPosition: Dispatch<SetStateAction<string>>;
+  handlePushChatID: (e: string) => void;
+  handlePgpKeys: () => void;
 }) {
   const { chainId, roundId, applicationId } = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
   const project = round?.approvedProjects?.find(
     (project) => project.grantApplicationId === applicationId
   );
-  const [msgs, setMsgs] = useState<any[]>([]);
+  const [msgs, setMsgs] = useState<
+    { fromCAIP10: string; profile: string; messageContent: string }[]
+  >([]);
   const [inputMsg, setInputMsg] = useState<string>("");
   const [isPresent, setIsPreset] = useState<boolean>(false);
 
@@ -651,10 +658,12 @@ export function PushChat(props: {
   useEffect(() => {
     fetchMsgs();
     handleWebSockets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     fetchMsgs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pushChatId]);
 
   useEffect(() => {
@@ -665,7 +674,7 @@ export function PushChat(props: {
   }, [msgs]);
 
   const fetchMsgs = async () => {
-    if (!wallet.props.context || !project) {
+    if (!wallet || !project) {
       return;
     }
     const { props: walletProps } = wallet;
@@ -674,26 +683,27 @@ export function PushChat(props: {
     } = walletProps;
 
     const pushChatId =
-      (await getGroupChatID(project.projectMetadata.title, address)) || null;
-    const chatHistory = await fetchHistoryMsgs(
-      address,
-      pushChatId as string,
-      props.pgpKeys
-    );
-    const newMsgArr = []
-      if(chatHistory.length){
-        for(let i =0; i< chatHistory.length ; i++){
-          const userDetails = await getUserDetails(chatHistory[i].fromCAIP10)
-          newMsgArr.push({
-            ...chatHistory[i],
-            profile: userDetails
-          })
-        }
+      (await getGroupChatID(project.projectMetadata.title)) || null;
+    const chatHistory: {
+      profile: string;
+      fromCAIP10: string;
+      messageContent: string;
+    }[] = await fetchHistoryMsgs(address, pushChatId as string, props.pgpKeys);
+    const newMsgArr = [];
+    if (chatHistory.length) {
+      for (let i = 0; i < chatHistory.length; i++) {
+        const userDetails =
+          (await getUserDetails(chatHistory[i].fromCAIP10)) || ("" as string);
+        newMsgArr.push({
+          ...chatHistory[i],
+          messageContent: chatHistory[i].messageContent,
+          profile: userDetails,
+        });
       }
-    
+    }
 
     let isMem = false;
-    const groupInfo = await getGroupInfo(pushChatId as string, address);
+    const groupInfo = await getGroupInfo(pushChatId as string);
     groupInfo?.members.forEach((mem) => {
       if (mem.wallet === `eip155:${address}`) {
         isMem = true;
@@ -712,7 +722,7 @@ export function PushChat(props: {
       } = walletProps;
 
       const pushChatId =
-        (await getGroupChatID(project.projectMetadata.title, address)) || null;
+        (await getGroupChatID(project.projectMetadata.title)) || null;
       const res = await sendMsg(
         inputMsg,
         address,
@@ -720,12 +730,15 @@ export function PushChat(props: {
         pushChatId as string
       );
 
-      const profileImage = await getUserDetails(`eip155:${address}`)
-
+      const profileImage = await getUserDetails(`eip155:${address}`);
 
       if (res) {
         setMsgs([
-          { fromCAIP10: `eip155:${address}`, messageContent: inputMsg, profile: profileImage },
+          {
+            fromCAIP10: `eip155:${address}`,
+            messageContent: inputMsg,
+            profile: profileImage as string,
+          },
           ...oldMsgs,
         ]);
       }
@@ -733,11 +746,14 @@ export function PushChat(props: {
     }
   };
 
-  const handleInputMsg = (e: any) => {
+  const handleInputMsg = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputMsg(e.target.value);
   };
 
   const handleWebSockets = () => {
+    if(!wallet){
+      return
+    }
     const { props: walletProps } = wallet;
     if (!wallet.props.context) {
       return;
@@ -754,12 +770,16 @@ export function PushChat(props: {
       socketOptions: { autoConnect: true, reconnectionAttempts: 3 },
     });
 
-    pushSDKSocket?.on(EVENTS.CHAT_RECEIVED_MESSAGE, async (message) => {
+    pushSDKSocket?.on(EVENTS.CHAT_RECEIVED_MESSAGE, async () => {
       await fetchMsgs();
     });
   };
 
-  const textBoxLeft = (e: any) => {
+  const textBoxLeft = (e: {
+    fromCAIP10: string;
+    profile: string;
+    messageContent: string;
+  }) => {
     const addOfUser = e.fromCAIP10
       ? `${e.fromCAIP10.substring(7, 12)}...${e.fromCAIP10.substring(
           e.fromCAIP10.length - 5,
@@ -769,7 +789,7 @@ export function PushChat(props: {
     return (
       <div className={`flex flex-row`}>
         <div className="flex justify-center align-center rounded-full w-9 h-9 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-        <img className="rounded-full" src={e.profile} />
+          <img className="rounded-full" src={e.profile} />
         </div>
         <div
           className={`flex flex-col my-2 rounded hover:cursor-pointer ml-2.5 ${
@@ -787,8 +807,11 @@ export function PushChat(props: {
     );
   };
 
-  const textBoxRight = (e: any) => {
-
+  const textBoxRight = (e: {
+    fromCAIP10: string;
+    profile: string;
+    messageContent: string;
+  }) => {
     const addOfUser = e.fromCAIP10
       ? `${e.fromCAIP10.substring(7, 12)}...${e.fromCAIP10.substring(
           e.fromCAIP10.length - 5,
@@ -831,7 +854,7 @@ export function PushChat(props: {
         <div>Get Decrypted PGP keys first to see the chat!</div>
       )}
       {props.pgpKeys ? (
-        props.pushChatId ? (
+        props.pushChatId.length ? (
           // return chats for the user
           <>
             {isPresent && (
@@ -869,12 +892,18 @@ export function PushChat(props: {
               id="chat-scroll"
               className="h-96 flex flex-auto flex-col overflow-auto mt-6"
             >
-              {msgs?.map((e) => {
-                const newAdd = "eip155:" + wallet.props.context.address;
-                return newAdd === e.fromCAIP10
-                  ? textBoxRight(e)
-                  : textBoxLeft(e);
-              })}
+              {msgs?.map(
+                (e: {
+                  fromCAIP10: string;
+                  profile: string;
+                  messageContent: string;
+                }) => {
+                  const newAdd = "eip155:" + wallet.props.context.address;
+                  return newAdd === e.fromCAIP10
+                    ? textBoxRight(e)
+                    : textBoxLeft(e);
+                }
+              )}
             </div>
             <div className="flex flex-row"></div>
           </>
@@ -982,11 +1011,11 @@ function ShortlistTooltip() {
   );
 }
 
-function ScollComponent(props: { handleClickScroll: any }) {
+function ScollComponent(props: { handleClickScroll: () => void }) {
   return (
     <div className="fixed bottom-10 right-2">
       <Button className="py-2 px-2" onClick={props.handleClickScroll}>
-        <PushLogo/>
+        <PushLogo />
       </Button>
     </div>
   );

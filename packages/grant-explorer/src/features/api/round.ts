@@ -253,6 +253,7 @@ export async function getProjectOwners(
 }
 
 export async function getQFVotesForProject(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
   projectRegistryId: string,
   account: string
