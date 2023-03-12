@@ -94,9 +94,9 @@ B: 54/250 = 0.216
 C: 162/250 = 0.648
 
 Final match amounts for the given match pot
-A: 100*0.136 = 13.6
-B: 100*0.216 = 21.6
-C: 100\*0.648 = 64.8
+A: 100 * 0.136 = 13.6
+B: 100 * 0.216 = 21.6
+C: 100 \* 0.648 = 64.8
 
 ### if match cap is 0.5
 
@@ -111,7 +111,7 @@ totalMatchForProjectWhichHaveNotCapped = 13.6 + 21.6 = 35.2
 reminderPercent = amountLeftInPoolAfterCapping/totalMatchForProjectWhichHaveNotCapped = 14.8/35.2 = 0.421
 
 A:
-matchAmountInUSD += matchAmountInUSD*reminderPercent = 13.6 + 13.6*0.421 = 19.3
+matchAmountInUSD += matchAmountInUSD * reminderPercent = 13.6 + 13.6 * 0.421 = 19.3
 
 B:
-matchAmountInUSD += matchAmountInUSD*reminderPercent = 21.6 + 21.6*0.421 = 30.7
+matchAmountInUSD += matchAmountInUSD * reminderPercent = 21.6 + 21.6 * 0.421 = 30.7
