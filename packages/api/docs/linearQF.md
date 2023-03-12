@@ -88,15 +88,15 @@ match amount = 196-34 = 162
 
 sum of match amounts = 34+54+162 = 250
 
-Final match percent (without match cap)
-A: 34/250 = 0.136
-B: 54/250 = 0.216
-C: 162/250 = 0.648
+Final match percent (without match cap) <br>
+A: 34/250 = 0.136 <br>
+B: 54/250 = 0.216 <br>
+C: 162/250 = 0.648 
 
-Final match amounts for the given match pot
-A: 100 * 0.136 = 13.6
-B: 100 * 0.216 = 21.6
-C: 100 \* 0.648 = 64.8
+Final match amounts for the given match pot <br>
+A: 100 * 0.136 = 13.6 <br>
+B: 100 * 0.216 = 21.6 <br>
+C: 100 \* 0.648 = 64.8 <br>
 
 ### if match cap is 0.5
 
