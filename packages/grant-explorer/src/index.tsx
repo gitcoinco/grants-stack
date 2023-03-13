@@ -34,10 +34,10 @@ import ThankYou from "./features/round/ThankYou";
 // Initialize sentry
 initSentry();
 
-// // Initialize datadog
+// Initialize datadog
 initDatadog();
 
-// // Initialize tagmanager
+// Initialize tagmanager
 initTagmanager();
 
 const root = ReactDOM.createRoot(

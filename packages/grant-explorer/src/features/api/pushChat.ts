@@ -84,7 +84,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       isContributor = true;
     }
     if (!chatId) {
-      if (project.recipient === account) {
+      if (project.recipient === account || account.length) {
         return {
           isOwner: true,
           isMember: false,
