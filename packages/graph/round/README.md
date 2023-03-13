@@ -138,11 +138,8 @@ pnpm run test
 Note: If you are using an M1, you would have issues running tests.
 
 - Download m1 version from the latest https://github.com/LimeChain/matchstick/releases
-- Run the tests from the `graph` folder using
-```
-<YOUR_GLOBAL_PATH>/@graphprotocol/graph-cli/node_modules/binary-install-raw/bin/0.2.0/<DOWNLOADED_VERSION>/binary-macos-11-m1`
-```
-
+- Rename `binary-macos-11-m1` to `binary-macos-11` (downloaded in `<YOUR_GLOBAL_PATH>/@graphprotocol/graph-cli/node_modules/binary-install-raw/bin/0.2.0/<DOWNLOADED_VERSION>/`
+- Run the test using `pnpm run test`
 
 ## How do we fetch off-chain storage
 
