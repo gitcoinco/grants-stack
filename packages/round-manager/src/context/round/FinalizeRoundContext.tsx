@@ -19,6 +19,8 @@ import {
 } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
+import { generateMerkleTree } from "../../features/api/utils";
+import { formatBytes32String } from "ethers/lib/utils";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -121,17 +123,21 @@ const _finalizeRound = async ({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
+
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
 
-    const IpfsHash = await storeDocument(dispatch, matchingJSON);
+    const { tree, matchingResults } = generateMerkleTree(matchingJSON);
+    const merkleRoot = tree.root;
+
+    const IpfsHash = await storeDocument(dispatch, matchingResults);
 
     const distributionMetaPtr = {
       protocol: 1,
       pointer: IpfsHash,
     };
-    const merkleRoot = "";
+
     const transactionBlockNumber = await finalizeToContract(
       dispatch,
       roundId,
@@ -158,7 +164,7 @@ export const useFinalizeRound = () => {
 
   const finalizeRound = (
     roundId: string,
-    matchingJSON: MatchingStatsData[] | undefined
+    matchingJSON: MatchingStatsData[]
   ) => {
     return _finalizeRound({
       dispatch: context.dispatch,
@@ -225,10 +231,8 @@ async function finalizeToContract(
       payload: { finalizeRoundToContractStatus: ProgressStatus.IN_PROGRESS },
     });
 
-    const merkleRoootInBytes = ethers.utils.formatBytes32String(merkleRoot);
-
     const encodedDistribution = encodeDistributionParameters(
-      merkleRoootInBytes,
+      merkleRoot,
       distributionMetaPtr
     );
 
