@@ -1,6 +1,0 @@
-build/
-generated/
-subgraph.yaml
-/data/
-data
-tests/.bin

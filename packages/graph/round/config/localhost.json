@@ -1,6 +1,0 @@
-{
-  "network": "hardhat",
-  "startBlock": 1,
-  "programFactoryAddress": "0x79c2394B20A809EA693a7D64323A8846FF02029c",
-  "roundFactoryAddress": "0x89f01CD69087669f8e49F6FB8aD475F622Ac8791"
-}
