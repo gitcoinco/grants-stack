@@ -5,7 +5,8 @@ import projectRegistry from "./projectRegistry";
 import roundFactory from "./roundFactory";
 import roundImplementation from "./roundImplementation";
 import qfVotingStrategyFactory from "./votingStrategy/qfVotingStrategyFactory";
-import merklePayoutStrategy from "./payoutStrategy/merklePayoutStrategy";
+import merklePayoutStrategyFactory from "./payoutStrategy/merklePayoutStrategyFactory";
+import merklePayoutStrategyImplementation from "./payoutStrategy/merklePayoutStrategyImplementation";
 
 const abi = {
   // External
@@ -24,7 +25,8 @@ const abi = {
   qfVotingStrategyFactory,
 
   // PayoutStrategy
-  merklePayoutStrategy,
+  merklePayoutStrategyFactory,
+  merklePayoutStrategyImplementation,
 };
 
 export default abi;
