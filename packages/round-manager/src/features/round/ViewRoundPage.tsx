@@ -156,7 +156,7 @@ export default function ViewRoundPage() {
                             <DocumentTextIcon className="h-6 w-6 mr-2" />
                             <span
                               className="mt-0.5"
-                              data-testid="round-results"
+                              data-testid="fund-contract"
                             >
                               Fund Contract
                             </span>
