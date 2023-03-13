@@ -40,8 +40,7 @@ export default function FundContract(props: {
       <div className="flex flex-col mt-4 max-w-xl">
         <div className="flex flex-row justify-start">
           <p className="text-sm w-1/3">
-            Contract Address:{" "}
-            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+            Contract Address: <InformationIcon />
           </p>
           <p className="text-sm">{props.round?.id}</p>
         </div>
@@ -59,14 +58,13 @@ export default function FundContract(props: {
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">
-            Protocol fee:{" "}
-            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+            Protocol fee: <InformationIcon />
           </p>
           <p className="text-sm">10%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">
-            Round fee: <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+            Round fee: <InformationIcon />
           </p>
           <p className="text-sm">10%</p>
         </div>
@@ -80,8 +78,7 @@ export default function FundContract(props: {
         <hr className="mt-6 mb-6" />
         <div className="flex flex-row justify-start">
           <p className="text-sm w-1/3">
-            Final day to fund:{" "}
-            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+            Final day to fund: <InformationIcon />
           </p>
           <p className="text-sm">
             {props.round?.roundEndTime.toLocaleString()}{" "}
