@@ -1,9 +1,9 @@
 /**
  * Supported EVM networks
  */
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { SchemaQuestion } from "./utils";
 
 export type Network = "goerli" | "optimism";
@@ -211,6 +211,14 @@ export interface Round {
    * List of projects approved for the round
    */
   approvedProjects?: ApprovedProject[];
+  /**
+   * Round fees percentage
+   */
+  feesPercentage?: number;
+  /**
+   * Round fees address
+   */
+  feesAddress?: string;
 }
 
 export type MatchingStatsData = {
