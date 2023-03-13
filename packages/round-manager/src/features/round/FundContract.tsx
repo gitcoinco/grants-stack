@@ -1,14 +1,27 @@
-import { Spinner } from "../common/Spinner";
-import React, { useEffect, useState } from "react";
-import { XIcon } from "@heroicons/react/outline";
-import { Round } from "../api/types";
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import { Round } from "../api/types";
 
 export default function FundContract(props: {
   round: Round | undefined;
   chainId: string;
   roundId: string | undefined;
 }) {
+  function getTimeLeft(roundEndTime: Date | undefined): string {
+    if (!roundEndTime) {
+      return "";
+    }
+    const dateDiffInSecs = (roundEndTime.getTime() || 0) - Date.now();
+    const daysLeft = Math.floor(dateDiffInSecs / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor(
+      (dateDiffInSecs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutesLeft = Math.floor(
+      (dateDiffInSecs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const secondsLeft = Math.floor((dateDiffInSecs % (1000 * 60)) / 1000);
+    return `${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s`;
+  }
+
   return (
     <div className="mt-8">
       <p
@@ -24,61 +37,79 @@ export default function FundContract(props: {
         pledged during round creation. However, you are always welcome to fund
         over the initial amount if you wish to do so.
       </p>
-      <table className="mb-12">
-        <tr>
-          <td className="flex flex-row">
-            Contract Address:
-            <span>
-              <InformationIcon />
+      <div className="flex flex-col mt-4 max-w-xl">
+        <div className="flex flex-row justify-start">
+          <p className="text-sm w-1/3">
+            Contract Address:{" "}
+            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+          </p>
+          <p className="text-sm">{props.round?.id}</p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">Payout token:</p>
+          <p className="text-sm">{props.round?.token}</p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">Matching pool size:</p>
+          <p className="text-sm">
+            {props.round?.roundMetadata?.matchingFunds?.matchingFundsAvailable}{" "}
+            {props.round?.token}{" "}
+            <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
+          </p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">
+            Protocol fee:{" "}
+            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+          </p>
+          <p className="text-sm">10%</p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">
+            Round fee: <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+          </p>
+          <p className="text-sm">10%</p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">Amount in contract:</p>
+          <p className="text-sm">
+            11000 {props.round?.token}{" "}
+            <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
+          </p>
+        </div>
+        <hr className="mt-6 mb-6" />
+        <div className="flex flex-row justify-start">
+          <p className="text-sm w-1/3">
+            Final day to fund:{" "}
+            <InformationCircleIcon className="h-3 w-3 ml-1 inline" />
+          </p>
+          <p className="text-sm">
+            {props.round?.roundEndTime.toLocaleString()}{" "}
+            <span className="text-sm text-red-500 ml-6">
+              ({getTimeLeft(props.round?.roundEndTime)})
             </span>
-          </td>
-          <td>{props.round?.id}</td>
-        </tr>
-        <tr>
-          <td>Payout token:</td>
-          <td>{props.round?.token}</td>
-        </tr>
-        <tr>
-          <td>Matching pool size:</td>
-          <td>
-            {props.round?.roundMetadata?.matchingFunds?.matchingFundsAvailable}
-          </td>
-        </tr>
-        <tr>
-          <td className="flex flex-row">
-            Protocol fee:
-            <InformationIcon />
-          </td>
-          <td>10%</td>
-        </tr>
-        <tr>
-          <td className="flex flex-row">
-            Round fee:
-            <InformationIcon />
-          </td>
-          <td>10%</td>
-        </tr>
-        <tr>
-          <td>Amount in contract:</td>
-          <td>0</td>
-        </tr>
-        <hr />
-        <tr>
-          <td className="flex flex-row">
-            Final day to fund:
-            <InformationIcon />
-          </td>
-          <td>{props.round?.roundEndTime.toString()}</td>
-        </tr>
-        <tr>
-          <td>Amount left to fund:</td>
-          <td>10,000</td>
-        </tr>
-        <tr>
-          <td>Amount to fund:</td>
-          <td>10,000</td>
-        </tr>
-      </table>
+          </p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">Amount left to fund:</p>
+          <p className="text-sm">0 {props.round?.token}</p>
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <p className="text-sm w-1/3">Amount to fund:</p>
+          <input
+            className="border border-gray-300 rounded-md p-2"
+            placeholder="Enter the amount you wish to fund"
+          />
+        </div>
+        <div className="flex flex-row justify-start mt-6">
+          <button className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded">
+            Fund Contract
+          </button>
+          <button className="bg-white hover:bg-blue-700 text-gray py-2 px-4 rounded border border-gray ml-4">
+            View Contract
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
