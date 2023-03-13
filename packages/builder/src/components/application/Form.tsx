@@ -746,7 +746,9 @@ export default function Form({
         open={showErrorModal}
         onClose={closeErrorModal}
         onRetry={handleSubmitApplicationRetry}
-      />
+      >
+        <div>There was a problem with your round application transaction.</div>
+      </ErrorModal>
     </div>
   );
 }

@@ -24,7 +24,7 @@
     "create-local": "graph create --node http://localhost:8020/ thelostone-mc/program-factory",
     "remove-local": "graph remove --node http://localhost:8020/ thelostone-mc/program-factory",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 thelostone-mc/program-factory",
-    "test": "echo 'graph tests disabled'"
+    "test": "graph test"
   },
   "dependencies": {
     "@graphprotocol/graph-ts": "0.27.0",

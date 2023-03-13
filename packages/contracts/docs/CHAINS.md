@@ -99,7 +99,7 @@ These are contracts that are created/deployed once for goerli
 | RoundImplementation                   | 0x0bbB660E151F4A404AA5692445465291A95400C4 |
 | ProjectRegistry                       | 0x832c5391dc7931312CbdBc1046669c9c3A4A28d5 |
 | MerklePayoutStrategyFactory           | 0xBb380EEEF1D33e9B993CEDbb77A6753EbA0d2F9f |
-| MerklePayouStrategyImplementation     | 0xaF15533e0d5D35B9Bf4B4230ED9601676107bBA4 |
+| MerklePayouStrategyImplementation     | 0x8c2781F2681C66eCb477FD11e93699F56Db38b63 |
 
 **Sample contracts unique to a round **
 

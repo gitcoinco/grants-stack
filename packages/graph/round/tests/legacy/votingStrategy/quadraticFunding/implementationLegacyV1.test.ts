@@ -2,7 +2,7 @@ import { test, assert, newMockEvent, describe, beforeEach, clearStore, afterEach
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { handleVote } from "../../../../src/legacy/votingStrategy/quadraticFunding/implementationLegacyV1";
 import { Voted as VotedEvent } from "../../../../generated/QuadraticFundingVotingStrategy/QuadraticFundingVotingStrategyImplementationLegacyV1";
-import { QFVote, Round, VotingStrategy } from "../../../../generated/schema";
+import { PayoutStrategy, QFVote, Round, VotingStrategy } from "../../../../generated/schema";
 import { generateID } from "../../../../src/utils";
 
 
@@ -62,11 +62,18 @@ describe("handleVote", () => {
     votingStrategyEntity.version = "0.1.0";
     votingStrategyEntity.save();
 
+    // Create PayoutStrategy entity
+    let payoutStrategyEntity = new PayoutStrategy("0xB16081F360e3847006dB660bae1c6d1b2e17eC2C");
+    payoutStrategyEntity.strategyName = "MERKLE";
+    payoutStrategyEntity.strategyAddress = "0xA16081F360e3847006dB660bae1c6d1b2e17eB1A";
+    payoutStrategyEntity.version = "0.1.0";
+    payoutStrategyEntity.save();
+
     // Create Round entity
     const roundEntity = new Round(roundAddress.toHex());
     roundEntity.program = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2B";
     roundEntity.votingStrategy = votingStrategyEntity.id;
-    roundEntity.payoutStrategy = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2C";
+    roundEntity.payoutStrategy = payoutStrategyEntity.id;
     roundEntity.applicationsStartTime = new BigInt(10).toString();
     roundEntity.applicationsEndTime = new BigInt(20).toString();
     roundEntity.roundStartTime = new BigInt(30).toString();
@@ -74,6 +81,9 @@ describe("handleVote", () => {
     roundEntity.token = "0xB16081F360e3847006dB660bae1c6d1b2e17eC2D";
     roundEntity.roundMetaPtr = "roundMetaPtr";
     roundEntity.applicationMetaPtr = "applicationMetaPtr";
+    roundEntity.createdAt = new BigInt(50);
+    roundEntity.updatedAt = new BigInt(60);
+    roundEntity.version = "0.1.0";
 
     roundEntity.save();
 
