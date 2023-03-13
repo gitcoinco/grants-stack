@@ -7,12 +7,12 @@ export async function getUserPgpKeys(address: string) {
     let { encryptedPrivateKey: pgpKeys } =
       (await PushApi.user.get({
         account: address,
-        env: "dev",
+        env: "staging",
       })) || {};
     if (!pgpKeys) {
       const { encryptedPrivateKey } = await PushApi.user.create({
         account: address,
-        env: "dev",
+        env: "staging",
       });
       pgpKeys = encryptedPrivateKey;
     }
@@ -31,7 +31,7 @@ export async function getGroupChatID(groupName: string) {
   try {
     const groupChatID = await PushApi.chat.getGroupByName({
       groupName,
-      env: "dev",
+      env: "staging",
     });
 
     return groupChatID.chatId;
@@ -46,7 +46,7 @@ export async function getGroupInfo(chatId: string) {
   try {
     const groupInfo = await PushApi.chat.getGroup({
       chatId,
-      env: "dev",
+      env: "staging",
     });
     return groupInfo ? groupInfo : null;
   } catch (e) {
@@ -84,7 +84,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       isContributor = true;
     }
     if (!chatId) {
-      if (project.recipient === account || account.length) {
+      if (project.recipient === account) {
         return {
           isOwner: true,
           isMember: false,
@@ -156,7 +156,7 @@ export async function createPushGroup(
       admins: [],
       isPublic: true,
       account: account,
-      env: "dev",
+      env: "staging",
       meta: `gitcoin:${project.projectRegistryId}:${round.id}`,
       pgpPrivateKey: decryptedPgpKeys, //decrypted private key
     });
@@ -187,7 +187,7 @@ export async function joinGroup(account: string, project: Project) {
       groupImage: groupInfo?.groupImage as string,
       admins: [...(adminsArray as string[]), `eip155:${account}`],
       account: `eip155:${account}`,
-      env: "dev",
+      env: "staging",
       pgpPrivateKey: decryptedPgpKeys, //decrypted private key
     });
     return response ? response.chatId : null;
@@ -206,7 +206,7 @@ export async function fetchHistoryMsgs(
     const threadhash: any = await PushApi.chat.conversationHash({
       account: account,
       conversationId: chatId, // receiver's address or chatId of a group
-      env: "dev",
+      env: "staging",
     });
     const chatHistory = await PushApi.chat.history({
       threadhash: threadhash.threadHash,
@@ -214,7 +214,7 @@ export async function fetchHistoryMsgs(
       pgpPrivateKey: pgpKeys,
       limit: 20,
       toDecrypt: true,
-      env: "dev",
+      env: "staging",
     });
     return chatHistory || [];
   } catch (e) {
@@ -238,7 +238,7 @@ export async function sendMsg(
       pgpPrivateKey: pgpKeys,
       apiKey:
         "tAWEnggQ9Z.UaDBNjrvlJZx3giBTIQDcT8bKQo1O1518uF1Tea7rPwfzXv2ouV5rX9ViwgJUrXm",
-      env: "dev",
+      env: "staging",
     });
     return response;
   } catch (e) {
@@ -250,7 +250,7 @@ export async function getUserDetails(account: string) {
   try {
     const user = await PushApi.user.get({
       account,
-      env: "dev",
+      env: "staging",
     });
     // return user;
     return user.profilePicture;

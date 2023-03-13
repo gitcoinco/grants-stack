@@ -142,7 +142,7 @@ export default function PushChat(props: {
     } = walletProps;
     const pushSDKSocket = createSocketConnection({
       user: `eip155:${address}`, // Not CAIP-10 format
-      env: "dev",
+      env: "staging",
       apiKey:
         "jVPMCRom1B.iDRMswdehJG7NpHDiECIHwYMMv6k2KzkPJscFIDyW8TtSnk4blYnGa8DIkfuacU0",
       socketType: "chat",
