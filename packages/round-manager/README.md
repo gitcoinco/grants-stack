@@ -9,7 +9,7 @@ This package serves the app which holds all the features w.r.t to
 
 This package is meant to be used by the round operators
 It relies on the contracts deployed from the [contracts](../contracts) package.
-Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
+Indexed data can be queried by the graphs deployed from Allo's [graph](https://github.com/Allo-Protocol/graph/blob/main/round/README.md) repository.
 
 ## Live Links
 

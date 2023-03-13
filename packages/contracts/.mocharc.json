@@ -1,5 +1,0 @@
-{
-  "mochaExplorer.files": "test/**/*.{j,t}s",
-  "require": "ts-node/register/files",
-  "timeout": 20000
-}

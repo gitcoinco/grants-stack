@@ -4,6 +4,4 @@ packages:
   - 'packages/eslint-config-gitcoin'
   - 'packages/round-manager'
   - 'packages/grant-explorer'
-  - 'packages/contracts'
-  - 'packages/graph'
   - 'packages/builder'
