@@ -1,6 +1,6 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import { Round } from "../api/types";
-import { payoutTokens } from "../api/utils";
+import { payoutTokens, useTokenPrice } from "../api/utils";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -14,7 +14,14 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  console.log(props.round?.token);
+  const { data, error, loading } = useTokenPrice(
+    matchingFundPayoutToken?.coingeckoId
+  );
+  const matchingFunds =
+    props.round &&
+    props.round.roundMetadata.matchingFunds?.matchingFundsAvailable;
+  const matchingFundsInUSD =
+    matchingFunds && data && !loading && !error && matchingFunds * Number(data);
 
   return (
     <div className="mt-8">
@@ -57,9 +64,10 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Matching pool size:</p>
           <p className="text-sm">
-            {props.round?.roundMetadata?.matchingFunds?.matchingFundsAvailable}{" "}
-            {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
+            {matchingFunds} {matchingFundPayoutToken?.name}{" "}
+            <span className="text-sm text-slate-400 ml-2">
+              ${matchingFundsInUSD} USD
+            </span>
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -84,7 +92,7 @@ export default function FundContract(props: {
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
             11000 {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
+            <span className="text-sm text-slate-400 ml-2">$1234.00 USD</span>
           </p>
         </div>
         <hr className="mt-6 mb-6" />
