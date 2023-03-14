@@ -35,8 +35,6 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.coingeckoId
   );
 
-  console.log("DASA matchingFundPayoutToken", matchingFundPayoutToken);
-
   const matchingFunds =
     props.round &&
     props.round.roundMetadata.matchingFunds?.matchingFundsAvailable;
