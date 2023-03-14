@@ -7,6 +7,7 @@ import {
   payoutTokens,
   useTokenPrice,
 } from "../api/utils";
+import { Spinner } from "../common/Spinner";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -46,7 +47,13 @@ export default function FundContract(props: {
     data &&
     !loading &&
     !error &&
+    !isBalanceError &&
+    !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
+
+  if (props.round === undefined || isBalanceLoading || loading) {
+    return <Spinner text="Loading..." />;
+  }
 
   return (
     <div className="mt-8">
