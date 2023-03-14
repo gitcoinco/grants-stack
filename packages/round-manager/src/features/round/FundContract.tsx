@@ -1,26 +1,20 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import { Round } from "../api/types";
+import { payoutTokens } from "../api/utils";
 
 export default function FundContract(props: {
   round: Round | undefined;
   chainId: string;
   roundId: string | undefined;
 }) {
-  function getTimeLeft(roundEndTime: Date | undefined): string {
-    if (!roundEndTime) {
-      return "";
-    }
-    const dateDiffInSecs = (roundEndTime.getTime() || 0) - Date.now();
-    const daysLeft = Math.floor(dateDiffInSecs / (1000 * 60 * 60 * 24));
-    const hoursLeft = Math.floor(
-      (dateDiffInSecs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const minutesLeft = Math.floor(
-      (dateDiffInSecs % (1000 * 60 * 60)) / (1000 * 60)
-    );
-    const secondsLeft = Math.floor((dateDiffInSecs % (1000 * 60)) / 1000);
-    return `${daysLeft}d ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s`;
-  }
+  const matchingFundPayoutToken =
+    props.round &&
+    payoutTokens.filter(
+      (t) =>
+        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
+    )[0];
+
+  console.log(props.round?.token);
 
   return (
     <div className="mt-8">
@@ -39,62 +33,69 @@ export default function FundContract(props: {
       </p>
       <div className="flex flex-col mt-4 max-w-xl">
         <div className="flex flex-row justify-start">
-          <p className="text-sm w-1/3">
-            Contract Address: <InformationIcon />
+          <p className="flex flex-row text-sm w-1/3">
+            Contract Address:
+            <span>
+              <InformationIcon />
+            </span>
           </p>
           <p className="text-sm">{props.round?.id}</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Payout token:</p>
-          <p className="text-sm">{props.round?.token}</p>
+          <p className="flex flex-row text-sm">
+            {matchingFundPayoutToken?.logo ? (
+              <img
+                src={matchingFundPayoutToken.logo}
+                alt=""
+                className="h-6 w-6 flex-shrink-0 rounded-full"
+              />
+            ) : null}
+            <span className="ml-2 pt-0.5">{matchingFundPayoutToken?.name}</span>
+          </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Matching pool size:</p>
           <p className="text-sm">
             {props.round?.roundMetadata?.matchingFunds?.matchingFundsAvailable}{" "}
-            {props.round?.token}{" "}
+            {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">
-            Protocol fee: <InformationIcon />
+          <p className="flex flex-row text-sm w-1/3">
+            Protocol fee:
+            <span>
+              <InformationIcon />
+            </span>
           </p>
-          <p className="text-sm">10%</p>
+          <p className="text-sm">0%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">
-            Round fee: <InformationIcon />
+          <p className="flex flex-row text-sm w-1/3">
+            Round fee:
+            <span>
+              <InformationIcon />
+            </span>
           </p>
-          <p className="text-sm">10%</p>
+          <p className="text-sm">0%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
-            11000 {props.round?.token}{" "}
+            11000 {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-6">$1234.00 USD</span>
           </p>
         </div>
         <hr className="mt-6 mb-6" />
-        <div className="flex flex-row justify-start">
-          <p className="text-sm w-1/3">
-            Final day to fund: <InformationIcon />
-          </p>
-          <p className="text-sm">
-            {props.round?.roundEndTime.toLocaleString()}{" "}
-            <span className="text-sm text-red-500 ml-6">
-              ({getTimeLeft(props.round?.roundEndTime)})
-            </span>
-          </p>
-        </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount left to fund:</p>
-          <p className="text-sm">0 {props.round?.token}</p>
+          <p className="text-sm">0 {matchingFundPayoutToken?.name}</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Amount to fund:</p>
+          <p className="text-sm w-1/3 py-3">Amount to fund:</p>
           <input
-            className="border border-gray-300 rounded-md p-2"
+            className="border border-gray-300 rounded-md p-2 w-1/2"
             placeholder="Enter the amount you wish to fund"
           />
         </div>
@@ -102,7 +103,7 @@ export default function FundContract(props: {
           <button className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded">
             Fund Contract
           </button>
-          <button className="bg-white hover:bg-blue-700 text-gray py-2 px-4 rounded border border-gray ml-4">
+          <button className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4">
             View Contract
           </button>
         </div>

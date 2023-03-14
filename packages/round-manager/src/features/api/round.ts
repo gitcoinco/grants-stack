@@ -51,6 +51,7 @@ export async function getRoundById(
               applicationsEndTime
               roundStartTime
               roundEndTime
+              token
               projectsMetaPtr {
                 pointer
               }
