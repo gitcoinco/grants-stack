@@ -22,7 +22,7 @@ export default function FundContract(props: {
     )[0];
 
   const tokenDetail = {
-    addressOrName: props.roundId!,
+    addressOrName: props.roundId,
     token: matchingFundPayoutToken?.address,
   };
 
@@ -151,7 +151,7 @@ export default function FundContract(props: {
               window.open(
                 getTxExplorerForContract(
                   props.chainId as unknown as ChainId,
-                  props.roundId!
+                  props.roundId as string
                 ),
                 "_blank"
               )
