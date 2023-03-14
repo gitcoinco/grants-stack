@@ -448,40 +448,6 @@ export async function getProjectOwners(
   }
 }
 
-interface FinalizeRoundToContractProps {
-  roundId: string;
-  encodedDistribution: string;
-  signerOrProvider: Signer;
-}
-
-export async function finalizeRoundToContract({
-  roundId,
-  encodedDistribution,
-  signerOrProvider,
-}: FinalizeRoundToContractProps) {
-  try {
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationContract.abi,
-      signerOrProvider
-    );
-
-    // Finalize round
-    const tx = await roundImplementation.updateDistribution(
-      encodedDistribution
-    );
-    const receipt = await tx.wait();
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    console.error("finalizeRoundToContract", error);
-    throw new Error("Unable to finalize Round");
-  }
-}
 
 /**
  * Fetch finalized matching distribution

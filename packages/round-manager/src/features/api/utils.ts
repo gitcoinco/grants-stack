@@ -585,7 +585,7 @@ export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
   matchingResults: MatchingStatsData[]
  } => {
 
-  let distribution: [number, string, number, string][] = [];
+  const distribution: [number, string, number, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
 

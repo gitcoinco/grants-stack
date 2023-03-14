@@ -232,11 +232,6 @@ export type MatchingStatsData = {
   projectPayoutAddress: string;
 };
 
-export type MatchingDistributionData = {
-  data: MatchingDistributionData[];
-  merkleProof: any[];
-};
-
 export type ProjectStatus =
   | "PENDING"
   | "APPROVED"

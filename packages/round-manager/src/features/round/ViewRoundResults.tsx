@@ -134,6 +134,7 @@ function InformationContent(props: {
       {!error && !isError && !loading && !isLoading && (
         <FinalizeRound
           roundId={props.roundId}
+          payoutStrategy={props.round?.payoutStrategy}
           matchingData={matchingData}
           useDefault={useDefault}
           setUseDefault={setUseDefault}
@@ -259,6 +260,7 @@ function InformationTable(props: {
 
 function FinalizeRound(props: {
   roundId: string | undefined;
+  payoutStrategy: string | undefined;
   matchingData: MatchingStatsData[] | undefined;
   useDefault: boolean;
   setUseDefault: (useDefault: boolean) => void;
@@ -302,10 +304,10 @@ function FinalizeRound(props: {
 
   const handleFinalizeRound = async () => {
     try {
-      if (props.roundId !== undefined) {
+      if (props.payoutStrategy !== undefined) {
         setOpenProgressModal(true);
         await finalizeRound(
-          props.roundId,
+          props.payoutStrategy,
           props.useDefault ? props.matchingData : props.customMatchingData
         );
       }
