@@ -1,4 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import ReactTooltip from "react-tooltip";
 import { useBalance } from "wagmi";
 import { Round } from "../api/types";
 import {
@@ -75,7 +76,22 @@ export default function FundContract(props: {
           <p className="flex flex-row text-sm w-1/3">
             Contract Address:
             <span>
-              <InformationIcon />
+              <InformationIcon
+                dataFor="contract-tooltip"
+                dataTestId="contract-tooltip"
+              />
+              <ReactTooltip
+                id="contract-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  This is the contract address of your round's core
+                  <br />
+                  contract.
+                </p>
+              </ReactTooltip>
             </span>
           </p>
           <p className="text-sm">{props.round?.id}</p>
@@ -106,7 +122,28 @@ export default function FundContract(props: {
           <p className="flex flex-row text-sm w-1/3">
             Protocol fee:
             <span>
-              <InformationIcon />
+              <InformationIcon
+                dataFor="protocol-fee-tooltip"
+                dataTestId="protocol-fee-tooltip"
+              />
+              <ReactTooltip
+                id="protocol-fee-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  Allo Protocol can be configured to charge fees
+                  <br />
+                  for use. These fees are paid to GitcoinDAO, who
+                  <br />
+                  use the funds to fund public goods. If enabled,
+                  <br />
+                  the fee is calculated as a percentage of your
+                  <br />
+                  funding pool, added on top of your pool.
+                </p>
+              </ReactTooltip>
             </span>
           </p>
           <p className="text-sm">0%</p>
@@ -115,7 +152,28 @@ export default function FundContract(props: {
           <p className="flex flex-row text-sm w-1/3">
             Round fee:
             <span>
-              <InformationIcon />
+              <InformationIcon
+                dataFor="round-fee-tooltip"
+                dataTestId="round-fee-tooltip"
+              />
+              <ReactTooltip
+                id="round-fee-tooltip"
+                place="bottom"
+                type="dark"
+                effect="solid"
+              >
+                <p className="text-xs">
+                  The round fees are any additional charges
+                  <br />
+                  for services used to run your round. These
+                  <br />
+                  can be software services (i.e. this user interface)
+                  <br />
+                  or other specialty tools. If enabled, they are
+                  <br />
+                  calculated as a percentage of your funding pool.
+                </p>
+              </ReactTooltip>
             </span>
           </p>
           <p className="text-sm">0%</p>
@@ -165,6 +223,14 @@ export default function FundContract(props: {
   );
 }
 
-function InformationIcon() {
-  return <InformationCircleIcon className="mt-1 ml-1 text-gray-900 w-4 h-4" />;
+function InformationIcon(props: { dataFor: string; dataTestId: string }) {
+  return (
+    <InformationCircleIcon
+      className="mt-1 ml-1 text-gray-900 w-3 h-3"
+      data-tip
+      data-background-color="#0E0333"
+      data-for={props.dataFor}
+      data-testid={props.dataTestId}
+    />
+  );
 }
