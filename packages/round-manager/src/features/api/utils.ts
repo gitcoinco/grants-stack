@@ -541,3 +541,33 @@ export const useTokenPrice = (tokenId: string | undefined) => {
     loading,
   };
 };
+
+/**
+ * Fetch link to contract on Etherscan or other explorer
+ *
+ * @param chainId - The chain ID of the blockchain
+ * @param contractAddress - The address of the contract
+ * @returns The link to the contract on Etherscan or other
+ * explorer for the given chain ID and contract address
+ */
+export const getTxExplorerForContract = (
+  chainId: ChainId,
+  contractAddress: string
+) => {
+  switch (chainId) {
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+      return `https://optimistic.etherscan.io/address/${contractAddress}`;
+
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `https://ftmscan.com/address/${contractAddress}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `https://testnet.ftmscan.com/address/${contractAddress}`;
+
+    case ChainId.MAINNET:
+      return `https://etherscan.io/address/${contractAddress}`;
+
+    default:
+      return `https://goerli.etherscan.io/address/${contractAddress}`;
+  }
+};

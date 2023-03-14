@@ -1,6 +1,11 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import { Round } from "../api/types";
-import { payoutTokens, useTokenPrice } from "../api/utils";
+import {
+  ChainId,
+  getTxExplorerForContract,
+  payoutTokens,
+  useTokenPrice,
+} from "../api/utils";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -111,7 +116,18 @@ export default function FundContract(props: {
           <button className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded">
             Fund Contract
           </button>
-          <button className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4">
+          <button
+            className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
+            onClick={() =>
+              window.open(
+                getTxExplorerForContract(
+                  props.chainId as unknown as ChainId,
+                  props.roundId!
+                ),
+                "_blank"
+              )
+            }
+          >
             View Contract
           </button>
         </div>

@@ -247,10 +247,11 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
 };
 
 /**
- * Fetch subgraph network for provided web3 network
+ * Fetch the correct transaction explorer for the provided web3 network
  *
- * @param chainId - The chain ID of the blockchain2
- * @returns the subgraph endpoint
+ * @param chainId - The chain ID of the blockchain
+ * @param txHash - The transaction hash
+ * @returns the transaction explorer URL for the provided transaction hash and network
  */
 export const getTxExplorer = (chainId?: ChainId, txHash?: string) => {
   switch (chainId) {
