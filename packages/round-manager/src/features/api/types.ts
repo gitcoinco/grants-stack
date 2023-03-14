@@ -111,7 +111,8 @@ export type InputType =
   | "paragraph"
   | "multiple-choice"
   | "checkbox"
-  | "dropdown";
+  | "dropdown"
+  | "link";
 
 export type EditQuestion = {
   index?: number;

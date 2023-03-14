@@ -1,6 +1,6 @@
 import { InputType } from "../api/types";
 import { MdOutlineShortText, MdCheckBox, MdArrowDropDownCircle, MdRadioButtonChecked, MdNotes } from "react-icons/md";
-import { AiOutlineMail, AiOutlineWallet } from "react-icons/ai";
+import { AiOutlineMail, AiOutlineWallet, AiOutlineLink } from "react-icons/ai";
 import { ReactNode } from "react";
 
 type InputIconProps = {
@@ -26,6 +26,7 @@ export const InputIcon = ({ type, className, size }: InputIconProps) => {
     "multiple-choice": <MdRadioButtonChecked style={style} />,
     "checkbox": <MdCheckBox style={style} />,
     "dropdown": <MdArrowDropDownCircle style={style} />,
+    "link": <AiOutlineLink style={style} />,
   } as const;
 
   return (
