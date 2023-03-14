@@ -1,4 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import { useBalance } from "wagmi";
 import { Round } from "../api/types";
 import {
   ChainId,
@@ -19,14 +20,35 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
+  const tokenDetail = {
+    addressOrName: props.roundId!,
+    token: matchingFundPayoutToken?.address,
+  };
+
+  const {
+    data: balanceData,
+    isError: isBalanceError,
+    isLoading: isBalanceLoading,
+  } = useBalance(tokenDetail);
+
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId
   );
+
+  console.log("DASA matchingFundPayoutToken", matchingFundPayoutToken);
+
   const matchingFunds =
     props.round &&
     props.round.roundMetadata.matchingFunds?.matchingFundsAvailable;
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
+
+  const tokenBalanceInUSD =
+    balanceData?.value &&
+    data &&
+    !loading &&
+    !error &&
+    Number(balanceData?.formatted) * Number(data);
 
   return (
     <div className="mt-8">
@@ -96,8 +118,10 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
-            11000 {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">$1234.00 USD</span>
+            {balanceData?.formatted} {matchingFundPayoutToken?.name}{" "}
+            <span className="text-sm text-slate-400 ml-2">
+              ${tokenBalanceInUSD} USD
+            </span>
           </p>
         </div>
         <hr className="mt-6 mb-6" />
