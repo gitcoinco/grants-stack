@@ -40,8 +40,15 @@ export default function FundContract(props: {
   const matchingFunds =
     props.round &&
     props.round.roundMetadata.matchingFunds?.matchingFundsAvailable;
+
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
+
+  const amountLeftToFund =
+    matchingFunds && matchingFunds - Number(balanceData?.formatted);
+
+  const amountLeftToFundInUSD =
+    amountLeftToFund && amountLeftToFund * Number(data);
 
   const tokenBalanceInUSD =
     balanceData?.value &&
@@ -190,7 +197,13 @@ export default function FundContract(props: {
         <hr className="mt-6 mb-6" />
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount left to fund:</p>
-          <p className="text-sm">0 {matchingFundPayoutToken?.name}</p>
+          <p className="text-sm">
+            {" "}
+            {amountLeftToFund} {matchingFundPayoutToken?.name}{" "}
+            <span className="text-sm text-slate-400 ml-2">
+              ${amountLeftToFundInUSD} USD
+            </span>
+          </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3 py-3">Amount to fund:</p>
