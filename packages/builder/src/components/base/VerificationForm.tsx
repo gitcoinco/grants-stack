@@ -56,6 +56,7 @@ export default function VerificationForm({
               changeHandler={handleInput}
               required={false}
               feedback={{ type: "none", message: "" }}
+              prefixBoxText="@"
             />
             <Twitter
               handle={props.formMetaData.projectTwitter ?? ""}

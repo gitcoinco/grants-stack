@@ -80,6 +80,7 @@ export function TextInput({
   tooltip,
   feedback,
   inputType,
+  prefixBoxText,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
@@ -111,16 +112,24 @@ export function TextInput({
         {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
-      <input
-        type={inputType ?? "text"}
-        id={name}
-        name={name}
-        value={value ?? ""}
-        placeholder={placeholder}
-        disabled={disabled}
-        onChange={changeHandler}
-        className={borderClass}
-      />
+      <div className="flex">
+        {Boolean(prefixBoxText) && (
+          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+            {" "}
+            {prefixBoxText}{" "}
+          </span>
+        )}
+        <input
+          type={inputType ?? "text"}
+          id={name}
+          name={name}
+          value={value ?? ""}
+          placeholder={placeholder}
+          disabled={disabled}
+          onChange={changeHandler}
+          className={borderClass}
+        />
+      </div>
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
           {feedback.message}
