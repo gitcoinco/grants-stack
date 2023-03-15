@@ -55,7 +55,7 @@ jest.mock("../../common/Auth", () => ({
   }),
 }));
 
-describe("View Funding Admin before distribution data is finalized to contract", () => {
+describe("View Round Results before distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -67,7 +67,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  describe("display funding admin tab", () => {
+  describe("display round results tab", () => {
     it("displays No Information Available before round end date", async () => {
       const roundEndTime = faker.date.future();
       mockRoundData = makeRoundData({ roundEndTime });
@@ -88,8 +88,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(screen.getByText("No Information Available")).toBeInTheDocument();
     });
 
@@ -138,8 +138,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
       expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
       expect(screen.getByTestId("finalize-round")).toBeInTheDocument();
@@ -194,8 +194,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -279,8 +279,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -370,8 +370,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -430,8 +430,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(
         screen.getByRole("button", {
           name: /finalize and save to contract/i,
@@ -474,8 +474,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       const button = screen.getByRole("button", {
         name: /finalize and save to contract/i,
       });
@@ -522,8 +522,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       const finalizeButton = screen.getByRole("button", {
         name: /finalize and save to contract/i,
       });
@@ -540,7 +540,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
   });
 });
 
-describe("View Funding Admin after distribution data is finalized to contract", () => {
+describe("View Round Results after distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -597,8 +597,8 @@ describe("View Funding Admin after distribution data is finalized to contract", 
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("finalized-round")).toBeInTheDocument();
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();

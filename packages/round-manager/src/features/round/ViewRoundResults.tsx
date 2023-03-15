@@ -26,7 +26,7 @@ import {
 } from "../../context/round/FinalizeRoundContext";
 import { errorModalDelayMs } from "../../constants";
 
-export default function ViewFundingAdmin(props: {
+export default function ViewRoundResults(props: {
   round: Round | undefined;
   chainId: string;
   roundId: string | undefined;
