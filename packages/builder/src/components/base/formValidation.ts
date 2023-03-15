@@ -2,7 +2,7 @@ import { array, object, string } from "yup";
 import { FormInputs } from "../../types";
 import {
   RoundApplicationAnswers,
-  RoundApplicationQuestion
+  RoundApplicationQuestion,
 } from "../../types/roundApplication";
 
 export async function validateProjectForm(inputs: FormInputs) {
