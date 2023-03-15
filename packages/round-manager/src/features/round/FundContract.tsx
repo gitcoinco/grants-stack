@@ -213,11 +213,15 @@ export default function FundContract(props: {
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <button className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded">
+          <button
+            className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded"
+            data-testid="fund-contract-btn"
+          >
             Fund Contract
           </button>
           <button
             className="bg-white hover:text-violet-700 hover:border-violet-700 text-gray py-2 px-4 rounded border border-gray ml-4"
+            data-testid="view-contract-btn"
             onClick={() =>
               window.open(
                 getTxExplorerForContract(
