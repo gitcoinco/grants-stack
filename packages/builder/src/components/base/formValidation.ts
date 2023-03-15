@@ -1,8 +1,8 @@
-import { object, array, string } from "yup";
+import { array, object, string } from "yup";
 import { FormInputs } from "../../types";
 import {
   RoundApplicationAnswers,
-  RoundApplicationQuestion,
+  RoundApplicationQuestion
 } from "../../types/roundApplication";
 
 export async function validateProjectForm(inputs: FormInputs) {
@@ -68,6 +68,14 @@ export async function validateApplication(
           1,
           `You must select at least one value for ${input.title}`
         );
+      }
+    } else if (input.type === "link") {
+      validation = string().url(
+        `${input.title} must be a valid url. e.g. https://gitcoin.co/`
+      );
+
+      if (input.required) {
+        validation = validation.required(`${input.title} is required`);
       }
     } else {
       validation = string();

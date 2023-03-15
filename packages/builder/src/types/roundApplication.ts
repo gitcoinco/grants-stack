@@ -32,6 +32,10 @@ export type ParagraphQuestion = BaseQuestion & {
   type: "paragraph";
 };
 
+export type LinkQuestion = BaseQuestion & {
+  type: "link";
+};
+
 export type MultipleChoiceQuestion = BaseQuestion & {
   type: "multiple-choice";
   options: string[];
@@ -56,7 +60,8 @@ export type RoundApplicationQuestion =
   | ParagraphQuestion
   | MultipleChoiceQuestion
   | CheckboxQuestion
-  | DropdownQuestion;
+  | DropdownQuestion
+  | LinkQuestion;
 
 export interface ProjectRequirements {
   twitter: {
