@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
+import { formatBytes32String } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -92,9 +93,11 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
-    projectId: faker.finance.ethereumAddress().toString(),
+    projectId: formatBytes32String(faker.company.name()),
     uniqueContributorsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
+    matchAmountInToken: faker.datatype.number(),
+    projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
 
