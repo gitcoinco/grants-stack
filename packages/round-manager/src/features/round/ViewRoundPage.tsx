@@ -253,8 +253,7 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewFundGrantees
-                        grantees = {null}
-                        isFundGranteesFetched = {false}
+                        finalized = {false}
                       />
                     </Tab.Panel>
                   </Tab.Panels>
