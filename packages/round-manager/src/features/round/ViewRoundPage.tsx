@@ -8,6 +8,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
+  UserGroupIcon,
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -36,6 +37,7 @@ import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
+import ViewFundGrantees from "./ViewFundGrantees";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -198,6 +200,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <UserGroupIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="fund-grantees"
+                            >
+                              Fund Grantees
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -230,7 +251,14 @@ export default function ViewRoundPage() {
                         roundId={id}
                       />
                     </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewFundGrantees
+                        grantees = {null}
+                        isFundGranteesFetched = {false}
+                      />
+                    </Tab.Panel>
                   </Tab.Panels>
+        
                 </div>
               </Tab.Group>
             </main>
