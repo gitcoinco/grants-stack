@@ -27,7 +27,7 @@ export async function validateProjectForm(inputs: FormInputs) {
 // strings should	not be a url
 function createValidationSchema(field: string) {
   return string()
-    .test("has-no-at", `${field} should not include a @`, (value) =>
+    .test("has-no-at", `${field} should not include an @ symbol`, (value) =>
       value ? !value.includes("@") : true
     )
     .test("is-not-url", `${field} should not be a URL`, (value) =>
@@ -38,8 +38,8 @@ function createValidationSchema(field: string) {
 export async function validateVerificationForm(inputs: FormInputs) {
   const schema = object({
     projectTwitter: createValidationSchema("Project Twitter"),
-    userGithub: createValidationSchema("User GitHub"),
-    projectGithub: createValidationSchema("Project GitHub"),
+    userGithub: createValidationSchema("Your GitHub username"),
+    projectGithub: createValidationSchema("GitHub Organization"),
   });
 
   const sanitizedInput = await schema.validate(inputs, { abortEarly: false });

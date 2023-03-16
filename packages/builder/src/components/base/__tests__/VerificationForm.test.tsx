@@ -74,13 +74,13 @@ describe("<VerificationForm />", () => {
         "There were 3 errors with your form submission"
       );
       const twitterUserErrors = screen.getAllByText(
-        "Project Twitter should not include a @"
+        "Project Twitter should not include an @ symbol"
       );
       const githubUserErrors = screen.getAllByText(
-        "User GitHub should not be a URL"
+        "Your GitHub username should not be a URL"
       );
       const githubProjectErrors = screen.getAllByText(
-        "Project GitHub should not be a URL"
+        "GitHub Organization should not be a URL"
       );
 
       expect(errorCountMessage).toBeInTheDocument();
