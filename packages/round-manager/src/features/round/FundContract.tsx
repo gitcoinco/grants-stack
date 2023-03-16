@@ -1,6 +1,8 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import { BigNumber, ethers } from "ethers";
+import { useState } from "react";
 import ReactTooltip from "react-tooltip";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { Round } from "../api/types";
 import {
   ChainId,
@@ -15,6 +17,11 @@ export default function FundContract(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  const { address } = useAccount();
+
+  const [amountToFund, setAmountToFund] = useState(0);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
+
   const matchingFundPayoutToken =
     props.round &&
     payoutTokens.filter(
@@ -22,16 +29,24 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  const tokenDetail = {
-    addressOrName: props.roundId,
-    token: matchingFundPayoutToken?.address,
-  };
+  const tokenDetailContract =
+    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+      ? { addressOrName: props.roundId }
+      : {
+          addressOrName: props.roundId,
+          token: matchingFundPayoutToken?.address,
+        };
+
+  const tokenDetailUser =
+    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+      ? { addressOrName: address }
+      : { addressOrName: address, token: matchingFundPayoutToken?.address };
 
   const {
     data: balanceData,
     isError: isBalanceError,
     isLoading: isBalanceLoading,
-  } = useBalance(tokenDetail);
+  } = useBalance(tokenDetailContract);
 
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId
@@ -58,6 +73,26 @@ export default function FundContract(props: {
     !isBalanceError &&
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
+
+  const matchingFundPayoutTokenBalance = useBalance(tokenDetailUser);
+
+  function handleFundContract() {
+    // check if signer has enough token balance
+    const accountBalance = matchingFundPayoutTokenBalance.data?.value;
+    const tokenBalance = ethers.utils.parseUnits(
+      amountToFund.toString(),
+      matchingFundPayoutToken?.decimal
+    );
+
+    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
+      setInsufficientBalance(true);
+      return;
+    } else {
+      setInsufficientBalance(false);
+    }
+
+    // setOpenConfirmationModal(true);
+  }
 
   if (props.round === undefined || isBalanceLoading || loading) {
     return <Spinner text="Loading..." />;
@@ -210,12 +245,15 @@ export default function FundContract(props: {
           <input
             className="border border-gray-300 rounded-md p-2 w-1/2"
             placeholder="Enter the amount you wish to fund"
+            value={amountToFund}
+            onChange={(e) => setAmountToFund(Number(e.target.value))}
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
           <button
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded"
             data-testid="fund-contract-btn"
+            onClick={() => handleFundContract()}
           >
             Fund Contract
           </button>
@@ -235,6 +273,15 @@ export default function FundContract(props: {
             View Contract
           </button>
         </div>
+        {insufficientBalance && (
+          <p
+            data-testid="insufficientBalance"
+            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+          >
+            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+            <span>You do not have enough funds for these donations</span>
+          </p>
+        )}
       </div>
     </div>
   );

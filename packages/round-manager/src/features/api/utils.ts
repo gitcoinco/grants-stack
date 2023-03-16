@@ -75,6 +75,7 @@ export const payoutTokens = [
     address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "ETH",
@@ -82,6 +83,7 @@ export const payoutTokens = [
     address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    decimal: 18,
   },
   {
     name: "DAI",
@@ -89,6 +91,7 @@ export const payoutTokens = [
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "ETH",
@@ -96,6 +99,7 @@ export const payoutTokens = [
     address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    decimal: 18,
   },
   {
     name: "WFTM",
@@ -103,6 +107,7 @@ export const payoutTokens = [
     address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     logo: TokenNamesAndLogos["FTM"],
     coingeckoId: TokenAndCoinGeckoIds["FTM"],
+    decimal: 18,
   },
   {
     name: "FTM",
@@ -110,6 +115,7 @@ export const payoutTokens = [
     address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["FTM"],
     coingeckoId: TokenAndCoinGeckoIds["FTM"],
+    decimal: 18,
   },
   {
     name: "BUSD",
@@ -117,6 +123,7 @@ export const payoutTokens = [
     address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
     logo: TokenNamesAndLogos["BUSD"],
     coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+    decimal: 18,
   },
   {
     name: "DAI",
@@ -124,6 +131,7 @@ export const payoutTokens = [
     address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "DAI",
@@ -131,6 +139,7 @@ export const payoutTokens = [
     address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "BUSD",
@@ -138,6 +147,7 @@ export const payoutTokens = [
     address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
     logo: TokenNamesAndLogos["BUSD"],
     coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+    decimal: 18,
   },
   {
     name: "DAI",
@@ -145,6 +155,7 @@ export const payoutTokens = [
     address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "ETH",
@@ -152,6 +163,7 @@ export const payoutTokens = [
     address: ethers.constants.AddressZero,
     logo: TokenNamesAndLogos["ETH"],
     coingeckoId: TokenAndCoinGeckoIds["ETH"],
+    decimal: 18,
   },
 ];
 
