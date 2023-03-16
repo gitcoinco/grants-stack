@@ -77,7 +77,7 @@ describe("<VerificationForm />", () => {
         "Project Twitter should not include an @ symbol"
       );
       const githubUserErrors = screen.getAllByText(
-        "Your GitHub username should not be a URL"
+        "Your GitHub Username should not be a URL"
       );
       const githubProjectErrors = screen.getAllByText(
         "GitHub Organization should not be a URL"

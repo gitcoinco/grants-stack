@@ -38,7 +38,7 @@ function createValidationSchema(field: string) {
 export async function validateVerificationForm(inputs: FormInputs) {
   const schema = object({
     projectTwitter: createValidationSchema("Project Twitter"),
-    userGithub: createValidationSchema("Your GitHub username"),
+    userGithub: createValidationSchema("Your GitHub Username"),
     projectGithub: createValidationSchema("GitHub Organization"),
   });
 
