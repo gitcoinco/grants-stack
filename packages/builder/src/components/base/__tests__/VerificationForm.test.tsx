@@ -77,10 +77,10 @@ describe("<VerificationForm />", () => {
         "Project Twitter should not include a @"
       );
       const githubUserErrors = screen.getAllByText(
-        "User Github should not be a URL"
+        "User GitHub should not be a URL"
       );
       const githubProjectErrors = screen.getAllByText(
-        "Project Github should not be a URL"
+        "Project GitHub should not be a URL"
       );
 
       expect(errorCountMessage).toBeInTheDocument();

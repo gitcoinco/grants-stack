@@ -38,8 +38,8 @@ function createValidationSchema(field: string) {
 export async function validateVerificationForm(inputs: FormInputs) {
   const schema = object({
     projectTwitter: createValidationSchema("Project Twitter"),
-    userGithub: createValidationSchema("User Github"),
-    projectGithub: createValidationSchema("Project Github"),
+    userGithub: createValidationSchema("User GitHub"),
+    projectGithub: createValidationSchema("Project GitHub"),
   });
 
   const sanitizedInput = await schema.validate(inputs, { abortEarly: false });
