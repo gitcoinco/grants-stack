@@ -87,28 +87,30 @@ describe("View Fund Grantees", () => {
     expect(screen.getByText("Round not finalized yet")).toBeInTheDocument();
   });
 
-  //   it("displays finalized status when round is finalized", () => {
-  //     (useParams as jest.Mock).mockReturnValueOnce({
-  //       id: undefined,
-  //     });
+  it("displays finalized status when round is finalized", () => {
+    (useParams as jest.Mock).mockReturnValueOnce({
+      id: undefined,
+    });
 
-  //     render(
-  //       wrapWithBulkUpdateGrantApplicationContext(
-  //         wrapWithApplicationContext(
-  //           wrapWithReadProgramContext(
-  //             wrapWithRoundContext(<ViewFundGrantees finalized={true} />, {
-  //               data: [],
-  //               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //             }),
-  //             { programs: [] }
-  //           ),
-  //           {
-  //             applications: [],
-  //             isLoading: false,
-  //           }
-  //         )
-  //       )
-  //     );
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithApplicationContext(
+          wrapWithReadProgramContext(
+            wrapWithRoundContext(<ViewFundGrantees finalized={true} />, {
+              data: [],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            }),
+            { programs: [] }
+          ),
+          {
+            applications: [],
+            isLoading: false,
+          }
+        )
+      )
+    );
 
-  //     expect(screen.getByText("")).toBeInTheDocument();
-  //   });
+    expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
+    expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
+  });
+});
