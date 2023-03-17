@@ -1,10 +1,14 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import { BigNumber, ethers } from "ethers";
+import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
 import { useAccount, useBalance } from "wagmi";
-import { ProgressStatus, Round } from "../api/types";
 import { errorModalDelayMs } from "../../constants";
+import { useFundContract } from "../../context/round/FundContractContext";
+import { ProgressStatus, Round } from "../api/types";
 import {
   ChainId,
   getTxExplorerForContract,
@@ -12,14 +16,10 @@ import {
   useTokenPrice,
 } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
-import { Spinner } from "../common/Spinner";
-import { datadogLogs } from "@datadog/browser-logs";
-import { Logger } from "ethers/lib.esm/utils";
+import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
-import ErrorModal from "../common/ErrorModal";
-import { useNavigate } from "react-router-dom";
-import { useFundContract } from "../../context/round/FundContractContext";
+import { Spinner } from "../common/Spinner";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -36,12 +36,12 @@ export default function FundContract(props: {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
-  string | undefined
->();
-const [transactionReplaced, setTransactionReplaced] = useState(false);
+    string | undefined
+  >();
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
 
   const {
-    submitDonations,
+    // submitDonations, commented out because it's not used and linter complains
     tokenApprovalStatus,
     fundStatus,
     indexingStatus,
@@ -84,6 +84,7 @@ const [transactionReplaced, setTransactionReplaced] = useState(false);
     fundStatus,
     indexingStatus,
     txHash,
+    transactionReplaced,
   ]);
 
   const matchingFundPayoutToken =
@@ -369,7 +370,9 @@ const [transactionReplaced, setTransactionReplaced] = useState(false);
             className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
           >
             <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-            <span>You do not have enough funds for funding the matching pool.</span>
+            <span>
+              You do not have enough funds for funding the matching pool.
+            </span>
           </p>
         )}
       </div>
@@ -377,125 +380,121 @@ const [transactionReplaced, setTransactionReplaced] = useState(false);
     </div>
   );
 
-
-function InformationIcon(props: { dataFor: string; dataTestId: string }) {
-  return (
-    <InformationCircleIcon
-      className="mt-1 ml-1 text-gray-900 w-3 h-3"
-      data-tip
-      data-background-color="#0E0333"
-      data-for={props.dataFor}
-      data-testid={props.dataTestId}
-    />
-  );
-}
-
-function FundContractModals() {
-  return (
-    <>
-      <ConfirmationModal
-        title={"Confirm Decision"}
-        confirmButtonText={"Confirm"}
-        confirmButtonAction={() => {
-          setOpenInfoModal(true);
-          setOpenConfirmationModal(false);
-        }}
-        body={<ConfirmationModalBody />}
-        isOpen={openConfirmationModal}
-        setIsOpen={setOpenConfirmationModal}
+  function InformationIcon(props: { dataFor: string; dataTestId: string }) {
+    return (
+      <InformationCircleIcon
+        className="mt-1 ml-1 text-gray-900 w-3 h-3"
+        data-tip
+        data-background-color="#0E0333"
+        data-for={props.dataFor}
+        data-testid={props.dataTestId}
       />
-      <InfoModal
-        title={"Heads up!"}
-        body={<InfoModalBody />}
-        isOpen={openInfoModal}
-        setIsOpen={setOpenInfoModal}
-        continueButtonAction={handleSubmitFund}
-      />
-      <ProgressModal
-        isOpen={openProgressModal}
-        subheading={"Please hold while we add your funds to the round."}
-        steps={progressSteps}
-      />
-      <ErrorModal
-        isOpen={openErrorModal}
-        setIsOpen={setOpenErrorModal}
-        tryAgainFn={handleSubmitFund}
-        subheading={errorModalSubHeading}
-      />
-    </>
-  );
-}
+    );
+  }
 
-function InfoModalBody() {
-  return (
-    <div className="text-sm text-grey-400 gap-16">
-      <p className="text-sm">
-        Submitting your donation will require signing two transactions
-        <br />
-        if you are using an ERC20 token:
+  function FundContractModals() {
+    return (
+      <>
+        <ConfirmationModal
+          title={"Confirm Decision"}
+          confirmButtonText={"Confirm"}
+          confirmButtonAction={() => {
+            setOpenInfoModal(true);
+            setOpenConfirmationModal(false);
+          }}
+          body={<ConfirmationModalBody />}
+          isOpen={openConfirmationModal}
+          setIsOpen={setOpenConfirmationModal}
+        />
+        <InfoModal
+          title={"Heads up!"}
+          body={<InfoModalBody />}
+          isOpen={openInfoModal}
+          setIsOpen={setOpenInfoModal}
+          continueButtonAction={handleSubmitFund}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we add your funds to the round."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmitFund}
+          subheading={errorModalSubHeading}
+        />
+      </>
+    );
+  }
+
+  function InfoModalBody() {
+    return (
+      <div className="text-sm text-grey-400 gap-16">
+        <p className="text-sm">
+          Submitting your donation will require signing two transactions
+          <br />
+          if you are using an ERC20 token:
+        </p>
+        <ul className="list-disc list-inside pl-3 pt-3">
+          <li>Approving the contract to access your wallet</li>
+          <li>Approving the transaction</li>
+        </ul>
+      </div>
+    );
+  }
+
+  function ConfirmationModalBody() {
+    return (
+      <>
+        <p className="text-sm text-grey-400">
+          Amount to be funded to the matching pool:
+        </p>
+        <p className="font-bold">
+          <span className="mr-1">{amountToFund}</span>
+          <span className="mr-1">{matchingFundPayoutToken?.name}</span>
+        </p>
+        <p>
+          <span className="text-md text-slate-400">
+            (${amountLeftToFundInUSD} USD)
+          </span>
+        </p>
+        <AdditionalGasFeesNote />
+      </>
+    );
+  }
+
+  function AdditionalGasFeesNote() {
+    return (
+      <p className="text-sm italic text-grey-400 mb-2">
+        Changes could be subject to additional gas fees.
       </p>
-      <ul className="list-disc list-inside pl-3 pt-3">
-        <li>Approving the contract to access your wallet</li>
-        <li>Approving the transaction</li>
-      </ul>
-    </div>
-  );
-}
+    );
+  }
 
-function ConfirmationModalBody() {
-  return (
-    <>
-      <p className="text-sm text-grey-400">
-        Amount to be funded to the matching pool:
-      </p>
-      <p className="font-bold">
-        <span className="mr-1">{amountToFund}</span>
-        <span className="mr-1">{matchingFundPayoutToken?.name}</span>
-      </p>
-      <p>
-      <span className="text-md text-slate-400">
-        (${amountLeftToFundInUSD} USD)
-      </span>
-      </p>
-      <AdditionalGasFeesNote />
-    </>
-  );
-}
+  async function handleSubmitFund() {
+    try {
+      setTimeout(() => {
+        setOpenProgressModal(true);
+        setOpenInfoModal(false);
+      }, errorModalDelayMs);
 
-function AdditionalGasFeesNote() {
-  return (
-    <p className="text-sm italic text-grey-400 mb-2">
-      Changes could be subject to additional gas fees.
-    </p>
-  );
-}
-
-
-async function handleSubmitFund() {
-  try {
-
-    setTimeout(() => {
-      setOpenProgressModal(true);
-      setOpenInfoModal(false);
-    }, errorModalDelayMs);
-
-    // await submitDonations({
-    //   roundId: roundId,
-    //   donations: donations,
-    //   donationToken: selectedPayoutToken,
-    //   totalDonation: totalDonation,
-    //   votingStrategy: round.votingStrategy,
-    // });
-  } catch (error) {
-    if (error === Logger.errors.TRANSACTION_REPLACED) {
-      setTransactionReplaced(true);
-    } else {
-      datadogLogs.logger.error(
-        `error: handleSubmitFund - ${error}, id: ${props.roundId}`
-      );
-      console.error("handleSubmitFund - roundId", props.roundId, error);
+      // await submitDonations({
+      //   roundId: roundId,
+      //   donations: donations,
+      //   donationToken: selectedPayoutToken,
+      //   totalDonation: totalDonation,
+      //   votingStrategy: round.votingStrategy,
+      // });
+    } catch (error) {
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        datadogLogs.logger.error(
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+        );
+        console.error("handleSubmitFund - roundId", props.roundId, error);
+      }
     }
   }
-}
-
 }
