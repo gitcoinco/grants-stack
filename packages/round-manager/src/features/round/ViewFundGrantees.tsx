@@ -4,6 +4,9 @@ import { Tab } from "@headlessui/react";
 import tw from "tailwind-styled-components";
 import { useLayoutEffect, useRef, useState } from "react";
 import { classNames } from "common";
+import { useRoundMatchData } from "../api/api";
+import { useParams } from "react-router-dom";
+import { useWallet } from "../common/Auth";
 
 // TODO: modify prop for expected data
 export default function ViewFundGrantees(props: { finalized: boolean }) {
@@ -50,13 +53,12 @@ function NonFinalizedRoundContent() {
   );
 }
 
-function FinalizedRoundContent() {
-  const tabStyles = (selected: boolean) =>
-    selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
-      : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
+const tabStyles = (selected: boolean) =>
+  selected
+    ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
+    : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
-  const TabApplicationCounter = tw.div`
+const TabApplicationCounter = tw.div`
     rounded-md
     ml-2
     w-8
@@ -65,6 +67,17 @@ function FinalizedRoundContent() {
     font-sm
     font-normal
     `;
+
+function FinalizedRoundContent() {
+  const { id: roundId } = useParams();
+  const { chain } = useWallet();
+  const {
+    data: roundMatchData,
+    error,
+    loading,
+  } = useRoundMatchData(chain.id.toString(), roundId as string);
+
+  /* Fetch distributions data for this round */
 
   return (
     <div>
