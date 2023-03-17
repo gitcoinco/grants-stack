@@ -41,7 +41,7 @@ export default function FundContract(props: {
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
   const {
-    // submitDonations, commented out because it's not used and linter complains
+    fundContract,
     tokenApprovalStatus,
     fundStatus,
     indexingStatus,
@@ -64,7 +64,7 @@ export default function FundContract(props: {
 
     if (indexingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
-        // navigate(`/round/${chainId}/${roundId}`);
+        navigate(`/round/${props.roundId}`);
       }, 5000);
     }
 
@@ -75,7 +75,7 @@ export default function FundContract(props: {
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        // navigate(`/round/${chainId}/${roundId}/${txHash}/thankyou`);
+        navigate(`/round/${props.roundId}`);
       }, errorModalDelayMs);
     }
   }, [
@@ -85,6 +85,7 @@ export default function FundContract(props: {
     indexingStatus,
     txHash,
     transactionReplaced,
+    props.roundId,
   ]);
 
   const matchingFundPayoutToken =
@@ -479,13 +480,15 @@ export default function FundContract(props: {
         setOpenInfoModal(false);
       }, errorModalDelayMs);
 
-      // await submitDonations({
-      //   roundId: roundId,
-      //   donations: donations,
-      //   donationToken: selectedPayoutToken,
-      //   totalDonation: totalDonation,
-      //   votingStrategy: round.votingStrategy,
-      // });
+      await fundContract({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        roundId: props.roundId!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userAddress: address!,
+        fundAmount: amountToFund,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        payoutToken: matchingFundPayoutToken!,
+      });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
         setTransactionReplaced(true);
