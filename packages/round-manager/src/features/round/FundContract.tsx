@@ -157,7 +157,7 @@ export default function FundContract(props: {
       setInsufficientBalance(false);
     }
 
-    // setOpenConfirmationModal(true);
+    setOpenConfirmationModal(true);
   }
 
   if (props.round === undefined || isBalanceLoading || loading) {
@@ -172,7 +172,7 @@ export default function FundContract(props: {
     },
     {
       name: "Submit",
-      description: "Finalize your contribution",
+      description: "Finalize your funding",
       status: fundStatus,
     },
     {
@@ -446,22 +446,17 @@ export default function FundContract(props: {
   }
 
   function ConfirmationModalBody() {
+    const amountInUSD = amountToFund * Number(data);
     return (
-      <>
-        <p className="text-sm text-grey-400">
-          Amount to be funded to the matching pool:
-        </p>
-        <p className="font-bold">
+      <div className="flex flex-col justify-center content-center">
+        <div className="text-sm text-grey-400">AMOUNT TO BE FUNDED</div>
+        <div className="font-bold my-6">
           <span className="mr-1">{amountToFund}</span>
           <span className="mr-1">{matchingFundPayoutToken?.name}</span>
-        </p>
-        <p>
-          <span className="text-md text-slate-400">
-            (${amountLeftToFundInUSD} USD)
-          </span>
-        </p>
+          <span className="text-md text-slate-400">(${amountInUSD} USD)</span>
+        </div>
         <AdditionalGasFeesNote />
-      </>
+      </div>
     );
   }
 
