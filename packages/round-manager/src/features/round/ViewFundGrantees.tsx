@@ -3,12 +3,13 @@ import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react
 import { Tab } from "@headlessui/react";
 import tw from "tailwind-styled-components";
 import { useLayoutEffect, useRef, useState } from "react";
+import { classNames } from "common";
 
 // TODO: modify prop for expected data
 export default function ViewFundGrantees(props: { finalized: boolean }) {
   const [isFundGranteesFetched, setIsFundGranteesFetched] = useState(false);
   if (isFundGranteesFetched) {
-    <Spinner text="We're fetching your data." />;
+    return <Spinner text="We're fetching your data." />;
   }
 
   return (
@@ -113,10 +114,6 @@ function FinalizedRoundContent() {
       </div>
     </div>
   );
-}
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
 }
 
 // Example data
@@ -231,7 +228,7 @@ export function PayProjectsTable(props: { projects: any[] }) {
                           type="checkbox"
                           className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                           checked={selectedProjects.includes(project)}
-                          onChange={(e: any) => {
+                          onChange={(e) => {
                             setSelectedProjects(
                               e.target.checked
                                 ? [...selectedProjects, project]
