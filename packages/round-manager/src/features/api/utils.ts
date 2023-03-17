@@ -46,6 +46,8 @@ export type PayoutToken = {
   address: string;
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+  coingeckoId?: string;
+  decimal?: number;
 };
 
 export type SupportType = {
