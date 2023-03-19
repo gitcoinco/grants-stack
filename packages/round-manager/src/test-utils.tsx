@@ -86,6 +86,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     payoutStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [faker.finance.ethereumAddress()],
+    finalized: false,
     ...overrides,
   };
 };

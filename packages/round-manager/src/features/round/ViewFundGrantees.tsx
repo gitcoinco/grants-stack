@@ -7,6 +7,7 @@ import { classNames } from "common";
 import { useRoundMatchData } from "../api/api";
 import { useParams } from "react-router-dom";
 import { useWallet } from "../common/Auth";
+import { Round } from "../api/types";
 
 type GranteeFundInfo = {
   project: string;
@@ -18,16 +19,20 @@ type GranteeFundInfo = {
 };
 
 // TODO: modify prop for expected data
-export default function ViewFundGrantees(props: { finalized: boolean }) {
-  const [isFundGranteesFetched, setIsFundGranteesFetched] = useState(false);
+export default function ViewFundGrantees() {
+  const [isFundGranteesFetched] = useState(false);
+
   if (isFundGranteesFetched) {
     return <Spinner text="We're fetching your data." />;
   }
 
+  // TODO: determine round finalization
+  const isRoundFinalized = true;
+
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
-      {!props.finalized ? (
+      {isRoundFinalized ? (
         <FinalizedRoundContent />
       ) : (
         <NonFinalizedRoundContent />
@@ -130,7 +135,7 @@ function FinalizedRoundContent() {
               <PayProjectsTable projects={exProjects} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable projects={exPaidProjects} />
+              <PaidProjectsTable projects={exPaidProjects} chain={chain} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -326,8 +331,31 @@ const exPaidProjects = [
 ] as GranteeFundInfo[];
 
 // TODO: Add types
-export function PaidProjectsTable(props: { projects: GranteeFundInfo[] }) {
-  // TODO: Fix etherscan link to use the correct network
+export function PaidProjectsTable(props: {
+  projects: GranteeFundInfo[];
+  chain: any;
+}) {
+  let blockScanUrl: string;
+  switch (props.chain.id) {
+    case 1:
+      blockScanUrl = "https://etherscan.io/tx/";
+      break;
+    case 5:
+      blockScanUrl = "https://goerli.etherscan.io/tx/";
+      break;
+    case 10:
+      blockScanUrl = "https://optimistic.etherscan.io/tx/";
+      break;
+    case 250:
+      blockScanUrl = "https://ftmscan.com/tx/";
+      break;
+    case 4002:
+      blockScanUrl = "https://testnet.ftmscan.com/tx/";
+      break;
+    default:
+      blockScanUrl = "https://etherscan.io/tx/";
+  }
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -411,7 +439,7 @@ export function PaidProjectsTable(props: { projects: GranteeFundInfo[] }) {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <a
-                          href={`https://etherscan.io/tx/${project.hash}`}
+                          href={`${blockScanUrl}${project.hash}`}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           View

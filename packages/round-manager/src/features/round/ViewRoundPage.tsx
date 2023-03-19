@@ -252,12 +252,9 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewFundGrantees
-                        finalized = {false}
-                      />
+                      <ViewFundGrantees />
                     </Tab.Panel>
                   </Tab.Panels>
-        
                 </div>
               </Tab.Group>
             </main>

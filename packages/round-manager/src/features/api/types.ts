@@ -220,6 +220,8 @@ export interface Round {
    * Round fees address
    */
   feesAddress?: string;
+
+  finalized: boolean;
 }
 
 export type MatchingStatsData = {

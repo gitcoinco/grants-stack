@@ -113,6 +113,7 @@ export async function getRoundById(
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
       approvedProjects: approvedProjectsWithMetadata,
+      finalized: false,
     };
   } catch (error) {
     console.error("getRoundById", error);
@@ -202,6 +203,7 @@ export async function listRounds(
         payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
+        finalized: false,
       });
     }
 
@@ -447,7 +449,6 @@ export async function getProjectOwners(
     throw Error("Unable to fetch project owners");
   }
 }
-
 
 /**
  * Fetch finalized matching distribution
