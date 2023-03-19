@@ -8,6 +8,15 @@ import { useRoundMatchData } from "../api/api";
 import { useParams } from "react-router-dom";
 import { useWallet } from "../common/Auth";
 
+type GranteeFundInfo = {
+  project: string;
+  walletAddress: string;
+  matchingPercent: string;
+  payoutAmount: string;
+  status?: string;
+  hash?: string;
+};
+
 // TODO: modify prop for expected data
 export default function ViewFundGrantees(props: { finalized: boolean }) {
   const [isFundGranteesFetched, setIsFundGranteesFetched] = useState(false);
@@ -71,6 +80,7 @@ const TabApplicationCounter = tw.div`
 function FinalizedRoundContent() {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
+
   const {
     data: roundMatchData,
     error,
@@ -120,7 +130,7 @@ function FinalizedRoundContent() {
               <PayProjectsTable projects={exProjects} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable paidProjects={exPaidProjects} />
+              <PaidProjectsTable projects={exPaidProjects} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -143,16 +153,19 @@ const exProjects = [
     matchingPercent: "90%",
     payoutAmount: "1000000",
   },
-];
+] as GranteeFundInfo[];
 
 // TODO: Add types
-export function PayProjectsTable(props: { projects: any[] }) {
+export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
-  const [checked, setChecked] = useState(false);
-  const [indeterminate, setIndeterminate] = useState(false);
-  const [selectedProjects, setSelectedProjects] = useState<any[]>([]);
+  const [checked, setChecked] = useState<boolean>(false);
+  const [indeterminate, setIndeterminate] = useState<boolean>(false);
+  const [selectedProjects, setSelectedProjects] = useState<GranteeFundInfo[]>(
+    []
+  );
 
   useLayoutEffect(() => {
     const isIndeterminate =
@@ -224,7 +237,7 @@ export function PayProjectsTable(props: { projects: any[] }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {props.projects.map((project) => (
+                  {props.projects.map((project: GranteeFundInfo) => (
                     <tr
                       key={project.walletAddress}
                       className={
@@ -300,7 +313,7 @@ const exPaidProjects = [
     matchingPercent: "10%",
     payoutAmount: "99",
     status: "Success",
-    txn: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
+    hash: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
   },
   {
     project: "Paid Example Project2",
@@ -308,12 +321,12 @@ const exPaidProjects = [
     matchingPercent: "90%",
     payoutAmount: "1000000",
     status: "Fail",
-    txn: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
+    hash: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
   },
-];
+] as GranteeFundInfo[];
 
 // TODO: Add types
-export function PaidProjectsTable(props: { paidProjects: any }) {
+export function PaidProjectsTable(props: { projects: GranteeFundInfo[] }) {
   // TODO: Fix etherscan link to use the correct network
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -373,7 +386,7 @@ export function PaidProjectsTable(props: { paidProjects: any }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {props.paidProjects.map((project: any) => (
+                  {props.projects.map((project: GranteeFundInfo) => (
                     <tr key={project.walletAddress}>
                       <td>{project.project}</td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
@@ -398,7 +411,7 @@ export function PaidProjectsTable(props: { paidProjects: any }) {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <a
-                          href={`https://etherscan.io/tx/${project.txn}`}
+                          href={`https://etherscan.io/tx/${project.hash}`}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           View
