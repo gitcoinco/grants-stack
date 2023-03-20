@@ -65,6 +65,11 @@ export default function ViewRoundPage() {
       setRoundExists(!!round);
 
       if (round) {
+        /* During development, give frontend access to all rounds */
+        if (process.env.NODE_ENV === "development") {
+          setHasAccess(true);
+          return;
+        }
         round.operatorWallets?.includes(address?.toLowerCase())
           ? setHasAccess(true)
           : setHasAccess(false);
