@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { ValidationError } from "yup";
 import { metadataSaved } from "../../actions/projectForm";
 import { GithubLogo, TwitterLogo } from "../../assets";
 import { XCircle } from "../../assets/icons";
@@ -9,6 +10,8 @@ import { TextInput } from "../grants/inputs";
 import Github from "../providers/Github";
 import Twitter from "../providers/Twitter";
 import Button, { ButtonVariants } from "./Button";
+import { validateVerificationForm } from "./formValidation";
+import FormValidationErrorList from "./FormValidationErrorList";
 
 export default function VerificationForm({
   setVerifying,
@@ -24,7 +27,16 @@ export default function VerificationForm({
     shallowEqual
   );
 
-  const [error, setError] = useState<string | undefined>();
+  const [failed, setFailed] = useState<string | undefined>();
+  const [formValidation, setFormValidation] = useState({
+    messages: [""],
+    valid: true,
+    errorCount: 0,
+  });
+
+  const [feedback, setFeedback] = useState([
+    { title: "", type: "none", message: "" },
+  ]);
 
   const handleInput = (e: ChangeHandlers) => {
     const { value } = e.target;
@@ -36,8 +48,51 @@ export default function VerificationForm({
     );
   };
 
-  const saveAndPreview = () => {
-    setVerifying(ProjectFormStatus.Preview);
+  const validate = async () => {
+    try {
+      await validateVerificationForm(props.formMetaData);
+      setFormValidation({
+        messages: [],
+        valid: true,
+        errorCount: 0,
+      });
+      setFeedback([{ title: "", type: "none", message: "" }]);
+      return true;
+    } catch (e) {
+      const error = e as ValidationError;
+      setFormValidation({
+        messages: error.inner.map((er) => (er as ValidationError).message),
+        valid: false,
+        errorCount: error.inner.length,
+      });
+      setFeedback([
+        ...error.inner.map((er) => {
+          const err = er as ValidationError;
+          console.log("ERROR", { err });
+          if (err !== null) {
+            return {
+              title: err.path!,
+              type: "error",
+              message: err.message,
+            };
+          }
+          return {
+            title: "",
+            type: "none",
+            message: "",
+          };
+        }),
+      ]);
+
+      return false;
+    }
+  };
+
+  const saveAndPreview = async () => {
+    const valid = await validate();
+    if (valid) {
+      setVerifying(ProjectFormStatus.Preview);
+    }
   };
 
   return (
@@ -55,11 +110,17 @@ export default function VerificationForm({
               value={props.formMetaData.projectTwitter}
               changeHandler={handleInput}
               required={false}
-              feedback={{ type: "none", message: "" }}
+              feedback={
+                feedback.find((fb) => fb.title === "projectTwitter") ?? {
+                  type: "none",
+                  message: "",
+                }
+              }
+              prefixBoxText="@"
             />
             <Twitter
               handle={props.formMetaData.projectTwitter ?? ""}
-              verificationError={(providerError) => setError(providerError)}
+              verificationError={(providerError) => setFailed(providerError)}
               canVerify={!!props.formMetaData.projectTwitter}
             />
           </div>
@@ -79,7 +140,12 @@ export default function VerificationForm({
               value={props.formMetaData.userGithub}
               changeHandler={handleInput}
               required={false}
-              feedback={{ type: "none", message: "" }}
+              feedback={
+                feedback.find((fb) => fb.title === "userGithub") ?? {
+                  type: "none",
+                  message: "",
+                }
+              }
             />
           </div>
           <div className="row-span-2 flex items-center">
@@ -93,7 +159,12 @@ export default function VerificationForm({
               tooltip={`In order to successfully verify,
           please make sure that you are a public member of the GitHub organization.
           GitHub organization and usernames are case sensitive.`}
-              feedback={{ type: "none", message: "" }}
+              feedback={
+                feedback.find((fb) => fb.title === "projectGithub") ?? {
+                  type: "none",
+                  message: "",
+                }
+              }
             />
             <Github
               org={props.formMetaData.projectGithub ?? ""}
@@ -101,18 +172,19 @@ export default function VerificationForm({
                 !!props.formMetaData.projectGithub &&
                 !!props.formMetaData.userGithub
               }
-              verificationError={(providerError) => setError(providerError)}
+              verificationError={(providerError) => setFailed(providerError)}
             />
           </div>
         </div>
       </div>
       <hr className="my-4" />
-      {error && (
+      {failed && (
         <div className="flex bg-danger-background/25 p-4 rounded">
           <img className="h-4 mt-1 mx-2" src={XCircle} alt="error icon" />
-          <p className="text-danger-text font-normal">{error}</p>
+          <p className="text-danger-text font-normal">{failed}</p>
         </div>
       )}
+      <FormValidationErrorList formValidation={formValidation} />
       <div className="flex w-full justify-end mt-6">
         <Button
           variant={ButtonVariants.outline}
