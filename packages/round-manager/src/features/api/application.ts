@@ -399,10 +399,9 @@ export const updateApplicationList = async (
 
 export const fundRoundContract = async (
   roundId: string,
-  userAddress: string,
   signer: Signer,
   payoutToken: PayoutToken,
-  fundAmount: number
+  amount: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -412,11 +411,9 @@ export const fundRoundContract = async (
   let tx: any = {};
 
   if (payoutToken.address === ethers.constants.AddressZero) {
-    const amountInWei = ethers.utils.parseUnits(fundAmount.toString(), "ether");
-
     const txObj = {
       to: roundId,
-      value: amountInWei,
+      value: amount,
     };
 
     tx = signer.sendTransaction(txObj);
@@ -429,7 +426,7 @@ export const fundRoundContract = async (
       signer
     );
 
-    tx = await tokenContract.transferFrom(userAddress, roundId, fundAmount);
+    tx = await tokenContract.transfer(roundId, amount);
 
     receipt = await tx.wait();
   }

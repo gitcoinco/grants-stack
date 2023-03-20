@@ -8,10 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useSigner } from "wagmi";
-import {
-  approveTokenOnContract,
-  fundRoundContract,
-} from "../../features/api/application";
+import { fundRoundContract } from "../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
 
 import { ProgressStatus } from "../../features/api/types";
@@ -32,7 +29,6 @@ export interface FundContractState {
 
 export type FundContractParams = {
   roundId: string;
-  userAddress: string;
   fundAmount: number;
   payoutToken: PayoutToken;
 };
@@ -41,7 +37,6 @@ interface SubmitFundParams {
   signer: Signer;
   context: FundContractState;
   roundId: string;
-  userAddress: string;
   payoutToken: PayoutToken;
   fundAmount: number;
 }
@@ -109,7 +104,7 @@ export const FundContractContext = createContext<FundContractState>(
 );
 
 export const useFundContract = () => {
-  const context = useContext(FundContractContext);
+  const context = useContext<FundContractState>(FundContractContext);
   if (context === undefined) {
     throw new Error(
       "useFundContract must be used within a FundContractProvider"
@@ -155,7 +150,6 @@ async function _fundContract({
   signer,
   context,
   roundId,
-  userAddress,
   fundAmount,
   payoutToken,
 }: SubmitFundParams) {
@@ -172,7 +166,7 @@ async function _fundContract({
     );
 
     // Invoke fund
-    await fund(signer, roundId, userAddress, payoutToken, fundAmount, context);
+    await fund(signer, roundId, payoutToken, fundAmount, context);
 
     // Wait for indexing on subgraph
     await waitForSubgraphToUpdate(signer, context);
@@ -192,26 +186,6 @@ async function approveTokenForFunding(
   const { setTokenApprovalStatus } = context;
 
   try {
-    setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
-
-    if (token.address == ethers.constants.AddressZero) {
-      // avoid calling approval for native token
-      setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
-      return;
-    }
-
-    const amountInUnits = ethers.utils.parseUnits(
-      amount.toString(),
-      token.decimal
-    );
-
-    await approveTokenOnContract(
-      signerOrProvider,
-      roundId,
-      token.address,
-      amountInUnits
-    );
-
     setTokenApprovalStatus(ProgressStatus.IS_SUCCESS);
   } catch (error) {
     datadogLogs.logger.error(
@@ -229,7 +203,6 @@ async function approveTokenForFunding(
 async function fund(
   signerOrProvider: Signer,
   roundId: string,
-  userAddress: string,
   token: PayoutToken,
   fundAmount: number,
   context: FundContractState
@@ -239,12 +212,16 @@ async function fund(
   try {
     setFundStatus(ProgressStatus.IN_PROGRESS);
 
+    const amountInUnits = ethers.utils.parseUnits(
+      fundAmount.toString(),
+      token.decimal
+    );
+
     const { txBlockNumber, txHash } = await fundRoundContract(
       roundId,
-      userAddress,
       signerOrProvider,
       token,
-      fundAmount
+      amountInUnits
     );
 
     setFundStatus(ProgressStatus.IS_SUCCESS);

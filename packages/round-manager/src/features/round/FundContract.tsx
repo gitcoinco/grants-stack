@@ -17,7 +17,6 @@ import {
 } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
-import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 
@@ -32,7 +31,6 @@ export default function FundContract(props: {
   const [amountToFund, setAmountToFund] = useState(0);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
@@ -75,7 +73,8 @@ export default function FundContract(props: {
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        navigate(`/round/${props.roundId}`);
+        // refresh
+        navigate(0);
       }, errorModalDelayMs);
     }
   }, [
@@ -165,11 +164,6 @@ export default function FundContract(props: {
   }
 
   const progressSteps = [
-    {
-      name: "Approve",
-      description: "Approve the contract to access your wallet",
-      status: tokenApprovalStatus,
-    },
     {
       name: "Submit",
       description: "Finalize your funding",
@@ -400,19 +394,13 @@ export default function FundContract(props: {
           title={"Confirm Decision"}
           confirmButtonText={"Confirm"}
           confirmButtonAction={() => {
-            setOpenInfoModal(true);
+            setOpenProgressModal(true);
             setOpenConfirmationModal(false);
+            handleSubmitFund();
           }}
           body={<ConfirmationModalBody />}
           isOpen={openConfirmationModal}
           setIsOpen={setOpenConfirmationModal}
-        />
-        <InfoModal
-          title={"Heads up!"}
-          body={<InfoModalBody />}
-          isOpen={openInfoModal}
-          setIsOpen={setOpenInfoModal}
-          continueButtonAction={handleSubmitFund}
         />
         <ProgressModal
           isOpen={openProgressModal}
@@ -426,22 +414,6 @@ export default function FundContract(props: {
           subheading={errorModalSubHeading}
         />
       </>
-    );
-  }
-
-  function InfoModalBody() {
-    return (
-      <div className="text-sm text-grey-400 gap-16">
-        <p className="text-sm">
-          Submitting your donation will require signing two transactions
-          <br />
-          if you are using an ERC20 token:
-        </p>
-        <ul className="list-disc list-inside pl-3 pt-3">
-          <li>Approving the contract to access your wallet</li>
-          <li>Approving the transaction</li>
-        </ul>
-      </div>
     );
   }
 
@@ -472,14 +444,11 @@ export default function FundContract(props: {
     try {
       setTimeout(() => {
         setOpenProgressModal(true);
-        setOpenInfoModal(false);
       }, errorModalDelayMs);
 
       await fundContract({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         roundId: props.roundId!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        userAddress: address!,
         fundAmount: amountToFund,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         payoutToken: matchingFundPayoutToken!,
