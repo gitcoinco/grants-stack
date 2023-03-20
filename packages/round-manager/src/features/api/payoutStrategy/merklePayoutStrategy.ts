@@ -1,8 +1,12 @@
 import { ethers, Signer } from "ethers";
+import { useState, useEffect } from "react";
+import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyImplementationContract,
   merklePayoutStrategyFactoryContract
 } from "../contracts";
+import { fetchMatchingDistribution } from "../round";
+import { MatchingStatsData } from "../types";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -88,3 +92,43 @@ export async function updateDistributionToContract({
     throw new Error("Unable to finalize Round");
   }
 }
+
+export const fetchMatchingDistributionFromContract = (
+  roundId: string | undefined
+): {
+  distributionMetaPtr: string;
+  matchingDistributionContract: MatchingStatsData[];
+  isLoading: boolean;
+  isError: boolean;
+} => {
+  const { provider: walletProvider } = useWallet();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [matchingData, setMatchingData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const matchingDataRes = await fetchMatchingDistribution(
+          roundId,
+          walletProvider
+        );
+        setMatchingData(matchingDataRes);
+        setIsLoading(false);
+      } catch (error) {
+        setIsError(true);
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return {
+    distributionMetaPtr: matchingData.distributionMetaPtr,
+    matchingDistributionContract: matchingData.matchingDistribution,
+    isLoading: isLoading,
+    isError: isError,
+  };
+};

@@ -9,10 +9,10 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { errorModalDelayMs } from "../../constants";
 import {
-  useFinalizeRound,
-  useMatchingDistribution
+  useFinalizeRound
 } from "../../context/round/FinalizeRoundContext";
 import { useRoundMatchData } from "../api/api";
+import { fetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
 import {
   MatchingStatsData,
   ProgressStatus,
@@ -90,7 +90,7 @@ function InformationContent(props: {
     matchingDistributionContract,
     isLoading,
     isError,
-  } = useMatchingDistribution(props.roundId);
+  } = fetchMatchingDistributionFromContract(props.roundId);
 
   useEffect(() => {
     if (distributionMetaPtr !== "") {

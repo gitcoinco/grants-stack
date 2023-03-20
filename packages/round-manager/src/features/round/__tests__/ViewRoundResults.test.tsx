@@ -17,7 +17,7 @@ import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
 import { faker } from "@faker-js/faker";
 import { useRoundMatchData } from "../../api/api";
-import { useMatchingDistribution } from "../../../context/round/FinalizeRoundContext";
+import { fetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -42,9 +42,15 @@ jest.mock("../../api/api", () => ({
   useRoundMatchData: jest.fn(),
 }));
 
+
+jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
+  ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
+  fetchMatchingDistributionFromContract: jest.fn(),
+}));
+
+
 jest.mock("../../../context/round/FinalizeRoundContext", () => ({
-  ...jest.requireActual("../../../context/round/FinalizeRoundContext"),
-  useMatchingDistribution: jest.fn(),
+  ...jest.requireActual("../../../context/round/FinalizeRoundContext")
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -100,7 +106,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -156,7 +162,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -212,7 +218,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -306,7 +312,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -402,7 +408,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -446,7 +452,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -494,7 +500,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -559,7 +565,7 @@ describe("View Round Results after distribution data is finalized to contract", 
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "abcd",
       matchingDistribution: [makeMatchingStatsData(), makeMatchingStatsData()],
       isLoading: false,
