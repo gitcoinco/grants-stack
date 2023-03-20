@@ -76,6 +76,7 @@ export type InputProps = {
     type: string;
     message: string;
   };
+  prefixBoxText?: string;
 };
 
 export type TextAreaProps = InputProps & { rows?: number };
