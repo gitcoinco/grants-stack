@@ -25,15 +25,11 @@ export type AddressQuestion = BaseQuestion & {
 };
 
 export type TextQuestion = BaseQuestion & {
-  type: "text" | "short-answer";
+  type: "text" | "short-answer" | "link";
 };
 
 export type ParagraphQuestion = BaseQuestion & {
   type: "paragraph";
-};
-
-export type LinkQuestion = BaseQuestion & {
-  type: "link";
 };
 
 export type MultipleChoiceQuestion = BaseQuestion & {
@@ -60,8 +56,7 @@ export type RoundApplicationQuestion =
   | ParagraphQuestion
   | MultipleChoiceQuestion
   | CheckboxQuestion
-  | DropdownQuestion
-  | LinkQuestion;
+  | DropdownQuestion;
 
 export interface ProjectRequirements {
   twitter: {
