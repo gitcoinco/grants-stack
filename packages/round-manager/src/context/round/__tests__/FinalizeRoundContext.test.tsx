@@ -1,13 +1,13 @@
-import { saveToIPFS } from "../../../features/api/ipfs";
+import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { saveToIPFS } from "../../../features/api/ipfs";
+import { updateDistributionToContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
 import { ProgressStatus } from "../../../features/api/types";
+import { makeMatchingStatsData } from "../../../test-utils";
 import {
   FinalizeRoundProvider,
   useFinalizeRound,
 } from "../FinalizeRoundContext";
-import { faker } from "@faker-js/faker";
-import { makeMatchingStatsData } from "../../../test-utils";
-import { updateDistributionToContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
 
 const mockWallet = {
   address: "0x0",
@@ -90,7 +90,7 @@ describe("<FinalizeRoundProvider />", () => {
     });
   });
 
-  describe("usefinalizeRound() Errors", () => {
+  describe("useFinalizeRound() Errors", () => {
     let consoleErrorSpy: jest.SpyInstance;
 
     beforeEach(() => {
