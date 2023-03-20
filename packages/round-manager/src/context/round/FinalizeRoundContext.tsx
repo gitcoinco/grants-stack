@@ -13,12 +13,11 @@ import React, {
 } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
-import {
-  fetchMatchingDistribution,
-  finalizeRoundToContract,
-} from "../../features/api/round";
+import { fetchMatchingDistribution } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
+import { generateMerkleTree } from "../../features/api/utils";
+import { updateDistributionToContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -27,7 +26,7 @@ export interface FinalizeRoundState {
 
 interface _finalizeRoundParams {
   dispatch: Dispatch;
-  roundId: string;
+  payoutStrategy: string;
   matchingJSON: MatchingStatsData[] | undefined;
   signerOrProvider: Web3Instance["provider"];
 }
@@ -113,7 +112,7 @@ export const FinalizeRoundProvider = ({
 
 const _finalizeRound = async ({
   dispatch,
-  roundId,
+  payoutStrategy,
   matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
@@ -121,20 +120,24 @@ const _finalizeRound = async ({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
+
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
 
-    const IpfsHash = await storeDocument(dispatch, matchingJSON);
+    const { tree, matchingResults } = generateMerkleTree(matchingJSON);
+    const merkleRoot = tree.root;
+
+    const IpfsHash = await storeDocument(dispatch, matchingResults);
 
     const distributionMetaPtr = {
       protocol: 1,
       pointer: IpfsHash,
     };
-    const merkleRoot = "";
+
     const transactionBlockNumber = await finalizeToContract(
       dispatch,
-      roundId,
+      payoutStrategy,
       merkleRoot,
       distributionMetaPtr,
       signerOrProvider
@@ -157,12 +160,12 @@ export const useFinalizeRound = () => {
   const { signer: walletSigner } = useWallet();
 
   const finalizeRound = (
-    roundId: string,
+    payoutStrategy: string,
     matchingJSON: MatchingStatsData[] | undefined
   ) => {
     return _finalizeRound({
       dispatch: context.dispatch,
-      roundId,
+      payoutStrategy,
       matchingJSON,
       // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: walletSigner,
@@ -214,7 +217,7 @@ async function storeDocument(
 
 async function finalizeToContract(
   dispatch: (action: Action) => void,
-  roundId: string,
+  payoutStrategy: string,
   merkleRoot: string,
   distributionMetaPtr: { protocol: number; pointer: string },
   signerOrProvider: Web3Instance["provider"]
@@ -225,15 +228,13 @@ async function finalizeToContract(
       payload: { finalizeRoundToContractStatus: ProgressStatus.IN_PROGRESS },
     });
 
-    const merkleRoootInBytes = ethers.utils.formatBytes32String(merkleRoot);
-
     const encodedDistribution = encodeDistributionParameters(
-      merkleRoootInBytes,
+      merkleRoot,
       distributionMetaPtr
-    );
+    )
 
-    const { transactionBlockNumber } = await finalizeRoundToContract({
-      roundId,
+    const { transactionBlockNumber } = await updateDistributionToContract({
+      payoutStrategy,
       encodedDistribution,
       // @ts-expect-error TODO: resolve this situation around signers and providers
       signerOrProvider: signerOrProvider,

@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { useMemo, useState } from "react";
-import { ApplicationMetadata, InputType, IPFSObject, Program } from "./types";
+import { ApplicationMetadata, InputType, IPFSObject, MatchingStatsData, Program } from "./types";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 export enum ChainId {
   MAINNET = 1,
@@ -571,3 +572,39 @@ export const getTxExplorerForContract = (
       return `https://goerli.etherscan.io/address/${contractAddress}`;
   }
 };
+/**
+ * Generate merkle tree
+ *
+ * To get merkle Proof: tree.getProof(distributions[0]);
+ * @param matchingResults MatchingStatsData[]
+ * @returns
+ */
+export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
+  distribution: [number, string, number, string][],
+  tree: StandardMerkleTree<[number, string, number, string]>
+  matchingResults: MatchingStatsData[]
+ } => {
+
+  const distribution: [number, string, number, string][] = [];
+
+  matchingResults.forEach((matchingResult, index) => {
+
+    matchingResults[index].index = index;
+
+    distribution.push([
+      index,
+      matchingResult.projectPayoutAddress,
+      matchingResult.matchAmountInToken,
+      matchingResult.projectId
+    ])
+  });
+
+  const tree = StandardMerkleTree.of(distribution, [
+    "uint256",
+    "address",
+    "uint256",
+    "bytes32"
+  ]);
+
+  return { distribution, tree, matchingResults} ;
+}

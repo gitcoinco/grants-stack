@@ -1,13 +1,13 @@
 import { saveToIPFS } from "../../../features/api/ipfs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ProgressStatus } from "../../../features/api/types";
-import { finalizeRoundToContract } from "../../../features/api/round";
 import {
   FinalizeRoundProvider,
   useFinalizeRound,
 } from "../FinalizeRoundContext";
 import { faker } from "@faker-js/faker";
 import { makeMatchingStatsData } from "../../../test-utils";
+import { updateDistributionToContract } from "../../../features/api/payoutStrategy/merklePayoutStrategy";
 
 const mockWallet = {
   address: "0x0",
@@ -17,7 +17,7 @@ const mockWallet = {
     },
   },
 };
-
+jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
 jest.mock("../../../features/common/Auth", () => ({
@@ -55,7 +55,7 @@ describe("<FinalizeRoundProvider />", () => {
 
     it("sets ipfs status to complete when saving to ipfs succeeds", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("my ipfs doc :)))");
-      (finalizeRoundToContract as jest.Mock).mockReturnValue(
+      (updateDistributionToContract as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
         })
@@ -75,7 +75,7 @@ describe("<FinalizeRoundProvider />", () => {
 
     it("sets contract deployment status to success when contract has been deployed", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("bafabcdef");
-      (finalizeRoundToContract as jest.Mock).mockResolvedValue({});
+      (updateDistributionToContract as jest.Mock).mockResolvedValue({});
 
       renderWithProvider(<TestUseFinalizeRoundComponent />);
 
@@ -119,7 +119,7 @@ describe("<FinalizeRoundProvider />", () => {
 
     it("sets contract deployment status to error when deployment fails", async () => {
       (saveToIPFS as jest.Mock).mockResolvedValue("asdf");
-      (finalizeRoundToContract as jest.Mock).mockRejectedValue(
+      (updateDistributionToContract as jest.Mock).mockRejectedValue(
         new Error("Failed to deploy :(")
       );
 

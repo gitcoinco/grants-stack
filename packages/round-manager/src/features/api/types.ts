@@ -223,10 +223,13 @@ export interface Round {
 }
 
 export type MatchingStatsData = {
+  index?: number;
   projectName?: string;
-  projectId: string;
   uniqueContributorsCount: number;
   matchPoolPercentage: number;
+  projectId: string;
+  matchAmountInToken: number;
+  projectPayoutAddress: string;
 };
 
 export type ProjectStatus =

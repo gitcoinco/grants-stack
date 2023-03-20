@@ -1,5 +1,8 @@
 import { ethers, Signer } from "ethers";
-import { merklePayoutStrategyFactoryContract } from "../contracts";
+import {
+  merklePayoutStrategyImplementationContract,
+  merklePayoutStrategyFactoryContract
+} from "../contracts";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -51,3 +54,37 @@ export const deployMerklePayoutStrategyContract = async (
     throw new Error("Unable to deploy merkle payout strategy contract");
   }
 };
+
+interface UpdateDistributionProps {
+  payoutContract: string;
+  encodedDistribution: string;
+  signerOrProvider: Signer;
+}
+
+export async function updateDistributionToContract({
+  payoutContract,
+  encodedDistribution,
+  signerOrProvider,
+}: UpdateDistributionProps) {
+  try {
+    const merklePayoutStrategyImplementation = new ethers.Contract(
+      payoutContract,
+      merklePayoutStrategyImplementationContract.abi,
+      signerOrProvider
+    );
+
+    const tx = await merklePayoutStrategyImplementation.updateDistribution(
+      encodedDistribution
+    );
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (error) {
+    console.error("updateDistributionToContract", error);
+    throw new Error("Unable to finalize Round");
+  }
+}

@@ -5,6 +5,9 @@ import {
   RoundApplicationQuestion,
 } from "../../types/roundApplication";
 
+const urlRegex =
+  /^(?:https?:\/\/)?(?:www\.)?[A-Za-z0-9]+\.[A-Za-z]{2,}(?:\/.*)?$/;
+
 export async function validateProjectForm(inputs: FormInputs) {
   const schema = object({
     title: string().required("Project Name is required"),
@@ -12,6 +15,31 @@ export async function validateProjectForm(inputs: FormInputs) {
     website: string()
       .url("Project Website must be a valid url. e.g. https://gitcoin.co/")
       .required("Project Website is required"),
+  });
+
+  const sanitizedInput = await schema.validate(inputs, { abortEarly: false });
+
+  return sanitizedInput;
+}
+
+// strings can be empty
+// strings should not contain @
+// strings should	not be a url
+function createValidationSchema(field: string) {
+  return string()
+    .test("has-no-at", `${field} should not include an @ symbol`, (value) =>
+      value ? !value.includes("@") : true
+    )
+    .test("is-not-url", `${field} should not be a URL`, (value) =>
+      value ? !urlRegex.test(value) : true
+    );
+}
+
+export async function validateVerificationForm(inputs: FormInputs) {
+  const schema = object({
+    projectTwitter: createValidationSchema("Project Twitter"),
+    userGithub: createValidationSchema("Your GitHub Username"),
+    projectGithub: createValidationSchema("GitHub Organization"),
   });
 
   const sanitizedInput = await schema.validate(inputs, { abortEarly: false });
