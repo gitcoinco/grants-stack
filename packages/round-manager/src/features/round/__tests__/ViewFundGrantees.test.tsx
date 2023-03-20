@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { render, screen } from "@testing-library/react";
-import ViewFundGrantees from "../ViewFundGrantees";
-import { GrantApplication, ProgressStatus, Round } from "../../api/types";
+import { useParams } from "react-router-dom";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
-  makeGrantApplicationData,
   makeRoundData,
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
-  wrapWithRoundContext,
+  wrapWithRoundContext
 } from "../../../test-utils";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { useParams } from "react-router-dom";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewFundGrantees from "../ViewFundGrantees";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -38,7 +37,6 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../api/api", () => ({
   ...jest.requireActual("../../api/api"),
-  useRoundMatchData: jest.fn(),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -70,7 +68,7 @@ describe("View Fund Grantees", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewFundGrantees finalized={false} />, {
+            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={false} />, {
               data: [],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
@@ -88,6 +86,7 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays finalized status when round is finalized", () => {
+
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
@@ -96,8 +95,8 @@ describe("View Fund Grantees", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewFundGrantees finalized={true} />, {
-              data: [],
+            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+              data: undefined,
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
             { programs: [] }

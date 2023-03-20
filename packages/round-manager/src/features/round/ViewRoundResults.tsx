@@ -1,34 +1,33 @@
-import { Spinner } from "../common/Spinner";
+import { RadioGroup } from "@headlessui/react";
 import {
   ExclamationCircleIcon as NoInformationIcon,
-  InformationCircleIcon,
+  InformationCircleIcon, XIcon
 } from "@heroicons/react/outline";
+import { Button } from "common/src/styles";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { errorModalDelayMs } from "../../constants";
+import {
+  useFinalizeRound,
+  useMatchingDistribution
+} from "../../context/round/FinalizeRoundContext";
+import { useRoundMatchData } from "../api/api";
 import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round,
+  Round
 } from "../api/types";
-import { useNavigate } from "react-router-dom";
+import { saveObjectAsJson } from "../api/utils";
+import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
-import ErrorModal from "../common/ErrorModal";
-import { useRoundMatchData } from "../api/api";
-import { Button } from "common/src/styles";
-import { saveObjectAsJson } from "../api/utils";
-import { RadioGroup } from "@headlessui/react";
-import React, { useEffect, useState } from "react";
-import * as yup from "yup";
-import { XIcon } from "@heroicons/react/outline";
-import {
-  useFinalizeRound,
-  useMatchingDistribution,
-} from "../../context/round/FinalizeRoundContext";
-import { errorModalDelayMs } from "../../constants";
+import { Spinner } from "../common/Spinner";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
-  chainId: string;
+  chainId: number;
   roundId: string | undefined;
 }) {
   const currentTime = new Date();
@@ -77,7 +76,7 @@ function NoInformationMessage() {
 
 function InformationContent(props: {
   round: Round | undefined;
-  chainId: string;
+  chainId: number;
   roundId: string | undefined;
 }) {
   const [useDefault, setUseDefault] = useState(true);
@@ -123,6 +122,12 @@ function InformationContent(props: {
       projectPayoutAddress: data.projectPayoutAddress,
     };
   });
+
+  const payoutStrategy = {
+    id: props.round?.payoutStrategy.id ?? "",
+    isReadyForPayout: props.round?.payoutStrategy.isReadyForPayout ?? false,
+  };
+
   return (
     <>
       <div>
@@ -134,7 +139,7 @@ function InformationContent(props: {
       {!error && !isError && !loading && !isLoading && (
         <FinalizeRound
           roundId={props.roundId}
-          payoutStrategy={props.round?.payoutStrategy}
+          payoutStrategy={payoutStrategy}
           matchingData={matchingData}
           useDefault={useDefault}
           setUseDefault={setUseDefault}
@@ -260,7 +265,10 @@ function InformationTable(props: {
 
 function FinalizeRound(props: {
   roundId: string | undefined;
-  payoutStrategy: string | undefined;
+  payoutStrategy: {
+    id: string | undefined;
+    isReadyForPayout: boolean;
+  };
   matchingData: MatchingStatsData[] | undefined;
   useDefault: boolean;
   setUseDefault: (useDefault: boolean) => void;
@@ -307,7 +315,7 @@ function FinalizeRound(props: {
       if (props.payoutStrategy !== undefined) {
         setOpenProgressModal(true);
         await finalizeRound(
-          props.payoutStrategy,
+          props.payoutStrategy.id ?? "",
           props.useDefault ? props.matchingData : props.customMatchingData
         );
       }

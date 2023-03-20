@@ -1,13 +1,12 @@
-import { Spinner } from "../common/Spinner";
-import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
-import tw from "tailwind-styled-components";
-import { useLayoutEffect, useRef, useState } from "react";
+import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
-import { useRoundMatchData } from "../api/api";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import tw from "tailwind-styled-components";
 import { useWallet } from "../common/Auth";
-import { Round } from "../api/types";
+import { Spinner } from "../common/Spinner";
 
 type GranteeFundInfo = {
   project: string;
@@ -18,21 +17,19 @@ type GranteeFundInfo = {
   hash?: string;
 };
 
-// TODO: modify prop for expected data
-export default function ViewFundGrantees() {
+export default function ViewFundGrantees(props: {
+  isRoundFinalized: boolean | undefined;
+}) {
   const [isFundGranteesFetched] = useState(false);
 
   if (isFundGranteesFetched) {
     return <Spinner text="We're fetching your data." />;
   }
 
-  // TODO: determine round finalization
-  const isRoundFinalized = true;
-
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
-      {isRoundFinalized ? (
+      {props.isRoundFinalized ? (
         <FinalizedRoundContent />
       ) : (
         <NonFinalizedRoundContent />
@@ -86,14 +83,7 @@ function FinalizedRoundContent() {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
 
-  const {
-    data: roundMatchData,
-    error,
-    loading,
-  } = useRoundMatchData(chain.id.toString(), roundId as string);
-
   /* Fetch distributions data for this round */
-
   return (
     <div>
       <div>
@@ -135,7 +125,7 @@ function FinalizedRoundContent() {
               <PayProjectsTable projects={exProjects} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable projects={exPaidProjects} chain={chain} />
+              <PaidProjectsTable projects={exPaidProjects} chainId={chain?.id} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -333,10 +323,10 @@ const exPaidProjects = [
 // TODO: Add types
 export function PaidProjectsTable(props: {
   projects: GranteeFundInfo[];
-  chain: any;
+  chainId: number;
 }) {
   let blockScanUrl: string;
-  switch (props.chain.id) {
+  switch (props.chainId) {
     case 1:
       blockScanUrl = "https://etherscan.io/tx/";
       break;

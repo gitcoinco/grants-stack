@@ -8,7 +8,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
-  UserGroupIcon,
+  UserGroupIcon
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
-  Round,
+  Round
 } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
@@ -35,9 +35,9 @@ import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
+import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
-import ViewFundGrantees from "./ViewFundGrantees";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -247,12 +247,12 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ViewRoundResults
                         round={round}
-                        chainId={`${chain.id}`}
+                        chainId={chain.id}
                         roundId={id}
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewFundGrantees />
+                      <ViewFundGrantees isRoundFinalized={round?.payoutStrategy?.isReadyForPayout ?? undefined} />
                     </Tab.Panel>
                   </Tab.Panels>
                 </div>

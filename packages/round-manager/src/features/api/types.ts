@@ -179,7 +179,10 @@ export interface Round {
   /**
    * Payout contract address
    */
-  payoutStrategy: string;
+  payoutStrategy: {
+    id: string;
+    isReadyForPayout: boolean;
+  };
   /**
    * Unix timestamp of the start of the round
    */

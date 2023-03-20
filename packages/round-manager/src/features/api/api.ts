@@ -94,7 +94,7 @@ export const useProjectSummary = (
   };
 };
 
-export const useRoundMatchData = (chainId: string, roundId: string) => {
+export const useRoundMatchData = (chainId: number, roundId: string) => {
   const [roundMatchData, setRoundMatchData] = useState<QFDistribution[]>();
   const [error, setError] = useState<Response | undefined>();
   const [loading, setLoading] = useState(false);
@@ -117,7 +117,7 @@ export const useRoundMatchData = (chainId: string, roundId: string) => {
         }
       })
       .then((data) => {
-        if (data.success) {
+        if (data.success && data.data) {
           setRoundMatchData(data.data);
         } else {
           setError(data.message);

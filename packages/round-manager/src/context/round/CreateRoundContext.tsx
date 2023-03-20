@@ -171,7 +171,10 @@ const _createRound = async ({
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
       votingStrategy: votingContractAddress,
-      payoutStrategy: payoutContractAddress,
+      payoutStrategy: {
+        id: payoutContractAddress,
+        isReadyForPayout: false,
+      },
     };
 
     const transactionBlockNumber = await handleDeployRoundContract(

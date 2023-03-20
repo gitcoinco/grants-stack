@@ -70,6 +70,10 @@ export async function getRoundById(
                   address
                 }
               }
+              payoutStrategy {
+                id
+                isReadyForPayout
+              }
             }
           }
         `,

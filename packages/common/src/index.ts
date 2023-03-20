@@ -121,7 +121,7 @@ export function classNames(...classes: (false | null | undefined | string)[]) {
 
 /**
  * Fetches the payouts that happened for a given round from TheGraph */
-export function usePayoutsForRound(roundId: string, chainId: ChainId) {
+export function fetchProjectPaidInARound(roundId: string, chainId: ChainId) {
   const { data, error, mutate } = useSWR(
     [roundId, chainId],
     ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
