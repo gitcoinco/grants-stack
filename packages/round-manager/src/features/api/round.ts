@@ -246,7 +246,10 @@ export async function deployRoundContract(
 
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
-    const initAddresses = [round.votingStrategy, round.payoutStrategy];
+    const initAddresses = [
+      round.votingStrategy,
+      round.payoutStrategy.id
+    ];
 
     const initRoundTimes = [
       new Date(round.applicationsStartTime).getTime() / 1000,
