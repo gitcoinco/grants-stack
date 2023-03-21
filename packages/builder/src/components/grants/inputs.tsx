@@ -2,7 +2,7 @@ import { Link, Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
 import { ethers } from "ethers";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   AddressInputProps,
   InputProps,
@@ -297,6 +297,7 @@ export function TextArea({
   containerClass,
   rows,
 }: TextAreaProps) {
+  const [markdownToolTipOpen, setMarkdownToolTipOpen] = useState(false);
   let borderClass = "";
   let feedbackColor = "";
 
@@ -307,7 +308,13 @@ export function TextArea({
   }
 
   const markdownTooltipText = (
-    <span>
+    <div
+      style={{ pointerEvents: "auto" }}
+      onMouseEnter={() => setMarkdownToolTipOpen(true)}
+      onMouseLeave={() => setMarkdownToolTipOpen(false)}
+      onFocus={() => setMarkdownToolTipOpen(true)}
+      onBlur={() => setMarkdownToolTipOpen(false)}
+    >
       We now offer rich text support with Markdown. To learn more about how to
       use Markdown, check out{" "}
       <Link
@@ -319,7 +326,7 @@ export function TextArea({
         this guide
       </Link>
       .
-    </span>
+    </div>
   );
 
   return (
@@ -335,11 +342,12 @@ export function TextArea({
         </div>
         {encrypted && encryptionTooltip}
         {/*  */}
-        <Link
-          href="https://www.markdownguide.org/cheat-sheet/"
-          target="_blank"
-          rel="noreferrer"
-          className="cursor-pointer underline"
+        <span
+          onMouseEnter={() => setMarkdownToolTipOpen(true)}
+          onMouseLeave={() => setMarkdownToolTipOpen(false)}
+          onFocus={() => setMarkdownToolTipOpen(true)}
+          onBlur={() => setMarkdownToolTipOpen(false)}
+          style={{ paddingBottom: "3px" }}
         >
           <Tooltip
             hasArrow
@@ -347,10 +355,12 @@ export function TextArea({
             bg="purple.900"
             className="shrink ml-2 cursor-pointer"
             label={markdownTooltipText}
+            isOpen={markdownToolTipOpen}
+            onOpen={() => setMarkdownToolTipOpen(true)}
           >
             <InformationCircleIcon className="w-6 h-6" color="gray" />
           </Tooltip>
-        </Link>
+        </span>
       </div>
       <legend>{info}</legend>
       <textarea
