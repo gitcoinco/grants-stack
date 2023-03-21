@@ -381,11 +381,9 @@ function GrantApplications(props: {
         </div>
       )}
 
-      <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-        {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-          <Spinner text="We're fetching your Round." />
-        )}
-      </div>
+      {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Round." />
+      )}
     </div>
   );
 }
