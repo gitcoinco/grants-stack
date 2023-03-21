@@ -1,17 +1,17 @@
 import { XIcon } from "@heroicons/react/solid";
 import { SchemaQuestion } from "../api/utils";
 
-// eslint-disable-next-line
 function Option({
   index,
   value,
   onChange,
   onDeleteOption,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options,
 }: {
   index: number;
   value: string;
-  onChange: (event: any) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteOption: (index: number) => void;
   options: SchemaQuestion[];
 }) {
