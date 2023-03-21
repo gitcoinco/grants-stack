@@ -2,7 +2,7 @@
 name: Product Backlog ticket
 about: ticket for work in Product Backlog board
 title: ''
-labels: 
+labels: product
 assignees: ''
 
 ---
