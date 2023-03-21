@@ -223,7 +223,7 @@ export const batchDistributeFunds = async (
       projectIdsToBePaid.includes(project.projectId)
     );
 
-    let projectsWithMerkleProof = [];
+    const projectsWithMerkleProof = [];
 
     projectsToBePaid.forEach(project => {
 
