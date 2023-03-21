@@ -5,6 +5,7 @@ import { classNames } from "common";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
+// import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 
@@ -83,6 +84,10 @@ function FinalizedRoundContent() {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
 
+  // const projects = await useGroupProjectsByPaymentStatus(roundId!, chain?.id);
+  // const paidProjects = projects['paid'];
+  // const unpaidProjects = projects['unpaid'];
+
   /* Fetch distributions data for this round */
   return (
     <div>
@@ -122,10 +127,10 @@ function FinalizedRoundContent() {
           </div>
           <Tab.Panels className="basis-5/6 ml-6">
             <Tab.Panel>
-              <PayProjectsTable projects={exProjects} />
+              <PayProjectsTable projects={paidProjects} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable projects={exPaidProjects} chainId={chain?.id} />
+              <PaidProjectsTable projects={unpaidProjects} chainId={chain?.id} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -135,7 +140,8 @@ function FinalizedRoundContent() {
 }
 
 // Example data
-const exProjects = [
+// TODO: Replace with useGroupProjectsByPaymentStatus
+const unpaidProjects = [
   {
     project: "Example Project",
     walletAddress: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
@@ -301,7 +307,8 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
 }
 
 // Example data
-const exPaidProjects = [
+// TODO: Replace with useGroupProjectsByPaymentStatus
+const paidProjects = [
   {
     project: "Paid Example Project",
     walletAddress: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",

@@ -1,3 +1,4 @@
+import { fetchProjectPaidInARound } from "common";
 import { ethers, Signer } from "ethers";
 import { useState, useEffect } from "react";
 import { useWallet } from "../../common/Auth";
@@ -7,6 +8,7 @@ import {
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
+import { ChainId } from "../utils";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -132,3 +134,45 @@ export const useFetchMatchingDistributionFromContract = (
     isError: isError,
   };
 };
+
+
+interface GroupedProjects {
+  paid: MatchingStatsData[];
+  unpaid: MatchingStatsData[];
+}
+
+/**
+ * Groups projects by payment status
+ * @param roundId Round ID
+ * @param chainId Chain ID
+ * @returns GroupedProjects
+ */
+export const useGroupProjectsByPaymentStatus = async (
+  roundId: string,
+  chainId: ChainId,
+): Promise<GroupedProjects> => {
+
+  const groupedProjects: GroupedProjects = {
+    paid: [],
+    unpaid: [],
+  };
+
+  const allProjects = (
+    await useFetchMatchingDistributionFromContract(roundId)
+  ).matchingDistributionContract;
+  const paidProjectsFromGraph = await fetchProjectPaidInARound(roundId, chainId);
+
+  const paidProjectIds = paidProjectsFromGraph.map((project) => project.id);
+
+  allProjects.forEach(project => {
+    const projectStatus = paidProjectIds.includes(project.projectId)
+      ? 'paid'
+      : 'unpaid';
+
+    groupedProjects[projectStatus].push(project);
+  });
+
+  // TODO: Add txn hash and other needs
+  return groupedProjects;
+
+}
