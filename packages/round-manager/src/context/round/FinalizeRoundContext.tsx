@@ -15,6 +15,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 import { generateMerkleTree } from "../../features/api/utils";
 import { updateDistributionToContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
+import { getAddress } from "ethers/lib/utils";
 
 export interface FinalizeRoundState {
   IPFSCurrentStatus: ProgressStatus;
@@ -113,6 +114,7 @@ const _finalizeRound = async ({
   matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
+
   dispatch({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
@@ -134,7 +136,7 @@ const _finalizeRound = async ({
 
     const transactionBlockNumber = await finalizeToContract(
       dispatch,
-      payoutStrategy,
+      getAddress(payoutStrategy),
       merkleRoot,
       distributionMetaPtr,
       signerOrProvider
