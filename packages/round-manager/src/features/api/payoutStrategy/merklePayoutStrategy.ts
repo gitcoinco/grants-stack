@@ -1,6 +1,7 @@
 import { fetchProjectPaidInARound } from "common";
 import { ethers, Signer } from "ethers";
 import { useState, useEffect } from "react";
+import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyImplementationContract,
@@ -8,7 +9,7 @@ import {
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
-import { ChainId } from "../utils";
+import { ChainId, generateMerkleTree } from "../utils";
 
 /**
  * Deploys a QFVotingStrategy contract by invoking the
@@ -190,3 +191,76 @@ export const useGroupProjectsByPaymentStatus = (
   // TODO: Add txn hash and other needs
   return groupedProjects;
 };
+
+/**
+ * Distributes funds to projects using merkle tree
+ *
+ * @param payoutStrategy
+ * @param allProjects
+ * @param projectIdsToBePaid
+ * @param signerOrProvider
+ * @returns
+ */
+export const batchDistributeFunds = async (
+  payoutStrategy: string,
+  allProjects: MatchingStatsData[],
+  projectIdsToBePaid: string[],
+  signerOrProvider: Signer
+) => {
+
+  try {
+    const merklePayoutStrategyImplementation = new ethers.Contract(
+      payoutStrategy,
+      merklePayoutStrategyImplementationContract.abi,
+      signerOrProvider
+    );
+
+    // Generate merkle tree
+    const { tree, matchingResults } = generateMerkleTree(allProjects);
+
+    // Filter projects to be paid from matching results
+    const projectsToBePaid = matchingResults.filter(project =>
+      projectIdsToBePaid.includes(project.projectId)
+    );
+
+    let projectsWithMerkleProof = [];
+
+    projectsToBePaid.forEach(project => {
+
+      const distribution: [number, string, number, string] = [
+        project.index!,
+        project.projectPayoutAddress,
+        project.matchAmountInToken,
+        project.projectId,
+      ];
+
+      // Generate merkle proof
+      const validMerkleProof = tree.getProof(distribution);
+
+      projectsWithMerkleProof.push({
+        index: distribution[0],
+        grantee: distribution[1],
+        amount: distribution[2],
+        merkleProof: validMerkleProof,
+        projectId: distribution[3],
+      })
+
+    });
+
+    const tx = await merklePayoutStrategyImplementation.payout(
+      projectsToBePaid
+    );
+
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+
+  } catch (error) {
+    console.error("batchDistributeFunds", error);
+    throw new Error("Unable to distribute funds");
+  }
+}

@@ -29,23 +29,26 @@ jest.mock("common", () => ({
   fetchProjectPaidInARound: jest.fn,
 }));
 
-describe.only('useGroupProjectsByPaymentStatus', () => {
-  it('SHOULD group projects into paid and unpaid arrays', async () => {
+describe('merklePayoutStrategy', () => {
 
-    const round = makeRoundData();
-    const chainId = ChainId.GOERLI_CHAIN_ID;
+  describe.only('useGroupProjectsByPaymentStatus', () => {
+    it('SHOULD group projects into paid and unpaid arrays', async () => {
 
-    const projects = [...paidProjects, ...unProjects];
-    // TODO: Fix this test
-    // (fetchProjectPaidInARound as any).mockReturnValueOnce(paidProjects);
-    // (fetchMatchingDistribution as any).mockResolvedValueOnce({
-    //   distributionMetaPtr: "",
-    //   matchingDistribution: projects
-    // });
+      const round = makeRoundData();
+      const chainId = ChainId.GOERLI_CHAIN_ID;
 
-    // const result = await useGroupProjectsByPaymentStatus(chainId, round.id!);
+      const projects = [...paidProjects, ...unProjects];
+      // TODO: Fix this test
+      // (fetchProjectPaidInARound as any).mockReturnValueOnce(paidProjects);
+      // (fetchMatchingDistribution as any).mockResolvedValueOnce({
+      //   distributionMetaPtr: "",
+      //   matchingDistribution: projects
+      // });
 
-    // expect(result.paid).toEqual(paidProjects);
-    // expect(result.paid).toEqual(unProjects);
+      // const result = await useGroupProjectsByPaymentStatus(chainId, round.id!);
+
+      // expect(result.paid).toEqual(paidProjects);
+      // expect(result.paid).toEqual(unProjects);
+    });
   });
 });
