@@ -1,7 +1,7 @@
 import { ethers, Signer } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
-  merklePayoutStrategyFactoryContract
+  merklePayoutStrategyFactoryContract,
 } from "../contracts";
 
 /**

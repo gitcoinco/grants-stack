@@ -120,7 +120,6 @@ const _finalizeRound = async ({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
   try {
-
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
@@ -231,7 +230,7 @@ async function finalizeToContract(
     const encodedDistribution = encodeDistributionParameters(
       merkleRoot,
       distributionMetaPtr
-    )
+    );
 
     const { transactionBlockNumber } = await updateDistributionToContract({
       payoutStrategy,

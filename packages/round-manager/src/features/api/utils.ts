@@ -1,6 +1,12 @@
 import { ethers } from "ethers";
 import { useMemo, useState } from "react";
-import { ApplicationMetadata, InputType, IPFSObject, MatchingStatsData, Program } from "./types";
+import {
+  ApplicationMetadata,
+  InputType,
+  IPFSObject,
+  MatchingStatsData,
+  Program,
+} from "./types";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 export enum ChainId {
@@ -579,32 +585,32 @@ export const getTxExplorerForContract = (
  * @param matchingResults MatchingStatsData[]
  * @returns
  */
-export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
-  distribution: [number, string, number, string][],
-  tree: StandardMerkleTree<[number, string, number, string]>
+export const generateMerkleTree = (
   matchingResults: MatchingStatsData[]
- } => {
-
+): {
+  distribution: [number, string, number, string][];
+  tree: StandardMerkleTree<[number, string, number, string]>;
+  matchingResults: MatchingStatsData[];
+} => {
   const distribution: [number, string, number, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
-
     matchingResults[index].index = index;
 
     distribution.push([
       index,
       matchingResult.projectPayoutAddress,
       matchingResult.matchAmountInToken,
-      matchingResult.projectId
-    ])
+      matchingResult.projectId,
+    ]);
   });
 
   const tree = StandardMerkleTree.of(distribution, [
     "uint256",
     "address",
     "uint256",
-    "bytes32"
+    "bytes32",
   ]);
 
-  return { distribution, tree, matchingResults} ;
-}
+  return { distribution, tree, matchingResults };
+};

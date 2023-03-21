@@ -448,7 +448,6 @@ export async function getProjectOwners(
   }
 }
 
-
 /**
  * Fetch finalized matching distribution
  * @param roundId - the ID of a specific round for detail

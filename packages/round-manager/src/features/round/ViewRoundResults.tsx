@@ -120,7 +120,7 @@ function InformationContent(props: {
       uniqueContributorsCount: data.uniqueContributorsCount,
       matchPoolPercentage: data.matchPoolPercentage,
       matchAmountInToken: data.matchAmountInToken,
-      projectPayoutAddress: data.projectPayoutAddress
+      projectPayoutAddress: data.projectPayoutAddress,
     };
   });
   return (
