@@ -1,4 +1,10 @@
+import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  approveTokenOnContract,
+  fundRoundContract,
+} from "../../../features/api/application";
+import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 import { ProgressStatus } from "../../../features/api/types";
 import {
   FundContractParams,
@@ -8,16 +14,7 @@ import {
 
 jest.mock("wagmi");
 jest.mock("../../../features/api/subgraph");
-jest.mock("../../../features/api/application", () => {
-  return {
-    fundRoundContract: async () => {
-      return {
-        txBlockNumber: 1234,
-        txHash: "0xabcdef1234567890",
-      };
-    },
-  };
-});
+jest.mock("../../../features/api/application");
 
 const mockSigner = {
   getChainId: () => {
@@ -42,6 +39,12 @@ const testParams: FundContractParams = {
 describe("<FundContractProvider />", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+
+    (fundRoundContract as jest.Mock).mockReturnValue(
+      new Promise(() => {
+        /* do nothing.*/
+      })
+    );
   });
 
   it("renders without crashing", () => {
@@ -68,26 +71,100 @@ describe("<FundContractProvider />", () => {
       ).toBeInTheDocument();
     });
   });
+});
 
-  it("updates token approval status after fundContract is successful", async () => {
+describe("useFundContract Errors", () => {
+  let consoleErrorSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
+      /* do nothing.*/
+    });
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockClear();
+  });
+
+  it("sets fund status to error when invoking fund fails", async () => {
+    (fundRoundContract as jest.Mock).mockRejectedValue(new Error(":("));
+
     renderWithProvider(<TestUseFundContractComponent {...testParams} />);
 
-    const fundContractButton = screen.getByTestId("fund-contract");
-    fireEvent.click(fundContractButton);
+    fireEvent.click(screen.getByTestId("fund-contract"));
 
-    await waitFor(() => {
-      expect(
-        screen.getByTestId(
-          `token-approval-status-is-${ProgressStatus.IS_SUCCESS}`
-        )
-      ).toBeInTheDocument();
-      expect(
-        screen.getByTestId(`fund-status-is-${ProgressStatus.IS_SUCCESS}`)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByTestId(`indexing-status-is-${ProgressStatus.IS_SUCCESS}`)
-      ).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`)
+    ).toBeInTheDocument();
+  });
+
+  it("sets indexing status to error when indexing fails", async () => {
+    (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      transactionBlockNumber: faker.random.numeric(),
     });
+    (fundRoundContract as jest.Mock).mockResolvedValue({
+      transactionBlockNumber: faker.random.numeric(),
+    });
+    (waitForSubgraphSyncTo as jest.Mock).mockRejectedValue(new Error(":("));
+
+    renderWithProvider(<TestUseFundContractComponent {...testParams} />);
+
+    fireEvent.click(screen.getByTestId("fund-contract"));
+
+    expect(
+      await screen.findByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+    ).toBeInTheDocument();
+  });
+
+  it("if fund fails, resets fund status when fund contract is retried", async () => {
+    (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      transactionBlockNumber: faker.random.numeric(),
+    });
+    (fundRoundContract as jest.Mock)
+      .mockRejectedValueOnce(new Error(":("))
+      .mockReturnValue(
+        new Promise(() => {
+          /* do nothing.*/
+        })
+      );
+
+    renderWithProvider(<TestUseFundContractComponent {...testParams} />);
+    fireEvent.click(screen.getByTestId("fund-contract"));
+
+    // retry bulk update operation
+    await screen.findByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`);
+    fireEvent.click(screen.getByTestId("fund-contract"));
+
+    expect(
+      screen.queryByTestId(`fund-status-is-${ProgressStatus.IS_ERROR}`)
+    ).not.toBeInTheDocument();
+  });
+
+  it("if indexing fails, resets indexing status when fund contract is retried", async () => {
+    (approveTokenOnContract as jest.Mock).mockResolvedValue({
+      transactionBlockNumber: faker.random.numeric(),
+    });
+    (fundRoundContract as jest.Mock).mockResolvedValue({
+      transactionBlockNumber: faker.random.numeric(),
+    });
+    (waitForSubgraphSyncTo as jest.Mock)
+      .mockRejectedValueOnce(new Error(":("))
+      .mockReturnValue(
+        new Promise(() => {
+          /* do nothing.*/
+        })
+      );
+
+    renderWithProvider(<TestUseFundContractComponent {...testParams} />);
+    fireEvent.click(screen.getByTestId("fund-contract"));
+
+    // retry bulk update operation
+    await screen.findByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`);
+    fireEvent.click(screen.getByTestId("fund-contract"));
+
+    expect(
+      screen.queryByTestId(`indexing-status-is-${ProgressStatus.IS_ERROR}`)
+    ).not.toBeInTheDocument();
   });
 });
 
