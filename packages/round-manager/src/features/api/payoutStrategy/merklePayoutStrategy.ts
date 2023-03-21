@@ -62,19 +62,19 @@ export const deployMerklePayoutStrategyContract = async (
 };
 
 interface UpdateDistributionProps {
-  payoutContract: string;
+  payoutStrategy: string;
   encodedDistribution: string;
   signerOrProvider: Signer;
 }
 
 export async function updateDistributionToContract({
-  payoutContract,
+  payoutStrategy,
   encodedDistribution,
   signerOrProvider,
 }: UpdateDistributionProps) {
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
-      payoutContract,
+      payoutStrategy,
       merklePayoutStrategyImplementationContract.abi,
       signerOrProvider
     );

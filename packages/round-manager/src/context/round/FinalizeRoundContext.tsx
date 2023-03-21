@@ -123,7 +123,6 @@ const _finalizeRound = async ({
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
-
     const { tree, matchingResults } = generateMerkleTree(matchingJSON);
     const merkleRoot = tree.root;
 
@@ -136,7 +135,7 @@ const _finalizeRound = async ({
 
     const transactionBlockNumber = await finalizeToContract(
       dispatch,
-      getAddress(payoutStrategy),
+      payoutStrategy,
       merkleRoot,
       distributionMetaPtr,
       signerOrProvider
