@@ -1,43 +1,51 @@
+import { fetchProjectPaidInARound } from "common";
+import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
 import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/merklePayoutStrategy";
+import { ChainId } from "../../utils";
+import { fetchMatchingDistribution } from "../../round";
+
+jest.mock("../../round");
+
+jest.mock("../../utils", () => ({
+  ...jest.requireActual("../../utils"),
+  graphql_fetch: jest.fn(),
+  fetchFromIPFS: jest.fn(),
+}));
 
 
-describe('useGroupProjectsByPaymentStatus', () => {
+const paidProjects = [
+  makeQFDistribution(),
+  makeQFDistribution(),
+]
+
+const unProjects = [
+  makeQFDistribution(),
+  makeQFDistribution(),
+  makeQFDistribution(),
+];
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  fetchProjectPaidInARound: jest.fn,
+}));
+
+describe.only('useGroupProjectsByPaymentStatus', () => {
   it('SHOULD group projects into paid and unpaid arrays', async () => {
 
-    const roundId = '123';
-    const chainId = '1';
+    const round = makeRoundData();
+    const chainId = ChainId.GOERLI_CHAIN_ID;
 
-    const projects = [
-      { projectId: '1', amount: 100, status: 'Unpaid' },
-      { projectId: '2', amount: 200, status: 'Paid' },
-      { projectId: '3', amount: 300, status: 'Unpaid' },
-    ];
-
-    const paidProjectsFromGraph = [{ id: '2' }];
-
-    const useFetchMatchingDistributionFromContract = jest.fn().mockResolvedValue({
-      matchingDistributionContract: projects,
-    });
-
-    const fetchProjectPaidInARound = jest
-      .fn()
-      .mockResolvedValue(paidProjectsFromGraph);
-
-
-    // const result = await useGroupProjectsByPaymentStatus(roundId, chainId, {
-    //   useFetchMatchingDistributionFromContract,
-    //   fetchProjectPaidInARound,
+    const projects = [...paidProjects, ...unProjects];
+    // TODO: Fix this test
+    // (fetchProjectPaidInARound as any).mockReturnValueOnce(paidProjects);
+    // (fetchMatchingDistribution as any).mockResolvedValueOnce({
+    //   distributionMetaPtr: "",
+    //   matchingDistribution: projects
     // });
-  
 
-    // expect(result.paid).toEqual([{ projectId: '2', amount: 200, status: 'Paid' }]);
-    // expect(result.unpaid).toEqual([
-    //   { projectId: '1', amount: 100, status: 'Unpaid' },
-    //   { projectId: '3', amount: 300, status: 'Unpaid' },
-    // ]);
-    // expect(useFetchMatchingDistributionFromContract).toHaveBeenCalledWith(roundId);
-    // expect(fetchProjectPaidInARound).toHaveBeenCalledWith(roundId, chainId);
+    // const result = await useGroupProjectsByPaymentStatus(chainId, round.id!);
 
-    
+    // expect(result.paid).toEqual(paidProjects);
+    // expect(result.paid).toEqual(unProjects);
   });
 });

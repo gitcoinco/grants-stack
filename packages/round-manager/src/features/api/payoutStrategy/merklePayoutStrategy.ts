@@ -156,6 +156,7 @@ export const useGroupProjectsByPaymentStatus = (
   });
 
   const paidProjectsFromGraph = fetchProjectPaidInARound(roundId, chainId);
+
   const allProjects =
     useFetchMatchingDistributionFromContract(
       roundId

@@ -112,4 +112,27 @@ describe("View Fund Grantees", () => {
     expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
     expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
   });
+
+  describe("Unpaid Projects", () => {
+  
+    it("displays unpaid projects section on clicking unpaid grantees tab", () => {
+      // TODO
+    });
+
+    it('displays exact list of projects in table which are to be paid', () =>  {
+      // TODO:
+    });
+  });
+
+  describe("Paid Projects", () => {
+    it("displays paid projects section on clicking paid grantees tab", () => {
+      // TODO:
+    });
+
+    it('displays exact list of projects in table which have been be paid', () =>  {
+      // TODO:
+    });
+
+  });
 });
+
