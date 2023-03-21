@@ -3,13 +3,13 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
 import { ethers } from "ethers";
 import { useEffect } from "react";
-import { getAddressType } from "../../utils/utils";
 import {
   AddressInputProps,
   InputProps,
-  TextAreaProps,
   ProjectOption,
+  TextAreaProps,
 } from "../../types";
+import { getAddressType } from "../../utils/utils";
 
 const optionalSpan = (
   <span className="text-gray-400 inset-y-0 right-0 text-sm">Optional</span>
@@ -193,7 +193,9 @@ export function TextInputAddress({
             encrypted ? `${encryptionTooltipLabel} \n` : ""
           } ${tooltipValue}`}
         >
-          <InformationCircleIcon className="w-6 h-6" color="gray" />
+          <span>
+            <InformationCircleIcon className="w-6 h-6" color="gray" />
+          </span>
         </Tooltip>
       </div>
       <legend>{info}</legend>
@@ -304,6 +306,22 @@ export function TextArea({
     feedbackColor = styleInfo.feedbackColor;
   }
 
+  const markdownTooltipText = (
+    <span>
+      We now offer rich text support with Markdown. To learn more about how to
+      use Markdown, check out{" "}
+      <a
+        href="https://www.markdownguide.org/cheat-sheet/"
+        target="_blank"
+        rel="noreferrer"
+        className="cursor-pointer underline"
+      >
+        this guide
+      </a>
+      .
+    </span>
+  );
+
   return (
     <div className={`mt-6 w-full sm:max-w-md relative ${containerClass}`}>
       <div className="flex">
@@ -316,6 +334,15 @@ export function TextArea({
           {required ? requiredSpan : optionalSpan}
         </div>
         {encrypted && encryptionTooltip}
+        <Tooltip
+          hasArrow
+          closeOnClick
+          bg="purple.900"
+          className="shrink ml-2 cursor-pointer"
+          label={markdownTooltipText}
+        >
+          <InformationCircleIcon className="w-6 h-6" color="gray" />
+        </Tooltip>
       </div>
       <legend>{info}</legend>
       <textarea
