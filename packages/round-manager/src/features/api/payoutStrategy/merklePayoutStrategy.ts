@@ -6,6 +6,7 @@ import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyImplementationContract,
   merklePayoutStrategyFactoryContract,
+  roundImplementationContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
