@@ -420,8 +420,8 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD = amountToFund * Number(data);
     return (
-      <div className="min-w-full flex justify-center">
-        <div className="flex flex-col justify-center items-center">
+      <div>
+        <div className="flex flex-col text-center sm:ml-16">
           <div className="text-sm text-grey-400 mt-4 mb-1">
             AMOUNT TO BE FUNDED
           </div>
@@ -431,8 +431,8 @@ export default function FundContract(props: {
           <div className="text-md text-slate-400 mb-6">
             (${amountInUSD.toFixed(2)} USD)
           </div>
-          <AdditionalGasFeesNote />
         </div>
+        <AdditionalGasFeesNote />
       </div>
     );
   }
