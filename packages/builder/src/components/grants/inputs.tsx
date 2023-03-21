@@ -1,4 +1,4 @@
-import { Tooltip } from "@chakra-ui/react";
+import { Link, Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
 import { ethers } from "ethers";
@@ -310,14 +310,14 @@ export function TextArea({
     <span>
       We now offer rich text support with Markdown. To learn more about how to
       use Markdown, check out{" "}
-      <a
+      <Link
         href="https://www.markdownguide.org/cheat-sheet/"
         target="_blank"
         rel="noreferrer"
         className="cursor-pointer underline"
       >
         this guide
-      </a>
+      </Link>
       .
     </span>
   );
@@ -334,15 +334,23 @@ export function TextArea({
           {required ? requiredSpan : optionalSpan}
         </div>
         {encrypted && encryptionTooltip}
-        <Tooltip
-          hasArrow
-          closeOnClick
-          bg="purple.900"
-          className="shrink ml-2 cursor-pointer"
-          label={markdownTooltipText}
+        {/*  */}
+        <Link
+          href="https://www.markdownguide.org/cheat-sheet/"
+          target="_blank"
+          rel="noreferrer"
+          className="cursor-pointer underline"
         >
-          <InformationCircleIcon className="w-6 h-6" color="gray" />
-        </Tooltip>
+          <Tooltip
+            hasArrow
+            closeOnClick
+            bg="purple.900"
+            className="shrink ml-2 cursor-pointer"
+            label={markdownTooltipText}
+          >
+            <InformationCircleIcon className="w-6 h-6" color="gray" />
+          </Tooltip>
+        </Link>
       </div>
       <legend>{info}</legend>
       <textarea
