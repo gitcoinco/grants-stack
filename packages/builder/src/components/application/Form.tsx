@@ -443,6 +443,7 @@ export default function Form({
               );
             case "short-answer":
             case "text":
+            case "link":
               return (
                 <TextInput
                   key={input.id}
