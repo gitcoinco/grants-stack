@@ -2,10 +2,11 @@
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
-// import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
+import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
+import { MatchingStatsData } from "../api/types";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 
@@ -83,10 +84,29 @@ const TabApplicationCounter = tw.div`
 function FinalizedRoundContent() {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
+  const projects = useGroupProjectsByPaymentStatus(chain?.id, roundId || "");
+  const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
+  const [unpaidProjects, setUnpaidProjects] = useState<GranteeFundInfo[]>([]);
 
-  // const projects = await useGroupProjectsByPaymentStatus(roundId!, chain?.id);
-  // const paidProjects = projects['paid'];
-  // const unpaidProjects = projects['unpaid'];
+  const mapMatchingStatsDataToGranteeFundInfo = (matchingStatsData: MatchingStatsData[]): GranteeFundInfo[] => {
+    return matchingStatsData.map((matchingStatData) => ({
+      project: matchingStatData.projectName ?? "",
+      walletAddress: matchingStatData.projectPayoutAddress,
+      matchingPercent: (matchingStatData.matchPoolPercentage * 100).toString(),
+      payoutAmount: matchingStatData.matchAmountInToken.toString(),
+    }));
+  };
+
+  useEffect(() => {
+
+    setPaidProjects(
+      mapMatchingStatsDataToGranteeFundInfo(projects['paid'])
+    );
+    setUnpaidProjects(
+      mapMatchingStatsDataToGranteeFundInfo(projects['unpaid'])
+    );
+
+  }, [projects]);
 
   /* Fetch distributions data for this round */
   return (
@@ -104,7 +124,7 @@ function FinalizedRoundContent() {
                         className={selected ? "bg-violet-100" : "bg-grey-150"}
                         data-testid="received-application-counter"
                       >
-                        {0}
+                        {unpaidProjects.length}
                       </TabApplicationCounter>
                     </div>
                   )}
@@ -117,7 +137,7 @@ function FinalizedRoundContent() {
                         className={selected ? "bg-violet-100" : "bg-grey-150"}
                         data-testid="received-application-counter"
                       >
-                        {0}
+                        {paidProjects.length}
                       </TabApplicationCounter>
                     </div>
                   )}
@@ -127,10 +147,10 @@ function FinalizedRoundContent() {
           </div>
           <Tab.Panels className="basis-5/6 ml-6">
             <Tab.Panel>
-              <PayProjectsTable projects={paidProjects} />
+              <PayProjectsTable projects={unpaidProjects} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable projects={unpaidProjects} chainId={chain?.id} />
+              <PaidProjectsTable projects={paidProjects} chainId={chain?.id} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -139,22 +159,6 @@ function FinalizedRoundContent() {
   );
 }
 
-// Example data
-// TODO: Replace with useGroupProjectsByPaymentStatus
-const unpaidProjects = [
-  {
-    project: "Example Project",
-    walletAddress: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
-    matchingPercent: "10%",
-    payoutAmount: "99",
-  },
-  {
-    project: "Example Project2",
-    walletAddress: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-    matchingPercent: "90%",
-    payoutAmount: "1000000",
-  },
-] as GranteeFundInfo[];
 
 // TODO: Add types
 export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
@@ -260,9 +264,9 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                               e.target.checked
                                 ? [...selectedProjects, project]
                                 : selectedProjects.filter(
-                                    (p) =>
-                                      p.walletAddress !== project.walletAddress
-                                  )
+                                  (p) =>
+                                    p.walletAddress !== project.walletAddress
+                                )
                             );
                           }}
                         />
@@ -306,28 +310,8 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
   );
 }
 
-// Example data
-// TODO: Replace with useGroupProjectsByPaymentStatus
-const paidProjects = [
-  {
-    project: "Paid Example Project",
-    walletAddress: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
-    matchingPercent: "10%",
-    payoutAmount: "99",
-    status: "Success",
-    hash: "0x8e3d6c1c7a352083b86d2fcb0184c8e89af51e28",
-  },
-  {
-    project: "Paid Example Project2",
-    walletAddress: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-    matchingPercent: "90%",
-    payoutAmount: "1000000",
-    status: "Fail",
-    hash: "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF",
-  },
-] as GranteeFundInfo[];
-
 // TODO: Add types
+// todo: such a nice table should be in a separate and shared file
 export function PaidProjectsTable(props: {
   projects: GranteeFundInfo[];
   chainId: number;
@@ -425,11 +409,10 @@ export function PaidProjectsTable(props: {
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <span
-                          className={`inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5 ${
-                            project.status === "Success"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-200 text-red-800"
-                          }`}
+                          className={`inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5 ${project.status === "Success"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-200 text-red-800"
+                            }`}
                         >
                           {project.status}
                         </span>

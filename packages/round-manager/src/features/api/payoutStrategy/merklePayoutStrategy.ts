@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyImplementationContract,
-  merklePayoutStrategyFactoryContract
+  merklePayoutStrategyFactoryContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
@@ -135,7 +135,6 @@ export const useFetchMatchingDistributionFromContract = (
   };
 };
 
-
 interface GroupedProjects {
   paid: MatchingStatsData[];
   unpaid: MatchingStatsData[];
@@ -147,32 +146,46 @@ interface GroupedProjects {
  * @param chainId Chain ID
  * @returns GroupedProjects
  */
-export const useGroupProjectsByPaymentStatus = async (
-  roundId: string,
+export const useGroupProjectsByPaymentStatus = (
   chainId: ChainId,
-): Promise<GroupedProjects> => {
-
-  const groupedProjects: GroupedProjects = {
+  roundId: string
+): GroupedProjects => {
+  const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({
     paid: [],
     unpaid: [],
-  };
-
-  const allProjects = (
-    await useFetchMatchingDistributionFromContract(roundId)
-  ).matchingDistributionContract;
-  const paidProjectsFromGraph = await fetchProjectPaidInARound(roundId, chainId);
-
-  const paidProjectIds = paidProjectsFromGraph.map((project) => project.id);
-
-  allProjects.forEach(project => {
-    const projectStatus = paidProjectIds.includes(project.projectId)
-      ? 'paid'
-      : 'unpaid';
-
-    groupedProjects[projectStatus].push(project);
   });
 
+  const paidProjectsFromGraph = fetchProjectPaidInARound(roundId, chainId);
+  const allProjects =
+    useFetchMatchingDistributionFromContract(
+      roundId
+    ).matchingDistributionContract;
+
+  useEffect(() => {
+    async function fetchData() {
+      const groupedProjectsTmp: GroupedProjects = {
+        paid: [],
+        unpaid: [],
+      };
+
+      const paidProjectIds = (await paidProjectsFromGraph).map(
+        (project) => project.id
+      );
+
+      allProjects?.forEach((project) => {
+        const projectStatus = paidProjectIds.includes(project.projectId)
+          ? "paid"
+          : "unpaid";
+
+        groupedProjectsTmp[projectStatus].push(project);
+      });
+
+      setGroupedProjects(groupedProjectsTmp);
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allProjects]);
   // TODO: Add txn hash and other needs
   return groupedProjects;
-
-}
+};
