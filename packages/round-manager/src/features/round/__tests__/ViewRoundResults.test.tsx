@@ -17,7 +17,7 @@ import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
 import { faker } from "@faker-js/faker";
 import { useRoundMatchData } from "../../api/api";
-import { fetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -45,7 +45,7 @@ jest.mock("../../api/api", () => ({
 
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
   ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
-  fetchMatchingDistributionFromContract: jest.fn(),
+  useFetchMatchingDistributionFromContract: jest.fn(),
 }));
 
 
@@ -106,7 +106,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -162,7 +162,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -218,7 +218,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -312,7 +312,7 @@ describe("View Round Results before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -408,7 +408,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -452,7 +452,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -500,7 +500,7 @@ describe("View Round Results before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -565,7 +565,7 @@ describe("View Round Results after distribution data is finalized to contract", 
       loading: false,
     }));
 
-    (fetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "abcd",
       matchingDistribution: [makeMatchingStatsData(), makeMatchingStatsData()],
       isLoading: false,

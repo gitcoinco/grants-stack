@@ -93,7 +93,7 @@ export async function updateDistributionToContract({
   }
 }
 
-export const fetchMatchingDistributionFromContract = (
+export const useFetchMatchingDistributionFromContract = (
   roundId: string | undefined
 ): {
   distributionMetaPtr: string;

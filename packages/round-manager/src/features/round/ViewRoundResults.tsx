@@ -12,7 +12,7 @@ import {
   useFinalizeRound
 } from "../../context/round/FinalizeRoundContext";
 import { useRoundMatchData } from "../api/api";
-import { fetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
+import { useFetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
 import {
   MatchingStatsData,
   ProgressStatus,
@@ -90,7 +90,7 @@ function InformationContent(props: {
     matchingDistributionContract,
     isLoading,
     isError,
-  } = fetchMatchingDistributionFromContract(props.roundId);
+  } = useFetchMatchingDistributionFromContract(props.roundId);
 
   useEffect(() => {
     if (distributionMetaPtr !== "") {
