@@ -25,7 +25,7 @@ export type AddressQuestion = BaseQuestion & {
 };
 
 export type TextQuestion = BaseQuestion & {
-  type: "text" | "short-answer";
+  type: "text" | "short-answer" | "link";
 };
 
 export type ParagraphQuestion = BaseQuestion & {
