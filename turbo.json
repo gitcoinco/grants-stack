@@ -29,7 +29,7 @@
       ]
     },
     "graph#test": {
-      "dependsOn": ["pnpm prepare:local", "pnpm codegen", "pnpm build"]
+      "dependsOn": ["yarn prepare:local", "yarn codegen", "yarn build"]
     },
     "test": {
       "dependsOn": [

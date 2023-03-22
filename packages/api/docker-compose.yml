@@ -28,7 +28,7 @@ services:
     volumes:
       - ./src:/src
       - ./prisma:/prisma
-    command: sh -c "pnpm prisma:migrate && pnpm dev"
+    command: sh -c "yarn prisma:migrate && yarn dev"
 
 volumes:
   postgres: {}

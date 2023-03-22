@@ -9,13 +9,13 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "build": "pnpm prisma:generate && pnpm tsc",
+    "build": "yarn prisma:generate && yarn tsc",
     "start": "node bin/index.js",
     "start:dev": "nodemon bin/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/index.js\"",
-    "prisma:migrate": "pnpm prisma migrate dev",
-    "prisma:generate": "pnpm prisma generate",
-    "prisma:docs": "pnpm prisma-docs-generator serve",
+    "prisma:migrate": "yarn prisma migrate dev",
+    "prisma:generate": "yarn prisma generate",
+    "prisma:docs": "yarn prisma-docs-generator serve",
     "format": "prettier . --write"
   },
   "devDependencies": {

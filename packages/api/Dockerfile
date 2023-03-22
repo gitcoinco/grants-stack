@@ -1,4 +1,4 @@
-FROM boudra/pnpm-node16:latest as base
+FROM node:16 as base
 
 RUN apt-get update && apt-get install -y openssl libssl-dev
 
@@ -13,12 +13,12 @@ ENV NODE_OPTIONS=--max_old_space_size=8192
 FROM base as dev
 ENV NODE_ENV=development
 
-RUN pnpm install
+RUN yarn install
 
 COPY . .
 
-RUN pnpm run build
+RUN yarn run build
 
 EXPOSE 8000
 
-CMD ["pnpm", "start"]
+CMD ["yarn", "start"]

@@ -17,22 +17,18 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: |
-          pnpm install
+          yarn install
 
       - name: Build the API
         run: |
-          pnpm api-build
+          yarn api-build
 
       - name: Test the API
         env:
@@ -41,4 +37,4 @@ jobs:
           REACT_APP_SUBGRAPH_FANTOM_TESTNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API }}
           REACT_APP_SUBGRAPH_FANTOM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API }}
         run: |
-          pnpm api-test
+          yarn api-test

@@ -132,22 +132,18 @@ jobs:
           fetch-depth: 0
       - uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
-          cache: "pnpm"
+          cache: "yarn"
 
       - name: Install Dependencies
         run: |
-          pnpm install
+          yarn install
 
       - name: Build the API
         run: |
-          pnpm api-build
+          yarn api-build
 
       - name: Upload Source Maps to Sentry
         uses: getsentry/action-release@v1

@@ -15,7 +15,7 @@
     "test:coverage": "craco test --watchAll=false --silent --coverage",
     "eject": "react-scripts eject",
     "format": "prettier . --write",
-    "lint:ci": "pnpm lint:fix --max-warnings=0",
+    "lint:ci": "yarn lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit"
   },
@@ -122,7 +122,7 @@
   "lint-staged": {
     "*.{ts,tsx,md}": [
       "prettier --write .",
-      "pnpm lint:fix"
+      "yarn lint:fix"
     ]
   }
 }

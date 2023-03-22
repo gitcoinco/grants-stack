@@ -18,21 +18,17 @@ jobs:
       with:
         fetch-depth: 1
 
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 7
-
     - uses: actions/setup-node@v3
       with:
         node-version: '16'
-        cache: 'pnpm'
+        cache: 'yarn'
 
     - name: Test and Build
       run: |
-        pnpm install
+        yarn install
 
         cd packages/builder
 
-        pnpm lint
-        pnpm test
-        pnpm build
+        yarn lint
+        yarn test
+        yarn build

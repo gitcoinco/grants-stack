@@ -7,7 +7,7 @@ This section documents the basic instructions on running / developing the round-
 Before running any command, make sure to install dependencies:
 
 ```sh
-$ pnpm install
+$ yarn install
 ```
 
 Create environment files, and fill in environment variables with your own values
@@ -34,7 +34,7 @@ The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
 ```sh
-$ pnpm start
+$ yarn start
 ```
 
 ### Lint TypeScript
@@ -42,7 +42,7 @@ $ pnpm start
 Lint the TypeScript code:
 
 ```sh
-$ pnpm lint:ts
+$ yarn lint:ts
 ```
 
 ### Test
@@ -50,7 +50,7 @@ $ pnpm lint:ts
 Run the Mocha tests:
 
 ```sh
-$ pnpm test
+$ yarn test
 ```
 
 ### Run in Production
@@ -59,7 +59,7 @@ Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 ```sh
-$ pnpm build
+$ yarn build
 ```
 
 Serve on port 3000

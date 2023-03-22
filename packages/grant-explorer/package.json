@@ -6,7 +6,7 @@
   "scripts": {
     "build": "craco build",
     "eject": "react-scripts eject",
-    "lint:ci": "pnpm lint:fix --max-warnings=0",
+    "lint:ci": "yarn lint:fix --max-warnings=0",
     "lint:fix": "eslint ./src --fix",
     "typecheck": "tsc --noEmit",
     "start": "craco start",
@@ -17,7 +17,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "prettier --write .",
-      "pnpm lint:fix"
+      "yarn lint:fix"
     ]
   },
   "browserslist": {

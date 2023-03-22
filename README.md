@@ -6,7 +6,7 @@ This repository contains packages needed for a user to
 - Vote for Projects within a Round
 
 Project Maintained via  : `turborepo`
-Package manager         : `pnpm`
+Package manager         : `yarn`
 
 ## Directory Structure
 

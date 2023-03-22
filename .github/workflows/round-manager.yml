@@ -17,23 +17,19 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: |
-          pnpm install
+          yarn install
 
       - name: Build Round Manager
         run: |
-          pnpm rm-build
+          yarn rm-build
 
       - name: Test Round Manager
         run: |
-          pnpm rm-test
+          yarn rm-test
