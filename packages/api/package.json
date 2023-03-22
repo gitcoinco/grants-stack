@@ -47,10 +47,11 @@
     "date-fns": "^2.29.3",
     "ethers": "^5.7.2",
     "express": "^4.17.1",
-    "node-cache": "^5.1.2",
     "isomorphic-fetch": "^3.0.0",
-    "yup": "^0.32.11",
-    "node-fetch": "^2.6.9"
+    "node-cache": "^5.1.2",
+    "node-fetch": "^2.6.9",
+    "prisma-docs-generator": "^0.5.0",
+    "yup": "^0.32.11"
   },
   "lint-staged": {
     "*.{ts,tsx,md}": [

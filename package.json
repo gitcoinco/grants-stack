@@ -6,7 +6,16 @@
     "npm": ">=8.5.5",
     "node": ">=16.15.0"
   },
-  "workspaces": [ "packages/*" ],
+    "workspaces": {
+    "packages" : [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/prisma",
+      "**/prisma-docs-generator",
+      "**/@prisma/client"
+    ]
+  },
   "scripts": {
     "start": "yarn --filter round-manager run start",
     "build": "yarn turbo build",
