@@ -259,6 +259,18 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
+      <div className="flex flex-grow justify-end">
+        <Button
+          onClick={() => {
+            console.log("Finalize Results");
+          }}
+          type="button"
+          data-testid="finalize-results"
+          className="bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
+        >
+          Finalize Results
+        </Button>
+      </div>
     </div>
   );
 }
