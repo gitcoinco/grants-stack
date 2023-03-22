@@ -1,43 +1,80 @@
+import { fetchProjectPaidInARound } from "common";
+import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
 import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/merklePayoutStrategy";
+import { ChainId } from "../../utils";
+import { fetchMatchingDistribution } from "../../round";
+import React, { useState as useStateMock } from "react";
 
+// Mocks
+jest.mock("../../round");
 
-describe('useGroupProjectsByPaymentStatus', () => {
-  it('SHOULD group projects into paid and unpaid arrays', async () => {
+jest.mock("common");
 
-    const roundId = '123';
-    const chainId = '1';
+jest.mock("../../../api/types", () => ({
+  ...jest.requireActual("../../../api/types"),
+}));
 
-    const projects = [
-      { projectId: '1', amount: 100, status: 'Unpaid' },
-      { projectId: '2', amount: 200, status: 'Paid' },
-      { projectId: '3', amount: 300, status: 'Unpaid' },
-    ];
+jest.mock("../../utils", () => ({
+  ...jest.requireActual("../../utils"),
+  graphql_fetch: jest.fn(),
+  fetchFromIPFS: jest.fn(),
+}));
 
-    const paidProjectsFromGraph = [{ id: '2' }];
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useOutletContext: () => ({
+    data: {},
+  }),
+}));
 
-    const useFetchMatchingDistributionFromContract = jest.fn().mockResolvedValue({
-      matchingDistributionContract: projects,
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useState: jest.fn(),
+  useEffect: jest.fn(),
+}))
+
+const paidProjects = [
+  makeQFDistribution(),
+  makeQFDistribution(),
+];
+
+const unProjects = [
+  makeQFDistribution(),
+  makeQFDistribution(),
+  makeQFDistribution(),
+];
+
+describe('merklePayoutStrategy', () => {
+  const setState = jest.fn();
+
+  // clean up function
+  beforeEach(() => {
+    (useStateMock as any).mockImplementation((init: any) => [init, setState]);
+  });
+
+  describe.only('useGroupProjectsByPaymentStatus', () => {
+    it('SHOULD group projects into paid and unpaid arrays', () => {
+      const returnValue = {paid: [], unpaid: []};
+      const useStateSpy = jest.spyOn(React, "useState");
+      useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
+      useStateSpy.mockImplementationOnce(() => [paidProjects, setState]);
+
+      const round = makeRoundData();
+      const chainId = ChainId.GOERLI_CHAIN_ID;
+
+      const projects = [...paidProjects, ...unProjects];
+      // TODO: Fix this test
+      (fetchProjectPaidInARound as any).mockImplementation(() => ({paidProjects}));
+      (fetchMatchingDistribution as any).mockImplementation(() => ({
+        distributionMetaPtr: "",
+        matchingDistribution: projects
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const result = useGroupProjectsByPaymentStatus(chainId, round.id!);
+
+      // expect(result.paid).toEqual(paidProjects);
+      // expect(result.paid).toEqual(unProjects);
     });
-
-    const fetchProjectPaidInARound = jest
-      .fn()
-      .mockResolvedValue(paidProjectsFromGraph);
-
-
-    // const result = await useGroupProjectsByPaymentStatus(roundId, chainId, {
-    //   useFetchMatchingDistributionFromContract,
-    //   fetchProjectPaidInARound,
-    // });
-  
-
-    // expect(result.paid).toEqual([{ projectId: '2', amount: 200, status: 'Paid' }]);
-    // expect(result.unpaid).toEqual([
-    //   { projectId: '1', amount: 100, status: 'Unpaid' },
-    //   { projectId: '3', amount: 300, status: 'Unpaid' },
-    // ]);
-    // expect(useFetchMatchingDistributionFromContract).toHaveBeenCalledWith(roundId);
-    // expect(fetchProjectPaidInARound).toHaveBeenCalledWith(roundId, chainId);
-
-    
   });
 });

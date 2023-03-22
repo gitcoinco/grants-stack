@@ -113,6 +113,7 @@ const _finalizeRound = async ({
   matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
+
   dispatch({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
@@ -121,7 +122,6 @@ const _finalizeRound = async ({
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
-
     const { tree, matchingResults } = generateMerkleTree(matchingJSON);
     const merkleRoot = tree.root;
 

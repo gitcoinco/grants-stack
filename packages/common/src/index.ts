@@ -136,7 +136,7 @@ export type Payout = {
  * @param chainId Chain ID
  * @returns
  */
-export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Payout[] {
+export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Promise<Payout[]> {
   const { data, error, mutate } = useSWR(
     [roundId, chainId],
     ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
@@ -168,7 +168,7 @@ export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Pay
     }
   );
 
-  const payouts = data.data.payoutStrategies.payouts;
+  const payouts = data?.data?.payoutStrategies?.payouts || [];
 
   return payouts;
 }

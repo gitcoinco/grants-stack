@@ -499,3 +499,36 @@ export async function fetchMatchingDistribution(
     throw new Error("Unable to fetch matching distribution");
   }
 }
+
+/**
+ * Marks contract as ready for payout + deducts fee
+ * @param roundId
+ * @param signerOrProvider
+ * @returns
+ */
+export const isReadyForPayout = async (
+  roundId: string,
+  signerOrProvider: Signer
+) => {
+  try {
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider
+    );
+
+    const tx = await roundImplementation.isReadyForPayout();
+
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+
+  } catch(error) {
+    console.error("isReadyForPayout", error);
+    throw new Error("Unable to mark contract ready for payout");
+  }
+}
