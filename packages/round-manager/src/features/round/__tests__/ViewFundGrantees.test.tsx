@@ -56,12 +56,68 @@ const useFetchMatchingDistributionFromContractMock = jest.spyOn(
   "useFetchMatchingDistributionFromContract"
 )
 
+const useGroupProjectsByPaymentStatusMock = jest.spyOn(
+  merklePayoutStrategy,
+  "useGroupProjectsByPaymentStatus"
+)
+
 const fetchMatchingDistributionMock = jest.spyOn(
   roundTs,
   "fetchMatchingDistribution"
 )
 
 describe("View Fund Grantees", () => {
+
+  const matchingStatsData: MatchingStatsData[] = [
+    {
+      index: 0,
+      projectName: "Project 1",
+      uniqueContributorsCount: 10,
+      matchPoolPercentage: 0.1,
+      projectId: "0x1",
+      matchAmountInToken: 100,
+      projectPayoutAddress: "0x00000000000000000000000000000000000000001",
+    },
+    {
+      index: 1,
+      projectName: "Project 2",
+      uniqueContributorsCount: 20,
+      matchPoolPercentage: 0.2,
+      projectId: "0x2",
+      matchAmountInToken: 200,
+      projectPayoutAddress: "0x00000000000000000000000000000000000000002",
+    },
+    {
+      index: 2,
+      projectName: "Project 3",
+      uniqueContributorsCount: 30,
+      matchPoolPercentage: 0.3,
+      projectId: "0x3",
+      matchAmountInToken: 300,
+      projectPayoutAddress: "0x00000000000000000000000000000000000000003",
+    },
+  ]
+
+
+  beforeEach(() => {
+    useFetchMatchingDistributionFromContractMock.mockReturnValue({
+      distributionMetaPtr: "some-meta-ptr",
+      matchingDistributionContract: matchingStatsData,
+      isLoading: false,
+      isError: false,
+    });
+
+    fetchMatchingDistributionMock.mockReturnValue(Promise.resolve({
+      distributionMetaPtr: "some-meta-ptr",
+      matchingDistribution: matchingStatsData
+    }));
+
+    useGroupProjectsByPaymentStatusMock.mockReturnValue({
+      paid: [matchingStatsData[0], matchingStatsData[1]],
+      unpaid: [matchingStatsData[2]],
+    })
+  });
+
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -106,53 +162,11 @@ describe("View Fund Grantees", () => {
     expect(screen.getByText("Round not finalized yet")).toBeInTheDocument();
   });
 
-  it.only("displays finalized status when round is finalized", async () => {
+  it("displays finalized status when round is finalized", async () => {
 
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
-
-    const matchingStatsData: MatchingStatsData[] = [
-      {
-        index: 0,
-        projectName: "Project 1",
-        uniqueContributorsCount: 10,
-        matchPoolPercentage: 0.1,
-        projectId: "0x1",
-        matchAmountInToken: 100,
-        projectPayoutAddress: "0x00000000000000000000000000000000000000001",
-      },
-      {
-        index: 1,
-        projectName: "Project 2",
-        uniqueContributorsCount: 20,
-        matchPoolPercentage: 0.2,
-        projectId: "0x2",
-        matchAmountInToken: 200,
-        projectPayoutAddress: "0x00000000000000000000000000000000000000002",
-      },
-      {
-        index: 2,
-        projectName: "Project 3",
-        uniqueContributorsCount: 30,
-        matchPoolPercentage: 0.3,
-        projectId: "0x3",
-        matchAmountInToken: 300,
-        projectPayoutAddress: "0x00000000000000000000000000000000000000003",
-      },
-    ]
-
-    useFetchMatchingDistributionFromContractMock.mockReturnValue({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistributionContract: matchingStatsData,
-      isLoading: false,
-      isError: false,
-    });
-
-    fetchMatchingDistributionMock.mockReturnValue(Promise.resolve({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistribution: matchingStatsData
-    }));
 
     await act(async () => {
       render(
@@ -173,6 +187,7 @@ describe("View Fund Grantees", () => {
         )
       );
     });
+
     expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
     expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
   });
@@ -205,8 +220,33 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Pay out funds")).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which are to be paid', () => {
-      // TODO:
+    it('displays exact list of projects in table which are to be paid', async () => {
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        );
+      });
+
+      await act(async () => {
+        const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
+        fireEvent.click(unpaidGranteesTab);
+      });
+
+      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
     });
   });
 
@@ -238,8 +278,34 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Transaction history of grantees you have paid out funds to.")).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which have been be paid', () => {
-      // TODO:
+    it('displays exact list of projects in table which have been be paid', async () => {
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        );
+      });
+
+      await act(async () => {
+        const paidGranteesTab = screen.getByText("Paid Grantees");
+        fireEvent.click(paidGranteesTab);
+      });
+
+      expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
     });
 
   });
