@@ -66,7 +66,7 @@
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.2",
     "buffer": "^6.0.3",
-    "common": "workspace:*",
+    "common": "*",
     "crypto-browserify": "^3.12.0",
     "date-fns": "^2.29.3",
     "dompurify": "^2.4.3",
@@ -114,7 +114,7 @@
     "prettier": "^2.8.3",
     "tailwind-styled-components": "^2.1.7",
     "tailwindcss": "^3.0.24",
-    "eslint-config-gitcoin": "workspace:*",
+    "eslint-config-gitcoin": "*",
     "@types/testing-library__jest-dom": "^5.14.5"
   },
   "engines": {

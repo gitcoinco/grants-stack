@@ -6,6 +6,7 @@
     "npm": ">=8.5.5",
     "node": ">=16.15.0"
   },
+  "workspaces": [ "packages/*" ],
   "scripts": {
     "start": "pnpm --filter round-manager run start",
     "build": "pnpm turbo build",
