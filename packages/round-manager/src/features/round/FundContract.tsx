@@ -53,9 +53,11 @@ export default function FundContract(props: {
     ) {
       setTimeout(() => {
         setOpenProgressModal(false);
-        if (transactionReplaced) {
-          setErrorModalSubHeading("Transaction cancelled. Please try again.");
-        }
+        setErrorModalSubHeading(
+          transactionReplaced
+            ? "Transaction cancelled. Please try again."
+            : "There was an error during the funding process. Please try again."
+        );
         setOpenErrorModal(true);
       }, errorModalDelayMs);
     }
