@@ -1,10 +1,17 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
 import { ethers } from "ethers";
+import { Logger } from "ethers/lib.esm/utils";
 import { useState } from "react";
 import { useBalance } from "wagmi";
-import { Round } from "../api/types";
+import { useReclaimFunds } from "../../context/round/ReclaimFundsContext";
+import { ProgressStatus, Round } from "../api/types";
 import { payoutTokens, useTokenPrice } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
+import ErrorModal from "../common/ErrorModal";
+import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -70,6 +77,30 @@ function ReclaimFundsContent(props: {
   roundId: string | undefined;
 }) {
   const [walletAddress, setWalletAddress] = useState<string>("");
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
+    string | undefined
+  >();
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
+
+  const { reclaimFunds, reclaimStatus } = useReclaimFunds();
+
+  async function handleSubmitFund() {
+    try {
+      // TODO: add logic to handle reclaiming funds
+    } catch (error) {
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        datadogLogs.logger.error(
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+        );
+        console.error("handleSubmitFund - roundId", props.roundId, error);
+      }
+    }
+  }
 
   const matchingFundPayoutToken =
     props.round &&
@@ -109,6 +140,77 @@ function ReclaimFundsContent(props: {
     !isBalanceError &&
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
+
+  function ConfirmationModalBody() {
+    return (
+      <div>
+        <div className="flex flex-col text-center sm:ml-16">
+          <div className="text-sm text-grey-400 mt-4 mb-1">
+            FUNDS TO BE RECLAIMED
+          </div>
+          <div className="font-bold mb-1">
+            {balanceData?.formatted} {matchingFundPayoutToken?.name}
+          </div>
+          <div className="text-md text-slate-400 mb-6">
+            (${Number(tokenBalanceInUSD).toFixed(2)} USD)
+          </div>
+        </div>
+        <AdditionalGasFeesNote />
+      </div>
+    );
+  }
+
+  const progressSteps = [
+    {
+      name: "Submit",
+      description: "Reclaiming funds from the round.",
+      status: reclaimStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        reclaimStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
+
+  function ReclaimFundsModal() {
+    return (
+      <>
+        <ConfirmationModal
+          title={"Confirm Decision"}
+          confirmButtonText={"Confirm"}
+          confirmButtonAction={() => {
+            setOpenProgressModal(true);
+            setOpenConfirmationModal(false);
+            handleSubmitFund();
+          }}
+          body={<ConfirmationModalBody />}
+          isOpen={openConfirmationModal}
+          setIsOpen={setOpenConfirmationModal}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we add your funds to the round."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmitFund}
+          subheading={errorModalSubHeading}
+        />
+      </>
+    );
+  }
+
+  function handleReclaimFunds() {
+    // check if signer has enough token balance
+    setOpenConfirmationModal(true);
+  }
+
   return (
     <div className="mt-8">
       <p
@@ -182,11 +284,13 @@ function ReclaimFundsContent(props: {
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded disabled:opacity-50"
             data-testid="reclaim-fund-btn"
             disabled={walletAddress.length == 0 || balanceData?.value.isZero()}
+            onClick={() => handleReclaimFunds()}
           >
             Reclaim funds
           </button>
         </div>
       </div>
+      <ReclaimFundsModal />
     </div>
   );
 }
