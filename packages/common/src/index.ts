@@ -1,4 +1,8 @@
 import useSWR from "swr";
+import {
+  ChainId,
+  graphql_fetch,
+} from "../../round-manager/src/features/api/utils";
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -110,3 +114,61 @@ export const submitPassport = (
     }),
   });
 };
+
+export function classNames(...classes: (false | null | undefined | string)[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export type Payout = {
+  id: string;
+  amount: string;
+  grantee: string;
+  projectId: string;
+  txnHash: string;
+  token: string;
+  version: string;
+  createdAt: string;
+}
+
+/**
+ * Fetches the payouts that happened for a given round from TheGraph
+ * @param roundId Round ID
+ * @param chainId Chain ID
+ * @returns
+ */
+export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Promise<Payout[]> {
+  const { data, error, mutate } = useSWR(
+    [roundId, chainId],
+    ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
+      return graphql_fetch(
+      `
+        query GetPayouts($roundId: String) {
+          payoutStrategies(
+            where:{
+              round_:{
+                id: $roundId
+              }
+            }
+          ) {
+            payouts {
+              id
+              version
+              createdAt
+              token
+              amount
+              grantee
+              projectId
+              txnHash
+            }
+          }
+        }
+      `,
+        chainId
+      );
+    }
+  );
+
+  const payouts = data?.data?.payoutStrategies?.payouts || [];
+
+  return payouts;
+}

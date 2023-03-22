@@ -70,6 +70,10 @@ export async function getRoundById(
                   address
                 }
               }
+              payoutStrategy {
+                id
+                isReadyForPayout
+              }
             }
           }
         `,
@@ -113,6 +117,7 @@ export async function getRoundById(
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
       approvedProjects: approvedProjectsWithMetadata,
+      finalized: false,
     };
   } catch (error) {
     console.error("getRoundById", error);
@@ -202,6 +207,7 @@ export async function listRounds(
         payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
+        finalized: false,
       });
     }
 
@@ -240,7 +246,10 @@ export async function deployRoundContract(
 
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
-    const initAddresses = [round.votingStrategy, round.payoutStrategy];
+    const initAddresses = [
+      round.votingStrategy,
+      round.payoutStrategy.id
+    ];
 
     const initRoundTimes = [
       new Date(round.applicationsStartTime).getTime() / 1000,
@@ -448,7 +457,6 @@ export async function getProjectOwners(
   }
 }
 
-
 /**
  * Fetch finalized matching distribution
  * @param roundId - the ID of a specific round for detail
@@ -489,5 +497,38 @@ export async function fetchMatchingDistribution(
   } catch (error) {
     console.error("fetchMatchingDistribution", error);
     throw new Error("Unable to fetch matching distribution");
+  }
+}
+
+/**
+ * Marks contract as ready for payout + deducts fee
+ * @param roundId
+ * @param signerOrProvider
+ * @returns
+ */
+export const isReadyForPayout = async (
+  roundId: string,
+  signerOrProvider: Signer
+) => {
+  try {
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider
+    );
+
+    const tx = await roundImplementation.isReadyForPayout();
+
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+
+  } catch(error) {
+    console.error("isReadyForPayout", error);
+    throw new Error("Unable to mark contract ready for payout");
   }
 }

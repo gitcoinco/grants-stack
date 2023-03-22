@@ -8,6 +8,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
+  UserGroupIcon
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -20,7 +21,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
-  Round,
+  Round
 } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
@@ -34,6 +35,7 @@ import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
+import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
 
@@ -198,6 +200,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <UserGroupIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="fund-grantees"
+                            >
+                              Fund Grantees
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -226,9 +247,12 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ViewRoundResults
                         round={round}
-                        chainId={`${chain.id}`}
+                        chainId={chain.id}
                         roundId={id}
                       />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewFundGrantees isRoundFinalized={round?.payoutStrategy?.isReadyForPayout ?? undefined} />
                     </Tab.Panel>
                   </Tab.Panels>
                 </div>
@@ -357,11 +381,9 @@ function GrantApplications(props: {
         </div>
       )}
 
-      <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-        {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-          <Spinner text="We're fetching your Round." />
-        )}
-      </div>
+      {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Round." />
+      )}
     </div>
   );
 }
