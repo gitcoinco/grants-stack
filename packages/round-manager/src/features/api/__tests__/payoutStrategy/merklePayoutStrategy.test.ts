@@ -7,6 +7,8 @@ import { fetchMatchingDistribution } from "../../round";
 
 jest.mock("../../round");
 
+jest.mock("common");
+
 jest.mock("../../utils", () => ({
   ...jest.requireActual("../../utils"),
   graphql_fetch: jest.fn(),
@@ -25,11 +27,6 @@ const unProjects = [
   makeQFDistribution(),
 ];
 
-jest.mock("common", () => ({
-  ...jest.requireActual("common"),
-  fetchProjectPaidInARound: jest.fn,
-}));
-
 describe('merklePayoutStrategy', () => {
 
   describe.only('useGroupProjectsByPaymentStatus', () => {
@@ -40,13 +37,13 @@ describe('merklePayoutStrategy', () => {
 
       const projects = [...paidProjects, ...unProjects];
       // TODO: Fix this test
-      // (fetchProjectPaidInARound as any).mockReturnValueOnce(paidProjects);
-      // (fetchMatchingDistribution as any).mockResolvedValueOnce({
-      //   distributionMetaPtr: "",
-      //   matchingDistribution: projects
-      // });
+      (fetchProjectPaidInARound as any).mockImplementation(() => ({paidProjects}));
+      (fetchMatchingDistribution as any).mockImplementation(() => ({
+        distributionMetaPtr: "",
+        matchingDistribution: projects
+      }));
 
-      // const result = await useGroupProjectsByPaymentStatus(chainId, round.id!);
+      const result = await useGroupProjectsByPaymentStatus(chainId, round.id!);
 
       // expect(result.paid).toEqual(paidProjects);
       // expect(result.paid).toEqual(unProjects);
