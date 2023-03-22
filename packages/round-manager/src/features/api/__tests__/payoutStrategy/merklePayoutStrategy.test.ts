@@ -1,16 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchProjectPaidInARound } from "common";
 import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
 import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/merklePayoutStrategy";
 import { ChainId } from "../../utils";
 import { fetchMatchingDistribution } from "../../round";
-import React from "react";
-import { useOutletContext } from "react-router-dom";
-import * as wagmi from "wagmi";
-import { MockConnector } from 'wagmi/connectors/mock'
-import { providers } from "ethers";
-import { goerli } from "wagmi/chains";
+import React, { useState as useStateMock } from "react";
 
+// Mocks
 jest.mock("../../round");
 
 jest.mock("common");
@@ -25,32 +20,23 @@ jest.mock("../../utils", () => ({
   fetchFromIPFS: jest.fn(),
 }));
 
-jest.mock("wagmi", () => ({
-  ...jest.requireActual("wagmi"),
-  useNetwork: () => ({
-    chain: jest.fn(),
-    chains: [
-      {
-        id: 5,
-        name: "Goerli",
-      },
-    ],
-    useSigner: () => ({
-      signer: jest.fn(),
-    }),
-    useProvider: () => ({
-      provider: jest.fn(),
-    }),
-    useNetwork: () => ({
-      chain: jest.fn(),
-    }),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useOutletContext: () => ({
+    data: {},
   }),
 }));
+
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useState: jest.fn(),
+  useEffect: jest.fn(),
+}))
 
 const paidProjects = [
   makeQFDistribution(),
   makeQFDistribution(),
-]
+];
 
 const unProjects = [
   makeQFDistribution(),
@@ -59,34 +45,19 @@ const unProjects = [
 ];
 
 describe('merklePayoutStrategy', () => {
+  const setState = jest.fn();
+
+  // clean up function
+  beforeEach(() => {
+    (useStateMock as any).mockImplementation((init: any) => [init, setState]);
+  });
 
   describe.only('useGroupProjectsByPaymentStatus', () => {
     it('SHOULD group projects into paid and unpaid arrays', () => {
-      const setState = jest.fn();
       const returnValue = {paid: [], unpaid: []};
       const useStateSpy = jest.spyOn(React, "useState");
       useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
-
-      // TODO: Add useOutletContext mock with this data
-      // const data = {
-      //   address: "0x123",
-      //   chain: { id: 5, name: "Goerli", network: "Goerli" },
-      //   provider: {},
-      //   signer: {},
-      // }
-
-      const mockProvider = new providers.JsonRpcProvider("http://localhost:8545");
-
-      const connector = new MockConnector({
-        chains: [goerli],
-        options: {
-          chainId: goerli.id,
-          signer: new providers.JsonRpcSigner(mockProvider),
-          flags: {
-            isAuthorized: true,
-          }
-        }
-      });
+      useStateSpy.mockImplementationOnce(() => [paidProjects, setState]);
 
       const round = makeRoundData();
       const chainId = ChainId.GOERLI_CHAIN_ID;
@@ -99,6 +70,7 @@ describe('merklePayoutStrategy', () => {
         matchingDistribution: projects
       }));
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = useGroupProjectsByPaymentStatus(chainId, round.id!);
 
       // expect(result.paid).toEqual(paidProjects);
