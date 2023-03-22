@@ -33,10 +33,11 @@ jobs:
           yarn build
 
       - name: Test the API
+        working-directory: packages/api
         env:
           REACT_APP_SUBGRAPH_GOERLI_API: ${{ secrets.REACT_APP_SUBGRAPH_GOERLI_API }}
           REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API }}
           REACT_APP_SUBGRAPH_FANTOM_TESTNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API }}
           REACT_APP_SUBGRAPH_FANTOM_MAINNET_API: ${{ secrets.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API }}
         run: |
-          yarn api-test
+          yarn test
