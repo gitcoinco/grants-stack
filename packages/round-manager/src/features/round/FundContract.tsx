@@ -28,7 +28,7 @@ export default function FundContract(props: {
   const { address } = useAccount();
   const navigate = useNavigate();
 
-  const [amountToFund, setAmountToFund] = useState(0);
+  const [amountToFund, setAmountToFund] = useState("");
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -145,7 +145,7 @@ export default function FundContract(props: {
     // check if signer has enough token balance
     const accountBalance = matchingFundPayoutTokenBalance.data?.value;
     const tokenBalance = ethers.utils.parseUnits(
-      amountToFund.toString(),
+      amountToFund,
       matchingFundPayoutToken?.decimal
     );
 
@@ -332,7 +332,7 @@ export default function FundContract(props: {
             className="border border-gray-300 rounded-md p-2 w-1/2"
             placeholder="Enter the amount you wish to fund"
             value={amountToFund}
-            onChange={(e) => setAmountToFund(Number(e.target.value))}
+            onChange={(e) => setAmountToFund(e.target.value)}
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -418,7 +418,10 @@ export default function FundContract(props: {
   }
 
   function ConfirmationModalBody() {
-    const amountInUSD = amountToFund * Number(data);
+    const amountInUSD =
+      Number(
+        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+      ) * Number(data);
     return (
       <div>
         <div className="flex flex-col text-center sm:ml-16">
@@ -454,7 +457,9 @@ export default function FundContract(props: {
       await fundContract({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         roundId: props.roundId!,
-        fundAmount: amountToFund,
+        fundAmount: Number(
+          parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        ),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         payoutToken: matchingFundPayoutToken!,
       });
