@@ -17,28 +17,10 @@
     ]
   },
   "scripts": {
-    "start": "yarn --filter round-manager run start",
-    "build": "yarn turbo build",
-    "compile": "yarn --filter contracts run compile ",
-    "test": "yarn run test",
+    "build": "turbo test",
+    "test": "turbo test",
     "typecheck": "turbo run typecheck",
-    "// round manager script": "====== packages/round-manager specific ======",
-    "rm-build": "yarn --filter round-manager run build",
-    "rm-test": "yarn --filter round-manager run test",
-    "rm-start": "yarn --filter round-manager run start",
-    "rm-slither": "yarn --filter round-manager run slither",
-    "rm-typecheck": "yarn --filter round-manager exec  -- tsc --noEmit",
-    "// grant explorer script": "====== packages/grant-explorer specific ======",
-    "re-build": "turbo run build --filter=grant-explorer",
-    "re-test": "turbo run test --filter=grant-explorer",
-    "re-start": "yarn --filter grant-explorer run start",
-    "re-typecheck": "turbo run typecheck --filter=grant-explorer",
-    "// api script": "====== packages/api specific ======",
-    "api-build": "turbo run build --filter=api",
-    "api-test": "turbo run test --filter=api",
-    "api-start": "yarn --filter api run start",
-    "lint-staged": "lint-staged",
-    "lint:builder": "yarn --filter=builder run lint"
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
