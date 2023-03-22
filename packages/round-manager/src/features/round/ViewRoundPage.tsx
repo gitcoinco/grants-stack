@@ -114,7 +114,7 @@ export default function ViewRoundPage() {
                   startTime={round?.roundStartTime}
                   endTime={round?.roundEndTime}
                 />
-                <div className="absolute right-0 mr-4">
+                <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
                     chainId={`${chain.id}`}

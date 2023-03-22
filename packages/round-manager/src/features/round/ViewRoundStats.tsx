@@ -11,7 +11,7 @@ export default function ViewRoundStats(props: {
   }
   // TODO: tooltips
   return (
-    <div className="flex flex-center flex-col mx-auto mt-3">
+    <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10 text-base">
         Round Stats
       </p>
