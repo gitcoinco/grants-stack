@@ -212,7 +212,7 @@ export default function ViewRoundPage() {
                             <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
                             <span
                               className="mt-0.5"
-                              data-testid="round-results"
+                              data-testid="reclaim-funds"
                             >
                               Reclaim Funds
                             </span>

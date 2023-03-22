@@ -16,9 +16,18 @@ export default function ReclaimFunds(props: {
   const isAfterRoundEndDate =
     props.round && props.round.roundEndTime <= currentTime;
 
+  const daysLeft = props.round
+    ? Number(props.round?.roundEndTime) - Number(currentTime)
+    : 0;
+
+  // convert unix time to days
+  const daysLeftInRound = Number((daysLeft / (1000 * 60 * 60 * 24)).toFixed(0));
+
   return (
     <div>
-      {isBeforeRoundEndDate && <NoInformationContent />}
+      {isBeforeRoundEndDate && (
+        <NoInformationContent daysLeft={daysLeftInRound} />
+      )}
       {isAfterRoundEndDate && (
         <InformationContent
           round={props.round}
@@ -30,22 +39,22 @@ export default function ReclaimFunds(props: {
   );
 }
 
-function NoInformationContent() {
+function NoInformationContent(props: { daysLeft: number }) {
   return (
     <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
       <div className="flex flex-center justify-center items-center bg-grey-150 rounded-full h-12 w-12 text-violet-400">
         <ExclamationCircleIcon className="w-6 h-6" />
       </div>
-      <NoInformationMessage />
+      <NoInformationMessage daysLeft={props.daysLeft} />
     </div>
   );
 }
 
-function NoInformationMessage() {
+function NoInformationMessage(props: { daysLeft: number }) {
   return (
     <>
       <h2 className="mt-8 text-2xl antialiased">
-        X days until you can reclaim funds
+        {props.daysLeft} days until you can reclaim funds
       </h2>
       <div className="text-sm">
         If there is a balance left over, you will be able to reclaim funds here.
@@ -100,7 +109,7 @@ function ReclaimFundsContent(props: {
     <div className="mt-8">
       <p
         className="font-bold mb-10 text-base"
-        data-testid="fund-contract-title"
+        data-testid="reclaim-funds-title"
       >
         Reclaim Funds
       </p>
@@ -167,7 +176,7 @@ function ReclaimFundsContent(props: {
         <div className="flex flex-row justify-start mt-6">
           <button
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded disabled:opacity-50"
-            data-testid="fund-contract-btn"
+            data-testid="reclaim-fund-btn"
             disabled={walletAddress.length == 0 || balanceData?.value.isZero()}
           >
             Reclaim funds
