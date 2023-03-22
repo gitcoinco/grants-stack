@@ -78,7 +78,7 @@ export async function getRoundById(
           }
         `,
       chainId,
-      { roundId }
+      { roundId: roundId }
     );
 
     const round: RoundResult = res.data.rounds[0];

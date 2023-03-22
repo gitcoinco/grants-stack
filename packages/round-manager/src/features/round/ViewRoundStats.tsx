@@ -1,14 +1,56 @@
 import { Spinner } from "../common/Spinner";
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import useSWR from "swr";
+import { useWallet } from "../common/Auth";
+import { Client } from "allo-indexer-client";
+import { useParams } from "react-router-dom";
+import { utils } from "ethers";
 
-export default function ViewRoundStats(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  roundStats: any;
-  isRoundStatsFetched: boolean;
-}) {
-  if (props.isRoundStatsFetched) {
-    <Spinner text="We're fetching your Round." />;
+function useRoundStats(roundId: string) {
+  const { chain } = useWallet();
+  const client = new Client(
+    fetch,
+    "https://grants-stack-indexer.fly.dev",
+    chain.id
+  );
+  return useSWR([roundId, "/stats"], ([roundId]) => {
+    return client.getRoundBy("id", utils.getAddress(roundId.toLowerCase()));
+  });
+}
+
+function useRoundProjects(roundId: string) {
+  const { chain } = useWallet();
+  const client = new Client(
+    fetch,
+    "https://grants-stack-indexer.fly.dev",
+    chain.id
+  );
+  return useSWR([roundId, "/projects"], ([roundId]) => {
+    return client.getRoundApplications(utils.getAddress(roundId.toLowerCase()));
+  });
+}
+
+export default function ViewRoundStats() {
+  const { id } = useParams();
+  const { data, isLoading, error } = useRoundStats(id as string);
+  const {
+    data: projects,
+    isLoading: isLoadingProjects,
+    error: projectsError,
+  } = useRoundProjects(id as string);
+
+  const acceptedProjectsCount = projects?.filter(
+    (proj) => proj.status === "APPROVED"
+  ).length;
+
+  if (isLoading) {
+    return <Spinner text="We're fetching your Round." />;
   }
+
+  if (!data) {
+    return <div>no data, {JSON.stringify(error)}</div>;
+  }
+
   // TODO: tooltips
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -18,18 +60,21 @@ export default function ViewRoundStats(props: {
       <div className="grid grid-cols-5 grid-rows-2 gap-6">
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard
-          text={"$180,000"}
+          text={new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(data.amountUSD)}
           title={"Est. Donations Made"}
           tooltip={"A tooltip // TODO: real tooltip"}
         />
         <StatsCard text={"$10,000"} title={"Matching Funds Available"} />
         <StatsCard
-          text={"321"}
+          text={data.uniqueContributors.toLocaleString("en")}
           title={"Unique Contributors"}
           tooltip={"el tooltipo"}
         />
         <StatsCard
-          text={"437"}
+          text={data.votes.toLocaleString("en")}
           title={"Number of Contributions"}
           tooltip={"Another tooltip"}
         />
@@ -48,7 +93,7 @@ export default function ViewRoundStats(props: {
                 Current Matching Stats
               </span>
               <span className={"text-sm leading-5 text-gray-400"}>
-                (as of 10/22/2022)
+                (as of {})
               </span>
             </caption>
             <thead>
@@ -86,11 +131,18 @@ export default function ViewRoundStats(props: {
           </table>
         </div>
         <div className="col-span-1 row-span-2 grid gap-y-6">
-          <StatsCard grayBorder={true} title="Avg. Contribution" text="$5.93" />
+          <StatsCard
+            grayBorder={true}
+            title="Avg. Contribution"
+            text={new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(data.amountUSD / data.uniqueContributors)}
+          />
           <StatsCard
             grayBorder={true}
             title="Participating projects"
-            text="67"
+            text={acceptedProjectsCount ?? "Loading..."}
           />
         </div>
       </div>
@@ -99,7 +151,7 @@ export default function ViewRoundStats(props: {
 }
 
 type StatsCardProps = {
-  text: string;
+  text: string | number;
   title: string;
   tooltip?: string;
   grayBorder?: boolean;
