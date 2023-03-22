@@ -23,14 +23,17 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
+        working-directory: packages/grant-explorer
         run: |
           yarn install
 
 
       - name: Build Grant Explorer
+        working-directory: packages/grant-explorer
         run: |
-          yarn re-build
+          yarn build
 
       - name: Test Grant Explorer
+        working-directory: packages/grant-explorer
         run: |
-          yarn re-test
+          yarn test

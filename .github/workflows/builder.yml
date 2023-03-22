@@ -24,10 +24,9 @@ jobs:
         cache: 'yarn'
 
     - name: Test and Build
+      working-directory: packages/builder
       run: |
         yarn install
-
-        cd packages/builder
 
         yarn lint
         yarn test

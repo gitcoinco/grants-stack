@@ -138,12 +138,14 @@ jobs:
           cache: "yarn"
 
       - name: Install Dependencies
+        working-directory: packages/api
         run: |
           yarn install
 
       - name: Build the API
+        working-directory: packages/api
         run: |
-          yarn api-build
+          yarn build
 
       - name: Upload Source Maps to Sentry
         uses: getsentry/action-release@v1

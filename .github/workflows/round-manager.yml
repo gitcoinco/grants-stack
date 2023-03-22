@@ -23,13 +23,16 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
+        working-directory: packages/round-manager
         run: |
           yarn install
 
       - name: Build Round Manager
+        working-directory: packages/round-manager
         run: |
-          yarn rm-build
+          yarn build
 
       - name: Test Round Manager
+        working-directory: packages/round-manager
         run: |
-          yarn rm-test
+          yarn test

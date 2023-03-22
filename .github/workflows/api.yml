@@ -23,12 +23,14 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
+        working-directory: packages/api
         run: |
           yarn install
 
       - name: Build the API
+        working-directory: packages/api
         run: |
-          yarn api-build
+          yarn build
 
       - name: Test the API
         env:
