@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchProjectPaidInARound } from "common";
 import { ethers, Signer } from "ethers";
 import { useState, useEffect } from "react";
@@ -229,6 +230,7 @@ export const batchDistributeFunds = async (
     projectsToBePaid.forEach(project => {
 
       const distribution: [number, string, number, string] = [
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         project.index!,
         project.projectPayoutAddress,
         project.matchAmountInToken,

@@ -547,7 +547,7 @@ function UploadJSON(props: {
         data-testid="dropzone"
       >
         <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
-          <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
+          <div className="h-full w-full text-center flex flex-col justify-center items-center  ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

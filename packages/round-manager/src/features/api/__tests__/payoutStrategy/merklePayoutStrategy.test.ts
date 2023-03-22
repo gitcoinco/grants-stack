@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchProjectPaidInARound } from "common";
 import { makeQFDistribution, makeRoundData } from "../../../../test-utils";
 import { useGroupProjectsByPaymentStatus } from "../../payoutStrategy/merklePayoutStrategy";

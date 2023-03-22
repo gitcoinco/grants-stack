@@ -59,7 +59,7 @@ describe("View Fund Grantees", () => {
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  it("displays non finalized status when round is not finalized", () => {
+  it("displays non-finalized status when round is not finalized", () => {
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
@@ -116,7 +116,7 @@ describe("View Fund Grantees", () => {
   describe("Unpaid Projects", () => {
   
     it("displays unpaid projects section on clicking unpaid grantees tab", () => {
-      // TODO
+      // TODO: 
     });
 
     it('displays exact list of projects in table which are to be paid', () =>  {
