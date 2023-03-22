@@ -106,6 +106,9 @@ export const useFetchMatchingDistributionFromContract = (
   isLoading: boolean;
   isError: boolean;
 } => {
+
+  console.log("SHOULD NOT PRINT");
+
   const { provider: walletProvider } = useWallet();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [matchingData, setMatchingData] = useState<any>({});
@@ -167,14 +170,18 @@ export const useGroupProjectsByPaymentStatus = (
 
   useEffect(() => {
     async function fetchData() {
+
       const groupedProjectsTmp: GroupedProjects = {
         paid: [],
         unpaid: [],
       };
 
       const paidProjectIds = (await paidProjectsFromGraph).map(
-        (project) => project.id
+        (project) => project.projectId
       );
+
+      console.log("mocked allProjects", allProjects);
+      console.log("mocked paidProjectIds", paidProjectIds);
 
       allProjects?.forEach((project) => {
         const projectStatus = paidProjectIds.includes(project.projectId)
@@ -186,10 +193,10 @@ export const useGroupProjectsByPaymentStatus = (
 
       setGroupedProjects(groupedProjectsTmp);
     }
-
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allProjects]);
+
   // TODO: Add txn hash and other needs
   return groupedProjects;
 };
