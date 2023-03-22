@@ -5,6 +5,8 @@ import { useWallet } from "../common/Auth";
 import { Client } from "allo-indexer-client";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
+import { useContractRead } from "wagmi";
+import { roundImplementationContract } from "../api/contracts";
 
 function useRoundStats(roundId: string) {
   const { chain } = useWallet();
@@ -33,15 +35,17 @@ function useRoundProjects(roundId: string) {
 export default function ViewRoundStats() {
   const { id } = useParams();
   const { data, isLoading, error } = useRoundStats(id as string);
-  const {
-    data: projects,
-    isLoading: isLoadingProjects,
-    error: projectsError,
-  } = useRoundProjects(id as string);
+  const { data: projects } = useRoundProjects(id as string);
 
   const acceptedProjectsCount = projects?.filter(
     (proj) => proj.status === "APPROVED"
   ).length;
+
+  const { data: matchAmount, error: matchAmountError } = useContractRead({
+    addressOrName: id as string,
+    contractInterface: roundImplementationContract.abi,
+    functionName: "matchAmount",
+  });
 
   if (isLoading) {
     return <Spinner text="We're fetching your Round." />;
@@ -50,6 +54,8 @@ export default function ViewRoundStats() {
   if (!data) {
     return <div>no data, {JSON.stringify(error)}</div>;
   }
+
+  console.log(matchAmountError);
 
   // TODO: tooltips
   return (
@@ -67,7 +73,10 @@ export default function ViewRoundStats() {
           title={"Est. Donations Made"}
           tooltip={"A tooltip // TODO: real tooltip"}
         />
-        <StatsCard text={"$10,000"} title={"Matching Funds Available"} />
+        <StatsCard
+          text={matchAmount ? matchAmount[0] : "Loading..."}
+          title={"Matching Funds Available"}
+        />
         <StatsCard
           text={data.uniqueContributors.toLocaleString("en")}
           title={"Unique Contributors"}

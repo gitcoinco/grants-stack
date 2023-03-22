@@ -94,7 +94,6 @@ export async function getRoundById(
       chainId
     );
 
-    console.log("approvedProjectsWithMetadata", approvedProjectsWithMetadata);
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
       (account: { address: string }) => account.address
     );
@@ -361,7 +360,6 @@ async function loadApprovedProjects(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<ApprovedProject[]> {
-  console.log("loadingprojects");
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
   }
