@@ -66,7 +66,7 @@ export default function ViewRoundPage() {
 
       if (round) {
         /* During development, give frontend access to all rounds */
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
           setHasAccess(true);
           return;
         }
