@@ -6,8 +6,10 @@ import { BigNumber } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
+import { useBalance } from "wagmi";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
-import { MatchingStatsData } from "../api/types";
+import { MatchingStatsData, Round } from "../api/types";
+import { payoutTokens, useTokenPrice } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 
@@ -21,9 +23,30 @@ type GranteeFundInfo = {
 };
 
 export default function ViewFundGrantees(props: {
-  isRoundFinalized: boolean | undefined;
+  round: Round | undefined;
+  chainId: number;
+  roundId: string | undefined;
 }) {
   const [isFundGranteesFetched] = useState(false);
+
+  const matchingFundPayoutToken =
+    props.round &&
+    payoutTokens.filter(
+      (t) =>
+        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
+    )[0];
+
+    const tokenDetail = {
+      addressOrName: props.roundId,
+      token: matchingFundPayoutToken?.address,
+    };
+  
+    const { data, } = useTokenPrice(
+      matchingFundPayoutToken?.coingeckoId
+    );
+
+    console.log("===>");
+    console.log(matchingFundPayoutToken);
 
   if (isFundGranteesFetched) {
     return <Spinner text="We're fetching your data." />;
@@ -32,7 +55,7 @@ export default function ViewFundGrantees(props: {
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
-      {props.isRoundFinalized ? (
+      {!props.round?.payoutStrategy?.isReadyForPayout ? (
         <FinalizedRoundContent />
       ) : (
         <NonFinalizedRoundContent />
@@ -232,7 +255,7 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Matching Percent
+                      Matching %
                     </th>
                     <th
                       scope="col"
@@ -286,7 +309,7 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                         {project.walletAddress}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.matchingPercent}
+                        {project.matchingPercent}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {project.payoutAmount.toString()}
