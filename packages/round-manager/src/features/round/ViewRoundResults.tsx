@@ -24,7 +24,7 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { isReadyForPayout } from "../../features/api/round";
+import { setReadyForPayout } from "../../features/api/round";
 import { useSigner } from "wagmi";
 
 export default function ViewRoundResults(props: {
@@ -268,11 +268,10 @@ function InformationTable(props: {
       <div className="flex justify-end">
         <Button
           onClick={async () => {
-            // TODO: Call the contract function to finalize the results
+            // TODO: trigger the modal
             if(signer) {
-              await isReadyForPayout(roundId, signer);
+              await setReadyForPayout(roundId, signer);
             }
-            console.log("Finalizing Results");
           }}
           type="button"
           data-testid="finalize-results"

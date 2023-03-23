@@ -4,14 +4,14 @@ import { ethers } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
-  roundImplementationContract,
+  roundImplementationContract
 } from "./contracts";
 import {
   ApplicationStatus,
   ApprovedProject,
   MatchingStatsData,
   MetadataPointer,
-  Round,
+  Round
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 
@@ -501,12 +501,12 @@ export async function fetchMatchingDistribution(
 }
 
 /**
- * Marks contract as ready for payout + deducts fee
+ * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
  * @param roundId
  * @param signerOrProvider
  * @returns
  */
-export const isReadyForPayout = async (
+export const setReadyForPayout = async (
   roundId: string,
   signerOrProvider: Signer
 ) => {
@@ -517,18 +517,18 @@ export const isReadyForPayout = async (
       signerOrProvider
     );
 
-    const tx = await roundImplementation.isReadyForPayout();
+    const tx = await roundImplementation.setReadyForPayout();
 
     const receipt = await tx.wait();
 
     console.log("✅ Transaction hash: ", tx.hash);
     const blockNumber = receipt.blockNumber;
+
     return {
       transactionBlockNumber: blockNumber,
     };
-
   } catch(error) {
-    console.error("isReadyForPayout", { error });
-    throw new Error("Unable to mark contract ready for payout");
+    console.error("setReadyForPayout", { error });
+    throw new Error("Unable to set contract ready for payout");
   }
 }
