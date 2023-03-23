@@ -18,7 +18,7 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round
+  Round,
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -26,6 +26,8 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { isReadyForPayout } from "../../features/api/round";
+import { useSigner } from "wagmi";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
