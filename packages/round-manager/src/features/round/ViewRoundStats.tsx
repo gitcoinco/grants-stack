@@ -65,7 +65,6 @@ export default function ViewRoundStats() {
               : "-"
           }
           title={"Est. Donations Made"}
-          tooltip={"A tooltip // TODO: real tooltip"}
         />
         <StatsCard
           text={matchAmount ? matchAmount[0] : "-"}
@@ -78,12 +77,10 @@ export default function ViewRoundStats() {
               : "-"
           }
           title={"Unique Contributors"}
-          tooltip={"el tooltipo"}
         />
         <StatsCard
           text={roundStats ? roundStats.votes.toLocaleString("en") : "-"}
           title={"Number of Contributions"}
-          tooltip={"Another tooltip"}
         />
         <hr className={"my-10 col-span-5"} />
         <div className="col-span-1 row-span-2 flex items-center">
@@ -166,7 +163,6 @@ export default function ViewRoundStats() {
 type StatsCardProps = {
   text: string | number;
   title: string;
-  tooltip?: string;
   grayBorder?: boolean;
 };
 
@@ -183,9 +179,6 @@ function StatsCard(props: StatsCardProps) {
         }
       >
         {props.title}
-        {props.tooltip && (
-          <InformationCircleIcon className={"text-gray-500 h-4 w-4"} />
-        )}
       </span>
       <div className={"text-2xl leading-8 font-normal text-grey-400"}>
         {props.text}
