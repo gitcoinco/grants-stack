@@ -85,7 +85,7 @@ function InformationContent(props: {
   const [customMatchingData, setCustomMatchingData] = useState<
     MatchingStatsData[] | undefined
   >();
-  const [useContractData, setUseContractData] = useState(true);
+  const [useFetchDistributionFromContract, setUseFetchDistributionFromContract] = useState(true);
 
   const {
     distributionMetaPtr,
@@ -96,9 +96,9 @@ function InformationContent(props: {
 
   useEffect(() => {
     if (distributionMetaPtr !== "") {
-      setUseContractData(true);
+      setUseFetchDistributionFromContract(true);
     } else {
-      setUseContractData(false);
+      setUseFetchDistributionFromContract(false);
     }
   }, [distributionMetaPtr, matchingDistributionContract]);
 
@@ -147,8 +147,8 @@ function InformationContent(props: {
           setUseDefault={setUseDefault}
           customMatchingData={customMatchingData}
           setCustomMatchingData={setCustomMatchingData}
-          useContractData={useContractData}
-          setUseContractData={setUseContractData}
+          useFetchDistributionFromContract={useFetchDistributionFromContract}
+          setUseFetchDistributionFromContract={setUseFetchDistributionFromContract}
           matchingDistributionContract={matchingDistributionContract}
         />
       )}
@@ -172,7 +172,9 @@ function ErrorMessage() {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function InformationTable(props: {
-  useContractData?: boolean;
+  roundId: string | undefined;
+  isReadyForPayout?: boolean;
+  useFetchDistributionFromContract?: boolean;
   matchingData: MatchingStatsData[] | undefined;
   isCustom?: boolean;
   customMatchingData?: MatchingStatsData[] | undefined;
@@ -180,16 +182,31 @@ function InformationTable(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+
+  // TODO: Refresh component
+  const [openReadyForPayoutModal, setOpenReadyForPayoutModal] = useState(false);
+
   const { data: signer } = useSigner();
-  // TODO: get the roundId
-  const roundId = "0x90f301826d464708c74b437f868e6c8a3c591e5f";
+
+  const handleSetReadyForPayout = async () => {
+    try {
+      if(signer && props.roundId) {
+        await setReadyForPayout(props.roundId, signer);
+
+        // TODO: Add Progres Modal
+        setOpenReadyForPayoutModal(false);
+      }
+    } catch (error) {
+      console.error("handleSetReadyForPayout", error)
+    }
+  };
 
   return (
     <div className="mt-8">
       <hr className="mt-2 mb-4" />
       <div className="flex flex-row relative">
         <p className="font-bold" data-testid="match-stats-title">
-          {props.useContractData
+          {props.useFetchDistributionFromContract
             ? "Finalized"
             : props.isCustom
             ? "Custom"
@@ -265,27 +282,38 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
-      <div className="flex justify-end">
-        <Button
-          onClick={async () => {
-            // TODO: trigger the modal
-            if(signer) {
-              await setReadyForPayout(roundId, signer);
-            }
-          }}
-          type="button"
-          data-testid="finalize-results"
-          className="flex bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
-        >
-          Finalize Results
-        </Button>
-      </div>
-      <div className="flex justify-end mt-4">
-        <span className="text-gray-400 flex">
-          The contract will be locked once results are finalized. You will not be able to change the results after you finalize.
-        </span>
-      </div>
+
+      {!props.isReadyForPayout ? (
+        <>
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setOpenReadyForPayoutModal(true)}
+              type="button"
+              data-testid="finalize-results"
+              className="flex bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
+              >
+              Finalize Results
+            </Button>
+          </div>
+          <div className="flex justify-end mt-4">
+            <span className="text-gray-400 flex">
+              You will not be able to change the distribution after you finalize.
+            </span>
+          </div>
+        </>
+      ): null}
+
+      <InfoModal
+        title={"Warning!"}
+        body={<ReadyForPayoutModalBody />}
+        isOpen={openReadyForPayoutModal}
+        setIsOpen={setOpenReadyForPayoutModal}
+        continueButtonText={"Ready for payout"}
+        continueButtonAction={handleSetReadyForPayout}
+      >
+      </InfoModal>
     </div>
+
   );
 }
 
@@ -302,13 +330,14 @@ function FinalizeRound(props: {
   setCustomMatchingData: (
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
-  useContractData: boolean;
-  setUseContractData: (useContractData: boolean) => void;
+  useFetchDistributionFromContract: boolean;
+  setUseFetchDistributionFromContract: (useFetchDistributionFromContract: boolean) => void;
   matchingDistributionContract: MatchingStatsData[] | undefined;
 }) {
   const [openInfoModal, setOpenInfoModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
+
   const navigate = useNavigate();
 
   const { finalizeRound, IPFSCurrentStatus, finalizeRoundToContractStatus } =
@@ -373,18 +402,20 @@ function FinalizeRound(props: {
 
   return (
     <>
-      {props.useContractData && (
+      {props.useFetchDistributionFromContract && (
         <div className="w-full pt-12">
           <span className="font-bold" data-testid="finalized-round">
             Finalized Round
           </span>
           <InformationTable
-            useContractData={props.useContractData}
+            roundId={props.roundId}
+            isReadyForPayout={props.payoutStrategy.isReadyForPayout}
+            useFetchDistributionFromContract={props.useFetchDistributionFromContract}
             matchingData={props.matchingDistributionContract}
           />
         </div>
       )}
-      {!props.useContractData && (
+      {!props.useFetchDistributionFromContract && (
         <div className="w-full pt-12">
           <span className="font-bold" data-testid="finalize-round">
             Finalize Round
@@ -401,7 +432,10 @@ function FinalizeRound(props: {
                 </div>
                 <div>
                   {props.useDefault ? (
-                    <InformationTable matchingData={props.matchingData} />
+                    <InformationTable
+                      roundId={props.roundId}
+                      matchingData={props.matchingData}
+                    />
                   ) : null}
                   {!props.useDefault && !props.customMatchingData && (
                     <UploadJSON
@@ -411,6 +445,7 @@ function FinalizeRound(props: {
                   )}
                   {!props.useDefault && props.customMatchingData ? (
                     <InformationTable
+                      roundId={props.roundId}
                       matchingData={props.customMatchingData}
                       isCustom={true}
                       customMatchingData={props.customMatchingData}
@@ -707,6 +742,24 @@ function InfoModalBody() {
         Please make sure that the final distribution is correct.
         <br />
         You will not be able to make changes after finalizing.
+      </p>
+    </div>
+  );
+}
+
+function ReadyForPayoutModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+       Upon finalizing round results,
+       they'll be permanently locked in the smart contract,
+       ensuring data integrity on the blockchain.
+      </p>
+
+      <p className="text-sm mt-4">
+       The protocol will also deduct a fee at this stage.
+       Please verify results before confirming, as you'll
+       acknowledge their accuracy and accept the fee deduction.
       </p>
     </div>
   );
