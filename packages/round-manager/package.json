@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@babel/core": "^7.20.12",
     "@craco/craco": "^6.4.5",
     "@datadog/browser-logs": "^4.17.1",
     "@datadog/browser-rum": "^4.17.1",
