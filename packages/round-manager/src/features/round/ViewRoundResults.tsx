@@ -398,6 +398,7 @@ function InformationTable(props: {
         tryAgainFn={handleReadyForPayoutModal}
       />
     </div>
+
   );
 }
 
