@@ -65,6 +65,11 @@ export default function ViewRoundPage() {
       setRoundExists(!!round);
 
       if (round) {
+        /* During development, give frontend access to all rounds */
+        if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+          setHasAccess(true);
+          return;
+        }
         round.operatorWallets?.includes(address?.toLowerCase())
           ? setHasAccess(true)
           : setHasAccess(false);
@@ -109,9 +114,9 @@ export default function ViewRoundPage() {
                   startTime={round?.roundStartTime}
                   endTime={round?.roundEndTime}
                 />
-                <div className="ml-32 absolute left-3/4">
+                <div className="absolute right-0">
                   <ViewGrantsExplorerButton
-                    iconStyle="h-4 w-4 mr-2"
+                    iconStyle="h-4 w-4"
                     chainId={`${chain.id}`}
                     roundId={id}
                   />
