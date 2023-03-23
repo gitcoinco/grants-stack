@@ -1,4 +1,3 @@
-import { InformationCircleIcon } from "@heroicons/react/solid";
 import useSWR from "swr";
 import { useWallet } from "../common/Auth";
 import { Client } from "allo-indexer-client";
