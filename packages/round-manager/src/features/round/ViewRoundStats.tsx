@@ -1,4 +1,3 @@
-import { Spinner } from "../common/Spinner";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import useSWR from "swr";
 import { useWallet } from "../common/Auth";
@@ -33,29 +32,20 @@ function useRoundProjects(roundId: string) {
 }
 
 export default function ViewRoundStats() {
-  const { id } = useParams();
-  const { data, isLoading, error } = useRoundStats(id as string);
-  const { data: projects } = useRoundProjects(id as string);
+  const { id: roundId } = useParams();
+
+  const { data: roundStats } = useRoundStats(roundId as string);
+  const { data: projects } = useRoundProjects(roundId as string);
 
   const acceptedProjectsCount = projects?.filter(
     (proj) => proj.status === "APPROVED"
   ).length;
 
-  const { data: matchAmount, error: matchAmountError } = useContractRead({
-    addressOrName: id as string,
+  const { data: matchAmount } = useContractRead({
+    addressOrName: roundId as string,
     contractInterface: roundImplementationContract.abi,
     functionName: "matchAmount",
   });
-
-  if (isLoading) {
-    return <Spinner text="We're fetching your Round." />;
-  }
-
-  if (!data) {
-    return <div>no data, {JSON.stringify(error)}</div>;
-  }
-
-  console.log(matchAmountError);
 
   // TODO: tooltips
   return (
@@ -66,24 +56,32 @@ export default function ViewRoundStats() {
       <div className="grid grid-cols-5 grid-rows-2 gap-6">
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard
-          text={new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(data.amountUSD)}
+          text={
+            roundStats
+              ? new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(roundStats.amountUSD)
+              : "-"
+          }
           title={"Est. Donations Made"}
           tooltip={"A tooltip // TODO: real tooltip"}
         />
         <StatsCard
-          text={matchAmount ? matchAmount[0] : "Loading..."}
+          text={matchAmount ? matchAmount[0] : "-"}
           title={"Matching Funds Available"}
         />
         <StatsCard
-          text={data.uniqueContributors.toLocaleString("en")}
+          text={
+            roundStats
+              ? roundStats.uniqueContributors.toLocaleString("en")
+              : "-"
+          }
           title={"Unique Contributors"}
           tooltip={"el tooltipo"}
         />
         <StatsCard
-          text={data.votes.toLocaleString("en")}
+          text={roundStats ? roundStats.votes.toLocaleString("en") : "-"}
           title={"Number of Contributions"}
           tooltip={"Another tooltip"}
         />
@@ -143,10 +141,16 @@ export default function ViewRoundStats() {
           <StatsCard
             grayBorder={true}
             title="Avg. Contribution"
-            text={new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(data.amountUSD / data.uniqueContributors)}
+            text={
+              roundStats
+                ? new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(
+                    roundStats.amountUSD / roundStats.uniqueContributors
+                  )
+                : "-"
+            }
           />
           <StatsCard
             grayBorder={true}
