@@ -259,17 +259,22 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
-      <div className="flex flex-grow justify-end">
+      <div className="flex justify-end">
         <Button
           onClick={() => {
             console.log("Finalize Results");
           }}
           type="button"
           data-testid="finalize-results"
-          className="bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
+          className="flex bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
         >
           Finalize Results
         </Button>
+      </div>
+      <div className="flex justify-end mt-4">
+        <span className="text-gray-400 flex">
+          The contract will be locked once results are finalized. You will not be able to change the results after you finalize.
+        </span>
       </div>
     </div>
   );
