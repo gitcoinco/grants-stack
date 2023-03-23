@@ -17,13 +17,15 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round
+  Round,
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { isReadyForPayout } from "../../features/api/round";
+import { useSigner } from "wagmi";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -178,6 +180,10 @@ function InformationTable(props: {
     customMatchingStats: MatchingStatsData[] | undefined
   ) => void;
 }) {
+  const { data: signer } = useSigner();
+  // TODO: get the roundId
+  const roundId = "0x90f301826d464708c74b437f868e6c8a3c591e5f";
+
   return (
     <div className="mt-8">
       <hr className="mt-2 mb-4" />
@@ -261,8 +267,12 @@ function InformationTable(props: {
       ) : null}
       <div className="flex justify-end">
         <Button
-          onClick={() => {
-            console.log("Finalize Results");
+          onClick={async () => {
+            // TODO: Call the contract function to finalize the results
+            if(signer) {
+              await isReadyForPayout(roundId, signer);
+            }
+            console.log("Finalizing Results");
           }}
           type="button"
           data-testid="finalize-results"

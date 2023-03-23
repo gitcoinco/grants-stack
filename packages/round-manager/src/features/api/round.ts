@@ -528,7 +528,7 @@ export const isReadyForPayout = async (
     };
 
   } catch(error) {
-    console.error("isReadyForPayout", error);
+    console.error("isReadyForPayout", { error });
     throw new Error("Unable to mark contract ready for payout");
   }
 }
