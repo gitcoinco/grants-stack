@@ -6,10 +6,12 @@ import { utils } from "ethers";
 import { useContractRead } from "wagmi";
 import { roundImplementationContract } from "../api/contracts";
 
+const boundFetch = fetch.bind(window);
+
 function useRoundStats(roundId: string) {
   const { chain } = useWallet();
   const client = new Client(
-    fetch,
+    boundFetch,
     "https://grants-stack-indexer.fly.dev",
     chain.id
   );
@@ -21,7 +23,7 @@ function useRoundStats(roundId: string) {
 function useRoundProjects(roundId: string) {
   const { chain } = useWallet();
   const client = new Client(
-    fetch,
+    boundFetch,
     "https://grants-stack-indexer.fly.dev",
     chain.id
   );
@@ -46,7 +48,6 @@ export default function ViewRoundStats() {
     functionName: "matchAmount",
   });
 
-  // TODO: tooltips
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10 text-base">
