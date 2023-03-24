@@ -9,7 +9,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
-  UserGroupIcon
+  UserGroupIcon,
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
-  Round
+  Round,
 } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
@@ -216,18 +216,31 @@ export default function ViewRoundPage() {
                                 : "flex flex-row"
                             }
                           >
-                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
-                            <span
-                              className="mt-0.5"
-                              data-testid="reclaim-funds"
-                            >
-                              Reclaim Funds
                             <UserGroupIcon className="h-6 w-6 mr-2" />
                             <span
                               className="mt-0.5"
                               data-testid="fund-grantees"
                             >
                               Fund Grantees
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="reclaim-funds"
+                            >
+                              Reclaim Funds
                             </span>
                           </div>
                         )}
@@ -265,12 +278,18 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
+                      <ViewFundGrantees
+                        isRoundFinalized={
+                          round?.payoutStrategy?.isReadyForPayout ?? undefined
+                        }
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
                       <ReclaimFunds
                         round={round}
                         chainId={`${chain.id}`}
                         roundId={id}
                       />
-                      <ViewFundGrantees isRoundFinalized={round?.payoutStrategy?.isReadyForPayout ?? undefined} />
                     </Tab.Panel>
                   </Tab.Panels>
                 </div>
