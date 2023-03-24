@@ -47,7 +47,7 @@ export default function ViewRoundPage() {
   const { id } = useParams();
   const { address, chain } = useWallet();
 
-  const { round, fetchRoundStatus, error } = useRoundById(id);
+  const { round, fetchRoundStatus, error } = useRoundById(id?.toLowerCase());
   const isRoundsFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
@@ -265,10 +265,7 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewRoundStats
-                        roundStats=""
-                        isRoundStatsFetched={true}
-                      />
+                      <ViewRoundStats />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundResults

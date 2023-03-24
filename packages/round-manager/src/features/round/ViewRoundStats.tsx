@@ -1,15 +1,53 @@
-import { Spinner } from "../common/Spinner";
-import { InformationCircleIcon } from "@heroicons/react/solid";
+import useSWR from "swr";
+import { useWallet } from "../common/Auth";
+import { Client } from "allo-indexer-client";
+import { useParams } from "react-router-dom";
+import { utils } from "ethers";
+import { useContractRead } from "wagmi";
+import { roundImplementationContract } from "../api/contracts";
 
-export default function ViewRoundStats(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  roundStats: any;
-  isRoundStatsFetched: boolean;
-}) {
-  if (props.isRoundStatsFetched) {
-    <Spinner text="We're fetching your Round." />;
-  }
-  // TODO: tooltips
+const boundFetch = fetch.bind(window);
+
+function useRoundStats(roundId: string) {
+  const { chain } = useWallet();
+  const client = new Client(
+    boundFetch,
+    "https://grants-stack-indexer.fly.dev",
+    chain.id
+  );
+  return useSWR([roundId, "/stats"], ([roundId]) => {
+    return client.getRoundBy("id", utils.getAddress(roundId.toLowerCase()));
+  });
+}
+
+function useRoundProjects(roundId: string) {
+  const { chain } = useWallet();
+  const client = new Client(
+    boundFetch,
+    "https://grants-stack-indexer.fly.dev",
+    chain.id
+  );
+  return useSWR([roundId, "/projects"], ([roundId]) => {
+    return client.getRoundApplications(utils.getAddress(roundId.toLowerCase()));
+  });
+}
+
+export default function ViewRoundStats() {
+  const { id: roundId } = useParams();
+
+  const { data: roundStats } = useRoundStats(roundId as string);
+  const { data: projects } = useRoundProjects(roundId as string);
+
+  const acceptedProjectsCount = projects?.filter(
+    (proj) => proj.status === "APPROVED"
+  ).length;
+
+  const { data: matchAmount } = useContractRead({
+    addressOrName: roundId as string,
+    contractInterface: roundImplementationContract.abi,
+    functionName: "matchAmount",
+  });
+
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
       <p className="text-xl font-semibold leading-6 mb-10 text-base">
@@ -18,20 +56,31 @@ export default function ViewRoundStats(props: {
       <div className="grid grid-cols-5 grid-rows-2 gap-6">
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard
-          text={"$180,000"}
+          text={
+            roundStats
+              ? new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(roundStats.amountUSD)
+              : "-"
+          }
           title={"Est. Donations Made"}
-          tooltip={"A tooltip // TODO: real tooltip"}
         />
-        <StatsCard text={"$10,000"} title={"Matching Funds Available"} />
         <StatsCard
-          text={"321"}
+          text={matchAmount ? matchAmount[0] : "-"}
+          title={"Matching Funds Available"}
+        />
+        <StatsCard
+          text={
+            roundStats
+              ? roundStats.uniqueContributors.toLocaleString("en")
+              : "-"
+          }
           title={"Unique Contributors"}
-          tooltip={"el tooltipo"}
         />
         <StatsCard
-          text={"437"}
+          text={roundStats ? roundStats.votes.toLocaleString("en") : "-"}
           title={"Number of Contributions"}
-          tooltip={"Another tooltip"}
         />
         <hr className={"my-10 col-span-5"} />
         <div className="col-span-1 row-span-2 flex items-center">
@@ -48,7 +97,7 @@ export default function ViewRoundStats(props: {
                 Current Matching Stats
               </span>
               <span className={"text-sm leading-5 text-gray-400"}>
-                (as of 10/22/2022)
+                (as of {})
               </span>
             </caption>
             <thead>
@@ -86,11 +135,24 @@ export default function ViewRoundStats(props: {
           </table>
         </div>
         <div className="col-span-1 row-span-2 grid gap-y-6">
-          <StatsCard grayBorder={true} title="Avg. Contribution" text="$5.93" />
+          <StatsCard
+            grayBorder={true}
+            title="Avg. Contribution"
+            text={
+              roundStats
+                ? new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(
+                    roundStats.amountUSD / roundStats.uniqueContributors
+                  )
+                : "-"
+            }
+          />
           <StatsCard
             grayBorder={true}
             title="Participating projects"
-            text="67"
+            text={acceptedProjectsCount ?? "Loading..."}
           />
         </div>
       </div>
@@ -99,9 +161,8 @@ export default function ViewRoundStats(props: {
 }
 
 type StatsCardProps = {
-  text: string;
+  text: string | number;
   title: string;
-  tooltip?: string;
   grayBorder?: boolean;
 };
 
@@ -118,9 +179,6 @@ function StatsCard(props: StatsCardProps) {
         }
       >
         {props.title}
-        {props.tooltip && (
-          <InformationCircleIcon className={"text-gray-500 h-4 w-4"} />
-        )}
       </span>
       <div className={"text-2xl leading-8 font-normal text-grey-400"}>
         {props.text}

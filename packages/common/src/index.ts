@@ -1,4 +1,6 @@
 import useSWR from "swr";
+import { useParams } from "react-router";
+import { isAddress } from "viem";
 import {
   ChainId,
   graphql_fetch,
@@ -128,7 +130,7 @@ export type Payout = {
   token: string;
   version: string;
   createdAt: string;
-}
+};
 
 /**
  * Fetches the payouts that happened for a given round from TheGraph
@@ -136,12 +138,15 @@ export type Payout = {
  * @param chainId Chain ID
  * @returns
  */
-export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Promise<Payout[]> {
+export function fetchProjectPaidInARound(
+  roundId: string,
+  chainId: ChainId
+): Promise<Payout[]> {
   const { data, error, mutate } = useSWR(
     [roundId, chainId],
     ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
       return graphql_fetch(
-      `
+        `
         query GetPayouts($roundId: String) {
           payoutStrategies(
             where:{
@@ -171,4 +176,22 @@ export function fetchProjectPaidInARound(roundId: string, chainId: ChainId): Pro
   const payouts = data?.data?.payoutStrategies?.payouts || [];
 
   return payouts;
+}
+
+/** Returns the current round id extracted from the current  route
+ * If there's no id parameter, or it isn't an Ethereum address, logs a warning to sentry.
+ * Types the return as string to avoid superfluous undefined-checks. If this hook is used on a page that doesn't contain a
+ * round id, we don't care about that page breaking either way.
+ * @return current round id extracted from route parameters
+ * */
+export function useRoundId() {
+  const { id: roundId } = useParams();
+
+  /* Check if the ID is an Ethereum address */
+  if (!isAddress(roundId ?? "")) {
+    console.warn(
+      "id extracted from url in useRoundId hook isn't a valid address. Check usage."
+    );
+  }
+  return roundId as string;
 }

@@ -8,9 +8,9 @@ importers:
       '@commitlint/config-conventional': ^17.1.0
       husky: ^8.0.1
       lint-staged: ^13.1.0
-      turbo: ^1.7.2
+      turbo: ^1.8.5
     dependencies:
-      turbo: 1.7.2
+      turbo: 1.8.5
     devDependencies:
       '@commitlint/cli': 17.4.1
       '@commitlint/config-conventional': 17.4.0
@@ -275,14 +275,18 @@ importers:
     specifiers:
       '@types/node': ^18.15.5
       react-hook-form: ^7.42.1
+      react-router: ^6
       swr: ^2.0.1
       tailwind-styled-components: ^2.2.0
       typescript: latest
+      viem: ^0.1.22
     dependencies:
       react-hook-form: 7.42.1
+      react-router: 6.7.0
       swr: 2.0.1
       tailwind-styled-components: 2.2.0
       typescript: 5.0.2
+      viem: 0.1.22_typescript@5.0.2
     devDependencies:
       '@types/node': 18.15.5
 
@@ -322,7 +326,7 @@ importers:
       '@rainbow-me/rainbowkit': ^0.7.2
       '@reduxjs/toolkit': ^1.8.1
       '@sentry/integrations': ^7.28.0
-      '@sentry/react': ^7.26.0
+      '@sentry/react': ^7.27.0
       '@sentry/tracing': ^7.26.0
       '@sentry/webpack-plugin': ^1.20.0
       '@tailwindcss/forms': ^0.5.3
@@ -481,7 +485,7 @@ importers:
       '@rainbow-me/rainbowkit': 0.7.2
       '@reduxjs/toolkit': ^1.8.1
       '@sentry/integrations': ^7.28.0
-      '@sentry/react': ^7.26.0
+      '@sentry/react': ^7.27.0
       '@sentry/tracing': ^7.26.0
       '@sentry/webpack-plugin': ^1.20.0
       '@tailwindcss/forms': ^0.5.2
@@ -499,6 +503,7 @@ importers:
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
       add: ^2.0.6
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8
       autoprefixer: ^10.4.7
       buffer: ^6.0.3
       common: workspace:*
@@ -567,6 +572,7 @@ importers:
       '@testing-library/user-event': 14.4.3
       '@types/jest': 27.5.2
       '@types/node': 17.0.45
+      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8
       buffer: 6.0.3
       common: link:../common
       crypto-browserify: 3.12.0
@@ -5518,7 +5524,7 @@ packages:
     dependencies:
       immer: 9.0.18
       react: 18.2.0
-      react-redux: 8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm
+      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       reselect: 4.1.7
@@ -6975,6 +6981,17 @@ packages:
     resolution: {integrity: sha512-MVEJ4vWAPNbrGLjz7ITnHYg+YXZ6ijAqtH5/cHwSoCpbvuJ98aLXwFfPKAUfZpJMQR5uXB58UJajbY130IRF/w==}
     dev: false
 
+  /@wagmi/chains/0.2.14_typescript@5.0.2:
+    resolution: {integrity: sha512-esWhs1sf8/J/u+54F/sUQ97iZ/zUN2rYUrLYOD35ynIJn9ZwGXeV/tkiXx/6xXDmq0VK5oe1Pe7BU/pvaURzcA==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.2
+    dev: false
+
   /@wagmi/core/0.5.4_ethers@5.7.2+react@18.2.0:
     resolution: {integrity: sha512-EisAQTXyglnfzALHRnI8rSXlt95O3KNgBN4fHOQvYj6sBOsp/t9ooaqMIbqn4v5xMJSjmYgnQH1J5InQOcTCNg==}
     peerDependencies:
@@ -7567,6 +7584,18 @@ packages:
   /abbrev/1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
     dev: true
+
+  /abitype/0.7.1_typescript@5.0.2:
+    resolution: {integrity: sha512-VBkRHTDZf9Myaek/dO3yMmOzB/y2s3Zo6nVU7yaw1G+TvCHAjwaJzNGN9yo4K5D8bU/VZXKP1EJpRhFr862PlQ==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.0.2
+    dev: false
 
   /abortable-iterator/3.0.2:
     resolution: {integrity: sha512-qVP8HFfTpUQI2F+f1tpTriKDIZ4XrmwCrBCrQeRKO7DKWF3kgoT6NXiNDv2krrGcHxPwmI63eGQiec81sEaWIw==}
@@ -12991,6 +13020,13 @@ packages:
     dependencies:
       harmony-reflect: 1.6.2
 
+  /idna-uts46-hx/4.1.2:
+    resolution: {integrity: sha512-EAB3egrcalcTQHcjA7yzXXkE4E09TIFerR//4yUYGYCeCfXmkU0LgsGJgYSIQA1lQunfsn4ZCWJhbelgl3cdiQ==}
+    engines: {node: '>=16.15.1', npm: '>=8.11.1'}
+    dependencies:
+      punycode: 2.1.1
+    dev: false
+
   /ieee754/1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
 
@@ -14020,6 +14056,14 @@ packages:
       ws: 7.5.9
     dev: false
 
+  /isomorphic-ws/5.0.0_ws@8.12.0:
+    resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
+    peerDependencies:
+      ws: '*'
+    dependencies:
+      ws: 8.12.0
+    dev: false
+
   /isstream/0.1.2:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
     dev: false
@@ -14583,7 +14627,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.11.18
+      '@types/node': 18.15.5
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -19262,6 +19306,15 @@ packages:
       react-router: 6.7.0_react@18.2.0
     dev: false
 
+  /react-router/6.7.0:
+    resolution: {integrity: sha512-KNWlG622ddq29MAM159uUsNMdbX8USruoKnwMMQcs/QWZgFUayICSn2oB7reHce1zPj6CG18kfkZIunSSRyGHg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.3.0
+    dev: false
+
   /react-router/6.7.0_react@18.2.0:
     resolution: {integrity: sha512-KNWlG622ddq29MAM159uUsNMdbX8USruoKnwMMQcs/QWZgFUayICSn2oB7reHce1zPj6CG18kfkZIunSSRyGHg==}
     engines: {node: '>=14'}
@@ -21595,65 +21648,65 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
-  /turbo-darwin-64/1.7.2:
-    resolution: {integrity: sha512-Sml3WR8MSu80W+gS8SnoKNImcDOlIX7zlvezzds65mW11yGniIFfZ18aKWGOm92Nj2SvXCQ2+UmyGghbFaHNmQ==}
+  /turbo-darwin-64/1.8.5:
+    resolution: {integrity: sha512-CAYh56bzeHfnh7jTm03r29bh8p5a/EjQo1Id5yLUH7hS7msTau/+YpxJWPodLbN0UQsUYivUqHQkglJ+eMJ7xA==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo-darwin-arm64/1.7.2:
-    resolution: {integrity: sha512-JnlgGLScboUJGJxvmSsF+5xkImEDTMPg2FHzX4n8AMB9az9ZlPQAMtc+xu4p6Xp9eaykKiV2RG81YS3H0fxDLA==}
+  /turbo-darwin-arm64/1.8.5:
+    resolution: {integrity: sha512-R3jCPOv+lu3dcvMhj8b/Defv6dyUwX6W+tbX7d6YUCA46Plf/bGCQ8+MSbxmr/4E1GyGOVFsn1wRfiYk0us/Dg==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo-linux-64/1.7.2:
-    resolution: {integrity: sha512-vbLJw6ovG+lpiPqxniscBjljKJ2jbsHuKp8uK4j/wqgp68wAVKeAZW77GGDAUgDb88XH6Kvhh2hcizL+iWduww==}
+  /turbo-linux-64/1.8.5:
+    resolution: {integrity: sha512-YRc/KNRZeUVvth11UO4SDQZR2IqGgl9MSsbzqoHuFz4B4Q5QXH7onHogv9aXWE/BZBBbcrSBTlwBSG0Gg+J8hg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo-linux-arm64/1.7.2:
-    resolution: {integrity: sha512-zLnuS8WdHonKL74KqOopOH/leBOWumlVGF8/8hldbDPq0mwY+6myRR5/5LdveB51rkG4UJh/sQ94xV67tjBoyw==}
+  /turbo-linux-arm64/1.8.5:
+    resolution: {integrity: sha512-8exVZb7XBl/V3gHSweuUyG2D9IzfWqwLvlXoeLWlVYSj61Ajgdv+WU7lvUmx+H2s+sSKqmIFmewA5Lw6YY37sg==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo-windows-64/1.7.2:
-    resolution: {integrity: sha512-oE5PMoXjmR09okvVzteFb6FjA6yo+nMsacsgKH2yLNq4sOrVo9tG98JkRurOv5+L6ZQ3yGXPxWHiqeH7hLkAVQ==}
+  /turbo-windows-64/1.8.5:
+    resolution: {integrity: sha512-fA8PU5ZNoFnQkapG06WiEqfsVQ5wbIPkIqTwUsd/M2Lp+KgxE79SQbuEI+2vQ9SmwM5qoMi515IPjgvXAJXgCw==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo-windows-arm64/1.7.2:
-    resolution: {integrity: sha512-mdTUJk23acRv5qxA/yEstYhM1VFenVE3FDrssxGRFq7S80smtCGK1xUd4BEDDzDlVXOqBohmM5jRh9516rcjPQ==}
+  /turbo-windows-arm64/1.8.5:
+    resolution: {integrity: sha512-SW/NvIdhckLsAWjU/iqBbCB0S8kXupKscUK3kEW1DZIr3MYcP/yIuaE/IdPuqcoF3VP0I3TLD4VTYCCKAo3tKA==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: false
     optional: true
 
-  /turbo/1.7.2:
-    resolution: {integrity: sha512-YR/x3GZEx0C1RV6Yvuw/HB1Ixx3upM6ZTTa4WqKz9WtLWN8u2g+u2h5KpG5YtjCS3wl/8zVXgHf2WiMK6KIghg==}
+  /turbo/1.8.5:
+    resolution: {integrity: sha512-UBnH2wIFb5g6OQCk8f34Ud15ZXV4xEMmugeDJTU5Ur2LpVRsNEny0isSCYdb3Iu3howoNyyXmtpaxWsAwNYkkg==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.7.2
-      turbo-darwin-arm64: 1.7.2
-      turbo-linux-64: 1.7.2
-      turbo-linux-arm64: 1.7.2
-      turbo-windows-64: 1.7.2
-      turbo-windows-arm64: 1.7.2
+      turbo-darwin-64: 1.8.5
+      turbo-darwin-arm64: 1.8.5
+      turbo-linux-64: 1.8.5
+      turbo-linux-arm64: 1.8.5
+      turbo-windows-64: 1.8.5
+      turbo-windows-arm64: 1.8.5
     dev: false
 
   /tweetnacl-util/0.15.1:
@@ -22082,6 +22135,23 @@ packages:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
+    dev: false
+
+  /viem/0.1.22_typescript@5.0.2:
+    resolution: {integrity: sha512-uUh7dskbQ07YuyDWjP25CY08MnlakFOMfl2nqritUHbKsftUET9GCvf9AMjLB88bwst4ijKZXFRUQFYYmtYFww==}
+    dependencies:
+      '@noble/hashes': 1.2.0
+      '@noble/secp256k1': 1.7.1
+      '@wagmi/chains': 0.2.14_typescript@5.0.2
+      abitype: 0.7.1_typescript@5.0.2
+      idna-uts46-hx: 4.1.2
+      isomorphic-ws: 5.0.0_ws@8.12.0
+      ws: 8.12.0
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /vm-browserify/1.1.2:
@@ -23061,4 +23131,14 @@ packages:
     dependencies:
       bn.js: 4.12.0
       ethereumjs-util: 6.2.1
+    dev: false
+
+  github.com/gitcoinco/allo-indexer-client/35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8:
+    resolution: {tarball: https://codeload.github.com/gitcoinco/allo-indexer-client/tar.gz/35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8}
+    name: allo-indexer-client
+    version: 0.1.0
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@types/node': 18.15.5
     dev: false
