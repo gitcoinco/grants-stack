@@ -1,6 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Tab } from "@headlessui/react";
 import {
+  ArrowCircleRightIcon,
   CalendarIcon,
   ChartBarIcon,
   ChevronRightIcon,
@@ -8,7 +9,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
-  UserGroupIcon
+  UserGroupIcon,
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
-  Round
+  Round,
 } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
@@ -35,6 +36,7 @@ import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
+import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
@@ -224,6 +226,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="reclaim-funds"
+                            >
+                              Reclaim Funds
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                     </Tab.List>
                   </div>
                   <Tab.Panels className="basis-5/6 ml-6">
@@ -257,7 +278,18 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewFundGrantees isRoundFinalized={round?.payoutStrategy?.isReadyForPayout ?? undefined} />
+                      <ViewFundGrantees
+                        isRoundFinalized={
+                          round?.payoutStrategy?.isReadyForPayout ?? undefined
+                        }
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ReclaimFunds
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
+                      />
                     </Tab.Panel>
                   </Tab.Panels>
                 </div>
