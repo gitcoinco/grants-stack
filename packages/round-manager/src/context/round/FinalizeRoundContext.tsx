@@ -7,13 +7,10 @@ import {
 import React, {
   createContext,
   useContext,
-  useEffect,
   useReducer,
-  useState,
 } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { saveToIPFS } from "../../features/api/ipfs";
-import { fetchMatchingDistribution } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ethers } from "ethers";
 import { generateMerkleTree } from "../../features/api/utils";
@@ -116,6 +113,7 @@ const _finalizeRound = async ({
   matchingJSON,
   signerOrProvider,
 }: _finalizeRoundParams) => {
+
   dispatch({
     type: ActionType.RESET_TO_INITIAL_STATE,
   });
@@ -124,7 +122,6 @@ const _finalizeRound = async ({
     if (!matchingJSON) {
       throw new Error("matchingJSON is undefined");
     }
-
     const { tree, matchingResults } = generateMerkleTree(matchingJSON);
     const merkleRoot = tree.root;
 
@@ -267,43 +264,3 @@ function encodeDistributionParameters(
     [merkleRoot, distributionMetaPtr]
   );
 }
-
-export const useMatchingDistribution = (
-  roundId: string | undefined
-): {
-  distributionMetaPtr: string;
-  matchingDistributionContract: MatchingStatsData[];
-  isLoading: boolean;
-  isError: boolean;
-} => {
-  const { provider: walletProvider } = useWallet();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [matchingData, setMatchingData] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const matchingDataRes = await fetchMatchingDistribution(
-          roundId,
-          walletProvider
-        );
-        setMatchingData(matchingDataRes);
-        setIsLoading(false);
-      } catch (error) {
-        setIsError(true);
-        console.error(error);
-      }
-    }
-
-    fetchData();
-  }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return {
-    distributionMetaPtr: matchingData.distributionMetaPtr,
-    matchingDistributionContract: matchingData.matchingDistribution,
-    isLoading: isLoading,
-    isError: isError,
-  };
-};

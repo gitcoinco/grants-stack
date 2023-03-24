@@ -261,11 +261,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              <p className="mt-6 mb-4 text-sm">
-                What are the dates for the Applications and Round voting
-                period(s)?
+              <div className="mt-6 mb-4 text-sm">
+                <span>
+                  What are the dates for the Applications and Round voting period(s)?
+                </span>
                 <ApplicationDatesInformation />
-              </p>
+              </div>
 
               <p className="text-sm mb-2">
                 <span>Applications</span>

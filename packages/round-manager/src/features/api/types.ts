@@ -179,7 +179,10 @@ export interface Round {
   /**
    * Payout contract address
    */
-  payoutStrategy: string;
+  payoutStrategy: {
+    id: string;
+    isReadyForPayout: boolean;
+  };
   /**
    * Unix timestamp of the start of the round
    */
@@ -220,6 +223,8 @@ export interface Round {
    * Round fees address
    */
   feesAddress?: string;
+
+  finalized: boolean;
 }
 
 export type MatchingStatsData = {

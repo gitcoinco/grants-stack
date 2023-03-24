@@ -1,13 +1,23 @@
+import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
+import { BigNumber, ethers } from "ethers";
+import { Logger } from "ethers/lib.esm/utils";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
-import { useBalance } from "wagmi";
-import { Round } from "../api/types";
+import { useAccount, useBalance } from "wagmi";
+import { errorModalDelayMs } from "../../constants";
+import { useFundContract } from "../../context/round/FundContractContext";
+import { ProgressStatus, Round } from "../api/types";
 import {
   ChainId,
   getTxExplorerForContract,
   payoutTokens,
   useTokenPrice,
 } from "../api/utils";
+import ConfirmationModal from "../common/ConfirmationModal";
+import ErrorModal from "../common/ErrorModal";
+import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 
 export default function FundContract(props: {
@@ -15,6 +25,70 @@ export default function FundContract(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  const { address } = useAccount();
+  const navigate = useNavigate();
+
+  const [amountToFund, setAmountToFund] = useState("");
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
+    string | undefined
+  >();
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
+
+  const {
+    fundContract,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+  } = useFundContract();
+
+  useEffect(() => {
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_ERROR ||
+      fundStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setErrorModalSubHeading(
+          transactionReplaced
+            ? "Transaction cancelled. Please try again."
+            : "There was an error during the funding process. Please try again."
+        );
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        navigate(`/round/${props.roundId}`);
+      }, 5000);
+    }
+
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
+      fundStatus === ProgressStatus.IS_SUCCESS &&
+      txHash !== ""
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        // refresh
+        navigate(0);
+      }, errorModalDelayMs);
+    }
+  }, [
+    navigate,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+    transactionReplaced,
+    props.roundId,
+  ]);
+
   const matchingFundPayoutToken =
     props.round &&
     payoutTokens.filter(
@@ -22,16 +96,24 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  const tokenDetail = {
-    addressOrName: props.roundId,
-    token: matchingFundPayoutToken?.address,
-  };
+  const tokenDetailContract =
+    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+      ? { addressOrName: props.roundId }
+      : {
+          addressOrName: props.roundId,
+          token: matchingFundPayoutToken?.address,
+        };
+
+  const tokenDetailUser =
+    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+      ? { addressOrName: address }
+      : { addressOrName: address, token: matchingFundPayoutToken?.address };
 
   const {
     data: balanceData,
     isError: isBalanceError,
     isLoading: isBalanceLoading,
-  } = useBalance(tokenDetail);
+  } = useBalance(tokenDetailContract);
 
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId
@@ -59,9 +141,50 @@ export default function FundContract(props: {
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
 
+  const matchingFundPayoutTokenBalance = useBalance(tokenDetailUser);
+
+  function handleFundContract() {
+    // check if signer has enough token balance
+    const accountBalance = matchingFundPayoutTokenBalance.data?.value;
+    const tokenBalance = ethers.utils.parseUnits(
+      amountToFund,
+      matchingFundPayoutToken?.decimal
+    );
+
+    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
+      setInsufficientBalance(true);
+      return;
+    } else {
+      setInsufficientBalance(false);
+    }
+
+    setOpenConfirmationModal(true);
+  }
+
   if (props.round === undefined || isBalanceLoading || loading) {
     return <Spinner text="Loading..." />;
   }
+
+  const progressSteps = [
+    {
+      name: "Submit",
+      description: "Finalize your funding",
+      status: fundStatus,
+    },
+    {
+      name: "Indexing",
+      description: "The subgraph is indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   return (
     <div className="mt-8">
@@ -210,12 +333,15 @@ export default function FundContract(props: {
           <input
             className="border border-gray-300 rounded-md p-2 w-1/2"
             placeholder="Enter the amount you wish to fund"
+            value={amountToFund}
+            onChange={(e) => setAmountToFund(e.target.value)}
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
           <button
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded"
             data-testid="fund-contract-btn"
+            onClick={() => handleFundContract()}
           >
             Fund Contract
           </button>
@@ -235,19 +361,119 @@ export default function FundContract(props: {
             View Contract
           </button>
         </div>
+        {insufficientBalance && (
+          <p
+            data-testid="insufficientBalance"
+            className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+          >
+            <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+            <span>
+              You do not have enough funds for funding the matching pool.
+            </span>
+          </p>
+        )}
       </div>
+      <FundContractModals />
     </div>
   );
-}
 
-function InformationIcon(props: { dataFor: string; dataTestId: string }) {
-  return (
-    <InformationCircleIcon
-      className="mt-1 ml-1 text-gray-900 w-3 h-3"
-      data-tip
-      data-background-color="#0E0333"
-      data-for={props.dataFor}
-      data-testid={props.dataTestId}
-    />
-  );
+  function InformationIcon(props: { dataFor: string; dataTestId: string }) {
+    return (
+      <InformationCircleIcon
+        className="mt-1 ml-1 text-gray-900 w-3 h-3"
+        data-tip
+        data-background-color="#0E0333"
+        data-for={props.dataFor}
+        data-testid={props.dataTestId}
+      />
+    );
+  }
+
+  function FundContractModals() {
+    return (
+      <>
+        <ConfirmationModal
+          title={"Confirm Decision"}
+          confirmButtonText={"Confirm"}
+          confirmButtonAction={() => {
+            setOpenProgressModal(true);
+            setOpenConfirmationModal(false);
+            handleSubmitFund();
+          }}
+          body={<ConfirmationModalBody />}
+          isOpen={openConfirmationModal}
+          setIsOpen={setOpenConfirmationModal}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we add your funds to the round."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          tryAgainFn={handleSubmitFund}
+          subheading={errorModalSubHeading}
+        />
+      </>
+    );
+  }
+
+  function ConfirmationModalBody() {
+    const amountInUSD =
+      Number(
+        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+      ) * Number(data);
+    return (
+      <div>
+        <div className="flex flex-col text-center sm:ml-16">
+          <div className="text-sm text-grey-400 mt-4 mb-1">
+            AMOUNT TO BE FUNDED
+          </div>
+          <div className="font-bold mb-1">
+            {amountToFund} {matchingFundPayoutToken?.name}
+          </div>
+          <div className="text-md text-slate-400 mb-6">
+            (${amountInUSD.toFixed(2)} USD)
+          </div>
+        </div>
+        <AdditionalGasFeesNote />
+      </div>
+    );
+  }
+
+  function AdditionalGasFeesNote() {
+    return (
+      <p className="text-sm italic text-grey-400 mb-2">
+        Changes could be subject to additional gas fees.
+      </p>
+    );
+  }
+
+  async function handleSubmitFund() {
+    try {
+      setTimeout(() => {
+        setOpenProgressModal(true);
+      }, errorModalDelayMs);
+
+      await fundContract({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        roundId: props.roundId!,
+        fundAmount: Number(
+          parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        ),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        payoutToken: matchingFundPayoutToken!,
+      });
+    } catch (error) {
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        datadogLogs.logger.error(
+          `error: handleSubmitFund - ${error}, id: ${props.roundId}`
+        );
+        console.error("handleSubmitFund - roundId", props.roundId, error);
+      }
+    }
+  }
 }

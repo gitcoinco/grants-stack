@@ -1,34 +1,33 @@
-import { Spinner } from "../common/Spinner";
+import { RadioGroup } from "@headlessui/react";
 import {
   ExclamationCircleIcon as NoInformationIcon,
-  InformationCircleIcon,
+  InformationCircleIcon, XIcon
 } from "@heroicons/react/outline";
+import { Button } from "common/src/styles";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
+import { errorModalDelayMs } from "../../constants";
+import {
+  useFinalizeRound
+} from "../../context/round/FinalizeRoundContext";
+import { useRoundMatchData } from "../api/api";
+import { useFetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
 import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round,
+  Round
 } from "../api/types";
-import { useNavigate } from "react-router-dom";
+import { saveObjectAsJson } from "../api/utils";
+import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
-import ErrorModal from "../common/ErrorModal";
-import { useRoundMatchData } from "../api/api";
-import { Button } from "common/src/styles";
-import { saveObjectAsJson } from "../api/utils";
-import { RadioGroup } from "@headlessui/react";
-import React, { useEffect, useState } from "react";
-import * as yup from "yup";
-import { XIcon } from "@heroicons/react/outline";
-import {
-  useFinalizeRound,
-  useMatchingDistribution,
-} from "../../context/round/FinalizeRoundContext";
-import { errorModalDelayMs } from "../../constants";
+import { Spinner } from "../common/Spinner";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
-  chainId: string;
+  chainId: number;
   roundId: string | undefined;
 }) {
   const currentTime = new Date();
@@ -77,7 +76,7 @@ function NoInformationMessage() {
 
 function InformationContent(props: {
   round: Round | undefined;
-  chainId: string;
+  chainId: number;
   roundId: string | undefined;
 }) {
   const [useDefault, setUseDefault] = useState(true);
@@ -91,7 +90,7 @@ function InformationContent(props: {
     matchingDistributionContract,
     isLoading,
     isError,
-  } = useMatchingDistribution(props.roundId);
+  } = useFetchMatchingDistributionFromContract(props.roundId);
 
   useEffect(() => {
     if (distributionMetaPtr !== "") {
@@ -120,9 +119,15 @@ function InformationContent(props: {
       uniqueContributorsCount: data.uniqueContributorsCount,
       matchPoolPercentage: data.matchPoolPercentage,
       matchAmountInToken: data.matchAmountInToken,
-      projectPayoutAddress: data.projectPayoutAddress
+      projectPayoutAddress: data.projectPayoutAddress,
     };
   });
+
+  const payoutStrategy = {
+    id: props.round?.payoutStrategy.id ?? "",
+    isReadyForPayout: props.round?.payoutStrategy.isReadyForPayout ?? false,
+  };
+
   return (
     <>
       <div>
@@ -134,7 +139,7 @@ function InformationContent(props: {
       {!error && !isError && !loading && !isLoading && (
         <FinalizeRound
           roundId={props.roundId}
-          payoutStrategy={props.round?.payoutStrategy}
+          payoutStrategy={payoutStrategy}
           matchingData={matchingData}
           useDefault={useDefault}
           setUseDefault={setUseDefault}
@@ -260,7 +265,10 @@ function InformationTable(props: {
 
 function FinalizeRound(props: {
   roundId: string | undefined;
-  payoutStrategy: string | undefined;
+  payoutStrategy: {
+    id: string | undefined;
+    isReadyForPayout: boolean;
+  };
   matchingData: MatchingStatsData[] | undefined;
   useDefault: boolean;
   setUseDefault: (useDefault: boolean) => void;
@@ -307,7 +315,7 @@ function FinalizeRound(props: {
       if (props.payoutStrategy !== undefined) {
         setOpenProgressModal(true);
         await finalizeRound(
-          props.payoutStrategy,
+          props.payoutStrategy.id ?? "",
           props.useDefault ? props.matchingData : props.customMatchingData
         );
       }
@@ -539,7 +547,7 @@ function UploadJSON(props: {
         data-testid="dropzone"
       >
         <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-42 p-10 group text-center">
-          <div className="h-full w-full text-center flex flex-col items-center justify-center items-center  ">
+          <div className="h-full w-full text-center flex flex-col justify-center items-center  ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

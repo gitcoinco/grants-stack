@@ -12,5 +12,8 @@
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.5"
   }
 }

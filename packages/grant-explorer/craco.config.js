@@ -38,6 +38,17 @@ module.exports = {
             test: /\.wasm$/,
             type: "webassembly/async",
           },
+          {
+            test: /\.tsx?$/,
+            loader: "babel-loader",
+            options: {
+              presets: [
+                "@babel/preset-env",
+                "@babel/preset-react",
+                "@babel/preset-typescript",
+              ],
+            },
+          },
         ],
       },
       resolve: {

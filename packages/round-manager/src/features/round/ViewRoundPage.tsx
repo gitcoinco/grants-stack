@@ -9,6 +9,7 @@ import {
   DocumentReportIcon,
   DocumentTextIcon,
   InboxIcon,
+  UserGroupIcon
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
-  Round,
+  Round
 } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
@@ -36,6 +37,7 @@ import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
+import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults";
 import ViewRoundStats from "./ViewRoundStats";
 
@@ -65,6 +67,11 @@ export default function ViewRoundPage() {
       setRoundExists(!!round);
 
       if (round) {
+        /* During development, give frontend access to all rounds */
+        if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+          setHasAccess(true);
+          return;
+        }
         round.operatorWallets?.includes(address?.toLowerCase())
           ? setHasAccess(true)
           : setHasAccess(false);
@@ -109,9 +116,9 @@ export default function ViewRoundPage() {
                   startTime={round?.roundStartTime}
                   endTime={round?.roundEndTime}
                 />
-                <div className="ml-32 absolute left-3/4">
+                <div className="absolute right-0">
                   <ViewGrantsExplorerButton
-                    iconStyle="h-4 w-4 mr-2"
+                    iconStyle="h-4 w-4"
                     chainId={`${chain.id}`}
                     roundId={id}
                   />
@@ -215,6 +222,12 @@ export default function ViewRoundPage() {
                               data-testid="reclaim-funds"
                             >
                               Reclaim Funds
+                            <UserGroupIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="fund-grantees"
+                            >
+                              Fund Grantees
                             </span>
                           </div>
                         )}
@@ -247,7 +260,7 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ViewRoundResults
                         round={round}
-                        chainId={`${chain.id}`}
+                        chainId={chain.id}
                         roundId={id}
                       />
                     </Tab.Panel>
@@ -257,6 +270,7 @@ export default function ViewRoundPage() {
                         chainId={`${chain.id}`}
                         roundId={id}
                       />
+                      <ViewFundGrantees isRoundFinalized={round?.payoutStrategy?.isReadyForPayout ?? undefined} />
                     </Tab.Panel>
                   </Tab.Panels>
                 </div>
@@ -385,11 +399,9 @@ function GrantApplications(props: {
         </div>
       )}
 
-      <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-        {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-          <Spinner text="We're fetching your Round." />
-        )}
-      </div>
+      {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Round." />
+      )}
     </div>
   );
 }

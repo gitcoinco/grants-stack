@@ -9,9 +9,16 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext,
 } from "../../../test-utils";
-import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useDisconnect,
+  useSwitchNetwork,
+  useSigner,
+} from "wagmi";
 import { useParams } from "react-router-dom";
 import { useTokenPrice } from "../../api/utils";
+import { faker } from "@faker-js/faker";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -69,6 +76,16 @@ describe("fund contract tab", () => {
       data: { formatted: "0", value: "0" },
       error: null,
       loading: false,
+    }));
+
+    (useAccount as jest.Mock).mockImplementation(() => ({
+      address: faker.finance.ethereumAddress(),
+    }));
+
+    (useSigner as jest.Mock).mockImplementation(() => ({
+      signer: {
+        getBalance: () => Promise.resolve("0"),
+      },
     }));
 
     render(
