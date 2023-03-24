@@ -1,4 +1,5 @@
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
+import { ethers } from "ethers";
 import { useState } from "react";
 import { useBalance } from "wagmi";
 import { Round } from "../api/types";
@@ -77,10 +78,13 @@ function ReclaimFundsContent(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  const tokenDetail = {
-    addressOrName: props.roundId,
-    token: matchingFundPayoutToken?.address,
-  };
+  const tokenDetail =
+    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+      ? { addressOrName: props.roundId }
+      : {
+          addressOrName: props.roundId,
+          token: matchingFundPayoutToken?.address,
+        };
 
   const {
     data: balanceData,
