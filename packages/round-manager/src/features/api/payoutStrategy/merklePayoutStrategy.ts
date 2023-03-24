@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchProjectPaidInARound } from "common";
 import { ethers, Signer } from "ethers";
-import { useState, useEffect } from "react";
-import dist from "tailwind-styled-components";
+import { useEffect, useState } from "react";
 import { useWallet } from "../../common/Auth";
 import {
-  merklePayoutStrategyImplementationContract,
   merklePayoutStrategyFactoryContract,
-  roundImplementationContract,
+  merklePayoutStrategyImplementationContract,
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
@@ -106,7 +104,6 @@ export const useFetchMatchingDistributionFromContract = (
   isLoading: boolean;
   isError: boolean;
 } => {
-
   console.log("SHOULD NOT PRINT");
 
   const { provider: walletProvider } = useWallet();
@@ -170,7 +167,6 @@ export const useGroupProjectsByPaymentStatus = (
 
   useEffect(() => {
     async function fetchData() {
-
       const groupedProjectsTmp: GroupedProjects = {
         paid: [],
         unpaid: [],
@@ -179,9 +175,6 @@ export const useGroupProjectsByPaymentStatus = (
       const paidProjectIds = (await paidProjectsFromGraph).map(
         (project) => project.projectId
       );
-
-      console.log("mocked allProjects", allProjects);
-      console.log("mocked paidProjectIds", paidProjectIds);
 
       allProjects?.forEach((project) => {
         const projectStatus = paidProjectIds.includes(project.projectId)
@@ -216,7 +209,6 @@ export const batchDistributeFunds = async (
   projectIdsToBePaid: string[],
   signerOrProvider: Signer
 ) => {
-
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
@@ -228,14 +220,13 @@ export const batchDistributeFunds = async (
     const { tree, matchingResults } = generateMerkleTree(allProjects);
 
     // Filter projects to be paid from matching results
-    const projectsToBePaid = matchingResults.filter(project =>
+    const projectsToBePaid = matchingResults.filter((project) =>
       projectIdsToBePaid.includes(project.projectId)
     );
 
     const projectsWithMerkleProof = [];
 
-    projectsToBePaid.forEach(project => {
-
+    projectsToBePaid.forEach((project) => {
       const distribution: [number, string, number, string] = [
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         project.index!,
@@ -253,8 +244,7 @@ export const batchDistributeFunds = async (
         amount: distribution[2],
         merkleProof: validMerkleProof,
         projectId: distribution[3],
-      })
-
+      });
     });
 
     const tx = await merklePayoutStrategyImplementation.payout(
@@ -268,9 +258,8 @@ export const batchDistributeFunds = async (
     return {
       transactionBlockNumber: blockNumber,
     };
-
   } catch (error) {
     console.error("batchDistributeFunds", error);
     throw new Error("Unable to distribute funds");
   }
-}
+};

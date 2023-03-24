@@ -104,6 +104,7 @@
     "@faker-js/faker": "^7.4.0",
     "@gitcoinco/passport-sdk-types": "^0.1.2",
     "@tailwindcss/line-clamp": "^0.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/dompurify": "^2.4.0",
     "@types/markdown-it": "^12.2.3",
     "@types/react": "^18.0.26",

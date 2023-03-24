@@ -3,6 +3,7 @@ import { useState as useStateMock } from "react";
 import { makeMatchingStatsData, makeRoundData } from "../../../../test-utils";
 import { ChainId } from "../../utils";
 
+import { renderHook } from "@testing-library/react-hooks";
 import * as merklePayoutStrategy from "../../payoutStrategy/merklePayoutStrategy";
 
 jest.mock("react", () => ({
@@ -88,18 +89,22 @@ describe("merklePayoutStrategy", () => {
       const round = makeRoundData();
       const chainId = ChainId.GOERLI_CHAIN_ID;
 
-      (fetchProjectPaidInARound as any).mockImplementation(
-        () => mockPaidProjects
-      );
+      (fetchProjectPaidInARound as any).mockImplementation(() => {
+        return mockPaidProjects;
+      });
 
-      const result = await merklePayoutStrategy.useGroupProjectsByPaymentStatus(
-        chainId,
-        round.id!
+      const { result } = renderHook(() =>
+        merklePayoutStrategy.useGroupProjectsByPaymentStatus(chainId, round.id!)
       );
+      /*
+      await waitFor(() =>
+        expect(result.current.unpaid).toEqual(mockUnpaidProjects)
+      );
+      */
       console.log(result);
 
-      // expect(result.paid).toEqual(mockPaidProjects);
-      // expect(result.paid).toEqual(mockUnpaidProjects);
+      // expect(result.current.paid).toEqual(mockPaidProjects);
+      // expect(result.current.unpaid).toEqual(mockUnpaidProjects);
     });
   });
 });
