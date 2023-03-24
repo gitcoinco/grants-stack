@@ -24,6 +24,7 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { setReadyForPayout } from "../../features/api/round";
 import { useSigner } from "wagmi";
 
@@ -185,21 +186,44 @@ function InformationTable(props: {
 
   // TODO: Refresh component
   const [openReadyForPayoutModal, setOpenReadyForPayoutModal] = useState(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const { data: signer } = useSigner();
 
-  const handleSetReadyForPayout = async () => {
+  const handleProgressModal = async () => {
+    try {
+      setOpenReadyForPayoutModal(false);
+      await handleFinalizeDistributionForPayout();
+      setOpenProgressModal(true);
+    } catch (error) {
+      console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
+    }
+  };
+
+  const handleFinalizeDistributionForPayout = async () => {
     try {
       if(signer && props.roundId) {
         await setReadyForPayout(props.roundId, signer);
-
-        // TODO: Add Progres Modal
-        setOpenReadyForPayoutModal(false);
       }
     } catch (error) {
-      console.error("handleSetReadyForPayout", error)
+      console.error("handleFinalizeDistributionForPayout() error", error);
     }
   };
+
+  // TODO: Update Progress Modal statuses with tx status of setReadyForPayout() contract call
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "Finalizing Distribution",
+      description: "The distribution is being finalized in the contract.",
+      status: ProgressStatus.IN_PROGRESS, // todo: replace this value with the tx status of setReadyForPayout() contract call
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status: ProgressStatus.IN_PROGRESS, // todo: replace this also on redirect/refresh success
+    },
+  ];
 
   return (
     <div className="mt-8">
@@ -282,8 +306,8 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
-
-      {!props.isReadyForPayout ? (
+      {/* This finalizes the distribution */}
+      {props.isReadyForPayout ? (
         <>
           <div className="flex justify-end">
             <Button
@@ -302,18 +326,29 @@ function InformationTable(props: {
           </div>
         </>
       ): null}
-
+      {/* Modals */}
       <InfoModal
         title={"Warning!"}
         body={<ReadyForPayoutModalBody />}
         isOpen={openReadyForPayoutModal}
         setIsOpen={setOpenReadyForPayoutModal}
         continueButtonText={"Ready for payout"}
-        continueButtonAction={handleSetReadyForPayout}
+        continueButtonAction={handleProgressModal}
       >
       </InfoModal>
+      <ProgressModal
+        isOpen={openProgressModal}
+        subheading={"Please hold while we update the contract."}
+        steps={progressSteps}
+        redirectUrl={`/rounds/${props.roundId}`}
+      />
+      <ErrorModal
+        subheading="There was an error finalizing the distribution."
+        isOpen={openErrorModal}
+        setIsOpen={setOpenErrorModal}
+        tryAgainFn={handleProgressModal}
+      />
     </div>
-
   );
 }
 
