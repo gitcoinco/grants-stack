@@ -1,6 +1,6 @@
-import React, { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "common/src/styles";
+import React, { Fragment, useRef } from "react";
 
 interface ModalProps {
   title?: string;
@@ -71,7 +71,7 @@ export default function ConfirmationModal({
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <Button
                     type="button"
-                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
+                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-4 py-2"
                     onClick={props.confirmButtonAction}
                   >
                     {confirmButtonText}
@@ -79,7 +79,7 @@ export default function ConfirmationModal({
                   <Button
                     type="button"
                     $variant="outline"
-                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto"
+                    className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-4 py-2"
                     onClick={cancelButtonAction}
                     ref={cancelButtonRef}
                   >

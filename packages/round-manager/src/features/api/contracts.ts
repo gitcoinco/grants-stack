@@ -46,6 +46,11 @@ export const projectRegistryContract = (
   };
 };
 
+/* ERC20 */
+export const ERC20Contract: Contract = {
+  abi: abi.erc20,
+};
+
 /************************/
 /* ===== Program ====== */
 /************************/

@@ -35,6 +35,7 @@ import { RoundProvider } from "./context/round/RoundContext";
 import { CreateRoundProvider } from "./context/round/CreateRoundContext";
 import { BulkUpdateGrantApplicationProvider } from "./context/application/BulkUpdateGrantApplicationContext";
 import { initSentry } from "./sentry";
+import { FundContractProvider } from "./context/round/FundContractContext";
 
 // Initialize sentry
 initSentry();
@@ -86,7 +87,9 @@ root.render(
                       <ApplicationProvider>
                         <BulkUpdateGrantApplicationProvider>
                           <FinalizeRoundProvider>
-                            <ViewRoundPage />
+                            <FundContractProvider>
+                              <ViewRoundPage />
+                            </FundContractProvider>
                           </FinalizeRoundProvider>
                         </BulkUpdateGrantApplicationProvider>
                       </ApplicationProvider>
