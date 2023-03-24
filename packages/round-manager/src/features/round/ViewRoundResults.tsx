@@ -26,6 +26,7 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { setReadyForPayout } from "../../features/api/round";
 import { useSigner } from "wagmi";
 
@@ -398,7 +399,6 @@ function InformationTable(props: {
         tryAgainFn={handleReadyForPayoutModal}
       />
     </div>
-
   );
 }
 
