@@ -416,7 +416,7 @@ export const fundRoundContract = async (
       value: amount,
     };
 
-    tx = signer.sendTransaction(txObj);
+    tx = await signer.sendTransaction(txObj);
 
     receipt = await tx.wait();
   } else {
