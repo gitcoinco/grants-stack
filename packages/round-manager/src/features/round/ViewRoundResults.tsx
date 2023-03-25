@@ -18,7 +18,7 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round,
+  Round
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -27,8 +27,8 @@ import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { setReadyForPayout } from "../../features/api/round";
 import { useSigner } from "wagmi";
+import { setReadyForPayout } from "../../features/api/round";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -221,6 +221,7 @@ function InformationTable(props: {
     }
   };
 
+  // todo: finish this
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
