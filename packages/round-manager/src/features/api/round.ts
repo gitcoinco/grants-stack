@@ -507,9 +507,7 @@ export async function fetchMatchingDistribution(
  * @returns
  */
 export const setReadyForPayout = async (
-  roundId: string,
-  signerOrProvider: Signer
-) => {
+  { roundId, signerOrProvider }: { roundId: string; signerOrProvider: Signer; }) => {
   try {
     const roundImplementation = new ethers.Contract(
       roundId,
@@ -518,6 +516,7 @@ export const setReadyForPayout = async (
     );
 
     const tx = await roundImplementation.setReadyForPayout();
+    console.log("⏳ Waiting for transaction to be mined...", tx);
 
     const receipt = await tx.wait();
 
@@ -526,9 +525,14 @@ export const setReadyForPayout = async (
 
     return {
       transactionBlockNumber: blockNumber,
+      error: undefined,
     };
-  } catch(error) {
+  } catch (error) {
     console.error("setReadyForPayout", { error });
-    throw new Error("Unable to set contract ready for payout");
+
+    return {
+      transactionBlockNumber: 0,
+      error,
+    };
   }
 }

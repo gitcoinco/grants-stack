@@ -17,7 +17,7 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round,
+  Round
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import ErrorModal from "../common/ErrorModal";
@@ -25,8 +25,8 @@ import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { setReadyForPayout } from "../../features/api/round";
 import { useSigner } from "wagmi";
+import { setReadyForPayout } from "../../features/api/round";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -184,7 +184,6 @@ function InformationTable(props: {
   ) => void;
 }) {
 
-  // TODO: Refresh component
   const [openReadyForPayoutModal, setOpenReadyForPayoutModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
@@ -193,35 +192,52 @@ function InformationTable(props: {
 
   const handleProgressModal = async () => {
     try {
-      setOpenReadyForPayoutModal(false);
-      await handleFinalizeDistributionForPayout();
       setOpenProgressModal(true);
+      await handleFinalizeDistributionForPayout();
+      setOpenReadyForPayoutModal(false);
     } catch (error) {
       console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
     }
   };
 
+  // todo: finish this
   const handleFinalizeDistributionForPayout = async () => {
     try {
-      if(signer && props.roundId) {
-        await setReadyForPayout(props.roundId, signer);
+      if (signer && props.roundId) {
+        const setReadyForPayoutTx = await setReadyForPayout({ roundId: props.roundId, signerOrProvider: signer });
+        console.log("setReadyForPayoutTx", { setReadyForPayoutTx });
+        if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
+          setOpenProgressModal(false);
+          setOpenErrorModal(true);
+          console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
+        } else {
+          handleRedirect();
+        }
       }
     } catch (error) {
       console.error("handleFinalizeDistributionForPayout() error", error);
     }
   };
 
+  // TODO: Refresh component
+  const [isRefreshed, setIsRefreshed] = useState(false);
+  const handleRedirect = () => {
+    // todo: handle redirect logic
+    setIsRefreshed(true);
+  }
+
   // TODO: Update Progress Modal statuses with tx status of setReadyForPayout() contract call
   const progressSteps: ProgressStep[] = [
     {
       name: "Finalizing Distribution",
       description: "The distribution is being finalized in the contract.",
-      status: ProgressStatus.IN_PROGRESS, // todo: replace this value with the tx status of setReadyForPayout() contract call
+      // todo: get the tx status of setReadyForPayout() contract call
+      status: ProgressStatus.IN_PROGRESS,
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: ProgressStatus.IN_PROGRESS, // todo: replace this also on redirect/refresh success
+      status: isRefreshed ? ProgressStatus.IS_SUCCESS : ProgressStatus.IN_PROGRESS,
     },
   ];
 
@@ -233,8 +249,8 @@ function InformationTable(props: {
           {props.useFetchDistributionFromContract
             ? "Finalized"
             : props.isCustom
-            ? "Custom"
-            : "Default"}{" "}
+              ? "Custom"
+              : "Default"}{" "}
           Matching Stats
         </p>
         {props.isCustom ? (
@@ -315,7 +331,7 @@ function InformationTable(props: {
               type="button"
               data-testid="finalize-results"
               className="flex bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
-              >
+            >
               Finalize Results
             </Button>
           </div>
@@ -325,7 +341,7 @@ function InformationTable(props: {
             </span>
           </div>
         </>
-      ): null}
+      ) : null}
       {/* Modals */}
       <InfoModal
         title={"Warning!"}
@@ -786,15 +802,11 @@ function ReadyForPayoutModalBody() {
   return (
     <div className="text-sm text-grey-400 gap-16">
       <p className="text-sm">
-       Upon finalizing round results,
-       they'll be permanently locked in the smart contract,
-       ensuring data integrity on the blockchain.
+        Upon finalizing round results, they'll be permanently locked in the smart contract, ensuring distribution integrity on the blockchain.
       </p>
 
       <p className="text-sm mt-4">
-       The protocol will also deduct a fee at this stage.
-       Please verify results before confirming, as you'll
-       acknowledge their accuracy and accept the fee deduction.
+        Please verify results before confirming, as you'll acknowledge their accuracy and accept the permanent locking of the distribution.
       </p>
     </div>
   );
