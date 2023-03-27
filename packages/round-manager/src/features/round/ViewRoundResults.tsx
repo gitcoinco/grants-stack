@@ -227,9 +227,8 @@ function InformationTable(props: {
 
         if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
 
-          setOpenReadyForPayoutProgressModal(false);
-         
           setTimeout(() => {
+            setOpenReadyForPayoutProgressModal(false);
             setOpenErrorModal(true);
           }, errorModalDelayMs);
 
@@ -245,11 +244,11 @@ function InformationTable(props: {
 
   const handleRedirect = () => {
     setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
-    setPayoutReady(true);
+
     setTimeout(() => {
+      setPayoutReady(true);
       setOpenReadyForPayoutProgressModal(false);
     }, errorModalDelayMs);
-
   }
 
   const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
@@ -450,11 +449,17 @@ function FinalizeRound(props: {
   const handleFinalizeRound = async () => {
     try {
       if (props.payoutStrategy !== undefined) {
-        setOpenProgressModal(true);
-        await finalizeRound(
-          props.payoutStrategy.id ?? "",
-          props.useDefault ? props.matchingData : props.customMatchingData
-        );
+
+        setTimeout(async () => {
+
+          setOpenInfoModal(false);
+          setOpenProgressModal(true);
+
+          await finalizeRound(
+            props.payoutStrategy.id ?? "",
+            props.useDefault ? props.matchingData : props.customMatchingData
+          );
+        }, errorModalDelayMs)
       }
     } catch (error) {
       console.error("FinalizeRound", error);
