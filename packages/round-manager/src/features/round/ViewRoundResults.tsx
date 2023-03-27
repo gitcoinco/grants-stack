@@ -221,7 +221,7 @@ function InformationTable(props: {
     }
   };
 
-  // todo: finish this
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
@@ -239,6 +239,7 @@ function InformationTable(props: {
 
           console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
         } else {
+          setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
           handleRedirect();
         }
       }
