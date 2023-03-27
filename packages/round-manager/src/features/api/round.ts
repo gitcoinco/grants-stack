@@ -507,7 +507,8 @@ export async function fetchMatchingDistribution(
  * @returns
  */
 export const setReadyForPayout = async (
-  { roundId, signerOrProvider }: { roundId: string; signerOrProvider: Signer; }) => {
+  { roundId, signerOrProvider }: { roundId: string; signerOrProvider: Signer; }
+): Promise<ReadyForPayout> => {
   try {
     const roundImplementation = new ethers.Contract(
       roundId,
@@ -536,3 +537,8 @@ export const setReadyForPayout = async (
     };
   }
 }
+
+type ReadyForPayout = {
+  transactionBlockNumber: number;
+  error?: unknown;
+};

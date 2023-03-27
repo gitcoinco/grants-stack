@@ -194,25 +194,26 @@ function InformationTable(props: {
 
   const handleProgressModal = async () => {
     try {
+      setOpenReadyForPayoutModal(false);
       setOpenProgressModal(true);
       await handleFinalizeDistributionForPayout();
-      setOpenReadyForPayoutModal(false);
     } catch (error) {
       console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
     }
   };
 
-  // todo: finish this
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const setReadyForPayoutTx = await setReadyForPayout({ roundId: props.roundId, signerOrProvider: signer });
-        console.log("setReadyForPayoutTx", { setReadyForPayoutTx });
         if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
           setOpenProgressModal(false);
           setOpenErrorModal(true);
           console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
         } else {
+          setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
           handleRedirect();
         }
       }
@@ -223,6 +224,8 @@ function InformationTable(props: {
 
   // // TODO: Refresh component
   const [isRefreshed, setIsRefreshed] = useState(false);
+  const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
+
   const handleRedirect = () => {
     // todo: handle redirect logic
     setIsRefreshed(true);
@@ -235,7 +238,7 @@ function InformationTable(props: {
       name: "Finalizing Distribution",
       description: "The distribution is being finalized in the contract.",
       // todo: get the tx status of setReadyForPayout() contract call
-      status: ProgressStatus.IN_PROGRESS,
+      status: finalizingDistributionStatus
     },
     {
       name: "Redirecting",
@@ -326,7 +329,7 @@ function InformationTable(props: {
         </div>
       ) : null}
       {/* This finalizes the distribution */}
-      {!payoutReady ? (
+      {payoutReady ? (
         <>
           <div className="flex justify-end">
             <Button
