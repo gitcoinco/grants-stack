@@ -26,7 +26,6 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useSigner } from "wagmi";
 import { setReadyForPayout } from "../../features/api/round";
 
@@ -221,7 +220,6 @@ function InformationTable(props: {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
@@ -239,7 +237,6 @@ function InformationTable(props: {
 
           console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
         } else {
-          setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
           handleRedirect();
         }
       }
