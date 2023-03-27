@@ -246,7 +246,8 @@ function InformationTable(props: {
     setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
 
     setTimeout(() => {
-      setPayoutReady(true);
+      // close modal and hide payout ready button
+      setPayoutReady(false);
       setOpenReadyForPayoutProgressModal(false);
     }, errorModalDelayMs);
   }
