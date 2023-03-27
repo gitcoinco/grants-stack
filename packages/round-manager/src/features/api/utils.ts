@@ -1,6 +1,12 @@
 import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
-import { ApplicationMetadata, InputType, IPFSObject, MatchingStatsData, Program } from "./types";
+import {
+  ApplicationMetadata,
+  InputType,
+  IPFSObject,
+  MatchingStatsData,
+  Program,
+} from "./types";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 export enum ChainId {
@@ -70,7 +76,7 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
   ETH: "ethereum",
 };
 
-export const payoutTokens = [
+export const payoutTokens: PayoutTokenWithCoingeckoId[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -185,12 +191,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.MAINNET,
           address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
           logo: TokenNamesAndLogos["DAI"],
+          decimals: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.MAINNET,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimals: 18,
         },
       ];
     }
@@ -201,12 +209,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
           logo: TokenNamesAndLogos["DAI"],
+          decimals: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimals: 18,
         },
       ];
     }
@@ -217,24 +227,28 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
           logo: TokenNamesAndLogos["FTM"],
+          decimals: 18,
         },
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["FTM"],
+          decimals: 18,
         },
         {
           name: "BUSD",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
           logo: TokenNamesAndLogos["BUSD"],
+          decimals: 18,
         },
         {
           name: "DAI",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
           logo: TokenNamesAndLogos["DAI"],
+          decimals: 18,
         },
       ];
     }
@@ -245,6 +259,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
           address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
           logo: TokenNamesAndLogos["DAI"],
+          decimals: 18,
         },
       ];
     }
@@ -256,18 +271,21 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
           logo: TokenNamesAndLogos["BUSD"],
+          decimals: 18,
         },
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
           logo: TokenNamesAndLogos["DAI"],
+          decimals: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimals: 18,
         },
       ];
     }
@@ -609,7 +627,6 @@ export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
   const distribution: [number, string, BigNumber, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
-
     matchingResults[index].index = index;
 
     distribution.push([
@@ -624,8 +641,21 @@ export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
     "uint256",
     "address",
     "uint256",
-    "bytes32"
+    "bytes32",
   ]);
 
-  return { distribution, tree, matchingResults} ;
-}
+  return { distribution, tree, matchingResults };
+};
+
+export const formatCurrency = (
+  value: bigint,
+  decimals: number,
+  fraction?: number
+) => {
+  console.log(value, decimals, fraction);
+  console.log(value / (BigInt(10) * BigInt(decimals)));
+  // return (value / (10*decimals)).toLocaleString("en-US", {
+  //  maximumFractionDigits: fraction || 3,
+  // });
+  return 0;
+};

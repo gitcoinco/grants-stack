@@ -9,9 +9,10 @@ import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, Round } from "../api/types";
-import { payoutTokens, useTokenPrice } from "../api/utils";
+import { formatCurrency, PayoutToken, payoutTokens, PayoutTokenWithCoingeckoId, useTokenPrice } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 type GranteeFundInfo = {
   project: string;
@@ -29,25 +30,6 @@ export default function ViewFundGrantees(props: {
 }) {
   const [isFundGranteesFetched] = useState(false);
 
-  const matchingFundPayoutToken =
-    props.round &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
-    )[0];
-
-    const tokenDetail = {
-      addressOrName: props.roundId,
-      token: matchingFundPayoutToken?.address,
-    };
-  
-    const { data, } = useTokenPrice(
-      matchingFundPayoutToken?.coingeckoId
-    );
-
-    console.log("===>");
-    console.log(matchingFundPayoutToken);
-
   if (isFundGranteesFetched) {
     return <Spinner text="We're fetching your data." />;
   }
@@ -55,8 +37,8 @@ export default function ViewFundGrantees(props: {
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
-      {!props.round?.payoutStrategy?.isReadyForPayout ? (
-        <FinalizedRoundContent />
+      {props.round?.payoutStrategy?.isReadyForPayout ? (
+        <FinalizedRoundContent tokenAddress={props.round?.token} />
       ) : (
         <NonFinalizedRoundContent />
       )}
@@ -105,12 +87,21 @@ const TabApplicationCounter = tw.div`
     font-normal
     `;
 
-function FinalizedRoundContent() {
+function FinalizedRoundContent(props: { tokenAddress: string }) {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
   const projects = useGroupProjectsByPaymentStatus(chain?.id, roundId || "");
   const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
-  const [unpaidProjects, setUnpaidProjects] = useState<GranteeFundInfo[]>([]);
+  const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
+
+  const matchingFundPayoutToken: PayoutTokenWithCoingeckoId =
+    payoutTokens.filter(
+      (t) =>
+        t.address.toLocaleLowerCase() == props.tokenAddress.toLocaleLowerCase()
+    )[0];
+
+  console.log("===> matchingFundPayoutToken");
+  console.log(matchingFundPayoutToken);
 
   const mapMatchingStatsDataToGranteeFundInfo = (matchingStatsData: MatchingStatsData[]): GranteeFundInfo[] => {
     return matchingStatsData.map((matchingStatData) => ({
@@ -127,7 +118,7 @@ function FinalizedRoundContent() {
       mapMatchingStatsDataToGranteeFundInfo(projects['paid'])
     );
     setUnpaidProjects(
-      mapMatchingStatsDataToGranteeFundInfo(projects['unpaid'])
+      projects['unpaid']
     );
 
   }, [projects]);
@@ -171,7 +162,7 @@ function FinalizedRoundContent() {
           </div>
           <Tab.Panels className="basis-5/6 ml-6">
             <Tab.Panel>
-              <PayProjectsTable projects={unpaidProjects} />
+              <PayProjectsTable projects={unpaidProjects} token={matchingFundPayoutToken}/>
             </Tab.Panel>
             <Tab.Panel>
               <PaidProjectsTable projects={paidProjects} chainId={chain?.id} />
@@ -185,16 +176,15 @@ function FinalizedRoundContent() {
 
 
 // TODO: Add types
-export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
+export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutTokenWithCoingeckoId }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
-  const [selectedProjects, setSelectedProjects] = useState<GranteeFundInfo[]>(
-    []
-  );
+  const [selectedProjects, setSelectedProjects] = useState<MatchingStatsData[]>([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     const isIndeterminate =
@@ -210,6 +200,25 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
     setChecked(!checked && !indeterminate);
     setIndeterminate(false);
   }
+
+  const ConfirmationModalContent = (props: { granteeCount: number, amount: number, symbol: string }) => (
+    <div className="flex flex-col">
+      <div className="text-gray-400 text-sm px-4 py-2 font-['Libre_Franklin']">
+        You have selected multiple Grantees to allocate funds to.
+      </div>
+      <div className="flex text-center">
+        <div className="w-2/5 border-r-2 border-gray-200 py-2">
+          <h2 className="font-bold text-base text-gray-400 mb-2 font-['Libre_Franklin']">GRANTEES</h2>
+          <p className="font-bold text-base text-black font-['Libre_Franklin']">{props.granteeCount}</p>
+        </div>
+        <div className="w-3/5 border-l-1 py-2">
+          <h2 className="font-bold text-base text-gray-400 mb-2 font-['Libre_Franklin']">FUNDS TO BE ALLOCATED</h2>
+          {/* <p className="font-bold text-base text-black font-['Libre_Franklin']">{formatCurrency(props.amount*1e18, 18)} {props.symbol}</p> */}
+        </div>
+      </div>
+      <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">Changes could be subject to additional gas fees.</div>
+    </div>
+  )
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -266,9 +275,9 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {props.projects.map((project: GranteeFundInfo) => (
+                  {props.projects.map((project: MatchingStatsData) => (
                     <tr
-                      key={project.walletAddress}
+                      key={project.projectPayoutAddress}
                       className={
                         selectedProjects.includes(project)
                           ? "bg-gray-50"
@@ -289,7 +298,7 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                                 ? [...selectedProjects, project]
                                 : selectedProjects.filter(
                                   (p) =>
-                                    p.walletAddress !== project.walletAddress
+                                    p.projectPayoutAddress !== project.projectPayoutAddress
                                 )
                             );
                           }}
@@ -303,13 +312,13 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                             : "text-gray-900"
                         )}
                       >
-                        {project.project}
+                        {project.projectName}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.walletAddress}
+                        {project.projectPayoutAddress}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.matchingPercent}%
+                        {project.matchPoolPercentage}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {project.payoutAmount.toString()}
@@ -324,12 +333,30 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
         <div className="flex flex-row-reverse mr-4 p-4">
           <button
             type="button"
-            className="block m-3 rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block m-3 rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            disabled={selectedProjects.length === 0}
+            onClick={() => setShowConfirmationModal(true)}
           >
             Pay out funds
           </button>
         </div>
       </div>
+      <ConfirmationModal
+        title={"Confirm Decision"}
+        confirmButtonText={"Confirm"}
+        confirmButtonAction={() => {
+          console.log("confirming....")
+          console.log(selectedProjects)
+          setShowConfirmationModal(false);
+        }}
+        body={<ConfirmationModalContent
+          granteeCount={selectedProjects.length}
+          amount={selectedProjects.reduce((acc, cur) => acc + cur.matchAmountInToken, 0)}
+          symbol={props.token.name.toUpperCase()}
+        />}
+        isOpen={showConfirmationModal}
+        setIsOpen={setShowConfirmationModal}
+      />
     </div>
   );
 }
