@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import { ApplicationMetadata, InputType, IPFSObject, MatchingStatsData, Program } from "./types";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
@@ -142,7 +142,7 @@ export const payoutTokens = [
   {
     name: "DAI",
     chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
+    address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
   },
@@ -580,12 +580,12 @@ export const getTxExplorerForContract = (
  * @returns
  */
 export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
-  distribution: [number, string, number, string][],
-  tree: StandardMerkleTree<[number, string, number, string]>
+  distribution: [number, string, BigNumber, string][],
+  tree: StandardMerkleTree<[number, string, BigNumber, string]>
   matchingResults: MatchingStatsData[]
  } => {
 
-  const distribution: [number, string, number, string][] = [];
+  const distribution: [number, string, BigNumber, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
 
@@ -594,7 +594,7 @@ export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
     distribution.push([
       index,
       matchingResult.projectPayoutAddress,
-      matchingResult.matchAmountInToken,
+      matchingResult.matchAmountInToken, // TODO: FIX
       matchingResult.projectId
     ])
   });

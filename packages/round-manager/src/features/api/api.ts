@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 import { useMemo, useState } from "react";
 
 export type QFDistribution = {
@@ -5,7 +7,7 @@ export type QFDistribution = {
   matchAmountInUSD: number;
   totalContributionsInUSD: number;
   matchPoolPercentage: number;
-  matchAmountInToken: number;
+  matchAmountInToken: BigNumber;
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
 };
@@ -102,7 +104,7 @@ export const useRoundMatchData = (chainId: number, roundId: string) => {
   useMemo(() => {
     setLoading(true);
 
-    if (roundId == "0x90f301826d464708c74b437f868e6c8a3c591e5f") {
+    if (roundId == "0xf9cce742ab3369745d8401dc8f40617c6da5a059") {
       // TODO: remove this stub
       setRoundMatchData(stubForAPI());
       setLoading(false);
@@ -146,28 +148,28 @@ const stubForAPI = () : QFDistribution[] => {
     {
       projectId: "0x1983d697278fff78d494f87371f3b8340334ad97bf278f972648ce0789e04283",
       matchAmountInUSD: 10,
-      totalContributionsInUSD: 0,
-      matchPoolPercentage: 0.10,
-      matchAmountInToken: 10,
+      totalContributionsInUSD: 10,
+      matchPoolPercentage: 0.30,
+      matchAmountInToken: parseEther('10'), // 10 DAI
       projectPayoutAddress: "0x0000000000000000000000000000000000000001",
       uniqueContributorsCount: 10,
     },
     {
-      projectId: "0x8ad6e9aa51d1d15c3197d9b5304c7cc2aae40dfb1a38f919d6c4ef33888609f7",
+      projectId: "0xaa0e74068c79c917e1232fda4096fe376fecb29b49bbb8bd0f754f0706d05f1a",
       matchAmountInUSD: 20,
       totalContributionsInUSD: 20,
-      matchPoolPercentage: 0.20,
-      matchAmountInToken: 20,
-      projectPayoutAddress: "0x0000000000000000000000000000000000000002",
+      matchPoolPercentage: 0.60,
+      matchAmountInToken: parseEther('20'), // 25 DAI
+      projectPayoutAddress: "0x5cdb35fADB8262A3f88863254c870c2e6A848CcA",
       uniqueContributorsCount: 20,
     },
     {
-      projectId: "0xc7f6c994a62837891a4913d85bf0944b6acfcffbe9972c095cfe32f32eade479",
+      projectId: "0xc460a1506a19c6cab911d78a3072aa3def97d324fb57fa318bd3ca9d1986f36b",
       matchAmountInUSD: 30,
       totalContributionsInUSD: 30,
-      matchPoolPercentage: 0.30,
-      matchAmountInToken: 300,
-      projectPayoutAddress: "0x0000000000000000000000000000000000000003",
+      matchPoolPercentage: 0.10,
+      matchAmountInToken: parseEther('5'), // 5 DAI
+      projectPayoutAddress: "0xB8cEF765721A6da910f14Be93e7684e9a3714123",
       uniqueContributorsCount: 30,
     }
   ];

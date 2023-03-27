@@ -2,7 +2,8 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
-import { formatBytes32String } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -100,7 +101,7 @@ export const makeMatchingStatsData = (): MatchingStatsData => {
     projectId: formatBytes32String(faker.company.name()),
     uniqueContributorsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: faker.datatype.number(),
+    matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
@@ -111,7 +112,7 @@ export const makeQFDistribution = (): QFDistribution => {
     matchAmountInUSD: faker.datatype.number(),
     totalContributionsInUSD: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: faker.datatype.number(),
+    matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
     uniqueContributorsCount: faker.datatype.number(),
   };

@@ -170,6 +170,17 @@ function ErrorMessage() {
   );
 }
 
+
+const getPayoutReadyStatus = (
+  isDistributionUploaded?: boolean,
+  isContractAlreadyReadyForPayout?: boolean
+): boolean => {
+  if(!isDistributionUploaded || isContractAlreadyReadyForPayout) {
+    return false;
+  }
+  return true;
+}
+
 function InformationTable(props: {
   roundId: string | undefined;
   isReadyForPayout?: boolean;
@@ -186,7 +197,12 @@ function InformationTable(props: {
   const [openReadyForPayoutProgressModal, setOpenReadyForPayoutProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
-  const [payoutReady, setPayoutReady] = useState(props.isReadyForPayout);
+  const [payoutReady, setPayoutReady] = useState(
+    getPayoutReadyStatus(
+      props.useFetchDistributionFromContract,
+      props.isReadyForPayout
+    )
+  );
 
   const { data: signer } = useSigner();
 
@@ -194,6 +210,7 @@ function InformationTable(props: {
     try {
       setOpenReadyForPayoutModal(false);
       setOpenReadyForPayoutProgressModal(true);
+
       await handleFinalizeDistributionForPayout();
     } catch (error) {
       console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
@@ -209,8 +226,13 @@ function InformationTable(props: {
         });
 
         if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
+
           setOpenReadyForPayoutProgressModal(false);
-          setOpenErrorModal(true);
+         
+          setTimeout(() => {
+            setOpenErrorModal(true);
+          }, errorModalDelayMs);
+
           console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
         } else {
           handleRedirect();
@@ -313,6 +335,7 @@ function InformationTable(props: {
           </tbody>
         </table>
       </div>
+
       {!props.isCustom ? (
         <div className="relative mt-4 mb-8 pb-8">
           <Button
@@ -329,8 +352,7 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
-      {/* This invokes the setReadyForPayout */}
-      {!payoutReady ? (
+      {payoutReady ? (
         <>
           <div className="flex justify-end">
             <Button
@@ -349,6 +371,7 @@ function InformationTable(props: {
           </div>
         </>
       ) : null}
+
       {/* Modals */}
       <InfoModal
         title={"Warning!"}
@@ -407,6 +430,7 @@ function FinalizeRound(props: {
       finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
     ) {
       // redirectToFinalizedRoundStats(navigate, 2000);
+      setOpenProgressModal(false);
       console.log("success");
     }
   }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
@@ -493,8 +517,27 @@ function FinalizeRound(props: {
                     <InformationTable
                       roundId={props.roundId}
                       matchingData={props.matchingData}
+                      isReadyForPayout={props.payoutStrategy.isReadyForPayout}
+                      useFetchDistributionFromContract={props.useFetchDistributionFromContract}
                     />
                   ) : null}
+
+                  {/* Trigger for updateDistribution */}
+                  {!props.payoutStrategy.isReadyForPayout &&
+                    <div className="grid justify-items-end">
+                      <div className="w-fit">
+                        <Button
+                          onClick={() => setOpenInfoModal(true)}
+                          type="submit"
+                          className="my-0 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
+                          disabled={!props.useDefault && !props.customMatchingData}
+                        >
+                          Save distribution
+                        </Button>
+                      </div>
+                    </div>
+                  }
+
                   {!props.useDefault && !props.customMatchingData && (
                     <UploadJSON
                       matchingData={props.matchingData}
@@ -506,23 +549,14 @@ function FinalizeRound(props: {
                       roundId={props.roundId}
                       matchingData={props.customMatchingData}
                       isCustom={true}
+                      isReadyForPayout={props.payoutStrategy.isReadyForPayout}
+                      useFetchDistributionFromContract={props.useFetchDistributionFromContract}
                       customMatchingData={props.customMatchingData}
                       setCustomMatchingData={props.setCustomMatchingData}
                     />
                   ) : null}
                 </div>
-                <div className="grid justify-items-end">
-                  <div className="w-fit">
-                    <Button
-                      onClick={() => setOpenInfoModal(true)}
-                      type="submit"
-                      className="my-5 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
-                      disabled={!props.useDefault && !props.customMatchingData}
-                    >
-                      Finalize and save to contract
-                    </Button>
-                  </div>
-                </div>
+
               </form>
             </div>
             <InfoModal
