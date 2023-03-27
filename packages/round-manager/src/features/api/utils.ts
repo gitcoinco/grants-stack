@@ -147,6 +147,13 @@ export const payoutTokens = [
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
   },
   {
+    name: "LOLG",
+    chainId: ChainId.GOERLI_CHAIN_ID,
+    address: "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D",
+    logo: TokenNamesAndLogos["DAI"],
+    coingeckoId: TokenAndCoinGeckoIds["DAI"],
+  },
+  {
     name: "ETH",
     chainId: ChainId.GOERLI_CHAIN_ID,
     address: ethers.constants.AddressZero,
