@@ -48,42 +48,38 @@ export default function VerificationForm({
     );
   };
 
+  const resetFeedback = () => {
+    setFeedback([{ title: "", type: "none", message: "" }]);
+  };
+
+  const handleValidationError = (error: ValidationError) => {
+    setFormValidation({
+      messages: error.inner.map((er) => er.message),
+      valid: false,
+      errorCount: error.inner.length,
+    });
+
+    setFeedback(
+      error.inner.map((err) => ({
+        title: err.path || "",
+        type: "error",
+        message: err.message,
+      }))
+    );
+  };
+
   const validate = async () => {
     try {
       await validateVerificationForm(props.formMetaData);
-      setFormValidation({
-        messages: [],
-        valid: true,
-        errorCount: 0,
-      });
-      setFeedback([{ title: "", type: "none", message: "" }]);
+      setFormValidation({ messages: [], valid: true, errorCount: 0 });
+      resetFeedback();
       return true;
     } catch (e) {
-      const error = e as ValidationError;
-      setFormValidation({
-        messages: error.inner.map((er) => (er as ValidationError).message),
-        valid: false,
-        errorCount: error.inner.length,
-      });
-      setFeedback([
-        ...error.inner.map((er) => {
-          const err = er as ValidationError;
-          console.log("ERROR", { err });
-          if (err !== null) {
-            return {
-              title: err.path!,
-              type: "error",
-              message: err.message,
-            };
-          }
-          return {
-            title: "",
-            type: "none",
-            message: "",
-          };
-        }),
-      ]);
-
+      if (e instanceof ValidationError) {
+        handleValidationError(e);
+      } else {
+        console.error("Unexpected error:", e);
+      }
       return false;
     }
   };
