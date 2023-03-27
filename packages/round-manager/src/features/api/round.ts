@@ -31,7 +31,7 @@ export async function getRoundById(
     // query the subgraph for all rounds by the given address in the given program
     const res = await graphql_fetch(
       `
-          query GetRounds($address: String, $programId: String, $roundId: String) {
+          query GetRounds($roundId: String) {
             rounds(where: {
         ${roundId ? `id: $roundId` : ``}
             }) {
@@ -80,8 +80,8 @@ export async function getRoundById(
       chainId,
       { roundId }
     );
-
-    const round: RoundResult = res.data.rounds[0];
+    
+    const round: RoundResult = res.data.rounds[0];    
 
     // fetch round and application metadata from IPFS
     const [roundMetadata, applicationMetadata] = await Promise.all([
@@ -509,6 +509,7 @@ export async function fetchMatchingDistribution(
 export const setReadyForPayout = async (
   { roundId, signerOrProvider }: { roundId: string; signerOrProvider: Signer; }
 ): Promise<ReadyForPayout> => {
+
   try {
     const roundImplementation = new ethers.Contract(
       roundId,

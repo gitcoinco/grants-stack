@@ -24,7 +24,6 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useSigner } from "wagmi";
 import { setReadyForPayout } from "../../features/api/round";
 
@@ -171,7 +170,6 @@ function ErrorMessage() {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function InformationTable(props: {
   roundId: string | undefined;
   isReadyForPayout?: boolean;
@@ -185,35 +183,36 @@ function InformationTable(props: {
 }) {
 
   const [openReadyForPayoutModal, setOpenReadyForPayoutModal] = useState(false);
-  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openReadyForPayoutProgressModal, setOpenReadyForPayoutProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
   const [payoutReady, setPayoutReady] = useState(props.isReadyForPayout);
 
   const { data: signer } = useSigner();
 
-  const handleProgressModal = async () => {
+  const handleReadyForPayoutModal = async () => {
     try {
       setOpenReadyForPayoutModal(false);
-      setOpenProgressModal(true);
+      setOpenReadyForPayoutProgressModal(true);
       await handleFinalizeDistributionForPayout();
     } catch (error) {
       console.error("Progress modal error calling handleFinalizeDistributionForPayout()", error);
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const setReadyForPayoutTx = await setReadyForPayout({ roundId: props.roundId, signerOrProvider: signer });
+        const setReadyForPayoutTx = await setReadyForPayout({
+          roundId: props.roundId,
+          signerOrProvider: signer
+        });
+
         if (setReadyForPayoutTx && setReadyForPayoutTx.error) {
-          setOpenProgressModal(false);
+          setOpenReadyForPayoutProgressModal(false);
           setOpenErrorModal(true);
           console.error("setReadyForPayoutTx error", setReadyForPayoutTx.error);
         } else {
-          setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
           handleRedirect();
         }
       }
@@ -222,28 +221,31 @@ function InformationTable(props: {
     }
   };
 
-  // // TODO: Refresh component
-  const [isRefreshed, setIsRefreshed] = useState(false);
-  const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
-
   const handleRedirect = () => {
-    // todo: handle redirect logic
-    setIsRefreshed(true);
+    setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
     setPayoutReady(true);
+    setTimeout(() => {
+      setOpenReadyForPayoutProgressModal(false);
+    }, errorModalDelayMs);
+
   }
 
-  // TODO: Update Progress Modal statuses with tx status of setReadyForPayout() contract call
-  const progressSteps: ProgressStep[] = [
+  const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
+
+
+  const readyForPayoutProgressSteps: ProgressStep[] = [
     {
       name: "Finalizing Distribution",
       description: "The distribution is being finalized in the contract.",
-      // todo: get the tx status of setReadyForPayout() contract call
       status: finalizingDistributionStatus
     },
     {
       name: "Redirecting",
       description: "Just another moment while we finish things up.",
-      status: isRefreshed ? ProgressStatus.IS_SUCCESS : ProgressStatus.IN_PROGRESS,
+      status:
+        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS ?
+        ProgressStatus.IS_SUCCESS:
+        ProgressStatus.NOT_STARTED,
     },
   ];
 
@@ -293,18 +295,17 @@ function InformationTable(props: {
           </thead>
           <tbody>
             {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              props.matchingData?.map((data: any) => (
+              props.matchingData?.map((data: MatchingStatsData) => (
                 <tr key={data.projectId}>
                   <td className="py-2">
-                    {data.projectName.slice(0, 16) + "..."}
+                    {data.projectName && data.projectName.slice(0, 16) + "..."}
                   </td>
                   <td className="py-2">
                     {data.projectId.slice(0, 32) + "..."}
                   </td>
                   <td className="py-2">{data.uniqueContributorsCount}</td>
                   <td className="py-2">
-                    {data.matchPoolPercentage.toFixed(4) * 100 + "%"}
+                    {Number(data.matchPoolPercentage.toFixed(4)) * 100 + "%"}
                   </td>
                 </tr>
               ))
@@ -328,14 +329,14 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
-      {/* This finalizes the distribution */}
-      {payoutReady ? (
+      {/* This invokes the setReadyForPayout */}
+      {!payoutReady ? (
         <>
           <div className="flex justify-end">
             <Button
               onClick={() => setOpenReadyForPayoutModal(true)}
               type="button"
-              data-testid="finalize-results"
+              data-testid="set-ready-for-payout"
               className="flex bg-white text-red-500 hover:bg-red-500 hover:text-white border border-red-500"
             >
               Finalize Results
@@ -355,20 +356,20 @@ function InformationTable(props: {
         isOpen={openReadyForPayoutModal}
         setIsOpen={setOpenReadyForPayoutModal}
         continueButtonText={"Ready for payout"}
-        continueButtonAction={handleProgressModal}
+        continueButtonAction={handleReadyForPayoutModal}
       >
       </InfoModal>
       <ProgressModal
-        isOpen={openProgressModal}
+        isOpen={openReadyForPayoutProgressModal}
         subheading={"Please hold while we update the contract."}
-        steps={progressSteps}
+        steps={readyForPayoutProgressSteps}
         redirectUrl={`/rounds/${props.roundId}`}
       />
       <ErrorModal
         subheading="There was an error finalizing the distribution."
         isOpen={openErrorModal}
         setIsOpen={setOpenErrorModal}
-        tryAgainFn={handleProgressModal}
+        tryAgainFn={handleReadyForPayoutModal}
       />
     </div>
   );

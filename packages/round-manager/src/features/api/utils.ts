@@ -299,7 +299,7 @@ export const graphql_fetch = async (
 
   if (fromProjectRegistry) {
     endpoint = endpoint.replace("grants-round", "grants-hub");
-  }
+  }  
 
   return fetch(endpoint, {
     method: "POST",
