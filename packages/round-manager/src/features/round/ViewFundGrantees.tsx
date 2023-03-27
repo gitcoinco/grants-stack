@@ -2,6 +2,7 @@
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
+import { BigNumber } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -14,7 +15,7 @@ type GranteeFundInfo = {
   project: string;
   walletAddress: string;
   matchingPercent: string;
-  payoutAmount: string;
+  payoutAmount: BigNumber;
   status?: string;
   hash?: string;
 };
@@ -93,7 +94,7 @@ function FinalizedRoundContent() {
       project: matchingStatData.projectName ?? "",
       walletAddress: matchingStatData.projectPayoutAddress,
       matchingPercent: (matchingStatData.matchPoolPercentage * 100).toString(),
-      payoutAmount: matchingStatData.matchAmountInToken.toString(),
+      payoutAmount: matchingStatData.matchAmountInToken,
     }));
   };
 
@@ -288,7 +289,7 @@ export function PayProjectsTable(props: { projects: GranteeFundInfo[] }) {
                         {project.matchingPercent}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.payoutAmount}
+                        {project.payoutAmount.toString()}
                       </td>
                     </tr>
                   ))}
@@ -405,7 +406,7 @@ export function PaidProjectsTable(props: {
                         {project.matchingPercent}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.payoutAmount}
+                        {project.payoutAmount.toString()}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <span
