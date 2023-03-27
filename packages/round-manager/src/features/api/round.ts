@@ -265,6 +265,8 @@ export async function deployRoundContract(
       round.operatorWallets,
     ];
 
+    // TODO: matchingFundsAvailable * 10^18
+
     // encode input parameters
     const params = [
       initAddresses,
