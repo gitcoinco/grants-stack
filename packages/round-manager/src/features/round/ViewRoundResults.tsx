@@ -188,6 +188,8 @@ function InformationTable(props: {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
+  const [payoutReady, setPayoutReady] = useState(props.isReadyForPayout);
+
   const { data: signer } = useSigner();
 
   const handleProgressModal = async () => {
@@ -219,11 +221,12 @@ function InformationTable(props: {
     }
   };
 
-  // TODO: Refresh component
+  // // TODO: Refresh component
   const [isRefreshed, setIsRefreshed] = useState(false);
   const handleRedirect = () => {
     // todo: handle redirect logic
     setIsRefreshed(true);
+    setPayoutReady(true);
   }
 
   // TODO: Update Progress Modal statuses with tx status of setReadyForPayout() contract call
@@ -323,7 +326,7 @@ function InformationTable(props: {
         </div>
       ) : null}
       {/* This finalizes the distribution */}
-      {props.isReadyForPayout ? (
+      {!payoutReady ? (
         <>
           <div className="flex justify-end">
             <Button
