@@ -141,9 +141,9 @@ function ReclaimFundsContent(props: {
 
   const tokenDetail =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
-      ? { addressOrName: props.roundId }
+      ? { addressOrName: payoutStrategy }
       : {
-          addressOrName: props.roundId,
+          addressOrName: payoutStrategy,
           token: matchingFundPayoutToken?.address,
         };
 
@@ -256,7 +256,7 @@ function ReclaimFundsContent(props: {
       </p>
       <div className="flex flex-col mt-4 max-w-xl">
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Payout token:</p>
+          <p className="text-sm w-1/2">Payout token:</p>
           <p className="flex flex-row text-sm">
             {matchingFundPayoutToken?.logo ? (
               <img
@@ -269,7 +269,7 @@ function ReclaimFundsContent(props: {
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Matching pool size:</p>
+          <p className="text-sm w-1/2">Matching pool size:</p>
           <p className="text-sm">
             {matchingFunds?.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -285,7 +285,7 @@ function ReclaimFundsContent(props: {
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3">Amount in contract:</p>
+          <p className="text-sm w-1/2">Amount in payout contract:</p>
           <p className="text-sm">
             {Number(balanceData?.formatted).toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -301,7 +301,7 @@ function ReclaimFundsContent(props: {
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
-          <p className="text-sm w-1/3 py-3">Wallet address:</p>
+          <p className="text-sm w-1/2 py-3">Wallet address:</p>
           <input
             className="border border-gray-300 rounded-md p-2 w-1/2"
             placeholder="Enter a valid wallet address"
