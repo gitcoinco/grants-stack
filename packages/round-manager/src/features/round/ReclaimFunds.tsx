@@ -2,8 +2,10 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
 import { ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useBalance } from "wagmi";
+import { errorModalDelayMs } from "../../constants";
 import { useReclaimFunds } from "../../context/round/ReclaimFundsContext";
 import { ProgressStatus, Round } from "../api/types";
 import { payoutTokens, useTokenPrice } from "../api/utils";
@@ -76,6 +78,7 @@ function ReclaimFundsContent(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -87,9 +90,36 @@ function ReclaimFundsContent(props: {
 
   const { reclaimFunds, reclaimStatus } = useReclaimFunds();
 
+  const payoutStrategy = props.round?.payoutStrategy.id ?? "";
+
+  useEffect(() => {
+    if (reclaimStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setErrorModalSubHeading(
+          transactionReplaced
+            ? "Transaction cancelled. Please try again."
+            : "There was an error during the funding process. Please try again."
+        );
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (reclaimStatus === ProgressStatus.IS_SUCCESS) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        // refresh
+        navigate(0);
+      }, errorModalDelayMs);
+    }
+  }, [navigate, transactionReplaced, props.roundId, reclaimStatus]);
+
   async function handleSubmitFund() {
     try {
-      // TODO: add logic to handle reclaiming funds
+      await reclaimFunds({
+        payoutStrategy,
+        recipientAddress: walletAddress,
+      });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
         setTransactionReplaced(true);

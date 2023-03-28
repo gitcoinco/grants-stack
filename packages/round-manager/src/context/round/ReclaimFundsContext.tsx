@@ -1,12 +1,27 @@
+import { Signer } from "ethers";
 import React, {
   createContext,
   SetStateAction,
   useContext,
   useState,
 } from "react";
+import { useSigner } from "wagmi";
+import { reclaimFundsFromContract } from "../../features/api/payoutStrategy/merklePayoutStrategy";
 import { ProgressStatus } from "../../features/api/types";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
+
+export type ReclaimFundsParams = {
+  payoutStrategy: string;
+  recipientAddress: string;
+};
+
+export type SubmitReclaimFundsParams = {
+  payoutStrategy: string;
+  recipientAddress: string;
+  signer: Signer;
+  context: ReclaimFundsState;
+};
 
 export interface ReclaimFundsState {
   reclaimStatus: ProgressStatus;
@@ -46,21 +61,50 @@ export const ReclaimFundsProvider = ({
 };
 
 export const useReclaimFunds = () => {
-  const context = useContext(ReclaimFundsContext);
+  const context = useContext<ReclaimFundsState>(ReclaimFundsContext);
   if (context === undefined) {
     throw new Error(
       "useReclaimFunds must be used within a ReclaimFundsProvider"
     );
   }
 
-  const { reclaimStatus, setReclaimStatus } = context;
+  const { data: signer } = useSigner();
 
-  const reclaimFunds = async () => {
-    // Add the logic for reclaiming funds here
+  const handleReclaimFunds = async (params: ReclaimFundsParams) => {
+    return _reclaimFunds({ ...params, signer: signer as Signer, context });
   };
 
   return {
-    reclaimFunds,
-    reclaimStatus,
+    reclaimFunds: handleReclaimFunds,
+    reclaimStatus: context.reclaimStatus,
   };
 };
+
+const _reclaimFunds = async ({
+  payoutStrategy,
+  recipientAddress,
+  signer,
+  context,
+}: SubmitReclaimFundsParams) => {
+  resetToInitialState(context);
+  const { setReclaimStatus } = context;
+  try {
+    setReclaimStatus(ProgressStatus.IN_PROGRESS);
+    const { transactionBlockNumber } = await reclaimFundsFromContract(
+      payoutStrategy,
+      signer,
+      recipientAddress
+    );
+    setReclaimStatus(ProgressStatus.IS_SUCCESS);
+    return transactionBlockNumber;
+  } catch (error) {
+    console.error("Error while reclaiming funds: ", error);
+    setReclaimStatus(ProgressStatus.IS_ERROR);
+  }
+};
+
+function resetToInitialState(context: ReclaimFundsState) {
+  const { setReclaimStatus } = context;
+
+  setReclaimStatus(ProgressStatus.NOT_STARTED);
+}
