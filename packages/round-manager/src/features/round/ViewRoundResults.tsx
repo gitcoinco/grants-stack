@@ -26,6 +26,7 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { useSigner } from "wagmi";
 import { setReadyForPayout } from "../../features/api/round";
+import { useWallet } from "../common/Auth";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -204,7 +205,7 @@ function InformationTable(props: {
     )
   );
 
-  const { data: signer } = useSigner();
+  const { signer } = useWallet();
 
   const handleReadyForPayoutModal = async () => {
     try {
