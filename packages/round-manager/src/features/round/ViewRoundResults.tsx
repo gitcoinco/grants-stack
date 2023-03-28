@@ -11,6 +11,7 @@ import { errorModalDelayMs } from "../../constants";
 import {
   useFinalizeRound
 } from "../../context/round/FinalizeRoundContext";
+import { setReadyForPayout } from "../../features/api/round";
 import { useRoundMatchData } from "../api/api";
 import { useFetchMatchingDistributionFromContract } from "../api/payoutStrategy/merklePayoutStrategy";
 import {
@@ -20,13 +21,11 @@ import {
   Round
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
+import { useWallet } from "../common/Auth";
 import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { useSigner } from "wagmi";
-import { setReadyForPayout } from "../../features/api/round";
-import { useWallet } from "../common/Auth";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -38,6 +37,8 @@ export default function ViewRoundResults(props: {
     props.round && props.round.roundEndTime >= currentTime;
   const isAfterRoundEndDate =
     props.round && props.round.roundEndTime <= currentTime;
+
+  console.log("PAYOUT",  props.round?.payoutStrategy);
 
   return (
     <div>
@@ -173,10 +174,14 @@ function ErrorMessage() {
 
 
 const getPayoutReadyStatus = (
-  isDistributionUploaded?: boolean,
-  isContractAlreadyReadyForPayout?: boolean
+  isDistributionAvailableOnChain?: boolean,
+  hasReadyForPayoutBeenExecuted?: boolean
 ): boolean => {
-  if(!isDistributionUploaded || isContractAlreadyReadyForPayout) {
+
+  console.log("isDistributionAvailableOnChain", isDistributionAvailableOnChain);
+  console.log("hasReadyForPayoutBeenExecuted", hasReadyForPayoutBeenExecuted);
+  
+  if(!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted) {
     return false;
   }
   return true;
@@ -208,9 +213,9 @@ function InformationTable(props: {
   const { signer } = useWallet();
 
   const handleReadyForPayoutModal = async () => {
+    setOpenReadyForPayoutModal(false);
+    setOpenReadyForPayoutProgressModal(true);
     try {
-      setOpenReadyForPayoutModal(false);
-      setOpenReadyForPayoutProgressModal(true);
 
       await handleFinalizeDistributionForPayout();
     } catch (error) {
@@ -491,7 +496,7 @@ function FinalizeRound(props: {
 
   return (
     <>
-      {props.useFetchDistributionFromContract && (
+      {props.useFetchDistributionFromContract ? (
         <div className="w-full pt-12">
           <span className="font-bold" data-testid="finalized-round">
             Finalized Round
@@ -503,8 +508,8 @@ function FinalizeRound(props: {
             matchingData={props.matchingDistributionContract}
           />
         </div>
-      )}
-      {!props.useFetchDistributionFromContract && (
+      ): null}
+      {!props.useFetchDistributionFromContract ? (
         <div className="w-full pt-12">
           <span className="font-bold" data-testid="finalize-round">
             Finalize Round
@@ -534,6 +539,7 @@ function FinalizeRound(props: {
                     <div className="grid justify-items-end">
                       <div className="w-fit">
                         <Button
+                          data-testid="save-distribution-button"
                           onClick={() => setOpenInfoModal(true)}
                           type="submit"
                           className="my-0 w-full flex justify-center tracking-wide focus:outline-none focus:shadow-outline shadow-lg cursor-pointer"
@@ -585,7 +591,7 @@ function FinalizeRound(props: {
             />
           </div>
         </div>
-      )}
+      ): null}
     </>
   );
 }

@@ -2,7 +2,6 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
-import { BigNumber } from "ethers";
 import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
@@ -11,27 +10,27 @@ import { store } from "./app/store";
 import {
   ApplicationContext,
   ApplicationState,
-  initialApplicationState,
+  initialApplicationState
 } from "./context/application/ApplicationContext";
 import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
-  initialBulkUpdateGrantApplicationState,
+  initialBulkUpdateGrantApplicationState
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import {
   initialReadProgramState,
   ReadProgramContext,
-  ReadProgramState,
+  ReadProgramState
 } from "./context/program/ReadProgramContext";
 import {
   FinalizeRoundContext,
   FinalizeRoundState,
-  initialFinalizeRoundState,
+  initialFinalizeRoundState
 } from "./context/round/FinalizeRoundContext";
 import {
   initialRoundState,
   RoundContext,
-  RoundState,
+  RoundState
 } from "./context/round/RoundContext";
 import { QFDistribution } from "./features/api/api";
 import {
@@ -43,7 +42,7 @@ import {
   ProjectCredentials,
   ProjectMetadata,
   ProjectStatus,
-  Round,
+  Round
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import history from "./history";
