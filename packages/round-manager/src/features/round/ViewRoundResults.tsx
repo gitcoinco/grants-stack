@@ -18,7 +18,8 @@ import {
   MatchingStatsData,
   ProgressStatus,
   ProgressStep,
-  Round
+  Round,
+  TransactionBlock
 } from "../api/types";
 import { saveObjectAsJson } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -224,7 +225,7 @@ function InformationTable(props: {
   const handleFinalizeDistributionForPayout = async () => {
     try {
       if (signer && props.roundId) {
-        const setReadyForPayoutTx = await setReadyForPayout({
+        const setReadyForPayoutTx: TransactionBlock = await setReadyForPayout({
           roundId: props.roundId,
           signerOrProvider: signer
         });

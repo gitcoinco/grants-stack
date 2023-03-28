@@ -247,6 +247,7 @@ export const batchDistributeFunds = async (
       });
     });
 
+    // todo: handle native token
     const tx = await merklePayoutStrategyImplementation.payout(
       projectsToBePaid
     );
@@ -257,10 +258,15 @@ export const batchDistributeFunds = async (
     const blockNumber = receipt.blockNumber;
     return {
       transactionBlockNumber: blockNumber,
+      error: undefined
     };
   } catch (error) {
     console.error("batchDistributeFunds", error);
-    throw new Error("Unable to distribute funds");
+    
+    return {
+			transactionBlockNumber: 0,
+			error,
+		};
   }
 };
 

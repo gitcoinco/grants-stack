@@ -354,3 +354,8 @@ export type Project = {
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
 };
+
+export type TransactionBlock = {
+	transactionBlockNumber: number;
+	error?: unknown;
+};

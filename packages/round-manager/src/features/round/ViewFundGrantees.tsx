@@ -2,7 +2,7 @@
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -162,7 +162,7 @@ function FinalizedRoundContent(props: { tokenAddress: string }) {
           </div>
           <Tab.Panels className="basis-5/6 ml-6">
             <Tab.Panel>
-              <PayProjectsTable projects={unpaidProjects} token={matchingFundPayoutToken}/>
+              <PayProjectsTable projects={unpaidProjects} token={matchingFundPayoutToken} />
             </Tab.Panel>
             <Tab.Panel>
               <PaidProjectsTable projects={paidProjects} chainId={chain?.id} />
@@ -201,7 +201,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
     setIndeterminate(false);
   }
 
-  const ConfirmationModalContent = (props: { granteeCount: number, amount: number, symbol: string }) => (
+  const ConfirmationModalContent = (props: { granteeCount: number, amount: string, symbol: string }) => (
     <div className="flex flex-col">
       <div className="text-gray-400 text-sm px-4 py-2 font-['Libre_Franklin']">
         You have selected multiple Grantees to allocate funds to.
@@ -213,12 +213,16 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         </div>
         <div className="w-3/5 border-l-1 py-2">
           <h2 className="font-bold text-base text-gray-400 mb-2 font-['Libre_Franklin']">FUNDS TO BE ALLOCATED</h2>
-          {/* <p className="font-bold text-base text-black font-['Libre_Franklin']">{formatCurrency(props.amount*1e18, 18)} {props.symbol}</p> */}
+          <p className="font-bold text-base text-black font-['Libre_Franklin']">{props.amount} {props.symbol}</p>
         </div>
       </div>
       <div className="text-gray-400 text-sm px-4 py-2 italic font-['Libre_Franklin']">Changes could be subject to additional gas fees.</div>
     </div>
   )
+
+  const handleFundGrantees = async () => {
+    setShowConfirmationModal(false);
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -321,7 +325,8 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {project.matchPoolPercentage}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.payoutAmount.toString()}
+                        {formatCurrency(project.matchAmountInToken, props.token.decimals)} 
+                        {" "+props.token.name.toUpperCase()}
                       </td>
                     </tr>
                   ))}
@@ -345,13 +350,17 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         title={"Confirm Decision"}
         confirmButtonText={"Confirm"}
         confirmButtonAction={() => {
-          console.log("confirming....")
-          console.log(selectedProjects)
-          setShowConfirmationModal(false);
+          handleFundGrantees();
         }}
         body={<ConfirmationModalContent
           granteeCount={selectedProjects.length}
-          amount={selectedProjects.reduce((acc, cur) => acc + cur.matchAmountInToken, 0)}
+          amount={
+            formatCurrency(
+              selectedProjects.reduce(
+                (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0)),
+              props.token.decimals
+            )
+          }
           symbol={props.token.name.toUpperCase()}
         />}
         isOpen={showConfirmationModal}
