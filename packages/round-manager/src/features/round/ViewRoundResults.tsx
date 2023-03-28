@@ -38,8 +38,6 @@ export default function ViewRoundResults(props: {
   const isAfterRoundEndDate =
     props.round && props.round.roundEndTime <= currentTime;
 
-  console.log("PAYOUT",  props.round?.payoutStrategy);
-
   return (
     <div>
       {isBeforeRoundEndDate && <NoInformationContent />}
@@ -178,9 +176,6 @@ const getPayoutReadyStatus = (
   hasReadyForPayoutBeenExecuted?: boolean
 ): boolean => {
 
-  console.log("isDistributionAvailableOnChain", isDistributionAvailableOnChain);
-  console.log("hasReadyForPayoutBeenExecuted", hasReadyForPayoutBeenExecuted);
-  
   if(!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted) {
     return false;
   }
@@ -435,9 +430,7 @@ function FinalizeRound(props: {
       IPFSCurrentStatus === ProgressStatus.IS_SUCCESS &&
       finalizeRoundToContractStatus === ProgressStatus.IS_SUCCESS
     ) {
-      // redirectToFinalizedRoundStats(navigate, 2000);
       setOpenProgressModal(false);
-      console.log("success");
     }
   }, [navigate, IPFSCurrentStatus, finalizeRoundToContractStatus]);
 

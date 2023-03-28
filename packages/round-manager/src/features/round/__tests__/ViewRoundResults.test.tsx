@@ -770,7 +770,7 @@ describe("Ready For Payout", () => {
     expect(infoModal).toBeInTheDocument();
   });
 
-  it.only("Should show Progress Modal when Info Modal is clicked", async () => {   
+  it("Should show Progress Modal when Info Modal is clicked", async () => {   
     (useRoundMatchData as jest.Mock).mockImplementation(() => ({
       data: [makeQFDistribution(), makeQFDistribution()],
       error: null,
@@ -824,8 +824,9 @@ describe("Ready For Payout", () => {
     await act(async () => {
       fireEvent.click(confirmButton);
     });
-    // todo: figure out how to test this
-    // const progressModal = screen.getByTestId("progress-modal");
-    // expect(progressModal).toBeInTheDocument();
+    const progressModal = screen.queryByTestId("progress-modal");
+
+    expect(progressModal).not.toBeInTheDocument();
+    expect(setReadyForPayout).toHaveBeenCalledTimes(1);
   });
 });
