@@ -9,14 +9,12 @@ import {
 import { useTokenPrice } from "../../api/utils";
 import ReclaimFunds from "../ReclaimFunds";
 import { ProgressStatus, Round } from "../../api/types";
-import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
+import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import ViewRoundPage from "../ViewRoundPage";
 import { useParams } from "react-router-dom";
 
 jest.mock("wagmi");
-
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -99,6 +97,12 @@ describe("ReclaimFunds", () => {
         loading: false,
       }));
 
+      (useSigner as jest.Mock).mockImplementation(() => ({
+        signer: {
+          getBalance: () => Promise.resolve("0"),
+        },
+      }));
+
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
@@ -123,7 +127,9 @@ describe("ReclaimFunds", () => {
       expect(screen.getByText("Contract Balance")).toBeInTheDocument();
       expect(screen.getByText("Payout token:")).toBeInTheDocument();
       expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
-      expect(screen.getByText("Amount in contract:")).toBeInTheDocument();
+      expect(
+        screen.getByText("Amount in payout contract:")
+      ).toBeInTheDocument();
       expect(screen.getByText("Wallet address:")).toBeInTheDocument();
       expect(screen.getByTestId("reclaim-fund-btn")).toBeInTheDocument();
     });
