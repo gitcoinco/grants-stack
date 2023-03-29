@@ -3,16 +3,19 @@ import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
 import { BigNumber, ethers } from "ethers";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
-import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
-import { MatchingStatsData, Round } from "../api/types";
+import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
+import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
 import { formatCurrency, PayoutToken, payoutTokens, PayoutTokenWithCoingeckoId, useTokenPrice } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import ConfirmationModal from "../common/ConfirmationModal";
+import ProgressModal from "../common/ProgressModal";
+import { errorModalDelayMs } from "../../constants";
+import InfoModal from "../common/InfoModal";
 
 type GranteeFundInfo = {
   project: string;
@@ -34,11 +37,13 @@ export default function ViewFundGrantees(props: {
     return <Spinner text="We're fetching your data." />;
   }
 
+  console.log("===> render ViewFundGrantees")
+
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
       {props.round?.payoutStrategy?.isReadyForPayout ? (
-        <FinalizedRoundContent tokenAddress={props.round?.token} />
+        <FinalizedRoundContent round={props.round} />
       ) : (
         <NonFinalizedRoundContent />
       )}
@@ -87,21 +92,27 @@ const TabApplicationCounter = tw.div`
     font-normal
     `;
 
-function FinalizedRoundContent(props: { tokenAddress: string }) {
+function FinalizedRoundContent(props: { round: Round }) {
   const { id: roundId } = useParams();
   const { chain } = useWallet();
   const projects = useGroupProjectsByPaymentStatus(chain?.id, roundId || "");
   const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
+  const [price, setPrice] = useState<number>(0);
 
   const matchingFundPayoutToken: PayoutTokenWithCoingeckoId =
     payoutTokens.filter(
       (t) =>
-        t.address.toLocaleLowerCase() == props.tokenAddress.toLocaleLowerCase()
+        t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
     )[0];
 
-  console.log("===> matchingFundPayoutToken");
-  console.log(matchingFundPayoutToken);
+  // todo: why is this component rendered 12 times?
+  console.log("===> render FinalizedRoundContent");
+
+  // todo: implement coingecko api for price fetching
+  // const { data, error, loading } = useTokenPrice(
+  //   matchingFundPayoutToken?.coingeckoId
+  // );
 
   const mapMatchingStatsDataToGranteeFundInfo = (matchingStatsData: MatchingStatsData[]): GranteeFundInfo[] => {
     return matchingStatsData.map((matchingStatData) => ({
@@ -113,14 +124,14 @@ function FinalizedRoundContent(props: { tokenAddress: string }) {
   };
 
   useEffect(() => {
-
+    setPrice(1808.04);
+    // setPrice(data[matchingFundPayoutToken?.coingeckoId].usd);
     setPaidProjects(
       mapMatchingStatsDataToGranteeFundInfo(projects['paid'])
     );
     setUnpaidProjects(
       projects['unpaid']
     );
-
   }, [projects]);
 
   /* Fetch distributions data for this round */
@@ -162,7 +173,11 @@ function FinalizedRoundContent(props: { tokenAddress: string }) {
           </div>
           <Tab.Panels className="basis-5/6 ml-6">
             <Tab.Panel>
-              <PayProjectsTable projects={unpaidProjects} token={matchingFundPayoutToken} />
+              <PayProjectsTable
+                projects={unpaidProjects}
+                token={matchingFundPayoutToken!}
+                price={price} round={props.round}
+                allProjects={[...projects.paid, ...projects.unpaid]} />
             </Tab.Panel>
             <Tab.Panel>
               <PaidProjectsTable projects={paidProjects} chainId={chain?.id} />
@@ -176,15 +191,45 @@ function FinalizedRoundContent(props: { tokenAddress: string }) {
 
 
 // TODO: Add types
-export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutTokenWithCoingeckoId }) {
+export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutTokenWithCoingeckoId, price: number, round: Round, allProjects: MatchingStatsData[] }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { signer } = useWallet();
+  const { id: roundId } = useParams();
   const checkbox = useRef<any>();
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
   const [selectedProjects, setSelectedProjects] = useState<MatchingStatsData[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
+  const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
+
+  const [openReadyForDistributionProgressModal, setOpenReadyForDistributionProgressModal] = useState(false);
+
+  const [finalizingDistributionStatus, setFinalizingDistributionStatus] = useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
+
+  const tokenDetail =
+    props.token.address == ethers.constants.AddressZero
+      ? { addressOrName: props.round?.payoutStrategy.id }
+      : { addressOrName: props.round?.payoutStrategy.id, token: props.token.address };
+
+  const tokenBalance = useBalance(tokenDetail);
+
+  const distributionSteps: ProgressStep[] = [
+    {
+      name: "Distributing Funds",
+      description: "Funds are being distributed to grantees.",
+      status: finalizingDistributionStatus
+    },
+    {
+      name: "Finishing up",
+      description: "We're wrapping up.",
+      status:
+        finalizingDistributionStatus == ProgressStatus.IS_SUCCESS ?
+          ProgressStatus.IS_SUCCESS :
+          ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   useLayoutEffect(() => {
     const isIndeterminate =
@@ -222,6 +267,39 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
 
   const handleFundGrantees = async () => {
     setShowConfirmationModal(false);
+    setOpenReadyForDistributionProgressModal(true);
+
+    if (signer && roundId) {
+      const tx: TransactionBlock = await batchDistributeFunds(
+        props.round?.payoutStrategy.id,
+        props.allProjects,
+        selectedProjects.map(p => p.projectId),
+        signer
+      );
+
+      if (tx && tx.error) {
+        setFinalizingDistributionStatus(ProgressStatus.IS_ERROR);
+      } else {
+        // success handling
+        setFinalizingDistributionStatus(ProgressStatus.IS_SUCCESS);
+      }
+
+      setTimeout(() => {
+        setOpenReadyForDistributionProgressModal(false);
+      }, errorModalDelayMs);
+    }
+
+  }
+
+  const handlePayOutFunds = async () => {
+    const totalPayout: BigNumber = selectedProjects.reduce(
+      (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0))
+
+    if (totalPayout.gt(tokenBalance.data?.value || BigNumber.from(0))) {
+      setShowInfoModal(true);
+    } else {
+      setShowConfirmationModal(true);
+    }
   }
 
   return (
@@ -325,8 +403,13 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {project.matchPoolPercentage}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {formatCurrency(project.matchAmountInToken, props.token.decimals)} 
-                        {" "+props.token.name.toUpperCase()}
+                        {formatCurrency(project.matchAmountInToken, props.token.decimals)}
+                        {" " + props.token.name.toUpperCase()}
+                        {" ($" +
+                          formatCurrency(
+                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            props.token.decimals, 2)
+                          + " USD) "}
                       </td>
                     </tr>
                   ))}
@@ -340,7 +423,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
             type="button"
             className="block m-3 rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             disabled={selectedProjects.length === 0}
-            onClick={() => setShowConfirmationModal(true)}
+            onClick={() => handlePayOutFunds()}
           >
             Pay out funds
           </button>
@@ -365,6 +448,26 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         />}
         isOpen={showConfirmationModal}
         setIsOpen={setShowConfirmationModal}
+      />
+      <InfoModal
+        title="Warning!"
+        body={
+          <div
+            className="text-gray-400 text-sm font-['Libre_Franklin']">
+            You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees.
+          </div>
+        }
+        isOpen={showInfoModal}
+        cancelButtonAction={() => setShowInfoModal(false)}
+        continueButtonAction={() => setShowInfoModal(false)}
+        disableContinueButton={true}
+        setIsOpen={setShowInfoModal}
+      />
+      <ProgressModal
+        isOpen={openReadyForDistributionProgressModal}
+        subheading={"Please hold while we distribute funds."}
+        steps={distributionSteps}
+      // redirectUrl={`/rounds/${props.roundId}`}
       />
     </div>
   );

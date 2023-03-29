@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
-import { ethers, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
