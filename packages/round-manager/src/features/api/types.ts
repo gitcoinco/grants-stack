@@ -4,6 +4,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 
 export type Network = "goerli" | "optimism";
@@ -233,7 +234,7 @@ export type MatchingStatsData = {
   uniqueContributorsCount: number;
   matchPoolPercentage: number;
   projectId: string;
-  matchAmountInToken: number;
+  matchAmountInToken: BigNumber;
   projectPayoutAddress: string;
 };
 

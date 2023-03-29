@@ -81,8 +81,9 @@ const finalizeRoundReducer = (state: FinalizeRoundState, action: Action) => {
     case ActionType.RESET_TO_INITIAL_STATE: {
       return initialFinalizeRoundState;
     }
+    default:
+      return state;
   }
-  return state;
 };
 
 export const FinalizeRoundProvider = ({
