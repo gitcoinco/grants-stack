@@ -3,19 +3,19 @@ import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
 import { classNames } from "common";
 import { BigNumber, ethers } from "ethers";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
+import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens, PayoutTokenWithCoingeckoId, useTokenPrice } from "../api/utils";
+import { formatCurrency, payoutTokens, PayoutTokenWithCoingeckoId } from "../api/utils";
 import { useWallet } from "../common/Auth";
-import { Spinner } from "../common/Spinner";
 import ConfirmationModal from "../common/ConfirmationModal";
-import ProgressModal from "../common/ProgressModal";
-import { errorModalDelayMs } from "../../constants";
 import InfoModal from "../common/InfoModal";
+import ProgressModal from "../common/ProgressModal";
+import { Spinner } from "../common/Spinner";
 
 type GranteeFundInfo = {
   project: string;
@@ -93,9 +93,9 @@ const TabApplicationCounter = tw.div`
     `;
 
 function FinalizedRoundContent(props: { round: Round }) {
-  const { id: roundId } = useParams();
+  // const { id: roundId } = useParams();
   const { chain } = useWallet();
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, roundId || "");
+  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id || "");
   const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);

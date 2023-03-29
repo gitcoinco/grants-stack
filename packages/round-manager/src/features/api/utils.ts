@@ -1,3 +1,4 @@
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import {
@@ -5,9 +6,8 @@ import {
 	InputType,
 	IPFSObject,
 	MatchingStatsData,
-	Program,
+	Program
 } from "./types";
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 export enum ChainId {
 	MAINNET = 1,
@@ -549,12 +549,14 @@ export const useTokenPrice = (tokenId: string | undefined) => {
 
 	useMemo(() => {
 		setLoading(true);
+		console.log("useTokenPrice", tokenId);
 		const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`;
 		fetch(tokenPriceEndpoint, {
 			headers: {
 				method: "GET",
 				Accept: "application/json",
 			},
+			mode: "no-cors",
 		})
 			.then((resp) => {
 				if (resp.ok) {
@@ -573,8 +575,14 @@ export const useTokenPrice = (tokenId: string | undefined) => {
 					setError(data.message);
 				}
 				setLoading(false);
+			})
+			.catch((err) => {
+				console.log("error fetching token price", { err });
+				setError(err);
+				setLoading(false);
 			});
 	}, [tokenId]);
+
 	return {
 		data: tokenPrice,
 		error,

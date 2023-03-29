@@ -13,7 +13,7 @@ import {
   ChainId,
   getTxExplorerForContract,
   payoutTokens,
-  useTokenPrice,
+  useTokenPrice
 } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
@@ -96,13 +96,11 @@ export default function FundContract(props: {
         t.address.toLocaleLowerCase() == props.round?.token?.toLocaleLowerCase()
     )[0];
 
-  const tokenDetailContract =
-    matchingFundPayoutToken?.address == ethers.constants.AddressZero
-      ? { addressOrName: props.roundId }
-      : {
-          addressOrName: props.roundId,
-          token: matchingFundPayoutToken?.address,
-        };
+  // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
+  const tokenDetail = {
+    addressOrName: props.roundId,
+    token: matchingFundPayoutToken?.address === "0x0000000000000000000000000000000000000000" ? undefined : matchingFundPayoutToken?.address,
+  };
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
@@ -118,6 +116,10 @@ export default function FundContract(props: {
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId
   );
+
+  // const data = 1800.50;
+  // const error = false;
+  // const loading = false;
 
   const matchingFunds =
     props.round &&
