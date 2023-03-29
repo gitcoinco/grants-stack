@@ -168,12 +168,13 @@ export function fetchProjectPaidInARound(
           }
         }
       `,
-        chainId
+        chainId,
+        { roundId }
       );
     }
   );
 
-  const payouts = data?.data?.payoutStrategies?.payouts || [];
+  const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
 
   return payouts;
 }
