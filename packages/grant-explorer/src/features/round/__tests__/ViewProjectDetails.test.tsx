@@ -13,10 +13,13 @@ import {
 import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
 import { faker } from "@faker-js/faker";
+import {SWRConfig} from "swr";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
 
 const chainId = faker.datatype.number();
 const roundId = faker.finance.ethereumAddress();
-const grantApplicationId = "";
+const grantApplicationId = "0xdeadbeef-0xdeadbeef";
 const useParamsFn = () => ({
   chainId,
   roundId,
@@ -39,10 +42,33 @@ jest.mock("wagmi", () => ({
   useSigner: () => mockSigner,
   useNetwork: () => mockNetwork,
 }));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: useParamsFn,
 }));
+
+const server = setupServer(
+  rest.get(
+    `https://grants-stack-indexer.fly.dev/data/:chainId/rounds/:roundId/projects.json`,
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json([
+          {
+            id: "0xdeadbeef",
+            amountUSD: 12345,
+            uniqueContributors: 42,
+          },
+        ])
+      );
+    }
+  )
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe("<ViewProjectDetails/>", () => {
   it("shows project name", async () => {
@@ -98,31 +124,14 @@ describe("<ViewProjectDetails/>", () => {
   });
 
   it("shows project stats", async () => {
-    fetchMock.mockResponse(
-      JSON.stringify({
-        success: true,
-        message:
-          "/update/summary/project/1/0xdf75054cd67217aee44b4f9e4ebc651c00330938/0xd27E1a1a60eBc1B70f4Cae5265092C0f6eDc7F9d",
-        data: {
-          contributionCount: 546,
-          uniqueContributors: 528,
-          totalContributionsInUSD: 400,
-          averageUSDContribution: 0.7,
-          updatedAt: "2022-12-22T14:41:36.002Z",
-        },
-      })
-    );
     const expectedProject = makeApprovedProjectData({ grantApplicationId });
     const roundWithProjects = makeRoundData({
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
+    renderWithContext(<SWRConfig value={{ dedupingInterval: 0 }}><ViewProjectDetails /></SWRConfig>, { rounds: [roundWithProjects] });
     /* Initially shows - when loading */
     expect(screen.getByText("$-")).toBeInTheDocument();
-    /* Then when the data resolves, displays that */
-    // const contributorsCount = await screen.findByText("528");
-    // expect(contributorsCount).toBeInTheDocument();
   });
 
   it("shows project description", async () => {
