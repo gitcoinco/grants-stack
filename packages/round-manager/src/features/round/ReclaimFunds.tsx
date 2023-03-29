@@ -223,7 +223,7 @@ function ReclaimFundsContent(props: {
         />
         <ProgressModal
           isOpen={openProgressModal}
-          subheading={"Please hold while we add your funds to the round."}
+          subheading={"Please hold while we reclaim your funds."}
           steps={progressSteps}
         />
         <ErrorModal
