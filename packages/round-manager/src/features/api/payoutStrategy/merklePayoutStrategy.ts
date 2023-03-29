@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { fetchProjectPaidInARound } from "common";
 import { BigNumber, ethers, Signer } from "ethers";
-import { useState, useEffect } from "react";
-import dist from "tailwind-styled-components";
+import { useEffect, useState } from "react";
+// import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
-  merklePayoutStrategyImplementationContract,
   merklePayoutStrategyFactoryContract,
-  roundImplementationContract,
+  merklePayoutStrategyImplementationContract
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
@@ -209,7 +208,6 @@ export const batchDistributeFunds = async (
   projectIdsToBePaid: string[],
   signerOrProvider: Signer
 ) => {
-
   try {
     const merklePayoutStrategyImplementation = new ethers.Contract(
       payoutStrategy,
@@ -221,7 +219,7 @@ export const batchDistributeFunds = async (
     const { tree, matchingResults } = generateMerkleTree(allProjects);
 
     // Filter projects to be paid from matching results
-    const projectsToBePaid = matchingResults.filter(project =>
+    const projectsToBePaid = matchingResults.filter((project) =>
       projectIdsToBePaid.includes(project.projectId)
     );
 
@@ -246,8 +244,7 @@ export const batchDistributeFunds = async (
         amount: distribution[2],
         merkleProof: validMerkleProof,
         projectId: distribution[3],
-      })
-
+      });
     });
 
     const tx = await merklePayoutStrategyImplementation.payout(
@@ -261,9 +258,45 @@ export const batchDistributeFunds = async (
     return {
       transactionBlockNumber: blockNumber,
     };
-
   } catch (error) {
     console.error("batchDistributeFunds", error);
     throw new Error("Unable to distribute funds");
+  }
+};
+
+/**
+ * Reclaims funds from contract to provided address
+ *
+ * @param payoutStrategy
+ * @param signerOrProvider
+ * @param recipient
+ * @returns
+ */
+export async function reclaimFundsFromContract(
+  payoutStrategy: string,
+  signerOrProvider: Signer,
+  recipient: string
+) {
+  try {
+    const merklePayoutStrategyImplementation = new ethers.Contract(
+      payoutStrategy,
+      merklePayoutStrategyImplementationContract.abi,
+      signerOrProvider
+    );
+
+    const tx = await merklePayoutStrategyImplementation.withdrawFunds(
+      recipient
+    );
+
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+    return {
+      transactionBlockNumber: blockNumber,
+    };
+  } catch (error) {
+    console.error("reclaimFundsFromContract", error);
+    throw new Error("Unable to reclaim funds from round");
   }
 }
