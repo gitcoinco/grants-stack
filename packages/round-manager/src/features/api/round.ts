@@ -4,14 +4,14 @@ import { ethers } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
-  roundImplementationContract,
+  roundImplementationContract
 } from "./contracts";
 import {
   ApplicationStatus,
   ApprovedProject,
   MatchingStatsData,
   MetadataPointer,
-  Round,
+  Round
 } from "./types";
 import { fetchFromIPFS, graphql_fetch } from "./utils";
 
@@ -31,7 +31,7 @@ export async function getRoundById(
     // query the subgraph for all rounds by the given address in the given program
     const res = await graphql_fetch(
       `
-          query GetRounds($address: String, $programId: String, $roundId: String) {
+          query GetRounds($roundId: String) {
             rounds(where: {
         ${roundId ? `id: $roundId` : ``}
             }) {
@@ -80,8 +80,8 @@ export async function getRoundById(
       chainId,
       { roundId: roundId }
     );
-
-    const round: RoundResult = res.data.rounds[0];
+    
+    const round: RoundResult = res.data.rounds[0];    
 
     // fetch round and application metadata from IPFS
     const [roundMetadata, applicationMetadata] = await Promise.all([
@@ -263,6 +263,8 @@ export async function deployRoundContract(
       round.operatorWallets?.slice(0, 1),
       round.operatorWallets,
     ];
+
+    // TODO: matchingFundsAvailable * 10^18
 
     // encode input parameters
     const params = [
@@ -499,15 +501,15 @@ export async function fetchMatchingDistribution(
 }
 
 /**
- * Marks contract as ready for payout + deducts fee
+ * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
  * @param roundId
  * @param signerOrProvider
  * @returns
  */
-export const isReadyForPayout = async (
-  roundId: string,
-  signerOrProvider: Signer
-) => {
+export const setReadyForPayout = async (
+  { roundId, signerOrProvider }: { roundId: string; signerOrProvider: Signer; }
+): Promise<ReadyForPayout> => {
+
   try {
     const roundImplementation = new ethers.Contract(
       roundId,
@@ -515,18 +517,29 @@ export const isReadyForPayout = async (
       signerOrProvider
     );
 
-    const tx = await roundImplementation.isReadyForPayout();
+    const tx = await roundImplementation.setReadyForPayout();
+    console.log("⏳ Waiting for transaction to be mined...", tx);
 
     const receipt = await tx.wait();
 
     console.log("✅ Transaction hash: ", tx.hash);
     const blockNumber = receipt.blockNumber;
+
     return {
       transactionBlockNumber: blockNumber,
+      error: undefined,
     };
+  } catch (error) {
+    console.error("setReadyForPayout", { error });
 
-  } catch(error) {
-    console.error("isReadyForPayout", error);
-    throw new Error("Unable to mark contract ready for payout");
+    return {
+      transactionBlockNumber: 0,
+      error,
+    };
   }
 }
+
+type ReadyForPayout = {
+  transactionBlockNumber: number;
+  error?: unknown;
+};
