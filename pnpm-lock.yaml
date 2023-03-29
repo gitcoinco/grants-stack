@@ -347,7 +347,7 @@ importers:
       '@types/react-dom': ^18.0.2
       '@types/react-gtm-module': ^2.0.1
       '@types/testing-library__jest-dom': ^5.14.5
-      allo-indexer-client: github:gitcoinco/allo-indexer-client
+      allo-indexer-client: github:gitcoinco/allo-indexer-client#35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8
       autoprefixer: ^10.4.7
       babel-loader: ^8.3.0
       buffer: ^6.0.3
