@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent, render, screen } from "@testing-library/react";
+import { BigNumber } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchNetwork } from "wagmi";
@@ -11,11 +12,10 @@ import {
   wrapWithReadProgramContext,
   wrapWithRoundContext
 } from "../../../test-utils";
-import { ProgressStatus, Round, MatchingStatsData } from "../../api/types";
-import ViewFundGrantees from "../ViewFundGrantees";
 import * as merklePayoutStrategy from '../../api/payoutStrategy/merklePayoutStrategy';
 import * as roundTs from '../../api/round';
-import { BigNumber } from "ethers";
+import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
+import ViewFundGrantees from "../ViewFundGrantees";
 
 
 jest.mock("../../common/Auth");
@@ -68,7 +68,6 @@ const fetchMatchingDistributionMock = jest.spyOn(
 )
 
 describe("View Fund Grantees", () => {
-
   const matchingStatsData: MatchingStatsData[] = [
     {
       index: 0,
@@ -108,7 +107,6 @@ describe("View Fund Grantees", () => {
     },
   ]
 
-
   beforeEach(() => {
     useFetchMatchingDistributionFromContractMock.mockReturnValue({
       distributionMetaPtr: "some-meta-ptr",
@@ -125,10 +123,8 @@ describe("View Fund Grantees", () => {
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
       unpaid: [matchingStatsData[2], matchingStatsData[3]],
-    })
-  });
+    });
 
-  beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
         id: mockRoundData.id,
@@ -137,13 +133,12 @@ describe("View Fund Grantees", () => {
 
     (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
-  });
-
-  it("displays non-finalized status when round is not finalized", () => {
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
+  });
 
+  it("displays non-finalized status when round is not finalized", () => {
     useFetchMatchingDistributionFromContractMock.mockReturnValue({
       distributionMetaPtr: "some-meta-ptr",
       matchingDistributionContract: [],
@@ -173,11 +168,6 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays finalized status when round is finalized", async () => {
-
-    (useParams as jest.Mock).mockReturnValueOnce({
-      id: undefined,
-    });
-
     await act(async () => {
       render(
         wrapWithBulkUpdateGrantApplicationContext(
@@ -203,65 +193,73 @@ describe("View Fund Grantees", () => {
   });
 
   describe("Unpaid Projects", () => {
-
-    it("displays unpaid projects section on clicking unpaid grantees tab", async () => {
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                data: undefined,
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
-              { programs: [] }
-            ),
-            {
-              applications: [],
-              isLoading: false,
-            }
+    beforeEach(async () => {
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
           )
-        )
-      );
-
+        );
+      });
+    });
+    it("displays unpaid projects section on clicking unpaid grantees tab", async () => {
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
       });
+
+      expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
+      expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
+      expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
       expect(screen.getByText("Pay out funds")).toBeInTheDocument();
     });
 
     it('displays exact list of projects in table which are to be paid', async () => {
-
-      await act(async () => {
-        render(
-          wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
-                { programs: [] }
-              ),
-              {
-                applications: [],
-                isLoading: false,
-              }
-            )
-          )
-        );
-      });
-
+      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
       });
-
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
     });
 
-    it.only('Should show the confirmation modal', async () => {
+    it('Should show the confirmation modal', async () => {
+      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
+      await act(async () => {
+        const checkboxes = screen.queryAllByTestId("project-checkbox");
+        checkboxes[0].click();
+      });
+    });
 
+    it('Should show the progress modal', async () => {
+      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
+      await act(async () => {
+        const checkboxes = screen.queryAllByTestId("project-checkbox");
+        checkboxes[0].click();
+      });
+    });
+
+    it('Should show the warning when not enough funds in contract', async () => {
+      await act(async () => {
+        const checkboxes = screen.queryAllByTestId("project-checkbox");
+        checkboxes[0].click();
+      });
+    });
+  });
+
+  describe("Paid Projects", () => {
+    beforeEach(async () => {
       await act(async () => {
         render(
           wrapWithBulkUpdateGrantApplicationContext(
@@ -281,52 +279,8 @@ describe("View Fund Grantees", () => {
           )
         );
       });
-
-      await act(async () => {
-        const checkboxes = screen.queryByTestId('project-checkbox');
-        console.log(checkboxes)
-      });
-
-      // expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
-
-    });
-
-    it('Should show the progress modal', async () => {
-
-    });
-
-    it('Should show the warning when not enough funds in contract', async () => {
-
-    });
-
-    it('Should calculate the currency value of the match token', async () => {
-
-    });
-
-
-
-  });
-
-  describe("Paid Projects", () => {
+    })
     it("displays paid projects section on clicking paid grantees tab", async () => {
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                data: undefined,
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
-              { programs: [] }
-            ),
-            {
-              applications: [],
-              isLoading: false,
-            }
-          )
-        )
-      );
-
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
@@ -336,26 +290,6 @@ describe("View Fund Grantees", () => {
     });
 
     it('displays exact list of projects in table which have been be paid', async () => {
-      await act(async () => {
-        render(
-          wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
-                { programs: [] }
-              ),
-              {
-                applications: [],
-                isLoading: false,
-              }
-            )
-          )
-        );
-      });
-
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);

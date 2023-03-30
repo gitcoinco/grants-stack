@@ -4,13 +4,12 @@ import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react
 import { classNames } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, payoutTokens, PayoutToken } from "../api/utils";
+import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
@@ -42,6 +41,7 @@ export default function ViewFundGrantees(props: {
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
       {props.isRoundFinalized ? (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         <FinalizedRoundContent round={props.round!} />
       ) : (
         <NonFinalizedRoundContent />
@@ -92,9 +92,9 @@ const TabApplicationCounter = tw.div`
     `;
 
 function FinalizedRoundContent(props: { round: Round }) {
-  // const { id: roundId } = useParams();
   const { chain } = useWallet();
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id || "");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id!);
   const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
@@ -174,6 +174,7 @@ function FinalizedRoundContent(props: { round: Round }) {
             <Tab.Panel>
               <PayProjectsTable
                 projects={unpaidProjects}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 token={matchingFundPayoutToken!}
                 price={price} round={props.round}
                 allProjects={[...projects.paid, ...projects.unpaid]} />
@@ -193,9 +194,9 @@ function FinalizedRoundContent(props: { round: Round }) {
 export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutToken, price: number, round: Round, allProjects: MatchingStatsData[] }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { signer } = useWallet();
-  const { id: roundId } = useParams();
+  const roundId = props.round.id;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const checkbox = useRef<any>();
   const [checked, setChecked] = useState<boolean>(false);
   const [indeterminate, setIndeterminate] = useState<boolean>(false);
