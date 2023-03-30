@@ -97,6 +97,15 @@ describe("View Fund Grantees", () => {
       matchAmountInToken: BigNumber.from("300"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
     },
+    {
+      index: 3,
+      projectName: "Project 4",
+      uniqueContributorsCount: 40,
+      matchPoolPercentage: 0.4,
+      projectId: "0x4",
+      matchAmountInToken: BigNumber.from("400"),
+      projectPayoutAddress: "0x00000000000000000000000000000000000000004",
+    },
   ]
 
 
@@ -114,7 +123,7 @@ describe("View Fund Grantees", () => {
     }));
 
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
-      paid: [matchingStatsData[0], matchingStatsData[1]],
+      paid: [matchingStatsData[0], matchingStatsData[1], matchingStatsData[3]],
       unpaid: [matchingStatsData[2]],
     })
   });
@@ -250,6 +259,52 @@ describe("View Fund Grantees", () => {
 
       expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
     });
+
+    it.only('Should show the confirmation modal', async () => {
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }),
+                { programs: [] }
+              ),
+              {
+                applications: [],
+                isLoading: false,
+              }
+            )
+          )
+        );
+      });
+
+      console.log(screen.debug());
+
+      await act(async () => {
+        const checkboxes = screen.getByTestId("project-checkbox");
+        // console.log(checkboxes);
+        // fireEvent.click(unpaidGranteesTab);
+      });
+
+    });
+
+    it('Should show the progress modal', async () => {
+
+    });
+
+    it('Should show the warning when not enough funds in contract', async () => {
+
+    });
+
+    it('Should calculate the currency value of the match token', async () => {
+
+    });
+
+
+
   });
 
   describe("Paid Projects", () => {
