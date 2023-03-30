@@ -1,10 +1,14 @@
 import useSWR from "swr";
 import { useParams } from "react-router";
 import { isAddress } from "viem";
-import {
-  ChainId,
-  graphql_fetch,
-} from "../../round-manager/src/features/api/utils";
+
+export enum ChainId {
+  MAINNET = 1,
+  GOERLI_CHAIN_ID = 5,
+  OPTIMISM_MAINNET_CHAIN_ID = 10,
+  FANTOM_MAINNET_CHAIN_ID = 250,
+  FANTOM_TESTNET_CHAIN_ID = 4002,
+}
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -132,6 +136,63 @@ export type Payout = {
   createdAt: string;
 };
 
+const getGraphQLEndpoint = async (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.MAINNET:
+      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
+
+    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
+
+    case ChainId.FANTOM_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
+
+    case ChainId.FANTOM_TESTNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
+
+    case ChainId.GOERLI_CHAIN_ID:
+    default:
+      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
+  }
+};
+
+/**
+ * Fetch data from a GraphQL endpoint
+ *
+ * @param query - The query to be executed
+ * @param chainId - The chain ID of the blockchain indexed by the subgraph
+ * @param variables - The variables to be used in the query
+ * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
+ * @returns The result of the query
+ */
+export const graphql_fetch = async (
+  query: string,
+  chainId: ChainId,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  variables: object = {},
+  fromProjectRegistry = false
+) => {
+  let endpoint = await getGraphQLEndpoint(chainId);
+
+  if (fromProjectRegistry) {
+    endpoint = endpoint.replace("grants-round", "grants-hub");
+  }
+
+  return fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query, variables }),
+  }).then((resp) => {
+    if (resp.ok) {
+      return resp.json();
+    }
+
+    return Promise.reject(resp);
+  });
+};
+
 /**
  * Fetches the payouts that happened for a given round from TheGraph
  * @param roundId Round ID
@@ -195,4 +256,41 @@ export function useRoundId() {
     );
   }
   return roundId as string;
+}
+
+export function formatDateWithOrdinal(date: Date) {
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  } as const;
+
+  const formatter = new Intl.DateTimeFormat("en-US", options);
+  const formattedDate = formatter.format(date);
+
+  const dayOfMonth = date.getDate();
+  const pluralRules = new Intl.PluralRules("en-US", { type: "ordinal" });
+  const suffix = {
+    one: "st",
+    two: "nd",
+    few: "rd",
+    other: "th",
+    many: "",
+    zero: "",
+  }[pluralRules.select(dayOfMonth)];
+
+  return `${formattedDate.replace(
+    dayOfMonth.toString(),
+    `${dayOfMonth}${suffix}`
+  )}`;
+}
+
+export * from "./icons";
+
+export * from "./markdown";
+export enum VerifiedCredentialState {
+  VALID,
+  INVALID,
+  PENDING,
 }

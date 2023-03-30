@@ -23,7 +23,7 @@ import {
   PassportResponse,
   PassportState,
 } from "../api/passport";
-import markdown from "../../app/markdown";
+import { renderToPlainText } from "common";
 import {
   CartDonation,
   PayoutToken,

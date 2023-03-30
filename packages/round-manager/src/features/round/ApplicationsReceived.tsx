@@ -34,7 +34,7 @@ import { useBulkUpdateGrantApplications } from "../../context/application/BulkUp
 import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
-import markdown from "../../markdown";
+import { renderToPlainText } from "common";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
@@ -99,6 +99,7 @@ export default function ApplicationsReceived() {
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
             status: application.status,
+            createdAt: application.createdAt,
           };
         })
       );
@@ -202,9 +203,7 @@ export default function ApplicationsReceived() {
                 <CardContent>
                   <CardTitle>{application?.project?.title}</CardTitle>
                   <CardDescription>
-                    {markdown.renderToPlainText(
-                      application?.project?.description ?? ""
-                    )}
+                    {renderToPlainText(application?.project?.description ?? "")}
                   </CardDescription>
                 </CardContent>
               </Link>

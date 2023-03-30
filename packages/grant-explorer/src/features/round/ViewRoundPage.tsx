@@ -24,7 +24,7 @@ import { useRoundSummary } from "../api/api";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
-import markdown from "../../app/markdown";
+import { renderToPlainText } from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 
@@ -295,7 +295,7 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
             by {projectRecipient}
           </CardDescription>
           <CardDescription data-testid="project-description">
-            {markdown.renderToPlainText(project.projectMetadata.description)}
+            {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
       </Link>
