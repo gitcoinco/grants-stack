@@ -53,7 +53,7 @@ export type PayoutToken = {
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
   coingeckoId?: string;
-  decimal?: number;
+  decimal: number;
 };
 
 export type SupportType = {
@@ -76,7 +76,7 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
 	ETH: "ethereum",
 };
 
-export const payoutTokens: PayoutTokenWithCoingeckoId[] = [
+export const payoutTokens: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -163,6 +163,7 @@ export const payoutTokens: PayoutTokenWithCoingeckoId[] = [
     address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+				decimal: 18,
   },
   {
     name: "LOLG",
@@ -191,14 +192,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 					chainId: ChainId.MAINNET,
 					address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
 					logo: TokenNamesAndLogos["DAI"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "ETH",
 					chainId: ChainId.MAINNET,
 					address: ethers.constants.AddressZero,
 					logo: TokenNamesAndLogos["ETH"],
-					decimals: 18,
+					decimal: 18,
 				},
 			];
 		}
@@ -209,14 +210,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 					chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
 					address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
 					logo: TokenNamesAndLogos["DAI"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "ETH",
 					chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
 					address: ethers.constants.AddressZero,
 					logo: TokenNamesAndLogos["ETH"],
-					decimals: 18,
+					decimal: 18,
 				},
 			];
 		}
@@ -227,28 +228,28 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 					chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
 					address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
 					logo: TokenNamesAndLogos["FTM"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "FTM",
 					chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
 					address: ethers.constants.AddressZero,
 					logo: TokenNamesAndLogos["FTM"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "BUSD",
 					chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
 					address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
 					logo: TokenNamesAndLogos["BUSD"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "DAI",
 					chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
 					address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
 					logo: TokenNamesAndLogos["DAI"],
-					decimals: 18,
+					decimal: 18,
 				},
 			];
 		}
@@ -259,7 +260,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 					chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
 					address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
 					logo: TokenNamesAndLogos["DAI"],
-					decimals: 18,
+					decimal: 18,
 				},
 			];
 		}
@@ -271,21 +272,21 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 					chainId: ChainId.GOERLI_CHAIN_ID,
 					address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
 					logo: TokenNamesAndLogos["BUSD"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "DAI",
 					chainId: ChainId.GOERLI_CHAIN_ID,
 					address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
 					logo: TokenNamesAndLogos["DAI"],
-					decimals: 18,
+					decimal: 18,
 				},
 				{
 					name: "ETH",
 					chainId: ChainId.GOERLI_CHAIN_ID,
 					address: ethers.constants.AddressZero,
 					logo: TokenNamesAndLogos["ETH"],
-					decimals: 18,
+					decimal: 18,
 				},
 			];
 		}
@@ -658,11 +659,11 @@ export const generateMerkleTree = (
 
 export const formatCurrency = (
 	value: BigNumber,
-	decimals: number,
+	decimal: number,
 	fraction?: number
 ) => {
 	return parseFloat(ethers.utils
-		.formatUnits(value.toString(), decimals))
+		.formatUnits(value.toString(), decimal))
 		.toLocaleString("en-US", {
 			maximumFractionDigits: fraction || 3,
 		});

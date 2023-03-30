@@ -111,7 +111,7 @@ export default function FundContract(props: {
     data: balanceData,
     isError: isBalanceError,
     isLoading: isBalanceLoading,
-  } = useBalance(tokenDetailContract);
+  } = useBalance(tokenDetail);
 
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId

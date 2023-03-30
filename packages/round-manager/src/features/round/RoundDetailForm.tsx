@@ -149,7 +149,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
       chainId: chain.id,
       address: "",
       default: true,
-      decimals: 0,
+      decimal: 0,
     },
     ...getPayoutTokenOptions(chain.id),
   ];

@@ -307,6 +307,3 @@ export async function reclaimFundsFromContract(
     throw new Error("Unable to reclaim funds from round");
   }
 }
-
-	}
-};

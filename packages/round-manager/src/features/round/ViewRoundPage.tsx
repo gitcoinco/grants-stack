@@ -279,6 +279,7 @@ export default function ViewRoundPage() {
                         isRoundFinalized={
                           round?.payoutStrategy?.isReadyForPayout ?? undefined
                         }
+                        round={round}
                       />
                     </Tab.Panel>
                     <Tab.Panel>

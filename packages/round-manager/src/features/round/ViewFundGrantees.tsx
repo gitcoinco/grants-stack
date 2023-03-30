@@ -10,7 +10,7 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, payoutTokens, PayoutTokenWithCoingeckoId } from "../api/utils";
+import { formatCurrency, payoutTokens, PayoutToken } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
@@ -28,8 +28,7 @@ type GranteeFundInfo = {
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
-  chainId: number;
-  roundId: string | undefined;
+  isRoundFinalized: boolean | undefined;
 }) {
   const [isFundGranteesFetched] = useState(false);
 
@@ -42,8 +41,8 @@ export default function ViewFundGrantees(props: {
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
-      {props.round?.payoutStrategy?.isReadyForPayout ? (
-        <FinalizedRoundContent round={props.round} />
+      {props.isRoundFinalized ? (
+        <FinalizedRoundContent round={props.round!} />
       ) : (
         <NonFinalizedRoundContent />
       )}
@@ -100,7 +99,7 @@ function FinalizedRoundContent(props: { round: Round }) {
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
-  const matchingFundPayoutToken: PayoutTokenWithCoingeckoId =
+  const matchingFundPayoutToken: PayoutToken =
     payoutTokens.filter(
       (t) =>
         t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
@@ -191,7 +190,7 @@ function FinalizedRoundContent(props: { round: Round }) {
 
 
 // TODO: Add types
-export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutTokenWithCoingeckoId, price: number, round: Round, allProjects: MatchingStatsData[] }) {
+export function PayProjectsTable(props: { projects: MatchingStatsData[], token: PayoutToken, price: number, round: Round, allProjects: MatchingStatsData[] }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -403,12 +402,12 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {project.matchPoolPercentage}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {formatCurrency(project.matchAmountInToken, props.token.decimals)}
+                        {formatCurrency(project.matchAmountInToken, props.token.decimal)}
                         {" " + props.token.name.toUpperCase()}
                         {" ($" +
                           formatCurrency(
                             project.matchAmountInToken.mul(props.price * 100).div(100),
-                            props.token.decimals, 2)
+                            props.token.decimal, 2)
                           + " USD) "}
                       </td>
                     </tr>
@@ -441,7 +440,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
             formatCurrency(
               selectedProjects.reduce(
                 (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0)),
-              props.token.decimals
+              props.token.decimal
             )
           }
           symbol={props.token.name.toUpperCase()}
