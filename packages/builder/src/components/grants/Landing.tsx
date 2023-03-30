@@ -97,15 +97,15 @@ function Landing() {
       <div className="flex absolute top-0 left-8 md:left-10">
         <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
         <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
-        <img className="py-4 mr-4" alt="Grants Hub Logo" src={GrantsHubLogo} />
-        <img alt="Grants Hub Logo Text" src={GrantsHubLogoText} />
+        <img className="py-4 mr-4" alt="Builder Logo" src={GrantsHubLogo} />
+        <img alt="Builder Logo Text" src={GrantsHubLogoText} />
       </div>
       <section className="flex flex-1 flex-col md:flex-row">
         <div className="flex flex-1 flex-col justify-center container px-8 md:px-10">
           <h3 className="mb-4 pt-24 md:pt-0 md:mb-4">
             <img src={GitcoinWordLogo} alt="Gitcoin logo" />
           </h3>
-          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1">Grants Hub</h1>
+          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1">Builder</h1>
           <p className="text-black text-xl w-full md:max-w-4xl">
             Build and fund your project all in one place, and bring your vision
             to life.

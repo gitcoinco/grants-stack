@@ -20,8 +20,8 @@ export default function Header() {
             <div className="flex">
               <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
               <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
-              <img className="py-4" alt="Grants Hub Logo" src={GrantsHubLogo} />
-              <h3 className="ml-6 mt-1 inline-flex items-center">Grants Hub</h3>
+              <img className="py-4" alt="Builder Logo" src={GrantsHubLogo} />
+              <h3 className="ml-6 mt-1 inline-flex items-center">Builder</h3>
             </div>
           </Link>
           <button
