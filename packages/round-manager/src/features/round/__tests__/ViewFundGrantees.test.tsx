@@ -10,13 +10,11 @@ import {
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
-  wrapWithRoundContext
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import * as merklePayoutStrategy from '../../api/payoutStrategy/merklePayoutStrategy';
-import * as roundTs from '../../api/round';
-import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
+import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStrategy";
+import * as roundTs from "../../api/round";import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
-
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -55,17 +53,17 @@ jest.mock("../../common/Auth", () => ({
 const useFetchMatchingDistributionFromContractMock = jest.spyOn(
   merklePayoutStrategy,
   "useFetchMatchingDistributionFromContract"
-)
+);
 
 const useGroupProjectsByPaymentStatusMock = jest.spyOn(
   merklePayoutStrategy,
   "useGroupProjectsByPaymentStatus"
-)
+);
 
 const fetchMatchingDistributionMock = jest.spyOn(
   roundTs,
   "fetchMatchingDistribution"
-)
+);
 
 describe("View Fund Grantees", () => {
   const matchingStatsData: MatchingStatsData[] = [
@@ -75,6 +73,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 10,
       matchPoolPercentage: 0.1,
       projectId: "0x1",
+      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("1.11"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
     },
@@ -84,6 +83,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 20,
       matchPoolPercentage: 0.2,
       projectId: "0x2",
+      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("2.22"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
     },
@@ -93,6 +93,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 30,
       matchPoolPercentage: 0.3,
       projectId: "0x3",
+      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("3.33"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
     },
@@ -115,10 +116,12 @@ describe("View Fund Grantees", () => {
       isError: false,
     });
 
-    fetchMatchingDistributionMock.mockReturnValue(Promise.resolve({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistribution: matchingStatsData
-    }));
+    fetchMatchingDistributionMock.mockReturnValue(
+      Promise.resolve({
+        distributionMetaPtr: "some-meta-ptr",
+        matchingDistribution: matchingStatsData,
+      })
+    );
 
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
@@ -150,10 +153,13 @@ describe("View Fund Grantees", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={false} round={makeRoundData()} />, {
-              data: [],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <ViewFundGrantees isRoundFinalized={false} round={makeRoundData()} />,
+              {
+                data: [],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -168,15 +174,22 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays finalized status when round is finalized", async () => {
+    (useParams as jest.Mock).mockReturnValueOnce({
+      id: undefined,
+    });
+
     await act(async () => {
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                data: undefined,
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
+              wrapWithRoundContext(
+                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />,
+                {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
+              ),
               { programs: [] }
             ),
             {
@@ -194,15 +207,18 @@ describe("View Fund Grantees", () => {
 
   describe("Unpaid Projects", () => {
     beforeEach(async () => {
-      await act(async () => {
-        render(
-          wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
+      await act( async () => {
+      render(
+        wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(
+                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()}/>,
+                {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
+                }
+                ),
                 { programs: [] }
               ),
               {
@@ -232,13 +248,15 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Payout funds")).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which are to be paid', async () => {
+    it("displays exact list of projects in table which are to be paid", async () => {
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
       });
 
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[2].projectPayoutAddress)
+      ).toBeInTheDocument();
       expect(screen.getByText(matchingStatsData[3].projectPayoutAddress)).toBeInTheDocument();
     });
 
@@ -319,15 +337,18 @@ describe("View Fund Grantees", () => {
 
   describe("Paid Projects", () => {
     beforeEach(async () => {
-      await act(async () => {
-        render(
-          wrapWithBulkUpdateGrantApplicationContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
+      await act( async () => {
+      render(
+        wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(
+                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()}/>,
+                  {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
+                }
+                ),
                 { programs: [] }
               ),
               {
@@ -353,10 +374,14 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Payout Amount")).toBeInTheDocument();
       expect(screen.getByText("Status")).toBeInTheDocument();
       expect(screen.getByText("Transaction")).toBeInTheDocument();
-      expect(screen.getByText("Transaction history of grantees you have paid out funds to.")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Transaction history of grantees you have paid out funds to."
+        )
+      ).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which have been paid', async () => {
+    it("displays exact list of projects in table which have been paid", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
@@ -386,4 +411,3 @@ describe("View Fund Grantees", () => {
     });
   });
 });
-
