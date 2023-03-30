@@ -555,6 +555,7 @@ describe("View Round Results before distribution data is finalized to contract",
       await act(async () => {
         fireEvent.click(continueButton);
       });
+
       const processingHeader = screen.getByTestId("progress-modal");
       expect(processingHeader).toBeInTheDocument();
     });

@@ -15,6 +15,7 @@ import { ProgressStatus, Round, MatchingStatsData } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 import * as merklePayoutStrategy from '../../api/payoutStrategy/merklePayoutStrategy';
 import * as roundTs from '../../api/round';
+import { BigNumber } from "ethers";
 
 
 jest.mock("../../common/Auth");
@@ -75,7 +76,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 10,
       matchPoolPercentage: 0.1,
       projectId: "0x1",
-      matchAmountInToken: 100,
+      matchAmountInToken: BigNumber.from("100"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
     },
     {
@@ -84,7 +85,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 20,
       matchPoolPercentage: 0.2,
       projectId: "0x2",
-      matchAmountInToken: 200,
+      matchAmountInToken: BigNumber.from("200"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
     },
     {
@@ -93,7 +94,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 30,
       matchPoolPercentage: 0.3,
       projectId: "0x3",
-      matchAmountInToken: 300,
+      matchAmountInToken: BigNumber.from("300"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
     },
   ]
@@ -145,7 +146,7 @@ describe("View Fund Grantees", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={false} />, {
+            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={false} round={makeRoundData()} />, {
               data: [],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,
             }),
@@ -173,7 +174,7 @@ describe("View Fund Grantees", () => {
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
                 data: undefined,
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
               }),
@@ -199,7 +200,7 @@ describe("View Fund Grantees", () => {
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
                 data: undefined,
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
               }),
@@ -221,12 +222,13 @@ describe("View Fund Grantees", () => {
     });
 
     it('displays exact list of projects in table which are to be paid', async () => {
+
       await act(async () => {
         render(
           wrapWithBulkUpdateGrantApplicationContext(
             wrapWithApplicationContext(
               wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
                 }),
@@ -256,7 +258,7 @@ describe("View Fund Grantees", () => {
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
                 data: undefined,
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
               }),
@@ -284,7 +286,7 @@ describe("View Fund Grantees", () => {
           wrapWithBulkUpdateGrantApplicationContext(
             wrapWithApplicationContext(
               wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} />, {
+                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
                 }),

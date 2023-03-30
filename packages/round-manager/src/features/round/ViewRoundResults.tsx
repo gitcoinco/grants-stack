@@ -27,6 +27,7 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { useSigner } from "wagmi";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;

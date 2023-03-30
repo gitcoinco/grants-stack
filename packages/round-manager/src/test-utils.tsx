@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
+import { ethers } from "ethers";
 import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
@@ -81,7 +82,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
-    token: faker.finance.ethereumAddress(),
+    token: ethers.constants.AddressZero, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: faker.finance.ethereumAddress(),
@@ -97,7 +98,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
-    projectId: formatBytes32String(faker.company.name()),
+    projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
     matchAmountInToken: parseEther(faker.datatype.number().toString()),
