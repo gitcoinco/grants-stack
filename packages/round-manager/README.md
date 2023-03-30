@@ -62,4 +62,4 @@ To contribute to this project, fork the project and follow the instructions at [
 
 ### Monitoring
 
-To setup monitoring for this project, follow the instructions at [MONITORING.md](docs/MONITORING.md)
+To set up monitoring for this project, follow the instructions at [MONITORING.md](docs/MONITORING.md)

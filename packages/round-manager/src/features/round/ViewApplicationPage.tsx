@@ -233,6 +233,12 @@ export default function ViewApplicationPage() {
         return;
       }
 
+      /* During development, give frontend access to all rounds */
+      if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+        setHasAccess(true);
+        return;
+      }
+
       if (round) {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }

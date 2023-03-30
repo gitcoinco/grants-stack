@@ -31,7 +31,7 @@ import {
   Project,
   recipient,
 } from "../api/types";
-import { classNames, getPayoutTokenOptions } from "../api/utils";
+import { getPayoutTokenOptions } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import Footer from "../common/Footer";
@@ -42,6 +42,7 @@ import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { classNames } from "common";
 import ReactTooltip from "react-tooltip";
 
 export default function ViewCart() {

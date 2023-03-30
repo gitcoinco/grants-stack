@@ -89,7 +89,7 @@ export default function Github({
             org,
             requestedClient: ClientType.GrantHub,
             proofs: {
-              code: result.code, // provided by github as query params in the redirect
+              code: result.code, // provided by GitHub as query params in the redirect
             },
           },
           signer as { signMessage: (message: string) => Promise<string> }

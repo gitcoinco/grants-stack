@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
+import { ChainId, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -23,7 +23,7 @@ import Footer from "../common/Footer";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
-import { renderToPlainText } from "common";
+import { getUTCDate, getUTCTime, renderToPlainText } from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 

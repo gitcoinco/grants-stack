@@ -24,7 +24,7 @@ import {
   ProgressStatus,
   Round,
 } from "../api/types";
-import { getUTCDate, getUTCTime } from "../api/utils";
+import { getUTCDate, getUTCTime } from "common";
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";

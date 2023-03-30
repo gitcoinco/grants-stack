@@ -1,5 +1,5 @@
 function Globe({ color }: { color: string }) {
-  // rendered as a component so that colors can dynamically added
+  // rendered as a component so that colors can be dynamically added
   return (
     <svg
       fill="none"

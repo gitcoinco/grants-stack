@@ -9,7 +9,7 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
-import { getUTCDate } from "../../api/utils";
+import { getUTCDate } from "common";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
