@@ -123,8 +123,8 @@ describe("View Fund Grantees", () => {
     }));
 
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
-      paid: [matchingStatsData[0], matchingStatsData[1], matchingStatsData[3]],
-      unpaid: [matchingStatsData[2]],
+      paid: [matchingStatsData[0], matchingStatsData[1]],
+      unpaid: [matchingStatsData[2], matchingStatsData[3]],
     })
   });
 
@@ -261,6 +261,7 @@ describe("View Fund Grantees", () => {
     });
 
     it.only('Should show the confirmation modal', async () => {
+
       await act(async () => {
         render(
           wrapWithBulkUpdateGrantApplicationContext(
@@ -281,13 +282,12 @@ describe("View Fund Grantees", () => {
         );
       });
 
-      console.log(screen.debug());
-
       await act(async () => {
-        const checkboxes = screen.getByTestId("project-checkbox");
-        // console.log(checkboxes);
-        // fireEvent.click(unpaidGranteesTab);
+        const checkboxes = screen.queryByTestId('project-checkbox');
+        console.log(checkboxes)
       });
+
+      // expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
 
     });
 
