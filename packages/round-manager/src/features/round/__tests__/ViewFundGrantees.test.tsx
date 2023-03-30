@@ -214,7 +214,8 @@ describe("View Fund Grantees", () => {
         );
       });
     });
-    it("displays unpaid projects section on clicking unpaid grantees tab", async () => {
+
+    it("displays unpaid projects section & table headers on clicking unpaid grantees tab", async () => {
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
@@ -223,31 +224,62 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
       expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
       expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
+      expect(screen.getByText("Select which grantees you wish to allocate funds to.")).toBeInTheDocument();
+      expect(screen.getByText("Project")).toBeInTheDocument();
+      expect(screen.getByText("Wallet Address")).toBeInTheDocument();
+      expect(screen.getByText("Matching %")).toBeInTheDocument();
+      expect(screen.getByText("Payout Amount")).toBeInTheDocument();
       expect(screen.getByText("Pay out funds")).toBeInTheDocument();
     });
 
     it('displays exact list of projects in table which are to be paid', async () => {
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
       });
+
+      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[3].projectPayoutAddress)).toBeInTheDocument();
     });
 
     it('Should show the confirmation modal', async () => {
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
+
+      // todo: need to mock tokenBalance.data.value - getting an undefined error
+      // await act(async () => {
+      //   const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
+      //   fireEvent.click(payoutFundsButton);
+      // });
+
+      // todo: close modal when cancel is clicked
+      // await act(async () => {
+      //   const cancelButton = screen.getByTestId("cancel-button");
+      //   fireEvent.click(cancelButton);
+      // });
+
+      // expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
     });
 
     it('Should show the progress modal', async () => {
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
+
+      // todo: need to mock tokenBalance.data.value - getting an undefined error
+      // await act(async () => {
+      //   const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
+      //   fireEvent.click(payoutFundsButton);
+      // });
+      // expect(screen.getByText("Confirm Decision")).toBeInTheDocument();
+
+      // await act(async () => {
+      //   const confirmButton = screen.getByTestId("confirm-button");
+      //   fireEvent.click(confirmButton);
+      // });
     });
 
     it('Should show the warning when not enough funds in contract', async () => {
@@ -255,6 +287,8 @@ describe("View Fund Grantees", () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
+
+      // todo: mock tokenBalance.data.value to be less than the total amount to be paid
     });
   });
 
@@ -284,21 +318,39 @@ describe("View Fund Grantees", () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
-      })
+      });
 
+      // tests that the table without data is displayed
+      expect(screen.getByText("Grantees")).toBeInTheDocument();
+      expect(screen.getByText("Project")).toBeInTheDocument();
+      expect(screen.getByText("Wallet Address")).toBeInTheDocument();
+      expect(screen.getByText("Matching Percent")).toBeInTheDocument();
+      expect(screen.getByText("Payout Amount")).toBeInTheDocument();
+      expect(screen.getByText("Status")).toBeInTheDocument();
+      expect(screen.getByText("Transaction")).toBeInTheDocument();
       expect(screen.getByText("Transaction history of grantees you have paid out funds to.")).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which have been be paid', async () => {
+    it('displays exact list of projects in table which have been paid', async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
       });
 
+      expect(screen.getByText(matchingStatsData[0].projectName!)).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[1].projectName!)).toBeInTheDocument();
+
       expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
       expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
-    });
 
+      expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100)).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100)).toBeInTheDocument();
+
+      expect(screen.getByText(matchingStatsData[0].matchAmountInToken.toString())).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[1].matchAmountInToken.toString())).toBeInTheDocument();
+
+      // todo: check for status and transaction hash/link
+    });
   });
 });
 

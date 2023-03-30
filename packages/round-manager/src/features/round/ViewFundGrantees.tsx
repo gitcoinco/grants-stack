@@ -422,6 +422,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         <div className="flex flex-row-reverse mr-4 p-4">
           <button
             type="button"
+            data-testid="pay-out-funds-button"
             className="block m-3 rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             disabled={selectedProjects.length === 0}
             onClick={() => handlePayOutFunds()}
