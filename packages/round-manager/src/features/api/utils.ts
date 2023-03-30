@@ -6,7 +6,7 @@ import {
 	InputType,
 	IPFSObject,
 	MatchingStatsData,
-	Program
+	Program,
 } from "./types";
 
 export enum ChainId {
@@ -47,13 +47,13 @@ export const CHAINS: Record<number, Program["chain"]> = {
 };
 
 export type PayoutToken = {
-  name: string;
-  chainId: number;
-  address: string;
-  logo?: string;
-  default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
-  coingeckoId?: string;
-  decimal: number;
+	name: string;
+	chainId: number;
+	address: string;
+	logo?: string;
+	default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
+	coingeckoId?: string;
+	decimal: number;
 };
 
 export type SupportType = {
@@ -77,110 +77,110 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
 };
 
 export const payoutTokens: PayoutToken[] = [
-  {
-    name: "DAI",
-    chainId: ChainId.MAINNET,
-    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.MAINNET,
-    address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
-    decimal: 18,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
-    decimal: 18,
-  },
-  {
-    name: "WFTM",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-    logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
-    decimal: 18,
-  },
-  {
-    name: "FTM",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["FTM"],
-    coingeckoId: TokenAndCoinGeckoIds["FTM"],
-    decimal: 18,
-  },
-  {
-    name: "BUSD",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
-    logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
-    decimal: 18,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
-    address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
-  },
-  {
-    name: "BUSD",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
-    logo: TokenNamesAndLogos["BUSD"],
-    coingeckoId: TokenAndCoinGeckoIds["BUSD"],
-    decimal: 18,
-  },
-  {
-    name: "DAI",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-				decimal: 18,
-  },
-  {
-    name: "LOLG",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D",
-    logo: TokenNamesAndLogos["DAI"],
-    coingeckoId: TokenAndCoinGeckoIds["DAI"],
-    decimal: 18,
-  },
-  {
-    name: "ETH",
-    chainId: ChainId.GOERLI_CHAIN_ID,
-    address: ethers.constants.AddressZero,
-    logo: TokenNamesAndLogos["ETH"],
-    coingeckoId: TokenAndCoinGeckoIds["ETH"],
-    decimal: 18,
-  },
+	{
+		name: "DAI",
+		chainId: ChainId.MAINNET,
+		address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "ETH",
+		chainId: ChainId.MAINNET,
+		address: ethers.constants.AddressZero,
+		logo: TokenNamesAndLogos["ETH"],
+		coingeckoId: TokenAndCoinGeckoIds["ETH"],
+		decimal: 18,
+	},
+	{
+		name: "DAI",
+		chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+		address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "ETH",
+		chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+		address: ethers.constants.AddressZero,
+		logo: TokenNamesAndLogos["ETH"],
+		coingeckoId: TokenAndCoinGeckoIds["ETH"],
+		decimal: 18,
+	},
+	{
+		name: "WFTM",
+		chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+		address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+		logo: TokenNamesAndLogos["FTM"],
+		coingeckoId: TokenAndCoinGeckoIds["FTM"],
+		decimal: 18,
+	},
+	{
+		name: "FTM",
+		chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+		address: ethers.constants.AddressZero,
+		logo: TokenNamesAndLogos["FTM"],
+		coingeckoId: TokenAndCoinGeckoIds["FTM"],
+		decimal: 18,
+	},
+	{
+		name: "BUSD",
+		chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+		address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
+		logo: TokenNamesAndLogos["BUSD"],
+		coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+		decimal: 18,
+	},
+	{
+		name: "DAI",
+		chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
+		address: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "DAI",
+		chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
+		address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "BUSD",
+		chainId: ChainId.GOERLI_CHAIN_ID,
+		address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
+		logo: TokenNamesAndLogos["BUSD"],
+		coingeckoId: TokenAndCoinGeckoIds["BUSD"],
+		decimal: 18,
+	},
+	{
+		name: "DAI",
+		chainId: ChainId.GOERLI_CHAIN_ID,
+		address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "LOLG",
+		chainId: ChainId.GOERLI_CHAIN_ID,
+		address: "0x7f329D36FeA6b3AD10E6e36f2728e7e6788a938D",
+		logo: TokenNamesAndLogos["DAI"],
+		coingeckoId: TokenAndCoinGeckoIds["DAI"],
+		decimal: 18,
+	},
+	{
+		name: "ETH",
+		chainId: ChainId.GOERLI_CHAIN_ID,
+		address: ethers.constants.AddressZero,
+		logo: TokenNamesAndLogos["ETH"],
+		coingeckoId: TokenAndCoinGeckoIds["ETH"],
+		decimal: 18,
+	},
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
@@ -662,9 +662,9 @@ export const formatCurrency = (
 	decimal: number,
 	fraction?: number
 ) => {
-	return parseFloat(ethers.utils
-		.formatUnits(value.toString(), decimal))
-		.toLocaleString("en-US", {
-			maximumFractionDigits: fraction || 3,
-		});
+	return parseFloat(
+		ethers.utils.formatUnits(value.toString(), decimal)
+	).toLocaleString("en-US", {
+		maximumFractionDigits: fraction || 3,
+	});
 };
