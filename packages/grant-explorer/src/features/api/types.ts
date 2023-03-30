@@ -184,6 +184,7 @@ export type ProjectMetadata = {
   projectGithub?: string;
   credentials?: ProjectCredentials;
   owners: ProjectOwner[];
+  createdAt?: number;
 };
 
 export type ProjectCredentials = {
