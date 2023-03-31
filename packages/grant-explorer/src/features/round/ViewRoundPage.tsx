@@ -4,7 +4,7 @@ import { useRoundById } from "../../context/RoundContext";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { Project, Requirement, Round } from "../api/types";
+import { ApplicationStatus, Project, Requirement, Round } from "../api/types";
 import { ChainId, getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
 import {
   BasicCard,
@@ -125,6 +125,7 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
 
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -135,8 +136,130 @@ function AfterRoundStart(props: {
       return () => clearTimeout(timeOutId);
     } else {
       let projects = round?.approvedProjects;
+
       // shuffle projects
       projects = projects?.sort(() => Math.random() - 0.5);
+
+      // TODO: Remove stub
+      projects = [
+        {
+          grantApplicationId:
+            "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
+          grantApplicationFormAnswers: [
+            {
+              questionId: 0,
+              question: "Email Address",
+              type: "email",
+              hidden: true,
+              answer: "2",
+            },
+            {
+              questionId: 1,
+              question: "Funding Sources",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+            {
+              questionId: 2,
+              question: "Team Size",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+          ],
+          projectRegistryId:
+            "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05",
+          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
+          projectMetadata: {
+            title: "rtandopm",
+            description: "rtandopmrtandopmrtandopmrtandopm",
+            website: "https://rtandopm.op",
+            credentials: {},
+            owners: [],
+          },
+          status: ApplicationStatus.APPROVED,
+        },
+        {
+          grantApplicationId:
+            "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
+          grantApplicationFormAnswers: [
+            {
+              questionId: 0,
+              question: "Email Address",
+              type: "email",
+              hidden: true,
+              answer: "2",
+            },
+            {
+              questionId: 1,
+              question: "Funding Sources",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+            {
+              questionId: 2,
+              question: "Team Size",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+          ],
+          projectRegistryId:
+            "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886",
+          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
+          projectMetadata: {
+            title: "Another Test",
+            description:
+              "2023-03-27 22:53 UTC2023-03-27 22:53 UTC2023-03-27 22:53 UTC",
+            website: "https://pop.com",
+            credentials: {},
+            owners: [],
+          },
+          status: ApplicationStatus.APPROVED,
+        },
+        {
+          grantApplicationId:
+            "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
+          grantApplicationFormAnswers: [
+            {
+              questionId: 0,
+              question: "Email Address",
+              type: "email",
+              hidden: true,
+              answer: "2",
+            },
+            {
+              questionId: 1,
+              question: "Funding Sources",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+            {
+              questionId: 2,
+              question: "Team Size",
+              type: "short-answer",
+              hidden: false,
+              answer: "2",
+            },
+          ],
+          projectRegistryId:
+            "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94",
+          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
+          projectMetadata: {
+            title: "Final test",
+            description:
+              "2023-03-27 23:10 UTC2023-03-27 23:10 UTC2023-03-27 23:10 UTC",
+            website: "https://test.opo",
+            credentials: {},
+            owners: [],
+          },
+          status: ApplicationStatus.APPROVED,
+        },
+      ];
+      
       setProjects(projects);
     }
   });
@@ -145,6 +268,7 @@ function AfterRoundStart(props: {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
     const projects = round?.approvedProjects;
+    
     const exactMatches = projects?.filter(
       (project) =>
         project.projectMetadata.title.toLocaleLowerCase() ===
