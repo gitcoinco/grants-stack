@@ -164,7 +164,6 @@ export const useGroupProjectsByPaymentStatus = (
       roundId,
     ).matchingDistributionContract;
 
-  console.log("===> paidProjectsFromSubgraph", paidProjectsFromGraph);
   useEffect(() => {
     async function fetchData() {
       const groupedProjectsTmp: GroupedProjects = {
@@ -177,7 +176,6 @@ export const useGroupProjectsByPaymentStatus = (
         project.grantee.toLocaleLowerCase(),
       );
 
-      console.log("===> paidProjectsFromGraph", paidProjectsFromGraph);
 
       allProjects?.forEach((project) => {
         const projectStatus = payoutAddress.includes(
