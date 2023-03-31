@@ -371,10 +371,21 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100)).toBeInTheDocument();
       expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100)).toBeInTheDocument();
 
-      expect(screen.getByText(matchingStatsData[0].matchAmountInToken.toString())).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].matchAmountInToken.toString())).toBeInTheDocument();
+      expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[0].matchAmountInToken.toString()))).toBeInTheDocument();
+      expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[1].matchAmountInToken.toString()))).toBeInTheDocument();
 
-      // todo: check for status and transaction hash/link
+      await act(async () => {
+        const statuses = screen.getAllByText("Success");
+        expect(statuses[0]).toBeInTheDocument();
+        expect(statuses[1]).toBeInTheDocument();
+      });
+
+      // NOTE: this could be added to for each transaction hash that the link is correct and not just there.
+      await act(async () => {
+        const links = screen.getAllByText("View");
+        fireEvent.click(links[0]);
+        fireEvent.click(links[1]);
+      });
     });
   });
 });

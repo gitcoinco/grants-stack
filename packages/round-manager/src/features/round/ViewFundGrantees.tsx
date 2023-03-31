@@ -35,8 +35,6 @@ export default function ViewFundGrantees(props: {
     return <Spinner text="We're fetching your data." />;
   }
 
-  console.log("===> render ViewFundGrantees")
-
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
@@ -105,9 +103,6 @@ function FinalizedRoundContent(props: { round: Round }) {
         t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
     )[0];
 
-  // todo: why is this component rendered 12 times?
-  console.log("===> render FinalizedRoundContent");
-
   // todo: implement coingecko api for price fetching
   // const { data, error, loading } = useTokenPrice(
   //   matchingFundPayoutToken?.coingeckoId
@@ -119,6 +114,8 @@ function FinalizedRoundContent(props: { round: Round }) {
       walletAddress: matchingStatData.projectPayoutAddress,
       matchingPercent: (matchingStatData.matchPoolPercentage * 100).toString(),
       payoutAmount: matchingStatData.matchAmountInToken,
+      status: "Success",
+      hash: "0x1234567890", // todo: where to get this from?
     }));
   };
 
@@ -294,7 +291,6 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
   const handlePayOutFunds = async () => {
     const totalPayout: BigNumber = selectedProjects.reduce(
       (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0));
-    console.log("totalPayout: JER", totalPayout.toString());
 
     if (totalPayout.gt(tokenBalance.data?.value || BigNumber.from(0))) {
       setShowInfoModal(true);
@@ -571,7 +567,7 @@ export function PaidProjectsTable(props: {
                         {project.matchingPercent}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.payoutAmount.toString()}
+                        {ethers.utils.formatEther(project.payoutAmount.toString())}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <span
