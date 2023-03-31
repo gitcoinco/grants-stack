@@ -26,7 +26,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import { CartProvider } from "./context/CartContext";
-import ViewBallot from "./features/round/ViewBallotPage";
+import ViewCart from "./features/round/ViewCartPage";
 import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
@@ -73,7 +73,7 @@ root.render(
                     path="/round/:chainId/:roundId/ballot"
                     element={
                       <QFDonationProvider>
-                        <ViewBallot />
+                        <ViewCart />
                       </QFDonationProvider>
                     }
                   />

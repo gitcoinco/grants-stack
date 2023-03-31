@@ -6,7 +6,7 @@ import {
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { ArrowLeftCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { Button, Input } from "common/src/styles";
 import { Listbox, Transition } from "@headlessui/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -26,7 +26,7 @@ import {
 } from "../api/passport";
 import markdown from "../../app/markdown";
 import {
-  FinalBallotDonation,
+  CartDonation,
   PayoutToken,
   ProgressStatus,
   Project,
@@ -43,7 +43,7 @@ import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
 
-export default function ViewBallot() {
+export default function ViewCart() {
   const { chainId, roundId } = useParams();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -57,9 +57,7 @@ export default function ViewBallot() {
   const [selectedPayoutToken, setSelectedPayoutToken] = useState<PayoutToken>(
     payoutTokenOptions[0]
   );
-  const [shortlistSelect, setShortlistSelect] = useState(false);
-  const [selected, setSelected] = useState<Project[]>([]);
-  const [donations, setDonations] = useState<FinalBallotDonation[]>([]);
+  const [donations, setDonations] = useState<CartDonation[]>([]);
 
   const totalDonation = useMemo(() => {
     return donations.reduce((acc, donation) => {
@@ -86,7 +84,7 @@ export default function ViewBallot() {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-  const [shortlist, finalBallot] = useCart();
+  const [cart] = useCart();
 
   const { openConnectModal } = useConnectModal();
   const { chain, chains } = useNetwork();
@@ -106,14 +104,7 @@ export default function ViewBallot() {
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const shortlistNotEmpty = shortlist.length > 0;
-  const finalBallotNotEmpty = finalBallot.length > 0;
-
-  useEffect(() => {
-    if (!shortlistSelect) {
-      setSelected([]);
-    }
-  }, [shortlistSelect]);
+  const cartNotEmpty = cart.length > 0;
 
   const navigate = useNavigate();
 
@@ -225,9 +216,6 @@ export default function ViewBallot() {
     } else {
       setPassportState(PassportState.NOT_CONNECTED);
     }
-
-    // call fetch passport
-    // check passport
   }, [address, isConnected]);
 
   const progressSteps = [
@@ -272,10 +260,8 @@ export default function ViewBallot() {
         <main>
           {Header(chainId, roundId)}
           <div className="flex flex-col md:flex-row gap-4">
-            {shortlistNotEmpty && ShortlistProjects(shortlist)}
-            {!shortlistNotEmpty && EmptyShortlist(chainId, roundId)}
-            {finalBallotNotEmpty && FinalBallotProjects(finalBallot)}
-            {!finalBallotNotEmpty && EmptyFinalBallot()}
+            {cartNotEmpty && CartWithProjects(cart)}
+            {!cartNotEmpty && EmptyCart()}
           </div>
         </main>
         <Footer />
@@ -324,7 +310,7 @@ export default function ViewBallot() {
             >
               <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
               <span>
-                You must enter donations for all final ballot projects
+                You must enter donations for all the projects
               </span>
             </p>
           )}
@@ -369,183 +355,24 @@ export default function ViewBallot() {
         </div>
 
         <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">
-          Donation Builder
+          Cart
         </h1>
 
         <p className="my-4">
-          Select your favorite projects from the Shortlist to build your Final
-          Donation.
+          Welcome to your cart!
+          Choose how you want to fund the projects you’ve chosen to support.
         </p>
       </div>
     );
   }
 
-  function ShortlistProjects(shortlist: Project[]) {
-    const [
-      ,
-      ,
-      ,
-      handleRemoveProjectsFromShortlist,
-      handleAddProjectsToFinalBallotAndRemoveFromShortlist,
-    ] = useCart();
-
-    return (
-      <div className="lg:w-1/2 h-full">
-        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-          <div className="flex justify-between border-b-2 pb-2">
-            <h2 className="text-xl">Shortlist</h2>
-            {shortlistSelect ? (
-              <SelectActive onClick={() => setShortlistSelect(false)} />
-            ) : (
-              <SelectInactive onClick={() => setShortlistSelect(true)} />
-            )}
-          </div>
-
-          <div className="my-4">
-            {shortlist.map((project: Project, key: number) => {
-              return (
-                <ShortlistProject
-                  isSelected={
-                    isProjectAlreadySelected(project.projectRegistryId) > -1
-                  }
-                  project={project}
-                  roundRoutePath={`/round/${chainId}/${roundId}`}
-                  key={key}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex mt-4 gap-4">
-          <Button
-            type="button"
-            $variant="outline"
-            data-testid="bulk-remove-from-shortlist"
-            onClick={() => {
-              handleRemoveProjectsFromShortlist(shortlist);
-            }}
-            className="grow text-xs px-4 py-2 border shadow-sm border-grey-100"
-          >
-            Clear all ({shortlist.length}) projects from the shortlist
-          </Button>
-
-          <Button
-            type="button"
-            $variant="outline"
-            data-testid="bulk-add-to-final-ballot"
-            onClick={() => {
-              handleAddProjectsToFinalBallotAndRemoveFromShortlist(shortlist);
-            }}
-            className="grow items-center px-4 py-2 border-none shadow-sm text-xs rounded text-violet-500 bg-violet-100"
-          >
-            Add all ({shortlist.length}) projects to Final Donation
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  function ShortlistProject(
-    props: React.ComponentProps<"div"> & {
-      project: Project;
-      roundRoutePath: string;
-      isSelected: boolean;
-    }
-  ) {
-    const { project, roundRoutePath } = props;
-    const [, , , handleRemoveProjectsFromShortlist] = useCart();
-
-    return (
-      <div
-        data-testid="project"
-        className="border-b-2 border-grey-100"
-        onClick={() => toggleSelection(props.project)}
-      >
-        <div
-          className={`mb-4 flex justify-between px-3 py-4 rounded-md
-            ${props.isSelected ? "bg-violet-100" : ""}`}
-        >
-          <div className="flex">
-            <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
-              <img
-                className="inline-block"
-                src={
-                  props.project.projectMetadata.logoImg
-                    ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
-                    : DefaultLogoImage
-                }
-                alt={"Project Logo"}
-              />
-              <div className="min-w-[64px] w-16 max-h-[64px] absolute top-0 right-0 bottom-0 left-0 overflow-hidden bg-fixed opacity-0 hover:opacity-70 transition duration-300 ease-in-out bg-gray-500 justify-center flex items-center">
-                <Link to={`${roundRoutePath}/${project.grantApplicationId}`}>
-                  <EyeIcon
-                    className="fill-gray-200 w-6 h-6 cursor-pointer"
-                    data-testid={`${project.projectRegistryId}-project-link`}
-                  />
-                </Link>
-              </div>
-            </div>
-
-            <div className="px-4 mt-1">
-              <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
-                {props.project.projectMetadata.title}
-              </p>
-              <p className="text-sm text-ellipsis line-clamp-3">
-                {markdown
-                  .renderToPlainText(props.project.projectMetadata.description)
-                  .substring(0, 130)}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <TrashIcon
-              data-testid="remove-from-shortlist"
-              onClick={() => handleRemoveProjectsFromShortlist([props.project])}
-              className="w-6 h-6 cursor-pointer"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function EmptyShortlist(chainId?: string, roundId?: string) {
-    return (
-      <>
-        <div className="lg:w-1/2 h-full px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-          <h2 className="text-xl border-b-2 pb-2">Shortlist</h2>
-
-          <div className="my-4">
-            <p className="text-grey-500 font-light">
-              Projects that you add to the shortlist will appear here.
-            </p>
-          </div>
-
-          <div className="flex justify-center mt-11">
-            <Link to={"/round/" + chainId + "/" + roundId}>
-              <Button
-                $variant="solid"
-                type="button"
-                className="inline-flex items-center shadow-sm text-sm rounded"
-              >
-                Browse Projects
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  function FinalBallotProjects(finalBallot: Project[]) {
+  function CartWithProjects(cart: Project[]) {
     return (
       <div className="lg:w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
           <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
             <div className="basis-[28%]">
-              <h2 className="mt-2 text-xl">Final Donation</h2>
+              <h2 className="mt-2 text-xl">Projects</h2>
             </div>
             <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
               <div className="flex gap-4">
@@ -576,12 +403,9 @@ export default function ViewBallot() {
             </div>
           </div>
           <div className="my-4">
-            {finalBallot.map((project: Project, key: number) => (
+            {cart.map((project: Project, key: number) => (
               <div key={key}>
-                <FinalBallotProject
-                  isSelected={
-                    isProjectAlreadySelected(project.projectRegistryId) > -1
-                  }
+                <ProjectInCart
                   project={project}
                   index={key}
                   roundRoutePath={`/round/${chainId}/${roundId}`}
@@ -595,29 +419,30 @@ export default function ViewBallot() {
     );
   }
 
-  function FinalBallotProject(
+  function ProjectInCart(
     props: React.ComponentProps<"div"> & {
       project: Project;
-      isSelected: boolean;
       index: number;
       roundRoutePath: string;
     }
   ) {
     const { project, roundRoutePath } = props;
-    const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
-      useCart();
+    const [
+      , //cart,
+      , //handleAddProjectsToCart
+      handleRemoveProjectsFromCart
+    ] = useCart();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
 
     return (
       <div
-        data-testid="finalBallot-project"
+        data-testid="cart-project"
         className="border-b-2 border-grey-100"
       >
         <div
-          className={`mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md
-            ${props.isSelected ? "bg-violet-100" : ""}`}
+          className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md"
         >
           <div className="flex">
             <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
@@ -650,7 +475,11 @@ export default function ViewBallot() {
                 </p>
               </Link>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {props.project.projectMetadata.description.substring(0, 130)}
+                {
+                  markdown
+                    .renderToPlainText(props.project.projectMetadata.description)
+                    .substring(0, 130)
+                }
               </p>
             </div>
           </div>
@@ -667,7 +496,7 @@ export default function ViewBallot() {
               min="0"
               value={
                 donations.find(
-                  (donation: FinalBallotDonation) =>
+                  (donation: CartDonation) =>
                     donation.projectRegistryId ===
                     props.project.projectRegistryId
                 )?.amount
@@ -686,7 +515,7 @@ export default function ViewBallot() {
             <ArrowLeftCircleIcon
               data-testid="remove-from-finalBallot"
               onClick={() => {
-                handleRemoveProjectsFromFinalBallotAndAddToShortlist([
+                handleRemoveProjectsFromCart([
                   props.project,
                 ]);
                 updateDonations(
@@ -703,13 +532,13 @@ export default function ViewBallot() {
     );
   }
 
-  function EmptyFinalBallot() {
+  function EmptyCart() {
     return (
       <div className="w-1/2 h-full">
         <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
           <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
             <div className="basis-[28%]">
-              <h2 className="mt-2 text-xl">Final Donation</h2>
+              <h2 className="mt-2 text-xl">Projects</h2>
             </div>
             <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
               <p className="mt-3 text-sm amount-text">Amount</p>
@@ -736,7 +565,7 @@ export default function ViewBallot() {
           </div>
           <div className="mt-4">
             <p className="text-grey-500">
-              Add the projects you want to fund here!
+              Cart is empty.
             </p>
           </div>
         </div>
@@ -774,7 +603,7 @@ export default function ViewBallot() {
     );
   }
 
-  function FinalBallotConfirmCount() {
+  function ProjectsInCartCount() {
     return (
       <div
         className="flex justify-center"
@@ -790,74 +619,6 @@ export default function ViewBallot() {
           <span>Contributed</span>
         </p>
       </div>
-    );
-  }
-
-  function SelectInactive(props: { onClick: () => void }) {
-    return (
-      <Button
-        type="button"
-        $variant="solid"
-        className="text-xs bg-grey-150 px-4 py-2 text-black"
-        onClick={props.onClick}
-      >
-        Select
-      </Button>
-    );
-  }
-
-  function SelectActive(props: { onClick: () => void }) {
-    const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] =
-      useCart();
-    return (
-      <Button
-        type="button"
-        $variant="solid"
-        className="text-xs px-4 py-2"
-        onClick={props.onClick}
-        data-testid="select"
-      >
-        {selected.length > 0 ? (
-          <div
-            data-testid="move-to-finalBallot"
-            onClick={async () =>
-              handleAddProjectsToFinalBallotAndRemoveFromShortlist(selected)
-            }
-          >
-            Add selected ({selected.length}) to Final Donation
-          </div>
-        ) : (
-          <>Select</>
-        )}
-      </Button>
-    );
-  }
-
-  function toggleSelection(project: Project) {
-    // toggle works when select is active
-    if (!shortlistSelect) return;
-
-    const newState = [...selected];
-
-    const projectIndex = isProjectAlreadySelected(project.projectRegistryId);
-
-    if (projectIndex < 0) {
-      newState.push(project);
-    } else {
-      newState.splice(projectIndex, 1);
-    }
-
-    setSelected(newState);
-
-    // disable select button if no projects are selected
-    if (newState.length == 0) {
-      setShortlistSelect(false);
-    }
-  }
-
-  function isProjectAlreadySelected(projectId: string): number {
-    return selected.findIndex(
-      (project) => project.projectRegistryId == projectId
     );
   }
 
@@ -886,12 +647,12 @@ export default function ViewBallot() {
   }
 
   function updateAllDonations(amount: number) {
-    const newDonations = finalBallot.map((project) => {
+    const newDonations = cart.map(project => {
       return {
         projectRegistryId: project.projectRegistryId,
         amount: amount.toString(),
         projectAddress: project.recipient,
-      } as FinalBallotDonation;
+      } as CartDonation;
     });
 
     setDonations(newDonations);
@@ -1129,7 +890,7 @@ export default function ViewBallot() {
         <p className="text-sm">
           Submitting your donation will require signing two transactions
           <br />
-          if you are using an ERC20 token:
+          <strong>if</strong>you are using an ERC20 token:
         </p>
         <ul className="list-disc list-inside pl-3 pt-3">
           <li>Approving the contract to access your wallet</li>
@@ -1140,15 +901,14 @@ export default function ViewBallot() {
   }
 
   function ConfirmationModalBody() {
-    const projectsCount = finalBallot.length;
+    const projectsCount = cart.length;
     return (
       <>
         <p className="text-sm text-grey-400">
-          {projectsCount} project{projectsCount > 1 && "s"} on your Final
-          Donation.
+          Funding {projectsCount} project{projectsCount > 1 && "s"}
         </p>
         <div className="my-8">
-          <FinalBallotConfirmCount />
+          <ProjectsInCartCount />
         </div>
         <AdditionalGasFeesNote />
       </>
