@@ -75,7 +75,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 10,
       matchPoolPercentage: 0.1,
       projectId: "0x1",
-      matchAmountInToken: BigNumber.from("111"),
+      matchAmountInToken: ethers.utils.parseEther("1.11"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
     },
     {
@@ -84,7 +84,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 20,
       matchPoolPercentage: 0.2,
       projectId: "0x2",
-      matchAmountInToken: BigNumber.from("222"),
+      matchAmountInToken: ethers.utils.parseEther("2.22"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
     },
     {
@@ -93,7 +93,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 30,
       matchPoolPercentage: 0.3,
       projectId: "0x3",
-      matchAmountInToken: BigNumber.from("333"),
+      matchAmountInToken: ethers.utils.parseEther("3.33"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
     },
     {
@@ -102,7 +102,7 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 40,
       matchPoolPercentage: 0.4,
       projectId: "0x4",
-      matchAmountInToken: BigNumber.from("444"),
+      matchAmountInToken: ethers.utils.parseEther("4.44"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000004",
     },
   ]
@@ -368,9 +368,12 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
       expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
 
+      console.log("matchingStatsData[0].matchPoolPercentage", matchingStatsData[0].matchPoolPercentage);
+
       // expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100)).toBeInTheDocument();
       // expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100)).toBeInTheDocument();
 
+      console.log(ethers.utils.formatEther(matchingStatsData[0].matchAmountInToken.toString()))
       expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[0].matchAmountInToken.toString()))).toBeInTheDocument();
       expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[1].matchAmountInToken.toString()))).toBeInTheDocument();
 
