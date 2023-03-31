@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useWallet } from "../../common/Auth";
 import {
   merklePayoutStrategyFactoryContract,
-  merklePayoutStrategyImplementationContract,
+  merklePayoutStrategyImplementationContract
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
@@ -175,8 +175,6 @@ export const useGroupProjectsByPaymentStatus = (
       const payoutAddress = paidProjects.map((project) =>
         project.grantee.toLocaleLowerCase(),
       );
-
-
       allProjects?.forEach((project) => {
         const projectStatus = payoutAddress.includes(
           project.projectPayoutAddress.toLocaleLowerCase(),
