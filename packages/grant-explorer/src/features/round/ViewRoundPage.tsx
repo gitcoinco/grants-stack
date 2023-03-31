@@ -259,7 +259,7 @@ function AfterRoundStart(props: {
           status: ApplicationStatus.APPROVED,
         },
       ];
-      
+
       setProjects(projects);
     }
   });
@@ -268,7 +268,7 @@ function AfterRoundStart(props: {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
     const projects = round?.approvedProjects;
-    
+
     const exactMatches = projects?.filter(
       (project) =>
         project.projectMetadata.title.toLocaleLowerCase() ===
@@ -365,18 +365,12 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const projectRecipient = project.recipient.slice(0, 6);
 
   const [
-    shortlist,
     cart,
-    handleAddProjectsToShortlist,
-    handleRemoveProjectsFromShortlist,
-    ,
-    handleRemoveProjectsFromFinalBallot,
+    handleRemoveProjectsFromCart,
+    handleAddProjectsToCart
   ] = useCart();
-  const isAddedToShortlist = shortlist.some(
-    (shortlistedProject) =>
-      shortlistedProject.grantApplicationId === project.grantApplicationId
-  );
-  const isAddedToCart = cart.some(
+
+  const isAlreadyInCart = cart.some(
     (cartProject) =>
       cartProject.grantApplicationId === project.grantApplicationId
   );
@@ -409,17 +403,14 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
       </Link>
       <CardFooter className="bg-white">
         <CardContent className="text-xs mt-4">
-          <ShortListButton
+          <CartButton
             project={project}
-            isAdded={isAddedToShortlist || isAddedToCart}
-            removeFromShortlist={() => {
-              handleRemoveProjectsFromShortlist([project]);
+            isAlreadyInCart={isAlreadyInCart}
+            removeFromCart={() => {
+              handleRemoveProjectsFromCart([project]);
             }}
-            removeFromFinalBallot={() => {
-              handleRemoveProjectsFromFinalBallot([project]);
-            }}
-            addToShortlist={() => {
-              handleAddProjectsToShortlist([project]);
+            addToCart={() => {
+              handleAddProjectsToCart([project]);
             }}
           />
         </CardContent>
@@ -449,87 +440,55 @@ const ProjectList = (props: {
   );
 };
 
-function ShortListButton(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
-  isAdded: boolean;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
-  addToShortlist: () => void;
+function CartButton(props: {
+  project: Project;
+  isAlreadyInCart: boolean;
+  removeFromCart: () => void;
+  addToCart: () => void;
 }) {
   return (
     <div>
-      <BallotSelectionToggle
+      <CartButtonToggle
         project={props.project}
-        isAdded={props.isAdded}
-        removeFromShortlist={props.removeFromShortlist}
-        removeFromFinalBallot={props.removeFromFinalBallot}
-        addToCart={props.addToShortlist}
+        isAlreadyInCart={props.isAlreadyInCart}
+        removeFromCart={props.removeFromCart}
+        addToCart={props.addToCart}
       />
     </div>
   );
 }
 
-function BallotSelectionToggle(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
-  isAdded: boolean;
+function CartButtonToggle(props: {
+  project: Project;
+  isAlreadyInCart: boolean;
   addToCart: () => void;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
+  removeFromCart: () => void;
 }) {
-  const [shortlist, finalBallot, , , ,] = useCart();
 
-  const isAddedToShortlist = shortlist.some(
-    (shortlistedProject) =>
-      shortlistedProject.grantApplicationId === props.project.grantApplicationId
-  );
-  const isAddedToCart = finalBallot.some(
-    (ballotProject) =>
-      ballotProject.grantApplicationId === props.project.grantApplicationId
-  );
-  // if the project is not added, show the add to shortlist button
-  // if the project is added to the shortlist, show the remove from shortlist button
-  // if the project is added to the final ballot, show the remove from final ballot button
-  if (props.isAdded) {
-    if (isAddedToShortlist) {
-      return (
-        <Button
-          data-testid="remove-from-shortlist"
-          onClick={props.removeFromShortlist}
-          className={
-            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Shortlist
-        </Button>
-      );
-    }
-    if (isAddedToCart) {
-      return (
-        <Button
-          data-testid="remove-from-final-ballot"
-          onClick={props.removeFromFinalBallot}
-          className={
-            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Final Ballot
-        </Button>
-      );
-    }
+  // if the project is not added, show the add to cart button
+  // if the project is added to the cart, show the remove from cart button
+  if (props.isAlreadyInCart) {
+    return (
+      <Button
+        data-testid="remove-from-cart"
+        onClick={props.removeFromCart}
+        className={
+          "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+        }
+      >
+        Remove from Cart
+      </Button>
+    );
   }
   return (
     <Button
-      data-testid="add-to-shortlist"
-      onClick={() => {
-        props.addToCart();
-      }}
+      data-testid="add-to-cart"
+      onClick={props.addToCart}
       className={
         "w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
       }
     >
-      Add to Shortlist
+      Add to Cart
     </Button>
   );
 }
