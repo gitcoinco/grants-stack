@@ -12,7 +12,7 @@ import {
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import { BallotProvider } from "./context/CartContext";
+import { CartProvider } from "./context/CartContext";
 import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { store } from "./app/store";
@@ -105,7 +105,7 @@ export const renderWithContext = (
           dispatch,
         }}
       >
-        <BallotProvider>{ui}</BallotProvider>
+        <CartProvider>{ui}</CartProvider>
       </RoundContext.Provider>
     </MemoryRouter>
   );

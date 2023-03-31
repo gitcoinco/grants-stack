@@ -8,10 +8,8 @@ import React, {
   useState,
 } from "react";
 import {
-  loadFinalBallot,
-  loadShortlist,
-  saveFinalBallot,
-  saveShortlist,
+  loadCartFromLocalStorage,
+  saveCartToLocalStorage
 } from "../features/api/LocalStorage";
 import { RoundContext } from "./RoundContext";
 
@@ -20,7 +18,7 @@ export interface CartContextState {
   setCart: React.Dispatch<SetStateAction<Project[]>>;
 }
 
-export const initialBallotState: CartContextState = {
+export const initialCartState: CartContextState = {
   cart: [],
   setCart: () => {
     /**/
@@ -28,45 +26,30 @@ export const initialBallotState: CartContextState = {
 };
 
 export const CartContext =
-  createContext<CartContextState>(initialBallotState);
+  createContext<CartContextState>(initialCartState);
 
-export const BallotProvider = ({ children }: { children: ReactNode }) => {
+export const CartProvider = ({ children }: { children: ReactNode }) => {
   const roundContext = useContext(RoundContext);
   const currentRoundId = roundContext?.state?.currentRoundId;
-  const [shortlist, setShortlist] = useState(initialBallotState.shortlist);
-  const [finalBallot, setFinalBallot] = useState(
-    initialBallotState.finalBallot
-  );
+  const [cart, setCart] = useState(initialCartState.cart);
 
   useEffect((): void => {
     if (currentRoundId) {
-      const storedShortlist =
-        loadShortlist(currentRoundId) ?? initialBallotState.shortlist;
-      setShortlist(storedShortlist);
-
-      const storedFinalBallot =
-        loadFinalBallot(currentRoundId) ?? initialBallotState.finalBallot;
-      setFinalBallot(storedFinalBallot);
+      const storedCart =
+        loadCartFromLocalStorage(currentRoundId) ?? initialCartState.cart;
+      setCart(storedCart);
     }
   }, [currentRoundId]);
 
   useEffect((): void => {
     if (currentRoundId) {
-      saveShortlist(shortlist, currentRoundId);
+      saveCartToLocalStorage(cart, currentRoundId);
     }
-  }, [shortlist, currentRoundId]);
-
-  useEffect((): void => {
-    if (currentRoundId) {
-      saveFinalBallot(finalBallot, currentRoundId);
-    }
-  }, [finalBallot, currentRoundId]);
+  }, [cart, currentRoundId]);
 
   const providerProps: CartContextState = {
-    shortlist,
-    setShortlist,
-    finalBallot,
-    setFinalBallot,
+    cart,
+    setCart
   };
 
   return (
@@ -79,88 +62,48 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
 /* Custom Hooks */
 type UseCart = [
   cart: CartContextState["cart"],
-  handleAddProjectsToFinalBallot: (projects: Project[]) => void,
-  handleRemoveProjectsFromFinalBallot: (projects: Project[]) => void,
+  handleAddProjectsToCart: (projects: Project[]) => void,
+  handleRemoveProjectsFromCart: (projects: Project[]) => void,
 ];
 
 export const useCart = (): UseCart => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error("useCart must be used within a BallotProvider");
+    throw new Error("useCart must be used within a CartProvider");
   }
 
-  const { shortlist, setShortlist } = context;
-  const { finalBallot, setFinalBallot } = context;
+  const { cart, setCart } = context;
 
-  const handleAddProjectsToShortlist = (projectsToAdd: Project[]): void => {
-    // Add projects to the shortlist if they are not already present
-    const newShortlist = projectsToAdd.reduce((acc, projectToAdd) => {
-      const isProjectAlreadyPresent = acc.find(
+  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {
+    // Add projects to the cart if they are not already present
+    const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
+      const isProjectAlreadyInCart = acc.find(
         (project) =>
           project.projectRegistryId === projectToAdd.projectRegistryId
       );
-      return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
-    }, shortlist);
+      return isProjectAlreadyInCart ? acc : acc.concat(projectToAdd);
+    }, cart);
 
-    setShortlist(newShortlist);
+    setCart(newCart);
   };
 
-  const handleRemoveProjectsFromShortlist = (
+  const handleRemoveProjectsFromCart = (
     projectsToRemove: Project[]
   ): void => {
     // Remove projects from the shortlist if they are present
-    const newShortlist = shortlist.filter(
+    const newCart = cart.filter(
       (project) =>
         !projectsToRemove.find(
           (projectToRemove) =>
             projectToRemove.projectRegistryId === project.projectRegistryId
         )
     );
-    setShortlist(newShortlist);
-  };
-
-  const handleAddProjectsToFinalBallot = (projectsToAdd: Project[]): void => {
-    // Add the projects to the final ballot from the shortlist and remove them from the shortlist
-    const newFinalBallot = projectsToAdd.reduce((acc, projectToAdd) => {
-      const isProjectAlreadyPresent = acc.find(
-        (project) =>
-          project.projectRegistryId === projectToAdd.projectRegistryId
-      );
-      return isProjectAlreadyPresent ? acc : acc.concat(projectToAdd);
-    }, finalBallot);
-    setFinalBallot(newFinalBallot);
-    handleRemoveProjectsFromShortlist(projectsToAdd);
-  };
-
-  const handleRemoveProjectsFromFinalBallot = (
-    projectsToRemove: Project[]
-  ): void => {
-    // Remove the projects from the final ballot and add them back to the shortlist
-    const newFinalBallot = finalBallot.filter(
-      (project) =>
-        !projectsToRemove.find(
-          (projectToRemove) =>
-            projectToRemove.projectRegistryId === project.projectRegistryId
-        )
-    );
-    setFinalBallot(newFinalBallot);
-  };
-
-  const handleRemoveProjectsFromFinalBallotAndAddToShortlist = (
-    projectsToRemove: Project[]
-  ): void => {
-    // Remove projects from final ballot if they are present and add them back to the shortlist
-    handleRemoveProjectsFromFinalBallot(projectsToRemove);
-    handleAddProjectsToShortlist(projectsToRemove);
+    setCart(newCart);
   };
 
   return [
-    shortlist,
-    finalBallot,
-    handleAddProjectsToShortlist,
-    handleRemoveProjectsFromShortlist,
-    handleAddProjectsToFinalBallot,
-    handleRemoveProjectsFromFinalBallot,
-    handleRemoveProjectsFromFinalBallotAndAddToShortlist,
+    cart,
+    handleAddProjectsToCart,
+    handleRemoveProjectsFromCart
   ];
 };

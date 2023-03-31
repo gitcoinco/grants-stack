@@ -25,7 +25,7 @@ import NotFound from "./features/common/NotFoundPage";
 import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
-import { BallotProvider } from "./context/CartContext";
+import { CartProvider } from "./context/CartContext";
 import ViewBallot from "./features/round/ViewBallotPage";
 import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";
@@ -50,7 +50,7 @@ root.render(
       <WagmiConfig client={WagmiClient}>
         <RainbowKitProvider coolMode chains={chains}>
           <RoundProvider>
-            <BallotProvider>
+            <CartProvider>
               <ReduxRouter history={history} store={store}>
                 <Routes>
                   {/* Protected Routes */}
@@ -100,7 +100,7 @@ root.render(
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </ReduxRouter>
-            </BallotProvider>
+            </CartProvider>
           </RoundProvider>
         </RainbowKitProvider>
       </WagmiConfig>
