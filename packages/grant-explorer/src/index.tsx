@@ -70,7 +70,7 @@ root.render(
                   />
 
                   <Route
-                    path="/round/:chainId/:roundId/ballot"
+                    path="/round/:chainId/:roundId/cart"
                     element={
                       <QFDonationProvider>
                         <ViewCart />

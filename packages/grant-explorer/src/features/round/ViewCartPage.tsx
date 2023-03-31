@@ -468,7 +468,7 @@ export default function ViewCart() {
             <div className="pl-4 mt-1">
               <Link
                 to={`${roundRoutePath}/${project.grantApplicationId}`}
-                data-testid={"final-ballot-project-link"}
+                data-testid={"cart-project-link"}
               >
                 <p className="font-semibold mb-2 text-ellipsis line-clamp-1">
                   {props.project.projectMetadata.title}
@@ -513,7 +513,7 @@ export default function ViewCart() {
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
             <ArrowLeftCircleIcon
-              data-testid="remove-from-finalBallot"
+              data-testid="remove-from-cart"
               onClick={() => {
                 handleRemoveProjectsFromCart([
                   props.project,
@@ -607,7 +607,7 @@ export default function ViewCart() {
     return (
       <div
         className="flex justify-center"
-        data-testid="final-ballot-project-count"
+        data-testid="cart-project-count"
       >
         <CheckIcon
           className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1 mr-2"

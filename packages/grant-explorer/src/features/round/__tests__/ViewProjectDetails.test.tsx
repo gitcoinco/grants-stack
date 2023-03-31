@@ -298,16 +298,16 @@ describe("voting cart", () => {
   it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    // click add to ballot
+    // click add to cart
     const addToCart = screen.getByTestId("add-to-cart");
     fireEvent.click(addToCart);
     setTimeout(() => {
       // wait three seconds after the user clicks add before proceeding
       expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
       expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
-      // click remove from ballot
-      const removeFromBallot = screen.getByTestId("remove-from-cart");
-      fireEvent.click(removeFromBallot);
+      // click remove from cart
+      const removeFromCart = screen.getByTestId("remove-from-cart");
+      fireEvent.click(removeFromCart);
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
       expect(
         screen.queryByTestId("remove-from-cart")

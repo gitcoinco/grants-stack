@@ -78,7 +78,7 @@ describe("View Cart Page", () => {
       screen.getByText(/Cart is empty./i);
     });
 
-    it("moves project from final donation to shortlist when clicking the send back button", async () => {
+    it("moves project from final donation to cart when clicking the send back button", async () => {
       const cart: Project[] = [
         makeApprovedProjectData(),
         makeApprovedProjectData(),

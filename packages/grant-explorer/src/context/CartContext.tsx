@@ -90,7 +90,7 @@ export const useCart = (): UseCart => {
   const handleRemoveProjectsFromCart = (
     projectsToRemove: Project[]
   ): void => {
-    // Remove projects from the shortlist if they are present
+    // Remove projects from the cart if they are present
     const newCart = cart.filter(
       (project) =>
         !projectsToRemove.find(

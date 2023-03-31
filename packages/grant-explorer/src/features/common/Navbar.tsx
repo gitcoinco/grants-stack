@@ -11,7 +11,7 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [shortlist] = useCart();
+  const [cart] = useCart();
   const { chainId, roundId } = useParams();
 
   return (
@@ -32,8 +32,8 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <Shortlist
-              count={shortlist.length}
+            <Cart
+              count={cart.length}
               roundUrlPath={props.roundUrlPath}
             />
             <div id="connect-wallet-button">
@@ -47,10 +47,10 @@ export default function Navbar(props: NavbarProps) {
   );
 }
 
-export function Shortlist(props: { count: number; roundUrlPath: string }) {
+export function Cart(props: { count: number; roundUrlPath: string }) {
   return (
     <span className="relative inline-block">
-      <Link to={`${props.roundUrlPath}/ballot`} data-testid={"ballot"}>
+      <Link to={`${props.roundUrlPath}/cart`} data-testid={"cart"}>
         <svg
           width="24"
           height="24"
@@ -59,9 +59,10 @@ export function Shortlist(props: { count: number; roundUrlPath: string }) {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M15 7V19H17V7H15ZM14 20H4V22H14V20ZM3 19V7H1V19H3ZM4 6H6V4H4V6ZM12 6H14V4H12V6ZM4 20C3.44772 20 3 19.5523 3 19H1C1 20.6569 2.34315 22 4 22V20ZM15 19C15 19.5523 14.5523 20 14 20V22C15.6569 22 17 20.6569 17 19H15ZM17 7C17 5.34315 15.6569 4 14 4V6C14.5523 6 15 6.44772 15 7H17ZM3 7C3 6.44772 3.44772 6 4 6V4C2.34315 4 1 5.34315 1 7H3ZM8 4H10V2H8V4ZM10 6H8V8H10V6ZM8 6C7.44772 6 7 5.55228 7 5H5C5 6.65685 6.34315 8 8 8V6ZM11 5C11 5.55228 10.5523 6 10 6V8C11.6569 8 13 6.65685 13 5H11ZM10 4C10.5523 4 11 4.44772 11 5H13C13 3.34315 11.6569 2 10 2V4ZM8 2C6.34315 2 5 3.34315 5 5H7C7 4.44772 7.44772 4 8 4V2Z"
-            fill="#0E0333"
+            d="M1 1H3L3.4 3M5 11H15L19 3H3.4M5 11L3.4 3M5 11L2.70711 13.2929C2.07714 13.9229 2.52331 15 3.41421 15H15M15 15C13.8954 15 13 15.8954 13 17C13 18.1046 13.8954 19 15 19C16.1046 19 17 18.1046 17 17C17 15.8954 16.1046 15 15 15ZM7 17C7 18.1046 6.10457 19 5 19C3.89543 19 3 18.1046 3 17C3 15.8954 3.89543 15 5 15C6.10457 15 7 15.8954 7 17Z"
+            stroke="#0E0333"
           />
+
           {props.count ? <circle cx="16" cy="10" r="8" fill="#6F3FF5" /> : null}
         </svg>
 
