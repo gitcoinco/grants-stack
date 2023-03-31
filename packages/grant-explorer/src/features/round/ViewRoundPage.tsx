@@ -16,7 +16,7 @@ import {
   CardFooter,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
@@ -343,8 +343,7 @@ function AfterRoundStart(props: {
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -367,19 +366,19 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
 
   const [
     shortlist,
-    finalBallot,
+    cart,
     handleAddProjectsToShortlist,
     handleRemoveProjectsFromShortlist,
     ,
     handleRemoveProjectsFromFinalBallot,
-  ] = useBallot();
+  ] = useCart();
   const isAddedToShortlist = shortlist.some(
     (shortlistedProject) =>
       shortlistedProject.grantApplicationId === project.grantApplicationId
   );
-  const isAddedToFinalBallot = finalBallot.some(
-    (ballotProject) =>
-      ballotProject.grantApplicationId === project.grantApplicationId
+  const isAddedToCart = cart.some(
+    (cartProject) =>
+      cartProject.grantApplicationId === project.grantApplicationId
   );
 
   return (
@@ -412,7 +411,7 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
         <CardContent className="text-xs mt-4">
           <ShortListButton
             project={project}
-            isAdded={isAddedToShortlist || isAddedToFinalBallot}
+            isAdded={isAddedToShortlist || isAddedToCart}
             removeFromShortlist={() => {
               handleRemoveProjectsFromShortlist([project]);
             }}
@@ -465,7 +464,7 @@ function ShortListButton(props: {
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
         removeFromFinalBallot={props.removeFromFinalBallot}
-        addToBallot={props.addToShortlist}
+        addToCart={props.addToShortlist}
       />
     </div>
   );
@@ -475,17 +474,17 @@ function BallotSelectionToggle(props: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   project: any;
   isAdded: boolean;
-  addToBallot: () => void;
+  addToCart: () => void;
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
 }) {
-  const [shortlist, finalBallot, , , ,] = useBallot();
+  const [shortlist, finalBallot, , , ,] = useCart();
 
   const isAddedToShortlist = shortlist.some(
     (shortlistedProject) =>
       shortlistedProject.grantApplicationId === props.project.grantApplicationId
   );
-  const isAddedToFinalBallot = finalBallot.some(
+  const isAddedToCart = finalBallot.some(
     (ballotProject) =>
       ballotProject.grantApplicationId === props.project.grantApplicationId
   );
@@ -506,7 +505,7 @@ function BallotSelectionToggle(props: {
         </Button>
       );
     }
-    if (isAddedToFinalBallot) {
+    if (isAddedToCart) {
       return (
         <Button
           data-testid="remove-from-final-ballot"
@@ -524,7 +523,7 @@ function BallotSelectionToggle(props: {
     <Button
       data-testid="add-to-shortlist"
       onClick={() => {
-        props.addToBallot();
+        props.addToCart();
       }}
       className={
         "w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"

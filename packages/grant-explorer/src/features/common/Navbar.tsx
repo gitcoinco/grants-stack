@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import CustomerSupport from "./CustomerSupport";
 
 export interface NavbarProps {
@@ -11,7 +11,7 @@ export interface NavbarProps {
 }
 
 export default function Navbar(props: NavbarProps) {
-  const [shortlist] = useBallot();
+  const [shortlist] = useCart();
   const { chainId, roundId } = useParams();
 
   return (

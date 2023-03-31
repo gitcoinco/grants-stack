@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BallotProvider, useBallot } from "../BallotContext";
+import { BallotProvider, useCart } from "../CartContext";
 import { Project } from "../../features/api/types";
 import { makeApprovedProjectData } from "../../test-utils";
 import {
@@ -21,7 +21,7 @@ describe("<BallotProvider>", () => {
     it("should not have any projects in the shortlist and final ballot", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
 
@@ -38,7 +38,7 @@ describe("<BallotProvider>", () => {
     it("should add a project to the shortlist when add project is invoked", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
       fireEvent.click(screen.getByTestId("add-project-to-shortlist"));
@@ -49,7 +49,7 @@ describe("<BallotProvider>", () => {
     it("should not add the same project twice to the shortlist", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
       fireEvent.click(screen.getByTestId("add-project-to-shortlist"));
@@ -73,7 +73,7 @@ describe("<BallotProvider>", () => {
           }}
         >
           <BallotProvider>
-            <TestingUseBallotComponent />
+            <TestingUseCartComponent />
           </BallotProvider>
         </RoundContext.Provider>
       );
@@ -98,7 +98,7 @@ describe("<BallotProvider>", () => {
           }}
         >
           <BallotProvider>
-            <TestingUseBallotComponent />
+            <TestingUseCartComponent />
           </BallotProvider>
         </RoundContext.Provider>
       );
@@ -110,7 +110,7 @@ describe("<BallotProvider>", () => {
     it("should update the shortlist when removing the project from the shortlist", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
       fireEvent.click(screen.getByTestId("add-project-to-shortlist"));
@@ -123,7 +123,7 @@ describe("<BallotProvider>", () => {
     it("does not error when trying to remove a project not in the shortlist", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
 
@@ -140,7 +140,7 @@ describe("<BallotProvider>", () => {
     it("should add a project to the shortlist when add project is invoked", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
       fireEvent.click(screen.getByTestId("add-project-to-finalBallot"));
@@ -151,7 +151,7 @@ describe("<BallotProvider>", () => {
     it("should not add the same project twice to the finalBallot", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
       fireEvent.click(screen.getByTestId("add-project-to-finalBallot"));
@@ -163,7 +163,7 @@ describe("<BallotProvider>", () => {
     it("adding project to finalBallot removes it from shortlist ", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
 
@@ -182,7 +182,7 @@ describe("<BallotProvider>", () => {
     it("removing project from finalBallot adds it to the shortlist", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
 
@@ -210,7 +210,7 @@ describe("<BallotProvider>", () => {
           }}
         >
           <BallotProvider>
-            <TestingUseBallotComponent />
+            <TestingUseCartComponent />
           </BallotProvider>
         </RoundContext.Provider>
       );
@@ -235,7 +235,7 @@ describe("<BallotProvider>", () => {
           }}
         >
           <BallotProvider>
-            <TestingUseBallotComponent />
+            <TestingUseCartComponent />
           </BallotProvider>
         </RoundContext.Provider>
       );
@@ -247,7 +247,7 @@ describe("<BallotProvider>", () => {
     it("does not error when trying to remove a project not in the finalBallot", () => {
       render(
         <BallotProvider>
-          <TestingUseBallotComponent />
+          <TestingUseCartComponent />
         </BallotProvider>
       );
 
@@ -259,7 +259,7 @@ describe("<BallotProvider>", () => {
 
 const testProject: Project = makeApprovedProjectData();
 
-const TestingUseBallotComponent = () => {
+const TestingUseCartComponent = () => {
   const [
     shortlist,
     finalBallot,
@@ -268,7 +268,7 @@ const TestingUseBallotComponent = () => {
     handleAddProjectsToFinalBallot,
     ,
     handleRemoveProjectsFromFinalBallotAndAddToShortlist,
-  ] = useBallot();
+  ] = useCart();
 
   return (
     <>

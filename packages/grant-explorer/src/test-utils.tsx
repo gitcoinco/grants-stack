@@ -12,7 +12,7 @@ import {
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import { BallotProvider } from "./context/BallotContext";
+import { BallotProvider } from "./context/CartContext";
 import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { store } from "./app/store";

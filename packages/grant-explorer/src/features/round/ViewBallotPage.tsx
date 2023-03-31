@@ -16,7 +16,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { modalDelayMs } from "../../constants";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import { useQFDonation } from "../../context/QFDonationContext";
 import { useRoundById } from "../../context/RoundContext";
 import {
@@ -86,7 +86,7 @@ export default function ViewBallot() {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-  const [shortlist, finalBallot] = useBallot();
+  const [shortlist, finalBallot] = useCart();
 
   const { openConnectModal } = useConnectModal();
   const { chain, chains } = useNetwork();
@@ -387,7 +387,7 @@ export default function ViewBallot() {
       ,
       handleRemoveProjectsFromShortlist,
       handleAddProjectsToFinalBallotAndRemoveFromShortlist,
-    ] = useBallot();
+    ] = useCart();
 
     return (
       <div className="lg:w-1/2 h-full">
@@ -454,7 +454,7 @@ export default function ViewBallot() {
     }
   ) {
     const { project, roundRoutePath } = props;
-    const [, , , handleRemoveProjectsFromShortlist] = useBallot();
+    const [, , , handleRemoveProjectsFromShortlist] = useCart();
 
     return (
       <div
@@ -605,7 +605,7 @@ export default function ViewBallot() {
   ) {
     const { project, roundRoutePath } = props;
     const [, , , , , , handleRemoveProjectsFromFinalBallotAndAddToShortlist] =
-      useBallot();
+      useCart();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
@@ -808,7 +808,7 @@ export default function ViewBallot() {
 
   function SelectActive(props: { onClick: () => void }) {
     const [, , , , handleAddProjectsToFinalBallotAndRemoveFromShortlist] =
-      useBallot();
+      useCart();
     return (
       <Button
         type="button"

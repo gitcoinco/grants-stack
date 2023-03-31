@@ -1,6 +1,6 @@
 import ViewBallot from "../ViewBallotPage";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BallotContext } from "../../../context/BallotContext";
+import { CartContext } from "../../../context/CartContext";
 import { Project } from "../../api/types";
 import {
   makeApprovedProjectData,
@@ -706,7 +706,7 @@ function renderWrapped(
   render(
     <MemoryRouter>
       <RoundProvider>
-        <BallotContext.Provider
+        <CartContext.Provider
           value={{
             shortlist: shortlist,
             setShortlist: setShortlist,
@@ -715,7 +715,7 @@ function renderWrapped(
           }}
         >
           <ViewBallot />
-        </BallotContext.Provider>
+        </CartContext.Provider>
       </RoundProvider>
     </MemoryRouter>
   );

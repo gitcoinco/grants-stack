@@ -25,7 +25,7 @@ import NotFound from "./features/common/NotFoundPage";
 import AccessDenied from "./features/common/AccessDenied";
 import ViewRound from "./features/round/ViewRoundPage";
 import ViewProjectDetails from "./features/round/ViewProjectDetails";
-import { BallotProvider } from "./context/BallotContext";
+import { BallotProvider } from "./context/CartContext";
 import ViewBallot from "./features/round/ViewBallotPage";
 import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";

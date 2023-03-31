@@ -21,7 +21,7 @@ import {
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "common/src/styles";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
 import React, { useEffect, useState } from "react";
@@ -91,11 +91,11 @@ export default function ViewProjectDetails() {
     handleRemoveProjectsFromShortlist,
     ,
     handleRemoveProjectsFromFinalBallot,
-  ] = useBallot();
+  ] = useCart();
   const isAddedToShortlist = shortlist.some(
     (project) => project.grantApplicationId === applicationId
   );
-  const isAddedToFinalBallot = finalBallot.some(
+  const isAddedToCart = finalBallot.some(
     (project) => project.grantApplicationId === applicationId
   );
 
@@ -139,7 +139,7 @@ export default function ViewProjectDetails() {
                   </div>
                 </div>
                 <Sidebar
-                  isAdded={isAddedToShortlist || isAddedToFinalBallot}
+                  isAdded={isAddedToShortlist || isAddedToCart}
                   removeFromShortlist={() => {
                     handleRemoveProjectsFromShortlist([projectToRender]);
                   }}
@@ -484,7 +484,7 @@ function Sidebar(props: {
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
         removeFromFinalBallot={props.removeFromFinalBallot}
-        addToBallot={props.addToShortlist}
+        addToCart={props.addToShortlist}
       />
       <ShortlistTooltip />
     </div>
@@ -547,17 +547,17 @@ export function ProjectStats() {
 
 function BallotSelectionToggle(props: {
   isAdded: boolean;
-  addToBallot: () => void;
+  addToCart: () => void;
   removeFromShortlist: () => void;
   removeFromFinalBallot: () => void;
 }) {
   const { applicationId } = useParams();
-  const [shortlist, finalBallot] = useBallot();
+  const [shortlist, finalBallot] = useCart();
 
   const isAddedToShortlist = shortlist.some(
     (project) => project.grantApplicationId === applicationId
   );
-  const isAddedToFinalBallot = finalBallot.some(
+  const isAddedToCart = finalBallot.some(
     (project) => project.grantApplicationId === applicationId
   );
   // if the project is not added, show the add to shortlist button
@@ -577,7 +577,7 @@ function BallotSelectionToggle(props: {
         </Button>
       );
     }
-    if (isAddedToFinalBallot) {
+    if (isAddedToCart) {
       return (
         <Button
           data-testid="remove-from-final-ballot"
@@ -595,7 +595,7 @@ function BallotSelectionToggle(props: {
     <Button
       data-testid="add-to-shortlist"
       onClick={() => {
-        props.addToBallot();
+        props.addToCart();
       }}
       className={
         "w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"

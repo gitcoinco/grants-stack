@@ -15,26 +15,20 @@ import {
 } from "../features/api/LocalStorage";
 import { RoundContext } from "./RoundContext";
 
-export interface BallotContextState {
-  shortlist: Project[];
-  setShortlist: React.Dispatch<SetStateAction<Project[]>>;
-  finalBallot: Project[];
-  setFinalBallot: React.Dispatch<SetStateAction<Project[]>>;
+export interface CartContextState {
+  cart: Project[];
+  setCart: React.Dispatch<SetStateAction<Project[]>>;
 }
 
-export const initialBallotState: BallotContextState = {
-  shortlist: [],
-  setShortlist: () => {
-    /**/
-  },
-  finalBallot: [],
-  setFinalBallot: () => {
+export const initialBallotState: CartContextState = {
+  cart: [],
+  setCart: () => {
     /**/
   },
 };
 
-export const BallotContext =
-  createContext<BallotContextState>(initialBallotState);
+export const CartContext =
+  createContext<CartContextState>(initialBallotState);
 
 export const BallotProvider = ({ children }: { children: ReactNode }) => {
   const roundContext = useContext(RoundContext);
@@ -68,7 +62,7 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [finalBallot, currentRoundId]);
 
-  const providerProps: BallotContextState = {
+  const providerProps: CartContextState = {
     shortlist,
     setShortlist,
     finalBallot,
@@ -76,29 +70,23 @@ export const BallotProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <BallotContext.Provider value={providerProps}>
+    <CartContext.Provider value={providerProps}>
       {children}
-    </BallotContext.Provider>
+    </CartContext.Provider>
   );
 };
 
 /* Custom Hooks */
-type UseBallot = [
-  shortlist: BallotContextState["shortlist"],
-  finalBallot: BallotContextState["finalBallot"],
-  handleAddProjectsToShortlist: (projects: Project[]) => void,
-  handleRemoveProjectsFromShortlist: (projects: Project[]) => void,
+type UseCart = [
+  cart: CartContextState["cart"],
   handleAddProjectsToFinalBallot: (projects: Project[]) => void,
   handleRemoveProjectsFromFinalBallot: (projects: Project[]) => void,
-  handleRemoveProjectsFromFinalBallotAndAddToShortlist: (
-    projects: Project[]
-  ) => void
 ];
 
-export const useBallot = (): UseBallot => {
-  const context = useContext(BallotContext);
+export const useCart = (): UseCart => {
+  const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error("useBallot must be used within a BallotProvider");
+    throw new Error("useCart must be used within a BallotProvider");
   }
 
   const { shortlist, setShortlist } = context;

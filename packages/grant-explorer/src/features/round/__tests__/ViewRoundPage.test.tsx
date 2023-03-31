@@ -377,8 +377,8 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
     it("shows a remove-from-shortlist button replacing add-to-shortlist when add-to-shortlist is clicked", () => {
       renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
-      const addToBallot = screen.getByTestId("add-to-shortlist");
-      fireEvent.click(addToBallot);
+      const addToCart = screen.getByTestId("add-to-shortlist");
+      fireEvent.click(addToCart);
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
@@ -392,8 +392,8 @@ describe("<ViewRound /> in case of after the round start date", () => {
       renderWithContext(<ViewRound />, { rounds: [roundWithProjects] });
 
       // click add to ballot
-      const addToBallot = screen.getByTestId("add-to-shortlist");
-      fireEvent.click(addToBallot);
+      const addToCart = screen.getByTestId("add-to-shortlist");
+      fireEvent.click(addToCart);
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
