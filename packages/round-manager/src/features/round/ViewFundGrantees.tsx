@@ -9,21 +9,12 @@ import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { batchDistributeFunds, useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/merklePayoutStrategy";
 import { MatchingStatsData, ProgressStatus, ProgressStep, Round, TransactionBlock } from "../api/types";
-import { formatCurrency, PayoutToken, payoutTokens } from "../api/utils";
+import { formatCurrency, PayoutToken, payoutTokens, useTokenPrice } from "../api/utils";
 import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-
-type GranteeFundInfo = {
-  project: string;
-  walletAddress: string;
-  matchingPercent: string;
-  payoutAmount: BigNumber;
-  status?: string;
-  hash?: string;
-};
 
 export default function ViewFundGrantees(props: {
   round: Round | undefined;
@@ -93,7 +84,7 @@ function FinalizedRoundContent(props: { round: Round }) {
   const { chain } = useWallet();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round.id!);
-  const [paidProjects, setPaidProjects] = useState<GranteeFundInfo[]>([]);
+  const [paidProjects, setPaidProjects] = useState<MatchingStatsData[]>([]);
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
@@ -103,27 +94,17 @@ function FinalizedRoundContent(props: { round: Round }) {
         t.address.toLocaleLowerCase() == props.round.token.toLocaleLowerCase()
     )[0];
 
-  // todo: implement coingecko api for price fetching
-  // const { data, error, loading } = useTokenPrice(
-  //   matchingFundPayoutToken?.coingeckoId
-  // );
-
-  const mapMatchingStatsDataToGranteeFundInfo = (matchingStatsData: MatchingStatsData[]): GranteeFundInfo[] => {
-    return matchingStatsData.map((matchingStatData) => ({
-      project: matchingStatData.projectName ?? "",
-      walletAddress: matchingStatData.projectPayoutAddress,
-      matchingPercent: (matchingStatData.matchPoolPercentage * 100).toString(),
-      payoutAmount: matchingStatData.matchAmountInToken,
-      status: "Success",
-      hash: "0x1234567890", // todo: where to get this from?
-    }));
-  };
+  const { data, error, loading } = useTokenPrice(
+    matchingFundPayoutToken?.coingeckoId
+  );
 
   useEffect(() => {
-    setPrice(1808.04);
-    // setPrice(data[matchingFundPayoutToken?.coingeckoId].usd);
+    if (!error && !loading)
+      setPrice(Number(data));
+
+    console.log("==> data", data)
     setPaidProjects(
-      mapMatchingStatsDataToGranteeFundInfo(projects['paid'])
+      projects['paid']
     );
     setUnpaidProjects(
       projects['unpaid']
@@ -177,7 +158,7 @@ function FinalizedRoundContent(props: { round: Round }) {
                 allProjects={[...projects.paid, ...projects.unpaid]} />
             </Tab.Panel>
             <Tab.Panel>
-              <PaidProjectsTable projects={paidProjects} chainId={chain?.id} />
+              <PaidProjectsTable projects={paidProjects} chainId={chain?.id} token={matchingFundPayoutToken!} price={price} />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
@@ -398,12 +379,12 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
                         {project.projectPayoutAddress}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.matchPoolPercentage}%
+                        {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         {formatCurrency(project.matchAmountInToken, props.token.decimal)}
                         {" " + props.token.name.toUpperCase()}
-                        {" ($" +
+                        {Boolean(props.price) && " ($" +
                           formatCurrency(
                             project.matchAmountInToken.mul(props.price * 100).div(100),
                             props.token.decimal, 2)
@@ -472,12 +453,13 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
   );
 }
 
-// TODO: Add types
-// todo: such a nice table should be in a separate and shared file
 export function PaidProjectsTable(props: {
-  projects: GranteeFundInfo[];
+  projects: MatchingStatsData[];
   chainId: number;
+  token: PayoutToken;
+  price: number,
 }) {
+  // todo: such a nice table should be in a separate and shared file
   let blockScanUrl: string;
   switch (props.chainId) {
     case 1:
@@ -534,7 +516,7 @@ export function PaidProjectsTable(props: {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Matching Percent
+                      Matching Percent %
                     </th>
                     <th
                       scope="col"
@@ -557,26 +539,32 @@ export function PaidProjectsTable(props: {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {props.projects.map((project: GranteeFundInfo) => (
-                    <tr key={project.walletAddress}>
-                      <td>{project.project}</td>
+                  {props.projects.map((project: MatchingStatsData) => (
+                    <tr key={project.projectPayoutAddress}>
+                      <td>{project.projectName}</td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.walletAddress}
+                        {project.projectPayoutAddress}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {project.matchingPercent}
+                        {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {ethers.utils.formatEther(project.payoutAmount.toString())}
+                        {ethers.utils.formatEther(project.matchAmountInToken.toString())}
+                        {" " + props.token.name.toUpperCase()}
+                        {Boolean(props.price) && " ($" +
+                          formatCurrency(
+                            project.matchAmountInToken.mul(props.price * 100).div(100),
+                            props.token.decimal, 2)
+                          + " USD) "}
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
                         <span
-                          className={`inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5 ${project.status === "Success"
+                          className={`inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5 ${project.hash
                             ? "bg-green-100 text-green-800"
                             : "bg-red-200 text-red-800"
                             }`}
                         >
-                          {project.status}
+                          Success
                         </span>
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">

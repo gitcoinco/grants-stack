@@ -236,6 +236,8 @@ export type MatchingStatsData = {
   projectId: string;
   matchAmountInToken: BigNumber;
   projectPayoutAddress: string;
+  status?: string;
+  hash?: string;
 };
 
 export type ProjectStatus =
@@ -356,6 +358,6 @@ export type Project = {
 };
 
 export type TransactionBlock = {
-	transactionBlockNumber: number;
-	error?: unknown;
+  transactionBlockNumber: number;
+  error?: unknown;
 };

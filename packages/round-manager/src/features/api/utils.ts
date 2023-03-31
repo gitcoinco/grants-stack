@@ -6,7 +6,7 @@ import {
   InputType,
   IPFSObject,
   MatchingStatsData,
-  Program
+  Program,
 } from "./types";
 
 export enum ChainId {
@@ -333,7 +333,7 @@ export const graphql_fetch = async (
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
-  fromProjectRegistry = false
+  fromProjectRegistry = false,
 ) => {
   let endpoint = await getGraphQLEndpoint(chainId);
 
@@ -364,7 +364,7 @@ export const graphql_fetch = async (
  */
 export const fetchFromIPFS = (cid: string) => {
   return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
   ).then((resp) => {
     if (resp.ok) {
       return resp.json();
@@ -469,7 +469,7 @@ export interface ApplicationSchema {
  */
 export const generateApplicationSchema = (
   questions: ApplicationMetadata["questions"],
-  requirements: ApplicationMetadata["requirements"]
+  requirements: ApplicationMetadata["requirements"],
 ): ApplicationSchema => {
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
@@ -550,7 +550,6 @@ export const useTokenPrice = (tokenId: string | undefined) => {
 
   useMemo(() => {
     setLoading(true);
-    console.log("useTokenPrice", tokenId);
     const tokenPriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`;
     fetch(tokenPriceEndpoint, {
       headers: {
@@ -601,7 +600,7 @@ export const useTokenPrice = (tokenId: string | undefined) => {
  */
 export const getTxExplorerForContract = (
   chainId: ChainId,
-  contractAddress: string
+  contractAddress: string,
 ) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
@@ -628,7 +627,7 @@ export const getTxExplorerForContract = (
  * @returns
  */
 export const generateMerkleTree = (
-  matchingResults: MatchingStatsData[]
+  matchingResults: MatchingStatsData[],
 ): {
   distribution: [number, string, BigNumber, string][];
   tree: StandardMerkleTree<[number, string, BigNumber, string]>;
@@ -660,10 +659,10 @@ export const generateMerkleTree = (
 export const formatCurrency = (
   value: BigNumber,
   decimal: number,
-  fraction?: number
+  fraction?: number,
 ) => {
   return parseFloat(
-    ethers.utils.formatUnits(value.toString(), decimal)
+    ethers.utils.formatUnits(value.toString(), decimal),
   ).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });
