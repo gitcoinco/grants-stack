@@ -22,7 +22,7 @@ describe("Local Storage", () => {
       saveCartToLocalStorage(cart, roundId1);
 
       expect(localStorage.setItem).toHaveBeenLastCalledWith(
-        `cart-${roundId1}`,
+        `cart-round-${roundId1}`,
         JSON.stringify(cart)
       );
       expect(localStorage.__STORE__[`cart-round-${roundId1}`]).toBe(

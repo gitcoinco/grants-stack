@@ -74,7 +74,7 @@ export const useCart = (): UseCart => {
 
   const { cart, setCart } = context;
 
-  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {
+  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {    
     // Add projects to the cart if they are not already present
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyInCart = acc.find(

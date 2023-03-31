@@ -4,7 +4,7 @@ import { useRoundById } from "../../context/RoundContext";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { ApplicationStatus, Project, Requirement, Round } from "../api/types";
+import { Project, Requirement, Round } from "../api/types";
 import { ChainId, getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
 import {
   BasicCard,
@@ -25,6 +25,9 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
 import markdown from "../../app/markdown";
+import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
+import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
+
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -125,7 +128,6 @@ function AfterRoundStart(props: {
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
 
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchQuery) {
@@ -139,127 +141,6 @@ function AfterRoundStart(props: {
 
       // shuffle projects
       projects = projects?.sort(() => Math.random() - 0.5);
-
-      // TODO: Remove stub
-      projects = [
-        {
-          grantApplicationId:
-            "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
-          grantApplicationFormAnswers: [
-            {
-              questionId: 0,
-              question: "Email Address",
-              type: "email",
-              hidden: true,
-              answer: "2",
-            },
-            {
-              questionId: 1,
-              question: "Funding Sources",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-            {
-              questionId: 2,
-              question: "Team Size",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-          ],
-          projectRegistryId:
-            "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05",
-          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
-          projectMetadata: {
-            title: "rtandopm",
-            description: "rtandopmrtandopmrtandopmrtandopm",
-            website: "https://rtandopm.op",
-            credentials: {},
-            owners: [],
-          },
-          status: ApplicationStatus.APPROVED,
-        },
-        {
-          grantApplicationId:
-            "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
-          grantApplicationFormAnswers: [
-            {
-              questionId: 0,
-              question: "Email Address",
-              type: "email",
-              hidden: true,
-              answer: "2",
-            },
-            {
-              questionId: 1,
-              question: "Funding Sources",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-            {
-              questionId: 2,
-              question: "Team Size",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-          ],
-          projectRegistryId:
-            "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886",
-          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
-          projectMetadata: {
-            title: "Another Test",
-            description:
-              "2023-03-27 22:53 UTC2023-03-27 22:53 UTC2023-03-27 22:53 UTC",
-            website: "https://pop.com",
-            credentials: {},
-            owners: [],
-          },
-          status: ApplicationStatus.APPROVED,
-        },
-        {
-          grantApplicationId:
-            "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94-0x5f437a92741be0f8bd6342668f1feb4414a9d5cc",
-          grantApplicationFormAnswers: [
-            {
-              questionId: 0,
-              question: "Email Address",
-              type: "email",
-              hidden: true,
-              answer: "2",
-            },
-            {
-              questionId: 1,
-              question: "Funding Sources",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-            {
-              questionId: 2,
-              question: "Team Size",
-              type: "short-answer",
-              hidden: false,
-              answer: "2",
-            },
-          ],
-          projectRegistryId:
-            "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94",
-          recipient: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
-          projectMetadata: {
-            title: "Final test",
-            description:
-              "2023-03-27 23:10 UTC2023-03-27 23:10 UTC2023-03-27 23:10 UTC",
-            website: "https://test.opo",
-            credentials: {},
-            owners: [],
-          },
-          status: ApplicationStatus.APPROVED,
-        },
-      ];
-
       setProjects(projects);
     }
   });
@@ -360,14 +241,35 @@ function AfterRoundStart(props: {
   );
 }
 
+const ProjectList = (props: {
+  projects: Project[];
+  roundRoutePath: string;
+}): JSX.Element => {
+  const { projects, roundRoutePath } = props;
+
+  return (
+    <CardsContainer>
+      {projects.map((project, index) => {
+        return (
+          <ProjectCard
+            key={index}
+            project={project}
+            roundRoutePath={roundRoutePath}
+          />
+        );
+      })}
+    </CardsContainer>
+  );
+};
+
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
   const [
     cart,
-    handleRemoveProjectsFromCart,
-    handleAddProjectsToCart
+    handleAddProjectsToCart,
+    handleRemoveProjectsFromCart
   ] = useCart();
 
   const isAlreadyInCart = cart.some(
@@ -401,8 +303,8 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
           </CardDescription>
         </CardContent>
       </Link>
-      <CardFooter className="bg-white">
-        <CardContent className="text-xs mt-4">
+      <CardFooter className="bg-white border-t">
+        <CardContent className="text-xs mt-3">
           <CartButton
             project={project}
             isAlreadyInCart={isAlreadyInCart}
@@ -418,27 +320,6 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
     </BasicCard>
   );
 }
-
-const ProjectList = (props: {
-  projects: Project[];
-  roundRoutePath: string;
-}): JSX.Element => {
-  const { projects, roundRoutePath } = props;
-
-  return (
-    <CardsContainer>
-      {projects.map((project, index) => {
-        return (
-          <ProjectCard
-            key={index}
-            project={project}
-            roundRoutePath={roundRoutePath}
-          />
-        );
-      })}
-    </CardsContainer>
-  );
-};
 
 function CartButton(props: {
   project: Project;
@@ -469,27 +350,23 @@ function CartButtonToggle(props: {
   // if the project is added to the cart, show the remove from cart button
   if (props.isAlreadyInCart) {
     return (
-      <Button
+      <div
+        className="float-right"
         data-testid="remove-from-cart"
         onClick={props.removeFromCart}
-        className={
-          "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-        }
       >
-        Remove from Cart
-      </Button>
+        <CheckedCircleIcon className="w-10"/>
+      </div>
     );
   }
   return (
-    <Button
+    <div
+      className="float-right"
       data-testid="add-to-cart"
       onClick={props.addToCart}
-      className={
-        "w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
-      }
     >
-      Add to Cart
-    </Button>
+      <CartCircleIcon className="w-10"/>
+    </div>
   );
 }
 
