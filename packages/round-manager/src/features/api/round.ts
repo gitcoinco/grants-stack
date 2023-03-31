@@ -4,7 +4,7 @@ import { BigNumber, ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
-  roundImplementationContract,
+  roundImplementationContract
 } from "./contracts";
 import {
   ApplicationStatus,
@@ -12,7 +12,7 @@ import {
   MatchingStatsData,
   MetadataPointer,
   Round,
-  TransactionBlock,
+  TransactionBlock
 } from "./types";
 import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
 
@@ -502,6 +502,7 @@ export async function fetchMatchingDistribution(
       // parse matchAmountInToken to a valid BigNumber
       matchingDistribution.map((distribution) => {
         distribution.matchAmountInToken = BigNumber.from(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (distribution.matchAmountInToken as any).hex,
         );
       });

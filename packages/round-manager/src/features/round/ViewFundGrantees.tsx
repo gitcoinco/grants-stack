@@ -4,6 +4,7 @@ import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react
 import { classNames } from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
@@ -99,16 +100,16 @@ function FinalizedRoundContent(props: { round: Round }) {
   );
 
   useEffect(() => {
-    if (!error && !loading)
+    if (data && !error && !loading) {
       setPrice(Number(data));
-
-    console.log("==> data", data)
+    }
     setPaidProjects(
       projects['paid']
     );
     setUnpaidProjects(
       projects['unpaid']
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
 
   /* Fetch distributions data for this round */
@@ -158,6 +159,7 @@ function FinalizedRoundContent(props: { round: Round }) {
                 allProjects={[...projects.paid, ...projects.unpaid]} />
             </Tab.Panel>
             <Tab.Panel>
+              {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
               <PaidProjectsTable projects={paidProjects} chainId={chain?.id} token={matchingFundPayoutToken!} price={price} />
             </Tab.Panel>
           </Tab.Panels>
@@ -192,6 +194,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
       : { addressOrName: props.round?.payoutStrategy.id, token: props.token.address };
 
   const tokenBalance = useBalance(tokenDetail);
+  const navigate = useNavigate();
 
   const distributionSteps: ProgressStep[] = [
     {
@@ -264,6 +267,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
 
       setTimeout(() => {
         setOpenReadyForDistributionProgressModal(false);
+        navigate(0);
       }, errorModalDelayMs);
     }
 
@@ -447,7 +451,6 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
         isOpen={openReadyForDistributionProgressModal}
         subheading={"Please hold while we distribute funds."}
         steps={distributionSteps}
-      // redirectUrl={`/rounds/${props.roundId}`}
       />
     </div>
   );
@@ -571,6 +574,7 @@ export function PaidProjectsTable(props: {
                         <a
                           href={`${blockScanUrl}${project.hash}`}
                           className="text-indigo-600 hover:text-indigo-900"
+                          target={"_blank"}
                         >
                           View
                         </a>

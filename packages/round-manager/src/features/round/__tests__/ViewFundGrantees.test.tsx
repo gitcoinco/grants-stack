@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
 import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
@@ -368,14 +368,8 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
       expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
 
-      console.log("matchingStatsData[0].matchPoolPercentage", matchingStatsData[0].matchPoolPercentage);
-
-      // expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100)).toBeInTheDocument();
-      // expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100)).toBeInTheDocument();
-
-      console.log(ethers.utils.formatEther(matchingStatsData[0].matchAmountInToken.toString()))
-      expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[0].matchAmountInToken.toString()))).toBeInTheDocument();
-      expect(screen.getByText(ethers.utils.formatEther(matchingStatsData[1].matchAmountInToken.toString()))).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
+      expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
 
       await act(async () => {
         const statuses = screen.getAllByText("Success");
