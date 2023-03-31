@@ -104,8 +104,6 @@ export default function ViewCart() {
   /* Donate without matching warning modal */
   const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
-  const cartNotEmpty = cart.length > 0;
-
   const navigate = useNavigate();
 
   const {
@@ -259,9 +257,12 @@ export default function ViewCart() {
       <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
         <main>
           {Header(chainId, roundId)}
-          <div className="flex flex-col md:flex-row gap-4">
-            {cartNotEmpty && CartWithProjects(cart)}
-            {!cartNotEmpty && EmptyCart()}
+          <div className="flex flex-col md:flex-row gap-5">
+            { cart.length == 0 ?
+              EmptyCart() :
+              CartWithProjects(cart)
+            }
+            { SummaryContainer() }
           </div>
         </main>
         <Footer />
@@ -298,10 +299,9 @@ export default function ViewCart() {
             Submit your donation!
           </Button>
           <p className="flex justify-center my-4 text-sm italic">
-            <span>
-              Your donation to each project must be valued at $1 USD or more to
-              be eligible for matching.
-            </span>
+            Your donation to each project must be valued at $1 USD or more to
+            <br />
+            be eligible for matching.
           </p>
           {emptyInput && (
             <p
@@ -358,7 +358,7 @@ export default function ViewCart() {
           Cart
         </h1>
 
-        <p className="my-4">
+        <p className="my-5">
           Welcome to your cart!
           Choose how you want to fund the projects you’ve chosen to support.
         </p>
@@ -368,53 +368,50 @@ export default function ViewCart() {
 
   function CartWithProjects(cart: Project[]) {
     return (
-      <div className="lg:w-1/2 h-full">
-        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
-          <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
-            <div className="basis-[28%]">
-              <h2 className="mt-2 text-xl">Projects</h2>
-            </div>
-            <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
-              <div className="flex gap-4">
-                <p className="mt-3 text-sm amount-text">Amount</p>
-                <Input
-                  aria-label={"Donation amount for all projects "}
-                  id={"input-donationamount"}
-                  min="0"
-                  value={fixedDonation ?? ""}
-                  type="number"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setFixedDonation(Number(e.target.value));
-                  }}
-                  className="w-24"
-                />
-                <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
-              </div>
-              <Button
-                type="button"
-                $variant="outline"
-                onClick={() => {
-                  updateAllDonations(fixedDonation ?? 0);
-                }}
-                className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
-              >
-                Apply to all
-              </Button>
-            </div>
+      <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border">
+        <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
+          <div className="basis-[28%]">
+            <h2 className="mt-2 text-xl">Projects</h2>
           </div>
-          <div className="my-4">
-            {cart.map((project: Project, key: number) => (
-              <div key={key}>
-                <ProjectInCart
-                  project={project}
-                  index={key}
-                  roundRoutePath={`/round/${chainId}/${roundId}`}
-                />
-              </div>
-            ))}
+          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+            <div className="flex gap-4">
+              <p className="mt-3 text-sm amount-text">Amount</p>
+              <Input
+                aria-label={"Donation amount for all projects "}
+                id={"input-donationamount"}
+                min="0"
+                value={fixedDonation ?? ""}
+                type="number"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setFixedDonation(Number(e.target.value));
+                }}
+                className="w-24"
+              />
+              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+            </div>
+            <Button
+              type="button"
+              $variant="outline"
+              onClick={() => {
+                updateAllDonations(fixedDonation ?? 0);
+              }}
+              className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
+            >
+              Apply to all
+            </Button>
           </div>
         </div>
-        <SummaryContainer />
+        <div className="my-4">
+          {cart.map((project: Project, key: number) => (
+            <div key={key}>
+              <ProjectInCart
+                project={project}
+                index={key}
+                roundRoutePath={`/round/${chainId}/${roundId}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -534,64 +531,59 @@ export default function ViewCart() {
 
   function EmptyCart() {
     return (
-      <div className="w-1/2 h-full">
-        <div className="block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
-          <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
-            <div className="basis-[28%]">
-              <h2 className="mt-2 text-xl">Projects</h2>
-            </div>
-            <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
-              <p className="mt-3 text-sm amount-text">Amount</p>
-              <Input
-                aria-label={"Donation amount for all projects "}
-                id={"input-donationamount"}
-                min="0"
-                value={fixedDonation ?? ""}
-                type="number"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setFixedDonation(Number(e.target.value));
-                }}
-                className="w-24"
-              />
-              <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
-              <Button
-                type="button"
-                $variant="outline"
-                className="text-xs px-4 py-2 text-purple-600 border-0"
-              >
-                Apply to all
-              </Button>
-            </div>
+      <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
+        <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+          <div className="basis-[28%]">
+            <h2 className="mt-2 text-xl">Projects</h2>
           </div>
-          <div className="mt-4">
-            <p className="text-grey-500">
-              Cart is empty.
-            </p>
+          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+            <p className="mt-3 text-sm amount-text">Amount</p>
+            <Input
+              aria-label={"Donation amount for all projects "}
+              id={"input-donationamount"}
+              min="0"
+              value={fixedDonation ?? ""}
+              type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setFixedDonation(Number(e.target.value));
+              }}
+              className="w-24"
+            />
+            <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
+            <Button
+              type="button"
+              $variant="outline"
+              className="text-xs px-4 py-2 text-purple-600 border-0"
+            >
+              Apply to all
+            </Button>
           </div>
         </div>
-        <SummaryContainer />
+        <div className="mt-4">
+          <p className="text-grey-500">
+            Cart is empty.
+          </p>
+        </div>
       </div>
     );
   }
 
   function Summary() {
     return (
-      <>
-        <div className="my-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
-          <h2 className="text-xl border-b-2 pb-2">Summary</h2>
-          <div className="flex justify-between mt-4">
-            <p>Your Contribution</p>
-            <p>
-              <span data-testid={"totalDonation"} className="mr-2">
-                {totalDonation.toString()}
-              </span>
-              <span data-testid={"summaryPayoutToken"}>
-                {selectedPayoutToken.name}
-              </span>
-            </p>
-          </div>
+      <div className="shrink mb-5 block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400 font-semibold">
+        <h2 className="text-xl border-b-2 pb-2">Summary</h2>
+        <div className="flex justify-between mt-4">
+          <p>Your Contribution</p>
+          <p>
+            <span data-testid={"totalDonation"} className="mr-2">
+              {totalDonation.toString()}
+            </span>
+            <span data-testid={"summaryPayoutToken"}>
+              {selectedPayoutToken.name}
+            </span>
+          </p>
         </div>
-      </>
+      </div>
     );
   }
 
