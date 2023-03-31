@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
@@ -13,7 +13,7 @@ import {
   MetadataPointer,
   Round
 } from "./types";
-import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
 
 /**
  * Fetch a round by ID
@@ -261,13 +261,19 @@ export async function deployRoundContract(
       round.operatorWallets,
     ];
 
-    // TODO: matchingFundsAvailable * 10^18
+    // Ensure tokenAmount is normalized to token decimals
+		const tokenAmount = round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0;
+		const token = payoutTokens.filter(
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
+		)[0];
+		const parsedTokenAmount = utils.parseUnits(tokenAmount.toString(), token.decimal)
+
 
     // encode input parameters
     const params = [
       initAddresses,
       initRoundTimes,
-      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0,
+      parsedTokenAmount,
       round.token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
