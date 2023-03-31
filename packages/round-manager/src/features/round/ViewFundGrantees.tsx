@@ -293,7 +293,8 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
 
   const handlePayOutFunds = async () => {
     const totalPayout: BigNumber = selectedProjects.reduce(
-      (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0))
+      (acc: BigNumber, cur) => acc.add(cur.matchAmountInToken), BigNumber.from(0));
+    console.log("totalPayout: JER", totalPayout.toString());
 
     if (totalPayout.gt(tokenBalance.data?.value || BigNumber.from(0))) {
       setShowInfoModal(true);
@@ -427,7 +428,7 @@ export function PayProjectsTable(props: { projects: MatchingStatsData[], token: 
             disabled={selectedProjects.length === 0}
             onClick={() => handlePayOutFunds()}
           >
-            Pay out funds
+            Payout funds
           </button>
         </div>
       </div>

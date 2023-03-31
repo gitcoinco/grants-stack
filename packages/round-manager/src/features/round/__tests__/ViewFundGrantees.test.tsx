@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { fireEvent, render, screen } from "@testing-library/react";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeRoundData,
   wrapWithApplicationContext,
@@ -229,7 +229,7 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Wallet Address")).toBeInTheDocument();
       expect(screen.getByText("Matching %")).toBeInTheDocument();
       expect(screen.getByText("Payout Amount")).toBeInTheDocument();
-      expect(screen.getByText("Pay out funds")).toBeInTheDocument();
+      expect(screen.getByText("Payout funds")).toBeInTheDocument();
     });
 
     it('displays exact list of projects in table which are to be paid', async () => {
@@ -242,53 +242,78 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText(matchingStatsData[3].projectPayoutAddress)).toBeInTheDocument();
     });
 
-    it('Should show the confirmation modal', async () => {
+    it('Should show the confirmation modal and close on cancel', async () => {
+      (useBalance as jest.Mock).mockImplementation(() => ({
+        data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+        error: null,
+        loading: false,
+      }));
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
 
-      // todo: need to mock tokenBalance.data.value - getting an undefined error
-      // await act(async () => {
-      //   const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
-      //   fireEvent.click(payoutFundsButton);
-      // });
+      await act(async () => {
+        const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
+        fireEvent.click(payoutFundsButton);
+      });
 
-      // todo: close modal when cancel is clicked
-      // await act(async () => {
-      //   const cancelButton = screen.getByTestId("cancel-button");
-      //   fireEvent.click(cancelButton);
-      // });
+      expect(screen.getByText("Confirm Decision")).toBeInTheDocument();
 
-      // expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
+      await act(async () => {
+        const cancelButton = screen.getByText("Cancel");
+        fireEvent.click(cancelButton);
+      });
+
+      expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
     });
 
     it('Should show the progress modal', async () => {
+      (useBalance as jest.Mock).mockImplementation(() => ({
+        data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+        error: null,
+        loading: false,
+      }));
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
 
-      // todo: need to mock tokenBalance.data.value - getting an undefined error
-      // await act(async () => {
-      //   const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
-      //   fireEvent.click(payoutFundsButton);
-      // });
-      // expect(screen.getByText("Confirm Decision")).toBeInTheDocument();
+      await act(async () => {
+        const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
+        fireEvent.click(payoutFundsButton);
+      });
 
-      // await act(async () => {
-      //   const confirmButton = screen.getByTestId("confirm-button");
-      //   fireEvent.click(confirmButton);
-      // });
+      expect(screen.getByText("Confirm Decision")).toBeInTheDocument();
+
+      await act(async () => {
+        const confirmButton = screen.getByTestId("confirm-button");
+        fireEvent.click(confirmButton);
+      });
     });
 
     it('Should show the warning when not enough funds in contract', async () => {
+      (useBalance as jest.Mock).mockImplementation(() => ({
+        data: { formatted: "0", value: "0" },
+        error: null,
+        loading: false,
+      }));
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
       });
 
-      // todo: mock tokenBalance.data.value to be less than the total amount to be paid
+      await act(async () => {
+        const payoutFundsButton = screen.getByTestId("pay-out-funds-button");
+        fireEvent.click(payoutFundsButton);
+      });
+
+      const warning =
+        await screen.findByText(
+          "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
+        );
+      
+      expect(warning).toBeInTheDocument();
     });
   });
 

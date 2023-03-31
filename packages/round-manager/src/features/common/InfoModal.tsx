@@ -1,7 +1,7 @@
-import React, { Fragment, ReactNode, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { Button } from "common/src/styles";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
+import { Button } from "common/src/styles";
+import React, { Fragment, ReactNode, useRef } from "react";
 
 interface InfoModalProps {
   title?: string;
@@ -84,6 +84,7 @@ export default function InfoModal({
                   <div className="self-end mt-8">
                     <Button
                       type="button"
+                      data-testid="info-cancel"
                       $variant="outline"
                       className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
                       onClick={cancelButtonAction}
