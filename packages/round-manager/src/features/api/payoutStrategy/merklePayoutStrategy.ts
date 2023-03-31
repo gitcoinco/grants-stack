@@ -5,9 +5,7 @@ import { useEffect, useState } from "react";
 // import dist from "tailwind-styled-components";
 import { useWallet } from "../../common/Auth";
 import {
-	merklePayoutStrategyImplementationContract,
-	merklePayoutStrategyFactoryContract,
-	roundImplementationContract,
+	merklePayoutStrategyFactoryContract, merklePayoutStrategyImplementationContract
 } from "../contracts";
 import { fetchMatchingDistribution } from "../round";
 import { MatchingStatsData } from "../types";
@@ -224,6 +222,7 @@ export const batchDistributeFunds = async (
 			projectIdsToBePaid.includes(project.projectId)
 		);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const projectsWithMerkleProof: any[] = [];
 
 		projectsToBePaid.forEach((project) => {

@@ -27,7 +27,6 @@ import ErrorModal from "../common/ErrorModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { useSigner } from "wagmi";
 
 export default function ViewRoundResults(props: {
   round: Round | undefined;
@@ -178,7 +177,7 @@ const getPayoutReadyStatus = (
   hasReadyForPayoutBeenExecuted?: boolean
 ): boolean => {
 
-  if(!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted) {
+  if (!isDistributionAvailableOnChain || hasReadyForPayoutBeenExecuted) {
     return false;
   }
   return true;
@@ -269,8 +268,8 @@ function InformationTable(props: {
       description: "Just another moment while we finish things up.",
       status:
         finalizingDistributionStatus == ProgressStatus.IS_SUCCESS ?
-        ProgressStatus.IS_SUCCESS:
-        ProgressStatus.NOT_STARTED,
+          ProgressStatus.IS_SUCCESS :
+          ProgressStatus.NOT_STARTED,
     },
   ];
 
@@ -503,7 +502,7 @@ function FinalizeRound(props: {
             matchingData={props.matchingDistributionContract}
           />
         </div>
-      ): null}
+      ) : null}
       {!props.useFetchDistributionFromContract ? (
         <div className="w-full pt-12">
           <span className="font-bold" data-testid="finalize-round">
@@ -586,7 +585,7 @@ function FinalizeRound(props: {
             />
           </div>
         </div>
-      ): null}
+      ) : null}
     </>
   );
 }
