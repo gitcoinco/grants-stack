@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "common/src/styles";
 import { useEffect, useRef, useState } from "react";
+import { listenForOutsideClicks } from "../api/utils";
 
 type Menu = {
   Icon: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -34,32 +35,6 @@ export const menuItems: Menu[] = [
     link: "https://forms.gle/AcnGN9yYNwWwrEGH8",
   },
 ];
-
-function listenForOutsideClicks({
-  listening,
-  setListening,
-  menuRef,
-  setOpen,
-}: {
-  listening: boolean;
-  setListening: React.Dispatch<React.SetStateAction<boolean>>;
-  menuRef: React.MutableRefObject<HTMLDivElement | null>;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  return () => {
-    if (listening) return;
-    if (!menuRef.current) return;
-    setListening(true);
-    [`click`, `touchstart`].forEach((type) => {
-      document.addEventListener(type, (evt) => {
-        if (menuRef.current && menuRef.current.contains(evt.target as Node)) {
-          return;
-        }
-        setOpen(false);
-      });
-    });
-  };
-}
 
 export default function CustomerSupport() {
   const menuRef = useRef(null);
