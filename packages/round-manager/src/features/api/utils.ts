@@ -1,7 +1,13 @@
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
-import { ApplicationMetadata, InputType, IPFSObject, MatchingStatsData, Program } from "./types";
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+import {
+  ApplicationMetadata,
+  InputType,
+  IPFSObject,
+  MatchingStatsData,
+  Program,
+} from "./types";
 
 export enum ChainId {
   MAINNET = 1,
@@ -47,7 +53,7 @@ export type PayoutToken = {
   logo?: string;
   default?: boolean; // TODO: this is only used to provide the initial placeholder item, look for better solution
   coingeckoId?: string;
-  decimal?: number;
+  decimal: number;
 };
 
 export type SupportType = {
@@ -70,7 +76,7 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
   ETH: "ethereum",
 };
 
-export const payoutTokens = [
+export const payoutTokens: PayoutToken[] = [
   {
     name: "DAI",
     chainId: ChainId.MAINNET,
@@ -157,6 +163,7 @@ export const payoutTokens = [
     address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
     logo: TokenNamesAndLogos["DAI"],
     coingeckoId: TokenAndCoinGeckoIds["DAI"],
+    decimal: 18,
   },
   {
     name: "LOLG",
@@ -185,12 +192,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.MAINNET,
           address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
           logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.MAINNET,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimal: 18,
         },
       ];
     }
@@ -201,12 +210,14 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
           logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimal: 18,
         },
       ];
     }
@@ -217,24 +228,28 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
           logo: TokenNamesAndLogos["FTM"],
+          decimal: 18,
         },
         {
           name: "FTM",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["FTM"],
+          decimal: 18,
         },
         {
           name: "BUSD",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50",
           logo: TokenNamesAndLogos["BUSD"],
+          decimal: 18,
         },
         {
           name: "DAI",
           chainId: ChainId.FANTOM_MAINNET_CHAIN_ID,
           address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
           logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
         },
       ];
     }
@@ -245,6 +260,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.FANTOM_TESTNET_CHAIN_ID,
           address: "0xEdE59D58d9B8061Ff7D22E629AB2afa01af496f4",
           logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
         },
       ];
     }
@@ -256,18 +272,21 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xa7c3bf25ffea8605b516cf878b7435fe1768c89b",
           logo: TokenNamesAndLogos["BUSD"],
+          decimal: 18,
         },
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
           logo: TokenNamesAndLogos["DAI"],
+          decimal: 18,
         },
         {
           name: "ETH",
           chainId: ChainId.GOERLI_CHAIN_ID,
           address: ethers.constants.AddressZero,
           logo: TokenNamesAndLogos["ETH"],
+          decimal: 18,
         },
       ];
     }
@@ -314,13 +333,13 @@ export const graphql_fetch = async (
   chainId: ChainId,
   // eslint-disable-next-line @typescript-eslint/ban-types
   variables: object = {},
-  fromProjectRegistry = false
+  fromProjectRegistry = false,
 ) => {
   let endpoint = await getGraphQLEndpoint(chainId);
 
   if (fromProjectRegistry) {
     endpoint = endpoint.replace("grants-round", "grants-hub");
-  }  
+  }
 
   return fetch(endpoint, {
     method: "POST",
@@ -345,7 +364,7 @@ export const graphql_fetch = async (
  */
 export const fetchFromIPFS = (cid: string) => {
   return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
   ).then((resp) => {
     if (resp.ok) {
       return resp.json();
@@ -450,7 +469,7 @@ export interface ApplicationSchema {
  */
 export const generateApplicationSchema = (
   questions: ApplicationMetadata["questions"],
-  requirements: ApplicationMetadata["requirements"]
+  requirements: ApplicationMetadata["requirements"],
 ): ApplicationSchema => {
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
@@ -537,6 +556,7 @@ export const useTokenPrice = (tokenId: string | undefined) => {
         method: "GET",
         Accept: "application/json",
       },
+      mode: "no-cors",
     })
       .then((resp) => {
         if (resp.ok) {
@@ -555,8 +575,14 @@ export const useTokenPrice = (tokenId: string | undefined) => {
           setError(data.message);
         }
         setLoading(false);
+      })
+      .catch((err) => {
+        console.log("error fetching token price", { err });
+        setError(err);
+        setLoading(false);
       });
   }, [tokenId]);
+
   return {
     data: tokenPrice,
     error,
@@ -574,7 +600,7 @@ export const useTokenPrice = (tokenId: string | undefined) => {
  */
 export const getTxExplorerForContract = (
   chainId: ChainId,
-  contractAddress: string
+  contractAddress: string,
 ) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
@@ -600,32 +626,44 @@ export const getTxExplorerForContract = (
  * @param matchingResults MatchingStatsData[]
  * @returns
  */
-export const generateMerkleTree = (matchingResults: MatchingStatsData[]): {
-  distribution: [number, string, BigNumber, string][],
-  tree: StandardMerkleTree<[number, string, BigNumber, string]>
-  matchingResults: MatchingStatsData[]
- } => {
-
+export const generateMerkleTree = (
+  matchingResults: MatchingStatsData[],
+): {
+  distribution: [number, string, BigNumber, string][];
+  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
+  matchingResults: MatchingStatsData[];
+} => {
   const distribution: [number, string, BigNumber, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
-
     matchingResults[index].index = index;
 
     distribution.push([
       index,
       matchingResult.projectPayoutAddress,
       matchingResult.matchAmountInToken, // TODO: FIX
-      matchingResult.projectId
-    ])
+      matchingResult.projectId,
+    ]);
   });
 
   const tree = StandardMerkleTree.of(distribution, [
     "uint256",
     "address",
     "uint256",
-    "bytes32"
+    "bytes32",
   ]);
 
-  return { distribution, tree, matchingResults} ;
-}
+  return { distribution, tree, matchingResults };
+};
+
+export const formatCurrency = (
+  value: BigNumber,
+  decimal: number,
+  fraction?: number,
+) => {
+  return parseFloat(
+    ethers.utils.formatUnits(value.toString(), decimal),
+  ).toLocaleString("en-US", {
+    maximumFractionDigits: fraction || 3,
+  });
+};

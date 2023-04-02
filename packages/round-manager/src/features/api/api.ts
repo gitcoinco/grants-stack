@@ -58,7 +58,7 @@ export const useRoundSummary = (chainId: string, roundId: string) => {
 export const useProjectSummary = (
   chainId: string,
   roundId: string,
-  projectId: string
+  projectId: string,
 ) => {
   const [projectSummary, setProjectSummary] = useState();
   const [error, setError] = useState<Response | undefined>();
@@ -104,7 +104,7 @@ export const useRoundMatchData = (chainId: number, roundId: string) => {
   useMemo(() => {
     setLoading(true);
 
-    if (roundId == "0x5f437a92741be0f8bd6342668f1feb4414a9d5cc") {
+    if (roundId == "0xd1184de83aa87512e79646c78b5e60fbf836afad") {
       // TODO: remove this stub
       setRoundMatchData(stubForAPI());
       setLoading(false);
@@ -142,35 +142,37 @@ export const useRoundMatchData = (chainId: number, roundId: string) => {
   };
 };
 
-
-const stubForAPI = () : QFDistribution[] => {
+const stubForAPI = (): QFDistribution[] => {
   return [
     {
-      projectId: "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886",
+      projectId:
+        "0x2525938e0221c345f602672f71f936f50a82a8ebf57cec7f3777ecac5ad44886",
       matchAmountInUSD: 10,
       totalContributionsInUSD: 10,
-      matchPoolPercentage: 0.30,
-      matchAmountInToken: parseEther('0.001'),
+      matchPoolPercentage: 0.3,
+      matchAmountInToken: parseEther("0.001"),
       projectPayoutAddress: "0x997D35b300bA1775fdB175dF045252e57D6EA5B0",
       uniqueContributorsCount: 10,
     },
     {
-      projectId: "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94",
+      projectId:
+        "0x3f4241566efa1a8bbcd705e733e396e2e525de48d6cd0a8024cdd73b5a930d94",
       matchAmountInUSD: 20,
       totalContributionsInUSD: 20,
-      matchPoolPercentage: 0.60,
-      matchAmountInToken: parseEther('0.002'),
+      matchPoolPercentage: 0.6,
+      matchAmountInToken: parseEther("0.002"),
       projectPayoutAddress: "0x500Df079BEBE24A9f6FFa2c70fb58000A4722784",
       uniqueContributorsCount: 20,
     },
     {
-      projectId: "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05",
+      projectId:
+        "0x950e82e811c5a080c0f1bf477874b4a19436766c1fdd17b48b01c0566c7feb05",
       matchAmountInUSD: 30,
       totalContributionsInUSD: 30,
-      matchPoolPercentage: 0.30,
-      matchAmountInToken: parseEther('0.003'),
+      matchPoolPercentage: 0.3,
+      matchAmountInToken: parseEther("0.002"),
       projectPayoutAddress: "0xB8cEF765721A6da910f14Be93e7684e9a3714123",
       uniqueContributorsCount: 30,
-    }
+    },
   ];
-}
+};

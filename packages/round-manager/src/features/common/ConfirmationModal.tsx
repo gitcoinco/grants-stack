@@ -70,6 +70,7 @@ export default function ConfirmationModal({
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <Button
+                    data-testid="confirm-button"
                     type="button"
                     className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-4 py-2"
                     onClick={props.confirmButtonAction}
