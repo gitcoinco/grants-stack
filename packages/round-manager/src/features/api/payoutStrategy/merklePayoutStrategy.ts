@@ -172,12 +172,13 @@ export const useGroupProjectsByPaymentStatus = (
       };
 
       const paidProjects: Payout[] = await paidProjectsFromGraph;
-      const payoutAddress = paidProjects.map((project) =>
-        project.grantee.toLocaleLowerCase(),
+      const paidProjectIds = paidProjects.map((project) =>
+        project.projectId,
       );
+
       allProjects?.forEach((project) => {
-        const projectStatus = payoutAddress.includes(
-          project.projectPayoutAddress.toLocaleLowerCase(),
+        const projectStatus = paidProjectIds.includes(
+          project.projectId
         )
           ? "paid"
           : "unpaid";
@@ -189,8 +190,8 @@ export const useGroupProjectsByPaymentStatus = (
             ...project,
             hash: paidProjects.find(
               (p) =>
-                p.grantee.toLocaleLowerCase() ===
-                project.projectPayoutAddress.toLocaleLowerCase(),
+                p.projectId ===
+                project.projectId,
             )?.txnHash,
             status: "",
           };
