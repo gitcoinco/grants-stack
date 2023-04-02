@@ -382,9 +382,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
-        expect(
-          screen.queryByTestId("add-to-cart")
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
       }, 3000);
     });
 
@@ -397,9 +395,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
       setTimeout(() => {
         // wait three seconds after the user clicks add before proceeding
         expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
-        expect(
-          screen.queryByTestId("add-to-cart")
-        ).not.toBeInTheDocument();
+        expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
         // click remove from cart
         const removeFromCart = screen.getByTestId("remove-from-cart");
         fireEvent.click(removeFromCart);

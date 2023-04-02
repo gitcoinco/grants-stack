@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import {
   loadCartFromLocalStorage,
-  saveCartToLocalStorage
+  saveCartToLocalStorage,
 } from "../features/api/LocalStorage";
 import { RoundContext } from "./RoundContext";
 
@@ -25,8 +25,7 @@ export const initialCartState: CartContextState = {
   },
 };
 
-export const CartContext =
-  createContext<CartContextState>(initialCartState);
+export const CartContext = createContext<CartContextState>(initialCartState);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const roundContext = useContext(RoundContext);
@@ -49,7 +48,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const providerProps: CartContextState = {
     cart,
-    setCart
+    setCart,
   };
 
   return (
@@ -63,7 +62,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 type UseCart = [
   cart: CartContextState["cart"],
   handleAddProjectsToCart: (projects: Project[]) => void,
-  handleRemoveProjectsFromCart: (projects: Project[]) => void,
+  handleRemoveProjectsFromCart: (projects: Project[]) => void
 ];
 
 export const useCart = (): UseCart => {
@@ -74,7 +73,7 @@ export const useCart = (): UseCart => {
 
   const { cart, setCart } = context;
 
-  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {    
+  const handleAddProjectsToCart = (projectsToAdd: Project[]): void => {
     // Add projects to the cart if they are not already present
     const newCart = projectsToAdd.reduce((acc, projectToAdd) => {
       const isProjectAlreadyInCart = acc.find(
@@ -87,9 +86,7 @@ export const useCart = (): UseCart => {
     setCart(newCart);
   };
 
-  const handleRemoveProjectsFromCart = (
-    projectsToRemove: Project[]
-  ): void => {
+  const handleRemoveProjectsFromCart = (projectsToRemove: Project[]): void => {
     // Remove projects from the cart if they are present
     const newCart = cart.filter(
       (project) =>
@@ -101,9 +98,5 @@ export const useCart = (): UseCart => {
     setCart(newCart);
   };
 
-  return [
-    cart,
-    handleAddProjectsToCart,
-    handleRemoveProjectsFromCart
-  ];
+  return [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart];
 };

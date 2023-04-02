@@ -66,9 +66,7 @@ describe("View Cart Page", () => {
       const projects = screen.getAllByTestId("cart-project");
       expect(projects.length).toEqual(cart.length);
       projects.forEach((project, i) => {
-        expect(project.textContent).toContain(
-          cart[i].projectMetadata.title
-        );
+        expect(project.textContent).toContain(cart[i].projectMetadata.title);
       });
     });
 
@@ -92,9 +90,8 @@ describe("View Cart Page", () => {
       expect(screen.getAllByTestId("cart-project").length).toEqual(2);
 
       /* Click the first project */
-      const removeProjectFromCart = screen.getAllByTestId(
-        "remove-from-cart"
-      )[0];
+      const removeProjectFromCart =
+        screen.getAllByTestId("remove-from-cart")[0];
       fireEvent.click(removeProjectFromCart);
 
       expect(setCart).toHaveBeenCalled();
@@ -375,10 +372,7 @@ describe("View Cart Page", () => {
   });
 });
 
-function renderWrapped(
-  cart: Project[] = [],
-  setCart = () => {}
-) {
+function renderWrapped(cart: Project[] = [], setCart = () => {}) {
   render(
     <MemoryRouter>
       <RoundProvider>

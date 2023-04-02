@@ -258,11 +258,8 @@ export default function ViewCart() {
         <main>
           {Header(chainId, roundId)}
           <div className="flex flex-col md:flex-row gap-5">
-            { cart.length == 0 ?
-              EmptyCart() :
-              CartWithProjects(cart)
-            }
-            { SummaryContainer() }
+            {cart.length == 0 ? EmptyCart() : CartWithProjects(cart)}
+            {SummaryContainer()}
           </div>
         </main>
         <Footer />
@@ -309,9 +306,7 @@ export default function ViewCart() {
               className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
             >
               <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-              <span>
-                You must enter donations for all the projects
-              </span>
+              <span>You must enter donations for all the projects</span>
             </p>
           )}
           {insufficientBalance && !wrongChain && (
@@ -354,13 +349,11 @@ export default function ViewCart() {
           </Link>
         </div>
 
-        <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">
-          Cart
-        </h1>
+        <h1 className="text-3xl mt-6 font-thin border-b-2 pb-2">Cart</h1>
 
         <p className="my-5">
-          Welcome to your cart!
-          Choose how you want to fund the projects you’ve chosen to support.
+          Welcome to your cart! Choose how you want to fund the projects you’ve
+          chosen to support.
         </p>
       </div>
     );
@@ -425,22 +418,19 @@ export default function ViewCart() {
   ) {
     const { project, roundRoutePath } = props;
     const [
-      , //cart,
-      , //handleAddProjectsToCart
-      handleRemoveProjectsFromCart
+      ,
+      ,
+      //cart,
+      //handleAddProjectsToCart
+      handleRemoveProjectsFromCart,
     ] = useCart();
 
     const focusedElement = document?.activeElement?.id;
     const inputID = "input-" + props.index;
 
     return (
-      <div
-        data-testid="cart-project"
-        className="border-b-2 border-grey-100"
-      >
-        <div
-          className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md"
-        >
+      <div data-testid="cart-project" className="border-b-2 border-grey-100">
+        <div className="mb-4 flex flex-col md:flex-row justify-between px-3 py-4 rounded-md">
           <div className="flex">
             <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
               <img
@@ -472,11 +462,9 @@ export default function ViewCart() {
                 </p>
               </Link>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {
-                  markdown
-                    .renderToPlainText(props.project.projectMetadata.description)
-                    .substring(0, 130)
-                }
+                {markdown
+                  .renderToPlainText(props.project.projectMetadata.description)
+                  .substring(0, 130)}
               </p>
             </div>
           </div>
@@ -512,9 +500,7 @@ export default function ViewCart() {
             <ArrowLeftCircleIcon
               data-testid="remove-from-cart"
               onClick={() => {
-                handleRemoveProjectsFromCart([
-                  props.project,
-                ]);
+                handleRemoveProjectsFromCart([props.project]);
                 updateDonations(
                   props.project.projectRegistryId,
                   "",
@@ -560,9 +546,7 @@ export default function ViewCart() {
           </div>
         </div>
         <div className="mt-4">
-          <p className="text-grey-500">
-            Cart is empty.
-          </p>
+          <p className="text-grey-500">Cart is empty.</p>
         </div>
       </div>
     );
@@ -597,10 +581,7 @@ export default function ViewCart() {
 
   function ProjectsInCartCount() {
     return (
-      <div
-        className="flex justify-center"
-        data-testid="cart-project-count"
-      >
+      <div className="flex justify-center" data-testid="cart-project-count">
         <CheckIcon
           className="bg-teal-400 text-grey-500 rounded-full h-6 w-6 p-1 mr-2"
           aria-hidden="true"
@@ -639,7 +620,7 @@ export default function ViewCart() {
   }
 
   function updateAllDonations(amount: number) {
-    const newDonations = cart.map(project => {
+    const newDonations = cart.map((project) => {
       return {
         projectRegistryId: project.projectRegistryId,
         amount: amount.toString(),

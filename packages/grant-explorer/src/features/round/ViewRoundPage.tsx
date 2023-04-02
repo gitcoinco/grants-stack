@@ -28,7 +28,6 @@ import markdown from "../../app/markdown";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 
-
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
@@ -224,7 +223,7 @@ function AfterRoundStart(props: {
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -266,11 +265,8 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
-  const [
-    cart,
-    handleAddProjectsToCart,
-    handleRemoveProjectsFromCart
-  ] = useCart();
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
 
   const isAlreadyInCart = cart.some(
     (cartProject) =>
@@ -345,7 +341,6 @@ function CartButtonToggle(props: {
   addToCart: () => void;
   removeFromCart: () => void;
 }) {
-
   // if the project is not added, show the add to cart button
   // if the project is added to the cart, show the remove from cart button
   if (props.isAlreadyInCart) {
@@ -355,7 +350,7 @@ function CartButtonToggle(props: {
         data-testid="remove-from-cart"
         onClick={props.removeFromCart}
       >
-        <CheckedCircleIcon className="w-10"/>
+        <CheckedCircleIcon className="w-10" />
       </div>
     );
   }
@@ -365,7 +360,7 @@ function CartButtonToggle(props: {
       data-testid="add-to-cart"
       onClick={props.addToCart}
     >
-      <CartCircleIcon className="w-10"/>
+      <CartCircleIcon className="w-10" />
     </div>
   );
 }

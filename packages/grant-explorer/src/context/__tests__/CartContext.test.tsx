@@ -4,7 +4,7 @@ import { Project } from "../../features/api/types";
 import { makeApprovedProjectData } from "../../test-utils";
 import {
   loadCartFromLocalStorage,
-  saveCartToLocalStorage
+  saveCartToLocalStorage,
 } from "../../features/api/LocalStorage";
 import { initialRoundState, RoundContext } from "../RoundContext";
 
@@ -75,15 +75,9 @@ describe("<CartProvider>", () => {
         </RoundContext.Provider>
       );
 
-      expect(screen.getAllByTestId("cart-project")).toHaveLength(
-        cart.length
-      );
-      expect(
-        screen.getByText(cart[0].projectRegistryId)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(cart[1].projectRegistryId)
-      ).toBeInTheDocument();
+      expect(screen.getAllByTestId("cart-project")).toHaveLength(cart.length);
+      expect(screen.getByText(cart[0].projectRegistryId)).toBeInTheDocument();
+      expect(screen.getByText(cart[1].projectRegistryId)).toBeInTheDocument();
     });
 
     it("should update the cart in localstorage when currently in a round and the cart changes", () => {
@@ -133,11 +127,8 @@ describe("<CartProvider>", () => {
 const testProject: Project = makeApprovedProjectData();
 
 const TestingUseCartComponent = () => {
-  const [
-    cart,
-    handleAddProjectsToCart,
-    handleRemoveProjectsFromCart
-  ] = useCart();
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
 
   return (
     <>

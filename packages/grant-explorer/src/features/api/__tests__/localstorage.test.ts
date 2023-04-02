@@ -2,7 +2,7 @@ import { Project } from "../types";
 import { makeApprovedProjectData } from "../../../test-utils";
 import {
   loadCartFromLocalStorage,
-  saveCartToLocalStorage
+  saveCartToLocalStorage,
 } from "../LocalStorage";
 
 describe("Local Storage", () => {

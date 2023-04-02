@@ -441,4 +441,4 @@ export const listenForOutsideClicks = ({
       });
     });
   };
-}
+};

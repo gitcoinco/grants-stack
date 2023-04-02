@@ -82,11 +82,8 @@ export default function ViewProjectDetails() {
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-  const [
-    cart, 
-    handleAddProjectsToCart,
-    handleRemoveProjectsFromCart
-  ] = useCart();
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
 
   const isAlreadyInCart = cart.some(
     (project) => project.grantApplicationId === applicationId
@@ -537,7 +534,6 @@ function CartButtonToggle(props: {
   addToCart: () => void;
   removeFromCart: () => void;
 }) {
-
   // if the project is not added, show the add to cart button
   // if the project is added to the cart, show the remove from cart button
   if (props.isAlreadyInCart) {

@@ -1,29 +1,71 @@
-import { Cart } from "../Navbar";
+import { faker } from "@faker-js/faker";
 import { screen } from "@testing-library/react";
-import { renderWithContext } from "../../../test-utils";
-import CustomerSupport from "../CustomerSupport";
+import { CartProvider, useCart } from "../../../context/CartContext";
+import { mockBalance, mockNetwork, mockSigner, renderWithContext } from "../../../test-utils";
+import Navbar from "../Navbar";
+import NavbarCart from "../NavbarCart";
 
-describe("<Cart/>", () => {
-  it("should not display a number when empty", () => {
-    renderWithContext(<Cart count={0} roundUrlPath={""} />);
+const chainId = 5;
+const roundId = faker.finance.ethereumAddress();
 
-    /* Verify we are displaying the 0 */
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
-  });
-
-  it("should display the number when full", () => {
-    renderWithContext(<Cart count={10} roundUrlPath={""} />);
-
-    /* Verify we aren't displaying the 0 */
-    expect(screen.getByText("10")).toBeInTheDocument();
-  });
+const useParamsFn = () => ({
+  chainId,
+  roundId,
 });
 
-describe("Support", () => {
-  it("should display support options", () => {
-    renderWithContext(<CustomerSupport />);
+const userAddress = faker.finance.ethereumAddress();
 
-    /* Verify we have customer support options in the document */
+const mockAccount = {
+  address: userAddress,
+  isConnected: false,
+};
+
+jest.mock("wagmi", () => ({
+  useAccount: () => mockAccount,
+  useBalance: () => mockBalance,
+  useSigner: () => mockSigner,
+  useNetwork: () => mockNetwork,
+}));
+
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+}));
+
+jest.mock("../Auth");
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: useParamsFn,
+}));
+
+describe("<Navbar>", () => {
+
+  it("SHOULD display home-link", () => {
+    renderWithContext(
+      <Navbar customBackground="" roundUrlPath={"/random"} />
+    );
+    expect(screen.getByTestId("home-link")).toBeInTheDocument();
+  });
+
+  it("SHOULD display connect wallet button", () => {
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
+    expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
+
+  });
+
+  it("SHOULD display cart", () => {
+    renderWithContext(
+      <Navbar customBackground="" roundUrlPath={"/random"} />
+    );
+    expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
+  });
+
+  it("SHOULD display support options", async () => {
+    renderWithContext(
+      <Navbar customBackground="" roundUrlPath={"/random"} />
+    );
+
     expect(screen.getByTestId("customer-support")).toBeInTheDocument();
   });
 });
+

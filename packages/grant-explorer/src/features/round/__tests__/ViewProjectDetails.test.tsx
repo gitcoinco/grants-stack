@@ -309,9 +309,7 @@ describe("voting cart", () => {
       const removeFromCart = screen.getByTestId("remove-from-cart");
       fireEvent.click(removeFromCart);
       expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
-      expect(
-        screen.queryByTestId("remove-from-cart")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("remove-from-cart")).not.toBeInTheDocument();
     }, 3000);
   });
 });

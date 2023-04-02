@@ -33,13 +33,10 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex items-center gap-6">
-            <div id="connect-wallet-button">
+            <div data-testid="connect-wallet-button" id="connect-wallet-button">
               <ConnectButton />
             </div>
-            <NavbarCart
-              cart={cart}
-              roundUrlPath={props.roundUrlPath}
-            />
+            <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
             <CustomerSupport />
           </div>
         </div>

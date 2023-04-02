@@ -25,7 +25,7 @@ export default function NavbarCart(props: {
   );
 
   return (
-    <div className="relative flex-row" onClick={toggleMenu} ref={menuRef}>
+    <div data-testid="navbar-cart" className="relative flex-row" onClick={toggleMenu} ref={menuRef}>
       <QuickViewIcon count={projectCount} />
 
       {open && Boolean(projectCount) && (
@@ -73,13 +73,12 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
   const navigate = useNavigate();
 
   return (
-    <div className="mt-4 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20">
+    <div data-testid="quick-view-summary" className="mt-4 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20">
       <p className="flex border-b mb-4 pb-4 gap-2">
         <CheckIcon className="w-5" />
         Projects in your cart
       </p>
 
-      {/* TODO: Add fixed height + scroll */}
       <div className="max-h-[100px] overflow-y-scroll">
         {props.cart &&
           props.cart.map((project) => (
@@ -87,7 +86,8 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
               roundUrlPath={props.roundUrlPath}
               project={project}
             />
-          ))}
+          ))
+        }
       </div>
 
       <Button
@@ -96,7 +96,7 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
         className="px-3 bg-violet-400 text-white border-0 text-xs"
         onClick={() => navigate(`${props.roundUrlPath}/cart`)}
       >
-        Checkout
+        View my cart ({props.cart.length})
       </Button>
     </div>
   );
@@ -104,7 +104,7 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
 
 function ProjectQuickView(props: { roundUrlPath: string; project: Project }) {
   return (
-    <div className="flex mb-4">
+    <div className="flex mb-4" data-testid="project-quick-view">
       <div className="relative overflow-hidden bg-no-repeat bg-cover  min-w-[64px] w-16 max-h-[64px] mt-auto mb-auto">
         <img
           className="inline-block"

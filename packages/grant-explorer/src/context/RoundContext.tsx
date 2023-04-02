@@ -121,9 +121,8 @@ export const useRoundById = (
     }
   }, [chainId, roundId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const round = context.state.rounds.find((round) => round.id === roundId);
-  
+
   return {
     round: round,
     isLoading: context.state.isLoading,
