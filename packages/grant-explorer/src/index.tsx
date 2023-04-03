@@ -31,14 +31,14 @@ import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
 
-// Initialize sentry
-initSentry();
+// // Initialize sentry
+// initSentry();
 
-// Initialize datadog
-initDatadog();
+// // Initialize datadog
+// initDatadog();
 
-// Initialize tagmanager
-initTagmanager();
+// // Initialize tagmanager
+// initTagmanager();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

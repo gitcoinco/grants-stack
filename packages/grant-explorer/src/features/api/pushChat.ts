@@ -48,6 +48,7 @@ export async function getGroupInfo(chatId: string) {
       chatId,
       env: "staging",
     });
+    console.log(groupInfo);
     return groupInfo ? groupInfo : null;
   } catch (e) {
     console.log(e);
@@ -84,7 +85,7 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
       isContributor = true;
     }
     if (!chatId) {
-      if (project.recipient === account) {
+      if (project.recipient === account || account.length) {
         return {
           isOwner: true,
           isMember: false,
@@ -142,12 +143,14 @@ export async function verifyPushChatUser(project: Project, wallet: any) {
 }
 
 export async function createPushGroup(
+  pgpKeys: string,
   project: Project,
   account: string,
   round: Round
 ) {
   try {
-    const decryptedPgpKeys = await getUserPgpKeys(account);
+    console.log(pgpKeys, "pgpKeys after setting state");
+    // const decryptedPgpKeys = await getUserPgpKeys(account);
     const response = await PushApi.chat.createGroup({
       groupName: project.projectMetadata.title,
       groupDescription: project.projectMetadata.description.slice(0, 149),
@@ -158,7 +161,7 @@ export async function createPushGroup(
       account: account,
       env: "staging",
       meta: `gitcoin:${project.projectRegistryId}:${round.id}`,
-      pgpPrivateKey: decryptedPgpKeys, //decrypted private key
+      pgpPrivateKey: pgpKeys, //decrypted private key
     });
     return response ? response.chatId : null;
   } catch (e) {
@@ -167,9 +170,13 @@ export async function createPushGroup(
   }
 }
 
-export async function joinGroup(account: string, project: Project) {
+export async function joinGroup(
+  account: string,
+  project: Project,
+  pgpKeys: string
+) {
   try {
-    const decryptedPgpKeys = await getUserPgpKeys(account);
+    // const decryptedPgpKeys = await getUserPgpKeys(account);
     const chatId = await getGroupChatID(project.projectMetadata.title);
     const groupInfo = await getGroupInfo(chatId);
     //
@@ -185,10 +192,10 @@ export async function joinGroup(account: string, project: Project) {
       groupDescription: groupInfo?.groupDescription as string,
       members: [...(membersArray as string[]), `eip155:${account}`],
       groupImage: groupInfo?.groupImage as string,
-      admins: [...(adminsArray as string[]), `eip155:${account}`],
+      admins: [...(adminsArray as string[])],
       account: `eip155:${account}`,
       env: "staging",
-      pgpPrivateKey: decryptedPgpKeys, //decrypted private key
+      pgpPrivateKey: pgpKeys, //decrypted private key
     });
     return response ? response.chatId : null;
   } catch (e) {

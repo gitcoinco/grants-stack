@@ -101,5 +101,5 @@ export const client = createClient({
   autoConnect: true,
   connectors: connectors,
   provider,
-  webSocketProvider,
+  // webSocketProvider,
 });

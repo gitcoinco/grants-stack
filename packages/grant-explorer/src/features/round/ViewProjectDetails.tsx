@@ -25,7 +25,7 @@ import { Button } from "common/src/styles";
 import { useBallot } from "../../context/BallotContext";
 import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import { getProjectSummary } from "../api/api";
 import { ReactComponent as PushLogo } from "../../assets/push-gitcoin-scroll-logo.svg";
@@ -102,7 +102,7 @@ export default function ViewProjectDetails() {
         return;
       }
       setPgpKeys(decryptedKeys);
-      return;
+      return decryptedKeys;
     }
   };
 
@@ -165,6 +165,7 @@ export default function ViewProjectDetails() {
                   handlePushChatID={handlePushChatID}
                   position={position}
                   setPosition={setPosition}
+                  handlePgpKeys={handlePgpKeys}
                   isAdded={isAddedToShortlist || isAddedToFinalBallot}
                   removeFromShortlist={() => {
                     handleRemoveProjectsFromShortlist([projectToRender]);
@@ -471,6 +472,7 @@ function Sidebar(props: {
   position: string;
   setPosition: (e: string) => void;
   pgpKeys: string;
+  handlePgpKeys: () => Promise<string>;
 }) {
   const wallet = Auth();
   const [isPresent, setIsPresent] = useState<boolean>(true);
@@ -506,8 +508,13 @@ function Sidebar(props: {
     if (chatId) {
       props.handlePushChatID(chatId as string);
     }
+
     if (isOwner) {
       setPosition("Owner");
+      return;
+    }
+    if (isMember && isContributor) {
+      setPosition("Member");
       return;
     }
     if (isContributor) {
@@ -524,51 +531,55 @@ function Sidebar(props: {
   };
 
   const handleGroupCreation = async () => {
+    const pgpKeys = await props.handlePgpKeys();
     const {
       props: {
         context: { address: account },
       },
     } = wallet;
-    if (position === "Owner") {
-      const groupChatId = await createPushGroup(
-        project as Project,
-        account,
-        round as Round
-      );
-      if (!groupChatId) return;
-      props.handlePushChatID(groupChatId);
-      setPosition("Owner");
-      setIsPresent(true);
-      handleClickScroll();
-      return;
+    if (!isPresent) {
+      if (position === "Owner") {
+        const groupChatId = await createPushGroup(
+          pgpKeys,
+          project as Project,
+          account,
+          round as Round
+        );
+        if (!groupChatId) return;
+        props.handlePushChatID(groupChatId);
+        setPosition("Owner");
+        setIsPresent(true);
+        handleClickScroll();
+        return;
+      }
     }
+
     if (position === "Contributor") {
-      await joinGroup(account, project as Project);
+      await joinGroup(account, project as Project, pgpKeys);
       props.handlePushChatID("");
       setPosition("Contributor");
       setIsPresent(true);
-      handleClickScroll();
       return;
     }
+    handleClickScroll();
+    return;
   };
+
+  const chatButtonText =
+    !isPresent && position === "Owner" ? "Create Group Chat" : "Comment";
 
   return (
     <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6 flex flex-col">
       <ProjectStats />
-      {!isPresent && position !== "None" && (
-        <Button
-          onClick={() => handleGroupCreation()}
-          className={
-            "w-80 self-center justify-center bg-[#6F3FF5] text-white font-semibold py-2 px-4 border border-[#A283F9] rounded my-2 box-border"
-          }
-        >
-          {position === "Owner"
-            ? "Create Group Chat"
-            : position === "Contributor"
-            ? "Join group"
-            : "None"}
-        </Button>
-      )}
+      <Button
+        onClick={() => handleGroupCreation()}
+        className={
+          "w-80 self-center justify-center bg-[#6F3FF5] text-white font-semibold py-2 px-4 border border-[#A283F9] rounded my-2 box-border"
+        }
+      >
+        {chatButtonText}
+      </Button>
+
       <BallotSelectionToggle
         isAdded={props.isAdded}
         removeFromShortlist={props.removeFromShortlist}
@@ -627,7 +638,6 @@ export function ProjectStats() {
     </div>
   );
 }
-
 
 function BallotSelectionToggle(props: {
   isAdded: boolean;

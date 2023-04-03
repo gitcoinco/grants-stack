@@ -10,7 +10,6 @@ import {
   sendMsg,
 } from "../api/pushChat";
 import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
-import { Button } from "common/src/styles";
 
 export default function PushChat(props: {
   pgpKeys: string;
@@ -217,7 +216,7 @@ export default function PushChat(props: {
 
   return (
     <div className="py-4 mt-4" id="push-chat">
-      <div className="flex flex-row justify-between">
+      {/* <div className="flex flex-row justify-between">
         <h4 className="text-2xl mb-2">Grant Group Chat</h4>
         {!props.pgpKeys && (
           <Button
@@ -227,7 +226,7 @@ export default function PushChat(props: {
             Decrypt keys to view group chat
           </Button>
         )}
-      </div>
+      </div> */}
 
       {!props.pgpKeys && (
         <div>Get Decrypted PGP keys first to see the chat!</div>
