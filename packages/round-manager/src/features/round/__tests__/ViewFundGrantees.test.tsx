@@ -13,7 +13,8 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStrategy";
-import * as roundTs from "../../api/round";import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
+import * as roundTs from "../../api/round";
+import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 
 jest.mock("../../common/Auth");
@@ -73,7 +74,6 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 10,
       matchPoolPercentage: 0.1,
       projectId: "0x1",
-      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("1.11"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000001",
     },
@@ -83,7 +83,6 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 20,
       matchPoolPercentage: 0.2,
       projectId: "0x2",
-      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("2.22"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000002",
     },
@@ -93,7 +92,6 @@ describe("View Fund Grantees", () => {
       uniqueContributorsCount: 30,
       matchPoolPercentage: 0.3,
       projectId: "0x3",
-      // @ts-expect-error Tests
       matchAmountInToken: ethers.utils.parseEther("3.33"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000003",
     },
@@ -106,7 +104,7 @@ describe("View Fund Grantees", () => {
       matchAmountInToken: ethers.utils.parseEther("4.44"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000004",
     },
-  ]
+  ];
 
   beforeEach(() => {
     useFetchMatchingDistributionFromContractMock.mockReturnValue({
@@ -154,7 +152,10 @@ describe("View Fund Grantees", () => {
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
             wrapWithRoundContext(
-              <ViewFundGrantees isRoundFinalized={false} round={makeRoundData()} />,
+              <ViewFundGrantees
+                isRoundFinalized={false}
+                round={makeRoundData()}
+              />,
               {
                 data: [],
                 fetchRoundStatus: ProgressStatus.IS_SUCCESS,
@@ -184,7 +185,10 @@ describe("View Fund Grantees", () => {
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
               wrapWithRoundContext(
-                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />,
+                <ViewFundGrantees
+                  isRoundFinalized={true}
+                  round={makeRoundData()}
+                />,
                 {
                   data: undefined,
                   fetchRoundStatus: ProgressStatus.IS_SUCCESS,
@@ -207,17 +211,20 @@ describe("View Fund Grantees", () => {
 
   describe("Unpaid Projects", () => {
     beforeEach(async () => {
-      await act( async () => {
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(
-                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()}/>,
-                {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(
+                  <ViewFundGrantees
+                    isRoundFinalized={true}
+                    round={makeRoundData()}
+                  />,
+                  {
+                    data: undefined,
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
                 ),
                 { programs: [] }
               ),
@@ -240,7 +247,9 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
       expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
       expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
-      expect(screen.getByText("Select which grantees you wish to allocate funds to.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Select which grantees you wish to allocate funds to.")
+      ).toBeInTheDocument();
       expect(screen.getByText("Project")).toBeInTheDocument();
       expect(screen.getByText("Wallet Address")).toBeInTheDocument();
       expect(screen.getByText("Matching %")).toBeInTheDocument();
@@ -257,10 +266,12 @@ describe("View Fund Grantees", () => {
       expect(
         screen.getByText(matchingStatsData[2].projectPayoutAddress)
       ).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[3].projectPayoutAddress)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[3].projectPayoutAddress)
+      ).toBeInTheDocument();
     });
 
-    it('Should show the confirmation modal and close on cancel', async () => {
+    it("Should show the confirmation modal and close on cancel", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -286,7 +297,7 @@ describe("View Fund Grantees", () => {
       expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
     });
 
-    it('Should show the progress modal', async () => {
+    it("Should show the progress modal", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -310,7 +321,7 @@ describe("View Fund Grantees", () => {
       });
     });
 
-    it('Should show the warning when not enough funds in contract', async () => {
+    it("Should show the warning when not enough funds in contract", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: "0" },
         error: null,
@@ -326,10 +337,9 @@ describe("View Fund Grantees", () => {
         fireEvent.click(payoutFundsButton);
       });
 
-      const warning =
-        await screen.findByText(
-          "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
-        );
+      const warning = await screen.findByText(
+        "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
+      );
 
       expect(warning).toBeInTheDocument();
     });
@@ -337,17 +347,20 @@ describe("View Fund Grantees", () => {
 
   describe("Paid Projects", () => {
     beforeEach(async () => {
-      await act( async () => {
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithApplicationContext(
-            wrapWithReadProgramContext(
-              wrapWithRoundContext(
-                <ViewFundGrantees isRoundFinalized={true} round={makeRoundData()}/>,
+      await act(async () => {
+        render(
+          wrapWithBulkUpdateGrantApplicationContext(
+            wrapWithApplicationContext(
+              wrapWithReadProgramContext(
+                wrapWithRoundContext(
+                  <ViewFundGrantees
+                    isRoundFinalized={true}
+                    round={makeRoundData()}
+                  />,
                   {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }
+                    data: undefined,
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
                 ),
                 { programs: [] }
               ),
@@ -359,7 +372,7 @@ describe("View Fund Grantees", () => {
           )
         );
       });
-    })
+    });
     it("displays paid projects section on clicking paid grantees tab", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
@@ -387,14 +400,26 @@ describe("View Fund Grantees", () => {
         fireEvent.click(paidGranteesTab);
       });
 
-      expect(screen.getByText(matchingStatsData[0].projectName!)).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].projectName!)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].projectName!)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].projectName!)
+      ).toBeInTheDocument();
 
-      expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].projectPayoutAddress)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].projectPayoutAddress)
+      ).toBeInTheDocument();
 
-      expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")
+      ).toBeInTheDocument();
 
       await act(async () => {
         const statuses = screen.getAllByText("Success");
