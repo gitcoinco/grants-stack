@@ -23,6 +23,8 @@ import OPIcon from "./OPIcon.png";
 import RoundApply from "./round-apply.svg";
 import SwitchToOptimism from "./switch-to-optimism.svg";
 import TwitterLogo from "./twitter_logo.svg";
+import BuilderLogo from "./builder-logo.svg";
+import BuilderLandingBackground from "./builder-landing-background.svg";
 
 export {
   FourZeroFour,
@@ -50,4 +52,6 @@ export {
   RoundApply,
   SwitchToOptimism,
   TwitterLogo,
+  BuilderLogo,
+  BuilderLandingBackground,
 };

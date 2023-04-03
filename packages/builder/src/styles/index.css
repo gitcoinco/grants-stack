@@ -20,7 +20,7 @@
 
   h1 {
     @apply text-7xl text-primary-text dark:text-primary-text;
-    font-family: Miriam Libre;
+    font-family: Grad;
   }
 
   h2 {

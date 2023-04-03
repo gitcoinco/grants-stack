@@ -1,25 +1,26 @@
 <svg width="32" height="32.5" viewBox="0 0 80 81" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="40" cy="40.4858" r="40" fill="#8C65F7"/>
-<circle cx="40" cy="40.4863" r="22" fill="url(#paint0_radial_130_440)"/>
-<circle cx="40" cy="40.4854" r="14" transform="rotate(-180 40 40.4854)" fill="#F5DA59"/>
-<circle cx="39.9998" cy="8.98698" r="2.66667" fill="#F5DA59"/>
-<circle cx="71.4985" cy="40.486" r="2.66667" transform="rotate(90 71.4985 40.486)" fill="#F5DA59"/>
-<circle cx="8.50106" cy="40.486" r="2.66667" transform="rotate(90 8.50106 40.486)" fill="#F5DA59"/>
-<circle cx="67.2786" cy="56.2353" r="2.66667" transform="rotate(120 67.2786 56.2353)" fill="#F5DA59"/>
-<circle cx="12.7212" cy="24.7368" r="2.66667" transform="rotate(120 12.7212 24.7368)" fill="#F5DA59"/>
-<circle cx="67.2789" cy="24.7365" r="2.66667" transform="rotate(60 67.2789 24.7365)" fill="#F5DA59"/>
-<circle cx="12.7214" cy="56.236" r="2.66667" transform="rotate(60 12.7214 56.236)" fill="#F5DA59"/>
-<circle cx="55.7494" cy="13.2082" r="2.66667" transform="rotate(30 55.7494 13.2082)" fill="#F5DA59"/>
-<circle cx="24.2507" cy="67.7643" r="2.66667" transform="rotate(30 24.2507 67.7643)" fill="#F5DA59"/>
-<circle cx="55.7487" cy="67.7642" r="2.66667" transform="rotate(150 55.7487 67.7642)" fill="#F5DA59"/>
-<circle cx="24.2501" cy="13.2075" r="2.66667" transform="rotate(150 24.2501 13.2075)" fill="#F5DA59"/>
-<circle cx="55.7487" cy="67.7642" r="2.66667" transform="rotate(150 55.7487 67.7642)" fill="#F5DA59"/>
-<circle cx="24.2501" cy="13.2075" r="2.66667" transform="rotate(150 24.2501 13.2075)" fill="#F5DA59"/>
-<circle cx="39.9998" cy="71.985" r="2.66667" fill="#F5DA59"/>
-<defs>
-<radialGradient id="paint0_radial_130_440" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(40 40.4863) rotate(90) scale(22)">
-<stop stop-color="#F5DA59"/>
-<stop offset="1" stop-color="#02E2AC"/>
-</radialGradient>
-</defs>
+    <circle cx="40" cy="40.4858" r="40" fill="#8C65F7" />
+    <circle cx="40" cy="40.4863" r="22" fill="url(#paint0_radial_130_440)" />
+    <circle cx="40" cy="40.4854" r="14" transform="rotate(-180 40 40.4854)" fill="#F5DA59" />
+    <circle cx="39.9998" cy="8.98698" r="2.66667" fill="#F5DA59" />
+    <circle cx="71.4985" cy="40.486" r="2.66667" transform="rotate(90 71.4985 40.486)" fill="#F5DA59" />
+    <circle cx="8.50106" cy="40.486" r="2.66667" transform="rotate(90 8.50106 40.486)" fill="#F5DA59" />
+    <circle cx="67.2786" cy="56.2353" r="2.66667" transform="rotate(120 67.2786 56.2353)" fill="#F5DA59" />
+    <circle cx="12.7212" cy="24.7368" r="2.66667" transform="rotate(120 12.7212 24.7368)" fill="#F5DA59" />
+    <circle cx="67.2789" cy="24.7365" r="2.66667" transform="rotate(60 67.2789 24.7365)" fill="#F5DA59" />
+    <circle cx="12.7214" cy="56.236" r="2.66667" transform="rotate(60 12.7214 56.236)" fill="#F5DA59" />
+    <circle cx="55.7494" cy="13.2082" r="2.66667" transform="rotate(30 55.7494 13.2082)" fill="#F5DA59" />
+    <circle cx="24.2507" cy="67.7643" r="2.66667" transform="rotate(30 24.2507 67.7643)" fill="#F5DA59" />
+    <circle cx="55.7487" cy="67.7642" r="2.66667" transform="rotate(150 55.7487 67.7642)" fill="#F5DA59" />
+    <circle cx="24.2501" cy="13.2075" r="2.66667" transform="rotate(150 24.2501 13.2075)" fill="#F5DA59" />
+    <circle cx="55.7487" cy="67.7642" r="2.66667" transform="rotate(150 55.7487 67.7642)" fill="#F5DA59" />
+    <circle cx="24.2501" cy="13.2075" r="2.66667" transform="rotate(150 24.2501 13.2075)" fill="#F5DA59" />
+    <circle cx="39.9998" cy="71.985" r="2.66667" fill="#F5DA59" />
+    <defs>
+        <radialGradient id="paint0_radial_130_440" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+            gradientTransform="translate(40 40.4863) rotate(90) scale(22)">
+            <stop stop-color="#F5DA59" />
+            <stop offset="1" stop-color="#02E2AC" />
+        </radialGradient>
+    </defs>
 </svg>
