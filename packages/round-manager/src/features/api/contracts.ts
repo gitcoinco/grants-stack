@@ -125,7 +125,7 @@ export const roundFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x8fFaDeC99708a69b1D8e143b2aE7C96039b338f6";
+      address = "0x4c03006F5bE2df33e3a0387E0ff2A16566674741";
       break;
     }
   }
@@ -170,7 +170,7 @@ export const qfVotingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab";
+      address = "0x47b9cdAD7c2CAB87eC3626e8Dc7702e601ABB513";
       break;
     }
   }
