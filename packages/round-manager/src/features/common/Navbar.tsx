@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { PlusSmIcon } from "@heroicons/react/solid";
-
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-white.svg";
-import { ReactComponent as RoundManagerLogo } from "../../assets/round-manager-logo.svg";
+import { ReactComponent as ManagerLogo } from "../../assets/manager-logo.svg";
+import { ReactComponent as GitcoinLogo } from "../../assets/gitcoin-logo.svg";
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
@@ -12,8 +11,12 @@ export interface NavbarProps {
 
 export default function Navbar({ programCta = true }: NavbarProps) {
   return (
-    <nav className="bg-grey-500">
-      <div className="mx-auto px-4 sm:px-6 lg:px-20">
+    <nav className="bg-white-500" >
+      <div 
+        className="mx-auto px-4 sm:px-6 lg:px-20" 
+        style={{
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.15)",
+        }}>
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
@@ -24,7 +27,7 @@ export default function Navbar({ programCta = true }: NavbarProps) {
               <GitcoinLogo className="block h-8 w-auto" />
               <div className="hidden lg:block md:block">
                 <span className="mx-6 text-grey-400">|</span>
-                <RoundManagerLogo className="lg:inline-block md:inline-block" />
+                <ManagerLogo className="lg:inline-block md:inline-block" />
               </div>
             </Link>
           </div>
