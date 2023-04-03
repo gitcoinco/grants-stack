@@ -125,7 +125,7 @@ export const roundFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48";
+      address = "0x8fFaDeC99708a69b1D8e143b2aE7C96039b338f6";
       break;
     }
   }
