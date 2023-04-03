@@ -212,8 +212,8 @@ function ProjectsList() {
                 Time to get your project funded!
               </h5>
               <p className="mb-6">
-                Congratulations on creating your project on Grants Hub! Continue
-                to apply for{" "}
+                Congratulations on creating your project on Builder! Continue to
+                apply for{" "}
                 {props.round ? props.round!.roundMetadata.name : "the round"}.
               </p>
             </>

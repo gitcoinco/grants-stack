@@ -18,7 +18,7 @@ type Menu = {
 export const menuItems: Menu[] = [
   {
     Icon: BookOpenIcon,
-    title: "Grants Hub Guide",
+    title: "Builder Guide",
     subTitle: "Best practices for project owners",
     link: "https://support.gitcoin.co/gitcoin-grants-protocol",
   },
@@ -37,7 +37,7 @@ export const menuItems: Menu[] = [
   {
     Icon: CodeBracketIcon,
     title: "Developer Docs",
-    subTitle: "Build on top of Grants Hub",
+    subTitle: "Build on top of Builder",
     link: "https://app.gitbook.com/o/Aqbtj6s4OkLaygileCka/home",
   },
 ];
