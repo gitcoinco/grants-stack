@@ -26,18 +26,21 @@ import Navbar from "../common/Navbar";
 import ReactTooltip from "react-tooltip";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
-import { getProjectSummary } from "../api/api";
 import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import markdown from "../../app/markdown";
+import { Client, Application } from "allo-indexer-client";
+import { utils } from "ethers";
 
 enum VerifiedCredentialState {
   VALID,
   INVALID,
   PENDING,
 }
+
+const boundFetch = fetch.bind(window);
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
@@ -431,21 +434,28 @@ function Sidebar(props: {
   );
 }
 
+// NOTE: Consider moving this
+export function useRoundProject(chainId: number, roundId: string, projectId: string) {
+  // use chain id and project id from url params
+  const client = new Client(
+    boundFetch,
+    process.env.REACT_APP_ALLO_API_ENDPOINT ?? "",
+    chainId
+  );
+  return useSWR([roundId, "/projects"], ([roundId]) => 
+    client
+      .getRoundApplications(utils.getAddress(roundId.toLowerCase()))
+      .then((apps: Application[]) => apps.filter((app: Application) => app.id === projectId))
+  );
+}
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
-  const project = round?.approvedProjects?.find(
-    (project) => project.grantApplicationId === applicationId
-  );
-  const { data } = useSWR(
-    {
-      chainId,
-      roundId,
-      projectId: project?.recipient,
-    },
-    getProjectSummary
-  );
+  const projectId = applicationId?.split("-")[0] as string
+
+
+  const { data: project } = useRoundProject( Number(chainId), roundId as string, projectId);
 
   const timeRemaining = round?.roundEndTime
     ? formatDistanceToNowStrict(round.roundEndTime)
@@ -454,11 +464,11 @@ export function ProjectStats() {
   return (
     <div className={"rounded bg-gray-50 mb-4 p-4 gap-4 flex flex-col"}>
       <div>
-        <h3>${data?.data.totalContributionsInUSD?.toFixed() ?? "-"}</h3>
+        <h3>${project ? project[0].amountUSD.toFixed(2) : "-"}</h3>
         <p>funding received in current round</p>
       </div>
       <div>
-        <h3>{data?.data.uniqueContributors ?? "-"}</h3>
+        <h3>{project ? project[0].uniqueContributors : "-"}</h3>
         <p>contributors</p>
       </div>
       <div>
