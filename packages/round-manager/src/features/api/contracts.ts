@@ -170,7 +170,7 @@ export const qfVotingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x47b9cdAD7c2CAB87eC3626e8Dc7702e601ABB513";
+      address = "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab";
       break;
     }
   }
