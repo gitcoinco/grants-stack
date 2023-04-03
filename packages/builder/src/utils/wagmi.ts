@@ -109,7 +109,7 @@ const connectors = connectorsForWallets([
     wallets: [
       injectedWallet({ chains }),
       walletConnectWallet({ chains }),
-      coinbaseWallet({ appName: "Grants Hub", chains }),
+      coinbaseWallet({ appName: "Builder", chains }),
       metaMaskWallet({ chains }),
     ],
   },
