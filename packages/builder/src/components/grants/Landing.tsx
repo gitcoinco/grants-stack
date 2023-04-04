@@ -3,14 +3,38 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
 import { BroadcastChannel } from "broadcast-channel";
+import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import Footer from "../Footer";
-import {
-  BuilderLandingBackground,
-  BuilderLogo,
-  GitcoinLogo,
-} from "../../assets";
+import { LandingBackground, BuilderLogo, GitcoinLogo } from "../../assets";
+import { grantsPath } from "../../routes";
+
+function LandingHeader() {
+  return (
+    <header
+      className="flex items-center justify-between px-4 sm:px-2 z-10 text-primary-text w-full border-0 sm:border-b mx-auto h-1/8"
+      style={{
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <div className="w-full mx-auto flex flex-wrap items-center justify-between">
+        <div className="w-full relative flex justify-between pl-4">
+          <Link to={grantsPath()}>
+            <div className="flex">
+              <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
+              <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
+              <img className="py-4" alt="Builder Logo" src={BuilderLogo} />
+            </div>
+          </Link>
+          <div className="flex items-center mr-4">
+            <ConnectButton />
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
 
 function Landing() {
   const dispatch = useDispatch();
@@ -92,21 +116,12 @@ function Landing() {
 
   return (
     <div className="flex flex-col absolute h-full w-full">
-      <div
-        style={{
-          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-        }}
-        className="flex flex-col md:flex-row items-center justify-between w-full h-16"
-      >
-        <div className="flex absolute top-0 left-8 md:left-10">
-          <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
-          <span className="border border-gitcoin-separator my-[1.75rem] mr-4" />
-          <img className="py-4 mr-4" alt="Builder Logo" src={BuilderLogo} />
-        </div>
-      </div>
-      <section className="flex flex flex-col md:flex-row pt-10">
-        <div className="flex flex-1 flex-col justify-center container px-8 md:px-10">
-          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1">Builder</h1>
+      <LandingHeader />
+      <section className="flex flex-col md:flex-row">
+        <div className="flex flex-1 flex-col justify-center container px-8 md:px-10 md:pl-4 pl-16">
+          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1 mt-4">
+            Builder
+          </h1>
           <p className="text-black text-xl w-full md:max-w-4xl">
             Build and fund your project all in one place, and bring your vision
             to life.
@@ -122,10 +137,10 @@ function Landing() {
             </div>
           )}
         </div>
-        <div className="flex flex p-16">
+        <div className="flex flex-col flex-1">
           <img
             className="w-full object-cover"
-            src={BuilderLandingBackground}
+            src={LandingBackground}
             alt="Jungle Background"
           />
         </div>
