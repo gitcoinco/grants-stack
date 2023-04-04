@@ -47,6 +47,10 @@ export type DropdownQuestion = BaseQuestion & {
   options: string[];
 };
 
+export type NumberQuestion = BaseQuestion & {
+  type: "number";
+};
+
 export type RoundApplicationQuestion =
   | AddressQuestion
   | ProjectQuestion
@@ -56,7 +60,8 @@ export type RoundApplicationQuestion =
   | ParagraphQuestion
   | MultipleChoiceQuestion
   | CheckboxQuestion
-  | DropdownQuestion;
+  | DropdownQuestion
+  | NumberQuestion;
 
 export interface ProjectRequirements {
   twitter: {
