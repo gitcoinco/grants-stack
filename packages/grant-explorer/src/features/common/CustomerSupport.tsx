@@ -17,7 +17,7 @@ type Menu = {
 export const menuItems: Menu[] = [
   {
     Icon: BookOpenIcon,
-    title: "Grants Explorer Guide",
+    title: "Explorer Guide",
     subTitle: "Best practices for project owners",
     link: "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-protocol/funder-faq/grants-explorer-guide",
   },
