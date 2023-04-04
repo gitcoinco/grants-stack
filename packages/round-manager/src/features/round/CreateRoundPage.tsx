@@ -1,15 +1,13 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
-import "react-datetime/css/react-datetime.css";
-import { XIcon } from "@heroicons/react/solid";
-import { FormWizard } from "../common/FormWizard";
-import { RoundDetailForm } from "./RoundDetailForm";
-import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
-import { RoundApplicationForm } from "./RoundApplicationForm";
-import { Button } from "common/src/styles";
-import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
+import { XIcon } from "@heroicons/react/solid";
+import { Button } from "common/src/styles";
+import "react-datetime/css/react-datetime.css";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProgramById } from "../../context/program/ReadProgramContext";
+import Footer from "../common/Footer";
+import { FormWizard } from "../common/FormWizard";
+import Navbar from "../common/Navbar";
+import { RoundApplicationForm } from "./RoundApplicationForm";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -50,8 +48,8 @@ export default function CreateRound() {
           <main>
             <FormWizard
               steps={[
-                RoundDetailForm,
-                ApplicationEligibilityForm,
+                // RoundDetailForm,
+                // ApplicationEligibilityForm,
                 // @ts-expect-error Needs refactoring/typing as a whole
                 RoundApplicationForm,
               ]}
