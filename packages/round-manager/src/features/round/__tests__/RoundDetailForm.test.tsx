@@ -2,13 +2,13 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { makeProgramData, renderWrapped } from "../../../test-utils";
 
-import { FormStepper } from "../../common/FormStepper";
-import { RoundDetailForm } from "../RoundDetailForm";
-import { FormContext } from "../../common/FormWizard";
-import { ChainId, CHAINS, getPayoutTokenOptions } from "../../api/utils";
-import { useWallet } from "../../common/Auth";
 import { faker } from "@faker-js/faker";
 import moment from "moment";
+import { ChainId, CHAINS, getPayoutTokenOptions } from "../../api/utils";
+import { useWallet } from "../../common/Auth";
+import { FormStepper } from "../../common/FormStepper";
+import { FormContext } from "../../common/FormWizard";
+import { RoundDetailForm } from "../RoundDetailForm";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -29,16 +29,16 @@ beforeEach(() => {
 describe("<RoundDetailForm />", () => {
   it("renders round name input", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const roundNameInput = await screen.getByLabelText("Round Name");
+    const roundNameInput = screen.getByLabelText("Round Name");
     expect(roundNameInput).toBeInTheDocument();
   });
 
   it("requires round name input to not be empty", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button", {
+    const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
-    const input = await screen.getByRole("textbox", {
+    const input = screen.getByRole("textbox", {
       name: /round name/i,
     });
     await act(async () => {
@@ -51,10 +51,10 @@ describe("<RoundDetailForm />", () => {
 
   it("requires round name to be longer than 8 characters", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button", {
+    const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
-    const input = await screen.getByRole("textbox", {
+    const input = screen.getByRole("textbox", {
       name: /round name/i,
     });
     await act(async () => {
@@ -74,7 +74,7 @@ describe("<RoundDetailForm />", () => {
 
   it("renders submit button", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const nextButton = await screen.getByRole("button", {
+    const nextButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
     expect(nextButton).toBeInTheDocument();
@@ -83,13 +83,13 @@ describe("<RoundDetailForm />", () => {
 
   it("renders date components", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = await screen.getAllByLabelText("Start Date");
+    const startDateInputs = screen.getAllByLabelText("Start Date");
     expect(startDateInputs[0]).toBeInTheDocument();
     expect(startDateInputs[1]).toBeInTheDocument();
     expect(startDateInputs[0].id).toBe("applicationsStartTime");
     expect(startDateInputs[1].id).toBe("roundStartTime");
 
-    const endDateInputs = await screen.getAllByLabelText("End Date");
+    const endDateInputs = screen.getAllByLabelText("End Date");
     expect(endDateInputs[0]).toBeInTheDocument();
     expect(endDateInputs[1]).toBeInTheDocument();
     expect(endDateInputs[0].id).toBe("applicationsEndTime");
@@ -98,16 +98,16 @@ describe("<RoundDetailForm />", () => {
 
   it("renders contact information input", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const contactInfoInput = await screen.getByLabelText("Contact Information");
+    const contactInfoInput = screen.getByLabelText("Contact Information");
     expect(contactInfoInput).toBeInTheDocument();
   });
 
   it("requires contact information input to not be empty", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button", {
+    const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
-    const input = await screen.getByRole("textbox", {
+    const input = screen.getByRole("textbox", {
       name: /contact information/i,
     });
     await act(async () => {
@@ -120,14 +120,14 @@ describe("<RoundDetailForm />", () => {
 
   it("requires contact information to be of type email when support type is email", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button", {
+    const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
     const supportSelection = screen.getByTestId("support-type-select");
     fireEvent.click(supportSelection);
     const firstSupportOption = screen.getAllByTestId("support-type-option")[0];
     fireEvent.click(firstSupportOption);
-    const infoInput = await screen.getByRole("textbox", {
+    const infoInput = screen.getByRole("textbox", {
       name: /contact information/i,
     });
     await act(async () => {
@@ -148,14 +148,14 @@ describe("<RoundDetailForm />", () => {
 
   it("requires contact information to be of type URL when support type is NOT email", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const submitButton = await screen.getByRole("button", {
+    const submitButton = screen.getByRole("button", {
       name: /next|launch/i,
     });
     const supportSelection = screen.getByTestId("support-type-select");
     fireEvent.click(supportSelection);
     const firstSupportOption = screen.getAllByTestId("support-type-option")[1];
     fireEvent.click(firstSupportOption);
-    const infoInput = await screen.getByRole("textbox", {
+    const infoInput = screen.getByRole("textbox", {
       name: /contact information/i,
     });
     await act(async () => {
@@ -176,7 +176,8 @@ describe("<RoundDetailForm />", () => {
 
   it("validates round start time is after application start time", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = await screen.getAllByLabelText("Start Date");
+    const startDateInputs = screen.getAllByLabelText("Start Date");
+    const endDateInputs = screen.getAllByLabelText("End Date");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
@@ -193,23 +194,29 @@ describe("<RoundDetailForm />", () => {
       /* Round start date */
       expect(startDateInputs[1].id).toBe("roundStartTime");
       fireEvent.change(startDateInputs[1], {
-        target: { value: "08/24/2022 12:00 AM" },
+        target: { value: "08/24/2022 12:01 AM" },
+      });
+
+      /* Applications end date */
+      expect(endDateInputs[0].id).toBe("applicationsEndTime");
+      fireEvent.change(endDateInputs[0], {
+        target: { value: "08/25/2022 12:00 AM" },
       });
 
       /* Trigger validation */
       fireEvent.click(screen.getByText("Launch"));
     });
 
-    const errors = await screen.getByText(
-      "Round start date must be later than applications start date"
+    const errors = screen.getByText(
+      "Round start date must be later than applications end date"
     );
     expect(errors).toBeInTheDocument();
   });
 
   it("validates applications end date is after applications start date", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = await screen.getAllByLabelText("Start Date");
-    const endDateInputs = await screen.getAllByLabelText("End Date");
+    const startDateInputs = screen.getAllByLabelText("Start Date");
+    const endDateInputs = screen.getAllByLabelText("End Date");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
@@ -233,7 +240,7 @@ describe("<RoundDetailForm />", () => {
       fireEvent.click(screen.getByText("Launch"));
     });
 
-    const errors = await screen.getByText(
+    const errors = screen.getByText(
       "Applications end date must be later than applications start date"
     );
     expect(errors).toBeInTheDocument();
@@ -241,8 +248,8 @@ describe("<RoundDetailForm />", () => {
 
   it("validates round end date is after round start date", async () => {
     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    const startDateInputs = await screen.getAllByLabelText("Start Date");
-    const endDateInputs = await screen.getAllByLabelText("End Date");
+    const startDateInputs = screen.getAllByLabelText("Start Date");
+    const endDateInputs = screen.getAllByLabelText("End Date");
 
     await act(async () => {
       /* Prefill round name to ignore errors from it */
@@ -266,7 +273,7 @@ describe("<RoundDetailForm />", () => {
       fireEvent.click(screen.getByText("Launch"));
     });
 
-    const errors = await screen.getByText(
+    const errors = screen.getByText(
       "Round end date must be later than the round start date"
     );
     expect(errors).toBeInTheDocument();
@@ -292,8 +299,8 @@ describe("<RoundDetailForm />", () => {
         <RoundDetailForm stepper={FormStepper} />
       </FormContext.Provider>
     );
-    const startDateInputs = await screen.getAllByLabelText("Start Date");
-    const endDateInputs = await screen.getAllByLabelText("End Date");
+    const startDateInputs = screen.getAllByLabelText("Start Date");
+    const endDateInputs = screen.getAllByLabelText("End Date");
 
     /* Round Name */
     fireEvent.input(screen.getByLabelText("Round Name"), {

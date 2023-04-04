@@ -10,7 +10,7 @@ import {
   SubmitHandler,
   useController,
   useForm,
-  UseFormRegisterReturn,
+  UseFormRegisterReturn
 } from "react-hook-form";
 import * as yup from "yup";
 
@@ -18,7 +18,7 @@ import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
-  SelectorIcon,
+  SelectorIcon
 } from "@heroicons/react/solid";
 import { Input } from "common/src/styles";
 import moment from "moment";
@@ -88,16 +88,25 @@ const ValidationSchema = yup.object().shape({
     .min(
       yup.ref("applicationsStartTime"),
       "Applications end date must be later than applications start date"
+    )
+    .max(
+      yup.ref("roundStartTime"),
+      "Applications end date must be earlier than the round start date"
     ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
     .min(
-      yup.ref("applicationsStartTime"),
-      "Round start date must be later than applications start date"
+      yup.ref("applicationsEndTime"),
+      "Round start date must be later than applications end date"
+    )
+    .max(
+      yup.ref("roundEndTime"),
+      "Round start date must be earlier than the round end date"
     ),
   roundEndTime: yup
     .date()
+    .required("This field is required.")
     .min(
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
