@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { PlusSmIcon } from "@heroicons/react/solid";
-import { ReactComponent as ManagerLogo } from "../../assets/manager-logo.svg";
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoin-logo.svg";
+import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
+import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
@@ -11,7 +11,7 @@ export interface NavbarProps {
 
 export default function Navbar({ programCta = true }: NavbarProps) {
   return (
-    <nav className="bg-white-500" >
+    <nav className="bg-moon-600" >
       <div 
         className="mx-auto px-4 sm:px-6 lg:px-20" 
         style={{
@@ -24,10 +24,10 @@ export default function Navbar({ programCta = true }: NavbarProps) {
               className="flex-shrink-0 flex items-center"
               data-testid={"home-link"}
             >
-              <GitcoinLogo className="block h-8 w-auto" />
+              <GitcoinLogoDark className="block h-8 w-auto" />
               <div className="hidden lg:block md:block">
                 <span className="mx-6 text-grey-400">|</span>
-                <ManagerLogo className="lg:inline-block md:inline-block" />
+                <ManagerLogoDark className="lg:inline-block md:inline-block" />
               </div>
             </Link>
           </div>
