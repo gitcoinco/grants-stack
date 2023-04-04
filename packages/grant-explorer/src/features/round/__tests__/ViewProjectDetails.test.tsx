@@ -114,6 +114,10 @@ describe("<ViewProjectDetails/>", () => {
       expect(screen.getByTestId("project-twitter")).toBeInTheDocument();
     });
 
+    it("shows created at date", async () => {
+      expect(screen.getByTestId("project-createdAt")).toBeInTheDocument();
+    });
+
     it("shows project user github", async () => {
       expect(screen.getByTestId("user-github")).toBeInTheDocument();
     });

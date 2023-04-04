@@ -76,6 +76,7 @@ export const makeApprovedProjectData = (
       description: faker.lorem.sentence(),
       website: faker.internet.url(),
       projectTwitter: faker.internet.userName(),
+      createdAt: new Date().valueOf(),
       projectGithub: faker.internet.userName(),
       userGithub: faker.internet.userName(),
       owners: [{ address: faker.finance.ethereumAddress() }],

@@ -10,13 +10,12 @@ import {
   wrapWithApplicationContext,
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithReadProgramContext,
-  wrapWithRoundContext
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import * as merklePayoutStrategy from '../../api/payoutStrategy/merklePayoutStrategy';
-import * as roundTs from '../../api/round';
+import * as merklePayoutStrategy from "../../api/payoutStrategy/merklePayoutStrategy";
+import * as roundTs from "../../api/round";
 import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
-
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
@@ -55,17 +54,17 @@ jest.mock("../../common/Auth", () => ({
 const useFetchMatchingDistributionFromContractMock = jest.spyOn(
   merklePayoutStrategy,
   "useFetchMatchingDistributionFromContract"
-)
+);
 
 const useGroupProjectsByPaymentStatusMock = jest.spyOn(
   merklePayoutStrategy,
   "useGroupProjectsByPaymentStatus"
-)
+);
 
 const fetchMatchingDistributionMock = jest.spyOn(
   roundTs,
   "fetchMatchingDistribution"
-)
+);
 
 describe("View Fund Grantees", () => {
   const matchingStatsData: MatchingStatsData[] = [
@@ -105,7 +104,7 @@ describe("View Fund Grantees", () => {
       matchAmountInToken: ethers.utils.parseEther("4.44"),
       projectPayoutAddress: "0x00000000000000000000000000000000000000004",
     },
-  ]
+  ];
 
   beforeEach(() => {
     useFetchMatchingDistributionFromContractMock.mockReturnValue({
@@ -115,10 +114,12 @@ describe("View Fund Grantees", () => {
       isError: false,
     });
 
-    fetchMatchingDistributionMock.mockReturnValue(Promise.resolve({
-      distributionMetaPtr: "some-meta-ptr",
-      matchingDistribution: matchingStatsData
-    }));
+    fetchMatchingDistributionMock.mockReturnValue(
+      Promise.resolve({
+        distributionMetaPtr: "some-meta-ptr",
+        matchingDistribution: matchingStatsData,
+      })
+    );
 
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
@@ -150,10 +151,16 @@ describe("View Fund Grantees", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithApplicationContext(
           wrapWithReadProgramContext(
-            wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={false} round={makeRoundData()} />, {
-              data: [],
-              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-            }),
+            wrapWithRoundContext(
+              <ViewFundGrantees
+                isRoundFinalized={false}
+                round={makeRoundData()}
+              />,
+              {
+                data: [],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }
+            ),
             { programs: [] }
           ),
           {
@@ -168,15 +175,25 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays finalized status when round is finalized", async () => {
+    (useParams as jest.Mock).mockReturnValueOnce({
+      id: undefined,
+    });
+
     await act(async () => {
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithApplicationContext(
             wrapWithReadProgramContext(
-              wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                data: undefined,
-                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-              }),
+              wrapWithRoundContext(
+                <ViewFundGrantees
+                  isRoundFinalized={true}
+                  round={makeRoundData()}
+                />,
+                {
+                  data: undefined,
+                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                }
+              ),
               { programs: [] }
             ),
             {
@@ -199,10 +216,16 @@ describe("View Fund Grantees", () => {
           wrapWithBulkUpdateGrantApplicationContext(
             wrapWithApplicationContext(
               wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
+                wrapWithRoundContext(
+                  <ViewFundGrantees
+                    isRoundFinalized={true}
+                    round={makeRoundData()}
+                  />,
+                  {
+                    data: undefined,
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
+                ),
                 { programs: [] }
               ),
               {
@@ -224,7 +247,9 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
       expect(screen.getByText("Unpaid Grantees")).toBeInTheDocument();
       expect(screen.getByText("Paid Grantees")).toBeInTheDocument();
-      expect(screen.getByText("Select which grantees you wish to allocate funds to.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Select which grantees you wish to allocate funds to.")
+      ).toBeInTheDocument();
       expect(screen.getByText("Project")).toBeInTheDocument();
       expect(screen.getByText("Wallet Address")).toBeInTheDocument();
       expect(screen.getByText("Matching %")).toBeInTheDocument();
@@ -232,17 +257,21 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Payout funds")).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which are to be paid', async () => {
+    it("displays exact list of projects in table which are to be paid", async () => {
       await act(async () => {
         const unpaidGranteesTab = screen.getByText("Unpaid Grantees");
         fireEvent.click(unpaidGranteesTab);
       });
 
-      expect(screen.getByText(matchingStatsData[2].projectPayoutAddress)).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[3].projectPayoutAddress)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[2].projectPayoutAddress)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[3].projectPayoutAddress)
+      ).toBeInTheDocument();
     });
 
-    it('Should show the confirmation modal and close on cancel', async () => {
+    it("Should show the confirmation modal and close on cancel", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -268,7 +297,7 @@ describe("View Fund Grantees", () => {
       expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
     });
 
-    it('Should show the progress modal', async () => {
+    it("Should show the progress modal", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -292,7 +321,7 @@ describe("View Fund Grantees", () => {
       });
     });
 
-    it('Should show the warning when not enough funds in contract', async () => {
+    it("Should show the warning when not enough funds in contract", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: "0" },
         error: null,
@@ -308,10 +337,9 @@ describe("View Fund Grantees", () => {
         fireEvent.click(payoutFundsButton);
       });
 
-      const warning =
-        await screen.findByText(
-          "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
-        );
+      const warning = await screen.findByText(
+        "You don’t have enough funds in the contract to pay out the selected grantees. Please either add more funds to the contract or select fewer grantees."
+      );
 
       expect(warning).toBeInTheDocument();
     });
@@ -324,10 +352,16 @@ describe("View Fund Grantees", () => {
           wrapWithBulkUpdateGrantApplicationContext(
             wrapWithApplicationContext(
               wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewFundGrantees isRoundFinalized={true} round={makeRoundData()} />, {
-                  data: undefined,
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
+                wrapWithRoundContext(
+                  <ViewFundGrantees
+                    isRoundFinalized={true}
+                    round={makeRoundData()}
+                  />,
+                  {
+                    data: undefined,
+                    fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+                  }
+                ),
                 { programs: [] }
               ),
               {
@@ -338,7 +372,7 @@ describe("View Fund Grantees", () => {
           )
         );
       });
-    })
+    });
     it("displays paid projects section on clicking paid grantees tab", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
@@ -353,23 +387,39 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Payout Amount")).toBeInTheDocument();
       expect(screen.getByText("Status")).toBeInTheDocument();
       expect(screen.getByText("Transaction")).toBeInTheDocument();
-      expect(screen.getByText("Transaction history of grantees you have paid out funds to.")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Transaction history of grantees you have paid out funds to."
+        )
+      ).toBeInTheDocument();
     });
 
-    it('displays exact list of projects in table which have been paid', async () => {
+    it("displays exact list of projects in table which have been paid", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
       });
 
-      expect(screen.getByText(matchingStatsData[0].projectName!)).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].projectName!)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].projectName!)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].projectName!)
+      ).toBeInTheDocument();
 
-      expect(screen.getByText(matchingStatsData[0].projectPayoutAddress)).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].projectPayoutAddress)).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].projectPayoutAddress)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].projectPayoutAddress)
+      ).toBeInTheDocument();
 
-      expect(screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
-      expect(screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[0].matchPoolPercentage * 100 + "%")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(matchingStatsData[1].matchPoolPercentage * 100 + "%")
+      ).toBeInTheDocument();
 
       await act(async () => {
         const statuses = screen.getAllByText("Success");
@@ -386,4 +436,3 @@ describe("View Fund Grantees", () => {
     });
   });
 });
-
