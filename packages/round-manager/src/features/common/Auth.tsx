@@ -1,12 +1,12 @@
 import { Outlet, useOutletContext } from "react-router-dom";
 import { useAccount, useNetwork, useProvider, useSigner } from "wagmi";
-
 import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "./Footer";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Navbar from "./Navbar";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
@@ -27,7 +27,8 @@ export default function Auth() {
 
   return !isConnected ? (
     <div>
-      <main>
+      <Navbar programCta={false} />
+      <main className="pt-4">
         {isConnecting ? (
           <Spinner text="Connecting Wallet" />
         ) : (
@@ -36,7 +37,7 @@ export default function Auth() {
             <div className="row-span-5">
               <div className="my-[15rem]">
                 <LandingLogo className="block w-auto mb-6 ml-2"></LandingLogo>
-                <h1 className="mb-6">Round Manager</h1>
+                <h1 className="mb-6">Manager</h1>
                 <p className="text-2xl mt-2 mb-6 text-grey-400">
                   As a round operator you can manage high-impact
                   <br />
