@@ -629,7 +629,34 @@ export default function Form({
                   }
                 />
               );
-
+            case "number":
+              return (
+                <TextInput
+                  inputType="number"
+                  key={input.id}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
+                  placeholder="0"
+                  name={`${input.id}`}
+                  value={(answers[input.id] as number) ?? 0}
+                  disabled={preview}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              );
             default:
               return null;
           }

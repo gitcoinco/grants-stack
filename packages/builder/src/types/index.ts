@@ -186,7 +186,7 @@ export interface RoundApplication {
   answers: Array<{
     questionId: Number;
     question: string;
-    answer: string | undefined | string[];
+    answer: string | undefined | string[] | number;
     encryptedAnswer:
       | {
           ciphertext: string;

@@ -84,5 +84,5 @@ export interface RoundApplicationMetadata {
 }
 
 export type RoundApplicationAnswers = {
-  [key: string | number]: string | string[];
+  [key: string | number]: string | string[] | number;
 };

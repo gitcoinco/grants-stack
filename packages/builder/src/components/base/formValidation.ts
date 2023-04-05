@@ -1,4 +1,4 @@
-import { array, object, string } from "yup";
+import { array, object, string, number } from "yup";
 import { FormInputs } from "../../types";
 import {
   RoundApplicationAnswers,
@@ -105,6 +105,12 @@ export async function validateApplication(
       if (input.required) {
         validation = validation.required(`${input.title} is required`);
       }
+    } else if (input.type === "number") {
+      validation = number().typeError(`${input.title} must be a number`);
+
+      if (input.required) {
+        validation = validation.required(`${input.title} is required`);
+      }
     } else {
       validation = string();
 
@@ -112,7 +118,6 @@ export async function validateApplication(
         validation = validation.required(`${input.title} is required`);
       }
     }
-
     return {
       ...acc,
       [input.id]: validation,
