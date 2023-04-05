@@ -166,7 +166,7 @@ describe("View Round", () => {
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
     expect(screen.getByText("Round Stats")).toBeInTheDocument();
-    expect(screen.getByText("Funding Admin")).toBeInTheDocument();
+    expect(screen.getByText("Round Results")).toBeInTheDocument();
   });
 
   it("indicates how many of each kind of application there are", () => {

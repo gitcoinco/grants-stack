@@ -137,18 +137,27 @@ export interface Round {
   approvedProjects?: Project[];
 }
 
+export type GrantApplicationFormAnswer = {
+  questionId: number;
+  question: string;
+  answer: string | string[];
+  hidden: boolean;
+  type?: string;
+};
+
 export type Project = {
   grantApplicationId: GrantApplicationId;
   projectRegistryId: ProjectRegistryId;
   recipient: recipient;
   projectMetadata: ProjectMetadata;
+  grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
 };
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
 export type recipient = string;
 
-export type FinalBallotDonation = {
+export type CartDonation = {
   projectRegistryId: ProjectRegistryId;
   amount: string;
   projectAddress: recipient;
@@ -175,6 +184,7 @@ export type ProjectMetadata = {
   projectGithub?: string;
   credentials?: ProjectCredentials;
   owners: ProjectOwner[];
+  createdAt?: number;
 };
 
 export type ProjectCredentials = {

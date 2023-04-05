@@ -41,9 +41,9 @@ export type CreateRoundData = {
     version: string;
     lastUpdatedOn: number;
     applicationSchema: {
-      questions: SchemaQuestion[],
-      requirements: ProjectRequirements,
-    },
+      questions: SchemaQuestion[];
+      requirements: ProjectRequirements;
+    };
   };
   round: Round;
 };
@@ -171,7 +171,10 @@ const _createRound = async ({
     const roundContractInputsWithContracts = {
       ...roundContractInputsWithPointers,
       votingStrategy: votingContractAddress,
-      payoutStrategy: payoutContractAddress,
+      payoutStrategy: {
+        id: payoutContractAddress,
+        isReadyForPayout: false,
+      },
     };
 
     const transactionBlockNumber = await handleDeployRoundContract(

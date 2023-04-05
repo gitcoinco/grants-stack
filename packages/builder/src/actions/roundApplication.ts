@@ -9,6 +9,7 @@ import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
+import { RoundApplicationAnswers } from "../types/roundApplication";
 import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
@@ -129,7 +130,7 @@ const dispatchAndLogApplicationError = (
 };
 
 export const submitApplication =
-  (roundAddress: string, formInputs: { [id: number]: string }) =>
+  (roundAddress: string, formInputs: RoundApplicationAnswers) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const roundState = state.rounds[roundAddress];
@@ -161,8 +162,12 @@ export const submitApplication =
       return;
     }
 
-    const { projectQuestionId } = roundApplicationMetadata;
-    if (projectQuestionId === undefined) {
+    const projectQuestion =
+      roundApplicationMetadata.applicationSchema.questions.find(
+        (q) => q.type === "project"
+      );
+
+    if (!projectQuestion) {
       dispatchAndLogApplicationError(
         dispatch,
         roundAddress,
@@ -172,7 +177,8 @@ export const submitApplication =
       return;
     }
 
-    const projectID = formInputs[projectQuestionId];
+    const projectID = formInputs[projectQuestion.id] as string;
+
     const {
       id: projectNumber,
       registryAddress: projectRegistryAddress,

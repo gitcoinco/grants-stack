@@ -86,25 +86,25 @@ export async function getProgramById(
     // get the subgraph for program by $programId
     const res = await graphql_fetch(
       `
-              query GetPrograms($programId: String) {
-                programs(where: {
-                  id: $programId
-                }) {
-                  id
-                  metaPtr {
-                    protocol
-                    pointer
-                  }
-                  roles(where: {
-                    role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
-                  }) {
-                    accounts {
-                      address
-                    }
-                  }
-                }
+        query GetPrograms($programId: String) {
+          programs(where: {
+            id: $programId
+          }) {
+            id
+            metaPtr {
+              protocol
+              pointer
+            }
+            roles(where: {
+              role: "0xaa630204f2780b6f080cc77cc0e9c0a5c21e92eb0c6771e709255dd27d6de132"
+            }) {
+              accounts {
+                address
               }
-            `,
+            }
+          }
+        }
+      `,
       chainId,
       { programId }
     );

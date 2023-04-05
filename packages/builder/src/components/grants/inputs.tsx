@@ -1,15 +1,15 @@
-import { Tooltip } from "@chakra-ui/react";
+import { Link, Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
 import { ethers } from "ethers";
-import { useEffect } from "react";
-import { getAddressType } from "../../utils/utils";
+import { useEffect, useState } from "react";
 import {
   AddressInputProps,
   InputProps,
-  TextAreaProps,
   ProjectOption,
+  TextAreaProps,
 } from "../../types";
+import { getAddressType } from "../../utils/utils";
 
 const optionalSpan = (
   <span className="text-gray-400 inset-y-0 right-0 text-sm">Optional</span>
@@ -79,12 +79,14 @@ export function TextInput({
   encrypted,
   tooltip,
   feedback,
+  inputType,
+  prefixBoxText,
 }: InputProps) {
   const styleInfo = getStyleInfoForFeedback(feedback);
   const { borderClass, feedbackColor } = styleInfo;
 
   return (
-    <div className="relative mt-6 w-full sm:w-1/2">
+    <div className="relative mt-6 w-full sm:max-w-md">
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -110,16 +112,24 @@ export function TextInput({
         {encrypted && encryptionTooltip}
       </div>
       <legend>{info}</legend>
-      <input
-        type="text"
-        id={name}
-        name={name}
-        value={value ?? ""}
-        placeholder={placeholder}
-        disabled={disabled}
-        onChange={changeHandler}
-        className={borderClass}
-      />
+      <div className="flex">
+        {Boolean(prefixBoxText) && (
+          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+            {" "}
+            {prefixBoxText}{" "}
+          </span>
+        )}
+        <input
+          type={inputType ?? "text"}
+          id={name}
+          name={name}
+          value={value ?? ""}
+          placeholder={placeholder}
+          disabled={disabled}
+          onChange={changeHandler}
+          className={borderClass}
+        />
+      </div>
       {feedback?.message ? (
         <span className={`text-sm text-${feedbackColor}`}>
           {feedback.message}
@@ -163,7 +173,7 @@ export function TextInputAddress({
 
   return (
     <div
-      className="relative mt-6 w-full sm:w-1/2"
+      className="relative mt-6 w-full sm:max-w-md"
       data-testid="address-input-wrapper"
     >
       <div className="flex">
@@ -183,13 +193,15 @@ export function TextInputAddress({
             encrypted ? `${encryptionTooltipLabel} \n` : ""
           } ${tooltipValue}`}
         >
-          <InformationCircleIcon className="w-6 h-6" color="gray" />
+          <span>
+            <InformationCircleIcon className="w-6 h-6" color="gray" />
+          </span>
         </Tooltip>
       </div>
       <legend>{info}</legend>
       <input
         type="text"
-        id={label}
+        id={name}
         name={name}
         value={value ?? ""}
         placeholder={placeholder}
@@ -233,7 +245,7 @@ export function WebsiteInput({
   const sanitizedInput = (value as string).replace(/(^\w+:|^)\/\//, "");
 
   return (
-    <div className="mt-6 w-full sm:w-1/2 relative">
+    <div className="mt-6 w-full sm:max-w-md relative">
       <div className=" flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -285,6 +297,7 @@ export function TextArea({
   containerClass,
   rows,
 }: TextAreaProps) {
+  const [markdownToolTipOpen, setMarkdownToolTipOpen] = useState(false);
   let borderClass = "";
   let feedbackColor = "";
 
@@ -294,8 +307,30 @@ export function TextArea({
     feedbackColor = styleInfo.feedbackColor;
   }
 
+  const markdownTooltipText = (
+    <div
+      style={{ pointerEvents: "auto" }}
+      onMouseEnter={() => setMarkdownToolTipOpen(true)}
+      onMouseLeave={() => setMarkdownToolTipOpen(false)}
+      onFocus={() => setMarkdownToolTipOpen(true)}
+      onBlur={() => setMarkdownToolTipOpen(false)}
+    >
+      We now offer rich text support with Markdown. To learn more about how to
+      use Markdown, check out{" "}
+      <Link
+        href="https://www.markdownguide.org/cheat-sheet/"
+        target="_blank"
+        rel="noreferrer"
+        className="cursor-pointer underline"
+      >
+        this guide
+      </Link>
+      .
+    </div>
+  );
+
   return (
-    <div className={`mt-6 w-full sm:w-1/2 relative ${containerClass}`}>
+    <div className={`mt-6 w-full sm:max-w-md relative ${containerClass}`}>
       <div className="flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -306,6 +341,26 @@ export function TextArea({
           {required ? requiredSpan : optionalSpan}
         </div>
         {encrypted && encryptionTooltip}
+        {/*  */}
+        <span
+          onMouseEnter={() => setMarkdownToolTipOpen(true)}
+          onMouseLeave={() => setMarkdownToolTipOpen(false)}
+          onFocus={() => setMarkdownToolTipOpen(true)}
+          onBlur={() => setMarkdownToolTipOpen(false)}
+          style={{ paddingBottom: "3px" }}
+        >
+          <Tooltip
+            hasArrow
+            closeOnClick
+            bg="purple.900"
+            className="shrink ml-2 cursor-pointer"
+            label={markdownTooltipText}
+            isOpen={markdownToolTipOpen}
+            onOpen={() => setMarkdownToolTipOpen(true)}
+          >
+            <InformationCircleIcon className="w-6 h-6" color="gray" />
+          </Tooltip>
+        </span>
       </div>
       <legend>{info}</legend>
       <textarea
@@ -328,8 +383,11 @@ export function TextArea({
 }
 
 type SelectInputProps = InputProps & {
-  defaultValue?: number;
-  options: ProjectOption[];
+  defaultValue?: string;
+  options: {
+    id: string;
+    title: string;
+  }[];
 };
 
 export function Select({
@@ -337,6 +395,7 @@ export function Select({
   info,
   name,
   options,
+  value,
   disabled,
   changeHandler,
   required,
@@ -371,13 +430,15 @@ export function Select({
         id={name}
         name={name}
         disabled={disabled}
-        className={classNames(`w-full `, {
+        className={classNames(`text-base w-full `, {
           "bg-transparent": !disabled,
           borderClass,
         })}
         onChange={(e) => changeHandler(e)}
+        value={value}
         defaultValue={defaultValue}
       >
+        {!defaultValue && <option hidden>Choose a value</option>}
         {options.map((option) => (
           <option key={`key-${option.id}`} value={option.id}>
             {option.title}
@@ -393,7 +454,12 @@ export function Select({
   );
 }
 
-export function CustomSelect({
+type ProjectInputProps = InputProps & {
+  defaultValue?: number;
+  options: ProjectOption[];
+};
+
+export function ProjectSelect({
   label,
   info,
   name,
@@ -404,7 +470,7 @@ export function CustomSelect({
   encrypted,
   defaultValue,
   feedback,
-}: SelectInputProps) {
+}: ProjectInputProps) {
   let borderClass = "";
   let feedbackColor = "";
 

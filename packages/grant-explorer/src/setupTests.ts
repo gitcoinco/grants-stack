@@ -4,7 +4,9 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 require("jest-localstorage-mock");
+import { TextEncoder } from "util";
 
+global.TextEncoder = TextEncoder;
 beforeEach(() => {
   // @headlessui/react needs IntersectionObserver but isn't available in test environment
   const mockIntersectionObserver = jest.fn();

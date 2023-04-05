@@ -16,7 +16,7 @@ import {
   CardFooter,
 } from "../common/styles";
 import { ProjectBanner } from "../common/ProjectBanner";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
@@ -25,6 +25,8 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
 import markdown from "../../app/markdown";
+import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
+import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -135,6 +137,7 @@ function AfterRoundStart(props: {
       return () => clearTimeout(timeOutId);
     } else {
       let projects = round?.approvedProjects;
+
       // shuffle projects
       projects = projects?.sort(() => Math.random() - 0.5);
       setProjects(projects);
@@ -145,6 +148,7 @@ function AfterRoundStart(props: {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
     const projects = round?.approvedProjects;
+
     const exactMatches = projects?.filter(
       (project) =>
         project.projectMetadata.title.toLocaleLowerCase() ===
@@ -219,8 +223,7 @@ function AfterRoundStart(props: {
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(e: any) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -237,25 +240,37 @@ function AfterRoundStart(props: {
   );
 }
 
+const ProjectList = (props: {
+  projects: Project[];
+  roundRoutePath: string;
+}): JSX.Element => {
+  const { projects, roundRoutePath } = props;
+
+  return (
+    <CardsContainer>
+      {projects.map((project, index) => {
+        return (
+          <ProjectCard
+            key={index}
+            project={project}
+            roundRoutePath={roundRoutePath}
+          />
+        );
+      })}
+    </CardsContainer>
+  );
+};
+
 function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
-  const [
-    shortlist,
-    finalBallot,
-    handleAddProjectsToShortlist,
-    handleRemoveProjectsFromShortlist,
-    ,
-    handleRemoveProjectsFromFinalBallot,
-  ] = useBallot();
-  const isAddedToShortlist = shortlist.some(
-    (shortlistedProject) =>
-      shortlistedProject.grantApplicationId === project.grantApplicationId
-  );
-  const isAddedToFinalBallot = finalBallot.some(
-    (ballotProject) =>
-      ballotProject.grantApplicationId === project.grantApplicationId
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
+
+  const isAlreadyInCart = cart.some(
+    (cartProject) =>
+      cartProject.grantApplicationId === project.grantApplicationId
   );
 
   return (
@@ -284,19 +299,16 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
           </CardDescription>
         </CardContent>
       </Link>
-      <CardFooter className="bg-white">
-        <CardContent className="text-xs mt-4">
-          <ShortListButton
+      <CardFooter className="bg-white border-t">
+        <CardContent className="text-xs mt-3">
+          <CartButton
             project={project}
-            isAdded={isAddedToShortlist || isAddedToFinalBallot}
-            removeFromShortlist={() => {
-              handleRemoveProjectsFromShortlist([project]);
+            isAlreadyInCart={isAlreadyInCart}
+            removeFromCart={() => {
+              handleRemoveProjectsFromCart([project]);
             }}
-            removeFromFinalBallot={() => {
-              handleRemoveProjectsFromFinalBallot([project]);
-            }}
-            addToShortlist={() => {
-              handleAddProjectsToShortlist([project]);
+            addToCart={() => {
+              handleAddProjectsToCart([project]);
             }}
           />
         </CardContent>
@@ -305,109 +317,51 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
   );
 }
 
-const ProjectList = (props: {
-  projects: Project[];
-  roundRoutePath: string;
-}): JSX.Element => {
-  const { projects, roundRoutePath } = props;
-
-  return (
-    <CardsContainer>
-      {projects.map((project, index) => {
-        return (
-          <ProjectCard
-            key={index}
-            project={project}
-            roundRoutePath={roundRoutePath}
-          />
-        );
-      })}
-    </CardsContainer>
-  );
-};
-
-function ShortListButton(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
-  isAdded: boolean;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
-  addToShortlist: () => void;
+function CartButton(props: {
+  project: Project;
+  isAlreadyInCart: boolean;
+  removeFromCart: () => void;
+  addToCart: () => void;
 }) {
   return (
     <div>
-      <BallotSelectionToggle
+      <CartButtonToggle
         project={props.project}
-        isAdded={props.isAdded}
-        removeFromShortlist={props.removeFromShortlist}
-        removeFromFinalBallot={props.removeFromFinalBallot}
-        addToBallot={props.addToShortlist}
+        isAlreadyInCart={props.isAlreadyInCart}
+        removeFromCart={props.removeFromCart}
+        addToCart={props.addToCart}
       />
     </div>
   );
 }
 
-function BallotSelectionToggle(props: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
-  isAdded: boolean;
-  addToBallot: () => void;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
+function CartButtonToggle(props: {
+  project: Project;
+  isAlreadyInCart: boolean;
+  addToCart: () => void;
+  removeFromCart: () => void;
 }) {
-  const [shortlist, finalBallot, , , ,] = useBallot();
-
-  const isAddedToShortlist = shortlist.some(
-    (shortlistedProject) =>
-      shortlistedProject.grantApplicationId === props.project.grantApplicationId
-  );
-  const isAddedToFinalBallot = finalBallot.some(
-    (ballotProject) =>
-      ballotProject.grantApplicationId === props.project.grantApplicationId
-  );
-  // if the project is not added, show the add to shortlist button
-  // if the project is added to the shortlist, show the remove from shortlist button
-  // if the project is added to the final ballot, show the remove from final ballot button
-  if (props.isAdded) {
-    if (isAddedToShortlist) {
-      return (
-        <Button
-          data-testid="remove-from-shortlist"
-          onClick={props.removeFromShortlist}
-          className={
-            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Shortlist
-        </Button>
-      );
-    }
-    if (isAddedToFinalBallot) {
-      return (
-        <Button
-          data-testid="remove-from-final-ballot"
-          onClick={props.removeFromFinalBallot}
-          className={
-            "w-full bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Final Ballot
-        </Button>
-      );
-    }
+  // if the project is not added, show the add to cart button
+  // if the project is added to the cart, show the remove from cart button
+  if (props.isAlreadyInCart) {
+    return (
+      <div
+        className="float-right"
+        data-testid="remove-from-cart"
+        onClick={props.removeFromCart}
+      >
+        <CheckedCircleIcon className="w-10" />
+      </div>
+    );
   }
   return (
-    <Button
-      data-testid="add-to-shortlist"
-      onClick={() => {
-        props.addToBallot();
-      }}
-      className={
-        "w-full bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
-      }
+    <div
+      className="float-right"
+      data-testid="add-to-cart"
+      onClick={props.addToCart}
     >
-      Add to Shortlist
-    </Button>
+      <CartCircleIcon className="w-10" />
+    </div>
   );
 }
 

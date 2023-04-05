@@ -1,7 +1,0 @@
-{
-    "network": "mainnet",
-    "startBlock": 16084200,
-    "programFactoryAddress": "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB",
-    "QFVotingStrategyFactoryAddress": "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38",
-    "roundFactoryAddress": "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe"
-  }

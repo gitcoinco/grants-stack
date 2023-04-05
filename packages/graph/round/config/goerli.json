@@ -1,7 +1,0 @@
-{
-  "network": "goerli",
-  "startBlock": 7835860,
-  "programFactoryAddress": "0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9",
-  "QFVotingStrategyFactoryAddress": "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab",
-  "roundFactoryAddress": "0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48"
-}

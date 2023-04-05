@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchApplicationData } from "../../actions/roundApplication";
+import {
+  fetchApplicationData,
+  submitApplication,
+} from "../../actions/roundApplication";
 import { loadRound, unloadRounds } from "../../actions/rounds";
 import { RootState } from "../../reducers";
 import Button, { ButtonVariants } from "../base/Button";
@@ -13,6 +16,7 @@ import Form from "../application/Form";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
 import Cross from "../icons/Cross";
+import { RoundApplicationAnswers } from "../../types/roundApplication";
 
 const formatDate = (unixTS: number) =>
   new Date(unixTS).toLocaleDateString(undefined);
@@ -191,7 +195,9 @@ function ViewApplication() {
               }
               showErrorModal={props.showErrorModal || false}
               round={props.round}
-              onSubmit={() => {}}
+              onSubmit={(answers: RoundApplicationAnswers) => {
+                dispatch(submitApplication(props.round!.address, answers));
+              }}
               readOnly
             />
           )}

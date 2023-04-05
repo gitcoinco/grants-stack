@@ -23,7 +23,7 @@ export default function Radio({
   const { borderClass, feedbackColor } = styleInfo;
 
   return (
-    <div className="mt-6 w-full sm:w-1/2 relative">
+    <div className="mt-6 w-full sm:max-w-md relative">
       <div className=" flex">
         <div className="grow">
           <label className="text-sm w-full" htmlFor={name}>
@@ -31,8 +31,14 @@ export default function Radio({
           </label>
         </div>
         <div className="shrink ml-2">
-          {required && (
-            <span className="text-purple-700 inset-y-0 right-0">*Required</span>
+          {required ? (
+            <span className="text-sm text-purple-700 inset-y-0 right-0">
+              *Required
+            </span>
+          ) : (
+            <span className="text-gray-400 inset-y-0 right-0 text-sm">
+              Optional
+            </span>
           )}
         </div>
       </div>
@@ -40,7 +46,9 @@ export default function Radio({
       <fieldset className="mt-4" id={name} disabled={disabled}>
         <div className={classNames("space-y-2 ", borderClass)}>
           {choices.map((choice) => {
-            const choiceId = choice.toLowerCase().replaceAll(" ", "_");
+            const choiceId = `${name}-${choice
+              .toLowerCase()
+              .replaceAll(" ", "_")}`;
             return (
               <div key={choiceId} className="flex justify-start w-1/2">
                 <input
@@ -51,7 +59,7 @@ export default function Radio({
                   onChange={changeHandler}
                   type="radio"
                   className={classNames(
-                    "focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
+                    "checked:text-violet-400 focus:ring-indigo-500 text-indigo-600 border-gray-300 w-4 flex-none"
                   )}
                 />
                 <label htmlFor={choiceId} className="ml-3 mb-0">

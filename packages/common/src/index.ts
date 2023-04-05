@@ -1,4 +1,10 @@
 import useSWR from "swr";
+import { useParams } from "react-router";
+import { isAddress } from "viem";
+import {
+  ChainId,
+  graphql_fetch,
+} from "../../round-manager/src/features/api/utils";
 
 export enum PassportState {
   NOT_CONNECTED,
@@ -110,3 +116,83 @@ export const submitPassport = (
     }),
   });
 };
+
+export function classNames(...classes: (false | null | undefined | string)[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export type Payout = {
+  id: string;
+  amount: string;
+  grantee: string;
+  projectId: string;
+  txnHash: string;
+  token: string;
+  version: string;
+  createdAt: string;
+};
+
+/**
+ * Fetches the payouts that happened for a given round from TheGraph
+ * @param roundId Round ID
+ * @param chainId Chain ID
+ * @returns
+ */
+export function fetchProjectPaidInARound(
+  roundId: string,
+  chainId: ChainId
+): Promise<Payout[]> {
+  const { data, error, mutate } = useSWR(
+    [roundId, chainId],
+    ([roundId, chainId]: [roundId: string, chainId: ChainId]) => {
+      return graphql_fetch(
+        `
+        query GetPayouts($roundId: String) {
+          payoutStrategies(
+            where:{
+              round_:{
+                id: $roundId
+              }
+            }
+          ) {
+            payouts {
+              id
+              version
+              createdAt
+              token
+              amount
+              grantee
+              projectId
+              txnHash
+            }
+          }
+        }
+      `,
+        chainId,
+        { roundId }
+      );
+    }
+  );
+
+  const payouts = data?.data?.payoutStrategies[0]?.payouts || [];
+
+  return payouts;
+}
+
+/** Returns the current round id extracted from the current  route
+ * If there's no id parameter, or it isn't an Ethereum address, logs a warning to sentry.
+ * Types the return as string to avoid superfluous undefined-checks. If this hook is used on a page that doesn't contain a
+ * round id, we don't care about that page breaking either way.
+ * @return current round id extracted from route parameters
+ * */
+export function useRoundId() {
+  const { id: roundId } = useParams();
+
+  /* Check if the ID is an Ethereum address */
+  if (!isAddress(roundId ?? "")) {
+    console.warn(
+      "id extracted from url in useRoundId hook isn't a valid address. Check usage."
+    );
+  }
+  return roundId as string;
+}

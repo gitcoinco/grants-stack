@@ -71,16 +71,18 @@ export type InputProps = {
   encrypted?: boolean;
   containerClass?: string;
   tooltip?: ReactNode;
+  inputType?: string;
   feedback: {
     type: string;
     message: string;
   };
+  prefixBoxText?: string;
 };
 
 export type TextAreaProps = InputProps & { rows?: number };
 
 export type AddressInputProps = {
-  label: string;
+  label: string | ReactNode;
   name: string;
   info?: string;
   tooltipValue?: string;
@@ -184,7 +186,7 @@ export interface RoundApplication {
   answers: Array<{
     questionId: Number;
     question: string;
-    answer: string | undefined;
+    answer: string | undefined | string[];
     encryptedAnswer:
       | {
           ciphertext: string;

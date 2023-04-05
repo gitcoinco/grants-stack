@@ -1,9 +1,11 @@
 /**
  * Supported EVM networks
  */
-import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { BigNumber } from "ethers";
+import { SchemaQuestion } from "./utils";
 
 export type Network = "goerli" | "optimism";
 
@@ -101,13 +103,21 @@ export interface Program {
   };
 }
 
-export type InputType = "email" | "number" | "text";
+export type InputType =
+  | "email"
+  | "address"
+  | "number"
+  | "text"
+  | "short-answer"
+  | "paragraph"
+  | "multiple-choice"
+  | "checkbox"
+  | "dropdown"
+  | "link";
 
-export type QuestionOptions = {
-  title: string;
-  required: boolean;
-  encrypted: boolean;
-  inputType: InputType;
+export type EditQuestion = {
+  index?: number;
+  field?: SchemaQuestion;
 };
 
 export type ProjectRequirements = {
@@ -122,7 +132,7 @@ export type ProjectRequirements = {
 };
 
 export interface ApplicationMetadata {
-  questions?: QuestionOptions[];
+  questions?: SchemaQuestion[];
   requirements: ProjectRequirements;
 }
 
@@ -170,7 +180,10 @@ export interface Round {
   /**
    * Payout contract address
    */
-  payoutStrategy: string;
+  payoutStrategy: {
+    id: string;
+    isReadyForPayout: boolean;
+  };
   /**
    * Unix timestamp of the start of the round
    */
@@ -203,13 +216,28 @@ export interface Round {
    * List of projects approved for the round
    */
   approvedProjects?: ApprovedProject[];
+  /**
+   * Round fees percentage
+   */
+  feesPercentage?: number;
+  /**
+   * Round fees address
+   */
+  feesAddress?: string;
+
+  finalized: boolean;
 }
 
 export type MatchingStatsData = {
+  index?: number;
   projectName?: string;
-  projectId: string;
   uniqueContributorsCount: number;
   matchPoolPercentage: number;
+  projectId: string;
+  matchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  status?: string;
+  hash?: string;
 };
 
 export type ProjectStatus =
@@ -287,6 +315,7 @@ export type AnswerBlock = {
   questionId: number;
   question: string;
   answer?: string;
+  type?: string;
   encryptedAnswer?: {
     ciphertext: string;
     encryptedSymmetricKey: string;
@@ -326,4 +355,9 @@ export type Project = {
   projectTwitter?: string;
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
+};
+
+export type TransactionBlock = {
+  transactionBlockNumber: number;
+  error?: unknown;
 };

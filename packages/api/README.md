@@ -12,7 +12,7 @@ This package is meant to be used by the round operators to
 - view how the matching funds distributions evolve during the course of a round
 - determine how the funds should be split amongst the projects based on the votes received
 
-Indexed data can be queried by the graphs deployed from the [graph](../graph) package.
+Indexed data can be queried by the graphs deployed from Allo's [graph](https://github.com/Allo-Protocol/graph/blob/main/round/README.md) package.
 
 ## Directory Structure
 

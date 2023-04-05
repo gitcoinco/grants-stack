@@ -10,6 +10,7 @@ import { Select, TextArea, TextInput, WebsiteInput } from "../grants/inputs";
 import Button, { ButtonVariants } from "./Button";
 import ExitModal from "./ExitModal";
 import { validateProjectForm } from "./formValidation";
+import FormValidationErrorList from "./FormValidationErrorList";
 import ImageInput from "./ImageInput";
 
 const validation = {
@@ -75,6 +76,7 @@ function ProjectForm({
         errorCount: 0,
       });
       setFeedback([{ title: "", type: "none", message: "" }]);
+      return true;
     } catch (e) {
       const error = e as ValidationError;
       datadogRum.addError(error);
@@ -101,6 +103,8 @@ function ProjectForm({
           };
         }),
       ]);
+
+      return false;
     }
   };
 
@@ -113,10 +117,10 @@ function ProjectForm({
     didMountRef.current = true;
   }, [props.formMetaData]);
 
-  const nextStep = () => {
-    validate();
+  const nextStep = async () => {
     setSubmitted(true);
-    if (formValidation.valid) {
+    const valid = await validate();
+    if (valid) {
       setVerifying(ProjectFormStatus.Verification);
     }
   };
@@ -127,7 +131,7 @@ function ProjectForm({
         <div className="relative mt-4 w-full sm:w-1/2">
           <Select
             name="network"
-            defaultValue={props.currentChain}
+            defaultValue={props.currentChain?.toString()}
             label="Project Deployment Network:"
             options={chains.map((i) => ({
               id: i.id.toString(),
@@ -224,25 +228,8 @@ function ProjectForm({
           </div>
         )}
 
-        {!formValidation.valid && submitted && (
-          <div
-            className="p-4 text-gitcoin-pink-500 border rounded border-red-900/10 bg-gitcoin-pink-100 mt-8"
-            role="alert"
-          >
-            <strong className="text-gitcoin-pink-500 font-medium text-sm">
-              There {formValidation.errorCount === 1 ? "was" : "were"}{" "}
-              {formValidation.errorCount}{" "}
-              {formValidation.errorCount === 1 ? "error" : "errors"} with your
-              form submission
-            </strong>
-            <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
-              {formValidation.messages.map((o) => (
-                <li className="text-black my-1" key={o}>
-                  {o}
-                </li>
-              ))}
-            </ul>
-          </div>
+        {submitted && (
+          <FormValidationErrorList formValidation={formValidation} />
         )}
         <div className="flex w-full justify-end mt-6">
           <Button

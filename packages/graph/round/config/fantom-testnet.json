@@ -1,7 +1,0 @@
-{
-  "network": "fantom-testnet",
-  "startBlock": 11455000,
-  "programFactoryAddress": "0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92",
-  "QFVotingStrategyFactoryAddress": "0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2",
-  "roundFactoryAddress": "0x00F51ba2Cd201F4bFac0090F450de0992a838762"
-}

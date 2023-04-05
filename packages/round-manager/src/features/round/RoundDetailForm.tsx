@@ -1,5 +1,8 @@
 import { Fragment, useContext, useState } from "react";
 
+import { yupResolver } from "@hookform/resolvers/yup";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 import {
   Control,
   Controller,
@@ -7,27 +10,24 @@ import {
   SubmitHandler,
   useController,
   useForm,
-  UseFormRegisterReturn,
+  UseFormRegisterReturn
 } from "react-hook-form";
-import Datetime from "react-datetime";
-import "react-datetime/css/react-datetime.css";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Program, Round } from "../api/types";
-import { FormContext } from "../common/FormWizard";
-import { Input } from "common/src/styles";
-import { FormStepper } from "../common/FormStepper";
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import {
   CheckIcon,
-  SelectorIcon,
   InformationCircleIcon,
+  SelectorIcon
 } from "@heroicons/react/solid";
-import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
-import { useWallet } from "../common/Auth";
+import { Input } from "common/src/styles";
 import moment from "moment";
 import ReactTooltip from "react-tooltip";
+import { Program, Round } from "../api/types";
+import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
+import { useWallet } from "../common/Auth";
+import { FormStepper } from "../common/FormStepper";
+import { FormContext } from "../common/FormWizard";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -88,16 +88,25 @@ const ValidationSchema = yup.object().shape({
     .min(
       yup.ref("applicationsStartTime"),
       "Applications end date must be later than applications start date"
+    )
+    .max(
+      yup.ref("roundStartTime"),
+      "Applications end date must be earlier than the round start date"
     ),
   roundStartTime: yup
     .date()
     .required("This field is required.")
     .min(
-      yup.ref("applicationsStartTime"),
-      "Round start date must be later than applications start date"
+      yup.ref("applicationsEndTime"),
+      "Round start date must be later than applications end date"
+    )
+    .max(
+      yup.ref("roundEndTime"),
+      "Round start date must be earlier than the round end date"
     ),
   roundEndTime: yup
     .date()
+    .required("This field is required.")
     .min(
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
@@ -125,6 +134,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
       matchingCap: false,
     },
     ...((formData as Partial<Round>)?.roundMetadata ?? {}),
+    feesPercentage: 0,
+    feesAddress: "",
   };
   const {
     control,
@@ -147,6 +158,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
       chainId: chain.id,
       address: "",
       default: true,
+      decimal: 0,
     },
     ...getPayoutTokenOptions(chain.id),
   ];
@@ -259,11 +271,12 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                 </div>
               </div>
 
-              <p className="mt-6 mb-4 text-sm">
-                What are the dates for the Applications and Round voting
-                period(s)?
+              <div className="mt-6 mb-4 text-sm">
+                <span>
+                  What are the dates for the Applications and Round voting period(s)?
+                </span>
                 <ApplicationDatesInformation />
-              </p>
+              </div>
 
               <p className="text-sm mb-2">
                 <span>Applications</span>

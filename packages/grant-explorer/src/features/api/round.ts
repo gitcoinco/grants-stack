@@ -202,6 +202,7 @@ async function fetchMetadataAndMapProject(
 
   return {
     grantApplicationId: project.id,
+    grantApplicationFormAnswers: application.answers,
     projectRegistryId: project.project,
     recipient: application.recipient,
     projectMetadata: {

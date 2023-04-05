@@ -1,39 +1,45 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useWallet } from "../common/Auth";
-import Navbar from "../common/Navbar";
+import { datadogLogs } from "@datadog/browser-logs";
+import { Tab } from "@headlessui/react";
 import {
+  ArrowCircleRightIcon,
   CalendarIcon,
+  ChartBarIcon,
   ChevronRightIcon,
   ClockIcon,
-  InboxIcon,
-  ChartBarIcon,
   DocumentReportIcon,
+  DocumentTextIcon,
+  InboxIcon,
+  UserGroupIcon,
 } from "@heroicons/react/solid";
-import { Tab } from "@headlessui/react";
-import ApplicationsReceived from "./ApplicationsReceived";
-import ApplicationsApproved from "./ApplicationsApproved";
-import ApplicationsRejected from "./ApplicationsRejected";
-import Footer from "../common/Footer";
+import { Button } from "common/src/styles";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { datadogLogs } from "@datadog/browser-logs";
-import NotFoundPage from "../common/NotFoundPage";
-import AccessDenied from "../common/AccessDenied";
-import CopyToClipboardButton from "../common/CopyToClipboardButton";
-import { useRoundById } from "../../context/round/RoundContext";
-import { Spinner } from "../common/Spinner";
+import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
+import { useRoundById } from "../../context/round/RoundContext";
 import {
   ApplicationStatus,
   GrantApplication,
   ProgressStatus,
   Round,
 } from "../api/types";
-import { Button } from "common/src/styles";
-import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
-import ViewFundingAdmin from "./ViewFundingAdmin";
-import ViewRoundStats from "./ViewRoundStats";
 import { getUTCDate, getUTCTime } from "../api/utils";
+import AccessDenied from "../common/AccessDenied";
+import { useWallet } from "../common/Auth";
+import CopyToClipboardButton from "../common/CopyToClipboardButton";
+import Footer from "../common/Footer";
+import Navbar from "../common/Navbar";
+import NotFoundPage from "../common/NotFoundPage";
+import { Spinner } from "../common/Spinner";
+import ApplicationsApproved from "./ApplicationsApproved";
+import ApplicationsReceived from "./ApplicationsReceived";
+import ApplicationsRejected from "./ApplicationsRejected";
+import FundContract from "./FundContract";
+import ReclaimFunds from "./ReclaimFunds";
+import ViewFundGrantees from "./ViewFundGrantees";
+import ViewRoundResults from "./ViewRoundResults";
+import ViewRoundStats from "./ViewRoundStats";
 
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
@@ -41,7 +47,7 @@ export default function ViewRoundPage() {
   const { id } = useParams();
   const { address, chain } = useWallet();
 
-  const { round, fetchRoundStatus, error } = useRoundById(id);
+  const { round, fetchRoundStatus, error } = useRoundById(id?.toLowerCase());
   const isRoundsFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
 
@@ -61,6 +67,11 @@ export default function ViewRoundPage() {
       setRoundExists(!!round);
 
       if (round) {
+        /* During development, give frontend access to all rounds */
+        if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+          setHasAccess(true);
+          return;
+        }
         round.operatorWallets?.includes(address?.toLowerCase())
           ? setHasAccess(true)
           : setHasAccess(false);
@@ -105,9 +116,9 @@ export default function ViewRoundPage() {
                   startTime={round?.roundStartTime}
                   endTime={round?.roundEndTime}
                 />
-                <div className="ml-32 absolute left-3/4">
+                <div className="absolute right-0">
                   <ViewGrantsExplorerButton
-                    iconStyle="h-4 w-4 mr-2"
+                    iconStyle="h-4 w-4"
                     chainId={`${chain.id}`}
                     roundId={id}
                   />
@@ -151,6 +162,25 @@ export default function ViewRoundPage() {
                                 : "flex flex-row"
                             }
                           >
+                            <DocumentTextIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="fund-contract"
+                            >
+                              Fund Contract
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
                             <ChartBarIcon className="h-6 w-6 mr-2" />
                             <span className="mt-0.5" data-testid="round-stats">
                               Round Stats
@@ -170,9 +200,47 @@ export default function ViewRoundPage() {
                             <DocumentReportIcon className="h-6 w-6 mr-2" />
                             <span
                               className="mt-0.5"
-                              data-testid="funding-admin"
+                              data-testid="round-results"
                             >
-                              Funding Admin
+                              Round Results
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <UserGroupIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="fund-grantees"
+                            >
+                              Fund Grantees
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab className={({ selected }) => tabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <ArrowCircleRightIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="reclaim-funds"
+                            >
+                              Reclaim Funds
                             </span>
                           </div>
                         )}
@@ -190,13 +258,32 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewRoundStats
-                        roundStats=""
-                        isRoundStatsFetched={true}
+                      <FundContract
+                        round={round}
+                        chainId={`${chain.id}`}
+                        roundId={id}
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewFundingAdmin
+                      <ViewRoundStats />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewRoundResults
+                        round={round}
+                        chainId={chain.id}
+                        roundId={id}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewFundGrantees
+                        isRoundFinalized={
+                          round?.payoutStrategy?.isReadyForPayout ?? undefined
+                        }
+                        round={round}
+                      />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ReclaimFunds
                         round={round}
                         chainId={`${chain.id}`}
                         roundId={id}
@@ -329,11 +416,9 @@ function GrantApplications(props: {
         </div>
       )}
 
-      <div className="grid md:grid-cols-4 sm:grid-cols-1 gap-4 mb-8">
-        {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-          <Spinner text="We're fetching your Round." />
-        )}
-      </div>
+      {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Round." />
+      )}
     </div>
   );
 }

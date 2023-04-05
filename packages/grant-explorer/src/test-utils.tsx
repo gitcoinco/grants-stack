@@ -12,7 +12,7 @@ import {
   ProjectMetadata,
   Round,
 } from "./features/api/types";
-import { BallotProvider } from "./context/BallotContext";
+import { CartProvider } from "./context/CartContext";
 import { Provider } from "react-redux";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { store } from "./app/store";
@@ -68,6 +68,7 @@ export const makeApprovedProjectData = (
 ): Project => {
   return {
     grantApplicationId: `${faker.finance.ethereumAddress()}-${faker.finance.ethereumAddress()}`,
+    grantApplicationFormAnswers: [],
     projectRegistryId: faker.datatype.number().toString(),
     recipient: faker.finance.ethereumAddress(),
     projectMetadata: {
@@ -75,6 +76,7 @@ export const makeApprovedProjectData = (
       description: faker.lorem.sentence(),
       website: faker.internet.url(),
       projectTwitter: faker.internet.userName(),
+      createdAt: new Date().valueOf(),
       projectGithub: faker.internet.userName(),
       userGithub: faker.internet.userName(),
       owners: [{ address: faker.finance.ethereumAddress() }],
@@ -103,7 +105,7 @@ export const renderWithContext = (
           dispatch,
         }}
       >
-        <BallotProvider>{ui}</BallotProvider>
+        <CartProvider>{ui}</CartProvider>
       </RoundContext.Provider>
     </MemoryRouter>
   );

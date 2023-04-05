@@ -10,13 +10,8 @@
     "start": "pnpm --filter round-manager run start",
     "build": "pnpm turbo build",
     "compile": "pnpm --filter contracts run compile ",
-    "test": "pnpm run test --ignore=@grants-round/graph",
+    "test": "pnpm run test",
     "typecheck": "turbo run typecheck",
-    "// contracts script": "====== packages/contract specific ======",
-    "hh-test": "pnpm --filter contracts run test",
-    "hh-compile": "pnpm --filter contracts run compile",
-    "// graph script": "====== packages/graph specific ======",
-    "graph-test": "pnpm --filter graph test",
     "// round manager script": "====== packages/round-manager specific ======",
     "rm-build": "pnpm --filter round-manager run build",
     "rm-test": "pnpm --filter round-manager run test",
@@ -32,7 +27,8 @@
     "api-build": "turbo run build --filter=api",
     "api-test": "turbo run test --filter=api",
     "api-start": "pnpm --filter api run start",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "lint:builder": "pnpm --filter=builder run lint"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -41,6 +37,6 @@
     "lint-staged": "^13.1.0"
   },
   "dependencies": {
-    "turbo": "^1.7.2"
+    "turbo": "^1.8.5"
   }
 }
