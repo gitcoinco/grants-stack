@@ -300,15 +300,6 @@ function AboutProject(props: { projectToRender: Project }) {
           />
         </span>
       )}
-      {projectToRender.projectMetadata.createdAt && (
-        <span className="flex items-center mt-4 gap-1">
-          <CalendarIcon className="h-4 w-4 mr-1 opacity-80" />
-          <DetailSummary
-            text={`${formattedDateWithOrdinal}`}
-            testID="project-createdAt"
-          />
-        </span>
-      )}
       {userGithub && (
         <span className="flex items-center mt-4 gap-1">
           <GithubIcon className="h-4 w-4 mr-1 opacity-40" />

@@ -184,8 +184,8 @@ export const makeGrantApplicationData = (
     });
   }
 
+  // @ts-expect-error type system madness
   return {
-    createdAt: "1659714564",
     id:
       applicationIdOverride ||
       faker.random.alpha({ count: 10, casing: "lower" }),
