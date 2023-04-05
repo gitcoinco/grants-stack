@@ -7,7 +7,9 @@ import { useProgramById } from "../../context/program/ReadProgramContext";
 import Footer from "../common/Footer";
 import { FormWizard } from "../common/FormWizard";
 import Navbar from "../common/Navbar";
+import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
+import { RoundDetailForm } from "./RoundDetailForm";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -48,8 +50,8 @@ export default function CreateRound() {
           <main>
             <FormWizard
               steps={[
-                // RoundDetailForm,
-                // ApplicationEligibilityForm,
+                RoundDetailForm,
+                ApplicationEligibilityForm,
                 // @ts-expect-error Needs refactoring/typing as a whole
                 RoundApplicationForm,
               ]}
