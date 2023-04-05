@@ -127,7 +127,7 @@ export const publishGrant =
     const addresses = addressesByChainID(chainID!);
     const { signer } = global;
     const projectRegistry = new ethers.Contract(
-      addresses.projectRegistry,
+      addresses.projectRegistry!,
       ProjectRegistryABI,
       signer
     );

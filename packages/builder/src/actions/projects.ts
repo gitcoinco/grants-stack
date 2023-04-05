@@ -1,22 +1,19 @@
-import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
-// import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
+import { convertStatusToText } from "common";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus, ProjectStats } from "../reducers/projects";
-import PinataClient from "../services/pinata";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
+import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProviderByChainId, getProjectURIComponents } from "../utils/utils";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
+import { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
-import { chains } from "../utils/wagmi";
-import { fetchProjectOwners } from "../utils/projects";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 interface ProjectsLoadingAction {
@@ -316,7 +313,10 @@ export const loadProjects =
       dispatch(projectsLoaded(chainID, projectEventsMap));
     } catch (error) {
       const chainName = chains.find((c) => c.id === chainID)?.name;
-
+      if (chainName === "Hardhat") {
+        dispatch(projectsLoaded(chainID, {}));
+        return;
+      }
       datadogRum.addError(error, { chainID });
       console.error(chainName, chainID, error);
 
@@ -335,65 +335,65 @@ export const loadProjects =
 export const loadAllChainsProjects =
   (withMetaData?: boolean) => async (dispatch: Dispatch) => {
     const { web3Provider } = global;
-    web3Provider?.chains?.forEach((chainID) => {
+    web3Provider?.chains?.forEach((chainID: { id: number }) => {
       dispatch(projectsLoading(chainID.id));
       dispatch<any>(loadProjects(chainID.id, withMetaData));
     });
   };
 
-export const fetchApplicationStatusesFromContract =
-  (
-    roundAddresses: string[],
-    projectID: string,
-    projectApplicationID: string,
-    chainId: number
-  ) =>
-  async (dispatch: Dispatch) => {
-    roundAddresses.forEach(async (roundAddress: string) => {
-      const appProvider = getProviderByChainId(chainId);
-      const contract = new ethers.Contract(
-        roundAddress,
-        RoundImplementationABI,
-        appProvider
-      );
-      try {
-        const result = await contract.projectsMetaPtr();
-        const pinataClient = new PinataClient();
-        const data = await pinataClient.fetchJson(result.pointer);
-        const projectApplication = data.find((app: any) => {
-          if (app.id === undefined) {
-            return false;
-          }
+export const fetchProjectApplicationInRound = async (
+  applicationId: string,
+  roundID: string,
+  reactEnv?: any
+): Promise<any> => {
+  const splitApplicationId = applicationId.split(":");
+  const projectChainId = Number(splitApplicationId[0]);
+  const projectRegistryAddress = splitApplicationId[1];
+  const projectNumber = splitApplicationId[2];
 
-          // appId is in the form "projectApplicationID-roundAddress"
-          const parts = app.id.split("-");
-          if (parts[0] === projectApplicationID) {
-            return true;
+  const projectApplicationID = generateUniqueRoundApplicationID(
+    projectChainId,
+    projectNumber,
+    projectRegistryAddress
+  );
+
+  try {
+    const response: any = await graphqlFetch(
+      `query projectApplicationInRound($projectApplicationID: String, $roundID: String) {
+          roundApplications(
+            where: {
+              project: $projectApplicationID,
+              round: $roundID
+            }
+          ) {
+            status
           }
-          return false;
-        });
-        if (projectApplication !== undefined) {
-          dispatch({
-            type: "PROJECT_APPLICATION_UPDATED",
-            projectID,
-            roundID: roundAddress,
-            status: projectApplication.status,
-          });
         }
-      } catch (error: any) {
-        datadogRum.addError(error, { roundAddress });
-        datadogLogs.logger.error("getApplicationStatusFromContract() error", {
-          roundAddress,
-          error,
-        });
-        dispatch({
-          type: PROJECT_APPLICATIONS_ERROR,
-          projectID,
-          error: error.message,
-        });
-      }
-    });
-  };
+      `,
+      projectChainId,
+      {
+        projectApplicationID,
+        roundID,
+      },
+      reactEnv
+    );
+
+    if (response.errors) {
+      throw response.errors;
+    }
+
+    return {
+      hasProjectAppliedToRound: response.data.roundApplications.length > 0,
+    };
+  } catch (error: any) {
+    datadogRum.addError(error, { projectApplicationID, roundID });
+    console.error(error);
+
+    return {
+      hasProjectAppliedToRound: false,
+    };
+  }
+};
 
 export const fetchProjectApplications =
   (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
@@ -410,18 +410,18 @@ export const fetchProjectApplications =
     }
 
     const apps = await Promise.all(
-      web3Provider.chains.map(async (chain) => {
+      web3Provider.chains.map(async (chain: { id: number }) => {
         try {
           const addresses = addressesByChainID(projectChainId);
           const projectApplicationID = generateUniqueRoundApplicationID(
             projectChainId,
             projectID,
-            addresses.projectRegistry
+            addresses.projectRegistry!
           );
 
           const response: any = await graphqlFetch(
-            `query roundProjects($projectID: String) {
-            roundProjects(where: { project: $projectID }) {
+            `query roundApplications($projectID: String) {
+            roundApplications(where: { project: $projectID }) {
               status
               round {
                 id
@@ -441,15 +441,17 @@ export const fetchProjectApplications =
           );
 
           if (response.errors) {
-            throw response.errors;
+            return [];
           }
 
-          const applications = response.data.roundProjects.map((rp: any) => ({
-            status: rp.status,
-            roundID: rp.round.id,
-            chainId: chain.id,
-            metaPtr: rp.metaPtr,
-          }));
+          const applications = response.data.roundApplications.map(
+            (application: any) => ({
+              status: convertStatusToText(application.status),
+              roundID: application.round.id,
+              chainId: chain.id,
+              metaPtr: application.metaPtr,
+            })
+          );
 
           if (applications.length === 0) {
             return [];
@@ -460,23 +462,6 @@ export const fetchProjectApplications =
             projectID,
             applications,
           });
-
-          // Update each application with the status from the contract
-          // FIXME: This part can be removed when we are sure that the
-          // aplication status returned from the graph is up to date.
-          // eslint-disable-next-line
-          const roundAddresses = applications.map(
-            (app: Application) => app.roundID
-          );
-
-          dispatch<any>(
-            fetchApplicationStatusesFromContract(
-              roundAddresses,
-              projectID,
-              projectApplicationID,
-              chain.id
-            )
-          );
 
           return applications;
         } catch (error: any) {
@@ -541,7 +526,7 @@ export const loadProjectStats =
       const projectApplicationID = generateUniqueRoundApplicationID(
         round.chainId,
         projectID,
-        addresses.projectRegistry
+        addresses.projectRegistry!
       );
       await fetch(
         `${process.env.REACT_APP_GITCOIN_API}update/summary/project/${round.chainId}/${round.roundId}/${projectApplicationID}`,
