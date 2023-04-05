@@ -5,8 +5,7 @@ import { Project } from "../api/types";
 import { Button } from "common/src/styles";
 import { CheckIcon, EyeIcon } from "@heroicons/react/24/outline";
 import DefaultLogoImage from "../../assets/default_logo.png";
-import markdown from "../../app/markdown";
-
+import { renderToPlainText } from "common";
 export default function NavbarCart(props: {
   cart: Project[];
   roundUrlPath: string;
@@ -25,7 +24,12 @@ export default function NavbarCart(props: {
   );
 
   return (
-    <div data-testid="navbar-cart" className="relative flex-row" onClick={toggleMenu} ref={menuRef}>
+    <div
+      data-testid="navbar-cart"
+      className="relative flex-row"
+      onClick={toggleMenu}
+      ref={menuRef}
+    >
       <QuickViewIcon count={projectCount} />
 
       {open && Boolean(projectCount) && (
@@ -73,7 +77,10 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
   const navigate = useNavigate();
 
   return (
-    <div data-testid="quick-view-summary" className="mt-4 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20">
+    <div
+      data-testid="quick-view-summary"
+      className="mt-4 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20"
+    >
       <p className="flex border-b mb-4 pb-4 gap-2">
         <CheckIcon className="w-5" />
         Projects in your cart
@@ -86,8 +93,7 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
               roundUrlPath={props.roundUrlPath}
               project={project}
             />
-          ))
-        }
+          ))}
       </div>
 
       <Button
@@ -134,9 +140,9 @@ function ProjectQuickView(props: { roundUrlPath: string; project: Project }) {
           </p>
         </Link>
         <p className="text-xs text-ellipsis line-clamp-3">
-          {markdown
-            .renderToPlainText(props.project.projectMetadata.description)
-            .substring(0, 20)}
+          {renderToPlainText(
+            props.project.projectMetadata.description
+          ).substring(0, 20)}
         </p>
       </div>
     </div>

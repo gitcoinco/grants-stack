@@ -11,7 +11,7 @@ const merklePayoutStrategyFactory = [
   "function payoutImplementation() view returns (address)",
   "function renounceOwnership()",
   "function transferOwnership(address newOwner)",
-  "function updatePayoutImplementation(address newPayoutImplementation)"
+  "function updatePayoutImplementation(address newPayoutImplementation)",
 ];
 
 export default merklePayoutStrategyFactory;

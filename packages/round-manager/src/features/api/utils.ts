@@ -292,70 +292,6 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
     }
   }
 };
-
-/**
- * Fetch subgraph network for provided web3 network
- *
- * @param chainId - The chain ID of the blockchain2
- * @returns the subgraph endpoint
- */
-const getGraphQLEndpoint = async (chainId: ChainId) => {
-  switch (chainId) {
-    case ChainId.MAINNET:
-      return `${process.env.REACT_APP_SUBGRAPH_MAINNET_API}`;
-
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API}`;
-
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
-
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
-
-    case ChainId.GOERLI_CHAIN_ID:
-    default:
-      return `${process.env.REACT_APP_SUBGRAPH_GOERLI_API}`;
-  }
-};
-
-/**
- * Fetch data from a GraphQL endpoint
- *
- * @param query - The query to be executed
- * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param variables - The variables to be used in the query
- * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
- * @returns The result of the query
- */
-export const graphql_fetch = async (
-  query: string,
-  chainId: ChainId,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  variables: object = {},
-  fromProjectRegistry = false,
-) => {
-  let endpoint = await getGraphQLEndpoint(chainId);
-
-  if (fromProjectRegistry) {
-    endpoint = endpoint.replace("grants-round", "grants-hub");
-  }
-
-  return fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
-};
-
 /**
  * Fetch data from IPFS
  * TODO: include support for fetching abitrary data e.g images
@@ -364,7 +300,7 @@ export const graphql_fetch = async (
  */
 export const fetchFromIPFS = (cid: string) => {
   return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`,
+    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
   ).then((resp) => {
     if (resp.ok) {
       return resp.json();
@@ -469,7 +405,7 @@ export interface ApplicationSchema {
  */
 export const generateApplicationSchema = (
   questions: ApplicationMetadata["questions"],
-  requirements: ApplicationMetadata["requirements"],
+  requirements: ApplicationMetadata["requirements"]
 ): ApplicationSchema => {
   const schema = { questions: new Array<SchemaQuestion>(), requirements };
   if (!questions) return schema;
@@ -600,7 +536,7 @@ export const useTokenPrice = (tokenId: string | undefined) => {
  */
 export const getTxExplorerForContract = (
   chainId: ChainId,
-  contractAddress: string,
+  contractAddress: string
 ) => {
   switch (chainId) {
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
@@ -627,7 +563,7 @@ export const getTxExplorerForContract = (
  * @returns
  */
 export const generateMerkleTree = (
-  matchingResults: MatchingStatsData[],
+  matchingResults: MatchingStatsData[]
 ): {
   distribution: [number, string, BigNumber, string][];
   tree: StandardMerkleTree<[number, string, BigNumber, string]>;
@@ -659,10 +595,10 @@ export const generateMerkleTree = (
 export const formatCurrency = (
   value: BigNumber,
   decimal: number,
-  fraction?: number,
+  fraction?: number
 ) => {
   return parseFloat(
-    ethers.utils.formatUnits(value.toString(), decimal),
+    ethers.utils.formatUnits(value.toString(), decimal)
   ).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });

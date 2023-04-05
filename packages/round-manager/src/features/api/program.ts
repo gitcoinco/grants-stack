@@ -1,9 +1,10 @@
-import { CHAINS, fetchFromIPFS, graphql_fetch } from "./utils";
+import { CHAINS, fetchFromIPFS } from "./utils";
 import { MetadataPointer, Program, Web3Instance } from "./types";
 import { programFactoryContract } from "./contracts";
 import { ethers } from "ethers";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Signer } from "@ethersproject/abstract-signer";
+import { graphql_fetch } from "common";
 
 /**
  * Fetch a list of programs

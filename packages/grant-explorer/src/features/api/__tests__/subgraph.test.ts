@@ -9,6 +9,11 @@ jest.mock("../utils", () => ({
   graphql_fetch: jest.fn(),
 }));
 
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  graphql_fetch: jest.fn(),
+}));
+
 beforeEach(() => {
   jest.clearAllMocks();
 });

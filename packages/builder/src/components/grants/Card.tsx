@@ -2,6 +2,7 @@ import { Badge, Image } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { renderToPlainText } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
@@ -11,7 +12,6 @@ import { getProjectImage, ImgTypes } from "../../utils/components";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import LoadingCard from "./LoadingCard";
-import markdown from "../../utils/markdown";
 
 function Card({ projectId }: { projectId: string }) {
   const dispatch = useDispatch();
@@ -52,9 +52,9 @@ function Card({ projectId }: { projectId: string }) {
     return projectPath(chainId, registryAddress, id);
   }
 
-  const projectDescription = markdown
-    .renderToPlainText(props.currentProject?.description || "")
-    .slice(0, 100);
+  const projectDescription = renderToPlainText(
+    props.currentProject?.description || ""
+  ).slice(0, 100);
 
   return (
     <div className="container grid grid-cols-1 max-w-sm rounded overflow-hidden shadow-lg my-6">

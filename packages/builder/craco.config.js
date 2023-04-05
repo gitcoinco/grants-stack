@@ -1,3 +1,6 @@
+const path = require("path");
+const CracoEsbuildPlugin = require("craco-esbuild");
+
 module.exports = {
   webpack: {
     configure: {
@@ -26,4 +29,13 @@ module.exports = {
       },
     },
   },
+  plugins: [
+    {
+      plugin: CracoEsbuildPlugin,
+      options: {
+        includePaths: [path.join(__dirname, `../common/src`)],
+        skipEsbuildJest: true,
+      },
+    },
+  ],
 };
