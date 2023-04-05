@@ -1,8 +1,6 @@
 import { act, cleanup, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  renderWrapped,
-} from "../../../utils/test_utils";
+import { renderWrapped } from "../../../utils/test_utils";
 import Stats from "../../../components/grants/stats/Stats";
 
 jest.mock("react-router-dom", () => ({
