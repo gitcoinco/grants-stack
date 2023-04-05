@@ -18,7 +18,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
 
-type RoundProject = {
+type RoundApplication = {
   id: string;
   metaPtr: {
     protocol: number;
@@ -36,7 +36,7 @@ type RoundProject = {
 
 type Res = {
   data: {
-    roundProjects: RoundProject[];
+    roundApplications: RoundApplication[];
   };
 };
 
@@ -50,7 +50,7 @@ export const getApplicationById = async (
     const res: Res = await graphql_fetch(
       `
         query GetGrantApplications($id: String) {
-          roundProjects(where: {
+          roundApplications(where: {
             id: $id
           }) {
             id
@@ -73,7 +73,7 @@ export const getApplicationById = async (
       { id }
     );
 
-    const grantApplicationExists = res.data.roundProjects.length > 0;
+    const grantApplicationExists = res.data.roundApplications.length > 0;
     if (!grantApplicationExists) {
       throw new Error("Grant Application doesn't exist");
     }
@@ -95,7 +95,7 @@ export const getApplicationById = async (
     const grantApplicationsFromContract =
       await updateApplicationStatusFromContract(
         grantApplications,
-        res.data.roundProjects[0].round.projectsMetaPtr
+        res.data.roundApplications[0].round.projectsMetaPtr
       );
 
     return grantApplicationsFromContract[0];
@@ -104,6 +104,21 @@ export const getApplicationById = async (
     throw error;
   }
 };
+
+function convertStatus(status: number) {
+  switch (status) {
+    case 0:
+      return "PENDING";
+    case 1:
+      return "APPROVED";
+    case 2:
+      return "REJECTED";
+    case 3:
+      return "CANCELLED";
+    default:
+      return "PENDING";
+  }
+}
 
 export const getApplicationsByRoundId = async (
   roundId: string,
@@ -117,7 +132,7 @@ export const getApplicationsByRoundId = async (
     const res = await graphql_fetch(
       `
         query GetApplicationsByRoundId($roundId: String!, $status: String) {
-          roundProjects(where: {
+          roundApplications(where: {
             round: $roundId
       ` +
         // TODO : uncomment when indexing IPFS via graph
@@ -147,8 +162,10 @@ export const getApplicationsByRoundId = async (
 
     const grantApplications: GrantApplication[] = [];
 
-    for (const project of res.data.roundProjects) {
+    for (const project of res.data.roundApplications) {
       const metadata = await fetchFromIPFS(project.metaPtr.pointer);
+
+      const projectStatus = convertStatus(project.status);
 
       // const signature = metadata?.signature;
       const application = metadata.application
@@ -157,17 +174,17 @@ export const getApplicationsByRoundId = async (
 
       grantApplications.push({
         ...application,
-        status: project.status,
+        status: projectStatus,
         id: project.id,
         projectsMetaPtr: project.round.projectsMetaPtr,
       });
     }
 
     const grantApplicationsFromContract =
-      res.data.roundProjects.length > 0
+      res.data.roundApplications.length > 0
         ? await updateApplicationStatusFromContract(
             grantApplications,
-            res.data.roundProjects[0].round.projectsMetaPtr
+            res.data.roundApplications[0].round.projectsMetaPtr
           )
         : grantApplications;
 
@@ -205,33 +222,34 @@ const fetchApplicationData = async (
   projectRegistry: Contract
 ): Promise<GrantApplication[]> =>
   Promise.all(
-    res.data.roundProjects.map(async (project): Promise<GrantApplication> => {
-      const metadata = await fetchFromIPFS(project.metaPtr.pointer);
+    res.data.roundApplications.map(
+      async (project): Promise<GrantApplication> => {
+        const metadata = await fetchFromIPFS(project.metaPtr.pointer);
 
-      const application = metadata.application
-        ? metadata.application
-        : metadata;
+        const application = metadata.application
+          ? metadata.application
+          : metadata;
 
-      let status = project.status;
+        let status = project.status;
 
-      if (id) {
-        status = await checkGrantApplicationStatus(
-          project.id,
-          project.round.projectsMetaPtr
-        );
-      }
+        if (id) {
+          status = await checkGrantApplicationStatus(
+            project.id,
+            project.round.projectsMetaPtr
+          );
+        }
 
-      const projectMetadata = application.project;
-      const projectRegistryId = projectMetadata.id;
-      const fixedId = projectRegistryId.includes(":")
-        ? projectRegistryId.split(":")[2]
-        : projectRegistryId;
+        const projectMetadata = application.project;
+        const projectRegistryId = projectMetadata.id;
+        const fixedId = projectRegistryId.includes(":")
+          ? projectRegistryId.split(":")[2]
+          : projectRegistryId;
 
-      const projectOwners = await projectRegistry.getProjectOwners(fixedId);
-      const grantApplicationProjectMetadata: Project = {
-        ...projectMetadata,
-        owners: projectOwners.map((address: string) => ({ address })),
-      };
+        const projectOwners = await projectRegistry.getProjectOwners(fixedId);
+        const grantApplicationProjectMetadata: Project = {
+          ...projectMetadata,
+          owners: projectOwners.map((address: string) => ({ address })),
+        };
 
       return {
         ...application,
@@ -283,7 +301,7 @@ const updateApplicationStatusFromContract = async (
       );
       // update status of application from contract / default to pending
       application.status =
-        index >= 0 ? applicationsFromContract[index].status : "PENDING";
+        index >= 0 ? applicationsFromContract[index].status : 0;
     } catch {
       application.status = "PENDING";
     }
