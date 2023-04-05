@@ -21,7 +21,7 @@ interface ProgressModalProps {
 export default function ProgressModal({
   isOpen,
   heading = "Processing...",
-  subheading = "Please hold while your operation is in progress.",
+  subheading = "Please hold while we submit your donation.",
   children,
   ...props
 }: ProgressModalProps) {

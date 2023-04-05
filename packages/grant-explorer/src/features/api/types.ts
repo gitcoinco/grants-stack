@@ -157,7 +157,7 @@ export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
 export type recipient = string;
 
-export type FinalBallotDonation = {
+export type CartDonation = {
   projectRegistryId: ProjectRegistryId;
   amount: string;
   projectAddress: recipient;

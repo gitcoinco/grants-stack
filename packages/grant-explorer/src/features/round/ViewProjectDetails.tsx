@@ -14,17 +14,15 @@ import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
   ChevronLeftIcon,
   GlobeAltIcon,
-  InformationCircleIcon,
   BoltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "common/src/styles";
-import { useBallot } from "../../context/BallotContext";
+import { useCart } from "../../context/CartContext";
 import Navbar from "../common/Navbar";
-import ReactTooltip from "react-tooltip";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -84,18 +82,10 @@ export default function ViewProjectDetails() {
   const currentTime = new Date();
   const isBeforeRoundEndDate = round && round.roundEndTime > currentTime;
   const isAfterRoundEndDate = round && round.roundEndTime <= currentTime;
-  const [
-    shortlist,
-    finalBallot,
-    handleAddProjectsToShortlist,
-    handleRemoveProjectsFromShortlist,
-    ,
-    handleRemoveProjectsFromFinalBallot,
-  ] = useBallot();
-  const isAddedToShortlist = shortlist.some(
-    (project) => project.grantApplicationId === applicationId
-  );
-  const isAddedToFinalBallot = finalBallot.some(
+  const [cart, handleAddProjectsToCart, handleRemoveProjectsFromCart] =
+    useCart();
+
+  const isAlreadyInCart = cart.some(
     (project) => project.grantApplicationId === applicationId
   );
 
@@ -139,15 +129,12 @@ export default function ViewProjectDetails() {
                   </div>
                 </div>
                 <Sidebar
-                  isAdded={isAddedToShortlist || isAddedToFinalBallot}
-                  removeFromShortlist={() => {
-                    handleRemoveProjectsFromShortlist([projectToRender]);
+                  isAlreadyInCart={isAlreadyInCart}
+                  removeFromCart={() => {
+                    handleRemoveProjectsFromCart([projectToRender]);
                   }}
-                  removeFromFinalBallot={() => {
-                    handleRemoveProjectsFromFinalBallot([projectToRender]);
-                  }}
-                  addToShortlist={() => {
-                    handleAddProjectsToShortlist([projectToRender]);
+                  addToCart={() => {
+                    handleAddProjectsToCart([projectToRender]);
                   }}
                 />
               </div>
@@ -472,21 +459,18 @@ export function ProjectLogo(props: {
 }
 
 function Sidebar(props: {
-  isAdded: boolean;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
-  addToShortlist: () => void;
+  isAlreadyInCart: boolean;
+  removeFromCart: () => void;
+  addToCart: () => void;
 }) {
   return (
     <div className="mt-6 md:mt-0 self-center md:self-auto md:ml-6">
       <ProjectStats />
-      <BallotSelectionToggle
-        isAdded={props.isAdded}
-        removeFromShortlist={props.removeFromShortlist}
-        removeFromFinalBallot={props.removeFromFinalBallot}
-        addToBallot={props.addToShortlist}
+      <CartButtonToggle
+        isAlreadyInCart={props.isAlreadyInCart}
+        addToCart={props.addToCart}
+        removeFromCart={props.removeFromCart}
       />
-      <ShortlistTooltip />
     </div>
   );
 }
@@ -545,98 +529,39 @@ export function ProjectStats() {
   );
 }
 
-function BallotSelectionToggle(props: {
-  isAdded: boolean;
-  addToBallot: () => void;
-  removeFromShortlist: () => void;
-  removeFromFinalBallot: () => void;
+function CartButtonToggle(props: {
+  isAlreadyInCart: boolean;
+  addToCart: () => void;
+  removeFromCart: () => void;
 }) {
-  const { applicationId } = useParams();
-  const [shortlist, finalBallot] = useBallot();
-
-  const isAddedToShortlist = shortlist.some(
-    (project) => project.grantApplicationId === applicationId
-  );
-  const isAddedToFinalBallot = finalBallot.some(
-    (project) => project.grantApplicationId === applicationId
-  );
-  // if the project is not added, show the add to shortlist button
-  // if the project is added to the shortlist, show the remove from shortlist button
-  // if the project is added to the final ballot, show the remove from final ballot button
-  if (props.isAdded) {
-    if (isAddedToShortlist) {
-      return (
-        <Button
-          data-testid="remove-from-shortlist"
-          onClick={props.removeFromShortlist}
-          className={
-            "w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Shortlist
-        </Button>
-      );
-    }
-    if (isAddedToFinalBallot) {
-      return (
-        <Button
-          data-testid="remove-from-final-ballot"
-          onClick={props.removeFromFinalBallot}
-          className={
-            "w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
-          }
-        >
-          Remove from Final Ballot
-        </Button>
-      );
-    }
+  // if the project is not added, show the add to cart button
+  // if the project is added to the cart, show the remove from cart button
+  if (props.isAlreadyInCart) {
+    return (
+      <Button
+        data-testid="remove-from-cart"
+        onClick={props.removeFromCart}
+        className={
+          "w-80 bg-transparent hover:bg-red-500 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded"
+        }
+      >
+        Remove from Cart
+      </Button>
+    );
   }
+
   return (
     <Button
-      data-testid="add-to-shortlist"
+      data-testid="add-to-cart"
       onClick={() => {
-        props.addToBallot();
+        props.addToCart();
       }}
       className={
         "w-80 bg-transparent hover:bg-violet-400 text-grey-900 font-semibold hover:text-white py-2 px-4 border border-violet-400 hover:border-transparent rounded"
       }
     >
-      Add to Shortlist
+      Add to Cart
     </Button>
-  );
-}
-
-function ShortlistTooltip() {
-  return (
-    <span className="flex items-center justify-center mt-2">
-      <InformationCircleIcon
-        data-tip
-        data-background-color="#0E0333"
-        data-for="shortlist-tooltip"
-        className="inline h-4 w-4 ml-2 mr-3"
-        data-testid={"shortlist-tooltip"}
-      />
-      <ReactTooltip
-        id="shortlist-tooltip"
-        place="bottom"
-        type="dark"
-        effect="solid"
-      >
-        <p className="text-xs">
-          This interactive tool allows you to <br />
-          visualize how you distribute your <br />
-          impact across projects as you make <br />
-          your decisions. Adjust as you go and
-          <br />
-          then decide when you're ready to <br />
-          submit your final choices.
-          <br />
-        </p>
-      </ReactTooltip>
-      <p className={"text-base font-normal text-black"}>
-        What is the Shortlist?
-      </p>
-    </span>
   );
 }
 

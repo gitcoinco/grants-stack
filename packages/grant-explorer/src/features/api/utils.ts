@@ -416,3 +416,29 @@ export const getUTCTime = (date: Date): string => {
 
   return utcTime.join(":") + " UTC";
 };
+
+export const listenForOutsideClicks = ({
+  listening,
+  setListening,
+  menuRef,
+  setOpen,
+}: {
+  listening: boolean;
+  setListening: React.Dispatch<React.SetStateAction<boolean>>;
+  menuRef: React.MutableRefObject<HTMLDivElement | null>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  return () => {
+    if (listening) return;
+    if (!menuRef.current) return;
+    setListening(true);
+    [`click`, `touchstart`].forEach((type) => {
+      document.addEventListener(type, (evt) => {
+        if (menuRef.current && menuRef.current.contains(evt.target as Node)) {
+          return;
+        }
+        setOpen(false);
+      });
+    });
+  };
+};

@@ -271,47 +271,45 @@ describe("<ViewProjectDetails/>", () => {
   });
 });
 
-describe("voting ballot", () => {
+describe("voting cart", () => {
   const expectedProject = makeApprovedProjectData({ grantApplicationId });
   const roundWithProjects = makeRoundData({
     id: roundId,
     approvedProjects: [expectedProject],
   });
 
-  it("shows an add-to-shortlist button", () => {
+  it("shows an add-to-cart button", () => {
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
+    expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
   });
 
-  it("shows a remove-from-shortlist button replacing add-to-shortlist when add-to-shortlist is clicked", () => {
+  it("shows a remove-from-cart button replacing add-to-cart when add-to-cart is clicked", () => {
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
-    const addToBallot = screen.getByTestId("add-to-shortlist");
-    fireEvent.click(addToBallot);
+    const addToCart = screen.getByTestId("add-to-cart");
+    fireEvent.click(addToCart);
     setTimeout(() => {
       // wait three seconds after the user clicks add before proceeding
-      expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
-      expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
+      expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
+      expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
     }, 3000);
   });
 
-  it("shows a add-to-shortlist button replacing a remove-from-shortlist button when remove-from-balled is clicked", () => {
+  it("shows a add-to-cart button replacing a remove-from-cart button when remove-from-balled is clicked", () => {
     renderWithContext(<ViewProjectDetails />, { rounds: [roundWithProjects] });
 
-    // click add to ballot
-    const addToBallot = screen.getByTestId("add-to-shortlist");
-    fireEvent.click(addToBallot);
+    // click add to cart
+    const addToCart = screen.getByTestId("add-to-cart");
+    fireEvent.click(addToCart);
     setTimeout(() => {
       // wait three seconds after the user clicks add before proceeding
-      expect(screen.getByTestId("remove-from-shortlist")).toBeInTheDocument();
-      expect(screen.queryByTestId("add-to-shortlist")).not.toBeInTheDocument();
-      // click remove from ballot
-      const removeFromBallot = screen.getByTestId("remove-from-shortlist");
-      fireEvent.click(removeFromBallot);
-      expect(screen.getByTestId("add-to-shortlist")).toBeInTheDocument();
-      expect(
-        screen.queryByTestId("remove-from-shortlist")
-      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("remove-from-cart")).toBeInTheDocument();
+      expect(screen.queryByTestId("add-to-cart")).not.toBeInTheDocument();
+      // click remove from cart
+      const removeFromCart = screen.getByTestId("remove-from-cart");
+      fireEvent.click(removeFromCart);
+      expect(screen.getByTestId("add-to-cart")).toBeInTheDocument();
+      expect(screen.queryByTestId("remove-from-cart")).not.toBeInTheDocument();
     }, 3000);
   });
 });
