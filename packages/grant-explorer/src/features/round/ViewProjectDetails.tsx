@@ -197,13 +197,6 @@ function AboutProject(props: { projectToRender: Project }) {
   const userGithub = projectToRender.projectMetadata.userGithub;
   const projectGithub = projectToRender.projectMetadata.projectGithub;
 
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  } as const;
-
   const date = new Date(projectToRender.projectMetadata.createdAt ?? 0);
   const formattedDateWithOrdinal = `Created on: ${formatDateWithOrdinal(date)}`;
 
