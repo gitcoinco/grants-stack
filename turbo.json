@@ -7,7 +7,8 @@
       ],
       "outputs": [
         "build"
-      ]
+      ],
+      "outputMode": "new-only"
     },
     "api#build": {
       "env": [
