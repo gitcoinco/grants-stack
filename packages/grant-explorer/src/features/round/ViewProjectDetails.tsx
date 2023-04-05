@@ -28,7 +28,7 @@ import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
-import { CalendarIcon, formatDateWithOrdinal } from "common";
+import { formatDateWithOrdinal } from "common";
 import { renderToHTML } from "common";
 import { Client, Application } from "allo-indexer-client";
 import { utils } from "ethers";
@@ -203,25 +203,6 @@ function AboutProject(props: { projectToRender: Project }) {
     day: "numeric",
     timeZone: "UTC",
   } as const;
-
-  const formatter = new Intl.DateTimeFormat("en-US", options);
-  const formattedDate = formatter.format(date);
-
-  const dayOfMonth = date.getDate();
-  const pluralRules = new Intl.PluralRules("en-US", { type: "ordinal" });
-  const suffix = {
-    one: "st",
-    two: "nd",
-    few: "rd",
-    other: "th",
-    many: "",
-    zero: "",
-  }[pluralRules.select(dayOfMonth)];
-
-  const formattedDateWithOrdinal = `Created on: ${formattedDate.replace(
-    dayOfMonth.toString(),
-    `${dayOfMonth}${suffix}`
-  )}`;
 
   const date = new Date(projectToRender.projectMetadata.createdAt ?? 0);
   const formattedDateWithOrdinal = `Created on: ${formatDateWithOrdinal(date)}`;

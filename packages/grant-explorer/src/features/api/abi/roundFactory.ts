@@ -15,7 +15,7 @@ const roundFactory = [
   "function roundImplementation() view returns (address)",
   "function transferOwnership(address newOwner)",
   "function updateAlloSettings(address newAlloSettings)",
-  "function updateRoundImplementation(address newRoundImplementation)"
+  "function updateRoundImplementation(address newRoundImplementation)",
 ];
 
 export default roundFactory;

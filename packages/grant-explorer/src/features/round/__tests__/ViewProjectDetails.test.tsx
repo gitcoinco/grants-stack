@@ -13,7 +13,7 @@ import {
 import { fireEvent, screen } from "@testing-library/react";
 import ViewProjectDetails from "../ViewProjectDetails";
 import { faker } from "@faker-js/faker";
-import {SWRConfig} from "swr";
+import { SWRConfig } from "swr";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
@@ -133,7 +133,12 @@ describe("<ViewProjectDetails/>", () => {
       id: roundId,
       approvedProjects: [expectedProject],
     });
-    renderWithContext(<SWRConfig value={{ dedupingInterval: 0 }}><ViewProjectDetails /></SWRConfig>, { rounds: [roundWithProjects] });
+    renderWithContext(
+      <SWRConfig value={{ dedupingInterval: 0 }}>
+        <ViewProjectDetails />
+      </SWRConfig>,
+      { rounds: [roundWithProjects] }
+    );
     /* Initially shows - when loading */
     expect(screen.getByText("$-")).toBeInTheDocument();
   });
