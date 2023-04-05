@@ -113,173 +113,220 @@ importers:
         version: 4.9.4
 
   packages/builder:
-    specifiers:
-      '@babel/core': ^7.20.12
-      '@babel/eslint-parser': ^7.17.0
-      '@babel/plugin-syntax-flow': ^7.14.5
-      '@babel/plugin-transform-react-jsx': ^7.14.9
-      '@chakra-ui/react': ^2.1.2
-      '@craco/craco': 6.4.3
-      '@datadog/browser-logs': ^4.21.2
-      '@datadog/browser-rum': ^4.16.0
-      '@emotion/react': ^11
-      '@emotion/styled': ^11
-      '@ethersproject/address': ^5.7.0
-      '@gitcoinco/passport-sdk-types': ^0.2.0
-      '@gitcoinco/passport-sdk-verifier': ^0.2.2
-      '@headlessui/react': ^1.6.5
-      '@heroicons/react': ^2.0.11
-      '@lagunovsky/redux-react-router': ^2.2.0
-      '@pinata/sdk': ^1.1.26
-      '@rainbow-me/rainbowkit': ^0.7.2
-      '@redux-devtools/extension': ^3.2.3
-      '@tailwindcss/line-clamp': ^0.4.2
-      '@tailwindcss/typography': ^0.5.9
-      '@tanstack/query-core': 4.22.0
-      '@testing-library/dom': '>=7.21.4'
-      '@testing-library/jest-dom': ^5.16.4
-      '@testing-library/react': ^13.1.1
-      '@testing-library/user-event': ^13.5.0
-      '@types/dompurify': ^2.4.0
-      '@types/jest': ^27.5.0
-      '@types/jest-when': ^3.5.2
-      '@types/markdown-it': ^12.2.3
-      '@types/node': ^18.11.18
-      '@types/react': ^18.0.5
-      '@types/react-dom': ^18.0.1
-      '@types/react-redux': ^7.1.24
-      '@types/testing-library__jest-dom': ^5.14.5
-      '@typescript-eslint/eslint-plugin': ^5.23.0
-      '@typescript-eslint/parser': ^5.23.0
-      '@wagmi/core': 0.5.4
-      allo-indexer-client: github:gitcoinco/allo-indexer-client#35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8
-      assert: ^2.0.0
-      autoprefixer: ^10.4.7
-      axios: ^0.27.2
-      broadcast-channel: ^4.18.1
-      buffer: ^6.0.3
-      classnames: ^2.3.2
-      crypto-browserify: ^3.12.0
-      dompurify: ^2.4.3
-      eslint: ^8.2.0
-      eslint-config-airbnb: ^19.0.4
-      eslint-config-airbnb-typescript: ^17.0.0
-      eslint-config-prettier: ^8.5.0
-      eslint-plugin-import: ^2.25.3
-      eslint-plugin-jsx-a11y: ^6.5.1
-      eslint-plugin-prettier: ^4.0.0
-      eslint-plugin-react: ^7.28.0
-      eslint-plugin-react-hooks: ^4.3.0
-      ethers: ^5.6.5
-      framer-motion: ^6
-      hardhat-deploy: ^0.11.4
-      history: ^5.3.0
-      https-browserify: ^1.0.0
-      jest: ^27.0
-      jest-environment-jsdom: ^27.0
-      jest-transform-stub: ^2.0.0
-      jest-when: ^3.5.1
-      lit-js-sdk: npm:lit-js-sdk-w-custom-provider
-      markdown-it: ^13.0.1
-      msw: ^0.47.4
-      os-browserify: ^0.3.0
-      postcss: ^8.4.14
-      postcss-import: ^14.1.0
-      prettier: ^2.6.2
-      process: ^0.11.10
-      react: ^18.0.0
-      react-dom: ^18.0.0
-      react-image-crop: ^10.0.6
-      react-redux: ^7.2.8
-      react-router: ^6
-      react-router-dom: ^6.3.0
-      react-scripts: 5.0.1
-      redux: ^4.2.1
-      redux-thunk: ^2.4.1
-      stream-browserify: ^3.0.0
-      stream-http: ^3.2.0
-      tailwindcss: ^3.0.24
-      ts-debounce: ^4.0.0
-      ts-jest: ^27.0
-      typescript: ^4.6.3
-      url: ^0.11.0
-      wagmi: ^0.6.4
-      web-vitals: ^2.1.4
-      webpack: ^4
-      yup: ^0.32.11
     dependencies:
-      '@babel/core': 7.20.12
-      '@babel/plugin-syntax-flow': 7.18.6_@babel+core@7.20.12
-      '@babel/plugin-transform-react-jsx': 7.20.7_@babel+core@7.20.12
-      '@chakra-ui/react': 2.4.9_7h642ehufk2ayekpx246qipqne
-      '@craco/craco': 6.4.3_zscc5cn3yxteyojqynx77hqik4
-      '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
-      '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
-      '@emotion/react': 11.10.5_yxdp3dl3eazy3vwpbmv4fq727a
-      '@emotion/styled': 11.10.5_4erqsq3n444jecyuvaxwc5b3vi
-      '@ethersproject/address': 5.7.0
-      '@gitcoinco/passport-sdk-types': 0.2.0
-      '@gitcoinco/passport-sdk-verifier': 0.2.2
-      '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
-      '@heroicons/react': 2.0.13_react@18.2.0
-      '@lagunovsky/redux-react-router': 2.3.0_oc6c6cn274447zrho6yfh7glcu
-      '@pinata/sdk': 1.2.1
-      '@rainbow-me/rainbowkit': 0.7.4_xzz3pppknljvue5rks2i3ror4m
-      '@redux-devtools/extension': 3.2.5_redux@4.2.1
-      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
-      '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
-      '@tanstack/query-core': 4.22.0
-      '@testing-library/dom': 8.20.0
-      '@testing-library/jest-dom': 5.16.5
-      '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
-      '@testing-library/user-event': 13.5.0_yxlyej73nftwmh2fiao7paxmlm
-      '@types/jest': 27.5.2
-      '@types/markdown-it': 12.2.3
-      '@types/node': 18.11.18
-      '@types/react': 18.0.27
-      '@types/react-dom': 18.0.10
-      '@types/react-redux': 7.1.25
-      '@types/testing-library__jest-dom': 5.14.5
-      '@wagmi/core': 0.5.4_ethers@5.6.5+react@18.2.0
-      allo-indexer-client: github.com/gitcoinco/allo-indexer-client/35fba8ef3cdca7ac482dcab42e4fdb666cca0fc8
-      assert: 2.0.0
-      autoprefixer: 10.4.13_postcss@8.4.21
-      axios: 0.27.2
-      broadcast-channel: 4.20.2
-      buffer: 6.0.3
-      classnames: 2.3.2
-      crypto-browserify: 3.12.0
-      dompurify: 2.4.3
-      ethers: 5.6.5
-      framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
-      history: 5.3.0
-      https-browserify: 1.0.0
-      jest: 27.5.1
-      lit-js-sdk: /lit-js-sdk-w-custom-provider/1.1.228
-      markdown-it: 13.0.1
-      os-browserify: 0.3.0
-      postcss: 8.4.21
-      process: 0.11.10
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-image-crop: 10.0.9_react@18.2.0
-      react-redux: 7.2.9_biqbaboplfbrettd7655fr4n2y
-      react-router: 6.7.0_react@18.2.0
-      react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
-      react-scripts: 5.0.1_3b7faz2l3oolxrfcxx2hmklkz4
-      redux: 4.2.1
-      redux-thunk: 2.4.2_redux@4.2.1
-      stream-browserify: 3.0.0
-      stream-http: 3.2.0
-      tailwindcss: 3.2.4_postcss@8.4.21
-      ts-debounce: 4.0.0
-      ts-jest: 27.1.5_j22lzoizerh26yhx3rtoqxu75q
-      typescript: 4.9.5
-      url: 0.11.0
-      wagmi: 0.6.8_2zvkf7ysi4hsi53ibmhvnxyxrq
-      web-vitals: 2.1.4
-      webpack: 4.46.0
-      yup: 0.32.11
+      '@babel/core':
+        specifier: ^7.20.12
+        version: 7.20.12
+      '@babel/plugin-syntax-flow':
+        specifier: ^7.14.5
+        version: 7.18.6(@babel/core@7.20.12)
+      '@babel/plugin-transform-react-jsx':
+        specifier: ^7.14.9
+        version: 7.20.7(@babel/core@7.20.12)
+      '@chakra-ui/react':
+        specifier: ^2.1.2
+        version: 2.4.9(@emotion/react@11.10.5)(@emotion/styled@11.10.5)(@types/react@18.0.27)(framer-motion@6.5.1)(react-dom@18.2.0)(react@18.2.0)
+      '@craco/craco':
+        specifier: 6.4.3
+        version: 6.4.3(@types/node@18.11.18)(react-scripts@5.0.1)(typescript@4.9.5)
+      '@datadog/browser-logs':
+        specifier: ^4.21.2
+        version: 4.30.1(@datadog/browser-rum@4.30.1)
+      '@datadog/browser-rum':
+        specifier: ^4.16.0
+        version: 4.30.1(@datadog/browser-logs@4.30.1)
+      '@emotion/react':
+        specifier: ^11
+        version: 11.10.5(@babel/core@7.20.12)(@types/react@18.0.27)(react@18.2.0)
+      '@emotion/styled':
+        specifier: ^11
+        version: 11.10.5(@babel/core@7.20.12)(@emotion/react@11.10.5)(@types/react@18.0.27)(react@18.2.0)
+      '@ethersproject/address':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@gitcoinco/passport-sdk-types':
+        specifier: ^0.2.0
+        version: 0.2.0
+      '@gitcoinco/passport-sdk-verifier':
+        specifier: ^0.2.2
+        version: 0.2.2
+      '@headlessui/react':
+        specifier: ^1.6.5
+        version: 1.7.7(react-dom@18.2.0)(react@18.2.0)
+      '@heroicons/react':
+        specifier: ^2.0.11
+        version: 2.0.13(react@18.2.0)
+      '@lagunovsky/redux-react-router':
+        specifier: ^2.2.0
+        version: 2.3.0(history@5.3.0)(react-dom@18.2.0)(react-redux@7.2.9)(react-router@6.7.0)(react@18.2.0)(redux@4.2.1)
+      '@pinata/sdk':
+        specifier: ^1.1.26
+        version: 1.2.1
+      '@rainbow-me/rainbowkit':
+        specifier: ^0.7.2
+        version: 0.7.4(@types/react@18.0.27)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.6.8)
+      '@redux-devtools/extension':
+        specifier: ^3.2.3
+        version: 3.2.5(redux@4.2.1)
+      '@tailwindcss/line-clamp':
+        specifier: ^0.4.2
+        version: 0.4.2(tailwindcss@3.2.4)
+      '@tailwindcss/typography':
+        specifier: ^0.5.9
+        version: 0.5.9(tailwindcss@3.2.4)
+      '@tanstack/query-core':
+        specifier: 4.22.0
+        version: 4.22.0
+      '@testing-library/dom':
+        specifier: '>=7.21.4'
+        version: 8.20.0
+      '@testing-library/jest-dom':
+        specifier: ^5.16.4
+        version: 5.16.5
+      '@testing-library/react':
+        specifier: ^13.1.1
+        version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
+      '@testing-library/user-event':
+        specifier: ^13.5.0
+        version: 13.5.0(@testing-library/dom@8.20.0)
+      '@types/jest':
+        specifier: ^27.5.0
+        version: 27.5.2
+      '@types/markdown-it':
+        specifier: ^12.2.3
+        version: 12.2.3
+      '@types/node':
+        specifier: ^18.11.18
+        version: 18.11.18
+      '@types/react':
+        specifier: ^18.0.5
+        version: 18.0.27
+      '@types/react-dom':
+        specifier: ^18.0.1
+        version: 18.0.10
+      '@types/react-redux':
+        specifier: ^7.1.24
+        version: 7.1.25
+      '@types/testing-library__jest-dom':
+        specifier: ^5.14.5
+        version: 5.14.5
+      '@wagmi/core':
+        specifier: 0.5.4
+        version: 0.5.4(ethers@5.6.5)(react@18.2.0)
+      assert:
+        specifier: ^2.0.0
+        version: 2.0.0
+      autoprefixer:
+        specifier: ^10.4.7
+        version: 10.4.13(postcss@8.4.21)
+      axios:
+        specifier: ^0.27.2
+        version: 0.27.2
+      broadcast-channel:
+        specifier: ^4.18.1
+        version: 4.20.2
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
+      classnames:
+        specifier: ^2.3.2
+        version: 2.3.2
+      crypto-browserify:
+        specifier: ^3.12.0
+        version: 3.12.0
+      dompurify:
+        specifier: ^2.4.3
+        version: 2.4.3
+      ethers:
+        specifier: ^5.6.5
+        version: 5.6.5
+      framer-motion:
+        specifier: ^6
+        version: 6.5.1(react-dom@18.2.0)(react@18.2.0)
+      history:
+        specifier: ^5.3.0
+        version: 5.3.0
+      https-browserify:
+        specifier: ^1.0.0
+        version: 1.0.0
+      jest:
+        specifier: ^27.0
+        version: 27.5.1(ts-node@10.9.1)
+      lit-js-sdk:
+        specifier: npm:lit-js-sdk-w-custom-provider
+        version: /lit-js-sdk-w-custom-provider@1.1.228
+      markdown-it:
+        specifier: ^13.0.1
+        version: 13.0.1
+      os-browserify:
+        specifier: ^0.3.0
+        version: 0.3.0
+      postcss:
+        specifier: ^8.4.14
+        version: 8.4.21
+      process:
+        specifier: ^0.11.10
+        version: 0.11.10
+      react:
+        specifier: ^18.0.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.0.0
+        version: 18.2.0(react@18.2.0)
+      react-image-crop:
+        specifier: ^10.0.6
+        version: 10.0.9(react@18.2.0)
+      react-redux:
+        specifier: ^7.2.8
+        version: 7.2.9(react-dom@18.2.0)(react@18.2.0)
+      react-router:
+        specifier: ^6
+        version: 6.7.0(react@18.2.0)
+      react-router-dom:
+        specifier: ^6.3.0
+        version: 6.7.0(react-dom@18.2.0)(react@18.2.0)
+      react-scripts:
+        specifier: 5.0.1
+        version: 5.0.1(@babel/plugin-syntax-flow@7.18.6)(@babel/plugin-transform-react-jsx@7.20.7)(esbuild@0.16.17)(eslint@8.32.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.4)
+      redux:
+        specifier: ^4.2.1
+        version: 4.2.1
+      redux-thunk:
+        specifier: ^2.4.1
+        version: 2.4.2(redux@4.2.1)
+      stream-browserify:
+        specifier: ^3.0.0
+        version: 3.0.0
+      stream-http:
+        specifier: ^3.2.0
+        version: 3.2.0
+      tailwindcss:
+        specifier: ^3.0.24
+        version: 3.2.4(postcss@8.4.21)(ts-node@10.9.1)
+      ts-debounce:
+        specifier: ^4.0.0
+        version: 4.0.0
+      ts-jest:
+        specifier: ^27.0
+        version: 27.1.5(@babel/core@7.20.12)(@types/jest@27.5.2)(jest@27.5.1)(typescript@4.9.5)
+      typescript:
+        specifier: ^4.6.3
+        version: 4.9.5
+      url:
+        specifier: ^0.11.0
+        version: 0.11.0
+      wagmi:
+        specifier: ^0.6.4
+        version: 0.6.8(@babel/core@7.20.12)(@tanstack/query-core@4.22.0)(ethers@5.6.5)(react-dom@18.2.0)(react@18.2.0)
+      web-vitals:
+        specifier: ^2.1.4
+        version: 2.1.4
+      webpack:
+        specifier: ^4
+        version: 4.46.0
+      yup:
+        specifier: ^0.32.11
+        version: 0.32.11
     devDependencies:
       '@babel/eslint-parser':
         specifier: ^7.17.0
