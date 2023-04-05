@@ -1,9 +1,12 @@
 import { faker } from "@faker-js/faker";
 import { screen } from "@testing-library/react";
-import { CartProvider, useCart } from "../../../context/CartContext";
-import { mockBalance, mockNetwork, mockSigner, renderWithContext } from "../../../test-utils";
+import {
+  mockBalance,
+  mockNetwork,
+  mockSigner,
+  renderWithContext,
+} from "../../../test-utils";
 import Navbar from "../Navbar";
-import NavbarCart from "../NavbarCart";
 
 const chainId = 5;
 const roundId = faker.finance.ethereumAddress();
@@ -39,33 +42,24 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("<Navbar>", () => {
-
   it("SHOULD display home-link", () => {
-    renderWithContext(
-      <Navbar customBackground="" roundUrlPath={"/random"} />
-    );
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
     expect(screen.getByTestId("home-link")).toBeInTheDocument();
   });
 
   it("SHOULD display connect wallet button", () => {
     renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
-
   });
 
   it("SHOULD display cart", () => {
-    renderWithContext(
-      <Navbar customBackground="" roundUrlPath={"/random"} />
-    );
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
 
   it("SHOULD display support options", async () => {
-    renderWithContext(
-      <Navbar customBackground="" roundUrlPath={"/random"} />
-    );
+    renderWithContext(<Navbar customBackground="" roundUrlPath={"/random"} />);
 
     expect(screen.getByTestId("customer-support")).toBeInTheDocument();
   });
 });
-

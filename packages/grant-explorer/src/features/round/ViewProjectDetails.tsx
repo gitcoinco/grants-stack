@@ -12,9 +12,9 @@ import {
 } from "../api/types";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import {
+  BoltIcon,
   ChevronLeftIcon,
   GlobeAltIcon,
-  BoltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -22,13 +22,14 @@ import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { Button } from "common/src/styles";
 import { useCart } from "../../context/CartContext";
 import Navbar from "../common/Navbar";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../common/Footer";
 import useSWR from "swr";
 import { formatDistanceToNowStrict } from "date-fns";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
-import markdown from "../../app/markdown";
+import { formatDateWithOrdinal } from "common";
+import { renderToHTML } from "common";
 import { Client, Application } from "allo-indexer-client";
 import { utils } from "ethers";
 
@@ -197,32 +198,7 @@ function AboutProject(props: { projectToRender: Project }) {
   const projectGithub = projectToRender.projectMetadata.projectGithub;
 
   const date = new Date(projectToRender.projectMetadata.createdAt ?? 0);
-
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  } as const;
-
-  const formatter = new Intl.DateTimeFormat("en-US", options);
-  const formattedDate = formatter.format(date);
-
-  const dayOfMonth = date.getDate();
-  const pluralRules = new Intl.PluralRules("en-US", { type: "ordinal" });
-  const suffix = {
-    one: "st",
-    two: "nd",
-    few: "rd",
-    other: "th",
-    many: "",
-    zero: "",
-  }[pluralRules.select(dayOfMonth)];
-
-  const formattedDateWithOrdinal = `Created on: ${formattedDate.replace(
-    dayOfMonth.toString(),
-    `${dayOfMonth}${suffix}`
-  )}`;
+  const formattedDateWithOrdinal = `Created on: ${formatDateWithOrdinal(date)}`;
 
   useEffect(() => {
     if (projectToRender?.projectMetadata?.owners) {
@@ -375,7 +351,7 @@ function Detail(props: { text: string; testID: string }) {
   return (
     <p
       dangerouslySetInnerHTML={{
-        __html: markdown.renderToHTML(props.text.replace(/\n/g, "\n\n")),
+        __html: renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
       className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
       data-testid={props.testID}
@@ -411,9 +387,7 @@ function ApplicationFormAnswers(props: {
               {answer.type === "paragraph" ? (
                 <p
                   dangerouslySetInnerHTML={{
-                    __html: markdown.renderToHTML(
-                      answerText.replace(/\n/g, "\n\n")
-                    ),
+                    __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
                   }}
                   className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
                 ></p>
@@ -476,27 +450,36 @@ function Sidebar(props: {
 }
 
 // NOTE: Consider moving this
-export function useRoundProject(chainId: number, roundId: string, projectId: string) {
+export function useRoundProject(
+  chainId: number,
+  roundId: string,
+  projectId: string
+) {
   // use chain id and project id from url params
   const client = new Client(
     boundFetch,
     process.env.REACT_APP_ALLO_API_ENDPOINT ?? "",
     chainId
   );
-  return useSWR([roundId, "/projects"], ([roundId]) => 
+  return useSWR([roundId, "/projects"], ([roundId]) =>
     client
       .getRoundApplications(utils.getAddress(roundId.toLowerCase()))
-      .then((apps: Application[]) => apps.filter((app: Application) => app.id === projectId))
+      .then((apps: Application[]) =>
+        apps.filter((app: Application) => app.id === projectId)
+      )
   );
 }
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
-  const projectId = applicationId?.split("-")[0] as string
+  const projectId = applicationId?.split("-")[0] as string;
 
-
-  const { data: project } = useRoundProject( Number(chainId), roundId as string, projectId);
+  const { data: project } = useRoundProject(
+    Number(chainId),
+    roundId as string,
+    projectId
+  );
 
   const timeRemaining = round?.roundEndTime
     ? formatDistanceToNowStrict(round.roundEndTime)

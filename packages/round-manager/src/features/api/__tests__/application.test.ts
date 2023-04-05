@@ -1,14 +1,18 @@
 import { makeGrantApplicationData } from "../../../test-utils";
 import { getApplicationById, getApplicationsByRoundId } from "../application";
-import { fetchFromIPFS, graphql_fetch } from "../utils";
+import { fetchFromIPFS } from "../utils";
 import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
+import { graphql_fetch } from "common";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
-  graphql_fetch: jest.fn(),
   fetchFromIPFS: jest.fn(),
+}));
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  graphql_fetch: jest.fn(),
 }));
 
 jest.mock("ethers");

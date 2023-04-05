@@ -59,7 +59,7 @@ const roundImplementation = [
   "function updateStartAndEndTimes(uint256 newApplicationsStartTime, uint256 newApplicationsEndTime, uint256 newRoundStartTime, uint256 newRoundEndTime)",
   "function vote(bytes[] encodedVotes) payable",
   "function votingStrategy() view returns (address)",
-  "function withdraw(address tokenAddress, address recipent)"
+  "function withdraw(address tokenAddress, address recipent)",
 ];
 
 export default roundImplementation;

@@ -1,4 +1,4 @@
-import { graphql_fetch } from "./utils";
+import { graphql_fetch } from "common";
 
 export async function getCurrentSubgraphBlockNumber(
   chainId: number

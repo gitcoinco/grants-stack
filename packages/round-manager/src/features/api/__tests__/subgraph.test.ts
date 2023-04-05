@@ -1,11 +1,11 @@
+import { graphql_fetch } from "common";
 import {
   getCurrentSubgraphBlockNumber,
   waitForSubgraphSyncTo,
 } from "../subgraph";
-import { graphql_fetch } from "../utils";
 
-jest.mock("../utils", () => ({
-  ...jest.requireActual("../utils"),
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
   graphql_fetch: jest.fn(),
 }));
 

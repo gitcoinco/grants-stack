@@ -97,6 +97,7 @@ export default function ApplicationsRejected() {
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
             status: application.status,
+            createdAt: application.createdAt,
           };
         })
       );

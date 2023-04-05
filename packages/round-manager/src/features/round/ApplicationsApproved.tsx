@@ -114,6 +114,7 @@ export default function ApplicationsApproved() {
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
             status: application.status,
+            createdAt: application.createdAt,
           };
         })
       );

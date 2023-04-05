@@ -11,27 +11,27 @@ import { store } from "./app/store";
 import {
   ApplicationContext,
   ApplicationState,
-  initialApplicationState
+  initialApplicationState,
 } from "./context/application/ApplicationContext";
 import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
-  initialBulkUpdateGrantApplicationState
+  initialBulkUpdateGrantApplicationState,
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import {
   initialReadProgramState,
   ReadProgramContext,
-  ReadProgramState
+  ReadProgramState,
 } from "./context/program/ReadProgramContext";
 import {
   FinalizeRoundContext,
   FinalizeRoundState,
-  initialFinalizeRoundState
+  initialFinalizeRoundState,
 } from "./context/round/FinalizeRoundContext";
 import {
   initialRoundState,
   RoundContext,
-  RoundState
+  RoundState,
 } from "./context/round/RoundContext";
 import { QFDistribution } from "./features/api/api";
 import {
@@ -43,7 +43,7 @@ import {
   ProjectCredentials,
   ProjectMetadata,
   ProjectStatus,
-  Round
+  Round,
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import history from "./history";
@@ -184,6 +184,7 @@ export const makeGrantApplicationData = (
     });
   }
 
+  // @ts-expect-error type system madness
   return {
     id:
       applicationIdOverride ||
@@ -193,6 +194,7 @@ export const makeGrantApplicationData = (
     recipient: faker.finance.ethereumAddress(),
     project: {
       lastUpdated: 1659714564,
+      createdAt: 1659714564,
       id: faker.random.alpha({ count: 10, casing: "lower" }),
       owners: [
         {

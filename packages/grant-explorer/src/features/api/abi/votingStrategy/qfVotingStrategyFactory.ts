@@ -11,7 +11,7 @@ const qfVotingStrategyFactory = [
   "function renounceOwnership()",
   "function transferOwnership(address newOwner)",
   "function updateVotingContract(address newVotingContract)",
-  "function votingContract() view returns (address)"
+  "function votingContract() view returns (address)",
 ];
 
 export default qfVotingStrategyFactory;

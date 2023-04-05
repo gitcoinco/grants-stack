@@ -64,7 +64,6 @@ describe("<NavbarCart/>", () => {
     });
 
     expect(screen.queryByText("View my cart (2)")).toBeInTheDocument();
-
   });
 
   it("SHOULD show project info in quick view summary", async () => {
@@ -77,7 +76,8 @@ describe("<NavbarCart/>", () => {
       fireEvent.click(icon);
     });
 
-    expect(screen.queryAllByTestId("project-quick-view").length).toEqual(cart.length);
-
+    expect(screen.queryAllByTestId("project-quick-view").length).toEqual(
+      cart.length
+    );
   });
 });
