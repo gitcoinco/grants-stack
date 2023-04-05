@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useRoundById } from "../../context/RoundContext";
 import Auth from "../common/Auth";
+import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import {
   getGroupChatID,
   fetchHistoryMsgs,
@@ -66,7 +67,7 @@ export default function PushChat(props: {
       profile: string;
       fromCAIP10: string;
       messageContent: string;
-    }[] = await fetchHistoryMsgs(address, pushChatId as string, props.pgpKeys);
+    }[] = await fetchHistoryMsgs(address, pushChatId as string);
     const newMsgArr = [];
     if (chatHistory.length) {
       for (let i = 0; i < chatHistory.length; i++) {
@@ -141,7 +142,7 @@ export default function PushChat(props: {
     } = walletProps;
     const pushSDKSocket = createSocketConnection({
       user: `eip155:${address}`, // Not CAIP-10 format
-      env: "staging",
+      env: ENV.STAGING,
       apiKey:
         "jVPMCRom1B.iDRMswdehJG7NpHDiECIHwYMMv6k2KzkPJscFIDyW8TtSnk4blYnGa8DIkfuacU0",
       socketType: "chat",
@@ -228,68 +229,66 @@ export default function PushChat(props: {
         )}
       </div> */}
 
-      {!props.pgpKeys && (
+      {/* {!props.pgpKeys && (
         <div>Get Decrypted PGP keys first to see the chat!</div>
-      )}
-      {props.pgpKeys ? (
-        props.pushChatId.length ? (
-          // return chats for the user
-          <>
-            {isPresent && (
-              <div className="w-100 flex flex-col relative">
-                <div className="border h-16 px-2 rounded-xl relative border-[#DEE2E6]">
-                  <input
-                    className="pt-0 px-1 h-8 w-full bg-transparent relative z-10 flex flex-row text-xs  outline-none"
-                    onChange={(e) => {
-                      handleInputMsg(e);
-                    }}
-                    value={inputMsg}
-                    onKeyDown={({ key }) => {
-                      if (key === "Enter") handleMsgSent();
-                    }}
-                  />
+      )} */}
+      {props.pushChatId.length ? (
+        // return chats for the user
+        <>
+          {isPresent && props.pgpKeys !== "" && (
+            <div className="w-100 flex flex-col relative">
+              <div className="border h-16 px-2 rounded-xl relative border-[#DEE2E6]">
+                <input
+                  className="pt-0 px-1 h-8 w-full bg-transparent relative z-10 flex flex-row text-xs  outline-none"
+                  onChange={(e) => {
+                    handleInputMsg(e);
+                  }}
+                  value={inputMsg}
+                  onKeyDown={({ key }) => {
+                    if (key === "Enter") handleMsgSent();
+                  }}
+                />
 
-                  {!inputMsg.length && (
-                    <span className="px-2 absolute top-2 left-2 text-xs text-[#DEE2E6]">
-                      Write on a grants group chat...
-                    </span>
-                  )}
-                </div>
-
-                <button
-                  onClick={handleMsgSent}
-                  className={
-                    "self-end bg-[#6F3FF5] mt-3.5 rounded-sm text-white text-xs cursor-pointer px-4 py-2"
-                  }
-                >
-                  Send Message
-                </button>
+                {!inputMsg.length && (
+                  <span className="px-2 absolute top-2 left-2 text-xs text-[#DEE2E6]">
+                    Write on a grants group chat...
+                  </span>
+                )}
               </div>
-            )}
-            <div
-              id="chat-scroll"
-              className="h-96 flex flex-auto flex-col overflow-auto mt-6"
-            >
-              {msgs?.map(
-                (e: {
-                  fromCAIP10: string;
-                  profile: string;
-                  messageContent: string;
-                }) => {
-                  const newAdd = "eip155:" + wallet.props.context.address;
-                  return newAdd === e.fromCAIP10
-                    ? textBoxRight(e)
-                    : textBoxLeft(e);
+
+              <button
+                onClick={handleMsgSent}
+                className={
+                  "self-end bg-[#6F3FF5] mt-3.5 rounded-sm text-white text-xs cursor-pointer px-4 py-2"
                 }
-              )}
+              >
+                Send Message
+              </button>
             </div>
-            <div className="flex flex-row"></div>
-          </>
-        ) : (
-          // return no group has present
-          <div>Chat group hasn't been created yet!</div>
-        )
-      ) : null}
+          )}
+          <div
+            id="chat-scroll"
+            className="h-96 flex flex-auto flex-col overflow-auto mt-6"
+          >
+            {msgs?.map(
+              (e: {
+                fromCAIP10: string;
+                profile: string;
+                messageContent: string;
+              }) => {
+                const newAdd = "eip155:" + wallet.props.context.address;
+                return newAdd === e.fromCAIP10
+                  ? textBoxRight(e)
+                  : textBoxLeft(e);
+              }
+            )}
+          </div>
+          <div className="flex flex-row"></div>
+        </>
+      ) : (
+        // return no group has present
+        <div>Chat group hasn't been created yet!</div>
+      )}
     </div>
   );
 }

@@ -42,6 +42,7 @@ import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import markdown from "../../app/markdown";
 import Auth from "../common/Auth";
+import { ProgressHookType } from "@pushprotocol/restapi";
 
 enum VerifiedCredentialState {
   VALID,
@@ -90,14 +91,23 @@ export default function ViewProjectDetails() {
   const [pgpKeys, setPgpKeys] = useState<string>("");
   const [pushChatId, setPushChatID] = useState<string>("");
   const [position, setPosition] = useState<string>("None");
+  const [progress, setProgress] = useState<ProgressHookType | null>(null);
 
   // useEffect(() => {
   //   handlePgpKeys();
   // }, []);
+  const handleProgress = (progress: ProgressHookType) => {
+    console.log(progress, "progress from function");
+    setProgress(progress);
+  };
 
   const handlePgpKeys = async () => {
     if (wallet.props.context) {
-      const decryptedKeys = await getUserPgpKeys(wallet.props.context.address);
+      const decryptedKeys = await getUserPgpKeys(
+        wallet.props.context.address,
+        wallet.props.context.signer,
+        handleProgress
+      );
       if (!decryptedKeys) {
         return;
       }
@@ -162,6 +172,8 @@ export default function ViewProjectDetails() {
                 <Sidebar
                   pushChatId={pushChatId}
                   pgpKeys={pgpKeys}
+                  progress={progress}
+                  handleProgress={handleProgress}
                   handlePushChatID={handlePushChatID}
                   position={position}
                   setPosition={setPosition}
@@ -473,6 +485,8 @@ function Sidebar(props: {
   setPosition: (e: string) => void;
   pgpKeys: string;
   handlePgpKeys: () => Promise<string>;
+  handleProgress: (progress: ProgressHookType) => void;
+  progress: ProgressHookType | null;
 }) {
   const wallet = Auth();
   const [isPresent, setIsPresent] = useState<boolean>(true);
@@ -492,10 +506,8 @@ function Sidebar(props: {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const handlePositions = async (wallet: any, project: Project) => {
     if (!wallet || !project) {
-      console.log("Inside the section");
       return;
     }
-    console.log("Out of section");
     const { isMember, isOwner, chatId, isContributor } =
       await verifyPushChatUser(project, wallet);
 
@@ -531,14 +543,19 @@ function Sidebar(props: {
   };
 
   const handleGroupCreation = async () => {
-    const pgpKeys = await props.handlePgpKeys();
+    let pgpKeys = props.pgpKeys;
+    if (props.pgpKeys === "") {
+      pgpKeys = await props.handlePgpKeys();
+    }
     const {
       props: {
         context: { address: account },
       },
     } = wallet;
+    console.log("isOwner", isPresent, position, typeof position);
     if (!isPresent) {
       if (position === "Owner") {
+        console.log("Hey from condition");
         const groupChatId = await createPushGroup(
           pgpKeys,
           project as Project,
@@ -565,6 +582,58 @@ function Sidebar(props: {
     return;
   };
 
+  const stepVerifier = () => {
+    let text = "";
+    if (props.progress) {
+      const { progressId } = props.progress;
+      switch (progressId) {
+        case "PUSH-CREATE-01":
+          text = "Creating Push Profile";
+          break;
+        case "PUSH-CREATE-02":
+          text = "1/3 - Profile Generation";
+          break;
+        case "PUSH-CREATE-03":
+          text = "2/3 - Profile Encryption";
+          break;
+        case "PUSH-CREATE-04":
+          text = "3/3 - Profile Sync";
+          break;
+        case "PUSH-CREATE-05":
+          text = "Push Profile Created";
+          break;
+        case "PUSH-DECRYPT-01":
+          text = "Decrypting Push Profile";
+          break;
+        case "PUSH-UPGRADE-01":
+          text = "1/4 - Profile Generation";
+          break;
+        case "PUSH-UPGRADE-02":
+          text = "2/4 - Decrypting Old Profile";
+          break;
+        case "PUSH-UPGRADE-03":
+          text = "3/4 - New Profile Encryption";
+          break;
+        case "PUSH-UPGRADE-04":
+          text = "4/4 - Profile Sync";
+          break;
+        case "PUSH-UPGRADE-05":
+          text = "Push Profile Upgraded";
+          break;
+        case "PUSH-ERROR-00":
+          text = "Unknown Error";
+          break;
+        case "PUSH-ERROR-01":
+          text = "Upgrade Failed";
+          break;
+        case "PUSH-ERROR-02":
+          text = "Decrypting Keys Failed";
+          break;
+      }
+    }
+    return text;
+  };
+
   const chatButtonText =
     !isPresent && position === "Owner" ? "Create Group Chat" : "Comment";
 
@@ -577,7 +646,9 @@ function Sidebar(props: {
           "w-80 self-center justify-center bg-[#6F3FF5] text-white font-semibold py-2 px-4 border border-[#A283F9] rounded my-2 box-border"
         }
       >
-        {chatButtonText}
+        {props.progress?.level === "SUCCESS" || !props.progress
+          ? chatButtonText
+          : stepVerifier()}
       </Button>
 
       <BallotSelectionToggle
