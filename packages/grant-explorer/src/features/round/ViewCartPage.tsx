@@ -462,9 +462,9 @@ export default function ViewCart() {
                 </p>
               </Link>
               <p className="text-sm text-ellipsis line-clamp-3">
-                {markdown
-                  .renderToPlainText(props.project.projectMetadata.description)
-                  .substring(0, 130)}
+                {renderToPlainText(
+                  props.project.projectMetadata.description
+                ).substring(0, 130)}
               </p>
             </div>
           </div>

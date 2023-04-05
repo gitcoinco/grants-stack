@@ -15,7 +15,6 @@ import {
   BoltIcon,
   ChevronLeftIcon,
   GlobeAltIcon,
-  InformationCircleIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
@@ -486,7 +485,11 @@ function Sidebar(props: {
 }
 
 // NOTE: Consider moving this
-export function useRoundProject(chainId: number, roundId: string, projectId: string) {
+export function useRoundProject(
+  chainId: number,
+  roundId: string,
+  projectId: string
+) {
   // use chain id and project id from url params
   const client = new Client(
     boundFetch,
@@ -496,17 +499,22 @@ export function useRoundProject(chainId: number, roundId: string, projectId: str
   return useSWR([roundId, "/projects"], ([roundId]) =>
     client
       .getRoundApplications(utils.getAddress(roundId.toLowerCase()))
-      .then((apps: Application[]) => apps.filter((app: Application) => app.id === projectId))
+      .then((apps: Application[]) =>
+        apps.filter((app: Application) => app.id === projectId)
+      )
   );
 }
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
-  const projectId = applicationId?.split("-")[0] as string
+  const projectId = applicationId?.split("-")[0] as string;
 
-
-  const { data: project } = useRoundProject( Number(chainId), roundId as string, projectId);
+  const { data: project } = useRoundProject(
+    Number(chainId),
+    roundId as string,
+    projectId
+  );
 
   const timeRemaining = round?.roundEndTime
     ? formatDistanceToNowStrict(round.roundEndTime)
