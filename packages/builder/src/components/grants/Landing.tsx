@@ -19,7 +19,7 @@ function LandingHeader() {
       }}
     >
       <div className="w-full mx-auto flex flex-wrap items-center justify-between">
-        <div className="w-full relative flex justify-between pl-4">
+        <div className="w-full relative flex justify-between pl-4 ml-20">
           <Link to={grantsPath()}>
             <div className="flex">
               <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
@@ -27,7 +27,7 @@ function LandingHeader() {
               <img className="py-4" alt="Builder Logo" src={BuilderLogo} />
             </div>
           </Link>
-          <div className="flex items-center mr-4">
+          <div className="flex items-center mr-20">
             <ConnectButton />
           </div>
         </div>
@@ -118,10 +118,8 @@ function Landing() {
     <div className="flex flex-col absolute h-full w-full">
       <LandingHeader />
       <section className="flex flex-col md:flex-row">
-        <div className="flex flex-1 flex-col justify-center container px-8 md:px-10 md:pl-4 pl-16">
-          <h1 className="w-auto text-5xl md:text-7xl mb-8 -ml-1 mt-4">
-            Builder
-          </h1>
+        <div className="flex flex-1 flex-col justify-center container px-8 md:px-10 md:pl-4 ml-20">
+          <h1 className="w-auto text-5xl md:text-7xl mb-8 mt-4">Builder</h1>
           <p className="text-black text-xl w-full md:max-w-4xl">
             Build and fund your project all in one place, and bring your vision
             to life.
