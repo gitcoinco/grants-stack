@@ -52,6 +52,16 @@ module.exports = {
         red: {
           100: "#D44D6E",
         },
+        moon: {
+          100: "#EBEBEB",
+          200: "#CACBCB",
+          300: "#979998",
+          400: "#656A68",
+          500: "#2B3330",
+          600: "#0B110F",
+          700: "#130C03", 
+          800: "#000000",
+        }
       },
       keyframes: {
         violetTransition: {

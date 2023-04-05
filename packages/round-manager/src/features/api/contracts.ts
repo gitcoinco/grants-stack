@@ -35,7 +35,7 @@ export const projectRegistryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5";
+      address = "0xa71864fAd36439C50924359ECfF23Bb185FFDf21";
       break;
     }
   }
@@ -44,6 +44,11 @@ export const projectRegistryContract = (
     address: address,
     abi: abi.projectRegistry,
   };
+};
+
+/* ERC20 */
+export const ERC20Contract: Contract = {
+  abi: abi.erc20,
 };
 
 /************************/
@@ -75,7 +80,7 @@ export const programFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x548c775c4Bd61d873a445ee4E769cf1A18d60eA9";
+      address = "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e";
       break;
     }
   }
@@ -120,7 +125,7 @@ export const roundFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0x5770b7a57BD252FC4bB28c9a70C9572aE6400E48";
+      address = "0x24F9EBFAdf095e0afe3d98635ee83CD72e49B5B0";
       break;
     }
   }
@@ -165,7 +170,7 @@ export const qfVotingStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0xF741F7B6a4cb3B4869B2e2C01aB70A12575B53Ab";
+      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
       break;
     }
   }
@@ -205,7 +210,7 @@ export const merklePayoutStrategyFactoryContract = (
     }
     case ChainId.GOERLI_CHAIN_ID:
     default: {
-      address = "0xBb380EEEF1D33e9B993CEDbb77A6753EbA0d2F9f";
+      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
       break;
     }
   }

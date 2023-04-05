@@ -4,6 +4,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
+import { BigNumber } from "ethers";
 import { SchemaQuestion } from "./utils";
 
 export type Network = "goerli" | "optimism";
@@ -111,7 +112,8 @@ export type InputType =
   | "paragraph"
   | "multiple-choice"
   | "checkbox"
-  | "dropdown";
+  | "dropdown"
+  | "link";
 
 export type EditQuestion = {
   index?: number;
@@ -178,7 +180,10 @@ export interface Round {
   /**
    * Payout contract address
    */
-  payoutStrategy: string;
+  payoutStrategy: {
+    id: string;
+    isReadyForPayout: boolean;
+  };
   /**
    * Unix timestamp of the start of the round
    */
@@ -219,13 +224,20 @@ export interface Round {
    * Round fees address
    */
   feesAddress?: string;
+
+  finalized: boolean;
 }
 
 export type MatchingStatsData = {
+  index?: number;
   projectName?: string;
-  projectId: string;
   uniqueContributorsCount: number;
   matchPoolPercentage: number;
+  projectId: string;
+  matchAmountInToken: BigNumber;
+  projectPayoutAddress: string;
+  status?: string;
+  hash?: string;
 };
 
 export type ProjectStatus =
@@ -343,4 +355,9 @@ export type Project = {
   projectTwitter?: string;
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
+};
+
+export type TransactionBlock = {
+  transactionBlockNumber: number;
+  error?: unknown;
 };

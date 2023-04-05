@@ -27,7 +27,8 @@
     "api-build": "turbo run build --filter=api",
     "api-test": "turbo run test --filter=api",
     "api-start": "pnpm --filter api run start",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "lint:builder": "pnpm --filter=builder run lint"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -36,6 +37,6 @@
     "lint-staged": "^13.1.0"
   },
   "dependencies": {
-    "turbo": "^1.7.2"
+    "turbo": "^1.8.5"
   }
 }

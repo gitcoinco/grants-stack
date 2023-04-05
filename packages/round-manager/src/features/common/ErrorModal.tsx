@@ -83,17 +83,18 @@ export default function ErrorModal({
                     <Button
                       type="button"
                       $variant="outline"
+                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
                       data-testid="tryAgain"
                       onClick={() => {
                         tryAgainFn();
                         setIsOpen(false);
                       }}
-                      className="mr-4"
                     >
                       Try Again
                     </Button>
                     <Button
                       type="button"
+                      className="w-full inline-flex text-sm sm:ml-3 sm:w-auto px-3.5 py-2"
                       onClick={() => {
                         doneFn();
                         setIsOpen(false);

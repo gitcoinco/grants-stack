@@ -1,10 +1,10 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
-import { ethers } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
-  roundImplementationContract,
+  roundImplementationContract
 } from "./contracts";
 import {
   ApplicationStatus,
@@ -12,8 +12,9 @@ import {
   MatchingStatsData,
   MetadataPointer,
   Round,
+  TransactionBlock
 } from "./types";
-import { fetchFromIPFS, graphql_fetch } from "./utils";
+import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
 
 /**
  * Fetch a round by ID
@@ -22,7 +23,7 @@ import { fetchFromIPFS, graphql_fetch } from "./utils";
  */
 export async function getRoundById(
   signerOrProvider: Web3Provider,
-  roundId: string
+  roundId: string,
 ): Promise<Round> {
   try {
     // fetch chain id
@@ -31,7 +32,7 @@ export async function getRoundById(
     // query the subgraph for all rounds by the given address in the given program
     const res = await graphql_fetch(
       `
-          query GetRounds($address: String, $programId: String, $roundId: String) {
+          query GetRounds($roundId: String) {
             rounds(where: {
         ${roundId ? `id: $roundId` : ``}
             }) {
@@ -51,6 +52,7 @@ export async function getRoundById(
               applicationsEndTime
               roundStartTime
               roundEndTime
+              token
               projectsMetaPtr {
                 pointer
               }
@@ -69,11 +71,15 @@ export async function getRoundById(
                   address
                 }
               }
+              payoutStrategy {
+                id
+                isReadyForPayout
+              }
             }
           }
         `,
       chainId,
-      { roundId }
+      { roundId: roundId },
     );
 
     const round: RoundResult = res.data.rounds[0];
@@ -86,12 +92,11 @@ export async function getRoundById(
 
     const approvedProjectsWithMetadata = await loadApprovedProjects(
       round,
-      chainId
+      chainId,
     );
 
-    console.log("approvedProjectsWithMetadata", approvedProjectsWithMetadata);
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
-      (account: { address: string }) => account.address
+      (account: { address: string }) => account.address,
     );
 
     return {
@@ -99,10 +104,10 @@ export async function getRoundById(
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(
-        res.data.rounds[0].applicationsStartTime * 1000
+        res.data.rounds[0].applicationsStartTime * 1000,
       ),
       applicationsEndTime: new Date(
-        res.data.rounds[0].applicationsEndTime * 1000
+        res.data.rounds[0].applicationsEndTime * 1000,
       ),
       roundStartTime: new Date(res.data.rounds[0].roundStartTime * 1000),
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
@@ -112,6 +117,7 @@ export async function getRoundById(
       ownedBy: res.data.rounds[0].program.id,
       operatorWallets: operatorWallets,
       approvedProjects: approvedProjectsWithMetadata,
+      finalized: false,
     };
   } catch (error) {
     console.error("getRoundById", error);
@@ -130,7 +136,7 @@ export async function listRounds(
   address: string,
   signerOrProvider: Web3Provider,
   programId: string,
-  roundId?: string
+  roundId?: string,
 ): Promise<{ rounds: Round[] }> {
   try {
     // fetch chain id
@@ -172,7 +178,7 @@ export async function listRounds(
           }
         `,
       chainId,
-      { address: address?.toLowerCase(), programId, roundId }
+      { address: address?.toLowerCase(), programId, roundId },
     );
 
     const rounds: Round[] = [];
@@ -185,7 +191,7 @@ export async function listRounds(
       ]);
 
       const operatorWallets = round.roles[0].accounts.map(
-        (account: { address: string }) => account.address
+        (account: { address: string }) => account.address,
       );
 
       rounds.push({
@@ -201,6 +207,7 @@ export async function listRounds(
         payoutStrategy: res.data.rounds[0].payoutStrategy,
         ownedBy: round.program.id,
         operatorWallets: operatorWallets,
+        finalized: false,
       });
     }
 
@@ -220,7 +227,7 @@ export async function listRounds(
  */
 export async function deployRoundContract(
   round: Round,
-  signerOrProvider: Signer
+  signerOrProvider: Signer,
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
@@ -230,7 +237,7 @@ export async function deployRoundContract(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _roundFactoryContract.address!,
       _roundFactoryContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
 
     if (!round.applicationsEndTime) {
@@ -239,7 +246,7 @@ export async function deployRoundContract(
 
     round.operatorWallets = round.operatorWallets?.filter((e) => e !== "");
 
-    const initAddresses = [round.votingStrategy, round.payoutStrategy];
+    const initAddresses = [round.votingStrategy, round.payoutStrategy.id];
 
     const initRoundTimes = [
       new Date(round.applicationsStartTime).getTime() / 1000,
@@ -255,11 +262,22 @@ export async function deployRoundContract(
       round.operatorWallets,
     ];
 
+    // Ensure tokenAmount is normalized to token decimals
+    const tokenAmount =
+      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0;
+    const token = payoutTokens.filter(
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
+    )[0];
+    const parsedTokenAmount = utils.parseUnits(
+      tokenAmount.toString(),
+      token.decimal,
+    );
+
     // encode input parameters
     const params = [
       initAddresses,
       initRoundTimes,
-      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0,
+      parsedTokenAmount,
       round.token,
       round.feesPercentage || 0,
       round.feesAddress || ethers.constants.AddressZero,
@@ -278,7 +296,7 @@ export async function deployRoundContract(
         "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
         "tuple(address[] adminRoles, address[] roundOperators)",
       ],
-      params
+      params,
     );
 
     // Deploy a new Round contract
@@ -290,7 +308,7 @@ export async function deployRoundContract(
 
     if (receipt.events) {
       const event = receipt.events.find(
-        (e: { event: string }) => e.event === "RoundCreated"
+        (e: { event: string }) => e.event === "RoundCreated",
       );
       if (event && event.args) {
         roundAddress = event.args.roundAddress;
@@ -349,9 +367,8 @@ type RoundProjects = Array<RoundProject>;
 async function loadApprovedProjects(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<ApprovedProject[]> {
-  console.log("loadingprojects");
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
   }
@@ -359,20 +376,20 @@ async function loadApprovedProjects(
 
   // TODO - when subgraph is ready, filter approved projects by project.status instead of through projectsMetaPtr
   const approvedProjectIds: string[] = await getApprovedProjectIds(
-    round.projectsMetaPtr
+    round.projectsMetaPtr,
   );
   const approvedProjects = allRoundProjects.filter((project) =>
-    approvedProjectIds.includes(project.id)
+    approvedProjectIds.includes(project.id),
   );
   const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
     approvedProjects.map((project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId)
+      fetchMetadataAndMapProject(project, chainId),
     );
   return Promise.all(fetchApprovedProjectMetadata);
 }
 
 async function getApprovedProjectIds(
-  roundProjectStatusesPtr?: MetadataPointer
+  roundProjectStatusesPtr?: MetadataPointer,
 ): Promise<string[]> {
   const roundProjectStatuses: RoundProjects = roundProjectStatusesPtr
     ? await fetchFromIPFS(roundProjectStatusesPtr.pointer)
@@ -385,7 +402,7 @@ async function getApprovedProjectIds(
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
+  chainId: any,
 ): Promise<ApprovedProject> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -411,7 +428,7 @@ async function fetchMetadataAndMapProject(
 export async function getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  projectRegistryId: string
+  projectRegistryId: string,
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
@@ -432,53 +449,18 @@ export async function getProjectOwners(
       `,
       chainId,
       { projectRegistryId },
-      true
+      true,
     );
 
     return (
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address)
+          ethers.utils.getAddress(account.account.address),
       ) || []
     );
   } catch (error) {
     console.log("getProjectOwners", error);
     throw Error("Unable to fetch project owners");
-  }
-}
-
-interface FinalizeRoundToContractProps {
-  roundId: string;
-  encodedDistribution: string;
-  signerOrProvider: Signer;
-}
-
-export async function finalizeRoundToContract({
-  roundId,
-  encodedDistribution,
-  signerOrProvider,
-}: FinalizeRoundToContractProps) {
-  try {
-    const roundImplementation = new ethers.Contract(
-      roundId,
-      roundImplementationContract.abi,
-      signerOrProvider
-    );
-
-    // Finalize round
-    const tx = await roundImplementation.updateDistribution(
-      encodedDistribution
-    );
-    const receipt = await tx.wait();
-
-    console.log("✅ Transaction hash: ", tx.hash);
-    const blockNumber = receipt.blockNumber;
-    return {
-      transactionBlockNumber: blockNumber,
-    };
-  } catch (error) {
-    console.error("finalizeRoundToContract", error);
-    throw new Error("Unable to finalize Round");
   }
 }
 
@@ -488,7 +470,7 @@ export async function finalizeRoundToContract({
  */
 export async function fetchMatchingDistribution(
   roundId: string | undefined,
-  signerOrProvider: Web3Provider
+  signerOrProvider: Web3Provider,
 ): Promise<{
   distributionMetaPtr: string;
   matchingDistribution: MatchingStatsData[];
@@ -501,13 +483,13 @@ export async function fetchMatchingDistribution(
     const roundImplementation = new ethers.Contract(
       roundId,
       roundImplementationContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider
+      signerOrProvider,
     );
     const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
     const distributionMetaPtr = distributionMetaPtrRes.pointer;
@@ -516,6 +498,14 @@ export async function fetchMatchingDistribution(
       // fetch distribution from IPFS
       const matchingDistributionRes = await fetchFromIPFS(distributionMetaPtr);
       matchingDistribution = matchingDistributionRes.matchingDistribution;
+
+      // parse matchAmountInToken to a valid BigNumber
+      matchingDistribution.map((distribution) => {
+        distribution.matchAmountInToken = BigNumber.from(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (distribution.matchAmountInToken as any).hex,
+        );
+      });
     }
 
     return { distributionMetaPtr, matchingDistribution };
@@ -524,3 +514,45 @@ export async function fetchMatchingDistribution(
     throw new Error("Unable to fetch matching distribution");
   }
 }
+
+/**
+ * Pay Protocol & Round Fees and transfer funds to payout contract (only by ROUND_OPERATOR_ROLE)
+ * @param roundId
+ * @param signerOrProvider
+ * @returns
+ */
+export const setReadyForPayout = async ({
+  roundId,
+  signerOrProvider,
+}: {
+  roundId: string;
+  signerOrProvider: Signer;
+}): Promise<TransactionBlock> => {
+  try {
+    const roundImplementation = new ethers.Contract(
+      roundId,
+      roundImplementationContract.abi,
+      signerOrProvider,
+    );
+
+    const tx = await roundImplementation.setReadyForPayout();
+    console.log("⏳ Waiting for transaction to be mined...", tx);
+
+    const receipt = await tx.wait();
+
+    console.log("✅ Transaction hash: ", tx.hash);
+    const blockNumber = receipt.blockNumber;
+
+    return {
+      transactionBlockNumber: blockNumber,
+      error: undefined,
+    };
+  } catch (error) {
+    console.error("setReadyForPayout", { error });
+
+    return {
+      transactionBlockNumber: 0,
+      error,
+    };
+  }
+};

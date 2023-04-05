@@ -26,6 +26,7 @@ const questions: InputType[] = [
   "dropdown",
   "email",
   "address",
+  "link",
 ]
 
 function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalProps) {
@@ -297,6 +298,7 @@ function AddQuestionModal({ onSave, question, show, onClose }: AddQuestionModalP
       case "email":
       case "address":
       case "paragraph":
+      case "link":
         result = { ...questionOptions, choices: [] };
         break;
     }

@@ -2,6 +2,8 @@ import { faker } from "@faker-js/faker";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
+import { ethers } from "ethers";
+import { formatBytes32String, parseEther } from "ethers/lib/utils";
 import React from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -9,27 +11,27 @@ import { store } from "./app/store";
 import {
   ApplicationContext,
   ApplicationState,
-  initialApplicationState,
+  initialApplicationState
 } from "./context/application/ApplicationContext";
 import {
   BulkUpdateGrantApplicationContext,
   BulkUpdateGrantApplicationState,
-  initialBulkUpdateGrantApplicationState,
+  initialBulkUpdateGrantApplicationState
 } from "./context/application/BulkUpdateGrantApplicationContext";
 import {
   initialReadProgramState,
   ReadProgramContext,
-  ReadProgramState,
+  ReadProgramState
 } from "./context/program/ReadProgramContext";
 import {
   FinalizeRoundContext,
   FinalizeRoundState,
-  initialFinalizeRoundState,
+  initialFinalizeRoundState
 } from "./context/round/FinalizeRoundContext";
 import {
   initialRoundState,
   RoundContext,
-  RoundState,
+  RoundState
 } from "./context/round/RoundContext";
 import { QFDistribution } from "./features/api/api";
 import {
@@ -41,7 +43,7 @@ import {
   ProjectCredentials,
   ProjectMetadata,
   ProjectStatus,
-  Round,
+  Round
 } from "./features/api/types";
 import { IAM_SERVER } from "./features/round/ViewApplicationPage";
 import history from "./history";
@@ -80,11 +82,15 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
-    token: faker.finance.ethereumAddress(),
+    token: ethers.constants.AddressZero, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
-    payoutStrategy: faker.finance.ethereumAddress(),
+    payoutStrategy: {
+      id: faker.finance.ethereumAddress(),
+      isReadyForPayout: false,
+    },
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [faker.finance.ethereumAddress()],
+    finalized: false,
     ...overrides,
   };
 };
@@ -92,9 +98,11 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 export const makeMatchingStatsData = (): MatchingStatsData => {
   return {
     projectName: faker.company.name(),
-    projectId: faker.finance.ethereumAddress().toString(),
+    projectId: formatBytes32String(faker.company.name().slice(0, 31)),
     uniqueContributorsCount: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
+    matchAmountInToken: parseEther(faker.datatype.number().toString()),
+    projectPayoutAddress: faker.finance.ethereumAddress(),
   };
 };
 
@@ -104,7 +112,7 @@ export const makeQFDistribution = (): QFDistribution => {
     matchAmountInUSD: faker.datatype.number(),
     totalContributionsInUSD: faker.datatype.number(),
     matchPoolPercentage: faker.datatype.number(),
-    matchAmountInToken: faker.datatype.number(),
+    matchAmountInToken: parseEther(faker.datatype.number().toString()),
     projectPayoutAddress: faker.finance.ethereumAddress(),
     uniqueContributorsCount: faker.datatype.number(),
   };

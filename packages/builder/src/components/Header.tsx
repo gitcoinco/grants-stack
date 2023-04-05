@@ -7,7 +7,7 @@ import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
 import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
-import { GitcoinLogo, GrantsHubLogo } from "../assets";
+import { GitcoinLogo, BuilderLogo } from "../assets";
 
 export default function Header() {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -20,8 +20,7 @@ export default function Header() {
             <div className="flex">
               <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
               <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
-              <img className="py-4" alt="Grants Hub Logo" src={GrantsHubLogo} />
-              <h3 className="ml-6 mt-1 inline-flex items-center">Grants Hub</h3>
+              <img className="py-4" alt="Builder Logo" src={BuilderLogo} />
             </div>
           </Link>
           <button

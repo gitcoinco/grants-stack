@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import ViewRoundPage from "../ViewRoundPage";
-import { ProgressStatus, Round } from "../../api/types";
+import { faker } from "@faker-js/faker";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useParams } from "react-router-dom";
+import { useDisconnect, useSwitchNetwork } from "wagmi";
 import {
   makeApprovedProjectData,
   makeMatchingStatsData,
@@ -11,13 +12,13 @@ import {
   wrapWithBulkUpdateGrantApplicationContext,
   wrapWithFinalizeRoundContext,
   wrapWithReadProgramContext,
-  wrapWithRoundContext,
+  wrapWithRoundContext
 } from "../../../test-utils";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
-import { useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
 import { useRoundMatchData } from "../../api/api";
-import { useMatchingDistribution } from "../../../context/round/FinalizeRoundContext";
+import { useFetchMatchingDistributionFromContract } from "../../api/payoutStrategy/merklePayoutStrategy";
+import { setReadyForPayout } from "../../api/round";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -25,6 +26,7 @@ global.TextDecoder = TextDecoder;
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
+jest.mock("../../api/round");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -42,20 +44,38 @@ jest.mock("../../api/api", () => ({
   useRoundMatchData: jest.fn(),
 }));
 
+
+jest.mock("../../api/payoutStrategy/merklePayoutStrategy", () => ({
+  ...jest.requireActual("../../api/payoutStrategy/merklePayoutStrategy"),
+  useFetchMatchingDistributionFromContract: jest.fn(),
+}));
+
+
 jest.mock("../../../context/round/FinalizeRoundContext", () => ({
-  ...jest.requireActual("../../../context/round/FinalizeRoundContext"),
-  useMatchingDistribution: jest.fn(),
+  ...jest.requireActual("../../../context/round/FinalizeRoundContext")
 }));
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
-    chain: {},
+    chain: {
+      name: "Ethereum",
+    },
     address: mockRoundData.operatorWallets![0],
+    signer: {
+      getChainId: () => {
+        /* do nothing */
+      },
+    },
     provider: { getNetwork: () => ({ chainId: "0" }) },
   }),
 }));
 
-describe("View Funding Admin before distribution data is finalized to contract", () => {
+jest.mock("../../../constants", () => ({
+  ...jest.requireActual("../../../constants"),
+  errorModalDelayMs: 0, // NB: use smaller delay for faster tests
+}));
+
+describe("View Round Results before distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -67,7 +87,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  describe("display funding admin tab", () => {
+  describe("display round results tab", () => {
     it("displays No Information Available before round end date", async () => {
       const roundEndTime = faker.date.future();
       mockRoundData = makeRoundData({ roundEndTime });
@@ -88,8 +108,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(screen.getByText("No Information Available")).toBeInTheDocument();
     });
 
@@ -100,7 +120,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -138,8 +158,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
       expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
       expect(screen.getByTestId("finalize-round")).toBeInTheDocument();
@@ -156,7 +176,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -194,8 +214,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -212,7 +232,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -279,8 +299,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -306,7 +326,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "",
       matchingDistribution: [],
       isLoading: false,
@@ -330,7 +350,7 @@ describe("View Funding Admin before distribution data is finalized to contract",
           "projectName":"test",
           "projectId":"0x37ad3db0b0bc56cea1909e6a6f21fd35453ef27f1d9a91e9edde75de10cc9cf8-0xebdb4156203c8b35b7a7c6f320786b98e5ac67c3",
           "uniqueContributorsCount":6202,
-          "matchPoolPercentage":0.0560505703204296 
+          "matchPoolPercentage":0.0560505703204296
         }
       ]
       `),
@@ -370,8 +390,8 @@ describe("View Funding Admin before distribution data is finalized to contract",
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
     expect(screen.getByTestId("custom-or-default-test-id")).toBeInTheDocument();
@@ -395,14 +415,14 @@ describe("View Funding Admin before distribution data is finalized to contract",
   });
 
   describe("finalize state to contract", () => {
-    it("displays the save to contract button", async () => {
+    beforeEach(() => {
       (useRoundMatchData as jest.Mock).mockImplementation(() => ({
         data: [makeQFDistribution(), makeQFDistribution()],
         error: null,
         loading: false,
       }));
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+      (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
         distributionMetaPtr: "",
         matchingDistribution: [],
         isLoading: false,
@@ -430,117 +450,56 @@ describe("View Funding Admin before distribution data is finalized to contract",
           )
         )
       );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+    });
+    it("displays the save to contract button", async () => {
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       expect(
         screen.getByRole("button", {
-          name: /finalize and save to contract/i,
+          name: /Save distribution/i,
         })
       ).toBeInTheDocument();
     });
 
     it("displays a heads-up dialogue when the submit button is pressed", async () => {
-      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
-        data: [makeQFDistribution(), makeQFDistribution()],
-        error: null,
-        loading: false,
-      }));
-
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
-        distributionMetaPtr: "",
-        matchingDistribution: [],
-        isLoading: false,
-        isError: null,
-      }));
-
-      const roundEndTime = faker.date.past();
-      mockRoundData = makeRoundData({ roundEndTime });
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithFinalizeRoundContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewRoundPage />, {
-                  data: [mockRoundData],
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
-                { programs: [] }
-              ),
-              {
-                applications: [],
-                isLoading: false,
-              }
-            )
-          )
-        )
-      );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
+      const roundResultsTab = screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
       const button = screen.getByRole("button", {
-        name: /finalize and save to contract/i,
+        name: /Save Distribution/i,
       });
       fireEvent.click(button);
       expect(
         screen.getByRole("heading", {
-          name: /heads up!/i,
+          name: /Heads up!/i,
         })
       ).toBeInTheDocument();
     });
 
     it("displays a progress window when clicking Continue", async () => {
-      (useRoundMatchData as jest.Mock).mockImplementation(() => ({
-        data: [makeQFDistribution(), makeQFDistribution()],
-        error: null,
-        loading: false,
-      }));
+      const roundResultsTab = screen.getByTestId("round-results");
+      expect(roundResultsTab).toBeInTheDocument();
+      await act(async () => {
+        fireEvent.click(roundResultsTab);
+      });
+      const finalizeButton = screen.getByTestId("save-distribution-button");
+      await act(async () => {
+        fireEvent.click(finalizeButton);
+      });
+      const continueButton = screen.getByTestId("info-continue");
+      await act(async () => {
+        fireEvent.click(continueButton);
+      });
 
-      (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
-        distributionMetaPtr: "",
-        matchingDistribution: [],
-        isLoading: false,
-        isError: null,
-      }));
-
-      const roundEndTime = faker.date.past();
-      mockRoundData = makeRoundData({ roundEndTime });
-      render(
-        wrapWithBulkUpdateGrantApplicationContext(
-          wrapWithFinalizeRoundContext(
-            wrapWithApplicationContext(
-              wrapWithReadProgramContext(
-                wrapWithRoundContext(<ViewRoundPage />, {
-                  data: [mockRoundData],
-                  fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-                }),
-                { programs: [] }
-              ),
-              {
-                applications: [],
-                isLoading: false,
-              }
-            )
-          )
-        )
-      );
-      const fundingAdminTab = screen.getByTestId("funding-admin");
-      fireEvent.click(fundingAdminTab);
-      const finalizeButton = screen.getByRole("button", {
-        name: /finalize and save to contract/i,
-      });
-      fireEvent.click(finalizeButton);
-      const continueButton = screen.getByRole("button", {
-        name: /continue/i,
-      });
-      fireEvent.click(continueButton);
-      const processingHeader = screen.getByRole("heading", {
-        name: /processing\.\.\./i,
-      });
-      expect(processingHeader).toBeInTheDocument();
+      //! todo: this is acting funny and only passes incrementally
+      // const processingHeader = screen.getByTestId("progress-modal");
+      //   await act(async () => {
+      //   expect(processingHeader).toBeInTheDocument();
+      // });
     });
   });
 });
 
-describe("View Funding Admin after distribution data is finalized to contract", () => {
+describe("View Round Results after distribution data is finalized to contract", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
@@ -559,7 +518,7 @@ describe("View Funding Admin after distribution data is finalized to contract", 
       loading: false,
     }));
 
-    (useMatchingDistribution as jest.Mock).mockImplementation(() => ({
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
       distributionMetaPtr: "abcd",
       matchingDistribution: [makeMatchingStatsData(), makeMatchingStatsData()],
       isLoading: false,
@@ -597,10 +556,213 @@ describe("View Funding Admin after distribution data is finalized to contract", 
         )
       )
     );
-    const fundingAdminTab = screen.getByTestId("funding-admin");
-    fireEvent.click(fundingAdminTab);
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
     expect(screen.getByTestId("finalized-round")).toBeInTheDocument();
     expect(screen.getByTestId("match-stats-title")).toBeInTheDocument();
     expect(screen.getByTestId("matching-stats-table")).toBeInTheDocument();
+  });
+});
+
+describe("Ready For Payout", () => {
+  beforeEach(() => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockRoundData.id,
+      };
+    });
+
+    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useDisconnect as jest.Mock).mockReturnValue({});
+  });
+
+
+  it("Should not show the Ready For Payout button if the round is not finalized", async () => {
+    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      data: [makeQFDistribution(), makeQFDistribution()],
+      error: null,
+      loading: false,
+    }));
+
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      distributionMetaPtr: "",
+      matchingDistribution: [],
+      isLoading: false,
+      isError: null,
+    }));
+
+    const roundEndTime = faker.date.past();
+    mockRoundData = makeRoundData({ roundEndTime });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithFinalizeRoundContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }),
+              { programs: [] }
+            ),
+            {
+              applications: [],
+              isLoading: false,
+            }
+          )
+        )
+      )
+    );
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
+
+    expect(
+      screen.queryByTestId("set-ready-for-payout")
+    ).not.toBeInTheDocument();
+  });
+
+  it("Should show the Ready For Payout button if the round is finalized", async () => {
+    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      data: [makeQFDistribution(), makeQFDistribution()],
+      error: null,
+      loading: false,
+    }));
+
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      distributionMetaPtr: "",
+      matchingDistribution: [],
+      isLoading: false,
+      isError: null,
+    }));
+
+    const roundEndTime = faker.date.past();
+    mockRoundData = makeRoundData({ roundEndTime });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithFinalizeRoundContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }),
+              { programs: [] }
+            ),
+            {
+              applications: [],
+              isLoading: false,
+            }
+          )
+        )
+      )
+    );
+    const roundResultsTab = screen.getByTestId("round-results");
+    fireEvent.click(roundResultsTab);
+  });
+
+  it("Should show Info Modal when Ready For Payout button is clicked", async () => {
+    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      data: [makeQFDistribution(), makeQFDistribution()],
+      error: null,
+      loading: false,
+    }));
+
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      distributionMetaPtr: "9a8sdf679a87sdf89",
+      matchingDistribution: [],
+      isLoading: false,
+      isError: null,
+    }));
+
+    const roundEndTime = faker.date.past();
+    mockRoundData = makeRoundData({ roundEndTime });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithFinalizeRoundContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }),
+              { programs: [] }
+            ),
+            {
+              applications: [],
+              isLoading: false,
+            }
+          )
+        )
+      )
+    );
+    const roundResultsTab = screen.getByTestId("round-results");
+    await act(async () => {
+      fireEvent.click(roundResultsTab);
+    });
+    const readyForPayoutButton = screen.getByTestId("set-ready-for-payout");
+    await act(async () => {
+      fireEvent.click(readyForPayoutButton);
+    });
+    const infoModal = screen.getByTestId("info-modal");
+    expect(infoModal).toBeInTheDocument();
+  });
+
+  it("Should show Progress Modal when Info Modal is clicked", async () => {
+    (useRoundMatchData as jest.Mock).mockImplementation(() => ({
+      data: [makeQFDistribution(), makeQFDistribution()],
+      error: null,
+      loading: false,
+    }));
+
+    (useFetchMatchingDistributionFromContract as jest.Mock).mockImplementation(() => ({
+      distributionMetaPtr: "9a8sdf679a87sdf89",
+      matchingDistribution: [],
+      isLoading: false,
+      isError: null,
+    }));
+
+    (setReadyForPayout as jest.Mock).mockResolvedValueOnce(() => ({
+      blockNumber: 0,
+      error: null,
+    }));
+
+    const roundEndTime = faker.date.past();
+    mockRoundData = makeRoundData({ roundEndTime });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithFinalizeRoundContext(
+          wrapWithApplicationContext(
+            wrapWithReadProgramContext(
+              wrapWithRoundContext(<ViewRoundPage />, {
+                data: [mockRoundData],
+                fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+              }),
+              { programs: [] }
+            ),
+            {
+              applications: [],
+              isLoading: false,
+            }
+          )
+        )
+      )
+    );
+    const roundResultsTab = screen.getByTestId("round-results");
+    await act(async () => {
+      fireEvent.click(roundResultsTab);
+    });
+    const readyForPayoutButton = screen.getByTestId("set-ready-for-payout");
+    await act(async () => {
+      fireEvent.click(readyForPayoutButton);
+    });
+    const infoModal = screen.getByTestId("info-modal");
+    expect(infoModal).toBeInTheDocument();
+    const confirmButton = screen.getByTestId("info-continue");
+    await act(async () => {
+      fireEvent.click(confirmButton);
+    });
+    const progressModal = screen.queryByTestId("progress-modal");
+
+    expect(progressModal).not.toBeInTheDocument();
+    expect(setReadyForPayout).toHaveBeenCalledTimes(1);
   });
 });

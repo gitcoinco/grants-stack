@@ -14,7 +14,7 @@ import {
 } from "../features/api/application";
 import { waitForSubgraphSyncTo } from "../features/api/subgraph";
 import {
-  FinalBallotDonation,
+  CartDonation,
   PayoutToken,
   ProgressStatus,
 } from "../features/api/types";
@@ -57,7 +57,7 @@ export const initialQFDonationState: QFDonationState = {
 
 export type QFDonationParams = {
   roundId: string;
-  donations: FinalBallotDonation[];
+  donations: CartDonation[];
   donationToken: PayoutToken;
   totalDonation: number;
   votingStrategy: string;
@@ -67,7 +67,7 @@ interface SubmitDonationParams {
   signer: Signer;
   context: QFDonationState;
   roundId: string;
-  donations: FinalBallotDonation[];
+  donations: CartDonation[];
   donationToken: PayoutToken;
   totalDonation: number;
   votingStrategy: string;
@@ -241,7 +241,7 @@ async function vote(
   signerOrProvider: Signer,
   roundId: string,
   token: PayoutToken,
-  donations: FinalBallotDonation[],
+  donations: CartDonation[],
   totalDonation: number,
   context: QFDonationState
 ): Promise<void> {
@@ -310,7 +310,7 @@ async function waitForSubgraphToUpdate(
 
 function encodeQFVotes(
   donationToken: PayoutToken,
-  donations: FinalBallotDonation[]
+  donations: CartDonation[]
 ): BytesLike[] {
   const encodedVotes: BytesLike[] = [];
 

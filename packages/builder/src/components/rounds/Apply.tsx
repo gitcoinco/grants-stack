@@ -250,7 +250,7 @@ function Apply() {
                 className="text-gitcoin-violet-400"
                 href="https://support.gitcoin.co/gitcoin-grants-protocol"
               >
-                Grants Hub Guide.
+                Builder Guide.
               </a>
             </p>
           </div>
