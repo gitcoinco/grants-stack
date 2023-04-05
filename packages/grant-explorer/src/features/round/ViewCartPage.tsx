@@ -6,7 +6,6 @@ import {
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { Button, Input } from "common/src/styles";
 import { Listbox, Transition } from "@headlessui/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -42,6 +41,7 @@ import PassportBanner from "../common/PassportBanner";
 import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
@@ -497,7 +497,7 @@ export default function ViewCart() {
               className="w-24"
             />
             <p className="m-auto">{selectedPayoutToken.name}</p>
-            <ArrowLeftCircleIcon
+            <TrashIcon
               data-testid="remove-from-cart"
               onClick={() => {
                 handleRemoveProjectsFromCart([props.project]);
@@ -507,7 +507,7 @@ export default function ViewCart() {
                   props.project.recipient
                 );
               }}
-              className="w-6 h-6 m-auto cursor-pointer"
+              className="w-5 h-5 m-auto cursor-pointer mb-4"
             />
           </div>
         </div>
