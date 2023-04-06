@@ -385,7 +385,7 @@ describe("<Form />", () => {
 });
 
 describe("<Form/>", () => {
-  it.only("prevents appliying when requirements are not met", async () => {
+  it("prevents appliying when requirements are not met", async () => {
     const store = setupStore();
 
     store.dispatch(web3ChainIDLoaded(5));
@@ -438,6 +438,8 @@ describe("<Form/>", () => {
         target: { value: `1:${addressFrom(1)}:1` },
       });
     });
+
+    console.log("selectProject", selectProject);
 
     expect(
       screen.getByText("Project Twitter is required.")

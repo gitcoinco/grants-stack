@@ -220,6 +220,7 @@ export default function Form({
 
   const handleProjectInput = async (e: ChangeHandlers) => {
     const { value } = e.target;
+    console.log("calling handler", value);
     setSelectedProjectID(value);
     setIsLoading(true);
     // don't load the project if the input is empty/blank
@@ -288,6 +289,13 @@ export default function Form({
   const projectRequirementsResult: string[] = [];
   const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
+  console.log("booleans", {
+    hasExistingApplication,
+    selectedProjectID,
+    haveProjectRequirementsBeenMet,
+    projectRequirementsResult,
+  });
+
   if (
     roundApplication.applicationSchema.requirements.twitter.required &&
     !selectedProjectMetadata?.projectTwitter
@@ -332,6 +340,15 @@ export default function Form({
     selectedProjectID &&
     ((selectedProjectID && projectRequirementsResult.length === 0) ||
       publishedApplication !== undefined);
+
+  console.log("isValidProjectSelected", {
+    isValidProjectSelected,
+    isUserOwnerOfProject,
+    hasExistingApplication,
+    selectedProjectID,
+    projectRequirementsResult,
+    publishedApplication,
+  });
 
   const needsProject = schema.questions.find((q) => q.type === "project");
 
