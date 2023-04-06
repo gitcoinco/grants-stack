@@ -1,9 +1,13 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import {
+  BoltIcon,
   ExclamationTriangleIcon,
+  GlobeAltIcon,
   InformationCircleIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
+import { renderToHTML } from "common";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -20,16 +24,21 @@ import {
   Metadata,
   ProjectOption,
   Round,
+  RoundApplicationQuestion,
 } from "../../types";
 import {
-  RoundApplicationMetadata,
   RoundApplicationAnswers,
+  RoundApplicationMetadata,
 } from "../../types/roundApplication";
 import { getProjectURIComponents } from "../../utils/utils";
 import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
+import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
 import { validateApplication } from "../base/formValidation";
+import FormValidationErrorList from "../base/FormValidationErrorList";
+import InputLabel from "../base/InputLabel";
+import Checkbox from "../grants/Checkbox";
 import {
   ProjectSelect,
   Select,
@@ -38,11 +47,7 @@ import {
   TextInputAddress,
 } from "../grants/inputs";
 import Radio from "../grants/Radio";
-import Checkbox from "../grants/Checkbox";
 import Toggle from "../grants/Toggle";
-import InputLabel from "../base/InputLabel";
-import FormValidationErrorList from "../base/FormValidationErrorList";
-import CallbackModal from "../base/CallbackModal";
 
 const validation = {
   messages: [""],
@@ -53,6 +58,242 @@ const validation = {
 enum ValidationStatus {
   Invalid,
   Valid,
+}
+
+function ProjectTitle(props: { projectMetadata: Metadata }) {
+  const { projectMetadata } = props;
+  return (
+    <div className="border-b-2 pb-2">
+      <h1 className="text-3xl mt-6 font-thin text-black">
+        {projectMetadata.title}
+      </h1>
+    </div>
+  );
+}
+
+function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
+  const { text, testID, sm } = props;
+  return (
+    <p
+      className={`${sm ? "text-sm" : "text-base"} font-normal text-black`}
+      data-testid={testID}
+    >
+      {" "}
+      {text}{" "}
+    </p>
+  );
+}
+
+function AboutProject(props: { projectToRender: Metadata }) {
+  const { projectToRender } = props;
+  const projectRecipient = "0x";
+
+  const projectWebsite = "";
+  const projectTwitter = "";
+  const userGithub = "";
+  const projectGithub = "";
+
+  const formattedDateWithOrdinal = "";
+
+  // TODO: check if credential is verified before returning a shield icon
+  const getVerifiableCredentialVerificationResultView = (provider: string) => (
+    <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
+      <ShieldCheckIcon
+        className="w-5 h-5 text-teal-500 mr-2"
+        data-testid={`${provider}-verifiable-credential`}
+      />
+      <p className="text-teal-500 font-medium text-xs">Verified</p>
+    </span>
+  );
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
+      {projectRecipient && (
+        <span className="flex items-center mt-4 gap-1">
+          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <DetailSummary
+            text={`${projectRecipient}`}
+            testID="project-recipient"
+            sm
+          />
+        </span>
+      )}
+      {projectWebsite && (
+        <span className="flex items-center mt-4 gap-1">
+          <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
+          <a
+            href={projectWebsite}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary
+              text={`${projectWebsite}`}
+              testID="project-website"
+            />
+          </a>
+        </span>
+      )}
+      {projectTwitter && (
+        <span className="flex items-center mt-4 gap-1">
+          {/* <TwitterIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <a
+            href={`https://twitter.com/${projectTwitter}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary
+              text={`@${projectTwitter}`}
+              testID="project-twitter"
+            />
+          </a>
+          {getVerifiableCredentialVerificationResultView("twitter")}
+        </span>
+      )}
+      {projectToRender.createdAt && (
+        <span className="flex items-center mt-4 gap-1">
+          {/* <CalendarIcon className="h-4 w-4 mr-1 opacity-80" /> */}
+          <DetailSummary
+            text={`${formattedDateWithOrdinal}`}
+            testID="project-createdAt"
+          />
+        </span>
+      )}
+      {userGithub && (
+        <span className="flex items-center mt-4 gap-1">
+          {/* <GithubIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <a
+            href={`https://github.com/${userGithub}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${userGithub}`} testID="user-github" />
+          </a>
+        </span>
+      )}
+      {projectGithub && (
+        <span className="flex items-center mt-4 gap-1">
+          {/* <GithubIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <a
+            href={`https://github.com/${projectGithub}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-base font-normal text-black"
+          >
+            <DetailSummary text={`${projectGithub}`} testID="project-github" />
+          </a>
+          {getVerifiableCredentialVerificationResultView("github")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function FullPreview(props: {
+  project: Metadata;
+  answers: RoundApplicationAnswers;
+  questions: RoundApplicationQuestion[];
+}) {
+  const { project, answers, questions } = props;
+  const ipfsPrefix = process.env.REACT_APP_PINATA_GATEWAY!;
+
+  return (
+    <>
+      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+        <div>
+          <div>
+            <img
+              className="h-[120px] w-full object-cover rounded-t"
+              src={ipfsPrefix + project.bannerImg}
+              alt="Project Banner"
+            />
+          </div>
+          <div className="pl-4 sm:pl-6 lg:pl-8">
+            <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+              <div className="flex">
+                <div className="pl-4">
+                  <div className="-mt-6 sm:-mt-6 sm:flex sm:items-end sm:space-x-5">
+                    <div className="flex">
+                      <img
+                        className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
+                        src={ipfsPrefix + project.logoImg}
+                        alt="Project Logo"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row">
+        <div className="grow">
+          <div>
+            <ProjectTitle projectMetadata={project} />
+            <AboutProject projectToRender={project} />
+          </div>
+          <div>
+            <h1 className="text-2xl mt-8 font-thin text-black">About</h1>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: renderToHTML(
+                  project.description.replace(/\n/g, "\n\n")
+                ),
+              }}
+              className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+            />
+
+            <div>
+              <h1 className="text-2xl mt-8 font-thin text-black">
+                Additional Information
+              </h1>
+              <div>
+                {questions.map((question: any) => {
+                  const currentAnswer = answers[question.id];
+                  const answerText = Array.isArray(currentAnswer)
+                    ? currentAnswer.join(", ")
+                    : currentAnswer;
+                  console.log("DASA question", question);
+
+                  return (
+                    <div>
+                      {!question.hidden && question.type !== "project" && (
+                        <div key={question.id}>
+                          <p className="text-md mt-8 mb-3 font-semibold text-black">
+                            {question.type === "recipient"
+                              ? "Recipient"
+                              : question.title}
+                          </p>
+                          {question.type === "paragraph" ? (
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: renderToHTML(
+                                  answerText.toString().replace(/\n/g, "\n\n")
+                                ),
+                              }}
+                              className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
+                            />
+                          ) : (
+                            <p className="text-base text-black">
+                              {answerText.toString().replace(/\n/g, "<br/>")}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default function Form({
@@ -306,6 +547,18 @@ export default function Form({
     publishedApplication !== undefined;
 
   const needsProject = schema.questions.find((q) => q.type === "project");
+
+  if (preview) {
+    if (selectedProjectMetadata) {
+      return (
+        <FullPreview
+          project={selectedProjectMetadata}
+          answers={answers}
+          questions={schema.questions}
+        />
+      );
+    }
+  }
 
   return (
     <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
