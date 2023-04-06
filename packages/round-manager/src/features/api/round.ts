@@ -4,7 +4,7 @@ import { BigNumber, ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
   roundFactoryContract,
-  roundImplementationContract
+  roundImplementationContract,
 } from "./contracts";
 import {
   ApplicationStatus,
@@ -12,7 +12,7 @@ import {
   MatchingStatsData,
   MetadataPointer,
   Round,
-  TransactionBlock
+  TransactionBlock,
 } from "./types";
 import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
 
@@ -23,7 +23,7 @@ import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
  */
 export async function getRoundById(
   signerOrProvider: Web3Provider,
-  roundId: string,
+  roundId: string
 ): Promise<Round> {
   try {
     // fetch chain id
@@ -59,6 +59,8 @@ export async function getRoundById(
               projects(first: 1000) {
                 id
                 project
+                status
+                applicationIndex
                 metaPtr {
                   protocol
                   pointer
@@ -79,7 +81,7 @@ export async function getRoundById(
           }
         `,
       chainId,
-      { roundId: roundId },
+      { roundId: roundId }
     );
 
     const round: RoundResult = res.data.rounds[0];
@@ -90,13 +92,20 @@ export async function getRoundById(
       fetchFromIPFS(res.data.rounds[0].applicationMetaPtr.pointer),
     ]);
 
+    round.projects = round.projects.map((project) => {
+      return {
+        ...project,
+        status: convertStatus(project.status),
+      };
+    });
+
     const approvedProjectsWithMetadata = await loadApprovedProjects(
       round,
-      chainId,
+      chainId
     );
 
     const operatorWallets = res.data.rounds[0].roles[0].accounts.map(
-      (account: { address: string }) => account.address,
+      (account: { address: string }) => account.address
     );
 
     return {
@@ -104,10 +113,10 @@ export async function getRoundById(
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(
-        res.data.rounds[0].applicationsStartTime * 1000,
+        res.data.rounds[0].applicationsStartTime * 1000
       ),
       applicationsEndTime: new Date(
-        res.data.rounds[0].applicationsEndTime * 1000,
+        res.data.rounds[0].applicationsEndTime * 1000
       ),
       roundStartTime: new Date(res.data.rounds[0].roundStartTime * 1000),
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
@@ -136,7 +145,7 @@ export async function listRounds(
   address: string,
   signerOrProvider: Web3Provider,
   programId: string,
-  roundId?: string,
+  roundId?: string
 ): Promise<{ rounds: Round[] }> {
   try {
     // fetch chain id
@@ -178,7 +187,7 @@ export async function listRounds(
           }
         `,
       chainId,
-      { address: address?.toLowerCase(), programId, roundId },
+      { address: address?.toLowerCase(), programId, roundId }
     );
 
     const rounds: Round[] = [];
@@ -191,7 +200,7 @@ export async function listRounds(
       ]);
 
       const operatorWallets = round.roles[0].accounts.map(
-        (account: { address: string }) => account.address,
+        (account: { address: string }) => account.address
       );
 
       rounds.push({
@@ -227,7 +236,7 @@ export async function listRounds(
  */
 export async function deployRoundContract(
   round: Round,
-  signerOrProvider: Signer,
+  signerOrProvider: Signer
 ): Promise<{ transactionBlockNumber: number }> {
   try {
     const chainId = await signerOrProvider.getChainId();
@@ -237,7 +246,7 @@ export async function deployRoundContract(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       _roundFactoryContract.address!,
       _roundFactoryContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     if (!round.applicationsEndTime) {
@@ -266,11 +275,11 @@ export async function deployRoundContract(
     const tokenAmount =
       round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0;
     const token = payoutTokens.filter(
-      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase(),
+      (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0];
     const parsedTokenAmount = utils.parseUnits(
       tokenAmount.toString(),
-      token.decimal,
+      token.decimal
     );
 
     // encode input parameters
@@ -296,7 +305,7 @@ export async function deployRoundContract(
         "tuple(tuple(uint256 protocol, string pointer), tuple(uint256 protocol, string pointer))",
         "tuple(address[] adminRoles, address[] roundOperators)",
       ],
-      params,
+      params
     );
 
     // Deploy a new Round contract
@@ -308,7 +317,7 @@ export async function deployRoundContract(
 
     if (receipt.events) {
       const event = receipt.events.find(
-        (e: { event: string }) => e.event === "RoundCreated",
+        (e: { event: string }) => e.event === "RoundCreated"
       );
       if (event && event.args) {
         roundAddress = event.args.roundAddress;
@@ -353,56 +362,50 @@ interface RoundResult {
 interface RoundProjectResult {
   id: string;
   project: string;
+  status: string | number;
+  applicationIndex: number;
   metaPtr: MetadataPointer;
 }
 
-export type RoundProject = {
-  id: string;
-  status: ApplicationStatus;
-  payoutAddress: string;
-};
-
-type RoundProjects = Array<RoundProject>;
+function convertStatus(status: string | number) {
+  switch (status) {
+    case 0:
+      return "PENDING";
+    case 1:
+      return "APPROVED";
+    case 2:
+      return "REJECTED";
+    case 3:
+      return "CANCELLED";
+    default:
+      return "PENDING";
+  }
+}
 
 async function loadApprovedProjects(
   round: RoundResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject[]> {
   if (!round.projectsMetaPtr || round.projects.length === 0) {
     return [];
   }
   const allRoundProjects = round.projects;
 
-  // TODO - when subgraph is ready, filter approved projects by project.status instead of through projectsMetaPtr
-  const approvedProjectIds: string[] = await getApprovedProjectIds(
-    round.projectsMetaPtr,
-  );
-  const approvedProjects = allRoundProjects.filter((project) =>
-    approvedProjectIds.includes(project.id),
+  const approvedProjects = allRoundProjects.filter(
+    (project) => project.status === ApplicationStatus.APPROVED
   );
   const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
     approvedProjects.map((project: RoundProjectResult) =>
-      fetchMetadataAndMapProject(project, chainId),
+      fetchMetadataAndMapProject(project, chainId)
     );
   return Promise.all(fetchApprovedProjectMetadata);
-}
-
-async function getApprovedProjectIds(
-  roundProjectStatusesPtr?: MetadataPointer,
-): Promise<string[]> {
-  const roundProjectStatuses: RoundProjects = roundProjectStatusesPtr
-    ? await fetchFromIPFS(roundProjectStatusesPtr.pointer)
-    : [];
-  return roundProjectStatuses
-    .filter((project) => project.status === ApplicationStatus.APPROVED)
-    .map((project) => project.id);
 }
 
 async function fetchMetadataAndMapProject(
   project: RoundProjectResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any,
+  chainId: any
 ): Promise<ApprovedProject> {
   const applicationData = await fetchFromIPFS(project.metaPtr.pointer);
   // NB: applicationData can be in two formats:
@@ -428,7 +431,7 @@ async function fetchMetadataAndMapProject(
 export async function getProjectOwners(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any,
-  projectRegistryId: string,
+  projectRegistryId: string
 ) {
   try {
     // get the subgraph for project owners by $projectRegistryId
@@ -449,13 +452,13 @@ export async function getProjectOwners(
       `,
       chainId,
       { projectRegistryId },
-      true,
+      true
     );
 
     return (
       res.data?.projects[0]?.accounts.map(
         (account: { account: { address: string } }) =>
-          ethers.utils.getAddress(account.account.address),
+          ethers.utils.getAddress(account.account.address)
       ) || []
     );
   } catch (error) {
@@ -470,7 +473,7 @@ export async function getProjectOwners(
  */
 export async function fetchMatchingDistribution(
   roundId: string | undefined,
-  signerOrProvider: Web3Provider,
+  signerOrProvider: Web3Provider
 ): Promise<{
   distributionMetaPtr: string;
   matchingDistribution: MatchingStatsData[];
@@ -483,13 +486,13 @@ export async function fetchMatchingDistribution(
     const roundImplementation = new ethers.Contract(
       roundId,
       roundImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
     const payoutStrategyAddress = await roundImplementation.payoutStrategy();
     const payoutStrategy = new ethers.Contract(
       payoutStrategyAddress,
       merklePayoutStrategyImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
     const distributionMetaPtrRes = await payoutStrategy.distributionMetaPtr();
     const distributionMetaPtr = distributionMetaPtrRes.pointer;
@@ -503,7 +506,7 @@ export async function fetchMatchingDistribution(
       matchingDistribution.map((distribution) => {
         distribution.matchAmountInToken = BigNumber.from(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (distribution.matchAmountInToken as any).hex,
+          (distribution.matchAmountInToken as any).hex
         );
       });
     }
@@ -532,7 +535,7 @@ export const setReadyForPayout = async ({
     const roundImplementation = new ethers.Contract(
       roundId,
       roundImplementationContract.abi,
-      signerOrProvider,
+      signerOrProvider
     );
 
     const tx = await roundImplementation.setReadyForPayout();
