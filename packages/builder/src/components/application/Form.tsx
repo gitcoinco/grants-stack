@@ -222,6 +222,13 @@ export default function Form({
     const { value } = e.target;
     setSelectedProjectID(value);
     setIsLoading(true);
+    // don't load the project if the input is empty/blank
+    if (value === "") {
+      setHasExistingApplication(false);
+      setIsLoading(false);
+      handleInput(e);
+      return;
+    }
     const { hasProjectAppliedToRound } = await fetchProjectApplicationInRound(
       value,
       round.address
@@ -314,6 +321,8 @@ export default function Form({
       "Verification of project Github is required."
     );
   }
+
+  //! todo: need to make sure the user is one of the owners of the project
 
   const isValidProjectSelected =
     !hasExistingApplication &&

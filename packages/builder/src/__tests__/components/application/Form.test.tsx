@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { Store } from "redux";
+import * as projects from "../../../actions/projects";
 import { web3ChainIDLoaded } from "../../../actions/web3";
 import Form from "../../../components/application/Form";
 import setupStore from "../../../store";
@@ -9,25 +10,25 @@ import {
   Round,
   RoundApplicationMetadata,
 } from "../../../types/index";
-import { renderWrapped } from "../../../utils/test_utils";
+import { addressFrom, renderWrapped } from "../../../utils/test_utils";
 import * as utils from "../../../utils/utils";
 
 const projectsMetadata: Metadata[] = [
   {
     protocol: 1,
     pointer: "0x1234",
-    id: "1:1:1",
+    id: `1:${addressFrom(1)}:1`,
     title: "First Project",
-    description: "",
-    website: "",
+    description: "This is the first project description",
+    website: "https://firstproject.com",
   },
   {
     protocol: 2,
     pointer: "0x1234",
-    id: "1:1:2",
+    id: `1:${addressFrom(2)}:2`,
     title: "Second Project",
-    description: "",
-    website: "",
+    description: "This is the second project description",
+    website: "https://secondproject.com",
   },
 ];
 
@@ -108,7 +109,7 @@ describe("<Form />", () => {
       payload: {
         chainID: 5,
         events: {
-          "1:1:1": {
+          [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,
             updatedAtBlock: 1112,
           },
@@ -122,16 +123,14 @@ describe("<Form />", () => {
   });
 
   describe("addressInput valid address change", () => {
-    test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
-      // const setState = jest.fn();
+    test.only("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
       const returnValue = {
         isContract: true,
         isSafe: true,
         resolved: true,
       };
-      // const useStateSpy = jest.spyOn(React, "useState");
-      // useStateSpy.mockImplementation(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue(false);
 
       renderWrapped(
         <Form
@@ -146,7 +145,7 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
@@ -176,14 +175,11 @@ describe("<Form />", () => {
 
     // ✅
     test("checks if wallet address IS a multi-sig on current chain when NO is selected and IS a safe", async () => {
-      // const setState = jest.fn();
       const returnValue = {
         isContract: true,
         isSafe: false,
         resolved: true,
       };
-      // const useStateSpy = jest.spyOn(React, "useState");
-      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -199,7 +195,7 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
@@ -229,14 +225,11 @@ describe("<Form />", () => {
 
     // ✅
     test("checks if wallet address is a multi-sig on current chain when YES is selected and IS NOT a safe", async () => {
-      // const setState = jest.fn();
       const returnValue = {
         isContract: false,
         isSafe: true,
         resolved: true,
       };
-      // const useStateSpy = jest.spyOn(React, "useState");
-      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -252,7 +245,7 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+      fireEvent.change(selectProject, { target: { value: "1:1:0x12345" } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
@@ -282,14 +275,11 @@ describe("<Form />", () => {
 
     // ✅
     test("checks if wallet address is a multi-sig on current chain when NO is selected and IS NOT a safe", async () => {
-      // const setState = jest.fn();
       const returnValue = {
         isContract: false,
         isSafe: false,
         resolved: true,
       };
-      // const useStateSpy = jest.spyOn(React, "useState");
-      // useStateSpy.mockImplementationOnce(() => [returnValue, setState]);
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
 
       renderWrapped(
@@ -305,7 +295,7 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
 
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
@@ -351,7 +341,7 @@ describe("<Form />", () => {
     const selectProject = screen.getByLabelText(
       "Select a project you would like to apply for funding:"
     );
-    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+    fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
 
     const toggleButton = screen.getByText("View your Project Details");
 
@@ -378,7 +368,7 @@ describe("<Form/>", () => {
       payload: {
         chainID: 5,
         events: {
-          "1:1:1": {
+          [`1:${addressFrom(1)}:1`]: {
             createdAtBlock: 1111,
             updatedAtBlock: 1112,
           },
@@ -413,7 +403,7 @@ describe("<Form/>", () => {
     const selectProject = screen.getByLabelText(
       "Select a project you would like to apply for funding:"
     );
-    fireEvent.change(selectProject, { target: { value: "1:1:1" } });
+    fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
 
     expect(
       screen.getByText("Project Twitter is required.")

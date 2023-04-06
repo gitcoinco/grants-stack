@@ -230,7 +230,7 @@ function Round() {
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
-          {props.applicationEnded ? (
+          {!props.applicationEnded ? (
             <>
               <Button
                 styles={[
