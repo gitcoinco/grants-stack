@@ -244,6 +244,7 @@ export type ProjectStatus =
   | "PENDING"
   | "APPROVED"
   | "REJECTED"
+  | "CANCELLED"
   | "APPEAL"
   | "FRAUD";
 
@@ -308,7 +309,14 @@ export interface GrantApplication {
    * e.g IPFS, Ceramic etc.
    */
   projectsMetaPtr: MetadataPointer;
+  /**
+   * Status of each grant application
+   */
   status?: ProjectStatus;
+  /**
+   * Index of a grant application
+   */
+  applicationIndex?: number;
   createdAt: string;
 }
 
@@ -335,6 +343,7 @@ export enum ApplicationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
 }
 
 export type ProgressStep = {

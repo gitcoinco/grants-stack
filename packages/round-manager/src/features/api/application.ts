@@ -146,6 +146,7 @@ export const getApplicationsByRoundId = async (
               protocol
               pointer
             }
+            applicationIndex
             status
             round {
               projectsMetaPtr {
@@ -175,6 +176,7 @@ export const getApplicationsByRoundId = async (
       grantApplications.push({
         ...application,
         status: projectStatus,
+        applicationIndex: project.applicationIndex,
         id: project.id,
         projectsMetaPtr: project.round.projectsMetaPtr,
       });
