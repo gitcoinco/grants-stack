@@ -152,6 +152,7 @@ export type Project = {
   projectMetadata: ProjectMetadata;
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
+  applicationIndex: number;
 };
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;

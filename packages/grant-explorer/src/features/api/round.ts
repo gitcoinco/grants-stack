@@ -43,6 +43,7 @@ interface RoundProjectResult {
   id: string;
   project: string;
   status: string | number;
+  applicationIndex: number;
   metaPtr: MetadataPointer;
 }
 
@@ -101,6 +102,7 @@ export async function getRoundById(
               id
               project
               status
+              applicationIndex
               metaPtr {
                       protocol
                       pointer
@@ -212,6 +214,7 @@ async function fetchMetadataAndMapProject(
       owners: projectOwners.map((address: string) => ({ address })),
     },
     status: ApplicationStatus.APPROVED,
+    applicationIndex: project.applicationIndex,
   };
 }
 
