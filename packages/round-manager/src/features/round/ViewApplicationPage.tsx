@@ -41,15 +41,15 @@ import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
 import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
-import markdown from "../../markdown";
+
+import {
+  CalendarIcon,
+  formatDateWithOrdinal,
+  VerifiedCredentialState,
+} from "common";
+import { renderToHTML } from "common";
 
 type ApplicationStatus = "APPROVED" | "REJECTED";
-
-enum VerifiedCredentialState {
-  VALID,
-  INVALID,
-  PENDING,
-}
 
 export const IAM_SERVER =
   "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
@@ -190,6 +190,7 @@ export default function ViewApplicationPage() {
       await bulkUpdateGrantApplications({
         roundId: roundId,
         applications: [
+          // @ts-expect-error clean up the types here once we have a working type system
           {
             status: reviewDecision,
             id: application.id,
@@ -245,6 +246,12 @@ export default function ViewApplicationPage() {
   useEffect(() => {
     if (!isLoading) {
       setApplicationExists(!getApplicationByIdError && !!application);
+
+      /* During development, give frontend access to all rounds */
+      if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
+        setHasAccess(true);
+        return;
+      }
 
       if (round) {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
@@ -452,6 +459,21 @@ export default function ViewApplicationPage() {
                       </span>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
+
+                    <span
+                      className="text-grey-500 flex flex-row justify-start items-center"
+                      data-testid="project-createdAt"
+                    >
+                      <CalendarIcon className="h-4 w-4 mr-2" />
+                      <span className="text-sm text-violet-400 mr-2">
+                        Created on:{" "}
+                        {application?.createdAt
+                          ? formatDateWithOrdinal(
+                              new Date(Number(application?.createdAt) * 1000)
+                            )
+                          : "-"}
+                      </span>
+                    </span>
                   </div>
 
                   <hr className="my-6" />
@@ -460,7 +482,7 @@ export default function ViewApplicationPage() {
 
                   <p
                     dangerouslySetInnerHTML={{
-                      __html: markdown.renderToHTML(
+                      __html: renderToHTML(
                         application?.project?.description.replace(
                           /\n/g,
                           "\n\n"
@@ -484,7 +506,7 @@ export default function ViewApplicationPage() {
                           {block.type === "paragraph" ? (
                             <p
                               dangerouslySetInnerHTML={{
-                                __html: markdown.renderToHTML(
+                                __html: renderToHTML(
                                   answerText.replace(/\n/g, "\n\n")
                                 ),
                               }}

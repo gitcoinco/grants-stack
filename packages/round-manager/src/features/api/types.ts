@@ -317,6 +317,10 @@ export interface GrantApplication {
    * Index of a grant application
    */
   applicationIndex?: number;
+  /**
+   * Created timestamp of a grant application
+   */
+  createdAt: string;
 }
 
 export type AnswerBlock = {
@@ -353,6 +357,7 @@ export type ProgressStep = {
 
 export type Project = {
   lastUpdated: number; // unix timestamp in milliseconds
+  createdAt: number; // unix timestamp in miliseconds
   id: string;
   owners: ProjectOwner[];
   title: string;

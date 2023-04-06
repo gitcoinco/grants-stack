@@ -15,7 +15,7 @@ const projectRegistry = [
   "function projectsCount() view returns (uint256)",
   "function projectsOwners(uint256) view returns (uint256 count)",
   "function removeProjectOwner(uint256 projectID, address prevOwner, address owner)",
-  "function updateProjectMetadata(uint256 projectID, tuple(uint256 protocol, string pointer) metadata)"
+  "function updateProjectMetadata(uint256 projectID, tuple(uint256 protocol, string pointer) metadata)",
 ];
 
 export default projectRegistry;

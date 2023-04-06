@@ -1,5 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { graphql_fetch } from "common";
 import { BigNumber, ethers, utils } from "ethers";
 import {
   merklePayoutStrategyImplementationContract,
@@ -14,7 +15,7 @@ import {
   Round,
   TransactionBlock,
 } from "./types";
-import { fetchFromIPFS, graphql_fetch, payoutTokens } from "./utils";
+import { fetchFromIPFS, payoutTokens } from "./utils";
 
 /**
  * Fetch a round by ID

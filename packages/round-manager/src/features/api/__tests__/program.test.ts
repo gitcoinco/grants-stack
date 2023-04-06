@@ -1,12 +1,17 @@
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
 import { makeProgramData } from "../../../test-utils";
-import { graphql_fetch, fetchFromIPFS, ChainId, CHAINS } from "../utils";
+import { fetchFromIPFS, ChainId, CHAINS } from "../utils";
+import { graphql_fetch } from "common";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
-  graphql_fetch: jest.fn(),
   fetchFromIPFS: jest.fn(),
+}));
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  graphql_fetch: jest.fn(),
 }));
 
 describe("listPrograms", () => {

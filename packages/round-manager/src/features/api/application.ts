@@ -1,4 +1,4 @@
-import { fetchFromIPFS, graphql_fetch, PayoutToken, pinToIPFS } from "./utils";
+import { fetchFromIPFS, PayoutToken, pinToIPFS } from "./utils";
 import {
   GrantApplication,
   GrantApplicationId,
@@ -16,6 +16,7 @@ import { BigNumber } from "ethers";
 import { Contract, ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
+import { graphql_fetch } from "common";
 
 type RoundApplication = {
   id: string;
@@ -30,6 +31,7 @@ type RoundApplication = {
       pointer: string;
     };
   };
+  createdAt: number;
 };
 
 type Res = {
@@ -57,6 +59,7 @@ export const getApplicationById = async (
               pointer
             }
             status
+            createdAt
             round {
               projectsMetaPtr {
                 protocol
@@ -250,15 +253,15 @@ const fetchApplicationData = async (
           owners: projectOwners.map((address: string) => ({ address })),
         };
 
-        return {
-          ...application,
-          status,
-          id: project.id,
-          project: grantApplicationProjectMetadata,
-          projectsMetaPtr: project.round.projectsMetaPtr,
-        } as GrantApplication;
-      }
-    )
+      return {
+        ...application,
+        status,
+        id: project.id,
+        project: grantApplicationProjectMetadata,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+        createdAt: project.createdAt,
+      } as GrantApplication;
+    })
   );
 
 /**

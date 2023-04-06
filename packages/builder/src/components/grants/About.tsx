@@ -1,4 +1,5 @@
 import { Box } from "@chakra-ui/react";
+import { renderToHTML } from "common";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { GithubLogo, TwitterLogo } from "../../assets";
@@ -7,7 +8,6 @@ import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
 import { CredentialProvider, FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
-import markdown from "../../utils/markdown";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
@@ -185,7 +185,7 @@ export default function About({
               <div
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
-                  __html: markdown.renderToHTML(
+                  __html: renderToHTML(
                     project.description.replace(/\n/g, "\n\n")
                   ),
                 }}

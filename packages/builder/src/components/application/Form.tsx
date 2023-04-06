@@ -42,6 +42,7 @@ import Checkbox from "../grants/Checkbox";
 import Toggle from "../grants/Toggle";
 import InputLabel from "../base/InputLabel";
 import FormValidationErrorList from "../base/FormValidationErrorList";
+import CallbackModal from "../base/CallbackModal";
 
 const validation = {
   messages: [""],
@@ -74,6 +75,7 @@ export default function Form({
   const dispatch = useDispatch();
   const { chains } = useNetwork();
 
+  const [infoModal, setInfoModal] = useState(false);
   const [answers, setAnswers] = useState<RoundApplicationAnswers>({});
   const [preview, setPreview] = useState(readOnly || false);
   const [formValidation, setFormValidation] = useState(validation);
@@ -230,9 +232,7 @@ export default function Form({
 
   const handleSubmitApplication = async () => {
     if (formValidation.valid) {
-      if (onSubmit) {
-        onSubmit(answers);
-      }
+      setInfoModal(true);
     }
   };
 
@@ -629,7 +629,34 @@ export default function Form({
                   }
                 />
               );
-
+            case "number":
+              return (
+                <TextInput
+                  inputType="number"
+                  key={input.id}
+                  label={
+                    <InputLabel
+                      title={input.title}
+                      encrypted={input.encrypted}
+                      hidden={input.hidden}
+                    />
+                  }
+                  placeholder="0"
+                  name={`${input.id}`}
+                  value={(answers[input.id] as number) ?? 0}
+                  disabled={preview}
+                  changeHandler={(e) => {
+                    handleInput(e);
+                  }}
+                  required={input.required ?? false}
+                  feedback={
+                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                      type: "none",
+                      message: "",
+                    }
+                  }
+                />
+              );
             default:
               return null;
           }
@@ -732,6 +759,27 @@ export default function Form({
       >
         <div>There was a problem with your round application transaction.</div>
       </ErrorModal>
+      <CallbackModal
+        modalOpen={infoModal}
+        confirmText="Proceed"
+        cancelText="Cancel"
+        confirmHandler={() => {
+          if (onSubmit) onSubmit(answers);
+          setInfoModal(false);
+        }}
+        toggleModal={() => setInfoModal(!infoModal)}
+        hideCloseButton
+      >
+        <>
+          <h5 className="font-medium mt-5 mb-2 text-lg">
+            Are you sure you want to submit your application?
+          </h5>
+          <p className="mb-6">
+            Please note that once you submit this application, you will NOT be
+            able to edit or re-apply with the same project to this round.
+          </p>
+        </>
+      </CallbackModal>
     </div>
   );
 }

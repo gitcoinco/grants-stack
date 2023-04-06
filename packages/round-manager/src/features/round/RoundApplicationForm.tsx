@@ -68,7 +68,7 @@ export const initialQuestions: SchemaQuestion[] = [
     required: true,
     encrypted: false,
     hidden: false,
-    type: "short-answer",
+    type: "number",
   },
 ];
 
