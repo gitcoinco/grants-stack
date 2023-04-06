@@ -7,7 +7,12 @@ import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
 import Footer from "../Footer";
-import { LandingBackground, BuilderLogo, GitcoinLogo } from "../../assets";
+import {
+  LandingBackground,
+  BuilderLogo,
+  GitcoinLogo,
+  GitcoinLogoText,
+} from "../../assets";
 import { grantsPath } from "../../routes";
 
 function LandingHeader() {
@@ -119,6 +124,13 @@ function Landing() {
       <LandingHeader />
       <section className="flex flex-col md:flex-row">
         <div className="flex flex-1 flex-col justify-center container px-8 md:px-10 md:pl-4 ml-20">
+          <div>
+            <img
+              className="inline-block ml-2"
+              src={GitcoinLogoText}
+              alt="Gitcoin Logo"
+            />
+          </div>
           <h1 className="w-auto text-5xl md:text-7xl mb-8 mt-4">Builder</h1>
           <p className="text-black text-xl w-full md:max-w-4xl">
             Build and fund your project all in one place, and bring your vision
