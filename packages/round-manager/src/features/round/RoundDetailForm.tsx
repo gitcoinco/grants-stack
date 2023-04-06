@@ -14,7 +14,7 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 
-import { Listbox, RadioGroup, Transition } from "@headlessui/react";
+import { Listbox, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
@@ -24,8 +24,7 @@ import { Input } from "common/src/styles";
 import moment from "moment";
 import ReactTooltip from "react-tooltip";
 import { Program, Round } from "../api/types";
-import { getPayoutTokenOptions, PayoutToken, SupportType } from "../api/utils";
-import { useWallet } from "../common/Auth";
+import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 
@@ -35,25 +34,6 @@ const ValidationSchema = yup.object().shape({
       .string()
       .required("This field is required.")
       .min(8, "Round name must be at least 8 characters."),
-    matchingFunds: yup.object({
-      matchingFundsAvailable: yup
-        .number()
-        .typeError("Matching funds available must be valid number.")
-        .moreThan(0, "Matching funds available must be more than zero."),
-      matchingCap: yup
-        .boolean()
-        .required("You must select if you want a matching cap for projects."),
-      matchingCapAmount: yup
-        .number()
-        .transform((value) => (isNaN(value) ? 0 : value))
-        .when("matchingCap", {
-          is: true,
-          then: yup
-            .number()
-            .required("You must provide an amount for the matching cap.")
-            .moreThan(0, "Matching cap amount must be more than zero."),
-        }),
-    }),
     support: yup.object({
       type: yup
         .string()
@@ -111,13 +91,6 @@ const ValidationSchema = yup.object().shape({
       yup.ref("roundStartTime"),
       "Round end date must be later than the round start date"
     ),
-  token: yup
-    .string()
-    .required("You must select a payout token for your round.")
-    .notOneOf(
-      ["Choose Payout Token"],
-      "You must select a payout token for your round."
-    ),
 });
 
 interface RoundDetailFormProps {
@@ -130,9 +103,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const { currentStep, setCurrentStep, stepsCount, formData, setFormData } =
     useContext(FormContext);
   const defaultRoundMetadata = {
-    matchingFunds: {
-      matchingCap: false,
-    },
     ...((formData as Partial<Round>)?.roundMetadata ?? {}),
     feesPercentage: 0,
     feesAddress: "",
@@ -142,7 +112,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<Round>({
     defaultValues: {
       ...formData,
@@ -150,18 +119,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     },
     resolver: yupResolver(ValidationSchema),
   });
-
-  const { chain } = useWallet();
-  const payoutTokenOptions: PayoutToken[] = [
-    {
-      name: "Choose Payout Token",
-      chainId: chain.id,
-      address: "",
-      default: true,
-      decimal: 0,
-    },
-    ...getPayoutTokenOptions(chain.id),
-  ];
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
@@ -191,44 +148,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
   function disableBeforeRoundStartDate(current: moment.Moment) {
     return current.isAfter(roundStartDate);
-  }
-
-  function quadraticFundingSettings() {
-    return (
-      <>
-        <hr className="my-8" />
-        <p className="text-grey-400 mb-4">Quadratic Funding Settings</p>
-        <div className="grid grid-cols-6 gap-6">
-          <PayoutTokenDropdown
-            errors={errors}
-            register={register("token")}
-            control={control}
-            payoutTokenOptions={payoutTokenOptions}
-          />
-          <MatchingFundsAvailable
-            errors={errors}
-            register={register(
-              "roundMetadata.matchingFunds.matchingFundsAvailable",
-              {
-                valueAsNumber: true,
-              }
-            )}
-            token={watch("token")}
-            payoutTokenOptions={payoutTokenOptions}
-          />
-          <MatchingCap
-            errors={errors}
-            registerMatchingCapAmount={register(
-              "roundMetadata.matchingFunds.matchingCapAmount",
-              {
-                valueAsNumber: true,
-              }
-            )}
-            control={control}
-          />
-        </div>
-      </>
-    );
   }
 
   return (
@@ -543,7 +462,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                   )}
                 </div>
               </div>
-              {quadraticFundingSettings()}
             </div>
 
             <div className="px-6 align-middle py-3.5 shadow-md">
@@ -590,43 +508,6 @@ function RoundName(props: {
   );
 }
 
-function PayoutTokenButton(props: {
-  errors: FieldErrors<Round>;
-  token?: PayoutToken;
-}) {
-  const { token } = props;
-  return (
-    <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border h-10 ${
-        props.errors.token
-          ? "border-red-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-          : "border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-      }`}
-      data-testid="payout-token-select"
-    >
-      <span className="flex items-center">
-        {token?.logo ? (
-          <img
-            src={token?.logo}
-            alt=""
-            className="h-6 w-6 flex-shrink-0 rounded-full"
-          />
-        ) : null}
-        {token?.default ? (
-          <span className="ml-3 block truncate text-gray-400">
-            {token?.name}
-          </span>
-        ) : (
-          <span className="ml-3 block truncate">{token?.name}</span>
-        )}
-      </span>
-      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-        <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-      </span>
-    </Listbox.Button>
-  );
-}
-
 function ProgramChain(props: { program: Program }) {
   const { program } = props;
   return (
@@ -661,346 +542,6 @@ function ProgramChain(props: { program: Program }) {
   );
 }
 
-function PayoutTokenInformation() {
-  return (
-    <>
-      <InformationCircleIcon
-        data-tip
-        data-background-color="#0E0333"
-        data-for="payout-token-tooltip"
-        className="inline h-4 w-4 ml-2 mr-3 mb-1"
-        data-testid={"payout-token-tooltip"}
-      />
-      <ReactTooltip
-        id="payout-token-tooltip"
-        place="bottom"
-        type="dark"
-        effect="solid"
-      >
-        <p className="text-xs">
-          The payout token is the token <br />
-          that you will use to distribute <br />
-          matching funds to your grantees.
-        </p>
-      </ReactTooltip>
-    </>
-  );
-}
-
-function PayoutTokenDropdown(props: {
-  register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control: Control<Round>;
-  payoutTokenOptions: PayoutToken[];
-}) {
-  const { field } = useController({
-    name: "token",
-    defaultValue: props.payoutTokenOptions[0].address,
-    control: props.control,
-    rules: {
-      required: true,
-    },
-  });
-  return (
-    <div className="relative col-span-6 sm:col-span-3">
-      <Listbox {...field}>
-        {({ open }) => (
-          <div>
-            <Listbox.Label className="block text-sm">
-              <span>Payout Token</span>
-              <span className="text-right text-violet-400 float-right text-xs mt-1">
-                *Required
-              </span>
-              <PayoutTokenInformation />
-            </Listbox.Label>
-            <div className="mt-1 mb-2 shadow-sm block rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-              <PayoutTokenButton
-                errors={props.errors}
-                token={props.payoutTokenOptions.find(
-                  (t) => t.address === field.value
-                )}
-              />
-              <Transition
-                show={open}
-                as={Fragment}
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                  {props.payoutTokenOptions.map(
-                    (token) =>
-                      !token.default && (
-                        <Listbox.Option
-                          key={token.name}
-                          className={({ active }) =>
-                            classNames(
-                              active
-                                ? "text-white bg-indigo-600"
-                                : "text-gray-900",
-                              "relative cursor-default select-none py-2 pl-3 pr-9"
-                            )
-                          }
-                          value={token.address}
-                          data-testid="payout-token-option"
-                        >
-                          {({ selected, active }) => (
-                            <>
-                              <div className="flex items-center">
-                                {token.logo ? (
-                                  <img
-                                    src={token.logo}
-                                    alt=""
-                                    className="h-6 w-6 flex-shrink-0 rounded-full"
-                                  />
-                                ) : null}
-                                <span
-                                  className={classNames(
-                                    selected ? "font-semibold" : "font-normal",
-                                    "ml-3 block truncate"
-                                  )}
-                                >
-                                  {token.name}
-                                </span>
-                              </div>
-
-                              {selected ? (
-                                <span
-                                  className={classNames(
-                                    active ? "text-white" : "text-indigo-600",
-                                    "absolute inset-y-0 right-0 flex items-center pr-4"
-                                  )}
-                                >
-                                  <CheckIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      )
-                  )}
-                </Listbox.Options>
-              </Transition>
-            </div>
-            {props.errors.token && (
-              <p className="mt-2 text-xs text-pink-500">
-                {props.errors.token?.message}
-              </p>
-            )}
-          </div>
-        )}
-      </Listbox>
-    </div>
-  );
-}
-
-function MatchingFundsAvailable(props: {
-  register: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  token: string;
-  payoutTokenOptions: PayoutToken[];
-}) {
-  // not sure why UseFormRegisterReturn only takes strings for react-hook-form
-  return (
-    <div className="col-span-6 sm:col-span-3">
-      <div className="flex justify-between">
-        <label htmlFor="matchingFundsAvailable" className="text-sm">
-          Matching Funds Available
-        </label>
-        <span className="text-right text-violet-400 float-right text-xs mt-1">
-          *Required
-        </span>
-      </div>
-
-      <div className="relative mt-1 rounded-md shadow-sm">
-        <Input
-          {...props.register}
-          className={
-            "block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-10"
-          }
-          type="number"
-          id={"roundMetadata.matchingFunds.matchingFundsAvailable"}
-          $hasError={
-            props.errors?.roundMetadata?.matchingFunds?.matchingFundsAvailable
-          }
-          placeholder="Enter the amount in chosen payout token."
-          data-testid="matching-funds-available"
-          aria-describedby="price-currency"
-          step="any"
-        />
-        <div className="pointer-events-none absolute inset-y-0 right-0 pr-10 flex items-center">
-          <span className="text-gray-400 sm:text-sm">
-            {
-              props.payoutTokenOptions.find(
-                (token) => token.address === props.token
-              )?.name
-            }
-          </span>
-        </div>
-      </div>
-      {props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable && (
-        <p className="text-xs text-pink-500">
-          {
-            props.errors.roundMetadata?.matchingFunds?.matchingFundsAvailable
-              .message
-          }
-        </p>
-      )}
-    </div>
-  );
-}
-
-// TODO - maybe clear matching cap amount when isMatchingCap switches to "No" ?
-function MatchingCap(props: {
-  registerMatchingCapAmount: UseFormRegisterReturn<string>;
-  errors: FieldErrors<Round>;
-  control?: Control<Round>;
-}) {
-  const { field: matchingCapField } = useController({
-    name: "roundMetadata.matchingFunds.matchingCap",
-    defaultValue: false,
-    control: props.control,
-    rules: {
-      required: true,
-    },
-  });
-  const { value: isMatchingCap } = matchingCapField;
-
-  return (
-    <>
-      {" "}
-      <div className="col-span-6 sm:col-span-3">
-        <RadioGroup {...matchingCapField} data-testid="matching-cap-selection">
-          <RadioGroup.Label className="block text-sm">
-            <p className="text-sm">
-              <span>Do you want a matching cap for projects?</span>
-              <span className="text-right text-violet-400 float-right text-xs mt-1">
-                *Required
-              </span>
-              <InformationCircleIcon
-                data-tip
-                data-background-color="#0E0333"
-                data-for="matching-cap-tooltip"
-                className="inline h-4 w-4 ml-2 mr-3 mb-1"
-                data-testid={"matching-cap-tooltip"}
-              />
-            </p>
-            <ReactTooltip
-              id="matching-cap-tooltip"
-              place="bottom"
-              type="dark"
-              effect="solid"
-            >
-              <p className="text-xs">
-                This will cap the percentage <br />
-                of your overall matching pool <br />
-                that a single grantee can receive.
-              </p>
-            </ReactTooltip>
-          </RadioGroup.Label>
-          <div className="flex flex-row gap-4 mt-3">
-            <RadioGroup.Option value={true}>
-              {({ checked, active }) => (
-                <span className="flex items-center text-sm">
-                  <span
-                    className={classNames(
-                      checked
-                        ? "bg-indigo-600 border-transparent"
-                        : "bg-white border-gray-300",
-                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
-                    )}
-                    aria-hidden="true"
-                  >
-                    <span className="rounded-full bg-white w-1.5 h-1.5" />
-                  </span>
-                  <RadioGroup.Label
-                    as="span"
-                    className="ml-3 block text-sm text-gray-700"
-                    data-testid="matching-cap-true"
-                  >
-                    Yes
-                  </RadioGroup.Label>
-                </span>
-              )}
-            </RadioGroup.Option>
-            <RadioGroup.Option value={false}>
-              {({ checked, active }) => (
-                <span className="flex items-center text-sm">
-                  <span
-                    className={classNames(
-                      checked
-                        ? "bg-indigo-600 border-transparent"
-                        : "bg-white border-gray-300",
-                      active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                      "h-4 w-4 rounded-full border flex items-center justify-center"
-                    )}
-                    aria-hidden="true"
-                  >
-                    <span className="rounded-full bg-white w-1.5 h-1.5" />
-                  </span>
-                  <RadioGroup.Label
-                    as="span"
-                    className="ml-3 block text-sm text-gray-700"
-                    data-testid="matching-cap-false"
-                  >
-                    No
-                  </RadioGroup.Label>
-                </span>
-              )}
-            </RadioGroup.Option>
-          </div>
-        </RadioGroup>
-      </div>
-      <div className="col-span-6 sm:col-span-3">
-        <label htmlFor="matchingCapAmount" className="block text-sm">
-          <p className="text-sm">
-            <span>If so, how much?</span>
-            <span className="text-right text-violet-400 float-right text-xs mt-1">
-              *Required
-            </span>
-          </p>
-        </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-gray-400 sm:text-sm">%</span>
-          </div>
-          <Input
-            className={
-              "block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10"
-            }
-            {...props.registerMatchingCapAmount}
-            $hasError={
-              isMatchingCap &&
-              props.errors?.roundMetadata?.matchingFunds?.matchingCapAmount
-            }
-            type="number"
-            id={"matchingCapAmount"}
-            disabled={!isMatchingCap}
-            placeholder="Enter matching cap in form of percentage."
-            data-testid="matching-cap-percent"
-            aria-describedby="percentage-symbol"
-            max="100"
-            step="any"
-          />
-        </div>
-        {isMatchingCap &&
-          props.errors?.roundMetadata?.matchingFunds?.matchingCapAmount && (
-            <p className="text-xs text-pink-500">
-              {
-                props.errors.roundMetadata?.matchingFunds?.matchingCapAmount
-                  ?.message
-              }
-            </p>
-          )}
-      </div>
-    </>
-  );
-}
-
 function ContactInformation(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
@@ -1022,7 +563,7 @@ function ContactInformation(props: {
         type="text"
         placeholder="Enter desired form of contact here. Ex: website, email..."
         id={"roundMetadata.support.info"}
-      />
+        />
       {props.errors.roundMetadata?.support?.info && (
         <p className="text-xs text-pink-500">
           {props.errors.roundMetadata?.support.info?.message}
@@ -1039,13 +580,13 @@ function SupportTypeButton(props: {
   const { supportType } = props;
   return (
     <Listbox.Button
-      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
-        props.errors.roundMetadata?.support?.type
-          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-          : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-      }`}
-      data-testid="support-type-select"
-      id={"roundMetadata.support.type"}
+    className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
+      props.errors.roundMetadata?.support?.type
+      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+      : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+    }`}
+    data-testid="support-type-select"
+    id={"roundMetadata.support.type"}
     >
       <span className="flex items-center">
         {supportType?.default ? (
@@ -1054,7 +595,7 @@ function SupportTypeButton(props: {
           </span>
         ) : (
           <span className="ml-3 block truncate">{supportType?.name}</span>
-        )}
+          )}
       </span>
       <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
         <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -1095,32 +636,32 @@ function SupportTypeDropdown(props: {
                 errors={props.errors}
                 supportType={props.supportTypes.find(
                   (supportType) => supportType.name === field.value
-                )}
-              />
+                  )}
+                  />
               <Transition
                 show={open}
                 as={Fragment}
                 leave="transition ease-in duration-100"
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
-              >
+                >
                 <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {props.supportTypes.map(
                     (type) =>
-                      !type.default && (
-                        <Listbox.Option
-                          key={type.name}
-                          className={({ active }) =>
-                            classNames(
-                              active
-                                ? "text-white bg-indigo-600"
-                                : "text-gray-900",
-                              "relative cursor-default select-none py-2 pl-3 pr-9"
-                            )
-                          }
-                          value={type.name}
-                          data-testid="support-type-option"
-                        >
+                    !type.default && (
+                      <Listbox.Option
+                      key={type.name}
+                      className={({ active }) =>
+                      classNames(
+                        active
+                        ? "text-white bg-indigo-600"
+                        : "text-gray-900",
+                        "relative cursor-default select-none py-2 pl-3 pr-9"
+                        )
+                      }
+                      value={type.name}
+                      data-testid="support-type-option"
+                      >
                           {({ selected, active }) => (
                             <>
                               <div className="flex items-center">
@@ -1128,30 +669,30 @@ function SupportTypeDropdown(props: {
                                   className={classNames(
                                     selected ? "font-semibold" : "font-normal",
                                     "ml-3 block truncate"
-                                  )}
-                                >
+                                    )}
+                                    >
                                   {type.name}
                                 </span>
                               </div>
 
                               {selected ? (
                                 <span
-                                  className={classNames(
-                                    active ? "text-white" : "text-indigo-600",
-                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                className={classNames(
+                                  active ? "text-white" : "text-indigo-600",
+                                  "absolute inset-y-0 right-0 flex items-center pr-4"
                                   )}
-                                >
+                                  >
                                   <CheckIcon
                                     className="h-5 w-5"
                                     aria-hidden="true"
-                                  />
+                                    />
                                 </span>
                               ) : null}
                             </>
                           )}
                         </Listbox.Option>
                       )
-                  )}
+                      )}
                 </Listbox.Options>
               </Transition>
             </div>
@@ -1213,38 +754,39 @@ function Support(props: {
       default: false,
     },
   ];
-
+  
   return (
     <SupportTypeDropdown
-      register={props.register}
-      errors={props.errors}
-      control={props.control}
-      supportTypes={supportTypes}
+    register={props.register}
+    errors={props.errors}
+    control={props.control}
+    supportTypes={supportTypes}
     />
-  );
-}
-
-function ApplicationDatesInformation() {
-  return (
-    <>
+    );
+  }
+  
+  function ApplicationDatesInformation() {
+    return (
+      <>
       <InformationCircleIcon
         data-tip
         data-background-color="#0E0333"
         data-for="application-dates-tooltip"
         className="inline h-4 w-4 ml-2 mr-3 mb-1"
         data-testid="application-dates-tooltip"
-      />
+        />
       <ReactTooltip
         id="application-dates-tooltip"
         place="bottom"
         type="dark"
         effect="solid"
-      >
+        >
         <p className="text-xs">All dates are in UTC.</p>
       </ReactTooltip>
     </>
   );
 }
+
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
