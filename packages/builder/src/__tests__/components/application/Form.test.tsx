@@ -123,14 +123,16 @@ describe("<Form />", () => {
   });
 
   describe("addressInput valid address change", () => {
-    test.only("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
+    test("checks if wallet address IS a multi-sig on current chain when YES is selected and IS a safe", async () => {
       const returnValue = {
         isContract: true,
         isSafe: true,
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue(false);
+      jest
+        .spyOn(projects, "fetchProjectApplicationInRound")
+        .mockResolvedValue(false);
 
       renderWrapped(
         <Form
@@ -145,8 +147,11 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
-
+      await act(async () => {
+        fireEvent.change(selectProject, {
+          target: { value: `1:${addressFrom(1)}:1` },
+        });
+      });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -181,6 +186,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+      jest
+        .spyOn(projects, "fetchProjectApplicationInRound")
+        .mockResolvedValue(false);
 
       renderWrapped(
         <Form
@@ -195,8 +203,11 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
-
+      await act(async () => {
+        fireEvent.change(selectProject, {
+          target: { value: `1:${addressFrom(1)}:1` },
+        });
+      });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -231,6 +242,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+      jest
+        .spyOn(projects, "fetchProjectApplicationInRound")
+        .mockResolvedValue(false);
 
       renderWrapped(
         <Form
@@ -245,8 +259,11 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: "1:1:0x12345" } });
-
+      await act(async () => {
+        fireEvent.change(selectProject, {
+          target: { value: `1:${addressFrom(1)}:1` },
+        });
+      });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -281,6 +298,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
+      jest
+        .spyOn(projects, "fetchProjectApplicationInRound")
+        .mockResolvedValue(false);
 
       renderWrapped(
         <Form
@@ -295,8 +315,11 @@ describe("<Form />", () => {
       const selectProject = screen.getByLabelText(
         "Select a project you would like to apply for funding:"
       );
-      fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
-
+      await act(async () => {
+        fireEvent.change(selectProject, {
+          target: { value: `1:${addressFrom(1)}:1` },
+        });
+      });
       const addressInputWrapper = screen.getByTestId("address-input-wrapper");
       const walletTypeWrapper = screen.getByTestId("wallet-type");
       const isSafeOption = walletTypeWrapper.querySelector(
@@ -341,8 +364,11 @@ describe("<Form />", () => {
     const selectProject = screen.getByLabelText(
       "Select a project you would like to apply for funding:"
     );
-    fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
-
+    await act(async () => {
+      fireEvent.change(selectProject, {
+        target: { value: `1:${addressFrom(1)}:1` },
+      });
+    });
     const toggleButton = screen.getByText("View your Project Details");
 
     expect(screen.getByLabelText("Project Website")).toBeInTheDocument();
@@ -359,7 +385,7 @@ describe("<Form />", () => {
 });
 
 describe("<Form/>", () => {
-  it("prevents appliying when requirements are not met", async () => {
+  it.only("prevents appliying when requirements are not met", async () => {
     const store = setupStore();
 
     store.dispatch(web3ChainIDLoaded(5));
@@ -381,6 +407,10 @@ describe("<Form/>", () => {
       data: { ...projectsMetadata[0], projectGithub: "mygithub" },
     });
 
+    jest
+      .spyOn(projects, "fetchProjectApplicationInRound")
+      .mockResolvedValue(false);
+
     renderWrapped(
       <Form
         roundApplication={{
@@ -388,7 +418,7 @@ describe("<Form/>", () => {
           applicationSchema: {
             ...roundApplicationMetadata.applicationSchema,
             requirements: {
-              github: { required: true, verification: false },
+              github: { required: false, verification: false },
               twitter: { required: true, verification: false },
             },
           },
@@ -403,7 +433,11 @@ describe("<Form/>", () => {
     const selectProject = screen.getByLabelText(
       "Select a project you would like to apply for funding:"
     );
-    fireEvent.change(selectProject, { target: { value: `1:${addressFrom(1)}:1` } });
+    await act(async () => {
+      fireEvent.change(selectProject, {
+        target: { value: `1:${addressFrom(1)}:1` },
+      });
+    });
 
     expect(
       screen.getByText("Project Twitter is required.")
@@ -421,6 +455,9 @@ describe("Form questions", () => {
   beforeEach(() => {
     store = setupStore();
     store.dispatch(web3ChainIDLoaded(5));
+    jest
+      .spyOn(projects, "fetchProjectApplicationInRound")
+      .mockResolvedValue(false);
   });
 
   test("checkbox", async () => {

@@ -323,8 +323,11 @@ export default function Form({
   }
 
   //! todo: need to make sure the user is one of the owners of the project
+  // @thelostone-mc is going to create a ticket for this
+  const isUserOwnerOfProject = true;
 
   const isValidProjectSelected =
+    isUserOwnerOfProject &&
     !hasExistingApplication &&
     selectedProjectID &&
     ((selectedProjectID && projectRequirementsResult.length === 0) ||
