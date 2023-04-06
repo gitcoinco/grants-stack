@@ -1,10 +1,12 @@
 import { fetchFromIPFS, PayoutToken, pinToIPFS } from "./utils";
 import {
+  AppStatus,
   GrantApplication,
   GrantApplicationId,
   MetadataPointer,
   Project,
   ProjectStatus,
+  Status,
   Web3Instance,
 } from "./types";
 import {
@@ -59,6 +61,7 @@ export const getApplicationById = async (
               pointer
             }
             status
+            applicationIndex
             createdAt
             round {
               projectsMetaPtr {
@@ -253,15 +256,16 @@ const fetchApplicationData = async (
           owners: projectOwners.map((address: string) => ({ address })),
         };
 
-      return {
-        ...application,
-        status,
-        id: project.id,
-        project: grantApplicationProjectMetadata,
-        projectsMetaPtr: project.round.projectsMetaPtr,
-        createdAt: project.createdAt,
-      } as GrantApplication;
-    })
+        return {
+          ...application,
+          status,
+          id: project.id,
+          project: grantApplicationProjectMetadata,
+          projectsMetaPtr: project.round.projectsMetaPtr,
+          createdAt: project.createdAt,
+        } as GrantApplication;
+      }
+    )
   );
 
 /**
@@ -319,10 +323,10 @@ const updateApplicationStatusFromContract = async (
   return applications;
 };
 
-export const updateRoundContract = async (
+export const updateApplicationStatuses = async (
   roundId: string,
   signer: Signer,
-  newProjectsMetaPtr: string
+  statuses: AppStatus[]
 ): Promise<{ transactionBlockNumber: number }> => {
   const roundImplementation = new ethers.Contract(
     roundId,
@@ -330,16 +334,16 @@ export const updateRoundContract = async (
     signer
   );
 
-  const tx = await roundImplementation.updateProjectsMetaPtr({
-    protocol: 1,
-    pointer: newProjectsMetaPtr,
-  });
+  console.log("Updating application statuses...", statuses);
+
+  const tx = await roundImplementation.setApplicationStatuses(statuses);
 
   const receipt = await tx.wait();
 
   console.log("✅ Transaction hash: ", tx.hash);
 
   const blockNumber = receipt.blockNumber;
+
   return {
     transactionBlockNumber: blockNumber,
   };

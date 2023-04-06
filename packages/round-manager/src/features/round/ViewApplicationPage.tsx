@@ -81,25 +81,18 @@ export default function ViewApplicationPage() {
 
   const {
     bulkUpdateGrantApplications,
-    IPFSCurrentStatus,
     contractUpdatingStatus,
     indexingStatus,
   } = useBulkUpdateGrantApplications();
 
   const isUpdateLoading =
-    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
   const progressSteps: ProgressStep[] = [
     {
-      name: "Storing",
-      description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
-    },
-    {
       name: "Updating",
-      description: `Connecting to the ${chain.name} blockchain.`,
+      description: `Updating the application status on the contract.`,
       status: contractUpdatingStatus,
     },
     {
@@ -118,10 +111,7 @@ export default function ViewApplicationPage() {
   ];
 
   useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractUpdatingStatus === ProgressStatus.IS_ERROR
-    ) {
+    if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
         setOpenProgressModal(false);
         setOpenErrorModal(true);
@@ -133,14 +123,7 @@ export default function ViewApplicationPage() {
     } else if (indexingStatus == ProgressStatus.IS_SUCCESS) {
       redirectToViewRoundPage(navigate, 0, roundId);
     }
-  }, [
-    navigate,
-    IPFSCurrentStatus,
-    contractUpdatingStatus,
-    indexingStatus,
-    id,
-    roundId,
-  ]);
+  }, [navigate, contractUpdatingStatus, indexingStatus, id, roundId]);
 
   const { application, isLoading, getApplicationByIdError } =
     useApplicationById(id);

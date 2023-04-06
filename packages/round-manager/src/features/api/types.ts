@@ -346,6 +346,16 @@ export enum ApplicationStatus {
   CANCELLED = "CANCELLED",
 }
 
+export type Status = {
+  index: number;
+  status: number;
+};
+
+export type AppStatus = {
+  index: number;
+  statusRow: string;
+};
+
 export type ProgressStep = {
   name: string;
   description: string;
