@@ -289,13 +289,6 @@ export default function Form({
   const projectRequirementsResult: string[] = [];
   const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
-  console.log("booleans", {
-    hasExistingApplication,
-    selectedProjectID,
-    haveProjectRequirementsBeenMet,
-    projectRequirementsResult,
-  });
-
   if (
     roundApplication.applicationSchema.requirements.twitter.required &&
     !selectedProjectMetadata?.projectTwitter
