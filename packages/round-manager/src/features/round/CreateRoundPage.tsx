@@ -10,7 +10,7 @@ import Navbar from "../common/Navbar";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { RoundDetailForm } from "./RoundDetailForm";
-import QuadraticFundingForm from './QuadraticFundingFrom';
+import QuadraticFundingForm from "./QuadraticFundingForm";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (

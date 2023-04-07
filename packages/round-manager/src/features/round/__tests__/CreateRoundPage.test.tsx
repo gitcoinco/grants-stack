@@ -7,7 +7,7 @@ import { RoundApplicationForm } from "../RoundApplicationForm";
 import { useWallet } from "../../common/Auth";
 import * as FormWizardImport from "../../common/FormWizard";
 import { fireEvent, screen } from "@testing-library/react";
-import QuadraticFundingForm from "../QuadraticFundingFrom";
+import QuadraticFundingForm from "../QuadraticFundingForm";
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
