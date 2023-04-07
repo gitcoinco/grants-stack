@@ -23,6 +23,8 @@
     "re-test": "turbo run test --filter=grant-explorer",
     "re-start": "pnpm --filter grant-explorer run start",
     "re-typecheck": "turbo run typecheck --filter=grant-explorer",
+    "// builder script": "====== packages/builder specific ======",
+    "b-start": "pnpm --filter builder run start",
     "// api script": "====== packages/api specific ======",
     "api-build": "turbo run build --filter=api",
     "api-test": "turbo run test --filter=api",

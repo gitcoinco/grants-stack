@@ -1,7 +1,6 @@
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import {
-  BoltIcon,
   ExclamationTriangleIcon,
   GlobeAltIcon,
   InformationCircleIcon,
@@ -14,6 +13,7 @@ import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import { resetApplicationError } from "../../actions/roundApplication";
+import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import { editProjectPathByID } from "../../routes";
@@ -35,10 +35,12 @@ import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import CallbackModal from "../base/CallbackModal";
 import ErrorModal from "../base/ErrorModal";
-import { validateApplication } from "../base/formValidation";
 import FormValidationErrorList from "../base/FormValidationErrorList";
 import InputLabel from "../base/InputLabel";
+import { validateApplication } from "../base/formValidation";
 import Checkbox from "../grants/Checkbox";
+import Radio from "../grants/Radio";
+import Toggle from "../grants/Toggle";
 import {
   ProjectSelect,
   Select,
@@ -46,8 +48,6 @@ import {
   TextInput,
   TextInputAddress,
 } from "../grants/inputs";
-import Radio from "../grants/Radio";
-import Toggle from "../grants/Toggle";
 
 const validation = {
   messages: [""],
@@ -86,12 +86,9 @@ function DetailSummary(props: { text: string; testID: string; sm?: boolean }) {
 
 function AboutProject(props: { projectToRender: Metadata }) {
   const { projectToRender } = props;
-  const projectRecipient = "0x";
 
-  const projectWebsite = "";
-  const projectTwitter = "";
-  const userGithub = "";
-  const projectGithub = "";
+  const { website, projectTwitter, projectGithub, userGithub } =
+    projectToRender;
 
   const formattedDateWithOrdinal = "";
 
@@ -108,29 +105,16 @@ function AboutProject(props: { projectToRender: Metadata }) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
-      {projectRecipient && (
-        <span className="flex items-center mt-4 gap-1">
-          <BoltIcon className="h-4 w-4 mr-1 opacity-40" />
-          <DetailSummary
-            text={`${projectRecipient}`}
-            testID="project-recipient"
-            sm
-          />
-        </span>
-      )}
-      {projectWebsite && (
+      {website && (
         <span className="flex items-center mt-4 gap-1">
           <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
           <a
-            href={projectWebsite}
+            href={website}
             target="_blank"
             rel="noreferrer"
             className="text-base font-normal text-black"
           >
-            <DetailSummary
-              text={`${projectWebsite}`}
-              testID="project-website"
-            />
+            <DetailSummary text={`${website}`} testID="project-website" />
           </a>
         </span>
       )}
@@ -201,24 +185,32 @@ function FullPreview(props: {
 
   return (
     <>
-      <div className="relative top-16 lg:mx-20 h-screen px-4 py-7">
+      <div className="relative py-7">
         <div>
           <div>
             <img
               className="h-[120px] w-full object-cover rounded-t"
-              src={ipfsPrefix + project.bannerImg}
+              src={
+                project.bannerImg
+                  ? ipfsPrefix + project.bannerImg
+                  : DefaultProjectBanner
+              }
               alt="Project Banner"
             />
           </div>
           <div className="pl-4 sm:pl-6 lg:pl-8">
-            <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+            <div className="-mt-1 sm:-mt-2 sm:flex sm:items-end sm:space-x-5">
               <div className="flex">
                 <div className="pl-4">
                   <div className="-mt-6 sm:-mt-6 sm:flex sm:items-end sm:space-x-5">
                     <div className="flex">
                       <img
-                        className="h-12 w-12 rounded-full ring-4 ring-white bg-white"
-                        src={ipfsPrefix + project.logoImg}
+                        className="h-16 w-16 rounded-full ring-4 ring-white bg-white"
+                        src={
+                          project.logoImg
+                            ? ipfsPrefix + project.logoImg
+                            : DefaultProjectLogo
+                        }
                         alt="Project Logo"
                       />
                     </div>
