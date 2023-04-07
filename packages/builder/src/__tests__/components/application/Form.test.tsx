@@ -529,9 +529,10 @@ describe("Form questions", () => {
       choice.click();
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 
-      0: `1:${addressFrom(1)}:1`, 
-      1: ["Second option"] });
+    expect(onChange).toHaveBeenCalledWith({
+      0: `1:${addressFrom(1)}:1`,
+      1: ["Second option"],
+    });
 
     act(() => {
       const choice = screen.getByLabelText("First option");
@@ -591,9 +592,9 @@ describe("Form questions", () => {
       choice.click();
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 
+    expect(onChange).toHaveBeenCalledWith({
       0: `1:${addressFrom(1)}:1`,
-      1: "Second option" 
+      1: "Second option",
     });
 
     act(() => {
@@ -658,18 +659,18 @@ describe("Form questions", () => {
       fireEvent.change(select, { target: { value: "First option" } });
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 
+    expect(onChange).toHaveBeenCalledWith({
       0: `1:${addressFrom(1)}:1`,
-      1: "First option" 
+      1: "First option",
     });
 
     act(() => {
       fireEvent.change(select, { target: { value: "Second option" } });
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 
+    expect(onChange).toHaveBeenCalledWith({
       0: `1:${addressFrom(1)}:1`,
-      1: "Second option" 
+      1: "Second option",
     });
   });
 });

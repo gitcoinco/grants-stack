@@ -396,6 +396,7 @@ export default function Form({
             );
           }
 
+          // Add isPreview for Application View when readonly
           if (
             isValidProjectSelected &&
             haveProjectRequirementsBeenMet &&
