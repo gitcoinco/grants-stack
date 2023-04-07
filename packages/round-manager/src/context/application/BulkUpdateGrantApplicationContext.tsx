@@ -142,10 +142,6 @@ function convertStatus(status: string) {
 function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
   const statuses: Status[] = [];
 
-  console.log("rowIndex", rowIndex);
-  console.log("applications", applications);
-  console.log(applications[1]);
-
   for (let i = rowIndex * 128; i < rowIndex * 128 + 128; i++) {
     if (applications[i] !== undefined) {
       statuses.push({
@@ -220,8 +216,6 @@ async function _bulkUpdateGrantApplication({
         statusRow: createFullRow(statuses),
       });
     }
-
-    console.log("statusRows", statusRows);
 
     const transactionBlockNumber = await updateContract({
       signer,

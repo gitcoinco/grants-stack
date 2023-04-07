@@ -106,6 +106,21 @@ export const makeMatchingStatsData = (): MatchingStatsData => {
   };
 };
 
+export const makeApplication = (): GrantApplication => {
+  return {
+    id: faker.finance.ethereumAddress(),
+    round: faker.finance.ethereumAddress(),
+    recipient: faker.finance.ethereumAddress(),
+    projectsMetaPtr: {
+      protocol: randomInt(1, 10),
+      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+    },
+    status: ApplicationStatus.PENDING,
+    applicationIndex: faker.datatype.number(),
+    createdAt: faker.date.past().toDateString(),
+  };
+};
+
 export const makeQFDistribution = (): QFDistribution => {
   return {
     projectId: faker.finance.ethereumAddress().toString(),

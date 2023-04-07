@@ -11,6 +11,7 @@ import {
 } from "../../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 import { faker } from "@faker-js/faker";
+import { makeApplication } from "../../../test-utils";
 
 jest.mock("../../../features/api/application");
 jest.mock("../../../features/api/subgraph");
@@ -32,7 +33,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
   });
 
   describe("useBulkUpdateGrantApplication", () => {
-    it.only("sets contract update status to in progress when contract is being updated", async () => {
+    it("sets contract update status to in progress when contract is being updated", async () => {
       (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateApplicationStatuses as jest.Mock).mockReturnValue(
         new Promise(() => {
@@ -46,7 +47,7 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 
       expect(
         await screen.findByTestId(
-          `contract-updating-status-is-${ProgressStatus.IN_PROGRESS}}`
+          `contract-updating-status-is-${ProgressStatus.IN_PROGRESS}`
         )
       );
     });
@@ -222,11 +223,19 @@ const TestUseBulkUpdateGrantApplicationComponent = () => {
     indexingStatus,
   } = useBulkUpdateGrantApplications();
 
+  const roundId = faker.finance.ethereumAddress();
+  const applications = [makeApplication(), makeApplication()];
+  const selectedApplications = [applications[0]];
+
   return (
     <div>
       <button
         onClick={() => {
-          bulkUpdateGrantApplications({} as BulkUpdateGrantApplicationParams);
+          bulkUpdateGrantApplications({
+            roundId,
+            applications,
+            selectedApplications,
+          });
         }}
         data-testid="update-grant-application"
       >
