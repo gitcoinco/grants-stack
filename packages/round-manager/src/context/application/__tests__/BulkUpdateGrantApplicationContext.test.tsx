@@ -5,10 +5,7 @@ import {
   BulkUpdateGrantApplicationProvider,
   useBulkUpdateGrantApplications,
 } from "../BulkUpdateGrantApplicationContext";
-import {
-  updateApplicationStatuses,
-  updateApplicationList,
-} from "../../../features/api/application";
+import { updateApplicationStatuses } from "../../../features/api/application";
 import { waitForSubgraphSyncTo } from "../../../features/api/subgraph";
 import { faker } from "@faker-js/faker";
 import { makeApplication } from "../../../test-utils";
@@ -34,7 +31,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 
   describe("useBulkUpdateGrantApplication", () => {
     it("sets contract update status to in progress when contract is being updated", async () => {
-      (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateApplicationStatuses as jest.Mock).mockReturnValue(
         new Promise(() => {
           /* do nothing.*/
@@ -53,7 +49,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
     });
 
     it("sets update status to complete when updating contract succeeds", async () => {
-      (updateApplicationList as jest.Mock).mockResolvedValue("some hash");
       (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber: 100,
       });
@@ -70,7 +65,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 
     it("sets indexing status to in progress when waiting for subgraph to index", async () => {
       const transactionBlockNumber = 10;
-      (updateApplicationList as jest.Mock).mockResolvedValue("bafabcdef");
       (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
@@ -94,7 +88,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
 
     it("sets indexing status to completed when subgraph is finished indexing", async () => {
       const transactionBlockNumber = faker.datatype.number();
-      (updateApplicationList as jest.Mock).mockResolvedValue("bafabcdef");
       (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
@@ -144,7 +137,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       });
 
       it("sets indexing status to error when waiting for subgraph to sync fails", async () => {
-        (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
         (updateApplicationStatuses as jest.Mock).mockResolvedValue({
           transactionBlockNumber: 100,
         });
@@ -161,7 +153,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       });
 
       it("if contract update fails, resets contract updating status when bulk update is retried", async () => {
-        (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
         (updateApplicationStatuses as jest.Mock)
           .mockRejectedValueOnce(new Error(":("))
           .mockReturnValue(
@@ -187,7 +178,6 @@ describe("<BulkUpdateGrantApplicationProvider />", () => {
       });
 
       it("if indexing fails, resets indexing status when bulk update is retried", async () => {
-        (updateApplicationList as jest.Mock).mockResolvedValue("asdf");
         (updateApplicationStatuses as jest.Mock).mockResolvedValue({
           transactionBlockNumber: 100,
         });
