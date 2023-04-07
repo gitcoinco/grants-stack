@@ -317,6 +317,9 @@ export interface GrantApplication {
    * Index of a grant application
    */
   applicationIndex?: number;
+  /**
+   * Created timestamp of a grant application
+   */
   createdAt: string;
 }
 
