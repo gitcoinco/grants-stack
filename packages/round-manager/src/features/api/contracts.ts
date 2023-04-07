@@ -63,19 +63,19 @@ export const programFactoryContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB";
+      address = "0x56296242CA408bA36393f3981879fF9692F193cC";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x8918401DD47f1645fF1111D8E513c0404b84d5bB";
+      address = "0xd5Fb00093Ebd30011d932cB69bb6313c550aB05f";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "0xe0281a20dFaCb0E179E6581c33542bC533DdC4AB";
+      address = "";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
@@ -108,19 +108,19 @@ export const roundFactoryContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "0xE2Bf906f7d10F059cE65769F53fe50D8E0cC7cBe";
+      address = "0x9Cb7f434aD3250d1656854A9eC7A71EceC6eE1EF";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "0x0f0A4961274A578443089D06AfB9d1fC231A5a4D";
+      address = "0x04E753cFB8c8D1D7f776f7d7A033740961b6AEC2";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "0x3e7f72DFeDF6ba1BcBFE77A94a752C529Bb4429E";
+      address = "";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "0x00F51ba2Cd201F4bFac0090F450de0992a838762";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
@@ -153,7 +153,7 @@ export const qfVotingStrategyFactoryContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
+      address = "0x4a850F463D1C4842937c5Bc9540dBc803D744c9F";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
@@ -161,11 +161,11 @@ export const qfVotingStrategyFactoryContract = (
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
-      address = "0x06A6Cc566c5A88E77B1353Cdc3110C2e6c828e38";
+      address = "";
       break;
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
-      address = "0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2";
+      address = "";
       break;
     }
     case ChainId.GOERLI_CHAIN_ID:
@@ -193,11 +193,11 @@ export const merklePayoutStrategyFactoryContract = (
 
   switch (chainId) {
     case ChainId.MAINNET: {
-      address = "";
+      address = "0x8F8d78f119Aa722453d33d6881f4D400D67D054F";
       break;
     }
     case ChainId.OPTIMISM_MAINNET_CHAIN_ID: {
-      address = "";
+      address = "0xB5365543cdDa2C795AD104F4cB784EF3DB1CD383";
       break;
     }
     case ChainId.FANTOM_MAINNET_CHAIN_ID: {
