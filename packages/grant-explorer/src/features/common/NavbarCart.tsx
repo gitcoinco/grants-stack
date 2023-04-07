@@ -79,14 +79,14 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
   return (
     <div
       data-testid="quick-view-summary"
-      className="mt-4 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20"
+      className="mt-5 w-[400px] flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20"
     >
-      <p className="flex border-b mb-4 pb-4 gap-2">
-        <CheckIcon className="w-5" />
-        Projects in your cart
+      <p className="flex border-b mb-4 pb-2 gap-2 text-sm">
+        <CheckIcon className="w-4" />
+        Projects added to your cart
       </p>
 
-      <div className="max-h-[100px] overflow-y-scroll">
+      <div className="max-h-[200px] overflow-y-scroll">
         {props.cart &&
           props.cart.map((project) => (
             <ProjectQuickView
@@ -99,7 +99,7 @@ function QuickViewSummary(props: { roundUrlPath: string; cart: Project[] }) {
       <Button
         type="button"
         $variant="solid"
-        className="px-3 bg-violet-400 text-white border-0 text-xs"
+        className="px-3 bg-violet-400 text-white border-0 text-xs mb-2"
         onClick={() => navigate(`${props.roundUrlPath}/cart`)}
       >
         View my cart ({props.cart.length})

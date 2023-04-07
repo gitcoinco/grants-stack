@@ -297,7 +297,6 @@ export default function ViewCart() {
           </Button>
           <p className="flex justify-center my-4 text-sm italic">
             Your donation to each project must be valued at $1 USD or more to
-            <br />
             be eligible for matching.
           </p>
           {emptyInput && (
