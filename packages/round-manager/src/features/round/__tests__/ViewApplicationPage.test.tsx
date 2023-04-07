@@ -22,8 +22,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import {
   getApplicationById,
-  updateApplicationList,
-  updateRoundContract,
+  updateApplicationStatuses,
 } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
@@ -184,11 +183,9 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should start the bulk update process to persist approve decision when confirm is selected", async () => {
-      (updateApplicationList as jest.Mock).mockResolvedValue("");
-      (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise(() => {
-          /* do nothing */
-        })
+      const transactionBlockNumber = 10;
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue(
+        transactionBlockNumber
       );
 
       renderWithContext(<ViewApplicationPage />, {
@@ -199,31 +196,24 @@ describe("ViewApplicationPage", () => {
       fireEvent.click(screen.getByText("Confirm"));
 
       await waitFor(() => {
-        expect(updateApplicationList).toBeCalled();
+        expect(updateApplicationStatuses).toBeCalled();
       });
 
-      await waitFor(() => {
-        expect(updateRoundContract).toBeCalled();
-      });
+      application.status = "APPROVED";
 
       const expected = {
         id: application.id,
         round: application.round,
         recipient: application.recipient,
         projectsMetaPtr: application.projectsMetaPtr,
-        status: ApplicationStatus.APPROVED,
+        status: application.status,
       };
-      expect(updateApplicationList).toBeCalled();
-      const updateApplicationListFirstCall = (
-        updateApplicationList as jest.Mock
-      ).mock.calls[0];
-      const actualApplicationsUpdated = updateApplicationListFirstCall[0];
-      expect(actualApplicationsUpdated).toEqual([expected]);
 
-      expect(updateRoundContract).toBeCalled();
-      const updateRoundContractFirstCall = (updateRoundContract as jest.Mock)
-        .mock.calls[0];
-      const actualRoundId = updateRoundContractFirstCall[0];
+      expect(updateApplicationStatuses).toBeCalled();
+      const updateApplicationStatusesFirstCall = (
+        updateApplicationStatuses as jest.Mock
+      ).mock.calls[0];
+      const actualRoundId = updateApplicationStatusesFirstCall[0];
       expect(actualRoundId).toEqual(roundIdOverride);
     });
 
@@ -242,7 +232,7 @@ describe("ViewApplicationPage", () => {
 
     it("shows error modal when reviewing application fails", async () => {
       const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
@@ -252,7 +242,7 @@ describe("ViewApplicationPage", () => {
           applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          contractUpdatingStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -266,7 +256,7 @@ describe("ViewApplicationPage", () => {
 
     it("choosing done closes the error modal", async () => {
       const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
@@ -276,7 +266,7 @@ describe("ViewApplicationPage", () => {
           applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          contractUpdatingStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -292,36 +282,6 @@ describe("ViewApplicationPage", () => {
         fireEvent.click(done);
       });
 
-      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
-    });
-
-    it("choosing try again restarts the action and closes the error modal", async () => {
-      const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
-        transactionBlockNumber,
-      });
-
-      renderWithContext(
-        <ViewApplicationPage />,
-        {
-          applications: [application],
-        },
-        {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
-        }
-      );
-
-      fireEvent.click(screen.getByText(/Approve/));
-
-      await screen.findByTestId("confirm-modal");
-      fireEvent.click(screen.getByText("Confirm"));
-
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
-
-      const tryAgain = await screen.findByTestId("tryAgain");
-      await act(() => {
-        fireEvent.click(tryAgain);
-      });
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     });
   });
