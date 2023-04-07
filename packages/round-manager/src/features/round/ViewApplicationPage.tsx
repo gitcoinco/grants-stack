@@ -35,7 +35,10 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationById } from "../../context/application/ApplicationContext";
+import {
+  useApplicationById,
+  useApplicationByRoundId,
+} from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -78,6 +81,11 @@ export default function ViewApplicationPage() {
 
   const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address } = useWallet();
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { applications, isLoading } = useApplicationByRoundId(roundId!);
+  const filteredApplication = applications?.filter((a) => a.id == id) || [];
+  const application = filteredApplication[0];
 
   const {
     bulkUpdateGrantApplications,
@@ -125,9 +133,6 @@ export default function ViewApplicationPage() {
     }
   }, [navigate, contractUpdatingStatus, indexingStatus, id, roundId]);
 
-  const { application, isLoading, getApplicationByIdError } =
-    useApplicationById(id);
-
   useEffect(() => {
     const applicationHasLoadedWithProjectOwners =
       !isLoading && application?.project?.owners;
@@ -170,18 +175,12 @@ export default function ViewApplicationPage() {
       setOpenProgressModal(true);
       setOpenModal(false);
 
+      application.status = reviewDecision;
+
       await bulkUpdateGrantApplications({
         roundId: roundId,
-        applications: [
-          // @ts-expect-error clean up the types here once we have a working type system
-          {
-            status: reviewDecision,
-            id: application.id,
-            round: roundId,
-            recipient: application.recipient,
-            projectsMetaPtr: application.projectsMetaPtr,
-          },
-        ],
+        applications: applications!,
+        selectedApplications: [application],
       });
     } catch (error) {
       datadogLogs.logger.error(
@@ -228,7 +227,7 @@ export default function ViewApplicationPage() {
 
   useEffect(() => {
     if (!isLoading) {
-      setApplicationExists(!getApplicationByIdError && !!application);
+      setApplicationExists(!!application);
 
       /* During development, give frontend access to all rounds */
       if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
@@ -240,7 +239,7 @@ export default function ViewApplicationPage() {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
     }
-  }, [address, application, isLoading, round, getApplicationByIdError]);
+  }, [address, application, isLoading, round]);
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {
