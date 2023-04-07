@@ -1,7 +1,13 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
 import { convertStatusToText } from "common";
+// import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
+import {
+  Client as AlloClient,
+  Application as GrantApplication,
+} from "allo-indexer-client";
+import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -465,6 +471,21 @@ export const fetchProjectApplications =
             applications,
           });
 
+          // Update each application with the status from the contract
+          // FIXME: This part can be removed when we are sure that the
+          // aplication status returned from the graph is up to date.
+          // eslint-disable-next-line
+          const roundAddresses = applications.map((app: Application) => app.roundID);
+
+          dispatch<any>(
+            fetchApplicationStatusesFromContract(
+              roundAddresses,
+              projectID,
+              projectApplicationID,
+              chain.id
+            )
+          );
+
           return applications;
         } catch (error: any) {
           datadogRum.addError(error, { projectID });
@@ -490,14 +511,7 @@ export const loadProjectStats =
       projectID,
     });
 
-    const data = { query: "force" };
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
+    const boundFetch = fetch.bind(window);
 
     const stats: ProjectStats[] = [];
 
@@ -524,47 +538,36 @@ export const loadProjectStats =
     };
 
     for await (const round of rounds) {
-      const addresses = addressesByChainID(round.chainId);
-      const projectApplicationID = generateUniqueRoundApplicationID(
-        round.chainId,
-        projectID,
-        addresses.projectRegistry!
+      // NOTE: Consider finding a way for singleton Client to be used
+      const client = new AlloClient(
+        boundFetch,
+        process.env.REACT_APP_ALLO_API_URL ?? "",
+        round.chainId
       );
-      await fetch(
-        `${process.env.REACT_APP_GITCOIN_API}update/summary/project/${round.chainId}/${round.roundId}/${projectApplicationID}`,
-        options
-      )
-        .then((response) => response.json())
-        .then(async (projectRoundData) => {
-          if (Object.keys(projectRoundData.data).length !== 0) {
-            await updateStats(
-              {
-                fundingReceived: parseFloat(
-                  projectRoundData.data.totalContributionsInUSD
-                ),
-                uniqueContributors: parseInt(
-                  projectRoundData.data.uniqueContributors,
-                  10
-                ),
-                avgContribution: parseFloat(
-                  projectRoundData.data.averageUSDContribution
-                ),
-                totalContributions: parseInt(
-                  projectRoundData.data.contributionCount,
-                  10
-                ),
-                success: true,
-              },
-              round.roundId
-            );
-          } else {
-            await loadingErrorUpdate(round.roundId);
-          }
-        })
-        .catch(async (error) => {
-          await loadingErrorUpdate(round.roundId);
-          console.error(error);
-        });
+
+      const project = await client
+        .getRoundApplications(utils.getAddress(round.roundId.toLowerCase()))
+        .then(
+          (apps: GrantApplication[]) =>
+            apps.filter(
+              (app: GrantApplication) => app.projectNumber === Number(projectID)
+            )[0]
+        );
+
+      if (project) {
+        await updateStats(
+          {
+            fundingReceived: project.amountUSD,
+            uniqueContributors: project.uniqueContributors,
+            avgContribution: project.amountUSD / project.uniqueContributors,
+            totalContributions: project.votes,
+            success: true,
+          },
+          round.roundId
+        );
+      } else {
+        await loadingErrorUpdate(round.roundId);
+      }
     }
 
     if (rounds.length > 0)
