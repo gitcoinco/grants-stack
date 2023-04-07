@@ -383,7 +383,9 @@ export const fetchProjectApplicationInRound = async (
     }
 
     return {
-      hasProjectAppliedToRound: response.data.roundApplications.length > 0,
+      hasProjectAppliedToRound: response.data.roundApplications
+        ? response.data.roundApplications.length > 0
+        : false,
     };
   } catch (error: any) {
     datadogRum.addError(error, { projectApplicationID, roundID });

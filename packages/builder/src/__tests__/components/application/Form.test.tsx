@@ -130,9 +130,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest
-        .spyOn(projects, "fetchProjectApplicationInRound")
-        .mockResolvedValue(false);
+      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+        hasProjectAppliedToRound: false,
+      });
 
       renderWrapped(
         <Form
@@ -186,9 +186,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest
-        .spyOn(projects, "fetchProjectApplicationInRound")
-        .mockResolvedValue(false);
+      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+        hasProjectAppliedToRound: false,
+      });
 
       renderWrapped(
         <Form
@@ -242,9 +242,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest
-        .spyOn(projects, "fetchProjectApplicationInRound")
-        .mockResolvedValue(false);
+      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+        hasProjectAppliedToRound: false,
+      });
 
       renderWrapped(
         <Form
@@ -298,9 +298,9 @@ describe("<Form />", () => {
         resolved: true,
       };
       jest.spyOn(utils, "getAddressType").mockResolvedValue(returnValue);
-      jest
-        .spyOn(projects, "fetchProjectApplicationInRound")
-        .mockResolvedValue(false);
+      jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+        hasProjectAppliedToRound: false,
+      });
 
       renderWrapped(
         <Form
@@ -351,6 +351,10 @@ describe("<Form />", () => {
   });
 
   it("shows a project details section", async () => {
+    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+      hasProjectAppliedToRound: false,
+    });
+
     renderWrapped(
       <Form
         roundApplication={roundApplicationMetadata}
@@ -407,9 +411,9 @@ describe("<Form/>", () => {
       data: { ...projectsMetadata[0], projectGithub: "mygithub" },
     });
 
-    jest
-      .spyOn(projects, "fetchProjectApplicationInRound")
-      .mockResolvedValue(false);
+    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+      hasProjectAppliedToRound: false,
+    });
 
     renderWrapped(
       <Form
@@ -439,8 +443,6 @@ describe("<Form/>", () => {
       });
     });
 
-    console.log("selectProject", selectProject);
-
     expect(
       screen.getByText("Project Twitter is required.")
     ).toBeInTheDocument();
@@ -457,9 +459,27 @@ describe("Form questions", () => {
   beforeEach(() => {
     store = setupStore();
     store.dispatch(web3ChainIDLoaded(5));
-    jest
-      .spyOn(projects, "fetchProjectApplicationInRound")
-      .mockResolvedValue(false);
+    jest.spyOn(projects, "fetchProjectApplicationInRound").mockResolvedValue({
+      hasProjectAppliedToRound: false,
+    });
+
+    store.dispatch({
+      type: "PROJECTS_LOADED",
+      payload: {
+        chainID: 5,
+        events: {
+          [`1:${addressFrom(1)}:1`]: {
+            createdAtBlock: 1111,
+            updatedAtBlock: 1112,
+          },
+        },
+      },
+    });
+
+    store.dispatch({
+      type: "GRANT_METADATA_FETCHED",
+      data: { ...projectsMetadata[0], projectGithub: "mygithub" },
+    });
   });
 
   test("checkbox", async () => {
@@ -474,6 +494,10 @@ describe("Form questions", () => {
             questions: [
               {
                 id: 0,
+                type: "project",
+              },
+              {
+                id: 1,
                 type: "checkbox",
                 title: "This is the title",
                 required: true,
@@ -491,12 +515,23 @@ describe("Form questions", () => {
       store
     );
 
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
+    await act(async () => {
+      fireEvent.change(selectProject, {
+        target: { value: `1:${addressFrom(1)}:1` },
+      });
+    });
+
     act(() => {
       const choice = screen.getByLabelText("Second option");
       choice.click();
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 0: ["Second option"] });
+    expect(onChange).toHaveBeenCalledWith({ 
+      0: `1:${addressFrom(1)}:1`, 
+      1: ["Second option"] });
 
     act(() => {
       const choice = screen.getByLabelText("First option");
@@ -504,7 +539,8 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: ["Second option", "First option"],
+      0: `1:${addressFrom(1)}:1`,
+      1: ["Second option", "First option"],
     });
   });
 
@@ -520,6 +556,10 @@ describe("Form questions", () => {
             questions: [
               {
                 id: 0,
+                type: "project",
+              },
+              {
+                id: 1,
                 type: "multiple-choice",
                 title: "This is the title",
                 required: true,
@@ -537,12 +577,24 @@ describe("Form questions", () => {
       store
     );
 
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
+    await act(async () => {
+      fireEvent.change(selectProject, {
+        target: { value: `1:${addressFrom(1)}:1` },
+      });
+    });
+
     act(() => {
       const choice = screen.getByLabelText("Second option");
       choice.click();
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
+    expect(onChange).toHaveBeenCalledWith({ 
+      0: `1:${addressFrom(1)}:1`,
+      1: "Second option" 
+    });
 
     act(() => {
       const choice = screen.getByLabelText("First option");
@@ -550,7 +602,8 @@ describe("Form questions", () => {
     });
 
     expect(onChange).toHaveBeenCalledWith({
-      0: "First option",
+      0: `1:${addressFrom(1)}:1`,
+      1: "First option",
     });
   });
 
@@ -566,6 +619,10 @@ describe("Form questions", () => {
             questions: [
               {
                 id: 0,
+                type: "project",
+              },
+              {
+                id: 1,
                 type: "dropdown",
                 title: "This is the title",
                 required: true,
@@ -583,6 +640,15 @@ describe("Form questions", () => {
       store
     );
 
+    const selectProject = screen.getByLabelText(
+      "Select a project you would like to apply for funding:"
+    );
+    await act(async () => {
+      fireEvent.change(selectProject, {
+        target: { value: `1:${addressFrom(1)}:1` },
+      });
+    });
+
     const select = screen.getByLabelText(/This is the title/);
 
     expect(screen.getByText("First option")).toBeInTheDocument();
@@ -592,12 +658,18 @@ describe("Form questions", () => {
       fireEvent.change(select, { target: { value: "First option" } });
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 0: "First option" });
+    expect(onChange).toHaveBeenCalledWith({ 
+      0: `1:${addressFrom(1)}:1`,
+      1: "First option" 
+    });
 
     act(() => {
       fireEvent.change(select, { target: { value: "Second option" } });
     });
 
-    expect(onChange).toHaveBeenCalledWith({ 0: "Second option" });
+    expect(onChange).toHaveBeenCalledWith({ 
+      0: `1:${addressFrom(1)}:1`,
+      1: "Second option" 
+    });
   });
 });

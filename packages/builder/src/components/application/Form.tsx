@@ -220,7 +220,6 @@ export default function Form({
 
   const handleProjectInput = async (e: ChangeHandlers) => {
     const { value } = e.target;
-    console.log("calling handler", value);
     setSelectedProjectID(value);
     setIsLoading(true);
     // don't load the project if the input is empty/blank
@@ -287,7 +286,6 @@ export default function Form({
   }, [props.allProjectMetadata]);
 
   const projectRequirementsResult: string[] = [];
-  const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
   if (
     roundApplication.applicationSchema.requirements.twitter.required &&
@@ -323,25 +321,13 @@ export default function Form({
     );
   }
 
-  //! todo: need to make sure the user is one of the owners of the project
-  // @thelostone-mc is going to create a ticket for this
-  const isUserOwnerOfProject = true;
+  const haveProjectRequirementsBeenMet = projectRequirementsResult.length === 0;
 
+  // todo: ensure that the applications are made by a project owner
   const isValidProjectSelected =
-    isUserOwnerOfProject &&
     !hasExistingApplication &&
     selectedProjectID &&
-    ((selectedProjectID && projectRequirementsResult.length === 0) ||
-      publishedApplication !== undefined);
-
-  console.log("isValidProjectSelected", {
-    isValidProjectSelected,
-    isUserOwnerOfProject,
-    hasExistingApplication,
-    selectedProjectID,
-    projectRequirementsResult,
-    publishedApplication,
-  });
+    publishedApplication === undefined;
 
   const needsProject = schema.questions.find((q) => q.type === "project");
 
@@ -727,7 +713,8 @@ export default function Form({
           </div>
         )}
 
-        {selectedProjectID &&
+        {!hasExistingApplication &&
+          selectedProjectID &&
           selectedProjectID !== "0" &&
           !haveProjectRequirementsBeenMet && (
             <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
