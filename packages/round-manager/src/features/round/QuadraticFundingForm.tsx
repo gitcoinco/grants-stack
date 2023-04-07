@@ -47,7 +47,8 @@ const ValidationSchema = yup.object().shape({
           then: yup
             .number()
             .required("You must provide an amount for the matching cap.")
-            .moreThan(0, "Matching cap amount must be more than zero."),
+            .moreThan(0, "Matching cap amount must be more than zero.")
+            .max(100, "Matching cap amount must be less than or equal to 100%."),
         }),
       minDonationThreshold: yup
         .boolean()
@@ -86,9 +87,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     formData?.roundMetadata.quadraticFundingConfig ?? {
       matchingFundsAvailable: 0,
       matchingCap: false,
-      matchingCapAmount: 10,
       minDonationThreshold: false,
-      minDonationThresholdAmount: 1,
       sybilDefense: true,
     };
 
@@ -660,13 +659,13 @@ function MatchingCap(props: {
             aria-describedby="percentage-symbol"
             max="100"
             step="any"
-            onChange={(e) => setMatchingCapAmount(e.target.value)}
+            onKeyUp={(e) => e.currentTarget.value !== "" ? setMatchingCapAmount(e.currentTarget.value) : setMatchingCapAmount(undefined)}
           />
         </div>
         {isMatchingCap &&
           props.errors?.roundMetadata?.quadraticFundingConfig
             ?.matchingCapAmount && (
-            <p className="text-xs text-pink-500">
+            <p className="text-xs text-pink-500" data-testid="matching-cap-error">
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
                   ?.matchingCapAmount?.message
