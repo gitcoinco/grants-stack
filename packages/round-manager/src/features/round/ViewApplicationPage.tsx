@@ -35,7 +35,7 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import { useApplicationById } from "../../context/application/ApplicationContext";
+import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -79,27 +79,25 @@ export default function ViewApplicationPage() {
   const { roundId, id } = useParams() as { roundId: string; id: string };
   const { chain, address } = useWallet();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { applications, isLoading } = useApplicationByRoundId(roundId!);
+  const filteredApplication = applications?.filter((a) => a.id == id) || [];
+  const application = filteredApplication[0];
+
   const {
     bulkUpdateGrantApplications,
-    IPFSCurrentStatus,
     contractUpdatingStatus,
     indexingStatus,
   } = useBulkUpdateGrantApplications();
 
   const isUpdateLoading =
-    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
   const progressSteps: ProgressStep[] = [
     {
-      name: "Storing",
-      description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
-    },
-    {
       name: "Updating",
-      description: `Connecting to the ${chain.name} blockchain.`,
+      description: `Updating the application status on the contract.`,
       status: contractUpdatingStatus,
     },
     {
@@ -118,10 +116,7 @@ export default function ViewApplicationPage() {
   ];
 
   useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractUpdatingStatus === ProgressStatus.IS_ERROR
-    ) {
+    if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
         setOpenProgressModal(false);
         setOpenErrorModal(true);
@@ -133,17 +128,7 @@ export default function ViewApplicationPage() {
     } else if (indexingStatus == ProgressStatus.IS_SUCCESS) {
       redirectToViewRoundPage(navigate, 0, roundId);
     }
-  }, [
-    navigate,
-    IPFSCurrentStatus,
-    contractUpdatingStatus,
-    indexingStatus,
-    id,
-    roundId,
-  ]);
-
-  const { application, isLoading, getApplicationByIdError } =
-    useApplicationById(id);
+  }, [navigate, contractUpdatingStatus, indexingStatus, id, roundId]);
 
   useEffect(() => {
     const applicationHasLoadedWithProjectOwners =
@@ -187,18 +172,13 @@ export default function ViewApplicationPage() {
       setOpenProgressModal(true);
       setOpenModal(false);
 
+      application.status = reviewDecision;
+
       await bulkUpdateGrantApplications({
         roundId: roundId,
-        applications: [
-          // @ts-expect-error clean up the types here once we have a working type system
-          {
-            status: reviewDecision,
-            id: application.id,
-            round: roundId,
-            recipient: application.recipient,
-            projectsMetaPtr: application.projectsMetaPtr,
-          },
-        ],
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        applications: applications!,
+        selectedApplications: [application],
       });
     } catch (error) {
       datadogLogs.logger.error(
@@ -245,7 +225,7 @@ export default function ViewApplicationPage() {
 
   useEffect(() => {
     if (!isLoading) {
-      setApplicationExists(!getApplicationByIdError && !!application);
+      setApplicationExists(!!application);
 
       /* During development, give frontend access to all rounds */
       if (process.env.REACT_APP_IGNORE_FRONTEND_CHECKS) {
@@ -257,7 +237,7 @@ export default function ViewApplicationPage() {
         setHasAccess(!!round.operatorWallets?.includes(address?.toLowerCase()));
       }
     }
-  }, [address, application, isLoading, round, getApplicationByIdError]);
+  }, [address, application, isLoading, round]);
 
   const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>();
   useEffect(() => {

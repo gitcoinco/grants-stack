@@ -106,6 +106,23 @@ export const makeMatchingStatsData = (): MatchingStatsData => {
   };
 };
 
+export const makeApplication = (): GrantApplication => {
+  return {
+    id: faker.finance.ethereumAddress(),
+    round: faker.finance.ethereumAddress(),
+    recipient: faker.finance.ethereumAddress(),
+    projectsMetaPtr: {
+      protocol: randomInt(1, 10),
+      pointer: faker.random.alpha({ count: 59, casing: "lower" }),
+    },
+    status: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
+      randomInt(0, 5)
+    ] as ProjectStatus,
+    applicationIndex: faker.datatype.number(),
+    createdAt: faker.date.past().toDateString(),
+  };
+};
+
 export const makeQFDistribution = (): QFDistribution => {
   return {
     projectId: faker.finance.ethereumAddress().toString(),
@@ -184,7 +201,6 @@ export const makeGrantApplicationData = (
     });
   }
 
-  // @ts-expect-error type system madness
   return {
     id:
       applicationIdOverride ||
@@ -219,9 +235,11 @@ export const makeGrantApplicationData = (
       protocol: randomInt(1, 10),
       pointer: faker.random.alpha({ count: 59, casing: "lower" }),
     },
-    status: ["PENDING", "APPROVED", "REJECTED", "APPEAL", "FRAUD"][
+    status: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "APPEAL", "FRAUD"][
       randomInt(0, 4)
     ] as ProjectStatus,
+    applicationIndex: faker.datatype.number(),
+    createdAt: faker.datatype.number().toString(),
   };
 };
 

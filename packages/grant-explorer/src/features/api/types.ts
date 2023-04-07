@@ -152,6 +152,7 @@ export type Project = {
   projectMetadata: ProjectMetadata;
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
+  applicationIndex: number;
 };
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
@@ -167,6 +168,7 @@ export enum ApplicationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
 }
 
 interface ProjectOwner {
