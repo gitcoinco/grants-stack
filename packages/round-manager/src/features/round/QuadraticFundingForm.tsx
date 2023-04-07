@@ -34,7 +34,7 @@ const ValidationSchema = yup.object().shape({
     quadraticFundingConfig: yup.object({
       matchingFundsAvailable: yup
         .number()
-        .typeError("Matching funds available must be valid number.")
+        .typeError("Matching funds available must be a valid number.")
         .moreThan(0, "Matching funds available must be more than zero."),
       matchingCap: yup
         .boolean()

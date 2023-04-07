@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  prettyDOM,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { makeProgramData, renderWrapped } from "../../../test-utils";
 
 import { faker } from "@faker-js/faker";
@@ -9,6 +15,7 @@ import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import { RoundDetailForm } from "../RoundDetailForm";
+import QuadraticFundingForm from "../QuadraticFundingForm";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -346,17 +353,6 @@ describe("<RoundDetailForm />", () => {
       target: { value: moment(roundEndTime).format("MM/DD/YYYY h:mm A") },
     });
 
-    // TODO: Fix move to Quadratic Funding test suite
-    // /* Payout Token */
-    // const payoutTokenSelection = screen.getByTestId("payout-token-select");
-    // fireEvent.click(payoutTokenSelection);
-    // const firstTokenOption = screen.getAllByTestId("payout-token-option")[0];
-    // fireEvent.click(firstTokenOption);
-
-    // fireEvent.change(screen.getByTestId("matching-funds-available"), {
-    //   target: { value: 1 },
-    // });
-
     /* Trigger validation */
     fireEvent.click(screen.getByText("Next"));
 
@@ -399,111 +395,102 @@ describe("<RoundDetailForm />", () => {
     expect(screen.getByText(chain.name!)).toBeInTheDocument();
     expect(screen.getByTestId("chain-logo")).toBeInTheDocument();
   });
+});
 
-  // TODO: Move to Quadratic Funding Settings test suite
-  // describe("Quadratic Funding Settings", () => {
-  //   it("renders the quadratic funding settings section", () => {
-  //     renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+describe("<QuadraticFundingForm />", () => {
+  beforeEach(() => {
+    renderWrapped(<QuadraticFundingForm stepper={FormStepper} />);
+  });
 
-  //     expect(
-  //       screen.getByText(/Quadratic Funding Settings/i)
-  //     ).toBeInTheDocument();
-  //   });
+  it("selects payout token", function () {
+    const payoutTokenSelection = screen.getByTestId("payout-token-select");
+    fireEvent.click(payoutTokenSelection);
+    const firstTokenOption = screen.getAllByTestId("payout-token-option")[0];
+    fireEvent.click(firstTokenOption);
+    fireEvent.change(screen.getByTestId("matching-funds-available"), {
+      target: { value: 1 },
+    });
+  });
 
-    // it("renders a dropdown list of tokens when payout token input is clicked", async () => {
-    //   const options = getPayoutTokenOptions(ChainId.GOERLI_CHAIN_ID);
+  it("renders the quadratic funding settings section", () => {
+    expect(screen.getByText(/Quadratic Funding Settings/i)).toBeInTheDocument();
+  });
 
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   const payoutTokenSelection = screen.getByTestId("payout-token-select");
-    //   fireEvent.click(payoutTokenSelection);
+  it("renders a dropdown list of tokens when payout token input is clicked", async () => {
+    const options = getPayoutTokenOptions(ChainId.GOERLI_CHAIN_ID);
 
-    //   const selectOptions = await screen.findAllByTestId("payout-token-option");
-    //   expect(selectOptions).toHaveLength(options.length);
-    // });
+    const payoutTokenSelection = screen.getByTestId("payout-token-select");
+    fireEvent.click(payoutTokenSelection);
 
-    // it("shows validation error message when the payout token is not selected", async () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   const payoutTokenSelection = screen.getByTestId("payout-token-select");
-    //   fireEvent.click(payoutTokenSelection);
+    const selectOptions = await screen.findAllByTestId("payout-token-option");
+    expect(selectOptions).toHaveLength(options.length);
+  });
 
-    //   fireEvent.click(screen.getByText("Launch"));
+  it("shows validation error message when the payout token is not selected", async () => {
+    const payoutTokenSelection = screen.getByTestId("payout-token-select");
+    fireEvent.click(payoutTokenSelection);
 
-    //   const errors = await screen.findByText(
-    //     "You must select a payout token for your round."
-    //   );
-    //   expect(errors).toBeInTheDocument();
-    // });
+    fireEvent.click(screen.getByText("Launch"));
 
-    // it("renders matching funds available & matching cap input fields", () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
+    const errors = await screen.findByText(
+      "You must select a payout token for your round."
+    );
+    expect(errors).toBeInTheDocument();
+  });
 
-    //   expect(
-    //     screen.getByTestId("matching-funds-available")
-    //   ).toBeInTheDocument();
-    //   expect(screen.getByTestId("matching-cap-selection")).toBeInTheDocument();
-    //   expect(screen.getByTestId("matching-cap-true")).toBeInTheDocument();
-    //   expect(screen.getByTestId("matching-cap-false")).toBeInTheDocument();
-    //   expect(screen.getByTestId("matching-cap-percent")).toBeInTheDocument();
-    // });
+  it("renders matching funds available & matching cap input fields", () => {
+    expect(screen.getByTestId("matching-funds-available")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-cap-selection")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-cap-true")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-cap-false")).toBeInTheDocument();
+    expect(screen.getByTestId("matching-cap-percent")).toBeInTheDocument();
+  });
 
-    // it("enables matching cap when matching cap is selected to 'Yes'", () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   fireEvent.click(screen.getByTestId("matching-cap-true"));
+  it("enables matching cap when matching cap is selected to 'Yes'", () => {
+    fireEvent.click(screen.getByTestId("matching-cap-true"));
 
-    //   expect(screen.getByTestId("matching-cap-percent")).toBeEnabled();
-    // });
+    expect(screen.getByTestId("matching-cap-percent")).toBeEnabled();
+  });
 
-    // it("defaults matching cap to be disabled", () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   expect(screen.getByTestId("matching-cap-percent")).toBeDisabled();
-    // });
+  it("defaults matching cap to be disabled", () => {
+    expect(screen.getByTestId("matching-cap-percent")).toBeDisabled();
+  });
 
-    // it("shows validation error message when matching funds amount is not provided", async () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   fireEvent.click(screen.getByText("Launch"));
+  it("shows validation error message when matching funds amount is not provided", async () => {
+    fireEvent.change(screen.getByTestId("matching-funds-available"), {
+      target: { value: "" },
+    });
+    fireEvent.click(screen.getByText("Launch"));
 
-    //   const errors = await screen.findByText(
-    //     "Matching funds available must be valid number."
-    //   );
-    //   expect(errors).toBeInTheDocument();
-    // });
+    const errors = await screen.findByText(
+      "Matching funds available must be a valid number."
+    );
+    expect(errors).toBeInTheDocument();
+  });
 
-    // it("shows validation error message when matching funds amount is <= zero", async () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   fireEvent.change(screen.getByTestId("matching-funds-available"), {
-    //     target: { value: 0 },
-    //   });
-    //   fireEvent.click(screen.getByText("Launch"));
+  it("shows validation error message when matching funds amount is <= zero", async () => {
+    fireEvent.change(screen.getByTestId("matching-funds-available"), {
+      target: { value: 0 },
+    });
+    fireEvent.click(screen.getByText("Launch"));
 
-    //   const errors = await screen.findByText(
-    //     "Matching funds available must be more than zero."
-    //   );
-    //   expect(errors).toBeInTheDocument();
-    // });
+    const errors = await screen.findByText(
+      "Matching funds available must be more than zero."
+    );
+    expect(errors).toBeInTheDocument();
+  });
 
-    // it("shows validation error message if matching cap percentage is not provided", async () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   fireEvent.click(screen.getByTestId("matching-cap-true"));
-    //   fireEvent.click(screen.getByText("Launch"));
+  it("shows validation error message if matching cap is selected and percentage is <= zero", async () => {
+    fireEvent.click(screen.getByTestId("matching-cap-true"));
+    fireEvent.change(screen.getByTestId("matching-cap-percent"), {
+      target: { value: 0 },
+    });
+    fireEvent.click(screen.getByText("Launch"));
+    console.log(prettyDOM(screen.getByTestId("matching-cap-percent")));
 
-    //   const errors = await screen.findByText(
-    //     "You must provide an amount for the matching cap."
-    //   );
-    //   expect(errors).toBeInTheDocument();
-    // });
-
-    // it("shows validation error message if matching cap percentage is <= zero", async () => {
-    //   renderWrapped(<RoundDetailForm stepper={FormStepper} />);
-    //   fireEvent.click(screen.getByTestId("matching-cap-true"));
-    //   fireEvent.change(screen.getByTestId("matching-cap-percent"), {
-    //     target: { value: 0 },
-    //   });
-    //   fireEvent.click(screen.getByText("Launch"));
-
-    //   const errors = await screen.findByText(
-    //     "Matching cap amount must be more than zero."
-    //   );
-    //   expect(errors).toBeInTheDocument();
-    // });
-  // });
+    const errors = await screen.findByText(
+      "Matching cap amount must be more than zero."
+    );
+    expect(errors).toBeInTheDocument();
+  });
 });
