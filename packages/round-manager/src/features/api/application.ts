@@ -6,7 +6,6 @@ import {
   MetadataPointer,
   Project,
   ProjectStatus,
-  Status,
   Web3Instance,
 } from "./types";
 import {

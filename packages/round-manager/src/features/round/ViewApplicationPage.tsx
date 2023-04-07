@@ -35,10 +35,7 @@ import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import NotFoundPage from "../common/NotFoundPage";
 import AccessDenied from "../common/AccessDenied";
-import {
-  useApplicationById,
-  useApplicationByRoundId,
-} from "../../context/application/ApplicationContext";
+import { useApplicationByRoundId } from "../../context/application/ApplicationContext";
 import { Spinner } from "../common/Spinner";
 import { ApplicationBanner, ApplicationLogo } from "./BulkApplicationCommon";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -179,6 +176,7 @@ export default function ViewApplicationPage() {
 
       await bulkUpdateGrantApplications({
         roundId: roundId,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         applications: applications!,
         selectedApplications: [application],
       });

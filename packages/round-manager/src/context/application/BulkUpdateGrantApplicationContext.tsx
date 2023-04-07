@@ -201,8 +201,8 @@ async function _bulkUpdateGrantApplication({
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const rowIndex = selectedApplications.map(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       (application) => application.applicationIndex! % 128
     );
 
