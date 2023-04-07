@@ -134,4 +134,27 @@ describe("<QuadraticFundingForm />", () => {
         expect(errors).toBeInTheDocument();
         expect(errors).toHaveTextContent("Matching cap amount must be less than or equal to 100%.");
     }); 
+
+    it("shows validation error message if minimum donation threshold is not provided", async () => {
+        fireEvent.click(screen.getByTestId("min-donation-true"));
+        fireEvent.click(screen.getByText("Launch"));
+        const errors = await screen.findByText(
+            "You must provide an amount for the minimum donation threshold."
+        );
+        expect(errors).toBeInTheDocument();
+    }); 
+
+    it("shows validation error message if minimum donation threshold is <= zero", async () => {
+        fireEvent.click(screen.getByTestId("min-donation-true"));
+        fireEvent.change(screen.getByTestId("min-donation-amount"), {
+            target: { value: "-1" },
+        });
+        fireEvent.click(screen.getByText("Launch"));
+        const errors = await screen.findByText(
+            "Minimum donation threshold must be more than zero."
+        );
+        expect(errors).toBeInTheDocument();
+
+    });
+
   });

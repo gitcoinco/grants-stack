@@ -706,7 +706,7 @@ function MinDonationThreshold(props: {
   });
   const { value: isMinDonation } = minDonationThresholdField;
 
-  // watch for minDonationAmoun
+  // watch for minDonationAmount
   const amt = useWatch({
     name: "roundMetadata.quadraticFundingConfig.minDonationThresholdAmount",
     control: props.control,
@@ -832,11 +832,9 @@ function MinDonationThreshold(props: {
             placeholder="Enter minimum donation amount"
             data-testid="min-donation-amount"
             aria-describedby="dollar-symbol"
-            max="100"
             step="any"
-            min="0"
-            onChange={(e) => {
-              setMinDonationAmount(Number(e.target.value));
+            onKeyUp={(e) => {
+              setMinDonationAmount(Number(e.currentTarget.value));
             }}
           />
         </div>
