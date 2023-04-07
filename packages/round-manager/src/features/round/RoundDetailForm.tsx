@@ -165,6 +165,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
   const FormStepper = props.stepper;
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
+  const [applicationEndDate, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const next: SubmitHandler<Round> = async (values) => {
@@ -182,6 +183,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
   function disableBeforeApplicationStartDate(current: moment.Moment) {
     return current.isAfter(applicationStartDate);
+  }
+
+  function disableBeforeApplicationEndDate(current: moment.Moment) {
+    return current.isAfter(applicationEndDate);
   }
 
   function disableBeforeRoundStartDate(current: moment.Moment) {
@@ -370,6 +375,10 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                         <Datetime
                           {...field}
                           closeOnSelect
+                          onChange={(date) => {
+                            setApplicationEndDate(moment(date));
+                            field.onChange(moment(date));
+                          }}
                           inputProps={{
                             id: "applicationsEndTime",
                             placeholder: "",
@@ -446,7 +455,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                           }}
-                          isValidDate={disableBeforeApplicationStartDate}
+                          isValidDate={disableBeforeApplicationEndDate}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
                           timeFormat={"HH:mm UTC"}
