@@ -22,7 +22,7 @@ const merklePayoutStrategyImplementation = [
   "function setReadyForPayout() payable",
   "function tokenAddress() view returns (address)",
   "function updateDistribution(bytes encodedDistribution)",
-  "function withdrawFunds(address withdrawAddress) payable",
+  "function withdrawFunds(address withdrawAddress) payable"
 ];
 
 export default merklePayoutStrategyImplementation;
