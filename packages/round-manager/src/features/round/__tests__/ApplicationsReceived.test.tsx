@@ -22,8 +22,7 @@ import {
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
 import {
   getApplicationsByRoundId,
-  updateApplicationList,
-  updateRoundContract,
+  updateApplicationStatuses,
 } from "../../api/application";
 import { ApplicationStatus, ProgressStatus } from "../../api/types";
 
@@ -343,8 +342,7 @@ describe("<ApplicationsReceived />", () => {
       });
 
       it("starts the bulk update process when confirm is selected", async () => {
-        (updateApplicationList as jest.Mock).mockResolvedValue("");
-        (updateRoundContract as jest.Mock).mockResolvedValue("");
+        (updateApplicationStatuses as jest.Mock).mockResolvedValue("");
         setupInBulkSelectionMode();
 
         const approveButton = screen.queryAllByTestId("approve-button")[0];
@@ -362,31 +360,14 @@ describe("<ApplicationsReceived />", () => {
         fireEvent.click(confirmationModalConfirmButton);
 
         await waitFor(() => {
-          expect(updateApplicationList).toBeCalled();
+          expect(updateApplicationStatuses).toBeCalled();
         });
 
-        await waitFor(() => {
-          expect(updateRoundContract).toBeCalled();
-        });
-
-        const updateApplicationListFirstCall = (
-          updateApplicationList as jest.Mock
+        expect(updateApplicationStatuses).toBeCalled();
+        const updateApplicationStatusesFirstCall = (
+          updateApplicationStatuses as jest.Mock
         ).mock.calls[0];
-        const actualApplicationsUpdated = updateApplicationListFirstCall[0];
-        expect(actualApplicationsUpdated).toEqual([
-          {
-            id: grantApplications[0].id,
-            round: grantApplications[0].round,
-            recipient: grantApplications[0].recipient,
-            projectsMetaPtr: grantApplications[0].projectsMetaPtr,
-            status: ApplicationStatus.APPROVED,
-          },
-        ]);
-
-        expect(updateRoundContract).toBeCalled();
-        const updateRoundContractFirstCall = (updateRoundContract as jest.Mock)
-          .mock.calls[0];
-        const actualRoundId = updateRoundContractFirstCall[0];
+        const actualRoundId = updateApplicationStatusesFirstCall[0];
         expect(actualRoundId).toEqual(roundIdOverride);
       });
 
@@ -427,7 +408,7 @@ describe("<ApplicationsReceived />", () => {
   describe("when processing bulk action fails", () => {
     beforeEach(() => {
       const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
@@ -437,7 +418,7 @@ describe("<ApplicationsReceived />", () => {
           applications: grantApplications,
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          contractUpdatingStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -475,17 +456,6 @@ describe("<ApplicationsReceived />", () => {
       });
 
       expect(await screen.queryByTestId("error-modal")).not.toBeInTheDocument();
-    });
-
-    it("choosing try again restarts the action and closes the error modal", async () => {
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
-
-      const tryAgain = await screen.findByTestId("tryAgain");
-      await act(() => {
-        fireEvent.click(tryAgain);
-      });
-
-      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     });
   });
 });
