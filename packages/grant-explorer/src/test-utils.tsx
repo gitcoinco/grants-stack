@@ -83,6 +83,7 @@ export const makeApprovedProjectData = (
       ...projectMetadataOverrides,
     },
     status: ApplicationStatus.APPROVED,
+    applicationIndex: faker.datatype.number(),
     ...overrides,
   };
 };

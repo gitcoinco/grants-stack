@@ -21,9 +21,8 @@ import {
 } from "../../../context/application/ApplicationContext";
 import { MemoryRouter } from "react-router-dom";
 import {
-  getApplicationById,
-  updateApplicationList,
-  updateRoundContract,
+  getApplicationsByRoundId,
+  updateApplicationStatuses,
 } from "../../api/application";
 import { faker } from "@faker-js/faker";
 import { RoundContext } from "../../../context/round/RoundContext";
@@ -90,12 +89,13 @@ describe("ViewApplicationPage", () => {
   });
 
   it("should display 404 when there no application is found", () => {
-    (getApplicationById as jest.Mock).mockRejectedValue("No application :(");
+    (getApplicationsByRoundId as jest.Mock).mockRejectedValue(
+      "No application :("
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [],
       isLoading: false,
-      getApplicationByIdError: new Error("No application :("),
     });
 
     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe("ViewApplicationPage", () => {
 
   it("should display access denied when wallet accessing is not round operator", () => {
     const application = makeGrantApplicationData({ applicationIdOverride });
-    (getApplicationById as any).mockResolvedValue(application);
+    (getApplicationsByRoundId as any).mockResolvedValue(application);
     const wrongAddress = faker.finance.ethereumAddress();
     (useWallet as jest.Mock).mockImplementation(() => ({
       ...mockWallet,
@@ -140,7 +140,7 @@ describe("ViewApplicationPage", () => {
       applicationAnswers: expectedAnswers,
     });
 
-    (getApplicationById as any).mockResolvedValue(
+    (getApplicationsByRoundId as any).mockResolvedValue(
       grantApplicationWithApplicationAnswers
     );
 
@@ -162,7 +162,7 @@ describe("ViewApplicationPage", () => {
         applicationIdOverride,
         roundIdOverride,
       });
-      (getApplicationById as any).mockResolvedValue(application);
+      (getApplicationsByRoundId as any).mockResolvedValue(application);
     });
 
     it("should open confirmation modal when approve is clicked", async () => {
@@ -184,11 +184,9 @@ describe("ViewApplicationPage", () => {
     });
 
     it("should start the bulk update process to persist approve decision when confirm is selected", async () => {
-      (updateApplicationList as jest.Mock).mockResolvedValue("");
-      (updateRoundContract as jest.Mock).mockReturnValue(
-        new Promise(() => {
-          /* do nothing */
-        })
+      const transactionBlockNumber = 10;
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue(
+        transactionBlockNumber
       );
 
       renderWithContext(<ViewApplicationPage />, {
@@ -199,31 +197,24 @@ describe("ViewApplicationPage", () => {
       fireEvent.click(screen.getByText("Confirm"));
 
       await waitFor(() => {
-        expect(updateApplicationList).toBeCalled();
+        expect(updateApplicationStatuses).toBeCalled();
       });
 
-      await waitFor(() => {
-        expect(updateRoundContract).toBeCalled();
-      });
+      application.status = "APPROVED";
 
       const expected = {
         id: application.id,
         round: application.round,
         recipient: application.recipient,
         projectsMetaPtr: application.projectsMetaPtr,
-        status: ApplicationStatus.APPROVED,
+        status: application.status,
       };
-      expect(updateApplicationList).toBeCalled();
-      const updateApplicationListFirstCall = (
-        updateApplicationList as jest.Mock
-      ).mock.calls[0];
-      const actualApplicationsUpdated = updateApplicationListFirstCall[0];
-      expect(actualApplicationsUpdated).toEqual([expected]);
 
-      expect(updateRoundContract).toBeCalled();
-      const updateRoundContractFirstCall = (updateRoundContract as jest.Mock)
-        .mock.calls[0];
-      const actualRoundId = updateRoundContractFirstCall[0];
+      expect(updateApplicationStatuses).toBeCalled();
+      const updateApplicationStatusesFirstCall = (
+        updateApplicationStatuses as jest.Mock
+      ).mock.calls[0];
+      const actualRoundId = updateApplicationStatusesFirstCall[0];
       expect(actualRoundId).toEqual(roundIdOverride);
     });
 
@@ -242,7 +233,7 @@ describe("ViewApplicationPage", () => {
 
     it("shows error modal when reviewing application fails", async () => {
       const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
@@ -252,7 +243,7 @@ describe("ViewApplicationPage", () => {
           applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          contractUpdatingStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -266,7 +257,7 @@ describe("ViewApplicationPage", () => {
 
     it("choosing done closes the error modal", async () => {
       const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
+      (updateApplicationStatuses as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 
@@ -276,7 +267,7 @@ describe("ViewApplicationPage", () => {
           applications: [application],
         },
         {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
+          contractUpdatingStatus: ProgressStatus.IS_ERROR,
         }
       );
 
@@ -292,36 +283,6 @@ describe("ViewApplicationPage", () => {
         fireEvent.click(done);
       });
 
-      expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
-    });
-
-    it("choosing try again restarts the action and closes the error modal", async () => {
-      const transactionBlockNumber = 10;
-      (updateRoundContract as jest.Mock).mockResolvedValue({
-        transactionBlockNumber,
-      });
-
-      renderWithContext(
-        <ViewApplicationPage />,
-        {
-          applications: [application],
-        },
-        {
-          IPFSCurrentStatus: ProgressStatus.IS_ERROR,
-        }
-      );
-
-      fireEvent.click(screen.getByText(/Approve/));
-
-      await screen.findByTestId("confirm-modal");
-      fireEvent.click(screen.getByText("Confirm"));
-
-      expect(await screen.findByTestId("error-modal")).toBeInTheDocument();
-
-      const tryAgain = await screen.findByTestId("tryAgain");
-      await act(() => {
-        fireEvent.click(tryAgain);
-      });
       expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
     });
   });
@@ -344,7 +305,9 @@ describe("ViewApplicationPage verification badges", () => {
     });
 
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
+    (getApplicationsByRoundId as any).mockResolvedValue(
+      grantApplicationWithNoVc
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -368,7 +331,9 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: expectedGithubOrganizationName,
     });
     grantApplicationWithNoVc.project!.credentials = {};
-    (getApplicationById as any).mockResolvedValue(grantApplicationWithNoVc);
+    (getApplicationsByRoundId as any).mockResolvedValue(
+      grantApplicationWithNoVc
+    );
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplicationWithNoVc],
@@ -396,7 +361,7 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationById as any).mockResolvedValue(
+      (getApplicationsByRoundId as any).mockResolvedValue(
         grantApplicationWithValidVc
       );
 
@@ -419,7 +384,7 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectTwitter = handle.toUpperCase();
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -444,7 +409,7 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle.toLowerCase(),
     });
     grantApplication.project!.projectGithub = handle.toUpperCase();
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -471,7 +436,7 @@ describe("ViewApplicationPage verification badges", () => {
         applicationIdOverride,
         ...overrides,
       });
-      (getApplicationById as any).mockResolvedValue(grantApplicationStub);
+      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationStub);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationStub],
@@ -498,7 +463,7 @@ describe("ViewApplicationPage verification badges", () => {
         }),
         isLoading: false,
       };
-      (getApplicationById as any).mockResolvedValue(
+      (getApplicationsByRoundId as any).mockResolvedValue(
         noGithubVerification.application
       );
 
@@ -519,7 +484,7 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: "whatever",
     });
     grantApplication.project!.credentials["github"].issuer = fakeIssuer;
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -544,7 +509,7 @@ describe("ViewApplicationPage verification badges", () => {
       projectTwitterOverride: handle,
     });
     grantApplication.project!.projectTwitter = "not some handle";
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -569,7 +534,7 @@ describe("ViewApplicationPage verification badges", () => {
       projectGithubOverride: handle,
     });
     grantApplication.project!.projectGithub = "not some handle";
-    (getApplicationById as any).mockResolvedValue(grantApplication);
+    (getApplicationsByRoundId as any).mockResolvedValue(grantApplication);
 
     renderWithContext(<ViewApplicationPage />, {
       applications: [grantApplication],
@@ -599,7 +564,7 @@ describe("ViewApplicationPage verification badges", () => {
       grantApplicationData.project!.owners.forEach((it) => {
         it.address = "bad";
       });
-      (getApplicationById as any).mockResolvedValue(grantApplicationData);
+      (getApplicationsByRoundId as any).mockResolvedValue(grantApplicationData);
 
       renderWithContext(<ViewApplicationPage />, {
         applications: [grantApplicationData],
