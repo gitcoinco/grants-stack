@@ -178,6 +178,8 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
                     }
                   )}
                   control={control}
+                  token={watch("token")}
+                  payoutTokenOptions={payoutTokenOptions}
                 />
               </div>
             </div>
@@ -508,6 +510,8 @@ function MatchingCap(props: {
   registerMatchingCapAmount: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control?: Control<Round>;
+  token: string;
+  payoutTokenOptions: PayoutToken[];
 }) {
   const { field: matchingCapField } = useController({
     name: "roundMetadata.quadraticFundingConfig.matchingCap",
@@ -524,11 +528,21 @@ function MatchingCap(props: {
     name: "roundMetadata.quadraticFundingConfig.matchingCapAmount",
     control: props.control,
   });
-  // const [matchingCapAmount, setMatchingCapAmount] = useState<string>(amt);
 
   const [matchingCapAmount, setMatchingCapAmount] = useState<
     string | undefined
   >(amt?.toString());
+
+  const matchingFunds = useWatch({
+    name: "roundMetadata.quadraticFundingConfig.matchingFundsAvailable",
+    control: props.control,
+  });
+
+  const matchingValueNumber = (Number(matchingCapAmount) / 100) * matchingFunds;
+  const matchingValue =
+    matchingValueNumber % 1 !== 0
+      ? matchingValueNumber.toFixed(2)
+      : matchingValueNumber.toFixed(0);
 
   return (
     <>
@@ -664,17 +678,13 @@ function MatchingCap(props: {
         className="col-span-6 rounded text-sm bg-gray-50 p-2 text-gray-500"
         hidden={!isMatchingCap}
       >
-        A single project can only receive a maximum of{" "}
+        A single project can only receive a maximum of {matchingCapAmount} % of
+        the matching fund (=
+        {matchingValue}{" "}
         {
-          // same as matchingCapAmount
-          matchingCapAmount
-        }{" "}
-        % of the matching fund (=$
-        {
-          // TODO: add amount * percentage
-        }{" "}
-        {
-          // TODO: add currency symbol
+          props.payoutTokenOptions.find(
+            (token) => token.address === props.token
+          )?.name
         }
         )
       </div>
