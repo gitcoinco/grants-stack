@@ -295,16 +295,28 @@ export enum VerifiedCredentialState {
   PENDING,
 }
 
-export const convertStatusToText = (applicationStatus: string | number) => {
+enum ApplicationStatus {
+  PENDING = "0",
+  APPROVED = "1",
+  REJECTED = "2",
+  CANCELLED = "3",
+}
+
+export const convertStatusToText = (
+  applicationStatus: string | number
+): string => {
+  // Ensure the applicationStatus is a string
+  applicationStatus = applicationStatus.toString();
+
   switch (applicationStatus) {
-    case 3:
+    case ApplicationStatus.CANCELLED:
       return "CANCELLED";
-    case 2:
+    case ApplicationStatus.REJECTED:
       return "REJECTED";
-    case 1:
+    case ApplicationStatus.APPROVED:
       return "APPROVED";
-    case 0:
+    case ApplicationStatus.PENDING:
     default:
       return "PENDING";
   }
-}
+};

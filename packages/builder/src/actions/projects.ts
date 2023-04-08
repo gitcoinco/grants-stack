@@ -2,12 +2,10 @@ import { datadogRum } from "@datadog/browser-rum";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
 import { convertStatusToText } from "common";
-// import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-// import RoundImplementationABI from "../contracts/abis/RoundImplementation.json";
 import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -449,6 +447,8 @@ export const fetchProjectApplications =
           );
 
           if (response.errors) {
+            datadogRum.addError(response.error, { projectID });
+            console.error(response.error);
             return [];
           }
 
@@ -470,21 +470,6 @@ export const fetchProjectApplications =
             projectID,
             applications,
           });
-
-          // Update each application with the status from the contract
-          // FIXME: This part can be removed when we are sure that the
-          // aplication status returned from the graph is up to date.
-          // eslint-disable-next-line
-          // const roundAddresses = applications.map((app: Application) => app.roundID);
-
-          // dispatch<any>(
-          //   fetchApplicationStatusesFromContract(
-          //     roundAddresses,
-          //     projectID,
-          //     projectApplicationID,
-          //     chain.id
-          //   )
-          // );
 
           return applications;
         } catch (error: any) {
