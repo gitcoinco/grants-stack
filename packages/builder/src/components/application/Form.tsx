@@ -4,7 +4,6 @@ import {
   ExclamationTriangleIcon,
   GlobeAltIcon,
   InformationCircleIcon,
-  ShieldCheckIcon,
 } from "@heroicons/react/24/solid";
 import { renderToHTML } from "common";
 import { Fragment, useEffect, useState } from "react";
@@ -63,7 +62,7 @@ enum ValidationStatus {
 function ProjectTitle(props: { projectMetadata: Metadata }) {
   const { projectMetadata } = props;
   return (
-    <div className="border-b-2 pb-2">
+    <div className="pb-2">
       <h1 className="text-3xl mt-6 font-thin text-black">
         {projectMetadata.title}
       </h1>
@@ -90,21 +89,8 @@ function AboutProject(props: { projectToRender: Metadata }) {
   const { website, projectTwitter, projectGithub, userGithub } =
     projectToRender;
 
-  const formattedDateWithOrdinal = "";
-
-  // TODO: check if credential is verified before returning a shield icon
-  const getVerifiableCredentialVerificationResultView = (provider: string) => (
-    <span className="rounded-full bg-teal-100 px-2.5 inline-flex flex-row justify-center items-center">
-      <ShieldCheckIcon
-        className="w-5 h-5 text-teal-500 mr-2"
-        data-testid={`${provider}-verifiable-credential`}
-      />
-      <p className="text-teal-500 font-medium text-xs">Verified</p>
-    </span>
-  );
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 border-b-2 pt-2 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 pt-2 pb-6">
       {website && (
         <span className="flex items-center mt-4 gap-1">
           <GlobeAltIcon className="h-4 w-4 mr-1 opacity-40" />
@@ -132,14 +118,20 @@ function AboutProject(props: { projectToRender: Metadata }) {
               testID="project-twitter"
             />
           </a>
-          {getVerifiableCredentialVerificationResultView("twitter")}
         </span>
       )}
       {projectToRender.createdAt && (
         <span className="flex items-center mt-4 gap-1">
           {/* <CalendarIcon className="h-4 w-4 mr-1 opacity-80" /> */}
           <DetailSummary
-            text={`${formattedDateWithOrdinal}`}
+            text={`${new Date(projectToRender.createdAt).toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }
+            )}`}
             testID="project-createdAt"
           />
         </span>
@@ -168,7 +160,6 @@ function AboutProject(props: { projectToRender: Metadata }) {
           >
             <DetailSummary text={`${projectGithub}`} testID="project-github" />
           </a>
-          {getVerifiableCredentialVerificationResultView("github")}
         </span>
       )}
     </div>
@@ -185,7 +176,7 @@ function FullPreview(props: {
 
   return (
     <>
-      <div className="relative py-7">
+      <div className="relative pt-7">
         <div>
           <div>
             <img
@@ -239,9 +230,9 @@ function FullPreview(props: {
               className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
             />
 
-            <div>
-              <h1 className="text-2xl mt-8 font-thin text-black">
-                Additional Information
+            <div className="mt-4 border-t-2">
+              <h1 className="text-2xl mt-6 font-thin text-black">
+                Additional Details
               </h1>
               <div>
                 {questions.map((question: any) => {
