@@ -73,7 +73,6 @@ describe("<Show />", () => {
 
         renderWrapped(<Show />, store);
 
-        // const container = screen.getAllByTestId("show-round-container");
         const element = screen.getByTestId("switch-networks-modal-button");
         const button = element.children[1];
 

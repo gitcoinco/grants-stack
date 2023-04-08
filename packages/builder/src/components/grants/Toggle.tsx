@@ -19,7 +19,7 @@ export default function Toggle({
   return (
     <div>
       {showProjectDetails && projectMetadata && (
-        <Accordion className="w-1/2 mt-4" allowToggle>
+        <Accordion className="w-2/3 mt-4" allowToggle>
           <AccordionItem className="border-none">
             <h2>
               <AccordionButton className="pl-0">

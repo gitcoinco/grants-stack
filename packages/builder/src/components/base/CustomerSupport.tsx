@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 type Menu = {
-  Icon: (props: React.ComponentProps<"svg">) => JSX.Element;
+  Icon: any;
   title: string;
   subTitle: string;
   link: string;

@@ -8,7 +8,13 @@ export const chains: { [key: number]: string } = {
   1: "mainnet",
 };
 
-export const addresses: { [key: string]: any } = {
+export type DeploymentAddress = {
+  [key: string]: {
+    projectRegistry: string | undefined;
+  };
+};
+
+export const addresses: DeploymentAddress = {
   localhost: {
     projectRegistry: "0x832c5391dc7931312CbdBc1046669c9c3A4A28d5",
   },
