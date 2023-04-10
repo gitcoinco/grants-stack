@@ -173,7 +173,7 @@ async function loadApprovedProjects(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chainId: any
 ): Promise<Project[]> {
-  if (!round.projectsMetaPtr || round.projects.length === 0) {
+  if (round.projects.length === 0) {
     return [];
   }
 
