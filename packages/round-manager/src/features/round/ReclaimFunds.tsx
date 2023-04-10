@@ -155,7 +155,7 @@ function ReclaimFundsContent(props: {
 
   const matchingFunds =
     props.round &&
-    props.round.roundMetadata.matchingFunds?.matchingFundsAvailable;
+    props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
   const { data, error, loading } = useTokenPrice(
     matchingFundPayoutToken?.coingeckoId
   );

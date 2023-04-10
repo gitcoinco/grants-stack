@@ -10,6 +10,7 @@ import Navbar from "../common/Navbar";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { RoundDetailForm } from "./RoundDetailForm";
+import QuadraticFundingForm from "./QuadraticFundingForm";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -51,6 +52,7 @@ export default function CreateRound() {
             <FormWizard
               steps={[
                 RoundDetailForm,
+                QuadraticFundingForm,
                 ApplicationEligibilityForm,
                 // @ts-expect-error Needs refactoring/typing as a whole
                 RoundApplicationForm,
