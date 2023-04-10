@@ -12,10 +12,16 @@ import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import { resetApplicationError } from "../../actions/roundApplication";
-import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
+import {
+  DefaultProjectBanner,
+  DefaultProjectLogo,
+  GithubLogo,
+  TwitterLogo,
+} from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import { editProjectPathByID } from "../../routes";
+import colors from "../../styles/colors";
 import {
   AddressType,
   ChangeHandlers,
@@ -47,6 +53,7 @@ import {
   TextInput,
   TextInputAddress,
 } from "../grants/inputs";
+import Calendar from "../icons/Calendar";
 
 const validation = {
   messages: [""],
@@ -106,7 +113,7 @@ function AboutProject(props: { projectToRender: Metadata }) {
       )}
       {projectTwitter && (
         <span className="flex items-center mt-4 gap-1">
-          {/* <TwitterIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <img src={TwitterLogo} className="h-4" alt="Twitter Logo" />
           <a
             href={`https://twitter.com/${projectTwitter}`}
             target="_blank"
@@ -123,6 +130,7 @@ function AboutProject(props: { projectToRender: Metadata }) {
       {projectToRender.createdAt && (
         <span className="flex items-center mt-4 gap-1">
           {/* <CalendarIcon className="h-4 w-4 mr-1 opacity-80" /> */}
+          <Calendar color={colors["secondary-text"]} />
           <DetailSummary
             text={`${new Date(projectToRender.createdAt).toLocaleDateString(
               "en-US",
@@ -138,7 +146,7 @@ function AboutProject(props: { projectToRender: Metadata }) {
       )}
       {userGithub && (
         <span className="flex items-center mt-4 gap-1">
-          {/* <GithubIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <img src={GithubLogo} className="h-4" alt="GitHub Logo" />
           <a
             href={`https://github.com/${userGithub}`}
             target="_blank"
@@ -151,7 +159,7 @@ function AboutProject(props: { projectToRender: Metadata }) {
       )}
       {projectGithub && (
         <span className="flex items-center mt-4 gap-1">
-          {/* <GithubIcon className="h-4 w-4 mr-1 opacity-40" /> */}
+          <img src={GithubLogo} className="h-4" alt="GitHub Logo" />
           <a
             href={`https://github.com/${projectGithub}`}
             target="_blank"
