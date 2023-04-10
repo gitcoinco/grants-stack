@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { ChainId, getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
+import { getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
@@ -20,7 +20,6 @@ import { useCart } from "../../context/CartContext";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { useEffect, useState } from "react";
 import Footer from "../common/Footer";
-import { useRoundSummary } from "../api/api";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
@@ -36,13 +35,6 @@ export default function ViewRound() {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round, isLoading } = useRoundById(chainId!, roundId!);
-
-  const roundStats = useRoundSummary({
-    chainId: chainId as ChainId,
-    roundId: roundId as string,
-  });
-
-  console.log("roundSummary", roundStats);
 
   const currentTime = new Date();
 
@@ -204,7 +196,7 @@ function AfterRoundStart(props: {
 
           <p className="text-1xl mb-4">
             Matching funds available: &nbsp;
-            {round.roundMetadata?.matchingFunds?.matchingFundsAvailable.toLocaleString()}
+            {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
             &nbsp;
             {matchingFundPayoutTokenName}
           </p>
@@ -391,7 +383,7 @@ function PreRoundPage(props: {
     round &&
     payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
-    )[0].name;
+    )[0]?.name;
 
   return (
     <div className="mt-20 flex justify-center">
@@ -447,7 +439,7 @@ function PreRoundPage(props: {
             <span>
               {" "}
               &nbsp;
-              {round.roundMetadata?.matchingFunds?.matchingFundsAvailable}
+              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}
               &nbsp;
               {matchingFundPayoutTokenName}
             </span>
