@@ -338,7 +338,8 @@ export default function Form({
           if (
             needsProject &&
             input.type !== "project" &&
-            !isValidProjectSelected
+            !isValidProjectSelected &&
+            !readOnly
           ) {
             return null;
           }
@@ -398,7 +399,7 @@ export default function Form({
 
           // Add isPreview for Application View when readonly
           if (
-            isValidProjectSelected &&
+            (isValidProjectSelected || readOnly) &&
             haveProjectRequirementsBeenMet &&
             !isLoading
           ) {
