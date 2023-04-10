@@ -1,21 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  act,
-  fireEvent,
-  prettyDOM,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { makeProgramData, renderWrapped } from "../../../test-utils";
 
 import { faker } from "@faker-js/faker";
 import moment from "moment";
-import { ChainId, CHAINS, getPayoutTokenOptions } from "../../api/utils";
+import { ChainId, CHAINS } from "../../api/utils";
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import { RoundDetailForm } from "../RoundDetailForm";
-import QuadraticFundingForm from "../QuadraticFundingForm";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
