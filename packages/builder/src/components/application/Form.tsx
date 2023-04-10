@@ -178,8 +178,18 @@ function FullPreview(props: {
   project: Metadata;
   answers: RoundApplicationAnswers;
   questions: RoundApplicationQuestion[];
+  handleSubmitApplication: Function;
+  setPreview: Function;
+  disableSubmit: boolean;
 }) {
-  const { project, answers, questions } = props;
+  const {
+    project,
+    answers,
+    questions,
+    setPreview,
+    handleSubmitApplication,
+    disableSubmit,
+  } = props;
   const ipfsPrefix = process.env.REACT_APP_PINATA_GATEWAY!;
 
   return (
@@ -248,7 +258,6 @@ function FullPreview(props: {
                   const answerText = Array.isArray(currentAnswer)
                     ? currentAnswer.join(", ")
                     : currentAnswer;
-                  console.log("DASA question", question);
 
                   return (
                     <div>
@@ -281,6 +290,27 @@ function FullPreview(props: {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <div className="flex justify-end">
+          <Button
+            variant={ButtonVariants.outline}
+            onClick={() => {
+              setPreview(false);
+            }}
+          >
+            Back to Editing
+          </Button>
+          <Button
+            variant={ButtonVariants.primary}
+            onClick={() => {
+              handleSubmitApplication();
+            }}
+            disabled={disableSubmit}
+          >
+            Submit
+          </Button>
         </div>
       </div>
     </>
@@ -539,141 +569,46 @@ export default function Form({
 
   const needsProject = schema.questions.find((q) => q.type === "project");
 
-  if (preview) {
-    if (selectedProjectMetadata) {
-      return (
+  return (
+    <>
+      {preview && selectedProjectMetadata && (
         <FullPreview
-          project={selectedProjectMetadata}
+          project={selectedProjectMetadata!}
           answers={answers}
           questions={schema.questions}
+          setPreview={setPreview}
+          handleSubmitApplication={handleSubmitApplication}
+          disableSubmit={disableSubmit}
         />
-      );
-    }
-  }
+      )}
+      <div
+        className={`border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4 ${
+          preview && selectedProjectMetadata ? "hidden" : ""
+        }`}
+      >
+        <form onSubmit={(e) => e.preventDefault()}>
+          {schema.questions.map((input) => {
+            if (
+              needsProject &&
+              input.type !== "project" &&
+              !isValidProjectSelected
+            ) {
+              return null;
+            }
 
-  return (
-    <div className="border-0 sm:border sm:border-solid border-gitcoin-grey-100 rounded text-primary-text p-0 sm:p-4">
-      <form onSubmit={(e) => e.preventDefault()}>
-        {schema.questions.map((input) => {
-          if (
-            needsProject &&
-            input.type !== "project" &&
-            !isValidProjectSelected
-          ) {
-            return null;
-          }
-
-          switch (input.type) {
-            case "project":
-              return readOnly ? (
-                <TextInput
-                  key={input.id.toString()}
-                  label="Select a project you would like to apply for funding:"
-                  name={input.id.toString()}
-                  value={(answers[input.id] as string) ?? ""}
-                  disabled={preview}
-                  changeHandler={(e) => {
-                    handleInput(e);
-                  }}
-                  required
-                  feedback={
-                    feedback.find((fb) => fb.title === input.id.toString()) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              ) : (
-                <Fragment key="project">
-                  <div className="mt-6 w-full sm:max-w-md relative">
-                    <ProjectSelect
-                      key={input.id.toString()}
-                      label="Select a project you would like to apply for funding:"
-                      name={input.id.toString()}
-                      value={(answers[input.id] as string) ?? ""}
-                      options={projectOptions ?? []}
-                      disabled={preview}
-                      changeHandler={handleProjectInput}
-                      required
-                      feedback={
-                        feedback.find(
-                          (fb) => fb.title === input.id.toString()
-                        ) ?? {
-                          type: "none",
-                          message: "",
-                        }
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Toggle
-                      projectMetadata={selectedProjectMetadata}
-                      showProjectDetails={showProjectDetails}
-                    />
-                  </div>
-                  {isValidProjectSelected && (
-                    <div>
-                      <p className="text-xs mt-4 mb-1 whitespace-normal sm:max-w-md">
-                        To complete your application to{" "}
-                        {round.roundMetadata.name}, a little more info is
-                        needed:
-                      </p>
-                      <hr className="w-1/2" />
-                    </div>
-                  )}
-                </Fragment>
-              );
-            case "recipient":
-              /* Radio for safe or multi-sig */
-              return (
-                <Fragment key={input.id}>
-                  {!readOnly && (
-                    <div className="relative mt-2" data-testid="wallet-type">
-                      <Stack>
-                        <Radio
-                          label="Is your payout wallet a Gnosis Safe or multi-sig?"
-                          choices={["Yes", "No"]}
-                          changeHandler={handleInput}
-                          name="isSafe"
-                          value={answers.isSafe as string}
-                          info=""
-                          required
-                          disabled={preview}
-                          feedback={
-                            feedback.find((fb) => fb.title === "isSafe") ?? {
-                              type: "none",
-                              message: "",
-                            }
-                          }
-                        />
-                      </Stack>
-                    </div>
-                  )}
-                  {/* todo: do we need this tooltip for all networks? */}
-                  <TextInputAddress
-                    data-testid="address-input-wrapper"
-                    key={input.id}
-                    label={
-                      <InputLabel
-                        title="Payout Wallet Address"
-                        encrypted={false}
-                        hidden={false}
-                      />
-                    }
+            switch (input.type) {
+              case "project":
+                return readOnly ? (
+                  <TextInput
+                    key={input.id.toString()}
+                    label="Select a project you would like to apply for funding:"
                     name={input.id.toString()}
-                    placeholder="Address that will receive funds"
-                    // eslint-disable-next-line max-len
-                    tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
-                    value={answers[input.id.toString()] as string}
+                    value={(answers[input.id] as string) ?? ""}
                     disabled={preview}
-                    changeHandler={handleInput}
+                    changeHandler={(e) => {
+                      handleInput(e);
+                    }}
                     required
-                    onAddressType={(v) => setAddressType(v)}
-                    warningHighlight={
-                      addressType &&
-                      ((answers.isSafe === "Yes" && !addressType.isContract) ||
-                        (answers.isSafe === "No" && addressType.isContract))
-                    }
                     feedback={
                       feedback.find(
                         (fb) => fb.title === input.id.toString()
@@ -683,122 +618,249 @@ export default function Form({
                       }
                     }
                   />
-                </Fragment>
-              );
-            case "short-answer":
-            case "text":
-            case "link":
-              return (
-                <TextInput
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
+                ) : (
+                  <Fragment key="project">
+                    <div className="mt-6 w-full sm:max-w-md relative">
+                      <ProjectSelect
+                        key={input.id.toString()}
+                        label="Select a project you would like to apply for funding:"
+                        name={input.id.toString()}
+                        value={(answers[input.id] as string) ?? ""}
+                        options={projectOptions ?? []}
+                        disabled={preview}
+                        changeHandler={handleProjectInput}
+                        required
+                        feedback={
+                          feedback.find(
+                            (fb) => fb.title === input.id.toString()
+                          ) ?? {
+                            type: "none",
+                            message: "",
+                          }
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Toggle
+                        projectMetadata={selectedProjectMetadata}
+                        showProjectDetails={showProjectDetails}
+                      />
+                    </div>
+                    {isValidProjectSelected && (
+                      <div>
+                        <p className="text-xs mt-4 mb-1 whitespace-normal sm:max-w-md">
+                          To complete your application to{" "}
+                          {round.roundMetadata.name}, a little more info is
+                          needed:
+                        </p>
+                        <hr className="w-1/2" />
+                      </div>
+                    )}
+                  </Fragment>
+                );
+              case "recipient":
+                /* Radio for safe or multi-sig */
+                return (
+                  <Fragment key={input.id}>
+                    {!readOnly && (
+                      <div className="relative mt-2" data-testid="wallet-type">
+                        <Stack>
+                          <Radio
+                            label="Is your payout wallet a Gnosis Safe or multi-sig?"
+                            choices={["Yes", "No"]}
+                            changeHandler={handleInput}
+                            name="isSafe"
+                            value={answers.isSafe as string}
+                            info=""
+                            required
+                            disabled={preview}
+                            feedback={
+                              feedback.find((fb) => fb.title === "isSafe") ?? {
+                                type: "none",
+                                message: "",
+                              }
+                            }
+                          />
+                        </Stack>
+                      </div>
+                    )}
+                    {/* todo: do we need this tooltip for all networks? */}
+                    <TextInputAddress
+                      data-testid="address-input-wrapper"
+                      key={input.id}
+                      label={
+                        <InputLabel
+                          title="Payout Wallet Address"
+                          encrypted={false}
+                          hidden={false}
+                        />
+                      }
+                      name={input.id.toString()}
+                      placeholder="Address that will receive funds"
+                      // eslint-disable-next-line max-len
+                      tooltipValue="Please make sure the payout wallet address you provide is a valid address that you own on the network you are applying on."
+                      value={answers[input.id.toString()] as string}
+                      disabled={preview}
+                      changeHandler={handleInput}
+                      required
+                      onAddressType={(v) => setAddressType(v)}
+                      warningHighlight={
+                        addressType &&
+                        ((answers.isSafe === "Yes" &&
+                          !addressType.isContract) ||
+                          (answers.isSafe === "No" && addressType.isContract))
+                      }
+                      feedback={
+                        feedback.find(
+                          (fb) => fb.title === input.id.toString()
+                        ) ?? {
+                          type: "none",
+                          message: "",
+                        }
+                      }
                     />
-                  }
-                  name={`${input.id}`}
-                  value={(answers[input.id] as string) ?? ""}
-                  disabled={preview}
-                  changeHandler={(e) => {
-                    handleInput(e);
-                  }}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
+                  </Fragment>
+                );
+              case "short-answer":
+              case "text":
+              case "link":
+                return (
+                  <TextInput
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
                     }
-                  }
-                />
-              );
-            case "email":
-              return (
-                <TextInput
-                  inputType="email"
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
+                    name={`${input.id}`}
+                    value={(answers[input.id] as string) ?? ""}
+                    disabled={preview}
+                    changeHandler={(e) => {
+                      handleInput(e);
+                    }}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              case "email":
+                return (
+                  <TextInput
+                    inputType="email"
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    placeholder="name@example.com"
+                    name={`${input.id}`}
+                    value={(answers[input.id] as string) ?? ""}
+                    disabled={preview}
+                    changeHandler={(e) => {
+                      handleInput(e);
+                    }}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              case "address":
+                return (
+                  <TextInput
+                    inputType="text"
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    name={`${input.id}`}
+                    value={(answers[input.id] as string) ?? ""}
+                    disabled={preview}
+                    changeHandler={(e) => {
+                      handleInput(e);
+                    }}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              case "paragraph":
+                return (
+                  <TextArea
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    name={`${input.id}`}
+                    value={(answers[input.id] as string) ?? ""}
+                    disabled={preview}
+                    changeHandler={handleInput}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              case "dropdown":
+                return (
+                  <div
+                    key={input.id}
+                    className="mt-6 w-full sm:max-w-md relative"
+                  >
+                    <Select
+                      label={
+                        <InputLabel
+                          title={input.title}
+                          encrypted={input.encrypted}
+                          hidden={input.hidden}
+                        />
+                      }
+                      name={`${input.id}`}
+                      value={answers[input.id] as string}
+                      options={input.options.map((o) => ({ id: o, title: o }))}
+                      disabled={preview}
+                      changeHandler={handleInput}
+                      required={input.required}
+                      feedback={
+                        feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                          type: "none",
+                          message: "",
+                        }
+                      }
                     />
-                  }
-                  placeholder="name@example.com"
-                  name={`${input.id}`}
-                  value={(answers[input.id] as string) ?? ""}
-                  disabled={preview}
-                  changeHandler={(e) => {
-                    handleInput(e);
-                  }}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            case "address":
-              return (
-                <TextInput
-                  inputType="text"
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
-                    />
-                  }
-                  name={`${input.id}`}
-                  value={(answers[input.id] as string) ?? ""}
-                  disabled={preview}
-                  changeHandler={(e) => {
-                    handleInput(e);
-                  }}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            case "paragraph":
-              return (
-                <TextArea
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
-                    />
-                  }
-                  name={`${input.id}`}
-                  value={(answers[input.id] as string) ?? ""}
-                  disabled={preview}
-                  changeHandler={handleInput}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            case "dropdown":
-              return (
-                <div
-                  key={input.id}
-                  className="mt-6 w-full sm:max-w-md relative"
-                >
-                  <Select
+                  </div>
+                );
+              case "multiple-choice":
+                return (
+                  <Radio
+                    key={input.id}
                     label={
                       <InputLabel
                         title={input.title}
@@ -808,10 +870,10 @@ export default function Form({
                     }
                     name={`${input.id}`}
                     value={answers[input.id] as string}
-                    options={input.options.map((o) => ({ id: o, title: o }))}
+                    choices={input.options}
                     disabled={preview}
                     changeHandler={handleInput}
-                    required={input.required}
+                    required={input.required ?? false}
                     feedback={
                       feedback.find((fb) => fb.title === `${input.id}`) ?? {
                         type: "none",
@@ -819,156 +881,129 @@ export default function Form({
                       }
                     }
                   />
+                );
+              case "checkbox":
+                return (
+                  <Checkbox
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    name={`${input.id}`}
+                    values={(answers[input.id] as string[]) ?? []}
+                    choices={input.options}
+                    disabled={preview}
+                    onChange={(newValues: string[]) => {
+                      setAnswer(input.id, newValues);
+                    }}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              case "number":
+                return (
+                  <TextInput
+                    inputType="number"
+                    key={input.id}
+                    label={
+                      <InputLabel
+                        title={input.title}
+                        encrypted={input.encrypted}
+                        hidden={input.hidden}
+                      />
+                    }
+                    placeholder="0"
+                    name={`${input.id}`}
+                    value={(answers[input.id] as number) ?? 0}
+                    disabled={preview}
+                    changeHandler={(e) => {
+                      handleInput(e);
+                    }}
+                    required={input.required ?? false}
+                    feedback={
+                      feedback.find((fb) => fb.title === `${input.id}`) ?? {
+                        type: "none",
+                        message: "",
+                      }
+                    }
+                  />
+                );
+              default:
+                return null;
+            }
+          })}
+          {selectedProjectID && projectRequirementsResult.length > 0 && (
+            <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
+              <div className="flex flex-1 justify-start items-start">
+                <div className="text-gitcoin-violet-500 fill-current w-6 shrink-0 mx-4">
+                  <InformationCircleIcon />
                 </div>
-              );
-            case "multiple-choice":
-              return (
-                <Radio
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
-                    />
-                  }
-                  name={`${input.id}`}
-                  value={answers[input.id] as string}
-                  choices={input.options}
-                  disabled={preview}
-                  changeHandler={handleInput}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            case "checkbox":
-              return (
-                <Checkbox
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
-                    />
-                  }
-                  name={`${input.id}`}
-                  values={(answers[input.id] as string[]) ?? []}
-                  choices={input.options}
-                  disabled={preview}
-                  onChange={(newValues: string[]) => {
-                    setAnswer(input.id, newValues);
-                  }}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            case "number":
-              return (
-                <TextInput
-                  inputType="number"
-                  key={input.id}
-                  label={
-                    <InputLabel
-                      title={input.title}
-                      encrypted={input.encrypted}
-                      hidden={input.hidden}
-                    />
-                  }
-                  placeholder="0"
-                  name={`${input.id}`}
-                  value={(answers[input.id] as number) ?? 0}
-                  disabled={preview}
-                  changeHandler={(e) => {
-                    handleInput(e);
-                  }}
-                  required={input.required ?? false}
-                  feedback={
-                    feedback.find((fb) => fb.title === `${input.id}`) ?? {
-                      type: "none",
-                      message: "",
-                    }
-                  }
-                />
-              );
-            default:
-              return null;
-          }
-        })}
-        {selectedProjectID && projectRequirementsResult.length > 0 && (
-          <div className="relative bg-gitcoin-violet-100 mt-3 p-3 rounded-md flex flex-1 justify-between items-center">
-            <div className="flex flex-1 justify-start items-start">
-              <div className="text-gitcoin-violet-500 fill-current w-6 shrink-0 mx-4">
-                <InformationCircleIcon />
-              </div>
-              <div className="text-black text-sm">
-                <p className="text-primary-text pb-1 font-medium">
-                  Some information of your project is required to apply to this
-                  round. Complete the required details{" "}
-                  <Link
-                    className="text-link"
-                    target="_blank"
-                    to={editProjectPathByID(selectedProjectID)!}
-                  >
-                    here
-                  </Link>{" "}
-                  and refresh this page.
-                </p>
-                <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
-                  {projectRequirementsResult.map((msg) => (
-                    <li key={msg}>{msg}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-        {addressType &&
-          ((answers.isSafe === "Yes" && !addressType.isContract) ||
-            (answers.isSafe === "No" && addressType.isContract)) && (
-            <div
-              className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
-              role="alert"
-              data-testid="review-wallet-address"
-            >
-              <div className="text-gitcoin-yellow-500">
-                <ExclamationTriangleIcon height={25} width={25} />
-              </div>
-              <div className="pl-6">
-                <strong className="text-gitcoin-yellow-500 font-medium">
-                  Review your payout wallet address.
-                </strong>
-                <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
-                  <li className="text-black">
-                    {answers.isSafe === "Yes" &&
-                      (!addressType.isContract || !addressType.isSafe) &&
-                      // eslint-disable-next-line max-len
-                      `It looks like the payout wallet address you have provided may not be a valid multi-sig on the ${chainInfo?.name} network. Please update your payout wallet address before proceeding.`}
-                    {answers.isSafe === "No" &&
-                      (addressType.isSafe || addressType.isContract) &&
-                      // eslint-disable-next-line max-len
-                      `It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.`}
-                  </li>
-                </ul>
+                <div className="text-black text-sm">
+                  <p className="text-primary-text pb-1 font-medium">
+                    Some information of your project is required to apply to
+                    this round. Complete the required details{" "}
+                    <Link
+                      className="text-link"
+                      target="_blank"
+                      to={editProjectPathByID(selectedProjectID)!}
+                    >
+                      here
+                    </Link>{" "}
+                    and refresh this page.
+                  </p>
+                  <ul className="mt-1 ml-2 text-black text-sm list-disc list-inside">
+                    {projectRequirementsResult.map((msg) => (
+                      <li key={msg}>{msg}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           )}
-        {showError && (
-          <FormValidationErrorList formValidation={formValidation} />
-        )}
-        {!readOnly && (
-          <div className="flex justify-end">
-            {!preview ? (
+          {addressType &&
+            ((answers.isSafe === "Yes" && !addressType.isContract) ||
+              (answers.isSafe === "No" && addressType.isContract)) && (
+              <div
+                className="flex flex-1 flex-row p-4 rounded bg-gitcoin-yellow mt-8"
+                role="alert"
+                data-testid="review-wallet-address"
+              >
+                <div className="text-gitcoin-yellow-500">
+                  <ExclamationTriangleIcon height={25} width={25} />
+                </div>
+                <div className="pl-6">
+                  <strong className="text-gitcoin-yellow-500 font-medium">
+                    Review your payout wallet address.
+                  </strong>
+                  <ul className="mt-1 ml-2 text-sm text-black list-disc list-inside">
+                    <li className="text-black">
+                      {answers.isSafe === "Yes" &&
+                        (!addressType.isContract || !addressType.isSafe) &&
+                        // eslint-disable-next-line max-len
+                        `It looks like the payout wallet address you have provided may not be a valid multi-sig on the ${chainInfo?.name} network. Please update your payout wallet address before proceeding.`}
+                      {answers.isSafe === "No" &&
+                        (addressType.isSafe || addressType.isContract) &&
+                        // eslint-disable-next-line max-len
+                        `It looks like the payout wallet address you have provided is a multi-sig. Please update your selection to indicate your payout wallet address will be a multi-sig, or update your payout wallet address.`}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          {showError && (
+            <FormValidationErrorList formValidation={formValidation} />
+          )}
+          {!readOnly && (
+            <div className="flex justify-end">
               <Button
                 variant={ButtonVariants.primary}
                 disabled={!isValidProjectSelected}
@@ -976,54 +1011,40 @@ export default function Form({
               >
                 Preview Application
               </Button>
-            ) : (
-              <div className="flex justify-end">
-                <Button
-                  variant={ButtonVariants.outline}
-                  onClick={() => setPreview(false)}
-                >
-                  Back to Editing
-                </Button>
-                <Button
-                  variant={ButtonVariants.primary}
-                  onClick={handleSubmitApplication}
-                  disabled={disableSubmit}
-                >
-                  Submit
-                </Button>
-              </div>
-            )}
+            </div>
+          )}
+        </form>
+        <ErrorModal
+          open={showErrorModal}
+          onClose={closeErrorModal}
+          onRetry={handleSubmitApplicationRetry}
+        >
+          <div>
+            There was a problem with your round application transaction.
           </div>
-        )}
-      </form>
-      <ErrorModal
-        open={showErrorModal}
-        onClose={closeErrorModal}
-        onRetry={handleSubmitApplicationRetry}
-      >
-        <div>There was a problem with your round application transaction.</div>
-      </ErrorModal>
-      <CallbackModal
-        modalOpen={infoModal}
-        confirmText="Proceed"
-        cancelText="Cancel"
-        confirmHandler={() => {
-          if (onSubmit) onSubmit(answers);
-          setInfoModal(false);
-        }}
-        toggleModal={() => setInfoModal(!infoModal)}
-        hideCloseButton
-      >
-        <>
-          <h5 className="font-medium mt-5 mb-2 text-lg">
-            Are you sure you want to submit your application?
-          </h5>
-          <p className="mb-6">
-            Please note that once you submit this application, you will NOT be
-            able to edit or re-apply with the same project to this round.
-          </p>
-        </>
-      </CallbackModal>
-    </div>
+        </ErrorModal>
+        <CallbackModal
+          modalOpen={infoModal}
+          confirmText="Proceed"
+          cancelText="Cancel"
+          confirmHandler={() => {
+            if (onSubmit) onSubmit(answers);
+            setInfoModal(false);
+          }}
+          toggleModal={() => setInfoModal(!infoModal)}
+          hideCloseButton
+        >
+          <>
+            <h5 className="font-medium mt-5 mb-2 text-lg">
+              Are you sure you want to submit your application?
+            </h5>
+            <p className="mb-6">
+              Please note that once you submit this application, you will NOT be
+              able to edit or re-apply with the same project to this round.
+            </p>
+          </>
+        </CallbackModal>
+      </div>
+    </>
   );
 }
