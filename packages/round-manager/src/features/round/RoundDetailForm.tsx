@@ -10,7 +10,7 @@ import {
   SubmitHandler,
   useController,
   useForm,
-  UseFormRegisterReturn
+  UseFormRegisterReturn,
 } from "react-hook-form";
 import * as yup from "yup";
 
@@ -18,7 +18,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import {
   CheckIcon,
   InformationCircleIcon,
-  SelectorIcon
+  SelectorIcon,
 } from "@heroicons/react/solid";
 import { Input } from "common/src/styles";
 import moment from "moment";
@@ -156,7 +156,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
         <div className="md:col-span-1">
           <p className="text-base leading-6">Details</p>
           <p className="mt-1 text-sm text-grey-400">
-            Use a permanent address where you can receive mail.
+            What is the Round name, when do applications open/close, and when
+            does it start and end?
           </p>
         </div>
 
@@ -197,7 +198,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
 
               <div className="mt-6 mb-4 text-sm">
                 <span>
-                  What are the dates for the Applications and Round voting period(s)?
+                  What are the dates for the Applications and Round voting
+                  period(s)?
                 </span>
                 <ApplicationDatesInformation />
               </div>
@@ -563,7 +565,7 @@ function ContactInformation(props: {
         type="text"
         placeholder="Enter desired form of contact here. Ex: website, email..."
         id={"roundMetadata.support.info"}
-        />
+      />
       {props.errors.roundMetadata?.support?.info && (
         <p className="text-xs text-pink-500">
           {props.errors.roundMetadata?.support.info?.message}
@@ -580,13 +582,13 @@ function SupportTypeButton(props: {
   const { supportType } = props;
   return (
     <Listbox.Button
-    className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
-      props.errors.roundMetadata?.support?.type
-      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-      : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-    }`}
-    data-testid="support-type-select"
-    id={"roundMetadata.support.type"}
+      className={`relative w-full cursor-default rounded-md border h-10 bg-white py-2 pl-3 pr-10 text-left shadow-sm ${
+        props.errors.roundMetadata?.support?.type
+          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+          : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+      }`}
+      data-testid="support-type-select"
+      id={"roundMetadata.support.type"}
     >
       <span className="flex items-center">
         {supportType?.default ? (
@@ -595,7 +597,7 @@ function SupportTypeButton(props: {
           </span>
         ) : (
           <span className="ml-3 block truncate">{supportType?.name}</span>
-          )}
+        )}
       </span>
       <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
         <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -636,32 +638,32 @@ function SupportTypeDropdown(props: {
                 errors={props.errors}
                 supportType={props.supportTypes.find(
                   (supportType) => supportType.name === field.value
-                  )}
-                  />
+                )}
+              />
               <Transition
                 show={open}
                 as={Fragment}
                 leave="transition ease-in duration-100"
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
-                >
+              >
                 <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {props.supportTypes.map(
                     (type) =>
-                    !type.default && (
-                      <Listbox.Option
-                      key={type.name}
-                      className={({ active }) =>
-                      classNames(
-                        active
-                        ? "text-white bg-indigo-600"
-                        : "text-gray-900",
-                        "relative cursor-default select-none py-2 pl-3 pr-9"
-                        )
-                      }
-                      value={type.name}
-                      data-testid="support-type-option"
-                      >
+                      !type.default && (
+                        <Listbox.Option
+                          key={type.name}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "text-white bg-indigo-600"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={type.name}
+                          data-testid="support-type-option"
+                        >
                           {({ selected, active }) => (
                             <>
                               <div className="flex items-center">
@@ -669,30 +671,30 @@ function SupportTypeDropdown(props: {
                                   className={classNames(
                                     selected ? "font-semibold" : "font-normal",
                                     "ml-3 block truncate"
-                                    )}
-                                    >
+                                  )}
+                                >
                                   {type.name}
                                 </span>
                               </div>
 
                               {selected ? (
                                 <span
-                                className={classNames(
-                                  active ? "text-white" : "text-indigo-600",
-                                  "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
                                   )}
-                                  >
+                                >
                                   <CheckIcon
                                     className="h-5 w-5"
                                     aria-hidden="true"
-                                    />
+                                  />
                                 </span>
                               ) : null}
                             </>
                           )}
                         </Listbox.Option>
                       )
-                      )}
+                  )}
                 </Listbox.Options>
               </Transition>
             </div>
@@ -754,39 +756,38 @@ function Support(props: {
       default: false,
     },
   ];
-  
+
   return (
     <SupportTypeDropdown
-    register={props.register}
-    errors={props.errors}
-    control={props.control}
-    supportTypes={supportTypes}
+      register={props.register}
+      errors={props.errors}
+      control={props.control}
+      supportTypes={supportTypes}
     />
-    );
-  }
-  
-  function ApplicationDatesInformation() {
-    return (
-      <>
+  );
+}
+
+function ApplicationDatesInformation() {
+  return (
+    <>
       <InformationCircleIcon
         data-tip
         data-background-color="#0E0333"
         data-for="application-dates-tooltip"
         className="inline h-4 w-4 ml-2 mr-3 mb-1"
         data-testid="application-dates-tooltip"
-        />
+      />
       <ReactTooltip
         id="application-dates-tooltip"
         place="bottom"
         type="dark"
         effect="solid"
-        >
+      >
         <p className="text-xs">All dates are in UTC.</p>
       </ReactTooltip>
     </>
   );
 }
-
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
