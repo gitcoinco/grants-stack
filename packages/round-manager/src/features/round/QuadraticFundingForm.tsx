@@ -24,6 +24,7 @@ import { classNames } from "common";
 import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
 import ReactTooltip from "react-tooltip";
 import { useWallet } from "../common/Auth";
+import deepmerge from "deepmerge";
 
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
@@ -125,7 +126,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
   const FormStepper = props.stepper;
 
   const next: SubmitHandler<Round> = async (values) => {
-    const data = { ...formData, ...values };
+    const data = deepmerge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };

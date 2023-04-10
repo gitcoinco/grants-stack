@@ -1,19 +1,14 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import {
-  EyeIcon, EyeOffIcon, LockClosedIcon,
-  LockOpenIcon
+  EyeIcon,
+  EyeOffIcon,
+  LockClosedIcon,
+  LockOpenIcon,
 } from "@heroicons/react/outline";
-import {
-  PencilIcon,
-  PlusSmIcon,
-  XIcon
-} from "@heroicons/react/solid";
+import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { useContext, useEffect, useState } from "react";
-import {
-  SubmitHandler,
-  useFieldArray, useForm
-} from "react-hook-form";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { errorModalDelayMs } from "../../constants";
 import { useCreateRound } from "../../context/round/CreateRoundContext";
@@ -23,9 +18,13 @@ import {
   Program,
   ProgressStatus,
   ProjectRequirements,
-  Round
+  Round,
 } from "../api/types";
-import { generateApplicationSchema, SchemaQuestion, typeToText } from "../api/utils";
+import {
+  generateApplicationSchema,
+  SchemaQuestion,
+  typeToText,
+} from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
 import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
@@ -82,7 +81,6 @@ export const initialRequirements: ProjectRequirements = {
     verification: false,
   },
 };
-
 
 /*
  * -------------------------------------------------------------------------------------------
@@ -200,7 +198,8 @@ export function RoundApplicationForm(props: {
       setOpenHeadsUpModal(true);
       return;
     }
-
+    console.log("values", values);
+    console.log("formData", formData);
     try {
       setOpenProgressModal(true);
       const data: Partial<Round> = { ...formData, ...values };
@@ -347,13 +346,14 @@ export function RoundApplicationForm(props: {
             </span>
           </div>
           {field.title}
-          {field.choices && field.choices?.length > 0 &&
+          {field.choices &&
+            field.choices?.length > 0 &&
             field.choices.map((choice, index) => (
               <div key={index} className="ml-1 border-l border-gray-200">
-                <span className="ml-2">&bull;</span><span className="ml-2 text-xs">{choice}</span>
+                <span className="ml-2">&bull;</span>
+                <span className="ml-2 text-xs">{choice}</span>
               </div>
-            ))
-          }
+            ))}
         </div>
         <div className="basis-1/3 flex justify-end items-center">
           <div className="text-sm justify-end p-2 leading-tight">
@@ -363,13 +363,11 @@ export function RoundApplicationForm(props: {
             <div className="flex justify-end">
               {fieldEncrypted(field.encrypted)}
             </div>
-            <div className="flex justify-end">
-              {fieldHidden(field.hidden)}
-            </div>
+            <div className="flex justify-end">{fieldHidden(field.hidden)}</div>
           </div>
           <div className="text-sm justify-center flex p-2">
             <div className="w-5">
-              {key >= 0 &&
+              {key >= 0 && (
                 <PencilIcon
                   data-testid="edit-question"
                   className="cursor-pointer"
@@ -379,27 +377,30 @@ export function RoundApplicationForm(props: {
                       field: field,
                     });
                     setOpenAddQuestionModal(true);
-                  }} />}
+                  }}
+                />
+              )}
             </div>
           </div>
           <div className="w-5 text-red-600">
-            {key >= 0 &&
-              <div data-testid="remove-question" onClick={() => removeQuestion(key)} >
+            {key >= 0 && (
+              <div
+                data-testid="remove-question"
+                onClick={() => removeQuestion(key)}
+              >
                 <XIcon className="cursor-pointer" />
               </div>
-            }
+            )}
           </div>
         </div>
       </div>
       <hr />
     </div>
-  )
+  );
 
   const ApplicationQuestions = () => {
     const lockedQuestion = singleQuestion(payoutQuestion, -1);
-    const f = fields.map((field, i) => (
-      singleQuestion(field, i)
-    ));
+    const f = fields.map((field, i) => singleQuestion(field, i));
 
     return (
       <div>
@@ -420,8 +421,8 @@ export function RoundApplicationForm(props: {
           show={openAddQuestionModal}
           onSave={addOrEditQuestion}
           onClose={() => {
-            setToEdit(undefined)
-            setOpenAddQuestionModal(false)
+            setToEdit(undefined);
+            setOpenAddQuestionModal(false);
           }}
           question={toEdit}
         />
@@ -430,14 +431,14 @@ export function RoundApplicationForm(props: {
           onClose={() => setOpenPreviewModal(false)}
         />
       </div>
-    )
+    );
   };
 
   const addOrEditQuestion = (question: EditQuestion) => {
     setOpenAddQuestionModal(false);
     if (question.field) {
       if (!question.index && question.index !== 0) {
-        append({...question.field, id: fields.length});
+        append({ ...question.field, id: fields.length });
       } else {
         update(question.index, question.field);
       }
@@ -454,7 +455,8 @@ export function RoundApplicationForm(props: {
         <ReviewInformation />
         <Box
           title="Project Information"
-          description="These details will be collected from project owners by default during the project creation process.">
+          description="These details will be collected from project owners by default during the project creation process."
+        >
           <ProjectInformation />
         </Box>
       </div>
@@ -476,7 +478,8 @@ export function RoundApplicationForm(props: {
           <Box
             title="Application Questions"
             description="Add round application questions for project owners to fulfill the application process."
-            onlyTopRounded={true} >
+            onlyTopRounded={true}
+          >
             <ApplicationQuestions />
           </Box>
           <form onSubmit={handleSubmit(next)} className="text-grey-500">
@@ -511,8 +514,9 @@ const ProjectSocials = ({
 }) => (
   <>
     <div
-      className={`flex flex-row mt-4 ${requirements.twitter.required ? "mb-1" : "mb-4"
-        }`}
+      className={`flex flex-row mt-4 ${
+        requirements.twitter.required ? "mb-1" : "mb-4"
+      }`}
     >
       <div className="text-sm basis-4/5">Project Twitter</div>
       <div className="basis-1/5 flex justify-end">
@@ -551,8 +555,9 @@ const ProjectSocials = ({
     )}
     <hr />
     <div
-      className={`flex flex-row mt-4 ${requirements.github.required ? "mb-1" : "mb-4"
-        }`}
+      className={`flex flex-row mt-4 ${
+        requirements.github.required ? "mb-1" : "mb-4"
+      }`}
     >
       <div className="text-sm basis-4/5">Project Github</div>
       <div className="basis-1/5 flex justify-end">
@@ -612,29 +617,23 @@ const fieldRequired = (required: boolean) => (
   <span className={`text-xs ${required ? "text-violet-400" : "text-grey-400"}`}>
     {required ? "*Required" : "Optional"}
   </span>
-)
+);
 
 const fieldEncrypted = (encrypted: boolean) => (
   <div className={`text-xs text-grey-400 flex flex-row`}>
     <div className="w-4 mr-1">
       {encrypted ? <LockClosedIcon /> : <LockOpenIcon />}
     </div>
-    <div>
-      {encrypted ? "Encrypted" : "Not Encrypted"}
-    </div>
+    <div>{encrypted ? "Encrypted" : "Not Encrypted"}</div>
   </div>
-)
+);
 
 const fieldHidden = (hidden: boolean) => (
   <div className={`text-xs text-grey-400 flex flex-row`}>
-    <div className="w-4 mr-1">
-      {hidden ? <EyeOffIcon /> : <EyeIcon />}
-    </div>
-    <div>
-      {hidden ? "Hidden from Explorer" : "Shown in Explorer"}
-    </div>
+    <div className="w-4 mr-1">{hidden ? <EyeOffIcon /> : <EyeIcon />}</div>
+    <div>{hidden ? "Hidden from Explorer" : "Shown in Explorer"}</div>
   </div>
-)
+);
 
 // is this always going to be static?
 function ProjectInformation() {
@@ -649,7 +648,7 @@ function ProjectInformation() {
   return (
     <>
       {fields.map((field, i) => (
-        <div key={i} >
+        <div key={i}>
           <div className="flex my-4">
             <span className="flex-1 text-sm">{field.name}</span>
             {fieldRequired(field.required)}
@@ -661,20 +660,30 @@ function ProjectInformation() {
   );
 }
 
-const Box = ({ title, description, onlyTopRounded = false, children }: { title: string, description: string, onlyTopRounded?: boolean, children: React.ReactNode }) => (
+const Box = ({
+  title,
+  description,
+  onlyTopRounded = false,
+  children,
+}: {
+  title: string;
+  description: string;
+  onlyTopRounded?: boolean;
+  children: React.ReactNode;
+}) => (
   <div className="mt-5 md:mt-0 md:col-span-2">
-    <div className={`${onlyTopRounded ? "rounded-t" : "rounded"} shadow-sm bg-white pt-7 pb-6 sm:px-6`}>
+    <div
+      className={`${
+        onlyTopRounded ? "rounded-t" : "rounded"
+      } shadow-sm bg-white pt-7 pb-6 sm:px-6`}
+    >
       <p className="mb-2 font-bold">{title}</p>
-      <p className="text-sm text-grey-400 mb-6">
-        {description}
-      </p>
+      <p className="text-sm text-grey-400 mb-6">{description}</p>
       <hr />
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   </div>
-)
+);
 
 function InfoModalBody() {
   return (
