@@ -48,7 +48,10 @@ const ValidationSchema = yup.object().shape({
             .number()
             .required("You must provide an amount for the matching cap.")
             .moreThan(0, "Matching cap amount must be more than zero.")
-            .max(100, "Matching cap amount must be less than or equal to 100%."),
+            .max(
+              100,
+              "Matching cap amount must be less than or equal to 100%."
+            ),
         }),
       minDonationThreshold: yup
         .boolean()
@@ -230,7 +233,11 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
               </div>
               <p className="text-grey-400 mb-2 mt-1 text-sm">
                 Ensure that project supporters are not bots or sybil with
-                Gitcoin Passport. Learn more about Gitcoin Passport here.{" "}
+                Gitcoin Passport. Learn more about Gitcoin Passport{" "}
+                <a href="https://docs.passport.gitcoin.co/overview/readme">
+                  here
+                </a>
+                .{" "}
               </p>
               <div className="flex">
                 <SybilDefense
@@ -268,7 +275,7 @@ function LeftSidebar() {
       </p>
       <p className="mt-1 text-sm text-grey-400 pt-4">
         You can change this settings anytime before the round starts. Learn more
-        about QF here.
+        about QF <a href="https://wtfisqf.com">here</a>.
       </p>
     </div>
   );
@@ -659,13 +666,20 @@ function MatchingCap(props: {
             aria-describedby="percentage-symbol"
             max="100"
             step="any"
-            onKeyUp={(e) => e.currentTarget.value !== "" ? setMatchingCapAmount(e.currentTarget.value) : setMatchingCapAmount(undefined)}
+            onKeyUp={(e) =>
+              e.currentTarget.value !== ""
+                ? setMatchingCapAmount(e.currentTarget.value)
+                : setMatchingCapAmount(undefined)
+            }
           />
         </div>
         {isMatchingCap &&
           props.errors?.roundMetadata?.quadraticFundingConfig
             ?.matchingCapAmount && (
-            <p className="text-xs text-pink-500" data-testid="matching-cap-error">
+            <p
+              className="text-xs text-pink-500"
+              data-testid="matching-cap-error"
+            >
               {
                 props.errors.roundMetadata?.quadraticFundingConfig
                   ?.matchingCapAmount?.message
