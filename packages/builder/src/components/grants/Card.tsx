@@ -105,7 +105,7 @@ function Card({ projectId }: { projectId: string }) {
               <Image
                 src={props.projectChainIconUri}
                 alt="chain icon"
-                className="flex flex-row h-4 w-4 mr-1 mt-[1px] rounded-full"
+                className="flex flex-row h-4 mr-1 mt-[1px] rounded-full"
               />
               {props.projectChainName}
             </Badge>
