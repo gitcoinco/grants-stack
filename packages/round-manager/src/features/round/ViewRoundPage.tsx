@@ -394,7 +394,7 @@ function GrantApplications(props: {
                 </Tab.List>
                 <div className="text-right absolute ml-24 bottom-4 left-3/4">
                   <CopyToClipboardButton
-                    textToCopy={`https://grantshub.gitcoin.co/#/chains/${props.chainId}/rounds/${props.roundId}`}
+                    textToCopy={`https://builder.gitcoin.co/#/chains/${props.chainId}/rounds/${props.roundId}`}
                     styles="text-xs p-2"
                     iconStyle="h-4 w-4 mr-1"
                   />
