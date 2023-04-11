@@ -86,4 +86,4 @@ Note: Live Deployment should always happen by raising a PR from `main` to `relea
 | Env     | Git Branch | URL                               |
 |---------|------------|-----------------------------------|
 | STAGING | main       | https://rmgitcoin.on.fleek.co/    |
-| LIVE    | release    | https://round-manager.gitcoin.co/ |
+| LIVE    | release    | https://manager.gitcoin.co/ |

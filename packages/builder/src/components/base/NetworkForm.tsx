@@ -44,23 +44,12 @@ function NetworkForm({
     >
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="relative mt-4 w-full sm:w-1/2">
-          <div className="mb-2">
-            Which network would you like to create this project on?
-          </div>
           <Select
             name="network"
             defaultValue={props.currentChain?.toString()}
             label={
-              <span className="text-xs">
-                For more details on network selection,{" "}
-                <a
-                  href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-protocol/what-is-grants-hub"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gitcoin-violet-400"
-                >
-                  read more.
-                </a>
+              <span className="text-[15px]">
+                Which network would you like to create this project on?
               </span>
             }
             options={chains.map((i) => ({

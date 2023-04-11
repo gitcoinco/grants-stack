@@ -20,7 +20,7 @@ export const menuItems: Menu[] = [
     Icon: BookOpenIcon,
     title: "Builder Guide",
     subTitle: "Best practices for project owners",
-    link: "https://support.gitcoin.co/gitcoin-grants-protocol",
+    link: "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/project-owners",
   },
   {
     Icon: ChatBubbleLeftRightIcon,

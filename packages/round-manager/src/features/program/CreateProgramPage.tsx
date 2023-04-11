@@ -287,10 +287,6 @@ export default function CreateProgram() {
               </div>
 
               <div className="px-6 align-middle pb-3.5 shadow-md">
-                <span className="italic text-grey-400">
-                  Note: You can't edit operator wallets after the grant is
-                  created.
-                </span>
                 <Button
                   className="float-right"
                   type="submit"

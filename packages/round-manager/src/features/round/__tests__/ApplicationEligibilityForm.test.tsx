@@ -98,16 +98,17 @@ describe("<ApplicationEligibilityForm>", () => {
 
 describe("form submission", () => {
   const setFormData = jest.fn();
-  const formContext = {
-    currentStep: 2,
-    setCurrentStep: jest.fn(),
-    stepsCount: 3,
-    formData: {},
-    setFormData,
-  };
-
+  let formContext: any;
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    formContext = {
+      currentStep: 2,
+      setCurrentStep: jest.fn(),
+      stepsCount: 3,
+      formData: {},
+      setFormData,
+    };
   });
 
   it("should set form data with user input when form is submitted", async () => {
