@@ -33,7 +33,7 @@ export default function ErrorModal({
             />
           </div>
           <div className="ml-6 text-[16px] font-[600]">
-            <div>{title ? title : "Error"}</div>
+            <div>{title ?? "Error"}</div>
             <p className="mt-2 text-[14px] font-[400]">
               {children ||
                 "There has been a systems error during the deployment of your project."}
