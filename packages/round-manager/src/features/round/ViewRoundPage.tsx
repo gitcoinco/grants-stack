@@ -451,7 +451,7 @@ export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
       data-testid="round-explorer"
     >
       <GrantExplorerLogo className={props.iconStyle} aria-hidden="true" />
-      View on Grants Explorer
+      View on Explorer
     </Button>
   );
 }
