@@ -42,6 +42,7 @@ import ProgressModal from "../common/ProgressModal";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Logger } from "ethers/lib.esm/utils";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import ReactTooltip from "react-tooltip";
 
 export default function ViewCart() {
   const { chainId, roundId } = useParams();
@@ -267,6 +268,35 @@ export default function ViewCart() {
     </>
   );
 
+  function ApplyTooltip() {
+    return (
+      <>
+        <InformationCircleIcon
+          data-tip
+          data-background-color="#5932C4"
+          data-for="apply-tooltip"
+          className="inline h-4 w-4 ml-1 mb-1 mt-4"
+          data-testid={"apply-tooltip"}
+        />
+
+        <ReactTooltip
+          id="apply-tooltip"
+          place="bottom"
+          type="dark"
+          effect="solid"
+        >
+          <p className="text-xs">
+            Apply the same donation amount <br />
+            to all of the projects you currently <br />
+            have in your cart. You can also set <br />
+            individual donation amounts <br />
+            below.
+          </p>
+        </ReactTooltip>
+      </>
+    );
+  }
+
   function SummaryContainer() {
     return (
       <>
@@ -296,9 +326,8 @@ export default function ViewCart() {
             Submit your donation!
           </Button>
           <p className="flex justify-center my-4 text-sm italic">
-            Your donation to each project must be valued at $1 USD or more to
-            <br />
-            be eligible for matching.
+            Your donation to each project must be valued at $1 USD or more to be
+            eligible for matching.
           </p>
           {emptyInput && (
             <p
@@ -382,16 +411,19 @@ export default function ViewCart() {
               />
               <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
             </div>
-            <Button
-              type="button"
-              $variant="outline"
-              onClick={() => {
-                updateAllDonations(fixedDonation ?? 0);
-              }}
-              className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
-            >
-              Apply to all
-            </Button>
+            <div className="flex flex-row">
+              <Button
+                type="button"
+                $variant="outline"
+                onClick={() => {
+                  updateAllDonations(fixedDonation ?? 0);
+                }}
+                className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
+              >
+                Apply to all
+              </Button>
+              <ApplyTooltip />
+            </div>
           </div>
         </div>
         <div className="my-4">

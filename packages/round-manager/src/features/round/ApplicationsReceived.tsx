@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
-import { useWallet } from "../common/Auth";
 import { Spinner } from "../common/Spinner";
 import {
   BasicCard,
@@ -38,7 +37,6 @@ import { renderToPlainText } from "common";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
-  const { chain } = useWallet();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const pendingApplications =
@@ -54,24 +52,17 @@ export default function ApplicationsReceived() {
 
   const {
     bulkUpdateGrantApplications,
-    IPFSCurrentStatus,
     contractUpdatingStatus,
     indexingStatus,
   } = useBulkUpdateGrantApplications();
   const isBulkUpdateLoading =
-    IPFSCurrentStatus == ProgressStatus.IN_PROGRESS ||
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
   const progressSteps: ProgressStep[] = [
     {
-      name: "Storing",
-      description: "The metadata is being saved in a safe place.",
-      status: IPFSCurrentStatus,
-    },
-    {
       name: "Updating",
-      description: `Connecting to the ${chain.name} blockchain.`,
+      description: `Updating application statuses on the contract.`,
       status: contractUpdatingStatus,
     },
     {
@@ -99,6 +90,7 @@ export default function ApplicationsReceived() {
             recipient: application.recipient,
             projectsMetaPtr: application.projectsMetaPtr,
             status: application.status,
+            applicationIndex: application.applicationIndex,
             createdAt: application.createdAt,
           };
         })
@@ -107,10 +99,7 @@ export default function ApplicationsReceived() {
   }, [applications, isLoading, bulkSelect]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (
-      IPFSCurrentStatus === ProgressStatus.IS_ERROR ||
-      contractUpdatingStatus === ProgressStatus.IS_ERROR
-    ) {
+    if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
       setTimeout(() => {
         setOpenErrorModal(true);
         setOpenProgressModal(false);
@@ -120,7 +109,7 @@ export default function ApplicationsReceived() {
     if (indexingStatus === ProgressStatus.IS_SUCCESS) {
       window.location.reload();
     }
-  }, [IPFSCurrentStatus, contractUpdatingStatus, indexingStatus]);
+  }, [contractUpdatingStatus, indexingStatus]);
 
   const handleDone = () => {
     window.location.reload();
@@ -151,7 +140,9 @@ export default function ApplicationsReceived() {
       await bulkUpdateGrantApplications({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         roundId: id!,
-        applications: selected.filter(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        applications: applications!,
+        selectedApplications: selected.filter(
           (application) => application.status !== "PENDING"
         ),
       });

@@ -88,10 +88,17 @@ export interface Round {
     name: string;
     eligibility: Eligibility;
     programContractAddress: string;
-    matchingFunds?: {
+    quadraticFundingConfig?: {
       matchingFundsAvailable: number;
       matchingCap: boolean;
       matchingCapAmount?: number;
+      minDonationThreshold?: boolean;
+      minDonationThresholdAmount?: number;
+      sybilDefense?: boolean;
+    };
+    support?: {
+      type: string;
+      info: string;
     };
   };
   /**
@@ -152,6 +159,7 @@ export type Project = {
   projectMetadata: ProjectMetadata;
   grantApplicationFormAnswers: GrantApplicationFormAnswer[];
   status: ApplicationStatus;
+  applicationIndex: number;
 };
 export type GrantApplicationId = string;
 export type ProjectRegistryId = string;
@@ -167,6 +175,7 @@ export enum ApplicationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
 }
 
 interface ProjectOwner {

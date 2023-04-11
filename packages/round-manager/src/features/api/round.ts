@@ -60,6 +60,8 @@ export async function getRoundById(
               projects(first: 1000) {
                 id
                 project
+                status
+                applicationIndex
                 metaPtr {
                   protocol
                   pointer
@@ -90,6 +92,13 @@ export async function getRoundById(
       fetchFromIPFS(res.data.rounds[0].roundMetaPtr.pointer),
       fetchFromIPFS(res.data.rounds[0].applicationMetaPtr.pointer),
     ]);
+
+    round.projects = round.projects.map((project) => {
+      return {
+        ...project,
+        status: convertStatus(project.status),
+      };
+    });
 
     const approvedProjectsWithMetadata = await loadApprovedProjects(
       round,
@@ -265,7 +274,7 @@ export async function deployRoundContract(
 
     // Ensure tokenAmount is normalized to token decimals
     const tokenAmount =
-      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0;
+      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
     const token = payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0];
@@ -354,16 +363,25 @@ interface RoundResult {
 interface RoundProjectResult {
   id: string;
   project: string;
+  status: string | number;
+  applicationIndex: number;
   metaPtr: MetadataPointer;
 }
 
-export type RoundProject = {
-  id: string;
-  status: ApplicationStatus;
-  payoutAddress: string;
-};
-
-type RoundProjects = Array<RoundProject>;
+function convertStatus(status: string | number) {
+  switch (status) {
+    case 0:
+      return "PENDING";
+    case 1:
+      return "APPROVED";
+    case 2:
+      return "REJECTED";
+    case 3:
+      return "CANCELLED";
+    default:
+      return "PENDING";
+  }
+}
 
 async function loadApprovedProjects(
   round: RoundResult,
@@ -375,29 +393,14 @@ async function loadApprovedProjects(
   }
   const allRoundProjects = round.projects;
 
-  // TODO - when subgraph is ready, filter approved projects by project.status instead of through projectsMetaPtr
-  const approvedProjectIds: string[] = await getApprovedProjectIds(
-    round.projectsMetaPtr
-  );
-  const approvedProjects = allRoundProjects.filter((project) =>
-    approvedProjectIds.includes(project.id)
+  const approvedProjects = allRoundProjects.filter(
+    (project) => project.status === ApplicationStatus.APPROVED
   );
   const fetchApprovedProjectMetadata: Promise<ApprovedProject>[] =
     approvedProjects.map((project: RoundProjectResult) =>
       fetchMetadataAndMapProject(project, chainId)
     );
   return Promise.all(fetchApprovedProjectMetadata);
-}
-
-async function getApprovedProjectIds(
-  roundProjectStatusesPtr?: MetadataPointer
-): Promise<string[]> {
-  const roundProjectStatuses: RoundProjects = roundProjectStatusesPtr
-    ? await fetchFromIPFS(roundProjectStatusesPtr.pointer)
-    : [];
-  return roundProjectStatuses
-    .filter((project) => project.status === ApplicationStatus.APPROVED)
-    .map((project) => project.id);
 }
 
 async function fetchMetadataAndMapProject(

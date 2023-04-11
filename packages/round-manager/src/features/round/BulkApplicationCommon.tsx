@@ -84,6 +84,7 @@ function MarkForRejection(props: {
     | "PENDING"
     | "APPROVED"
     | "REJECTED"
+    | "CANCELLED"
     | "APPEAL"
     | "FRAUD"
     | undefined;
@@ -107,7 +108,13 @@ function MarkForRejection(props: {
 }
 
 function MarkForApproval(props: {
-  applicationStatus?: "PENDING" | "APPROVED" | "REJECTED" | "APPEAL" | "FRAUD";
+  applicationStatus?:
+    | "PENDING"
+    | "APPROVED"
+    | "REJECTED"
+    | "CANCELLED"
+    | "APPEAL"
+    | "FRAUD";
   onClick: () => void;
 }) {
   return (
@@ -133,6 +140,7 @@ export function ApplicationHeader(props: {
     | "PENDING"
     | "APPROVED"
     | "REJECTED"
+    | "CANCELLED"
     | "APPEAL"
     | "FRAUD"
     | undefined;

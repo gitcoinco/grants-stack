@@ -46,6 +46,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "status",
+        "type": "uint256"
+      }
+    ],
+    "name": "ApplicationStatusesUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "oldTime",
@@ -97,10 +116,29 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MatchAmountUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "project",
+        "name": "projectID",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "applicationIndex",
+        "type": "uint256"
       },
       {
         "components": [
@@ -122,6 +160,31 @@
       }
     ],
     "name": "NewProjectApplication",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "matchAmountAfterFees",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "protocolFeeAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "roundFeeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PayFeeAndEscrowFundsToPayoutContract",
     "type": "event"
   },
   {
@@ -265,6 +328,32 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "roundFeeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "RoundFeeAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "roundFeePercentage",
+        "type": "uint32"
+      }
+    ],
+    "name": "RoundFeePercentageUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -351,6 +440,32 @@
   },
   {
     "inputs": [],
+    "name": "VERSION",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "alloSettings",
+    "outputs": [
+      {
+        "internalType": "contract AlloSettings",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "applicationMetaPtr",
     "outputs": [
       {
@@ -368,8 +483,92 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "applicationStatusesBitMap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "applications",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "projectID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "applicationIndex",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "protocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "pointer",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct MetaPtr",
+        "name": "metaPtr",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "applicationsEndTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "applicationsIndexesByProjectID",
     "outputs": [
       {
         "internalType": "uint256",
@@ -421,6 +620,44 @@
     "name": "applyToRound",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "projectID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getApplicationIndexesByProjectID",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApplicationStatus",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -533,6 +770,11 @@
         "internalType": "bytes",
         "name": "encodedParameters",
         "type": "bytes"
+      },
+      {
+        "internalType": "address",
+        "name": "_alloSettings",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -542,17 +784,38 @@
   },
   {
     "inputs": [],
-    "name": "projectsMetaPtr",
+    "name": "matchAmount",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "protocol",
+        "name": "",
         "type": "uint256"
-      },
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextApplicationIndex",
+    "outputs": [
       {
-        "internalType": "string",
-        "name": "pointer",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "payoutStrategy",
+    "outputs": [
+      {
+        "internalType": "contract IPayoutStrategy",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -609,6 +872,32 @@
   },
   {
     "inputs": [],
+    "name": "roundFeeAddress",
+    "outputs": [
+      {
+        "internalType": "address payable",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "roundFeePercentage",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "roundMetaPtr",
     "outputs": [
       {
@@ -641,6 +930,38 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "index",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "statusRow",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IRoundImplementation.ApplicationStatus[]",
+        "name": "statuses",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "setApplicationStatuses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "setReadyForPayout",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"
@@ -662,7 +983,7 @@
     "name": "token",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -699,11 +1020,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newApplicationsEndTime",
+        "name": "newAmount",
         "type": "uint256"
       }
     ],
-    "name": "updateApplicationsEndTime",
+    "name": "updateMatchAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -711,12 +1032,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "newApplicationsStartTime",
-        "type": "uint256"
+        "internalType": "address payable",
+        "name": "newFeeAddress",
+        "type": "address"
       }
     ],
-    "name": "updateApplicationsStartTime",
+    "name": "updateRoundFeeAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -724,37 +1045,12 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "protocol",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "pointer",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct MetaPtr",
-        "name": "newProjectsMetaPtr",
-        "type": "tuple"
+        "internalType": "uint32",
+        "name": "newFeePercentage",
+        "type": "uint32"
       }
     ],
-    "name": "updateProjectsMetaPtr",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newRoundEndTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateRoundEndTime",
+    "name": "updateRoundFeePercentage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -788,11 +1084,26 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "newApplicationsStartTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newApplicationsEndTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "newRoundStartTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newRoundEndTime",
         "type": "uint256"
       }
     ],
-    "name": "updateRoundStartTime",
+    "name": "updateStartAndEndTimes",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -807,7 +1118,7 @@
     ],
     "name": "vote",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -822,5 +1133,27 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address payable",
+        "name": "recipent",
+        "type": "address"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

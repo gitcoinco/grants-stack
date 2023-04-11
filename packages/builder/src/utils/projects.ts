@@ -9,7 +9,7 @@ export const fetchProjectOwners = (chainID: number, projectID: string) => {
   const appProvider = getProviderByChainId(chainID);
 
   const projectRegistry = new ethers.Contract(
-    addresses.projectRegistry,
+    addresses.projectRegistry!,
     ProjectRegistryABI,
     appProvider
   );

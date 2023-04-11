@@ -1,9 +1,7 @@
 // eslint-disable-next-line
-const JWT =
-  // eslint-disable-next-line
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI0YmE2NDc0NS1hYWFmLTRiOWEtODE4YS1kZmIzODkxOWRlZWEiLCJlbWFpbCI6ImVuZ2luZWVyaW5nQGdpdGNvaW4uY28iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOGU5ZTE4YTEwOTRkOGI3NTExNDYiLCJzY29wZWRLZXlTZWNyZXQiOiIyYTEwNDczMWIxMjJkMjhkOTIzZjAyNzViZWVlNmE4ZjdiNDFmOGNlYjZmNThhMjEzODQ1NWY2NDYyMDM3ZmY2IiwiaWF0IjoxNjU3NTQxMDMzfQ.RoIPOjVuu8DZiC24JR7C7Sk-U2EApk455gVMm3v2CyE";
+const JWT = process.env.REACT_APP_PINATA_JWT;
 // eslint-disable-next-line
-const GATEWAY = "https://gitcoin.mypinata.cloud"; //process.env.REACT_APP_PINATA_GATEWAY;
+const GATEWAY = process.env.REACT_APP_PINATA_GATEWAY;
 const PIN_JSON_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
 const PIN_FILE_TO_IPFS_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
@@ -19,7 +17,7 @@ export default class PinataClient {
   constructor() {
     if (JWT === undefined || GATEWAY === undefined) {
       throw new Error(
-        "remember to set the REACT_APP_PINATA_JWT and REACT_APP_PINATA_GATEWAY env vars"
+        "remember to set the REACT_APP_SUBGRAPH_MAINNET_API_KEY and REACT_APP_PINATA_GATEWAY env vars"
       );
     }
     this.jwt = JWT!;
