@@ -32,11 +32,7 @@ import {
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
-import {
-  ApplicationStatus,
-  GrantApplication,
-  ProgressStatus,
-} from "../../api/types";
+import { GrantApplication, ProgressStatus } from "../../api/types";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth");

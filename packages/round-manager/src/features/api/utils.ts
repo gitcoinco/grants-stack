@@ -182,7 +182,7 @@ export const payoutTokens: PayoutToken[] = [
     decimal: 18,
   },
 ];
-
+/*TODO: merge this and the above into one list / function*/
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   switch (chainId) {
     case ChainId.MAINNET: {
@@ -277,7 +277,7 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         {
           name: "DAI",
           chainId: ChainId.GOERLI_CHAIN_ID,
-          address: "0xf2edF1c091f683E3fb452497d9a98A49cBA84666",
+          address: "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844",
           logo: TokenNamesAndLogos["DAI"],
           decimal: 18,
         },

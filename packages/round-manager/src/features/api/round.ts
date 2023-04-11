@@ -274,7 +274,7 @@ export async function deployRoundContract(
 
     // Ensure tokenAmount is normalized to token decimals
     const tokenAmount =
-      round.roundMetadata.matchingFunds?.matchingFundsAvailable || 0;
+      round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable || 0;
     const token = payoutTokens.filter(
       (t) => t.address.toLocaleLowerCase() == round.token.toLocaleLowerCase()
     )[0];
