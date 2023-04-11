@@ -213,13 +213,14 @@ function Round() {
         <h2 className="text-center text-2xl">
           {roundData?.roundMetadata.name}
         </h2>
-        <h4 className="text-center">{roundData?.roundMetadata.description}</h4>
-
         <div className="flex flex-col mt-3 mb-8 text-secondary-text">
           {/* <div className="flex flex-1 flex-col mt-12">
                 <span>Matching Funds Available:</span>
                 <span>$XXX,XXX</span>
               </div> */}
+          <div className="flex flex-1 flex-col mt-8">
+            <span>{roundData?.roundMetadata.eligibility?.description}</span>
+          </div>
           <div className="flex flex-1 flex-col mt-8">
             <span>Application Period:</span>
             <span>{renderApplicationDate()}</span>
@@ -227,6 +228,19 @@ function Round() {
           <div className="flex flex-1 flex-col mt-8">
             <span>Round Dates:</span>
             <span>{renderRoundDate()}</span>
+          </div>
+          <div className="flex flex-1 flex-col mt-8">
+            <span>Eligibility Requirements:</span>
+            <span>
+              {roundData?.roundMetadata?.eligibility?.requirements.map(
+                (r: { requirement: string }, index: number) => (
+                  <>
+                    {`${index + 1}. ${r.requirement}`}
+                    <br />
+                  </>
+                )
+              )}
+            </span>
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
