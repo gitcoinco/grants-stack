@@ -439,7 +439,10 @@ function PreRoundPage(props: {
             <span>
               {" "}
               &nbsp;
-              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}
+              {
+                round.roundMetadata?.quadraticFundingConfig
+                  ?.matchingFundsAvailable
+              }
               &nbsp;
               {matchingFundPayoutTokenName}
             </span>

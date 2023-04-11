@@ -124,7 +124,7 @@ export default function ApplicationCard({
         <Image
           src={props.applicationChainIconUri}
           alt="chain icon"
-          className="flex flex-row h-4 w-4 ml-2 mr-1 mt-1 rounded-full"
+          className="flex flex-row h-4 ml-2 mr-1 mt-1 rounded-full"
         />
         <span className="align-middle mb-1">{props.applicationChainName}</span>
       </div>

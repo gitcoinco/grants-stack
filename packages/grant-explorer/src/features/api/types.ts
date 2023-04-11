@@ -92,7 +92,7 @@ export interface Round {
       matchingFundsAvailable: number;
       matchingCap: boolean;
       matchingCapAmount?: number;
-      minDonationThreshold?: boolean; 
+      minDonationThreshold?: boolean;
       minDonationThresholdAmount?: number;
       sybilDefense?: boolean;
     };
