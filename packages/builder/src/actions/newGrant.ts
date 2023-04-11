@@ -1,9 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { addressesByChainID } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
-import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { NewGrant, Status } from "../reducers/newGrant";

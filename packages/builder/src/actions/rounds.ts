@@ -3,13 +3,13 @@ import { Dispatch } from "redux";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { BigNumber, ethers } from "ethers";
+import { getProviderByChainId } from "common";
 import ProgramABI from "../contracts/abis/ProgramImplementation.json";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
-import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
 

@@ -1,6 +1,6 @@
+import { chains } from "common";
 import { Dispatch } from "redux";
 import { global } from "../global";
-import { chains } from "../contracts/deployments";
 
 const chainIds = Object.keys(chains);
 

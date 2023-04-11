@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { waitFor } from "@testing-library/react";
+import { fetchProjectOwners } from "common";
 import Show from "../../../components/grants/Show";
 import setupStore from "../../../store";
 import {
@@ -7,7 +8,6 @@ import {
   renderWrapped,
   buildProjectMetadata,
 } from "../../../utils/test_utils";
-import { fetchProjectOwners } from "../../../utils/projects";
 import { web3AccountLoaded, web3ChainIDLoaded } from "../../../actions/web3";
 import { grantMetadataFetched } from "../../../actions/grantsMetadata";
 

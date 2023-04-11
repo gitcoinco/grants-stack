@@ -1,20 +1,23 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers, utils } from "ethers";
 import { Dispatch } from "redux";
-import { convertStatusToText } from "common";
+import {
+  addressesByChainID,
+  convertStatusToText,
+  fetchProjectOwners,
+  getProviderByChainId,
+} from "common";
 import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-import { addressesByChainID } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
-import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
+import { getProjectURIComponents } from "../utils/utils";
 import { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";

@@ -4,7 +4,7 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
 import { EthDiamondGlyph, FantomFTMLogo, FTMTestnet, OPIcon } from "../assets";
-import { chains } from "../contracts/deployments";
+import { chains } from "./wagmi";
 
 export function shortAddress(address: string): string {
   try {
@@ -40,13 +40,13 @@ export const networkIcon: { [key: string]: string } = {
 export function getNetworkIcon(chainId: number): string {
   const rawName = chains[chainId];
 
-  return networkIcon[rawName];
+  return networkIcon[rawName.name];
 }
 
 export function networkPrettyName(chainId: number): string {
   const rawName = chains[chainId];
 
-  return networkPrettyNames[rawName];
+  return networkPrettyNames[rawName.name];
 }
 
 export function isValidAddress(address: string): boolean {
