@@ -24,7 +24,7 @@ import { classNames } from "common";
 import { PayoutToken, getPayoutTokenOptions } from "../api/utils";
 import ReactTooltip from "react-tooltip";
 import { useWallet } from "../common/Auth";
-
+import _ from 'lodash';
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
@@ -125,7 +125,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
   const FormStepper = props.stepper;
 
   const next: SubmitHandler<Round> = async (values) => {
-    const data = {...formData, ...values};
+    const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };
