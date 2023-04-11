@@ -186,7 +186,7 @@ export default function RoundListItem({
               linkProps={{
                 displayType: RoundDisplayType.Active,
                 link:
-                  `https://grant-explorer.gitcoin.co/#/round/${props.roundChain}/` +
+                  `https://explorer.gitcoin.co/#/round/${props.roundChain}/` +
                   `${props.roundAddress}/${props.generatedProjectId}-${props.roundAddress}`,
                 text: "View on Explorer",
                 applicationStatus: applicationData?.status!,
@@ -208,7 +208,7 @@ export default function RoundListItem({
             <LinkManager
               linkProps={{
                 displayType: RoundDisplayType.Past,
-                link: `https://round-manager.gitcoin.co/#/round/${props.roundAddress}`,
+                link: `https://manager.gitcoin.co/#/round/${props.roundAddress}`,
                 text: "View Stats",
                 enableStats: enableStatusButton(),
                 applicationStatus: applicationData?.status!,
