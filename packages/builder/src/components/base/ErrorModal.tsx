@@ -9,6 +9,7 @@ type ErrorModalProps = {
   secondaryBtnText?: string;
   onClose: (open: boolean) => void;
   onRetry: () => void;
+  title?: string;
 };
 
 export default function ErrorModal({
@@ -18,6 +19,7 @@ export default function ErrorModal({
   secondaryBtnText,
   onClose,
   onRetry,
+  title,
 }: ErrorModalProps): JSX.Element {
   return (
     <BaseModal isOpen={open} hideCloseButton onClose={() => onClose(false)}>
@@ -31,7 +33,7 @@ export default function ErrorModal({
             />
           </div>
           <div className="ml-6 text-[16px] font-[600]">
-            <div>Error</div>
+            <div>{title ? title : "Error"}</div>
             <p className="mt-2 text-[14px] font-[400]">
               {children ||
                 "There has been a systems error during the deployment of your project."}

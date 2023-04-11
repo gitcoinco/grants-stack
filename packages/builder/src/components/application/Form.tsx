@@ -1100,10 +1100,10 @@ export default function Form({
           open={showErrorModal}
           onClose={closeErrorModal}
           onRetry={handleSubmitApplicationRetry}
+          title="Round Application Period Closed"
         >
           {round.applicationsEndTime > now ? (
             <div className="my-2">
-              <h6>Round Application Period Closed</h6>
               The application period for this round has closed.
             </div>
           ) : (
