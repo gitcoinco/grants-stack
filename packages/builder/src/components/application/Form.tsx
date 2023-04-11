@@ -193,7 +193,7 @@ function FullPreview(props: {
     handleSubmitApplication,
     disableSubmit,
   } = props;
-  const ipfsPrefix = process.env.REACT_APP_PINATA_GATEWAY!;
+  const ipfsPrefix = `${process.env.REACT_APP_PINATA_GATEWAY!}/ipfs/`;
 
   return (
     <>
