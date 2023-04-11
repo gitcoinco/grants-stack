@@ -243,6 +243,7 @@ function FullPreview(props: {
           <div>
             <h1 className="text-2xl mt-8 font-thin text-black">About</h1>
             <p
+              // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{
                 __html: renderToHTML(
                   project.description.replace(/\n/g, "\n\n")
@@ -273,6 +274,7 @@ function FullPreview(props: {
                           </p>
                           {question.type === "paragraph" ? (
                             <p
+                              // eslint-disable-next-line react/no-danger
                               dangerouslySetInnerHTML={{
                                 __html: renderToHTML(
                                   answerText.toString().replace(/\n/g, "\n\n")
