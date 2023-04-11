@@ -201,10 +201,13 @@ async function _bulkUpdateGrantApplication({
       }
     });
 
-    const rowIndex = selectedApplications.map(
+    const rowIndex = selectedApplications.map((application) => {
+      if (application.applicationIndex === 0) {
+        return 0;
+      }
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      (application) => application.applicationIndex! % 128
-    );
+      return 128 % application.applicationIndex!;
+    });
 
     // remove duplicates from rowIndex & sort it
     const uniqueRowIndex = Array.from(new Set(rowIndex)).sort();

@@ -169,6 +169,7 @@ export type CartDonation = {
   projectRegistryId: ProjectRegistryId;
   amount: string;
   projectAddress: recipient;
+  applicationIndex: number;
 };
 
 export enum ApplicationStatus {

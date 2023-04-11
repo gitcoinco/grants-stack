@@ -17,7 +17,7 @@ export const voteOnRoundContract = async (
   );
 
   const decodedValues = ethers.utils.defaultAbiCoder.decode(
-    ["address", "uint256", "address"],
+    ["address", "uint256", "address", "bytes32", "uint256"],
     encodedVotes[0]
   );
 
