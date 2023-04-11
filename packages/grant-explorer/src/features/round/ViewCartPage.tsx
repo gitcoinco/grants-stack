@@ -523,7 +523,8 @@ export default function ViewCart() {
                 updateDonations(
                   props.project.projectRegistryId,
                   e.target.value,
-                  props.project.recipient
+                  props.project.recipient,
+                  props.project.applicationIndex
                 );
               }}
               className="w-24"
@@ -536,7 +537,8 @@ export default function ViewCart() {
                 updateDonations(
                   props.project.projectRegistryId,
                   "",
-                  props.project.recipient
+                  props.project.recipient,
+                  props.project.applicationIndex
                 );
               }}
               className="w-5 h-5 m-auto cursor-pointer mb-4"
@@ -630,7 +632,8 @@ export default function ViewCart() {
   function updateDonations(
     projectRegistryId: string,
     amount: string,
-    projectAddress: recipient
+    projectAddress: recipient,
+    applicationIndex: number
   ) {
     const projectIndex = donations.findIndex(
       (donation) => donation.projectRegistryId === projectRegistryId
@@ -645,6 +648,7 @@ export default function ViewCart() {
         projectRegistryId,
         amount,
         projectAddress,
+        applicationIndex
       });
     }
 
@@ -657,6 +661,7 @@ export default function ViewCart() {
         projectRegistryId: project.projectRegistryId,
         amount: amount.toString(),
         projectAddress: project.recipient,
+        applicationIndex: project.applicationIndex
       } as CartDonation;
     });
 
