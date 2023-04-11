@@ -119,7 +119,7 @@ describe("<ViewRound /> in case of during the application period", () => {
   it("Should show apply to round button", async () => {
     renderWithContext(<ViewRound />, { rounds: [stubRound], isLoading: false });
     const appURL =
-      "https://grantshub.gitcoin.co/#/chains/" + chainId + "/rounds/" + roundId;
+      "https://builder.gitcoin.co/#/chains/" + chainId + "/rounds/" + roundId;
 
     const AppSubmissionButton = await screen.findByText("Apply to Grant Round");
     expect(AppSubmissionButton).toBeInTheDocument();
