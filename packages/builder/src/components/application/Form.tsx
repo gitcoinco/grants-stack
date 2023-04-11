@@ -594,6 +594,7 @@ export default function Form({
     publishedApplication === undefined;
 
   const needsProject = schema.questions.find((q) => q.type === "project");
+  const now = new Date().getTime() / 1000;
 
   return (
     <>
@@ -1099,10 +1100,17 @@ export default function Form({
           open={showErrorModal}
           onClose={closeErrorModal}
           onRetry={handleSubmitApplicationRetry}
+          title="Round Application Period Closed"
         >
-          <div>
-            There was a problem with your round application transaction.
-          </div>
+          {round.applicationsEndTime > now ? (
+            <div className="my-2">
+              The application period for this round has closed.
+            </div>
+          ) : (
+            <div className="my-2">
+              There was a problem with your round application transaction.
+            </div>
+          )}
         </ErrorModal>
         <CallbackModal
           modalOpen={infoModal}
