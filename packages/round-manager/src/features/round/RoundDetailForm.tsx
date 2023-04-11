@@ -27,7 +27,7 @@ import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import deepmerge from "deepmerge";
+import _ from 'lodash';
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -127,7 +127,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const next: SubmitHandler<Round> = async (values) => {
-    const data = deepmerge(formData, values);
+    const data = _.merge(formData, values);
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };

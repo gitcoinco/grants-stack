@@ -34,7 +34,7 @@ import InfoModal from "../common/InfoModal";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
-import deepmerge from "deepmerge";
+import _ from 'lodash';
 
 const payoutQuestion: SchemaQuestion = {
   id: 0,
@@ -201,7 +201,7 @@ export function RoundApplicationForm(props: {
     }
     try {
       setOpenProgressModal(true);
-      const data: Partial<Round> = deepmerge(formData, values);
+      const data: Partial<Round> = _.merge(formData, values);
 
       const roundMetadataWithProgramContractAddress: Round["roundMetadata"] = {
         ...(data.roundMetadata as Round["roundMetadata"]),
