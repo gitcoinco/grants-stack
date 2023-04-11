@@ -116,7 +116,7 @@ function NewProject() {
               target="_blank"
               rel="noreferrer"
               className="text-gitcoin-violet-400"
-              href="https://support.gitcoin.co/gitcoin-grants-protocol"
+              href="https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/project-owners"
             >
               Builder Guide.
             </a>
