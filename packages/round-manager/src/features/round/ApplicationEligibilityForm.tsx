@@ -16,7 +16,6 @@ import { Button, Input } from "common/src/styles";
 import { PlusSmIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import deepmerge from "deepmerge";
 
 interface ApplicationEligibilityFormProps {
   stepper: typeof FormStepper;
@@ -67,7 +66,7 @@ export default function ApplicationEligibilityForm(
   const FormStepper = props.stepper;
 
   const next: SubmitHandler<Round> = async (values) => {
-    const data = deepmerge(formData, values);
+    const data = {...formData, ...values};
     setFormData(data);
     setCurrentStep(currentStep + 1);
   };
