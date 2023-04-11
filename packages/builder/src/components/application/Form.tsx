@@ -1097,7 +1097,7 @@ export default function Form({
             )}
         </form>
         <ErrorModal
-          open
+          open={showErrorModal}
           onClose={closeErrorModal}
           onRetry={handleSubmitApplicationRetry}
         >
