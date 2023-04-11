@@ -1,9 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
+import { chains } from "common";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
-import { chains } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";

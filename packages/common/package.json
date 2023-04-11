@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "@wagmi/core": "0.5.4",
     "dompurify": "^2.4.3",
     "markdown-it": "^13.0.1",
     "react": "^18.2.0",
@@ -16,13 +17,14 @@
     "swr": "^2.0.1",
     "tailwind-styled-components": "^2.2.0",
     "typescript": "latest",
-    "viem": "^0.1.22"
+    "viem": "^0.1.22",
+    "ethers": "5.7.2"
   },
   "devDependencies": {
     "@types/dompurify": "^2.4.0",
+    "@types/markdown-it": "^12.2.3",
     "@types/node": "^18.15.5",
     "@types/react": "^18.0.31",
-    "@types/react-dom": "^18.0.11",
-    "@types/markdown-it": "^12.2.3"
+    "@types/react-dom": "^18.0.11"
   }
 }
