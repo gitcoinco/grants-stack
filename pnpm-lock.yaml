@@ -114,6 +114,7 @@ importers:
       '@types/node': ^18.11.18
       '@types/react': ^18.0.5
       '@types/react-dom': ^18.0.1
+      '@types/react-gtm-module': ^2.0.1
       '@types/react-redux': ^7.1.24
       '@types/testing-library__jest-dom': ^5.14.5
       '@typescript-eslint/eslint-plugin': ^5.23.0
@@ -158,6 +159,7 @@ importers:
       process: ^0.11.10
       react: ^18.0.0
       react-dom: ^18.0.0
+      react-gtm-module: ^2.0.11
       react-image-crop: ^10.0.6
       react-redux: ^7.2.8
       react-router: ^6
@@ -232,6 +234,7 @@ importers:
       process: 0.11.10
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-gtm-module: 2.0.11
       react-image-crop: 10.0.9_react@18.2.0
       react-redux: 7.2.9_biqbaboplfbrettd7655fr4n2y
       react-router: 6.7.0_react@18.2.0
@@ -254,6 +257,7 @@ importers:
       '@babel/eslint-parser': 7.19.1_2je5tsgpdnpnp4f5qs5fqust6m
       '@types/dompurify': 2.4.0
       '@types/jest-when': 3.5.2
+      '@types/react-gtm-module': 2.0.1
       '@typescript-eslint/eslint-plugin': 5.48.2_azmbqzqvrlvblbdtiwxwvyvjjy
       '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       eslint: 8.32.0
@@ -8317,7 +8321,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: true
@@ -11233,7 +11237,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -11277,7 +11281,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -12201,6 +12205,18 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
