@@ -757,9 +757,8 @@ function MinDonationThreshold(props: {
               effect="solid"
             >
               <p className="text-xs">
-                placeholder <br />
-                placeholder <br />
-                placeholder
+                Set a minimum amount for each <br /> 
+                donation to be eligible for matching.
               </p>
             </ReactTooltip>
           </RadioGroup.Label>
