@@ -39,6 +39,8 @@ export const verifyApplicationMetadata = (
 
   return (
     verifyMessageSignature(owner, signature, hash)  &&
+
+    // verify that the project id matches the project id in the application metadata
     ethers.solidityPackedKeccak256(
       ["uint256", "address", "uint256"],
       [idSegments[0], idSegments[1], idSegments[2]]
