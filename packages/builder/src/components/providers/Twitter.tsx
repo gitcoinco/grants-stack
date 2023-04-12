@@ -38,9 +38,10 @@ export default function Twitter({
     };
   }, shallowEqual);
 
+  const [twitterVc, setTwitterCredential] = useState(props.vc);
   const [isValid, setIsValid] = useState(false);
   const { isValid: validTwitterCredential } = useValidateCredential(
-    props.vc,
+    twitterVc,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
@@ -141,6 +142,8 @@ export default function Twitter({
                   twitter: verified.credential!,
                 })
               );
+
+              setTwitterCredential(verified.credential!);
               verificationError();
             } else {
               verificationError(
