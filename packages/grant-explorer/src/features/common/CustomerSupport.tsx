@@ -1,6 +1,5 @@
 import {
   BookOpenIcon,
-  ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -21,12 +20,6 @@ export const menuItems: Menu[] = [
     title: "Explorer Guide",
     subTitle: "Best practices for project owners",
     link: "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-protocol/funder-faq/grants-explorer-guide",
-  },
-  {
-    Icon: ChatBubbleLeftRightIcon,
-    title: "Contact Support",
-    subTitle: "Reach our support team for help",
-    link: "https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us",
   },
   {
     Icon: ClipboardDocumentListIcon,

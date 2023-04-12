@@ -19,14 +19,6 @@ export default function Footer() {
               data-background-color="#0E0333"
               data-for="support-tooltip"
             />
-            <ReactTooltip
-              id="support-tooltip"
-              place="top"
-              type="dark"
-              effect="solid"
-            >
-              <p className="text-xs">Contact Support</p>
-            </ReactTooltip>
           </a>
           <a href="https://github.com/gitcoinco/grants-round">
             <GithubIcon
