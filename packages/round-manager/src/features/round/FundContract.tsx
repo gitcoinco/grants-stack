@@ -5,12 +5,11 @@ import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
 import {
-  ChainId,
   getTxExplorerForContract,
   payoutTokens,
   useTokenPrice,
@@ -22,7 +21,6 @@ import { Spinner } from "../common/Spinner";
 
 export default function FundContract(props: {
   round: Round | undefined;
-  chainId: string;
   roundId: string | undefined;
 }) {
   const { address } = useAccount();
@@ -37,6 +35,9 @@ export default function FundContract(props: {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
+
+  const { chain } = useNetwork();
+  const chainId = chain?.id ?? 5;
 
   const {
     fundContract,
@@ -356,10 +357,7 @@ export default function FundContract(props: {
             data-testid="view-contract-btn"
             onClick={() =>
               window.open(
-                getTxExplorerForContract(
-                  props.chainId as unknown as ChainId,
-                  props.roundId as string
-                ),
+                getTxExplorerForContract(chainId, props.roundId as string),
                 "_blank"
               )
             }

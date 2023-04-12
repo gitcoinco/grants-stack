@@ -258,11 +258,7 @@ export default function ViewRoundPage() {
                       />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <FundContract
-                        round={round}
-                        chainId={`${chain.id}`}
-                        roundId={id}
-                      />
+                      <FundContract round={round} roundId={id} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundStats />
