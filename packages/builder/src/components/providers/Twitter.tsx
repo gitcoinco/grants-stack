@@ -29,13 +29,14 @@ export default function Twitter({
   canVerify: boolean;
 }) {
   const dispatch = useDispatch();
-  const props = useSelector((state: RootState) => {
-    return {
+  const props = useSelector(
+    (state: RootState) => ({
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
       vc: state.projectForm?.credentials?.twitter,
-    };
-  }, shallowEqual);
+    }),
+    shallowEqual
+  );
 
   const [twitterVc, setTwitterCredential] = useState(props.vc);
   const { isValid: validTwitterCredential } = useValidateCredential(
