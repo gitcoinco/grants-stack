@@ -114,6 +114,8 @@ export default function Twitter({
       const queryCode = e.data.code;
       const queryState = e.data.state;
 
+      console.log("listenForRedirect data", { queryCode, queryState });
+
       fetchVerifiableCredential(
         process.env.REACT_APP_PASSPORT_IAM_URL || "",
         {
