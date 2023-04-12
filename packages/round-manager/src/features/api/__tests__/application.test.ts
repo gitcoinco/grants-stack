@@ -5,6 +5,7 @@ import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
+import { verifyApplicationMetadata } from "common/src/verification";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -20,6 +21,11 @@ jest.mock("ethers");
 const signerOrProviderStub = {
   getNetwork: async () => Promise.resolve({ chainId: "chain" }),
 } as unknown as Web3Provider;
+
+const verifyApplicationMetadataSpy = jest.spyOn(
+  require("common/src/verification"),
+  "verifyApplicationMetadata",
+);
 
 describe("getApplicationById", () => {
   let expectedApplication: GrantApplication;
@@ -202,6 +208,8 @@ describe("getApplicationsByRoundId", () => {
     });
 
     (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
+      verifyApplicationMetadataSpy.mockReturnValue(true);
+
       if (metaptr === expectedApplicationMetaPtr.pointer) {
         return {
           round: expectedApplication.round,
@@ -230,6 +238,8 @@ describe("getApplicationsByRoundId", () => {
   });
 
   it("should retrieve signed applications given an round id", async () => {
+    verifyApplicationMetadataSpy.mockReturnValue(true);
+
     const expectedApplication = expectedApplications[0];
     const roundId = expectedApplication.round;
     const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
