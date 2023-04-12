@@ -3,7 +3,6 @@ import { Button } from "@chakra-ui/react";
 import {
   QuestionMarkCircleIcon,
   BookOpenIcon,
-  ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   CodeBracketIcon,
 } from "@heroicons/react/24/outline";
@@ -21,12 +20,6 @@ export const menuItems: Menu[] = [
     title: "Builder Guide",
     subTitle: "Best practices for project owners",
     link: "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/project-owners",
-  },
-  {
-    Icon: ChatBubbleLeftRightIcon,
-    title: "Contact Support",
-    subTitle: "Reach our support team for help",
-    link: "https://support.gitcoin.co/gitcoin-knowledge-base/misc/contact-us",
   },
   {
     Icon: ClipboardDocumentListIcon,
