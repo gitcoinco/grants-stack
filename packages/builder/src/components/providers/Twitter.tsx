@@ -46,7 +46,11 @@ export default function Twitter({
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
-  console.log("validTwitterCredential", { isValid, validTwitterCredential, vc: props.vc });
+  console.log("validTwitterCredential", {
+    isValid,
+    validTwitterCredential,
+    vc: props.vc,
+  });
 
   useEffect(() => {
     if (validTwitterCredential) {
