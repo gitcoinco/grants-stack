@@ -43,5 +43,7 @@ export default function useValidateCredential(
     validateCredential();
   }, [vc, providerId, handle]);
 
+  console.log("useValidateCredential", { isValid, isLoading, error });
+
   return { isValid, isLoading, error };
 }
