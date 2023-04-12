@@ -40,23 +40,15 @@ export default function Twitter({
   }, shallowEqual);
 
   const [twitterVc, setTwitterCredential] = useState(props.vc);
-  const [isValid, setIsValid] = useState(false);
   const { isValid: validTwitterCredential } = useValidateCredential(
     twitterVc,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
   console.log("validTwitterCredential", {
-    isValid,
     validTwitterCredential,
     vc: props.vc,
   });
-
-  useEffect(() => {
-    if (validTwitterCredential) {
-      setIsValid(true);
-    }
-  }, [validTwitterCredential]);
 
   const { signer } = global;
 
@@ -188,7 +180,7 @@ export default function Twitter({
     };
   });
 
-  if (isValid) {
+  if (validTwitterCredential) {
     return <VerifiedBadge />;
   }
 
