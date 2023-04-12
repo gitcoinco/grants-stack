@@ -234,10 +234,15 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
               <p className="text-grey-400 mb-2 mt-1 text-sm">
                 Ensure that project supporters are not bots or sybil with
                 Gitcoin Passport. Learn more about Gitcoin Passport{" "}
-                <a href="https://docs.passport.gitcoin.co/overview/readme">
+                <a 
+                  href="https://docs.passport.gitcoin.co/overview/readme" 
+                  className="text-violet-300"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   here
                 </a>
-                .{" "}
+                .
               </p>
               <div className="flex">
                 <SybilDefense
