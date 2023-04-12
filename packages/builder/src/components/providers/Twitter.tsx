@@ -31,6 +31,7 @@ export default function Twitter({
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const twitterCredential = state.projectForm?.credentials?.twitter;
+    console.log("twitterCredential", twitterCredential);
     return {
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
@@ -45,7 +46,7 @@ export default function Twitter({
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
-  console.log("validTwitterCredential", { isValid, validTwitterCredential });
+  console.log("validTwitterCredential", { isValid, validTwitterCredential, vc: props.vc });
 
   useEffect(() => {
     if (validTwitterCredential) {
