@@ -39,8 +39,8 @@ export default function ApplicationCard({
 
   const renderApplicationDate = () => (
     <>
-      {formatDateFromSecs(roundData?.applicationsStartTime)} -{" "}
-      {formatDateFromSecs(roundData?.applicationsEndTime)}
+      {formatDateFromSecs(roundData?.roundStartTime)} -{" "}
+      {formatDateFromSecs(roundData?.roundEndTime)}
     </>
   );
 
