@@ -30,12 +30,10 @@ export default function Twitter({
 }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
-    const twitterCredential = state.projectForm?.credentials?.twitter;
-    console.log("twitterCredential", twitterCredential);
     return {
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
-      vc: twitterCredential,
+      vc: state.projectForm?.credentials?.twitter,
     };
   }, shallowEqual);
 
