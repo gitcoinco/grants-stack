@@ -261,7 +261,7 @@ function FullPreview(props: {
                   const currentAnswer = answers[question.id];
                   const answerText = Array.isArray(currentAnswer)
                     ? currentAnswer.join(", ")
-                    : currentAnswer;
+                    : currentAnswer || "";
 
                   return (
                     <div>
