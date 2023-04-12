@@ -42,6 +42,9 @@ function Round() {
     const applicationEnded = roundState
       ? (roundState.round?.applicationsEndTime || now - 1000) < now
       : true;
+    const applicationStarted = roundState
+      ? (roundState.round?.applicationsStartTime || now + 1000) > now
+      : true;
 
     return {
       roundState,
@@ -52,6 +55,7 @@ function Round() {
       roundChainId,
       projects: allProjectMetadata,
       projectsStatus,
+      applicationStarted,
       applicationEnded,
     };
   }, shallowEqual);
@@ -244,7 +248,7 @@ function Round() {
           </div>
         </div>
         <div className="flex flex-1 flex-col mt-8">
-          {props.applicationEnded ? (
+          {props.applicationEnded || props.applicationStarted ? (
             <>
               <Button
                 styles={[
