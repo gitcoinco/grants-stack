@@ -19,7 +19,11 @@ export default function useValidateCredential(
     setIsLoading(true);
 
     try {
-      console.log("validateCredential after try before if", { vc, providerId, handle });
+      console.log("validateCredential after try before if", {
+        vc,
+        providerId,
+        handle,
+      });
       if (vc && providerId && handle) {
         console.log("validateCredential after if", { vc, providerId, handle });
         const credential = vc;
@@ -28,7 +32,11 @@ export default function useValidateCredential(
           handle.toLowerCase();
         const validCredential = await verifier.verifyCredential(credential);
         const validIssuer = IAM_SERVER === credential.issuer;
-        console.log("validateCredential after if", { validCredentialProvider, validCredential, validIssuer });
+        console.log("validateCredential after if", {
+          validCredentialProvider,
+          validCredential,
+          validIssuer,
+        });
         // TODO: add owner check
         // address of vc.credentialSubject.id should be a project owner
         setIsValid(validCredentialProvider && validCredential && validIssuer);
