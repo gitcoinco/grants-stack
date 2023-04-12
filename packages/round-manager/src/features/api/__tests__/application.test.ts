@@ -5,7 +5,6 @@ import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
-import { verifyApplicationMetadata } from "common/src/verification";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
