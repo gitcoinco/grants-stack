@@ -31,7 +31,7 @@ export const menuItems: Menu[] = [
     Icon: CodeBracketIcon,
     title: "Developer Docs",
     subTitle: "Build on top of Builder",
-    link: "https://app.gitbook.com/o/Aqbtj6s4OkLaygileCka/home",
+    link: "https://docs.allo.gitcoin.co",
   },
 ];
 

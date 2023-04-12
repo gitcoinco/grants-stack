@@ -35,7 +35,7 @@ export default function Footer() {
             hasArrow
           >
             <li className="p-3 cursor-pointer hover:text-gitcoin-violet-400">
-              <a href="https://app.gitbook.com/o/Aqbtj6s4OkLaygileCka/home">
+              <a href="https://docs.allo.gitcoin.co">
                 <Code color="none" />
               </a>
             </li>
