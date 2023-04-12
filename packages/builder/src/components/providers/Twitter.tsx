@@ -108,6 +108,7 @@ export default function Twitter({
   }) {
     // when receiving twitter oauth response from a spawned child run fetchVerifiableCredential
     if (e.target === "twitter") {
+      console.log("listenForRedirect", e.target);
       // pull data from message
       const queryCode = e.data.code;
       const queryState = e.data.state;
