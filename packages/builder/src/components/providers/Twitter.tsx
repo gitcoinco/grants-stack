@@ -3,7 +3,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
@@ -38,11 +38,18 @@ export default function Twitter({
     };
   }, shallowEqual);
 
+  const [isValid, setIsValid] = useState(false);
   const { isValid: validTwitterCredential } = useValidateCredential(
     props.vc,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
+
+  useEffect(() => {
+    if (validTwitterCredential) {
+      setIsValid(true);
+    }
+  }, [validTwitterCredential]);
 
   const { signer } = global;
 
@@ -169,7 +176,7 @@ export default function Twitter({
     };
   });
 
-  if (validTwitterCredential) {
+  if (isValid) {
     return <VerifiedBadge />;
   }
 
