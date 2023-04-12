@@ -36,7 +36,7 @@ export default function FundContract(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
-  const { chain } = useNetwork();
+  const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
 
   const {
