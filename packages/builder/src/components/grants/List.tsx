@@ -54,7 +54,12 @@ function ProjectsList() {
       toggleModal === ApplicationModalStatus.NotApplied &&
       alreadyApplied === false;
 
-    const showRoundAlert = alreadyApplied === false;
+    const applicationStartTime = round?.applicationsStartTime ?? 0;
+    const applicationEndTime = round?.applicationsEndTime ?? 0;
+    const showRoundAlert =
+      alreadyApplied === false &&
+      applicationStartTime + 1000 < new Date().getTime() / 1000 &&
+      applicationEndTime - 1000 > new Date().getTime() / 1000;
 
     return {
       status: state.projects.status,
