@@ -43,6 +43,11 @@ jest.mock("../../../constants", () => ({
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
+const verifyApplicationMetadataSpy = jest.spyOn(
+  require("common/src/verification"),
+  "verifyApplicationMetadata",
+);
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -76,6 +81,8 @@ describe("<RoundApplicationForm />", () => {
       transactionBlockNumber: 0,
     });
     (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
+
+    verifyApplicationMetadataSpy.mockReturnValue(true);
   });
 
   describe("when submitting form", () => {

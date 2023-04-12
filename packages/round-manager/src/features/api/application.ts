@@ -185,6 +185,7 @@ export const getApplicationsByRoundId = async (
         metadata,
       );
 
+      console.log("=====>");
       if (isValidMetadata)
         grantApplications.push({
           ...application,
