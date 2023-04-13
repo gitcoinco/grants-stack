@@ -31,7 +31,7 @@ const getGraphQLEndpoint = (
     case ChainId.MAINNET_CHAIN_ID:
       return {
         // eslint-disable-next-line max-len
-        uri: `https://gateway.thegraph.com/api/${environment.REACT_APP_SUBGRAPH_MAINNET_API_KEY}/subgraphs/id/BQXTJRLZi7NWGq5AXzQQxvYNa5i1HmqALEJwy3gGJHCr`,
+        uri: `https://gateway.thegraph.com/api/${environment.REACT_APP_SUBGRAPH_MAINNET_API_KEY}/subgraphs/id/Ba4YGqqyYVFd55zcQnXS3XYTjJARKe93LY6qNgFbrHQz`,
         error: undefined,
       };
     case ChainId.GOERLI_CHAIN_ID:
