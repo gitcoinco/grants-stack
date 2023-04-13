@@ -4,15 +4,17 @@ import { fetchFromIPFS } from "../utils";
 import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
-import { graphql_fetch } from "common";
+import { fetchProjectOwners, graphql_fetch } from "common";
+
+jest.mock("common", () => ({
+  ...jest.requireActual("common"),
+  graphql_fetch: jest.fn(),
+  fetchProjectOwners: jest.fn(),
+}));
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
   fetchFromIPFS: jest.fn(),
-}));
-jest.mock("common", () => ({
-  ...jest.requireActual("common"),
-  graphql_fetch: jest.fn(),
 }));
 
 jest.mock("ethers");
@@ -23,12 +25,7 @@ const signerOrProviderStub = {
 
 const verifyApplicationMetadataSpy = jest.spyOn(
   require("common/src/verification"),
-  "verifyApplicationMetadata",
-);
-
-const fetchProjectOwnersSpy = jest.spyOn(
-  require("common/src/index"),
-  "fetchProjectOwners",
+  "verifyApplicationMetadata"
 );
 
 describe("getApplicationById", () => {
@@ -37,7 +34,7 @@ describe("getApplicationById", () => {
   beforeEach(() => {
     expectedApplication = makeGrantApplicationData();
     const projectOwners = expectedApplication.project?.owners.map(
-      (it) => it.address,
+      (it) => it.address
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,7 +89,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     console.log("actualApplication", actualApplication);
@@ -115,11 +112,11 @@ describe("getApplicationById", () => {
 
     const getApplicationByIdPromise = getApplicationById(
       "any-id",
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     await expect(getApplicationByIdPromise).rejects.toThrow(
-      "Grant Application doesn't exist",
+      "Grant Application doesn't exist"
     );
 
     consoleErrorSpy.mockClear();
@@ -172,7 +169,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
@@ -206,6 +203,7 @@ describe("getApplicationsByRoundId", () => {
             round: {
               projectsMetaPtr: expectedProjectsMetaPtr,
             },
+            sender: expectedApplication.recipient,
           },
         ],
       },
@@ -234,14 +232,13 @@ describe("getApplicationsByRoundId", () => {
 
     verifyApplicationMetadataSpy.mockReturnValue(true);
 
-    // todo: does not work
-    fetchProjectOwnersSpy.mockReturnValue(
-      Promise.resolve([expectedApplication.recipient]),
-    );
+    (fetchProjectOwners as jest.Mock).mockReturnValue([
+      expectedApplication.recipient,
+    ]);
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
@@ -269,6 +266,7 @@ describe("getApplicationsByRoundId", () => {
             round: {
               projectsMetaPtr: expectedProjectsMetaPtr,
             },
+            sender: expectedApplication.recipient,
           },
         ],
       },
@@ -295,10 +293,13 @@ describe("getApplicationsByRoundId", () => {
         ];
       }
     });
+    (fetchProjectOwners as jest.Mock).mockReturnValue([
+      expectedApplication.recipient,
+    ]);
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
