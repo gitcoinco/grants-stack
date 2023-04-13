@@ -27,7 +27,7 @@ import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import _ from 'lodash';
+import _ from "lodash";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -62,7 +62,11 @@ const ValidationSchema = yup.object().shape({
   applicationsStartTime: yup
     .date()
     .required("This field is required.")
-    .min(new Date(), "You must enter a date and time in the future."),
+    .min(new Date(), "You must enter a date and time in the future.")
+    .max(
+      yup.ref("applicationsEndTime"),
+      "Applications start date must be earlier than the applications end date"
+    ),
   applicationsEndTime: yup
     .date()
     .required("This field is required.")
@@ -135,6 +139,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   const now = moment().add(1, "hour").startOf("hour");
   const prev = () => setCurrentStep(currentStep - 1);
   const yesterday = moment().subtract(1, "day");
+
   const disablePastDate = (current: moment.Moment) => {
     return current.isAfter(yesterday);
   };
@@ -142,6 +147,14 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
   function disableBeforeApplicationStartDate(current: moment.Moment) {
     return current.isAfter(applicationStartDate);
   }
+
+  const disablePastAndBeforeRoundStartDate = (current: moment.Moment) => {
+    return (
+      disablePastDate(current) &&
+      current.isBefore(roundStartDate) &&
+      current.isBefore(applicationEndDate)
+    );
+  };
 
   function disableBeforeApplicationEndDate(current: moment.Moment) {
     return current.isAfter(applicationEndDate);
@@ -243,7 +256,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             className:
                               "block w-full border-0 p-0 text-gray-900 placeholder-grey-40  0 focus:ring-0 text-sm",
                           }}
-                          isValidDate={disablePastDate}
+                          isValidDate={disablePastAndBeforeRoundStartDate}
                           initialViewDate={now}
                           utc={true}
                           dateFormat={"YYYY-MM-DD"}
