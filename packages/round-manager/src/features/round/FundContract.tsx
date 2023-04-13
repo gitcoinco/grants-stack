@@ -122,13 +122,11 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.coingeckoId
   );
 
-  // const data = 1800.50;
-  // const error = false;
-  // const loading = false;
-
   const matchingFunds =
-    props.round &&
-    props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
+    (props.round &&
+      props.round.roundMetadata.quadraticFundingConfig
+        ?.matchingFundsAvailable) ??
+    0;
 
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
@@ -138,6 +136,15 @@ export default function FundContract(props: {
 
   const amountLeftToFundInUSD =
     amountLeftToFund && amountLeftToFund * Number(data);
+
+  const roundFeePercentage = props.round?.roundFeePercentage ?? 0;
+  const protocolFeePercentage = props.round?.protocolFeePercentage ?? 0;
+  const combinedFees =
+    ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
+  const contractBalance = ethers.utils.formatEther(
+    balanceData?.value.toString() ?? "0"
+  );
+  const totalAmountLeftToFund = ((combinedFees + matchingFunds) - Number(contractBalance)).toString();
 
   const tokenBalanceInUSD =
     balanceData?.value &&
@@ -318,7 +325,7 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
-            {balanceData?.formatted} {matchingFundPayoutToken?.name}{" "}
+            {contractBalance} {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-2">
               ${tokenBalanceInUSD} USD
             </span>
@@ -329,7 +336,7 @@ export default function FundContract(props: {
           <p className="text-sm w-1/3">Amount left to fund:</p>
           <p className="text-sm">
             {" "}
-            {amountLeftToFund} {matchingFundPayoutToken?.name}{" "}
+            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-2">
               ${amountLeftToFundInUSD} USD
             </span>
@@ -426,7 +433,9 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD =
       Number(
-        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        parseFloat(totalAmountLeftToFund).toFixed(
+          matchingFundPayoutToken?.decimal
+        )
       ) * Number(data);
     return (
       <div>
@@ -435,7 +444,7 @@ export default function FundContract(props: {
             AMOUNT TO BE FUNDED
           </div>
           <div className="font-bold mb-1">
-            {amountToFund} {matchingFundPayoutToken?.name}
+            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}
           </div>
           <div className="text-md text-slate-400 mb-6">
             (${amountInUSD.toFixed(2)} USD)
