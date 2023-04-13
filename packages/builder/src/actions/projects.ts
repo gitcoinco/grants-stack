@@ -284,8 +284,10 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
+    const chain = Number(chainId)
+    const appProvider = getProviderByChainId(chain);
 
-    const owners = await fetchProjectOwners(Number(chainId), id);
+    const owners = await fetchProjectOwners(appProvider, chain, id);
 
     dispatch(projectOwnersLoaded(projectID, owners));
   };

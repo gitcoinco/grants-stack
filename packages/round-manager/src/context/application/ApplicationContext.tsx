@@ -7,9 +7,6 @@ import {
 } from "../../features/api/application";
 import { Web3Provider } from "@ethersproject/providers";
 import { datadogLogs } from "@datadog/browser-logs";
-import { ChainId, verifyOwnerOfApplication } from "common";
-import { chainId } from "wagmi";
-import { useChainId } from "wagmi/dist/declarations/src/hooks";
 
 enum ActionType {
   SET_APPLICATION = "SET_APPLICATION",
@@ -219,7 +216,6 @@ export const useApplicationByRoundId = (
   getApplicationByRoundIdError?: Error;
 } => {
   const context = useContext(ApplicationContext);
-  const chainId = useChainId();
 
   if (context === undefined) {
     throw new Error(
@@ -232,23 +228,6 @@ export const useApplicationByRoundId = (
   useEffect(() => {
     fetchApplicationsByRoundId(context.dispatch, roundId, walletProvider);
   }, [roundId, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  /*TODO: use `common`s verifyOwnerOfApplication to filter out applications
-   *  submitted by wallets that arent't owners of the project they're applying with */
-
-  const filteredApplications = context.state.applications.filter(
-    (application) => {
-      if (!application.project?.id) {
-        return false;
-      }
-
-      return verifyOwnerOfApplication(
-        chainId as ChainId,
-        application.project.id,
-        "" /*TODO: get sender from application once subgraph is updated */
-      );
-    }
-  );
 
   return {
     applications: context.state.applications,

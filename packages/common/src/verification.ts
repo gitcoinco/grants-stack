@@ -6,12 +6,12 @@ export const verifyMessageSignature = (
   signature: string,
   message: string,
 ): boolean => {
-  const messageHash = ethers.hashMessage(message);
-  const messageDigest = ethers.getBytes(messageHash);
-  const sig = ethers.Signature.from(signature);
+  const messageHash = ethers.utils.hashMessage(message);
+  const messageDigest = ethers.utils.arrayify(messageHash);
+  const sig = ethers.utils.splitSignature(signature);
 
   for (const address of validSigners) {
-    const recoveredAddress = ethers.recoverAddress(messageDigest, sig);
+    const recoveredAddress = ethers.utils.recoverAddress(messageDigest, sig);
     if (recoveredAddress.toLowerCase() === address.toLowerCase()) {
       return true;
     }
@@ -30,7 +30,7 @@ export const verifyApplicationMetadata = (
   const deterministicApplication = objectToDeterministicJSON(
     application as any,
   );
-  const hash = ethers.solidityPackedKeccak256(
+  const hash = ethers.utils.solidityKeccak256(
     ["string"],
     [deterministicApplication],
   );
@@ -41,7 +41,7 @@ export const verifyApplicationMetadata = (
     verifyMessageSignature(owner, signature, hash)  &&
 
     // verify that the project id matches the project id in the application metadata
-    ethers.solidityPackedKeccak256(
+    ethers.utils.solidityKeccak256(
       ["uint256", "address", "uint256"],
       [idSegments[0], idSegments[1], idSegments[2]]
     ).toLowerCase() === projectId.toLowerCase()

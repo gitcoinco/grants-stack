@@ -26,13 +26,18 @@ const verifyApplicationMetadataSpy = jest.spyOn(
   "verifyApplicationMetadata",
 );
 
+const fetchProjectOwnersSpy = jest.spyOn(
+  require("common/src/index"),
+  "fetchProjectOwners",
+);
+
 describe("getApplicationById", () => {
   let expectedApplication: GrantApplication;
 
   beforeEach(() => {
     expectedApplication = makeGrantApplicationData();
     const projectOwners = expectedApplication.project?.owners.map(
-      (it) => it.address
+      (it) => it.address,
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,7 +92,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub
+      signerOrProviderStub,
     );
 
     console.log("actualApplication", actualApplication);
@@ -110,11 +115,11 @@ describe("getApplicationById", () => {
 
     const getApplicationByIdPromise = getApplicationById(
       "any-id",
-      signerOrProviderStub
+      signerOrProviderStub,
     );
 
     await expect(getApplicationByIdPromise).rejects.toThrow(
-      "Grant Application doesn't exist"
+      "Grant Application doesn't exist",
     );
 
     consoleErrorSpy.mockClear();
@@ -167,7 +172,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub
+      signerOrProviderStub,
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
@@ -207,14 +212,14 @@ describe("getApplicationsByRoundId", () => {
     });
 
     (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
-      verifyApplicationMetadataSpy.mockReturnValue(true);
-
       if (metaptr === expectedApplicationMetaPtr.pointer) {
         return {
-          round: expectedApplication.round,
-          recipient: expectedApplication.recipient,
-          project: expectedApplication.project,
-          answers: expectedApplication.answers,
+          application: {
+            round: expectedApplication.round,
+            recipient: expectedApplication.recipient,
+            project: expectedApplication.project,
+            answers: expectedApplication.answers,
+          },
         };
       }
       if (metaptr === expectedProjectsMetaPtr.pointer) {
@@ -227,9 +232,16 @@ describe("getApplicationsByRoundId", () => {
       }
     });
 
+    verifyApplicationMetadataSpy.mockReturnValue(true);
+
+    // todo: does not work
+    fetchProjectOwnersSpy.mockReturnValue(
+      Promise.resolve([expectedApplication.recipient]),
+    );
+
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub
+      signerOrProviderStub,
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
@@ -286,7 +298,7 @@ describe("getApplicationsByRoundId", () => {
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub
+      signerOrProviderStub,
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
