@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { InboxInIcon as NoApplicationsForRoundIcon } from "@heroicons/react/outline";
+import {
+  InboxInIcon as NoApplicationsForRoundIcon,
+  DownloadIcon,
+} from "@heroicons/react/outline";
 import { Spinner } from "../common/Spinner";
 import {
   BasicCard,
@@ -34,9 +37,13 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
+import { useNetwork } from "wagmi";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
+
+  const { chain } = useNetwork() || {};
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
   const pendingApplications =
@@ -156,6 +163,17 @@ export default function ApplicationsReceived() {
 
   return (
     <div>
+      <Button
+        type="button"
+        $as="a"
+        $variant="outline"
+        className="text-xs px-3 py-1 inline-block"
+        target="_blank"
+        href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`}
+      >
+        <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+        <span>CSV</span>
+      </Button>
       {pendingApplications && pendingApplications.length > 0 && (
         <div className="flex items-center justify-end mb-4">
           <span className="text-grey-400 text-sm mr-6">
