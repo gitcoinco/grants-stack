@@ -67,7 +67,7 @@ export default function ImageCrop({
   useEffect(() => {
     if (completedCrop?.width && completedCrop?.height && imgRef.current) {
       // We use canvasPreview as it's much faster than imgPreview.
-      const canvas = buildCanvas(imgRef.current, completedCrop);
+      const canvas = buildCanvas(imgRef.current, completedCrop, dimensions);
       setCroppedCanvas(canvas);
     }
   }, [completedCrop]);
