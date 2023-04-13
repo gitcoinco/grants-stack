@@ -146,6 +146,7 @@ export const getApplicationsByRoundId = async (
           first: 1000) {
             id
             project
+            sender
             metaPtr {
               protocol
               pointer
@@ -178,6 +179,8 @@ export const getApplicationsByRoundId = async (
 
       // todo: get the actual owner
       const owner = ["0x136D473D0C3965D7630F346152101e741074825f"];
+
+      console.log("===> sender", project.sender)
 
       const isValidMetadata = verifyApplicationMetadata(
         project.project,
