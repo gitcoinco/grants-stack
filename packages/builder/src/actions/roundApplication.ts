@@ -2,7 +2,7 @@ import { objectToDeterministicJSON } from "common/src/deterministicJSON";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { chains } from "common";
-import { ethers } from "ethers";
+import { Event, ethers } from "ethers";
 import { Dispatch } from "redux";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
 import { global } from "../global";
@@ -358,7 +358,7 @@ export const checkRoundApplications =
       Object.keys(uniqueIDsToIDs)
     );
 
-    let applicationEvents = [];
+    let applicationEvents: Event[] = [];
     try {
       applicationEvents = await contract.queryFilter(applicationFilter);
       applicationEvents.forEach((event) => {

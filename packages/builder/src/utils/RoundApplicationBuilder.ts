@@ -72,7 +72,7 @@ export default class RoundApplicationBuilder {
     roundAddress: string,
     formInputs: RoundApplicationAnswers
   ): Promise<RoundApplication> {
-    const answers = [];
+    const answers: any = [];
     let recipient: string;
 
     // eslint-disable-next-line

@@ -5,7 +5,6 @@ import {
   addressesByChainID,
   convertStatusToText,
   fetchProjectOwners,
-  getProviderByChainId,
 } from "common";
 import {
   Client as AlloClient,
@@ -17,7 +16,7 @@ import { Application, AppStatus, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents } from "../utils/utils";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 import { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
@@ -284,10 +283,10 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
-    const chain = Number(chainId)
+    const chain = Number(chainId);
     const appProvider = getProviderByChainId(chain);
 
-    const owners = await fetchProjectOwners(appProvider, chain, id);
+    const owners = await fetchProjectOwners(appProvider, chain, Number(id));
 
     dispatch(projectOwnersLoaded(projectID, owners));
   };

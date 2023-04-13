@@ -37,7 +37,7 @@ export default function Rounds() {
       const { round } = roundState;
 
       if (status === Status.Loaded && round) {
-        let category = null;
+        let category: RoundDisplayType | null = null;
         const currentTime = secondsSinceEpoch();
         // Current Applications
         if (

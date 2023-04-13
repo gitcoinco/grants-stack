@@ -118,7 +118,7 @@ describe("<Rounds />", () => {
         address: addressFrom(2),
         round: round2,
       });
-      const applications = [];
+      const applications: any = [];
       applications.push(
         buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
         // set the status directly here, saves some pain
@@ -161,7 +161,7 @@ describe("<Rounds />", () => {
         address: addressFrom(2),
         round: round2,
       });
-      const applications = [];
+      const applications: any = [];
       applications.push(
         buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
         // set the status directly here, saves some pain
@@ -203,7 +203,7 @@ describe("<Rounds />", () => {
         address: addressFrom(2),
         round: round2,
       });
-      const applications = [];
+      const applications: any = [];
       applications.push(
         buildProjectApplication({ roundID: addressFrom(1), status: "APPROVED" })
         // set the status directly here, saves some pain
