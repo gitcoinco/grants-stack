@@ -176,8 +176,8 @@ function ProjectForm({
         <ImageInput
           label="Project Logo"
           dimensions={{
-            width: 600,
-            height: 600,
+            width: 400,
+            height: 400,
           }}
           circle
           imageHash={props.formMetaData.logoImg}
