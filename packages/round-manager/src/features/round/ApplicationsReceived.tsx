@@ -168,8 +168,8 @@ export default function ApplicationsReceived() {
         $as="a"
         $variant="outline"
         className="text-xs px-3 py-1 inline-block"
-        target="_blank"
         href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`}
+        download
       >
         <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
         <span>CSV</span>
