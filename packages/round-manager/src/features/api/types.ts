@@ -229,6 +229,8 @@ export interface Round {
   feesAddress?: string;
 
   finalized: boolean;
+  protocolFeePercentage?: number;
+  roundFeePercentage?: number;
 }
 
 export type MatchingStatsData = {

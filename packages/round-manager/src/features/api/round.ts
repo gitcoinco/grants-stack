@@ -34,8 +34,13 @@ export async function getRoundById(
     const res = await graphql_fetch(
       `
           query GetRounds($roundId: String) {
+
+            alloSettings(id:"1") {
+              protocolFeePercentage
+            }
+
             rounds(where: {
-        ${roundId ? `id: $roundId` : ``}
+              ${roundId ? `id: $roundId` : ``}
             }) {
               id
               program {
@@ -53,6 +58,7 @@ export async function getRoundById(
               applicationsEndTime
               roundStartTime
               roundEndTime
+              roundFeePercentage
               token
               projectsMetaPtr {
                 pointer
@@ -109,6 +115,14 @@ export async function getRoundById(
       (account: { address: string }) => account.address
     );
 
+    const DENOMINATOR = 100000;
+
+    const protocolFeePercentage = res.data.alloSettings ?
+      (res.data.alloSettings.protocolFeePercentage / DENOMINATOR) :
+      0;
+
+    const roundFeePercentage = res.data.rounds[0].roundFeePercentage / DENOMINATOR;
+
     return {
       id: res.data.rounds[0].id,
       roundMetadata,
@@ -121,6 +135,8 @@ export async function getRoundById(
       ),
       roundStartTime: new Date(res.data.rounds[0].roundStartTime * 1000),
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
+      protocolFeePercentage: protocolFeePercentage,
+      roundFeePercentage: roundFeePercentage,
       token: res.data.rounds[0].token,
       votingStrategy: res.data.rounds[0].votingStrategy,
       payoutStrategy: res.data.rounds[0].payoutStrategy,
