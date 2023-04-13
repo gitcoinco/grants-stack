@@ -207,7 +207,7 @@ function Round() {
 
   return (
     <div
-      className="h-full w-full absolute flex flex-col justify-center items-center"
+      className="h-full w-full flex flex-col justify-center items-center"
       data-testid="show-round-container"
     >
       <div className="w-full lg:w-1/3 sm:w-2/3 px-4 md:mx-0">

@@ -25,6 +25,7 @@ import setupStore from "./store";
 import "./styles/index.css";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
+import initTagmanager from "./tagmanager";
 
 const store = setupStore();
 const root = ReactDOM.createRoot(
@@ -34,7 +35,11 @@ const root = ReactDOM.createRoot(
 const gtcLightTheme = lightTheme();
 gtcLightTheme.shadows.connectButton = "0 0 0 0px";
 
+// Initialize datadog
 initDatadog();
+
+// Initialize tagmanager
+initTagmanager();
 
 datadogRum.addAction("Init");
 
