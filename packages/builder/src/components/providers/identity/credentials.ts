@@ -6,7 +6,6 @@ import {
   VerifiableCredentialRecord,
 } from "@gitcoinco/passport-sdk-types";
 import { BroadcastChannel } from "broadcast-channel";
-import { debounce } from "ts-debounce";
 
 export type { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
@@ -119,7 +118,9 @@ export type OAuthResult = {
 
 export function openOauthWindow(
   url: string,
-  broadcastChannelName: string
+  broadcastChannelName: string,
+  target: string,
+  state?: string
 ): Promise<OAuthResult> {
   const width = 600;
   const height = 800;
@@ -147,32 +148,24 @@ export function openOauthWindow(
       reject(new VerificationError("Authorization timed out"));
     }, 1000 * 60 * 5);
 
-    channel.onmessage = debounce(
-      (event: {
-        target: string;
-        data: { error: string | null; code: string; state: string };
-      }) => {
-        clearTimeout(timeout);
+    channel.onmessage = (event: {
+      target: string;
+      data: { error: string | null; code: string; state: string };
+    }) => {
+      if (event.target !== target) return;
+      if (state && event.data.state !== state) return;
 
-        if (event.data.error) {
-          reject(new VerificationError(event.data.error));
-        }
+      clearTimeout(timeout);
+      channel.close();
 
-        resolve({
-          code: event.data.code,
-          state: event.data.state,
-        });
+      if (event.data.error) {
+        reject(new VerificationError(event.data.error));
       }
-    );
+
+      resolve({
+        code: event.data.code,
+        state: event.data.state,
+      });
+    };
   });
-}
-
-export async function createVerifiableCredentialFromOAuth(
-  authUrlGenerator: string,
-  callbackUrl: string,
-  broadcastChannelName: string
-): Promise<OAuthResult> {
-  const authUrl = await fetchAuthUrl(authUrlGenerator, callbackUrl);
-
-  return openOauthWindow(authUrl, broadcastChannelName);
 }

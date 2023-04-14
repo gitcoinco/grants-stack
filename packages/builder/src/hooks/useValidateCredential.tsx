@@ -25,6 +25,7 @@ export default function useValidateCredential(
           credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
           handle.toLowerCase();
         const validCredential = await verifier.verifyCredential(credential);
+
         const validIssuer = IAM_SERVER === credential.issuer;
         // TODO: add owner check
         // address of vc.credentialSubject.id should be a project owner

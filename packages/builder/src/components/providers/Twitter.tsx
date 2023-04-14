@@ -1,5 +1,4 @@
 import { Tooltip } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
@@ -9,7 +8,8 @@ import { RootState } from "../../reducers";
 import { CredentialProvider } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import {
-  createVerifiableCredentialFromOAuth,
+  fetchAuthUrl,
+  openOauthWindow,
   fetchVerifiableCredential,
   VerificationError,
   VerifiableCredential,
@@ -40,11 +40,7 @@ export default function Twitter({
     };
   }, shallowEqual);
 
-  const {
-    isValid: validCredential,
-    error: validationError,
-    isLoading,
-  } = useValidateCredential(
+  const { isValid: validCredential, isLoading } = useValidateCredential(
     props.verifiableCredential,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
@@ -52,19 +48,19 @@ export default function Twitter({
 
   const { signer } = global;
 
-  // pass the validation error to the parent component
-  useEffect(() => {
-    verificationError(validationError);
-  }, [validationError]);
-
   // Fetch Twitter OAuth2 url from the IAM procedure
   async function handleVerify(): Promise<void> {
     // Fetch data from external API
     try {
-      const result = await createVerifiableCredentialFromOAuth(
+      const authUrl = await fetchAuthUrl(
         `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL}/twitter/generateAuthUrl`,
-        process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK!,
-        "twitter_oauth_channel"
+        process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK!
+      );
+
+      const result = await openOauthWindow(
+        authUrl,
+        "twitter_oauth_channel",
+        "twitter"
       );
 
       const verified: { credential: VerifiableCredential } =
@@ -105,6 +101,7 @@ export default function Twitter({
       if (error instanceof VerificationError) {
         verificationError(error.message);
       } else {
+        console.error(error);
         verificationError(
           "Couldn't connect to Twitter. Please try verifying again"
         );
