@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { utils } from "ethers";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
@@ -164,17 +165,21 @@ export default function ApplicationsReceived() {
   return (
     <div>
       <div className="flex items-center mb-4">
-        <Button
-          type="button"
-          $as="a"
-          $variant="outline"
-          className="text-xs px-3 py-1 inline-block"
-          href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`}
-          download
-        >
-          <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
-          <span>CSV</span>
-        </Button>
+        {id && (
+          <Button
+            type="button"
+            $as="a"
+            $variant="outline"
+            className="text-xs px-3 py-1 inline-block"
+            href={`${process.env.REACT_APP_ALLO_API_URL}/data/${
+              chain?.id
+            }/rounds/${utils.getAddress(id)}/applications.csv`}
+            download
+          >
+            <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+            <span>CSV</span>
+          </Button>
+        )}
         {pendingApplications && pendingApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
