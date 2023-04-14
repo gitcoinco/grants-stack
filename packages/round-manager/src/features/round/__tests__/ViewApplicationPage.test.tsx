@@ -198,6 +198,7 @@ describe("ViewApplicationPage", () => {
 
       application.status = "APPROVED";
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const expected = {
         id: application.id,
         round: application.round,

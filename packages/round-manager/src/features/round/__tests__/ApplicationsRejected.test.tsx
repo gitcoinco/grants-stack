@@ -289,6 +289,7 @@ describe("<ApplicationsRejected />", () => {
 
         grantApplications[0].status = "APPROVED";
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const expected = {
           id: grantApplications[0].id,
           round: grantApplications[0].round,

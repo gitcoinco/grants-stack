@@ -67,6 +67,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsEndTime = faker.date.soon(10, applicationsStartTime);
   const roundStartTime = faker.date.future(1, applicationsEndTime);
   const roundEndTime = faker.date.soon(21, roundStartTime);
+  const roundFeePercentage = 10000;
+  const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
     roundMetadata: {
@@ -91,6 +93,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       id: faker.finance.ethereumAddress(),
       isReadyForPayout: false,
     },
+    protocolFeePercentage,
+    roundFeePercentage,
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [faker.finance.ethereumAddress()],
     finalized: false,
