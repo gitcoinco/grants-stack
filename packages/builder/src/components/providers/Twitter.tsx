@@ -118,7 +118,7 @@ export default function Twitter({
   return (
     <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
-        disabled={handle?.length === 0 && isLoading}
+        disabled={handle?.length === 0}
         styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleVerify()}
