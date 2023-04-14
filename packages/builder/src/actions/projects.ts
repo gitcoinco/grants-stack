@@ -8,7 +8,6 @@ import {
 } from "allo-indexer-client";
 import { addressesByChainID, fetchProjectOwners } from "common/src/registry";
 import { verifyApplicationMetadata } from "common/src/verification";
-import { getProvider } from "@wagmi/core";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus, ProjectStats } from "../reducers/projects";
@@ -380,7 +379,7 @@ const filterLegitApplications = async (
       const projectId = projectIdSplits[2];
 
       const owners = await fetchProjectOwners(
-        getProviderByChainId(Number(projectChainId)),
+        wagmi.getProvider({ chainId: Number(projectChainId) }),
         projectChainId,
         projectId
       );
