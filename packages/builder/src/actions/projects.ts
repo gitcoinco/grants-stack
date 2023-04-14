@@ -6,13 +6,12 @@ import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-import { addressesByChainID } from "../contracts/deployments";
+import { addressesByChainID, fetchProjectOwners } from "common/src/registry";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
-import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 import { chains } from "../utils/wagmi";
@@ -281,8 +280,13 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
+    const appProvider = getProviderByChainId(Number(chainId));
 
-    const owners = await fetchProjectOwners(Number(chainId), id);
+    const owners = await fetchProjectOwners(
+      appProvider,
+      Number(chainId),
+      Number(id)
+    );
 
     dispatch(projectOwnersLoaded(projectID, owners));
   };

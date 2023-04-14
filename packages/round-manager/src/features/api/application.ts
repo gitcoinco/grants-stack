@@ -19,6 +19,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
 import { verifyApplicationMetadata } from "common/src/verification";
+import { fetchProjectOwners } from "common/src/registry";
 
 type RoundApplication = {
   id: string;
@@ -177,19 +178,27 @@ export const getApplicationsByRoundId = async (
         ? metadata.application
         : metadata;
 
-      // todo: get the actual owner
-      const owner = ["0x136D473D0C3965D7630F346152101e741074825f"];
+      const projectIdSplits = metadata.application.project.id.split(":"); 
+      const chainId = projectIdSplits[0];
+      const projectId = projectIdSplits[2];
 
-      console.log("===> sender", project.sender)
+      const owners = await fetchProjectOwners(
+        signerOrProvider,
+        chainId,
+        projectId,
+      );
 
       const isValidMetadata = verifyApplicationMetadata(
         project.project,
-        owner,
+        owners,
         metadata,
       );
 
-      console.log("=====>");
-      if (isValidMetadata)
+      const isSenderOwner = owners
+        .map((owner: string) => owner.toLowerCase())
+        .includes(project.sender.toLowerCase());
+
+      if (isValidMetadata && isSenderOwner)
         grantApplications.push({
           ...application,
           status: projectStatus,
