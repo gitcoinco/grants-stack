@@ -49,6 +49,13 @@ export type GHOrgRequestPayload = RequestPayload & {
   org?: string;
 };
 
+export class VerificationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "VerificationError";
+  }
+}
+
 // Fetch a verifiableCredential
 export const fetchVerifiableCredential = async (
   iamUrl: string,
@@ -72,7 +79,7 @@ export const fetchVerifiableCredential = async (
 
   // must provide signature for message
   if (!signature) {
-    throw new Error("Unable to sign message");
+    throw new VerificationError("Unable to sign message");
   }
 
   // pass the signature as part of the proofs obj
@@ -80,19 +87,13 @@ export const fetchVerifiableCredential = async (
   payload.proofs = { ...payload.proofs, ...{ signature } };
 
   // fetch a credential from the API that fits the version, payload and passes the signature message challenge
-
-  let response;
-  try {
-    response = await axios.post(
-      `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/verify`,
-      {
-        payload,
-        challenge,
-      }
-    );
-  } catch (error) {
-    datadogLogs.logger.error(`Error fetching verifiable credential ${error}`);
-  }
+  const response = await axios.post(
+    `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/verify`,
+    {
+      payload,
+      challenge,
+    }
+  );
 
   // return everything that was used to create the credential (along with the credential)
   return {
@@ -102,13 +103,6 @@ export const fetchVerifiableCredential = async (
     credential: response?.data.credential,
   } as VerifiableCredentialRecord;
 };
-
-export class VerificationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "VerificationError";
-  }
-}
 
 export async function fetchAuthUrl(
   url: string,

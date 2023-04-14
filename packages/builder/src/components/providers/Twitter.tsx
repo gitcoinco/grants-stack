@@ -1,4 +1,5 @@
 import { Tooltip } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
@@ -39,13 +40,22 @@ export default function Twitter({
     };
   }, shallowEqual);
 
-  const { isValid: validTwitterCredential } = useValidateCredential(
+  const {
+    isValid: validCredential,
+    error: validationError,
+    isLoading,
+  } = useValidateCredential(
     props.verifiableCredential,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
 
   const { signer } = global;
+
+  // pass the validation error to the parent component
+  useEffect(() => {
+    verificationError(validationError);
+  }, [validationError]);
 
   // Fetch Twitter OAuth2 url from the IAM procedure
   async function handleVerify(): Promise<void> {
@@ -104,14 +114,14 @@ export default function Twitter({
     }
   }
 
-  if (validTwitterCredential) {
+  if (validCredential) {
     return <VerifiedBadge />;
   }
 
   return (
     <div hidden={!canVerify} className={canVerify ? "flex flex-row mt-4" : ""}>
       <Button
-        disabled={handle?.length === 0}
+        disabled={handle?.length === 0 && isLoading}
         styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
         onClick={() => handleVerify()}
