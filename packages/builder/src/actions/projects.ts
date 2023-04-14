@@ -7,6 +7,7 @@ import {
   Application as GrantApplication,
 } from "allo-indexer-client";
 import { addressesByChainID, fetchProjectOwners } from "common/src/registry";
+import { verifyApplicationMetadata } from "common/src/verification";
 import { getProvider } from "@wagmi/core";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -18,6 +19,7 @@ import { getProjectURIComponents } from "../utils/utils";
 import wagmi, { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
+import PinataClient from "../services/pinata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
 
@@ -426,6 +428,7 @@ export const fetchProjectApplications =
     });
 
     const { web3Provider } = global;
+    const pinataClient = new PinataClient();
 
     if (!web3Provider?.chains) {
       return;
@@ -445,6 +448,8 @@ export const fetchProjectApplications =
             `query roundApplications($projectID: String) {
             roundApplications(where: { project: $projectID }) {
               status
+              project
+              sender
               round {
                 id
               }
@@ -468,14 +473,51 @@ export const fetchProjectApplications =
             return [];
           }
 
-          const applications = response.data.roundApplications.map(
-            (application: any) => ({
-              status: convertStatusToText(application.status),
-              roundID: application.round.id,
-              chainId: chain.id,
-              metaPtr: application.metaPtr,
-            })
-          );
+          const applications: any[] = [];
+
+          console.log(response.data.roundApplications.length);
+          /* eslint-disable no-await-in-loop */
+          for (const application of response.data.roundApplications) {
+            const metadata = await pinataClient.fetchJson(
+              application.metaPtr.pointer
+            );
+            if (metadata.signature) {
+              console.log("==> metadata", metadata);
+              const projectIdSplits =
+                metadata.application.project.id.split(":");
+              const chainId = projectIdSplits[0];
+              const projectId = projectIdSplits[2];
+
+              const owners = await fetchProjectOwners(
+                getProviderByChainId(Number(chainId)),
+                chainId,
+                projectId
+              );
+
+              const isValidMetadata = verifyApplicationMetadata(
+                application.project,
+                owners,
+                metadata
+              );
+
+              const isSenderOwner = owners
+                .map((owner: string) => owner.toLowerCase())
+                .includes(application.sender.toLowerCase());
+
+              console.log("==> isValidMetadata", isValidMetadata);
+              console.log("==> isSenderOwner", isSenderOwner);
+
+              if (isValidMetadata && isSenderOwner)
+                applications.push({
+                  status: convertStatusToText(application.status),
+                  roundID: application.round.id,
+                  chainId: chain.id,
+                  metaPtr: application.metaPtr,
+                });
+            }
+          }
+
+          console.log("==> applications", applications);
 
           if (applications.length === 0) {
             return [];
