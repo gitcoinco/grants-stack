@@ -47,10 +47,10 @@ jest.mock("../../../constants", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: "some-round-id",
+    id: "0x0000000000000000000000000000000000000000",
   }),
 }));
-const roundIdOverride = "some-round-id";
+const roundIdOverride = "0x0000000000000000000000000000000000000000";
 
 const grantApplications = [
   makeGrantApplicationData({ roundIdOverride }),
