@@ -28,8 +28,9 @@ const signerOrProviderStub = {
 } as unknown as Web3Provider;
 
 const verifyApplicationMetadataSpy = jest.spyOn(
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("common/src/verification"),
-  "verifyApplicationMetadata",
+  "verifyApplicationMetadata"
 );
 
 describe("getApplicationById", () => {
@@ -38,7 +39,7 @@ describe("getApplicationById", () => {
   beforeEach(() => {
     expectedApplication = makeGrantApplicationData();
     const projectOwners = expectedApplication.project?.owners.map(
-      (it) => it.address,
+      (it) => it.address
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +94,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     console.log("actualApplication", actualApplication);
@@ -116,11 +117,11 @@ describe("getApplicationById", () => {
 
     const getApplicationByIdPromise = getApplicationById(
       "any-id",
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     await expect(getApplicationByIdPromise).rejects.toThrow(
-      "Grant Application doesn't exist",
+      "Grant Application doesn't exist"
     );
 
     consoleErrorSpy.mockClear();
@@ -173,7 +174,7 @@ describe("getApplicationById", () => {
 
     const actualApplication = await getApplicationById(
       applicationId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
@@ -242,13 +243,13 @@ describe("getApplicationsByRoundId", () => {
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
     expect(actualApplications[0].round).toEqual(expectedApplications[0].round);
   });
-  
+
   it("should retrieve signed applications given an round id", async () => {
     verifyApplicationMetadataSpy.mockReturnValue(true);
 
@@ -303,7 +304,7 @@ describe("getApplicationsByRoundId", () => {
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,
-      signerOrProviderStub,
+      signerOrProviderStub
     );
 
     // Todo: need to be fixed to check whether if the entire application matches with expectedApplication
