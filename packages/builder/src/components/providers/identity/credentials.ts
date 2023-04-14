@@ -60,13 +60,8 @@ export class VerificationError extends Error {
 export const fetchVerifiableCredential = async (
   iamUrl: string,
   payload: GHOrgRequestPayload,
-  signer: { signMessage: (message: string) => Promise<string> } | undefined
+  signer: { signMessage: (message: string) => Promise<string> }
 ): Promise<VerifiableCredentialRecord> => {
-  // must provide signature for message
-  if (!signer) {
-    throw new Error("Unable to sign message without a signer");
-  }
-
   // first pull a challenge that can be signed by the user
   const { challenge } = await fetchChallengeCredential(iamUrl, payload);
 
