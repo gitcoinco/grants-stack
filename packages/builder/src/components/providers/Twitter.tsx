@@ -8,8 +8,10 @@ import { RootState } from "../../reducers";
 import { CredentialProvider } from "../../types";
 import Button, { ButtonVariants } from "../base/Button";
 import {
-  createVerifiableCredential,
+  createVerifiableCredentialFromOAuth,
+  fetchVerifiableCredential,
   VerificationError,
+  VerifiableCredential,
 } from "./identity/credentials";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { credentialsSaved } from "../../actions/projectForm";
@@ -33,12 +35,12 @@ export default function Twitter({
     return {
       account: state.web3.account,
       formMetaData: state.projectForm.metadata,
-      vc: twitterCredential,
+      verifiableCredential: twitterCredential,
     };
   }, shallowEqual);
 
   const { isValid: validTwitterCredential } = useValidateCredential(
-    props.vc,
+    props.verifiableCredential,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
   );
@@ -46,19 +48,31 @@ export default function Twitter({
   const { signer } = global;
 
   // Fetch Twitter OAuth2 url from the IAM procedure
-  async function handleFetchTwitterOAuth(): Promise<void> {
+  async function handleVerify(): Promise<void> {
     // Fetch data from external API
     try {
-      const credential = await createVerifiableCredential(
+      const result = await createVerifiableCredentialFromOAuth(
         `${process.env.REACT_APP_PASSPORT_PROCEDURE_URL}/twitter/generateAuthUrl`,
         process.env.REACT_APP_PUBLIC_PASSPORT_TWITTER_CALLBACK!,
-        "twitter_oauth_channel",
-        CredentialProvider.Twitter,
-        props.account ?? "",
-        signer
+        "twitter_oauth_channel"
       );
 
-      const { provider } = credential.credentialSubject;
+      const verified: { credential: VerifiableCredential } =
+        await fetchVerifiableCredential(
+          process.env.REACT_APP_PASSPORT_IAM_URL || "",
+          {
+            type: CredentialProvider.Twitter,
+            version: "0.0.0",
+            address: props.account || "",
+            proofs: {
+              code: result.code,
+              sessionKey: result.state,
+            },
+          },
+          signer as { signMessage: (message: string) => Promise<string> }
+        );
+
+      const { provider } = verified.credential.credentialSubject;
 
       if (
         provider &&
@@ -66,7 +80,7 @@ export default function Twitter({
       ) {
         dispatch(
           credentialsSaved({
-            twitter: credential!,
+            twitter: verified.credential!,
           })
         );
         verificationError();
@@ -100,7 +114,7 @@ export default function Twitter({
         disabled={handle?.length === 0}
         styles={["ml-8 w-auto mt-12"]}
         variant={ButtonVariants.secondary}
-        onClick={() => handleFetchTwitterOAuth()}
+        onClick={() => handleVerify()}
       >
         Verify
       </Button>

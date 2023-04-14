@@ -5,11 +5,11 @@ import {
   RequestPayload,
   IssuedChallenge,
   VerifiableCredentialRecord,
-  VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { BroadcastChannel } from "broadcast-channel";
 import { debounce } from "ts-debounce";
-import { CredentialProvider } from "../../../types";
+
+export type { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
 // Keeping track of the hashing mechanism (algo + content)
 export const VERSION = "v0.0.0";
@@ -129,14 +129,15 @@ export async function fetchAuthUrl(
   return data.authUrl;
 }
 
+export type OAuthResult = {
+  code: string;
+  state: string;
+};
+
 export function openOauthWindow(
   url: string,
   broadcastChannelName: string
-): Promise<{
-  error: string | null;
-  code: string;
-  state: string;
-}> {
+): Promise<OAuthResult> {
   const width = 600;
   const height = 800;
   // eslint-disable-next-line no-restricted-globals
@@ -175,7 +176,6 @@ export function openOauthWindow(
         }
 
         resolve({
-          error: event.data.error,
           code: event.data.code,
           state: event.data.state,
         });
@@ -184,35 +184,12 @@ export function openOauthWindow(
   });
 }
 
-export async function createVerifiableCredential(
+export async function createVerifiableCredentialFromOAuth(
   authUrlGenerator: string,
   callbackUrl: string,
-  broadcastChannelName: string,
-  provider: CredentialProvider,
-  account: string,
-  signer: { signMessage: (message: string) => Promise<string> }
-): Promise<VerifiableCredential> {
+  broadcastChannelName: string
+): Promise<OAuthResult> {
   const authUrl = await fetchAuthUrl(authUrlGenerator, callbackUrl);
 
-  const result = await openOauthWindow(authUrl, broadcastChannelName);
-
-  const queryCode = result.code;
-  const queryState = result.state;
-
-  const verified: { credential: VerifiableCredential } =
-    await fetchVerifiableCredential(
-      process.env.REACT_APP_PASSPORT_IAM_URL || "",
-      {
-        type: provider,
-        version: "0.0.0",
-        address: account || "",
-        proofs: {
-          code: queryCode,
-          sessionKey: queryState,
-        },
-      },
-      signer
-    );
-
-  return verified.credential;
+  return openOauthWindow(authUrl, broadcastChannelName);
 }
