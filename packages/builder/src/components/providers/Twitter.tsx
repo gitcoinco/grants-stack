@@ -40,7 +40,7 @@ export default function Twitter({
     };
   }, shallowEqual);
 
-  const { isValid: validCredential, isLoading } = useValidateCredential(
+  const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
     CredentialProvider.Twitter,
     props.formMetaData.projectTwitter
