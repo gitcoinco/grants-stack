@@ -37,12 +37,12 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
-import { useNetwork } from "wagmi";
+import { useWallet } from "../common/Auth";
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
 
-  const { chain } = useNetwork() || {};
+  const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { applications, isLoading } = useApplicationByRoundId(id!);
@@ -163,30 +163,32 @@ export default function ApplicationsReceived() {
 
   return (
     <div>
-      <Button
-        type="button"
-        $as="a"
-        $variant="outline"
-        className="text-xs px-3 py-1 inline-block"
-        href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`}
-        download
-      >
-        <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
-        <span>CSV</span>
-      </Button>
-      {pendingApplications && pendingApplications.length > 0 && (
-        <div className="flex items-center justify-end mb-4">
-          <span className="text-grey-400 text-sm mr-6">
-            Save in gas fees by approving/rejecting multiple applications at
-            once.
-          </span>
-          {bulkSelect ? (
-            <Cancel onClick={() => setBulkSelect(false)} />
-          ) : (
-            <Select onClick={() => setBulkSelect(true)} />
-          )}
-        </div>
-      )}
+      <div className="flex items-center mb-4">
+        <Button
+          type="button"
+          $as="a"
+          $variant="outline"
+          className="text-xs px-3 py-1 inline-block"
+          href={`${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`}
+          download
+        >
+          <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+          <span>CSV</span>
+        </Button>
+        {pendingApplications && pendingApplications.length > 0 && (
+          <div className="flex items-center justify-end ml-auto">
+            <span className="text-grey-400 text-sm mr-6">
+              Save in gas fees by approving/rejecting multiple applications at
+              once.
+            </span>
+            {bulkSelect ? (
+              <Cancel onClick={() => setBulkSelect(false)} />
+            ) : (
+              <Select onClick={() => setBulkSelect(true)} />
+            )}
+          </div>
+        )}
+      </div>
       <CardsContainer>
         {!isLoading &&
           pendingApplications?.map((application, index) => (
