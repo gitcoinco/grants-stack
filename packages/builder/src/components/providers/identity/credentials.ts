@@ -1,6 +1,5 @@
 // --- Node/Browser http req library
 import axios from "axios";
-import { datadogLogs } from "@datadog/browser-logs";
 import {
   RequestPayload,
   IssuedChallenge,
@@ -20,21 +19,16 @@ export const fetchChallengeCredential = async (
   payload: RequestPayload
 ): Promise<IssuedChallenge> => {
   // fetch challenge as a credential from API that fits the version, address and type (this credential has a short ttl)
+  const response = await axios.post(
+    `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/challenge`,
+    {
+      payload: {
+        address: payload.address,
+        type: payload.type,
+      },
+    }
+  );
 
-  let response;
-  try {
-    response = await axios.post(
-      `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/challenge`,
-      {
-        payload: {
-          address: payload.address,
-          type: payload.type,
-        },
-      }
-    );
-  } catch (error) {
-    datadogLogs.logger.error(`Error fetching challenge credential ${error}`);
-  }
   return {
     challenge: response?.data.credential,
   } as IssuedChallenge;
