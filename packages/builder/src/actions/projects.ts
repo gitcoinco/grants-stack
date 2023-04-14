@@ -363,6 +363,127 @@ export const loadAllChainsProjects =
     });
   };
 
+const filterLegitApplications = async (
+  applicationMetadata: any[],
+  chainID: number
+) => {
+  const pinataClient = new PinataClient();
+  const applications: any[] = [];
+
+  /* eslint-disable no-await-in-loop */
+  for (const application of applicationMetadata) {
+    const metadata = await pinataClient.fetchJson(application.metaPtr.pointer);
+
+    if (metadata.signature) {
+      const projectIdSplits = metadata.application.project.id.split(":");
+      const projectChainId = projectIdSplits[0];
+      const projectId = projectIdSplits[2];
+
+      const owners = await fetchProjectOwners(
+        getProviderByChainId(Number(projectChainId)),
+        projectChainId,
+        projectId
+      );
+
+      const isValidMetadata = verifyApplicationMetadata(
+        application.project,
+        owners,
+        metadata
+      );
+
+      const isSenderOwner = owners
+        .map((owner: string) => owner.toLowerCase())
+        .includes(application.sender.toLowerCase());
+
+      if (isValidMetadata && isSenderOwner)
+        applications.push({
+          status: convertStatusToText(application.status),
+          roundID: application.round.id,
+          chainId: chainID,
+          metaPtr: application.metaPtr,
+        });
+    }
+  }
+
+  return applications;
+};
+
+const fetchApplicationsFromSubgraph = async (
+  projectID: string,
+  projectChainId: number,
+  roundID?: string,
+  reactEnv?: any /* ProcessEnv */
+): Promise<any[]> => {
+  const { web3Provider } = global;
+
+  if (!web3Provider?.chains) {
+    return [];
+  }
+
+  const apps = await Promise.all(
+    web3Provider.chains.map(async (chain: { id: number }) => {
+      try {
+        const addresses = addressesByChainID(projectChainId);
+        const projectApplicationID = generateUniqueRoundApplicationID(
+          projectChainId,
+          projectID,
+          addresses.projectRegistry!
+        );
+
+        const response: any = await graphqlFetch(
+          `query roundApplications($projectID: String, ${
+            roundID ? "$roundID: String" : ""
+          }) {
+            roundApplications(where: { project: $projectID }) {
+              status
+              project
+              sender
+              round {
+                id
+              }
+              metaPtr {
+                pointer
+                protocol
+              }
+            }
+          }
+          `,
+          chain.id,
+          {
+            projectID: projectApplicationID,
+            roundID,
+          },
+          reactEnv
+        );
+
+        if (response.errors) {
+          datadogRum.addError(response.error, { projectID });
+          console.error(response.error);
+          return [];
+        }
+
+        const applications = await filterLegitApplications(
+          response.data.roundApplications,
+          chain.id
+        );
+
+        if (applications.length === 0) {
+          return [];
+        }
+
+        return applications;
+      } catch (error: any) {
+        datadogRum.addError(error, { projectID });
+        console.error(error);
+
+        return [];
+      }
+    })
+  );
+
+  return apps.flat();
+};
+
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
@@ -379,170 +500,41 @@ export const fetchProjectApplicationInRound = async (
     projectRegistryAddress
   );
 
-  try {
-    const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $roundID: String) {
-          roundApplications(
-            where: {
-              project: $projectApplicationID,
-              round: $roundID
-            }
-          ) {
-            status
-          }
-        }
-      `,
-      projectChainId,
-      {
-        projectApplicationID,
-        roundID,
-      },
-      reactEnv
-    );
+  const applications = await fetchApplicationsFromSubgraph(
+    projectApplicationID,
+    projectChainId,
+    roundID,
+    reactEnv
+  );
 
-    if (response.errors) {
-      throw response.errors;
-    }
-
-    return {
-      hasProjectAppliedToRound: response.data.roundApplications
-        ? response.data.roundApplications.length > 0
-        : false,
-    };
-  } catch (error: any) {
-    datadogRum.addError(error, { projectApplicationID, roundID });
-    console.error(error);
-
-    return {
-      hasProjectAppliedToRound: false,
-    };
-  }
+  return {
+    hasProjectAppliedToRound: applications.length > 0,
+  };
 };
 
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
+  (
+    projectID: string,
+    projectChainId: number,
+    reactEnv?: any /* ProcessEnv */
+  ) =>
   async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
 
-    const { web3Provider } = global;
-    const pinataClient = new PinataClient();
-
-    if (!web3Provider?.chains) {
-      return;
-    }
-
-    const apps = await Promise.all(
-      web3Provider.chains.map(async (chain: { id: number }) => {
-        try {
-          const addresses = addressesByChainID(projectChainId);
-          const projectApplicationID = generateUniqueRoundApplicationID(
-            projectChainId,
-            projectID,
-            addresses.projectRegistry!
-          );
-
-          const response: any = await graphqlFetch(
-            `query roundApplications($projectID: String) {
-            roundApplications(where: { project: $projectID }) {
-              status
-              project
-              sender
-              round {
-                id
-              }
-              metaPtr {
-                pointer
-                protocol
-              }
-            }
-          }
-          `,
-            chain.id,
-            {
-              projectID: projectApplicationID,
-            },
-            reactEnv
-          );
-
-          if (response.errors) {
-            datadogRum.addError(response.error, { projectID });
-            console.error(response.error);
-            return [];
-          }
-
-          const applications: any[] = [];
-
-          console.log(response.data.roundApplications.length);
-          /* eslint-disable no-await-in-loop */
-          for (const application of response.data.roundApplications) {
-            const metadata = await pinataClient.fetchJson(
-              application.metaPtr.pointer
-            );
-            if (metadata.signature) {
-              console.log("==> metadata", metadata);
-              const projectIdSplits =
-                metadata.application.project.id.split(":");
-              const chainId = projectIdSplits[0];
-              const projectId = projectIdSplits[2];
-
-              const owners = await fetchProjectOwners(
-                getProviderByChainId(Number(chainId)),
-                chainId,
-                projectId
-              );
-
-              const isValidMetadata = verifyApplicationMetadata(
-                application.project,
-                owners,
-                metadata
-              );
-
-              const isSenderOwner = owners
-                .map((owner: string) => owner.toLowerCase())
-                .includes(application.sender.toLowerCase());
-
-              console.log("==> isValidMetadata", isValidMetadata);
-              console.log("==> isSenderOwner", isSenderOwner);
-
-              if (isValidMetadata && isSenderOwner)
-                applications.push({
-                  status: convertStatusToText(application.status),
-                  roundID: application.round.id,
-                  chainId: chain.id,
-                  metaPtr: application.metaPtr,
-                });
-            }
-          }
-
-          console.log("==> applications", applications);
-
-          if (applications.length === 0) {
-            return [];
-          }
-
-          dispatch({
-            type: PROJECT_APPLICATIONS_LOADED,
-            projectID,
-            applications,
-          });
-
-          return applications;
-        } catch (error: any) {
-          datadogRum.addError(error, { projectID });
-          console.error(error);
-
-          return [];
-        }
-      })
+    const apps = await fetchApplicationsFromSubgraph(
+      projectID,
+      projectChainId,
+      undefined,
+      reactEnv
     );
 
     dispatch({
       type: PROJECT_APPLICATIONS_LOADED,
       projectID,
-      applications: apps.flat(),
+      applications: apps,
     });
   };
 
