@@ -1,13 +1,15 @@
-// --- Types
+// --- Node/Browser http req library
+import axios from "axios";
 import { datadogLogs } from "@datadog/browser-logs";
 import {
   RequestPayload,
   IssuedChallenge,
   VerifiableCredentialRecord,
+  VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
-
-// --- Node/Browser http req library
-import axios from "axios";
+import { BroadcastChannel } from "broadcast-channel";
+import { debounce } from "ts-debounce";
+import { CredentialProvider } from "../../../types";
 
 // Keeping track of the hashing mechanism (algo + content)
 export const VERSION = "v0.0.0";
@@ -100,3 +102,117 @@ export const fetchVerifiableCredential = async (
     credential: response?.data.credential,
   } as VerifiableCredentialRecord;
 };
+
+export class VerificationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "VerificationError";
+  }
+}
+
+export async function fetchAuthUrl(
+  url: string,
+  callbackUrl: string
+): Promise<string> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      callback: callbackUrl,
+    }),
+  });
+
+  const data = await res.json();
+
+  return data.authUrl;
+}
+
+export function openOauthWindow(
+  url: string,
+  broadcastChannelName: string
+): Promise<{
+  error: string | null;
+  code: string;
+  state: string;
+}> {
+  const width = 600;
+  const height = 800;
+  // eslint-disable-next-line no-restricted-globals
+  const left = screen.width / 2 - width / 2;
+  // eslint-disable-next-line no-restricted-globals
+  const top = screen.height / 2 - height / 2;
+
+  const authWindow = window.open(
+    url,
+    "_blank",
+    // eslint-disable-next-line max-len
+    `toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+  );
+
+  if (!authWindow) {
+    throw new Error("Failed to open pop up");
+  }
+
+  return new Promise((resolve, reject) => {
+    const channel = new BroadcastChannel(broadcastChannelName);
+
+    // timeout after 5 minutes
+    const timeout = setTimeout(() => {
+      reject(new VerificationError("Authorization timed out"));
+    }, 1000 * 60 * 5);
+
+    channel.onmessage = debounce(
+      (event: {
+        target: string;
+        data: { error: string | null; code: string; state: string };
+      }) => {
+        clearTimeout(timeout);
+
+        if (event.data.error) {
+          reject(new VerificationError(event.data.error));
+        }
+
+        resolve({
+          error: event.data.error,
+          code: event.data.code,
+          state: event.data.state,
+        });
+      }
+    );
+  });
+}
+
+export async function createVerifiableCredential(
+  authUrlGenerator: string,
+  callbackUrl: string,
+  broadcastChannelName: string,
+  provider: CredentialProvider,
+  account: string,
+  signer: { signMessage: (message: string) => Promise<string> }
+): Promise<VerifiableCredential> {
+  const authUrl = await fetchAuthUrl(authUrlGenerator, callbackUrl);
+
+  const result = await openOauthWindow(authUrl, broadcastChannelName);
+
+  const queryCode = result.code;
+  const queryState = result.state;
+
+  const verified: { credential: VerifiableCredential } =
+    await fetchVerifiableCredential(
+      process.env.REACT_APP_PASSPORT_IAM_URL || "",
+      {
+        type: provider,
+        version: "0.0.0",
+        address: account || "",
+        proofs: {
+          code: queryCode,
+          sessionKey: queryState,
+        },
+      },
+      signer
+    );
+
+  return verified.credential;
+}

@@ -80,7 +80,7 @@ function Landing() {
     if (queryCode) {
       channel.postMessage({
         target: "twitter",
-        data: { code: queryCode, state: queryState },
+        data: { error: queryError, code: queryCode, state: queryState },
       });
     }
     // always close the redirected window
@@ -101,7 +101,7 @@ function Landing() {
     if (queryCode) {
       channel.postMessage({
         target: "github",
-        data: { code: queryCode, state: queryState },
+        data: { error: queryError, code: queryCode, state: queryState },
       });
     }
 
