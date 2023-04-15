@@ -45,14 +45,14 @@ export default function Twitter({
     props.formMetadata.projectTwitter
   );
 
-  console.log(
-    "TWITTER",
-    "credential",
-    props.verifiableCredential,
-    props.formMetadata.projectTwitter,
-    "isValid: ",
-    validCredential
-  );
+  // console.log(
+  //   "TWITTER",
+  //   "credential",
+  //   props.verifiableCredential,
+  //   props.formMetadata.projectTwitter,
+  //   "isValid: ",
+  //   validCredential
+  // );
 
   const { signer } = global;
 

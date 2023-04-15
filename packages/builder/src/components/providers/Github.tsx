@@ -56,14 +56,14 @@ export default function Github({
     props.formMetadata.projectGithub
   );
 
-  console.log(
-    "GITHUB",
-    "credential",
-    props.verifiableCredential,
-    props.formMetadata.projectTwitter,
-    "isValid: ",
-    validCredential
-  );
+  // console.log(
+  //   "GITHUB",
+  //   "credential",
+  //   props.verifiableCredential,
+  //   props.formMetadata.projectTwitter,
+  //   "isValid: ",
+  //   validCredential
+  // );
 
   async function handleVerify(): Promise<void> {
     // Fetch data from external API
