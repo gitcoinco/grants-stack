@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { CredentialProvider } from "../types";
