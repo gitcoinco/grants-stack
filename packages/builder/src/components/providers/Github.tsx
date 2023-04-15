@@ -43,7 +43,7 @@ export default function Github({
   const props = useSelector(
     (state: RootState) => ({
       account: state.web3.account,
-      formMetaData: state.projectForm.metadata,
+      formMetadata: state.projectForm.metadata,
       verifiableCredential: state.projectForm?.credentials?.github,
     }),
     shallowEqual
@@ -51,9 +51,18 @@ export default function Github({
   const { signer } = global;
   const dispatch = useDispatch();
 
-  const { isValid: validGithubCredential } = useValidateCredential(
+  const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
-    props.formMetaData.projectGithub
+    props.formMetadata.projectGithub
+  );
+
+  console.log(
+    "GITHUB",
+    "credential",
+    props.verifiableCredential,
+    props.formMetadata.projectTwitter,
+    "isValid: ",
+    validCredential
   );
 
   async function handleVerify(): Promise<void> {
@@ -99,7 +108,7 @@ export default function Github({
       } else {
         console.error(error);
         let errorMessage;
-        if (props.formMetaData.projectGithub) {
+        if (props.formMetadata.projectGithub) {
           // eslint-disable-next-line max-len
           errorMessage = `There was an issue with verifying your GitHub account, please make sure your Github account is a public member of the Github Organization and try again.`;
         } else {
@@ -113,7 +122,7 @@ export default function Github({
     }
   }
 
-  if (validGithubCredential) {
+  if (validCredential) {
     return <VerifiedBadge />;
   }
 

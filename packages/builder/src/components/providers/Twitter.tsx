@@ -46,6 +46,7 @@ export default function Twitter({
   );
 
   console.log(
+    "TWITTER",
     "credential",
     props.verifiableCredential,
     props.formMetadata.projectTwitter,
