@@ -47,9 +47,8 @@ export default function useValidateCredential(
     }
   }
 
-  useEffect(() => {
-    validateCredential();
-  }, [vc, providerId, handle]);
+  // TODO: this validates the credential on every render
+  validateCredential();
 
   return { isValid, isLoading, error };
 }
