@@ -6,7 +6,7 @@ import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import colors from "../../styles/colors";
-import { CredentialProvider, FormInputs, Metadata, Project } from "../../types";
+import { FormInputs, Metadata, Project } from "../../types";
 import { formatDateFromMs } from "../../utils/components";
 import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
@@ -53,13 +53,11 @@ export default function About({
 
   const { isValid: validTwitterCredential } = useValidateCredential(
     project?.credentials?.twitter,
-    CredentialProvider.Twitter,
     project?.projectTwitter
   );
 
   const { isValid: validGithubCredential } = useValidateCredential(
     project?.credentials?.github,
-    CredentialProvider.Github,
     project?.projectGithub
   );
 

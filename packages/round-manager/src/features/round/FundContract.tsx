@@ -18,6 +18,7 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { classNames } from "common";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -122,13 +123,11 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.coingeckoId
   );
 
-  // const data = 1800.50;
-  // const error = false;
-  // const loading = false;
-
   const matchingFunds =
-    props.round &&
-    props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
+    (props.round &&
+      props.round.roundMetadata.quadraticFundingConfig
+        ?.matchingFundsAvailable) ??
+    0;
 
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
@@ -139,6 +138,22 @@ export default function FundContract(props: {
   const amountLeftToFundInUSD =
     amountLeftToFund && amountLeftToFund * Number(data);
 
+  const roundFeePercentage = props.round?.roundFeePercentage ?? 0;
+  const protocolFeePercentage = props.round?.protocolFeePercentage ?? 0;
+  const combinedFees =
+    ((roundFeePercentage + protocolFeePercentage) * matchingFunds) / 100;
+  const contractBalance = ethers.utils.formatEther(
+    balanceData?.value.toString() ?? "0"
+  );
+  const totalAmountLeftToFund = (
+    combinedFees +
+    matchingFunds -
+    Number(contractBalance)
+  ).toString();
+  const totalDue = matchingFunds + combinedFees;
+
+  const fundContractDisabled = Number(contractBalance) >= Number(totalDue);
+
   const tokenBalanceInUSD =
     balanceData?.value &&
     data &&
@@ -148,11 +163,15 @@ export default function FundContract(props: {
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
 
-  const matchingFundPayoutTokenBalance = useBalance(tokenDetailUser);
+  const {
+    data: matchingFundPayoutTokenBalance,
+    // isError,
+    // isFetched,
+  } = useBalance(tokenDetailUser);
 
   function handleFundContract() {
     // check if signer has enough token balance
-    const accountBalance = matchingFundPayoutTokenBalance.data?.value;
+    const accountBalance = matchingFundPayoutTokenBalance?.value;
     const tokenBalance = ethers.utils.parseUnits(
       amountToFund,
       matchingFundPayoutToken?.decimal
@@ -283,7 +302,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">0%</p>
+          <p className="text-sm">{props.round.protocolFeePercentage}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="flex flex-row text-sm w-1/3">
@@ -313,12 +332,12 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">0%</p>
+          <p className="text-sm">{props.round.roundFeePercentage}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
-            {balanceData?.formatted} {matchingFundPayoutToken?.name}{" "}
+            {contractBalance} {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-2">
               ${tokenBalanceInUSD} USD
             </span>
@@ -329,7 +348,7 @@ export default function FundContract(props: {
           <p className="text-sm w-1/3">Amount left to fund:</p>
           <p className="text-sm">
             {" "}
-            {amountLeftToFund} {matchingFundPayoutToken?.name}{" "}
+            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
             <span className="text-sm text-slate-400 ml-2">
               ${amountLeftToFundInUSD} USD
             </span>
@@ -337,16 +356,27 @@ export default function FundContract(props: {
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3 py-3">Amount to fund:</p>
+          {/* todo: update input with a max selector at right of input */}
           <input
+            disabled={fundContractDisabled}
             className="border border-gray-300 rounded-md p-2 w-1/2"
-            placeholder="Enter the amount you wish to fund"
+            placeholder={`${
+              fundContractDisabled
+                ? "Contract is fully funded"
+                : "Enter the amount you wish to fund"
+            }`}
             value={amountToFund}
             onChange={(e) => setAmountToFund(e.target.value)}
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
           <button
-            className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded"
+            disabled={fundContractDisabled}
+            className={classNames(
+              `bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded ${
+                fundContractDisabled ? "cursor-not-allowed" : "cursor-pointer"
+              }`
+            )}
             data-testid="fund-contract-btn"
             onClick={() => handleFundContract()}
           >
@@ -426,7 +456,9 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD =
       Number(
-        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        parseFloat(totalAmountLeftToFund).toFixed(
+          matchingFundPayoutToken?.decimal
+        )
       ) * Number(data);
     return (
       <div>
@@ -435,7 +467,7 @@ export default function FundContract(props: {
             AMOUNT TO BE FUNDED
           </div>
           <div className="font-bold mb-1">
-            {amountToFund} {matchingFundPayoutToken?.name}
+            {totalAmountLeftToFund} {matchingFundPayoutToken?.name}
           </div>
           <div className="text-md text-slate-400 mb-6">
             (${amountInUSD.toFixed(2)} USD)

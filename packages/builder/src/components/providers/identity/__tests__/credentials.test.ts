@@ -100,14 +100,6 @@ describe("Fetch Credentials", () => {
     expect(record).toEqual(MOCK_VERIFY_RESPONSE_BODY.record);
   });
 
-  it("will fail if not provided a signer to sign the message", async () => {
-    await expect(
-      fetchVerifiableCredential(IAM_URL, payload, undefined)
-    ).rejects.toThrow("Unable to sign message without a signer");
-
-    expect(axios.post).not.toBeCalled();
-  });
-
   it("will not attempt to sign if not provided a challenge in the challenge credential", async () => {
     jest.spyOn(axios, "post").mockResolvedValueOnce({
       data: {

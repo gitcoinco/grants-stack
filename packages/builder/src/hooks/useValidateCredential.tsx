@@ -1,34 +1,56 @@
 import { useEffect, useState } from "react";
 import { PassportVerifier } from "@gitcoinco/passport-sdk-verifier";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
-import { CredentialProvider } from "../types";
+import { debounce } from "ts-debounce";
 
-const IAM_SERVER = "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+console.log(process.env.REACT_APP_PASSPORT_IAM_SERVER);
+
+const IAM_SERVER =
+  process.env.REACT_APP_PASSPORT_IAM_SERVER ||
+  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+
 const verifier = new PassportVerifier();
+
+export async function validateCredential(
+  credential: VerifiableCredential | undefined,
+  handle: string | undefined
+): Promise<boolean> {
+  if (!credential || !handle) {
+    return false;
+  }
+
+  const validCredentialProvider =
+    credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
+    handle.toLowerCase();
+  const validCredential = await verifier.verifyCredential(credential);
+
+  const validIssuer = IAM_SERVER === credential.issuer;
+
+  // console.log(
+  //   "validating",
+  //   credential,
+  //   validCredentialProvider,
+  //   validCredential,
+  //   validIssuer
+  // );
+
+  return validCredentialProvider && validCredential && validIssuer;
+}
 
 export default function useValidateCredential(
   vc: VerifiableCredential | undefined,
-  providerId: CredentialProvider,
   handle: string | undefined
 ): { isValid: boolean; isLoading: boolean; error: any | null } {
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  async function validateCredential() {
+  const hookValidateCredential = debounce(async () => {
     setIsLoading(true);
 
     try {
-      if (vc && providerId && handle) {
-        const credential = vc;
-        const validCredentialProvider =
-          credential.credentialSubject.provider?.split("#")[1].toLowerCase() ===
-          handle.toLowerCase();
-        const validCredential = await verifier.verifyCredential(credential);
-        const validIssuer = IAM_SERVER === credential.issuer;
-        // TODO: add owner check
-        // address of vc.credentialSubject.id should be a project owner
-        setIsValid(validCredentialProvider && validCredential && validIssuer);
+      if (vc && handle) {
+        setIsValid(await validateCredential(vc, handle));
       } else {
         setIsValid(false);
       }
@@ -37,11 +59,11 @@ export default function useValidateCredential(
     } finally {
       setIsLoading(false);
     }
-  }
+  }, 500);
 
   useEffect(() => {
-    validateCredential();
-  }, [vc, providerId, handle]);
+    hookValidateCredential();
+  }, [vc, handle]);
 
   return { isValid, isLoading, error };
 }

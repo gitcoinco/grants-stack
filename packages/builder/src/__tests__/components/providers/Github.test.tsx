@@ -58,7 +58,7 @@ describe("<Github />", () => {
       });
 
       // console.log(screen.debug());
-      expect(screen.queryByText("Verified")).toBeInTheDocument();
+      expect(await screen.findByText("Verified")).toBeInTheDocument();
     });
 
     test("should not show the badge if the verified account is different from the current one in the form", async () => {

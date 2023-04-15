@@ -109,7 +109,7 @@ _italic text_
         );
       });
 
-      expect(screen.queryAllByText("Verified").length).toBe(2);
+      expect((await screen.findAllByText("Verified")).length).toBe(2);
     });
     test("should show one verification badge", async () => {
       const store = setupStore();
@@ -145,7 +145,7 @@ _italic text_
         );
       });
 
-      expect(screen.queryByText("Verified")).toBeInTheDocument();
+      expect(await screen.findByText("Verified")).toBeInTheDocument();
     });
 
     test("should not show the badge if the verified account is different from the current ones in the form", async () => {

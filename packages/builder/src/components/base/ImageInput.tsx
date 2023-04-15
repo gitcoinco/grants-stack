@@ -201,7 +201,7 @@ export default function ImageInput({
         dimensions={dimensions}
         onClose={() => setShowCrop(false)}
         saveCrop={(imgUrl) => {
-          imgUrl.toBlob((blob) => blob && imgHandler(blob));
+          imgUrl.toBlob((blob) => blob && imgHandler(blob), "image/jpeg", 0.9);
         }}
       />
     </div>

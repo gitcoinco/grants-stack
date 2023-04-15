@@ -2,7 +2,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import { BroadcastChannel } from "broadcast-channel";
 import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import { initializeWeb3 } from "../../actions/web3";
@@ -47,13 +46,6 @@ function Landing() {
     web3Error: state.web3.error,
     web3Initializing: state.web3.initializing,
   }));
-  const queryString = new URLSearchParams(window?.location?.search);
-
-  // Twitter oauth will attach code & state in oauth procedure
-  const queryError = queryString.get("error");
-  const queryCode = queryString.get("code");
-  const queryState = queryString.get("state");
-
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const provider = useProvider();
@@ -67,49 +59,6 @@ function Landing() {
       dispatch(initializeWeb3(signer, provider, chain, address));
     }
   }, [signer, provider, chain, address]);
-
-  // if Twitter oauth then submit message to other windows and close self
-  if (
-    (queryError || queryCode) &&
-    queryState &&
-    /^twitter-.*/.test(queryState)
-  ) {
-    // shared message channel between windows (on the same domain)
-    const channel = new BroadcastChannel("twitter_oauth_channel");
-    // only continue with the process if a code is returned
-    if (queryCode) {
-      channel.postMessage({
-        target: "twitter",
-        data: { code: queryCode, state: queryState },
-      });
-    }
-    // always close the redirected window
-    window.close();
-
-    return <div />;
-  }
-
-  // if Github oauth then submit message to other windows and close self
-  if (
-    (queryError || queryCode) &&
-    queryState &&
-    /^github-.*/.test(queryState)
-  ) {
-    // shared message channel between windows (on the same domain)
-    const channel = new BroadcastChannel("github_oauth_channel");
-    // only continue with the process if a code is returned
-    if (queryCode) {
-      channel.postMessage({
-        target: "github",
-        data: { code: queryCode, state: queryState },
-      });
-    }
-
-    // always close the redirected window
-    window.close();
-
-    return <div />;
-  }
 
   if (
     props.web3Initializing &&
