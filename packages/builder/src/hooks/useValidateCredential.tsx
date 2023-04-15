@@ -31,6 +31,7 @@ export default function useValidateCredential(
         // address of vc.credentialSubject.id should be a project owner
         console.log(
           "hook",
+          credential,
           validCredentialProvider,
           validCredential,
           validIssuer
