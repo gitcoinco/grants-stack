@@ -29,6 +29,12 @@ export default function useValidateCredential(
         const validIssuer = IAM_SERVER === credential.issuer;
         // TODO: add owner check
         // address of vc.credentialSubject.id should be a project owner
+        console.log(
+          "hook",
+          validCredentialProvider,
+          validCredential,
+          validIssuer
+        );
         setIsValid(validCredentialProvider && validCredential && validIssuer);
       } else {
         setIsValid(false);
