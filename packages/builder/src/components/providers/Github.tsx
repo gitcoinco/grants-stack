@@ -53,7 +53,6 @@ export default function Github({
 
   const { isValid: validGithubCredential } = useValidateCredential(
     props.verifiableCredential,
-    CredentialProvider.Github,
     props.formMetaData.projectGithub
   );
 

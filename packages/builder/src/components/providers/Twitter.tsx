@@ -42,7 +42,6 @@ export default function Twitter({
 
   const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
-    CredentialProvider.Twitter,
     props.formMetadata.projectTwitter
   );
 

@@ -27,7 +27,6 @@ import colors from "../../styles/colors";
 import {
   AddressType,
   ChangeHandlers,
-  CredentialProvider,
   Metadata,
   ProjectOption,
   Round,
@@ -381,13 +380,11 @@ export default function Form({
 
   const twitterCredentialValidation = useValidateCredential(
     selectedProjectMetadata?.credentials?.twitter,
-    CredentialProvider.Twitter,
     selectedProjectMetadata?.projectTwitter
   );
 
   const githubCredentialValidation = useValidateCredential(
     selectedProjectMetadata?.credentials?.github,
-    CredentialProvider.Github,
     selectedProjectMetadata?.projectGithub
   );
 
