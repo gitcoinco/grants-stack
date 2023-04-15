@@ -18,6 +18,7 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
+import { classNames } from "common";
 
 export default function FundContract(props: {
   round: Round | undefined;
@@ -144,7 +145,14 @@ export default function FundContract(props: {
   const contractBalance = ethers.utils.formatEther(
     balanceData?.value.toString() ?? "0"
   );
-  const totalAmountLeftToFund = ((combinedFees + matchingFunds) - Number(contractBalance)).toString();
+  const totalAmountLeftToFund = (
+    combinedFees +
+    matchingFunds -
+    Number(contractBalance)
+  ).toString();
+  const totalDue = matchingFunds + combinedFees;
+
+  const fundContractDisabled = Number(contractBalance) >= Number(totalDue);
 
   const tokenBalanceInUSD =
     balanceData?.value &&
@@ -155,11 +163,15 @@ export default function FundContract(props: {
     !isBalanceLoading &&
     Number(balanceData?.formatted) * Number(data);
 
-  const matchingFundPayoutTokenBalance = useBalance(tokenDetailUser);
+  const {
+    data: matchingFundPayoutTokenBalance,
+    // isError,
+    // isFetched,
+  } = useBalance(tokenDetailUser);
 
   function handleFundContract() {
     // check if signer has enough token balance
-    const accountBalance = matchingFundPayoutTokenBalance.data?.value;
+    const accountBalance = matchingFundPayoutTokenBalance?.value;
     const tokenBalance = ethers.utils.parseUnits(
       amountToFund,
       matchingFundPayoutToken?.decimal
@@ -344,16 +356,27 @@ export default function FundContract(props: {
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3 py-3">Amount to fund:</p>
+          {/* todo: update input with a max selector at right of input */}
           <input
+            disabled={fundContractDisabled}
             className="border border-gray-300 rounded-md p-2 w-1/2"
-            placeholder="Enter the amount you wish to fund"
+            placeholder={`${
+              fundContractDisabled
+                ? "Contract is fully funded"
+                : "Enter the amount you wish to fund"
+            }`}
             value={amountToFund}
             onChange={(e) => setAmountToFund(e.target.value)}
           />
         </div>
         <div className="flex flex-row justify-start mt-6">
           <button
-            className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded"
+            disabled={fundContractDisabled}
+            className={classNames(
+              `bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded ${
+                fundContractDisabled ? "cursor-not-allowed" : "cursor-pointer"
+              }`
+            )}
             data-testid="fund-contract-btn"
             onClick={() => handleFundContract()}
           >
