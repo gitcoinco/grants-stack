@@ -558,7 +558,7 @@ importers:
       https-browserify: ^1.0.0
       husky: ^8.0.1
       jest-fetch-mock: ^3.0.3
-      lit-js-sdk: ^1.1.203
+      lit-js-sdk: ^1.1.250
       lodash: ^4.17.21
       moment: ^2.29.3
       os-browserify: ^0.3.0
@@ -626,7 +626,7 @@ importers:
       html-react-parser: 3.0.8_react@18.2.0
       https-browserify: 1.0.0
       jest-fetch-mock: 3.0.3
-      lit-js-sdk: 1.1.242
+      lit-js-sdk: 1.1.250
       lodash: 4.17.21
       moment: 2.29.4
       os-browserify: 0.3.0
@@ -7441,6 +7441,7 @@ packages:
 
   /@walletconnect/ethereum-provider/1.7.8_3cxu5zja4e2r5wmvge7mdcljwq:
     resolution: {integrity: sha512-dnl560zFMdK/LD4MD2XwHbWj7RXOaeXWPc9jzDaosLQLAXfA5mKe4XbCFFUPbVMYuyBdRI9NZv3Ci/qDb5wncQ==}
+    deprecated: 'WalletConnect''s v1 SDKs are now deprecated. Please upgrade to a v2 SDK. For details see: https://docs.walletconnect.com/'
     dependencies:
       '@walletconnect/client': 1.8.0_3cxu5zja4e2r5wmvge7mdcljwq
       '@walletconnect/jsonrpc-http-connection': 1.0.4
@@ -16540,6 +16541,12 @@ packages:
       micromodal: 0.4.10
     dev: false
 
+  /lit-connect-modal/0.1.11:
+    resolution: {integrity: sha512-EG6pcCqdxZQJt3MPDq3gJ5Sz4E5sJdydtAF7VFJu6z6GDHO1Ybp8WrTx8CUnHiF54/MQBRi6Nb7cbTvv+BKWvQ==}
+    dependencies:
+      micromodal: 0.4.10
+    dev: false
+
   /lit-js-sdk-w-custom-provider/1.1.228:
     resolution: {integrity: sha512-q6VmIeDWrNiAZNw3R2xFLom+OAahzCltTeblfM730YsxXoIAFynX7rChN+NC97VF7OiPOISQJqj4EDHfl74Kgw==}
     dependencies:
@@ -16569,8 +16576,8 @@ packages:
       - encoding
     dev: false
 
-  /lit-js-sdk/1.1.242:
-    resolution: {integrity: sha512-UHOe/U6aUgfdqxmBkSYP3xHv90YcAKuVdS6uXbGseApWk8Tt1jnqq8eQfzj0yCcx9QA0T5xx267BpFe+kTMnjw==}
+  /lit-js-sdk/1.1.250:
+    resolution: {integrity: sha512-FRMw7lO3eJoRiEshLszN9W4tkg7+yfx1fUywx4M6wwIkkQcW6Eff2dIhaQtNkfohqF19tuGiMn1cBV8VVypfXw==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/contracts': 5.7.0
@@ -16584,9 +16591,9 @@ packages:
       bufferutil: 4.0.7
       cross-blob: 3.0.2
       jszip: 3.10.1
-      lit-connect-modal: 0.1.10
+      lit-connect-modal: 0.1.11
       lit-siwe: 1.1.8_vs2eitok36dr26fji5ujfsmafm
-      node-fetch: 3.3.0
+      node-fetch: 3.3.1
       pako: 2.1.0
       tslib: 2.4.1
       tweetnacl: 1.0.3
@@ -17544,15 +17551,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-
-  /node-fetch/3.3.0:
-    resolution: {integrity: sha512-BKwRP/O0UvoMKp7GNdwPlObhYGB5DQqwhEDQlNKuoqwVYSxkSZCSbHjnFFmUEtwSKRPU4kNK8PbDYYitwaE3QA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      data-uri-to-buffer: 4.0.1
-      fetch-blob: 3.2.0
-      formdata-polyfill: 4.0.10
-    dev: false
 
   /node-fetch/3.3.1:
     resolution: {integrity: sha512-cRVc/kyto/7E5shrWca1Wsea4y6tL9iYJE5FBCius3JQfb/4P4I295PfhgbJQBLTx6lATE4z+wK0rPM4VS2uow==}

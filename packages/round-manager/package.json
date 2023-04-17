@@ -57,7 +57,7 @@
     "html-react-parser": "^3.0.7",
     "https-browserify": "^1.0.0",
     "jest-fetch-mock": "^3.0.3",
-    "lit-js-sdk": "^1.1.203",
+    "lit-js-sdk": "^1.1.250",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
     "os-browserify": "^0.3.0",
