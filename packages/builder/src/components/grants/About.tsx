@@ -45,7 +45,6 @@ export default function About({
     const applicationStatus: Status =
       state.projects.applicationData[params.id!]?.status || Status.Loading;
 
-    console.log("state.projects", applicationStatus);
     return {
       chainId,
       projectID: params.id!,
