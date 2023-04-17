@@ -103,7 +103,7 @@ export const { chains, provider } = configureChains(chainsAvailable, [
 
 // Custom wallet connectors: more can be added by going here:
 // https://www.rainbowkit.com/docs/custom-wallet-list
-const connectors = connectorsForWallets([
+export const connectors = connectorsForWallets([
   {
     groupName: "Recommended",
     wallets: [

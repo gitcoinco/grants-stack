@@ -2,6 +2,16 @@
   "name": "builder",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "craco start",
+    "build": "export REACT_APP_GIT_SHA=$(git rev-parse --short HEAD); env REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA:-$CF_PAGES_COMMIT_SHA} craco build",
+    "test": "jest --watchAll=false",
+    "test:dev": "jest --watch",
+    "test:coverage": "jest --watchAll=false --coverage",
+    "eject": "react-scripts eject",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
+    "lint:fix": "eslint ./src --fix --cache"
+  },
   "dependencies": {
     "@babel/core": "^7.20.12",
     "@babel/plugin-syntax-flow": "^7.14.5",
@@ -76,16 +86,6 @@
     "web-vitals": "^2.1.4",
     "webpack": "^4",
     "yup": "^0.32.11"
-  },
-  "scripts": {
-    "start": "craco start",
-    "build": "export REACT_APP_GIT_SHA=$(git rev-parse --short HEAD); env REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA:-$CF_PAGES_COMMIT_SHA} craco build",
-    "test": "jest --watchAll=false",
-    "test:dev": "jest --watch",
-    "test:coverage": "jest --watchAll=false --coverage",
-    "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --cache",
-    "lint:fix": "eslint ./src --fix --cache"
   },
   "eslintConfig": {
     "extends": [

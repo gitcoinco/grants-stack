@@ -24,8 +24,7 @@ import {
   getApplicationsByRoundId,
   updateApplicationStatuses,
 } from "../../api/application";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ApplicationStatus, ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({

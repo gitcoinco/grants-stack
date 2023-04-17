@@ -101,7 +101,7 @@ const connectors = connectorsForWallets([
 
 export const client = createClient({
   autoConnect: true,
-  connectors: connectors,
+  connectors,
   provider,
   webSocketProvider,
 });

@@ -18,21 +18,27 @@ describe("projects reducer", () => {
   it("PROJECT_APPLICATIONS_LOADING updates state", async () => {
     const initialState = {
       ...state,
-      applications: {
-        "1": [
-          {
-            roundID: addressFrom(1),
-            status: "PENDING" as AppStatus,
-            chainId: 1,
-          },
-        ],
-        "2": [
-          {
-            roundID: addressFrom(2),
-            status: "PENDING" as AppStatus,
-            chainId: 1,
-          },
-        ],
+      applicationData: {
+        "1": {
+          applications: [
+            {
+              roundID: addressFrom(1),
+              status: "PENDING" as AppStatus,
+              chainId: 1,
+            },
+          ],
+          status: Status.Loaded,
+        },
+        "2": {
+          applications: [
+            {
+              roundID: addressFrom(2),
+              status: "PENDING" as AppStatus,
+              chainId: 1,
+            },
+          ],
+          status: Status.Loaded,
+        },
       },
     };
 
@@ -41,28 +47,38 @@ describe("projects reducer", () => {
       projectID: "2",
     });
 
-    expect(newState.applications).toEqual({
-      "1": [
-        {
-          roundID: addressFrom(1),
-          status: "PENDING",
-          chainId: 1,
-        },
-      ],
+    expect(newState.applicationData).toEqual({
+      "1": {
+        status: Status.Loaded,
+        applications: [
+          {
+            roundID: addressFrom(1),
+            status: "PENDING",
+            chainId: 1,
+          },
+        ],
+      },
+      "2": {
+        status: Status.Loading,
+        applications: [],
+      },
     });
   });
 
   it("PROJECT_APPLICATIONS_LOADED updates state", async () => {
     const initialState = {
       ...state,
-      applications: {
-        "1": [
-          {
-            roundID: addressFrom(1),
-            status: "PENDING" as AppStatus,
-            chainId: 1,
-          },
-        ],
+      applicationData: {
+        "1": {
+          status: Status.Loaded,
+          applications: [
+            {
+              roundID: addressFrom(1),
+              status: "PENDING" as AppStatus,
+              chainId: 1,
+            },
+          ],
+        },
       },
     };
 
@@ -78,21 +94,27 @@ describe("projects reducer", () => {
       ],
     });
 
-    expect(newState.applications).toEqual({
-      "1": [
-        {
-          roundID: addressFrom(1),
-          status: "PENDING",
-          chainId: 1,
-        },
-      ],
-      "2": [
-        {
-          roundID: addressFrom(2),
-          status: "APPROVED",
-          chainId: 1,
-        },
-      ],
+    expect(newState.applicationData).toEqual({
+      "1": {
+        status: Status.Loaded,
+        applications: [
+          {
+            roundID: addressFrom(1),
+            status: "PENDING",
+            chainId: 1,
+          },
+        ],
+      },
+      "2": {
+        status: Status.Loaded,
+        applications: [
+          {
+            roundID: addressFrom(2),
+            status: "APPROVED",
+            chainId: 1,
+          },
+        ],
+      },
     });
   });
 
@@ -109,15 +131,28 @@ describe("projects reducer", () => {
   it("PROJECT_APPLICATION_UPDATED updates a project application status", async () => {
     const initialState = {
       ...state,
-      applications: {
-        "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
-        "2": [
-          { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
-          { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
-        ],
-        "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
+      applicationData: {
+        "1": {
+          status: Status.Loaded,
+          applications: [
+            { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+          ],
+        },
+        "2": {
+          status: Status.Loaded,
+          applications: [
+            { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+            { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
+            { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
+            { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
+          ],
+        },
+        "3": {
+          status: Status.Loaded,
+          applications: [
+            { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
+          ],
+        },
       },
     };
 
@@ -128,15 +163,28 @@ describe("projects reducer", () => {
       status: "APPROVED",
     });
 
-    expect(newState.applications).toEqual({
-      "1": [{ roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 }],
-      "2": [
-        { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
-        { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
-        { roundID: "0x3", status: "APPROVED" as AppStatus, chainId: 1 },
-        { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
-      ],
-      "3": [{ roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 }],
+    expect(newState.applicationData).toEqual({
+      "1": {
+        status: Status.Loaded,
+        applications: [
+          { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+        ],
+      },
+      "2": {
+        status: Status.Loaded,
+        applications: [
+          { roundID: "0x1", status: "PENDING" as AppStatus, chainId: 1 },
+          { roundID: "0x2", status: "PENDING" as AppStatus, chainId: 1 },
+          { roundID: "0x3", status: "APPROVED" as AppStatus, chainId: 1 },
+          { roundID: "0x4", status: "PENDING" as AppStatus, chainId: 1 },
+        ],
+      },
+      "3": {
+        status: Status.Loaded,
+        applications: [
+          { roundID: "0x3", status: "PENDING" as AppStatus, chainId: 1 },
+        ],
+      },
     });
   });
 
