@@ -50,7 +50,7 @@ export const addresses: DeploymentAddress = {
     projectRegistry: "0x984749e408FF0446d8ADaf20E293F2F299396631",
   },
   fantom: {
-    projectRegistry: "0x8e1bD5Da87C14dd808F7ecc2aBf9D1d558ea174",
+    projectRegistry: "0x8e1bd5da87c14dd8e08f7ecc2abf9d1d558ea174",
   },
 };
 
