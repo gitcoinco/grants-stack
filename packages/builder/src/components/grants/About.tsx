@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Spinner } from "@chakra-ui/react";
 import { renderToHTML } from "common";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import Calendar from "../icons/Calendar";
 import LinkIcon from "../icons/LinkIcon";
 import Shield from "../icons/Shield";
 import ApplicationCard from "./ApplicationCard";
+import { Status } from "../../reducers/projects";
 
 function Verified() {
   return (
@@ -41,12 +42,15 @@ export default function About({
 
     const applications =
       state.projects.applicationData[params.id!]?.applications || [];
+    const applicationStatus: Status =
+      state.projects.applicationData[params.id!]?.status || Status.Loading;
 
-    console.log("state.projects", state);
+    console.log("state.projects", applicationStatus);
     return {
       chainId,
       projectID: params.id!,
       applications,
+      applicationStatus,
     };
   });
 
@@ -87,6 +91,26 @@ export default function About({
       </Box>
     </>
   );
+
+  if (props.applicationStatus === Status.Loading)
+    return (
+      <>
+        <div className="flex items-center justify-center">
+          <Spinner
+            label="Loading Project Stats"
+            className="flex items-center justify-center"
+            thickness="6px"
+            boxSize={24}
+            speed="0.80s"
+            emptyColor="gray.200"
+            color="purple.500"
+          />
+        </div>
+        <div className="flex items-center justify-center text-gitcoin-grey-400 text-[18px]">
+          Loading...
+        </div>
+      </>
+    );
 
   return (
     <div className="flex flex-1 flex-col md:flex-row">
@@ -173,11 +197,6 @@ export default function About({
             )}
           </div>
         </div>
-        {canShowApplications && (
-          <div className="flex flex-1 md:hidden flex-col">
-            {renderApplications()}
-          </div>
-        )}
         <div className="mt-4">
           <p className="text-primary-text ml-2 xl:mt-2 lg:mt-2 font-bold">
             Description
