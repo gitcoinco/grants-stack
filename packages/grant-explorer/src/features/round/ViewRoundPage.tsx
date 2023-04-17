@@ -439,12 +439,22 @@ function PreRoundPage(props: {
             <span>
               {" "}
               &nbsp;
-              {
-                round.roundMetadata?.quadraticFundingConfig
-                  ?.matchingFundsAvailable
-              }
+              {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
               &nbsp;
               {matchingFundPayoutTokenName}
+            </span>
+          </p>
+          <p
+            className="text-lg my-2 text-grey-400 font-normal"
+            data-testid="matching-cap"
+          >
+            Matching Cap:
+            <span>
+              {" "}
+              &nbsp;
+              {round.roundMetadata?.quadraticFundingConfig?.matchingCapAmount}
+              &nbsp;
+              {"%"}
             </span>
           </p>
           <p className="text-lg my-5 text-grey-400 font-normal border-t py-5 border-b">
