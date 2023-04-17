@@ -137,7 +137,7 @@ export async function getRoundById(
       roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
-      token: res.data.rounds[0].token,
+      token: round.token,
       votingStrategy: res.data.rounds[0].votingStrategy,
       payoutStrategy: res.data.rounds[0].payoutStrategy,
       ownedBy: res.data.rounds[0].program.id,
