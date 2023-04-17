@@ -96,7 +96,7 @@ export default function About({
       <>
         <div className="flex items-center justify-center">
           <Spinner
-            label="Loading Project Stats"
+            label="Loading Project Details"
             className="flex items-center justify-center"
             thickness="6px"
             boxSize={24}
