@@ -162,14 +162,16 @@ export const useRoundById = (roundId?: string) => {
         (round) => round.id === roundId
       );
 
-      if (!existingRound) {
+      if (!existingRound?.token) {
         fetchRoundById(context.dispatch, provider, roundId);
       }
     }
   }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const round = context.state.data.find((round) => round.id === roundId);
+
   return {
-    round: context.state.data.find((round) => round.id === roundId),
+    round,
     fetchRoundStatus: context.state.fetchRoundStatus,
     error: context.state.error,
   };
