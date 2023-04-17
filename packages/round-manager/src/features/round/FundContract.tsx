@@ -304,7 +304,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round.protocolFeePercentage}%</p>
+          <p className="text-sm">{props.round.protocolFeePercentage ?? 0}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="flex flex-row text-sm w-1/3">
@@ -334,7 +334,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round.roundFeePercentage}%</p>
+          <p className="text-sm">{props.round.roundFeePercentage ?? 0}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
@@ -345,7 +345,6 @@ export default function FundContract(props: {
               ${tokenBalanceInUSD} USD
             </span>
               ): null}
-            
           </p>
         </div>
         <hr className="mt-6 mb-6" />
