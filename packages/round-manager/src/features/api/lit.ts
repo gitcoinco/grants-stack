@@ -1,6 +1,6 @@
-import { Buffer } from "buffer";
 import { datadogLogs } from "@datadog/browser-logs";
-import { isJestRunning } from "common";
+import { Buffer } from "buffer";
+import { isJestRunning } from "./utils";
 
 const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
 
