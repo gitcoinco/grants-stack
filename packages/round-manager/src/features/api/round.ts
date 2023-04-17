@@ -124,23 +124,23 @@ export async function getRoundById(
     const roundFeePercentage = res.data.rounds[0].roundFeePercentage / DENOMINATOR;
 
     return {
-      id: res.data.rounds[0].id,
+      id: round.id,
       roundMetadata,
       applicationMetadata,
       applicationsStartTime: new Date(
-        res.data.rounds[0].applicationsStartTime * 1000
+        Number(round.applicationsStartTime) * 1000
       ),
       applicationsEndTime: new Date(
-        res.data.rounds[0].applicationsEndTime * 1000
+        Number(round.applicationsEndTime) * 1000
       ),
-      roundStartTime: new Date(res.data.rounds[0].roundStartTime * 1000),
-      roundEndTime: new Date(res.data.rounds[0].roundEndTime * 1000),
+      roundStartTime: new Date(Number(round.roundStartTime) * 1000),
+      roundEndTime: new Date(Number(round.roundEndTime) * 1000),
       protocolFeePercentage: protocolFeePercentage,
       roundFeePercentage: roundFeePercentage,
-      token: res.data.rounds[0].token,
+      token: round.token,
       votingStrategy: res.data.rounds[0].votingStrategy,
       payoutStrategy: res.data.rounds[0].payoutStrategy,
-      ownedBy: res.data.rounds[0].program.id,
+      ownedBy: round.program.id,
       operatorWallets: operatorWallets,
       approvedProjects: approvedProjectsWithMetadata,
       finalized: false,
