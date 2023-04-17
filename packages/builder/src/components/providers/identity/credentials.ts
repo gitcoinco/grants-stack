@@ -5,7 +5,6 @@ import {
   IssuedChallenge,
   VerifiableCredentialRecord,
 } from "@gitcoinco/passport-sdk-types";
-import { BroadcastChannel } from "broadcast-channel";
 
 export type { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
@@ -148,24 +147,28 @@ export function openOauthWindow(
       reject(new VerificationError("Authorization timed out"));
     }, 1000 * 60 * 5);
 
-    channel.onmessage = (event: {
-      target: string;
-      data: { error: string | null; code: string; state: string };
-    }) => {
-      if (event.target !== target) return;
-      if (state && event.data.state !== state) return;
+    channel.addEventListener("message", (event: any) => {
+      const eventData = event.data as {
+        target: string;
+        data: { error: string | null; code: string; state: string };
+      };
+
+      console.log("called", eventData);
+      if (eventData.target !== target) return;
+      if (state && eventData.data.state !== state) return;
 
       clearTimeout(timeout);
+      console.log("closing");
       channel.close();
 
-      if (event.data.error) {
-        reject(new VerificationError(event.data.error));
+      if (eventData.data.error) {
+        reject(new VerificationError(eventData.data.error));
       }
 
       resolve({
-        code: event.data.code,
-        state: event.data.state,
+        code: eventData.data.code,
+        state: eventData.data.state,
       });
-    };
+    });
   });
 }

@@ -35,16 +35,24 @@ export default function Twitter({
     const twitterCredential = state.projectForm?.credentials?.twitter;
     return {
       account: state.web3.account,
-      formMetaData: state.projectForm.metadata,
+      formMetadata: state.projectForm.metadata,
       verifiableCredential: twitterCredential,
     };
   }, shallowEqual);
 
   const { isValid: validCredential } = useValidateCredential(
     props.verifiableCredential,
-    CredentialProvider.Twitter,
-    props.formMetaData.projectTwitter
+    props.formMetadata.projectTwitter
   );
+
+  // console.log(
+  //   "TWITTER",
+  //   "credential",
+  //   props.verifiableCredential,
+  //   props.formMetadata.projectTwitter,
+  //   "isValid: ",
+  //   validCredential
+  // );
 
   const { signer } = global;
 
