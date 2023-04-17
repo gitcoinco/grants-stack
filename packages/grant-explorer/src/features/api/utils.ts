@@ -388,9 +388,6 @@ export const pinToIPFS = (obj: IPFSObject) => {
 export const abbreviateAddress = (address: string) =>
   `${address.slice(0, 8)}...${address.slice(-4)}`;
 
-// Checks if tests are being run jest
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
-
 export const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
 };

@@ -9,9 +9,9 @@ import { RootState } from "../reducers";
 import { Status } from "../reducers/rounds";
 import PinataClient from "../services/pinata";
 import { MetaPtr, ProgramMetadata, Round, RoundMetadata } from "../types";
-import { getProviderByChainId } from "../utils/utils";
 import { RoundApplicationMetadata } from "../types/roundApplication";
 import { parseRoundApplicationMetadata } from "../utils/roundApplication";
+import wagmi from "../utils/wagmi";
 
 export const ROUNDS_LOADING_ROUND = "ROUNDS_LOADING_ROUND";
 interface RoundsLoadingRoundAction {
@@ -82,7 +82,7 @@ export const loadRound =
 
     const chainId = roundChainId || stateChainID;
 
-    const appProvider = getProviderByChainId(chainId!);
+    const appProvider = wagmi.getProvider({ chainId });
 
     const contract = new ethers.Contract(address, RoundABI, appProvider);
     const pinataClient = new PinataClient();

@@ -43,8 +43,11 @@ export interface ProjectsState {
   ids: string[];
   events: ProjectEventsMap;
   owners: ProjectOwners;
-  applications: {
-    [projectID: string]: Application[];
+  applicationData: {
+    [projectID: string]: {
+      status: Status;
+      applications: Application[];
+    };
   };
   stats: {
     [projectID: string]: ProjectStats[];
@@ -58,7 +61,7 @@ export const initialState: ProjectsState = {
   ids: [],
   owners: {},
   events: {},
-  applications: {},
+  applicationData: {},
   stats: {},
 };
 
@@ -128,28 +131,43 @@ export const projectsReducer = (
 
     case PROJECT_APPLICATIONS_LOADING: {
       // Remove the project applications key
-      const { [action.projectID]: projectApplications, ...applications } =
-        state.applications;
+      const { [action.projectID]: projectApplications, ...applicationData } =
+        state.applicationData;
 
       return {
         ...state,
-        applications,
+        applicationData: {
+          ...applicationData,
+          [action.projectID]: {
+            status: Status.Loading,
+            applications: [],
+          },
+        },
       };
     }
 
     case PROJECT_APPLICATIONS_LOADED: {
       return {
         ...state,
-        applications: {
-          ...state.applications,
-          [action.projectID]: action.applications,
+        applicationData: {
+          ...state.applicationData,
+          [action.projectID]: {
+            status: Status.Loaded,
+            applications: action.applications,
+          },
         },
         error: undefined,
       };
     }
 
     case PROJECT_APPLICATION_UPDATED: {
-      const projectApplications = state.applications[action.projectID] || [];
+      const projectData = state.applicationData[action.projectID];
+
+      if (!projectData) {
+        return state;
+      }
+
+      const projectApplications = projectData.applications;
       const index = projectApplications.findIndex(
         (app: Application) => app.roundID === action.roundID
       );
@@ -165,13 +183,16 @@ export const projectsReducer = (
 
       return {
         ...state,
-        applications: {
-          ...state.applications,
-          [action.projectID]: [
-            ...projectApplications.slice(0, index),
-            updatedApplication,
-            ...projectApplications.slice(index + 1),
-          ],
+        applicationData: {
+          ...state.applicationData,
+          [action.projectID]: {
+            ...projectData,
+            applications: [
+              ...projectApplications.slice(0, index),
+              updatedApplication,
+              ...projectApplications.slice(index + 1),
+            ],
+          },
         },
         error: undefined,
       };

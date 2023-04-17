@@ -6,26 +6,29 @@ import {
   Client as AlloClient,
   Application as GrantApplication,
 } from "allo-indexer-client";
-import { addressesByChainID } from "../contracts/deployments";
+import { addressesByChainID, fetchProjectOwners } from "common/src/registry";
+import { verifyApplicationMetadata } from "common/src/verification";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Application, AppStatus, ProjectStats } from "../reducers/projects";
 import { ProjectEvents, ProjectEventsMap } from "../types";
 import { graphqlFetch } from "../utils/graphql";
-import { fetchProjectOwners } from "../utils/projects";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
-import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
-import { chains } from "../utils/wagmi";
+import { getProjectURIComponents } from "../utils/utils";
+import wagmi, { chains } from "../utils/wagmi";
 import { fetchGrantData } from "./grantsMetadata";
 import { addAlert } from "./ui";
+import PinataClient from "../services/pinata";
 
 export const PROJECTS_LOADING = "PROJECTS_LOADING";
+
 interface ProjectsLoadingAction {
   payload: number;
   type: typeof PROJECTS_LOADING;
 }
 
 export const PROJECTS_LOADED = "PROJECTS_LOADED";
+
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
@@ -35,23 +38,27 @@ interface ProjectsLoadedAction {
 }
 
 export const PROJECTS_ERROR = "PROJECTS_ERROR";
+
 interface ProjectsErrorAction {
   type: typeof PROJECTS_ERROR;
   error: string;
 }
 
 export const PROJECTS_UNLOADED = "PROJECTS_UNLOADED";
+
 export interface ProjectsUnloadedAction {
   type: typeof PROJECTS_UNLOADED;
 }
 
 export const PROJECT_APPLICATIONS_LOADING = "PROJECT_APPLICATIONS_LOADING";
+
 interface ProjectApplicationsLoadingAction {
   type: typeof PROJECT_APPLICATIONS_LOADING;
   projectID: string;
 }
 
 export const PROJECT_APPLICATIONS_LOADED = "PROJECT_APPLICATIONS_LOADED";
+
 interface ProjectApplicationsLoadedAction {
   type: typeof PROJECT_APPLICATIONS_LOADED;
   projectID: string;
@@ -59,6 +66,7 @@ interface ProjectApplicationsLoadedAction {
 }
 
 export const PROJECT_APPLICATION_UPDATED = "PROJECT_APPLICATION_UPDATED";
+
 interface ProjectApplicationUpdatedAction {
   type: typeof PROJECT_APPLICATION_UPDATED;
   projectID: string;
@@ -67,6 +75,7 @@ interface ProjectApplicationUpdatedAction {
 }
 
 export const PROJECT_APPLICATIONS_ERROR = "PROJECT_APPLICATIONS_ERROR";
+
 interface ProjectApplicationsErrorAction {
   type: typeof PROJECT_APPLICATIONS_ERROR;
   projectID: string;
@@ -74,6 +83,7 @@ interface ProjectApplicationsErrorAction {
 }
 
 export const PROJECT_OWNERS_LOADED = "PROJECT_OWNERS_LOADED";
+
 interface ProjectOwnersLoadedAction {
   type: typeof PROJECT_OWNERS_LOADED;
   payload: {
@@ -83,12 +93,14 @@ interface ProjectOwnersLoadedAction {
 }
 
 export const PROJECT_STATS_LOADING = "PROJECT_STATS_LOADING";
+
 interface ProjectStatsLoadingAction {
   type: typeof PROJECT_STATS_LOADING;
   projectID: string;
 }
 
 export const PROJECT_STATS_LOADED = "PROJECT_STATS_LOADED";
+
 interface ProjectStatsLoadedAction {
   type: typeof PROJECT_STATS_LOADED;
   projectID: string;
@@ -129,12 +141,12 @@ const projectsUnload = () => ({
 });
 
 const fetchProjectCreatedUpdatedEvents = async (
-  chainID: number,
+  chainId: number,
   account: string
 ) => {
-  const addresses = addressesByChainID(chainID!);
+  const addresses = addressesByChainID(chainId);
 
-  const appProvider = getProviderByChainId(chainID);
+  const appProvider = wagmi.getProvider({ chainId });
 
   // FIXME: use contract filters when fantom bug is fixed
   // const contract = new ethers.Contract(
@@ -154,7 +166,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   };
 
   // FIXME: remove when the fantom RPC bug has been fixed
-  if (chainID === 250 || chainID === 4002) {
+  if (chainId === 250 || chainId === 4002) {
     createdFilter.address = undefined;
   }
 
@@ -180,7 +192,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   const ids = createdEvents.map((event) => parseInt(event.topics[1], 16));
 
   const fullIds = ids.map(
-    (id) => `${chainID}:${addresses.projectRegistry}:${id}`
+    (id) => `${chainId}:${addresses.projectRegistry}:${id}`
   );
 
   // FIXME: use this line when the fantom RPC bug has been fixed
@@ -205,7 +217,7 @@ const fetchProjectCreatedUpdatedEvents = async (
   };
 
   // FIXME: remove when the fantom RPC bug has been fixed
-  if (chainID === 250 || chainID === 4002) {
+  if (chainId === 250 || chainId === 4002) {
     updatedFilter.address = undefined;
   }
 
@@ -281,8 +293,13 @@ export const projectOwnersLoaded = (projectID: string, owners: string[]) => ({
 export const loadProjectOwners =
   (projectID: string) => async (dispatch: Dispatch) => {
     const { chainId, id } = getProjectURIComponents(projectID);
+    const appProvider = wagmi.getProvider({ chainId: Number(chainId) });
 
-    const owners = await fetchProjectOwners(Number(chainId), id);
+    const owners = await fetchProjectOwners(
+      appProvider,
+      Number(chainId),
+      Number(id)
+    );
 
     dispatch(projectOwnersLoaded(projectID, owners));
   };
@@ -345,6 +362,127 @@ export const loadAllChainsProjects =
     });
   };
 
+const filterLegitApplications = async (
+  applicationMetadata: any[],
+  chainID: number
+) => {
+  const pinataClient = new PinataClient();
+  const applications: any[] = [];
+
+  /* eslint-disable no-await-in-loop */
+  for (const application of applicationMetadata) {
+    const metadata = await pinataClient.fetchJson(application.metaPtr.pointer);
+
+    if (metadata.signature) {
+      const projectIdSplits = metadata.application.project.id.split(":");
+      const projectChainId = projectIdSplits[0];
+      const projectId = projectIdSplits[2];
+
+      const owners = await fetchProjectOwners(
+        wagmi.getProvider({ chainId: Number(projectChainId) }),
+        projectChainId,
+        projectId
+      );
+
+      const isValidMetadata = verifyApplicationMetadata(
+        application.project,
+        owners,
+        metadata
+      );
+
+      const isSenderOwner = owners
+        .map((owner: string) => owner.toLowerCase())
+        .includes(application.sender.toLowerCase());
+
+      if (isValidMetadata && isSenderOwner)
+        applications.push({
+          status: convertStatusToText(application.status),
+          roundID: application.round.id,
+          chainId: chainID,
+          metaPtr: application.metaPtr,
+        });
+    }
+  }
+
+  return applications;
+};
+
+const fetchApplicationsFromSubgraph = async (
+  projectID: string,
+  projectChainId: number,
+  roundID?: string,
+  reactEnv?: any /* ProcessEnv */
+): Promise<any[]> => {
+  const { web3Provider } = global;
+
+  if (!web3Provider?.chains) {
+    return [];
+  }
+
+  const apps = await Promise.all(
+    web3Provider.chains.map(async (chain: { id: number }) => {
+      try {
+        const addresses = addressesByChainID(projectChainId);
+        const projectApplicationID = generateUniqueRoundApplicationID(
+          projectChainId,
+          projectID,
+          addresses.projectRegistry!
+        );
+
+        const response: any = await graphqlFetch(
+          `query roundApplications($projectID: String, ${
+            roundID ? "$roundID: String" : ""
+          }) {
+            roundApplications(where: { project: $projectID }) {
+              status
+              project
+              sender
+              round {
+                id
+              }
+              metaPtr {
+                pointer
+                protocol
+              }
+            }
+          }
+          `,
+          chain.id,
+          {
+            projectID: projectApplicationID,
+            roundID,
+          },
+          reactEnv
+        );
+
+        if (response.errors) {
+          datadogRum.addError(response.error, { projectID });
+          console.error(response.error);
+          return [];
+        }
+
+        const applications = await filterLegitApplications(
+          response.data.roundApplications,
+          chain.id
+        );
+
+        if (applications.length === 0) {
+          return [];
+        }
+
+        return applications;
+      } catch (error: any) {
+        datadogRum.addError(error, { projectID });
+        console.error(error);
+
+        return [];
+      }
+    })
+  );
+
+  return apps.flat();
+};
+
 export const fetchProjectApplicationInRound = async (
   applicationId: string,
   roundID: string,
@@ -361,130 +499,41 @@ export const fetchProjectApplicationInRound = async (
     projectRegistryAddress
   );
 
-  try {
-    const response: any = await graphqlFetch(
-      `query projectApplicationInRound($projectApplicationID: String, $roundID: String) {
-          roundApplications(
-            where: {
-              project: $projectApplicationID,
-              round: $roundID
-            }
-          ) {
-            status
-          }
-        }
-      `,
-      projectChainId,
-      {
-        projectApplicationID,
-        roundID,
-      },
-      reactEnv
-    );
+  const applications = await fetchApplicationsFromSubgraph(
+    projectApplicationID,
+    projectChainId,
+    roundID,
+    reactEnv
+  );
 
-    if (response.errors) {
-      throw response.errors;
-    }
-
-    return {
-      hasProjectAppliedToRound: response.data.roundApplications
-        ? response.data.roundApplications.length > 0
-        : false,
-    };
-  } catch (error: any) {
-    datadogRum.addError(error, { projectApplicationID, roundID });
-    console.error(error);
-
-    return {
-      hasProjectAppliedToRound: false,
-    };
-  }
+  return {
+    hasProjectAppliedToRound: applications.length > 0,
+  };
 };
 
 export const fetchProjectApplications =
-  (projectID: string, projectChainId: number, reactEnv: any /* ProcessEnv */) =>
+  (
+    projectID: string,
+    projectChainId: number,
+    reactEnv?: any /* ProcessEnv */
+  ) =>
   async (dispatch: Dispatch) => {
     dispatch({
       type: PROJECT_APPLICATIONS_LOADING,
       projectID,
     });
 
-    const { web3Provider } = global;
-
-    if (!web3Provider?.chains) {
-      return;
-    }
-
-    const apps = await Promise.all(
-      web3Provider.chains.map(async (chain: { id: number }) => {
-        try {
-          const addresses = addressesByChainID(projectChainId);
-          const projectApplicationID = generateUniqueRoundApplicationID(
-            projectChainId,
-            projectID,
-            addresses.projectRegistry!
-          );
-
-          const response: any = await graphqlFetch(
-            `query roundApplications($projectID: String) {
-            roundApplications(where: { project: $projectID }) {
-              status
-              round {
-                id
-              }
-              metaPtr {
-                pointer
-                protocol
-              }
-            }
-          }
-          `,
-            chain.id,
-            {
-              projectID: projectApplicationID,
-            },
-            reactEnv
-          );
-
-          if (response.errors) {
-            datadogRum.addError(response.error, { projectID });
-            console.error(response.error);
-            return [];
-          }
-
-          const applications = response.data.roundApplications.map(
-            (application: any) => ({
-              status: convertStatusToText(application.status),
-              roundID: application.round.id,
-              chainId: chain.id,
-              metaPtr: application.metaPtr,
-            })
-          );
-
-          if (applications.length === 0) {
-            return [];
-          }
-
-          dispatch({
-            type: PROJECT_APPLICATIONS_LOADED,
-            projectID,
-            applications,
-          });
-
-          return applications;
-        } catch (error: any) {
-          datadogRum.addError(error, { projectID });
-          console.error(error);
-
-          return [];
-        }
-      })
+    const apps = await fetchApplicationsFromSubgraph(
+      projectID,
+      projectChainId,
+      undefined,
+      reactEnv
     );
 
     dispatch({
       type: PROJECT_APPLICATIONS_LOADED,
       projectID,
-      applications: apps.flat(),
+      applications: apps,
     });
   };
 

@@ -1,16 +1,16 @@
+import { objectToDeterministicJSON } from "common/src/deterministicJSON";
 import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { ethers } from "ethers";
 import { Dispatch } from "redux";
+import { chains } from "common/src/registry";
 import RoundABI from "../contracts/abis/RoundImplementation.json";
-import { chains } from "../contracts/deployments";
 import { global } from "../global";
 import { RootState } from "../reducers";
 import { Status } from "../reducers/roundApplication";
 import PinataClient from "../services/pinata";
 import { Project, RoundApplication, SignedRoundApplication } from "../types";
 import { RoundApplicationAnswers } from "../types/roundApplication";
-import { objectToDeterministicJSON } from "../utils/deterministicJSON";
 import generateUniqueRoundApplicationID from "../utils/roundApplication";
 import RoundApplicationBuilder from "../utils/RoundApplicationBuilder";
 import { getProjectURIComponents, metadataToProject } from "../utils/utils";
