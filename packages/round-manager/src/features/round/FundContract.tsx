@@ -475,9 +475,11 @@ export default function FundContract(props: {
           <div className="font-bold mb-1">
             {totalAmountLeftToFund} {matchingFundPayoutToken?.name}
           </div>
-          <div className="text-md text-slate-400 mb-6">
-            (${amountInUSD.toFixed(2)})
-          </div>
+          {amountInUSD > 0 ? (
+            <div className="text-md text-slate-400 mb-6">
+              (${amountInUSD.toFixed(2)} USD)
+            </div>
+          ) : null}
         </div>
         <AdditionalGasFeesNote />
       </div>
