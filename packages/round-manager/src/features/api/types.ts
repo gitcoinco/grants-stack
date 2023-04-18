@@ -381,6 +381,7 @@ export type Project = {
   bannerImg?: string;
   logoImg?: string;
   projectGithub?: string;
+  userGithub?: string;
   projectTwitter?: string;
   credentials: ProjectCredentials;
   metaPtr: MetadataPointer;
