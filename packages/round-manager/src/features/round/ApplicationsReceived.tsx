@@ -41,7 +41,7 @@ import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
 import { parse as parseCsv } from "csv-parse";
-import { stringify as stringifyCsv } from "csv-stringify/sync";
+import { stringify as stringifyCsv } from "csv-stringify";
 
 const CSV_EXPORT_DECRYPT_FIELDS = ["Email Address"];
 
@@ -123,7 +123,15 @@ async function exportAndDownloadCsv(
     })
   );
 
-  const csv = stringifyCsv(decryptedData, { header: true });
+  const csv = (await new Promise((resolve, reject) => {
+    stringifyCsv(decryptedData, { header: true }, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  })) as string;
 
   // create a download link and click it
   const outputBlob = new Blob([csv], {
