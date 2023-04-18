@@ -327,7 +327,7 @@ function encodeQFVotes(
       amountInUnits,
       projectAddress,
       donation.projectRegistryId,
-      donation.applicationIndex
+      donation.applicationIndex,
     ];
 
     encodedVotes.push(

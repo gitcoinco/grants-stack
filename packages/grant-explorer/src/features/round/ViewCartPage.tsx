@@ -649,7 +649,7 @@ export default function ViewCart() {
         projectRegistryId,
         amount,
         projectAddress,
-        applicationIndex
+        applicationIndex,
       });
     }
 
@@ -662,7 +662,7 @@ export default function ViewCart() {
         projectRegistryId: project.projectRegistryId,
         amount: amount.toString(),
         projectAddress: project.recipient,
-        applicationIndex: project.applicationIndex
+        applicationIndex: project.applicationIndex,
       } as CartDonation;
     });
 
