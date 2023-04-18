@@ -5,7 +5,7 @@ import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
 import { Project, Requirement, Round } from "../api/types";
-import { ChainId, payoutTokens } from "../api/utils";
+import { payoutTokens } from "../api/utils";
 import {
   BasicCard,
   CardContent,
