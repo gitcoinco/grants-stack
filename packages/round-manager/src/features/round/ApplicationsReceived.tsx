@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Lit } from "../api/lit";
 import { utils } from "ethers";
-import { parse as parseCsv } from "csv-parse";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
@@ -42,9 +41,105 @@ import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
 
+const CSV_EXPORT_DECRYPT_FIELDS = ["Email Address"];
+
+async function exportAndDownloadCsv(
+  roundId: string,
+  chainId: number,
+  chainName: string
+) {
+  const { parse: parseCsv } = await import("csv-parse");
+  const { stringify: stringifyCsv } = await import("csv-stringify/sync");
+
+  const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.csv`;
+  // Fetch the CSV data
+  const response = await fetch(remoteUrl);
+  const csvText = await response.text();
+
+  // Parse the CSV data
+  const data: Record<string, string | Promise<string>>[] = await new Promise(
+    (resolve, reject) => {
+      parseCsv(
+        csvText,
+        {
+          columns: true,
+        },
+        (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        }
+      );
+    }
+  );
+
+  const lit = new Lit({
+    chain: chainName.toLowerCase(),
+    contract: roundId,
+  });
+
+  const decryptedData = await Promise.all(
+    data.map(async (row) => {
+      // start async decrypt fields
+      for (const key of CSV_EXPORT_DECRYPT_FIELDS) {
+        if (!row[key]) {
+          continue;
+        }
+
+        const encryptedValue: {
+          ciphertext: string;
+          encryptedSymmetricKey: string;
+        } = JSON.parse(await row[key]);
+
+        const blob = new Blob([
+          Uint8Array.from(
+            window
+              .atob(encryptedValue.ciphertext)
+              .split("")
+              .map((x) => x.charCodeAt(0))
+          ),
+        ]);
+
+        row[key] = lit.decryptString(
+          blob,
+          encryptedValue.encryptedSymmetricKey
+        );
+      }
+
+      // await for async field decryption
+      for (const key in row) {
+        row[key] = await row[key];
+      }
+
+      return row;
+    })
+  );
+
+  const csv = stringifyCsv(decryptedData, { header: true });
+
+  // create a download link and click it
+  const outputBlob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const link = document.createElement("a");
+
+  try {
+    const dataUrl = URL.createObjectURL(outputBlob);
+    link.setAttribute("href", dataUrl);
+    link.setAttribute("download", `applications-${roundId}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+  } finally {
+    document.body.removeChild(link);
+  }
+}
+
 export default function ApplicationsReceived() {
   const { id } = useParams();
-
   const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -165,71 +260,14 @@ export default function ApplicationsReceived() {
     }
   };
 
-  async function handleExportCsvClick(id: string) {
-    setIsCsvExportLoading(true);
-
-    type Application = {
-      ["Email Address"]: string;
-    };
-
+  async function handleExportCsvClick(
+    roundId: string,
+    chainId: number,
+    chainName: string
+  ) {
     try {
-      const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`;
-      // Fetch the CSV data
-      const response = await fetch(remoteUrl);
-      const csvText = await response.text();
-
-      // Parse the CSV data
-      const data: Application[] = await new Promise((resolve, reject) => {
-        parseCsv(
-          csvText,
-          {
-            columns: true,
-          },
-          (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(data);
-            }
-          }
-        );
-      });
-
-      const lit = new Lit({
-        chain: chain.name.toLowerCase(),
-        contract: id,
-      });
-
-      const decryptedData = await Promise.all(
-        data.map(async (row) => {
-          const encryptedEmail: {
-            ciphertext: string;
-            encryptedSymmetricKey: string;
-          } = JSON.parse(row["Email Address"]);
-
-          console.log(encryptedEmail.ciphertext);
-
-          const blob = new Blob([
-            Uint8Array.from(
-              window
-                .atob(encryptedEmail.ciphertext)
-                .split("")
-                .map((x) => x.charCodeAt(0))
-            ),
-          ]);
-
-          const decryptedString = await lit.decryptString(
-            blob,
-            encryptedEmail.encryptedSymmetricKey
-          );
-
-          return { ...row, ["Email Address"]: decryptedString };
-        })
-      );
-
-      console.log(decryptedData);
-    } catch (error) {
-      console.error(error);
+      setIsCsvExportLoading(true);
+      await exportAndDownloadCsv(roundId, chainId, chainName);
     } finally {
       setIsCsvExportLoading(false);
     }
@@ -244,7 +282,9 @@ export default function ApplicationsReceived() {
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(utils.getAddress(id))}
+            onClick={() =>
+              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
+            }
           >
             {isCsvExportLoading ? (
               <>

@@ -549,6 +549,7 @@ importers:
       craco-esbuild: ^0.5.2
       crypto-browserify: ^3.12.0
       csv-parse: ^5.3.8
+      csv-stringify: ^6.3.2
       deepmerge: ^4.3.1
       eslint-config-gitcoin: workspace:*
       ethers: ^5.6.5
@@ -619,6 +620,7 @@ importers:
       common: link:../common
       crypto-browserify: 3.12.0
       csv-parse: 5.3.8
+      csv-stringify: 6.3.2
       deepmerge: 4.3.1
       eslint-config-gitcoin: link:../eslint-config-gitcoin
       ethers: 5.6.5
@@ -10118,6 +10120,10 @@ packages:
 
   /csv-parse/5.3.8:
     resolution: {integrity: sha512-ird8lzMv9I64oqIVIHdaTbT7Yr55n2C/Nv6m1LxO7nddLEeI67468VQ9Ik+r6lwYbK9kTE1oSqAVcVKc/Uqx6g==}
+    dev: false
+
+  /csv-stringify/6.3.2:
+    resolution: {integrity: sha512-dD9gfbxNKa5v90NHiE2Qd6F9I52GtJjGTfowwzqiNDZD/+NPW3h19d2Nvv311a8QUW11rYRobco27nvVAnCrLw==}
     dev: false
 
   /cyclist/1.0.1:
