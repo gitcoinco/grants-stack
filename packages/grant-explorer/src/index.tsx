@@ -30,6 +30,7 @@ import ViewCart from "./features/round/ViewCartPage";
 import PassportConnect from "./features/round/PassportConnect";
 import { QFDonationProvider } from "./context/QFDonationContext";
 import ThankYou from "./features/round/ThankYou";
+import LandingPage from "./features/discovery/LandingPage";
 
 // Initialize sentry
 initSentry();
@@ -57,7 +58,7 @@ root.render(
                   <Route element={<Auth />} />
 
                   {/* Default Route */}
-                  <Route path="/" element={<NotFound />} />
+                  <Route path="/" element={<LandingPage />} />
 
                   {/* Round Routes */}
                   <Route
