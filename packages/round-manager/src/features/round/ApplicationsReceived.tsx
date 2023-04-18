@@ -40,6 +40,8 @@ import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
+import { parse as parseCsv } from "csv-parse";
+import { stringify as stringifyCsv } from "csv-stringify/sync";
 
 const CSV_EXPORT_DECRYPT_FIELDS = ["Email Address"];
 
@@ -48,9 +50,6 @@ async function exportAndDownloadCsv(
   chainId: number,
   chainName: string
 ) {
-  const { parse: parseCsv } = await import("csv-parse");
-  const { stringify: stringifyCsv } = await import("csv-stringify/sync");
-
   const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.csv`;
 
   // Fetch the CSV data
