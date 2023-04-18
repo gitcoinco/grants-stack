@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCart } from "../../context/CartContext";
 import CustomerSupport from "./CustomerSupport";
 import NavbarCart from "./NavbarCart";
+import NavBarLogo from "./NavBarLogo";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -20,19 +21,7 @@ export default function Navbar(props: NavbarProps) {
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link
-              to={`/round/${chainId}/${roundId}`}
-              className="flex-shrink-0 flex items-center"
-              data-testid={"home-link"}
-            >
-              <GitcoinLogo className="block h-8 w-auto" />
-              <div className="hidden lg:block md:block">
-                <span className="mx-6 text-grey-400">|</span>
-                <GrantsExplorerLogo className="lg:inline-block md:inline-block" />
-              </div>
-            </Link>
-          </div>
+          <NavBarLogo url="/" />
           <div className="flex items-center gap-6">
             <div data-testid="connect-wallet-button" id="connect-wallet-button">
               <ConnectButton />
