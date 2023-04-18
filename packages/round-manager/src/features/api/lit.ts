@@ -12,6 +12,8 @@ const client = LitJsSdk
     })
   : null;
 
+type LitClient = any;
+
 const ROUND_OPERATOR =
   "0xec61da14b5abbac5c5fda6f1d57642a264ebd5d0674f35852829746dfb8174a5";
 
@@ -19,10 +21,11 @@ type LitInit = {
   chain: string;
   contract: string;
 };
+
 export class Lit {
   /* Lit doesn't provide types as of 12. 9. 2022 */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  litNodeClient: any;
+  litNodeClient: Promise<LitClient> | undefined;
   chain: string;
   contract: string;
 
@@ -69,9 +72,12 @@ export class Lit {
   /**
    * Connect to the lit node
    */
-  async connect() {
-    await client.connect();
-    this.litNodeClient = client;
+  async getClient(): Promise<LitClient> {
+    if (this.litNodeClient) {
+      return this.litNodeClient;
+    }
+    this.litNodeClient = client.connect().then(() => client);
+    return this.litNodeClient;
   }
 
   /**
@@ -81,9 +87,7 @@ export class Lit {
    * @returns {encryptedString, encryptedSymmetricKey}
    */
   async encryptString(content: string) {
-    if (!this.litNodeClient) {
-      await this.connect();
-    }
+    const client = await this.getClient();
 
     // Obtain Auth Signature to verify signer is wallet owner
     const chain = this.chain;
@@ -95,7 +99,7 @@ export class Lit {
     );
 
     // Saving the Encrypted Content to the Lit Nodes
-    const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
+    const encryptedSymmetricKey = await client.saveEncryptionKey({
       unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
       symmetricKey,
       authSig,
@@ -122,9 +126,7 @@ export class Lit {
     encryptedStr: string | Blob,
     encryptedSymmetricKey: string
   ) {
-    if (!this.litNodeClient) {
-      await this.connect();
-    }
+    const client = await this.getClient();
 
     try {
       const chain = this.chain;
@@ -133,7 +135,7 @@ export class Lit {
       const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
 
       // Obtaining the Decrypted Symmetric Key
-      const symmetricKey = await this.litNodeClient.getEncryptionKey({
+      const symmetricKey = await client.getEncryptionKey({
         unifiedAccessControlConditions: this.isRoundOperatorAccessControl(),
         toDecrypt: encryptedSymmetricKey,
         chain,
