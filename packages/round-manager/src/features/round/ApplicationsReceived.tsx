@@ -52,8 +52,14 @@ async function exportAndDownloadCsv(
   const { stringify: stringifyCsv } = await import("csv-stringify/sync");
 
   const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.csv`;
+
   // Fetch the CSV data
   const response = await fetch(remoteUrl);
+
+  if (response.status !== 200) {
+    throw new Error(`Failed to fetch CSV data from ${remoteUrl}`);
+  }
+
   const csvText = await response.text();
 
   // Parse the CSV data
@@ -268,6 +274,11 @@ export default function ApplicationsReceived() {
     try {
       setIsCsvExportLoading(true);
       await exportAndDownloadCsv(roundId, chainId, chainName);
+    } catch (e) {
+      datadogLogs.logger.error(
+        `error: exportApplicationCsv - ${e}, id: ${roundId}`
+      );
+      console.error("exportApplicationCsv", e);
     } finally {
       setIsCsvExportLoading(false);
     }
