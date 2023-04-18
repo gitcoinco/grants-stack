@@ -1,4 +1,3 @@
-import React from 'react';
 import NavBarLogo from '../common/NavBarLogo';
 
 const LandingHeader = () => {
