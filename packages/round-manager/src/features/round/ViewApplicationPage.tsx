@@ -83,9 +83,7 @@ export default function ViewApplicationPage() {
   const { applications, isLoading } = useApplicationByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
-
-  console.log("application", application)
-
+  
   const {
     bulkUpdateGrantApplications,
     contractUpdatingStatus,
@@ -305,6 +303,9 @@ export default function ViewApplicationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application, hasAccess, isLoading]);
 
+  // Handle case where project github is not set but user github is set. if both are not available, set to null
+  const registeredGithub = application?.project?.projectGithub ?? application?.project?.userGithub;
+
   return isLoading ? (
     <Spinner text="We're fetching the round application." />
   ) : (
@@ -443,12 +444,12 @@ export default function ViewApplicationPage() {
                     <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                       <GithubIcon className="h-4 w-4 mr-2" />
                       <a
-                        href={`https://github.com/${application?.project?.projectGithub}`}
+                        href={`https://github.com/${registeredGithub}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-violet-400 mr-2"
                       >
-                        {application?.project?.projectGithub}
+                        {registeredGithub}
                       </a>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
