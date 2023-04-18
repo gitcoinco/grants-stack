@@ -424,25 +424,30 @@ export default function ViewApplicationPage() {
               <div className="sm:flex sm:justify-between my-6">
                 <div className="sm:basis-3/4 sm:mr-3">
                   <div className="grid sm:grid-cols-3 gap-2 md:gap-10">
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="twitter-info"
-                    >
+
+                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="twitter-info">
                       <TwitterIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
+                      <a
+                        href={`https://twitter.com/${application?.project?.projectTwitter}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-violet-400 mr-2"
+                      >
                         {application?.project?.projectTwitter}
-                      </span>
+                      </a>
                       {getVerifiableCredentialVerificationResultView("twitter")}
                     </span>
 
-                    <span
-                      className="text-grey-500 flex flex-row justify-start items-center"
-                      data-testid="github-info"
-                    >
+                    <span className="text-grey-500 flex flex-row justify-start items-center" data-testid="github-info">
                       <GithubIcon className="h-4 w-4 mr-2" />
-                      <span className="text-sm text-violet-400 mr-2">
+                      <a
+                        href={`https://github.com/${application?.project?.projectGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-violet-400 mr-2"
+                      >
                         {application?.project?.projectGithub}
-                      </span>
+                      </a>
                       {getVerifiableCredentialVerificationResultView("github")}
                     </span>
 
