@@ -72,12 +72,12 @@ export class Lit {
   /**
    * Connect to the lit node
    */
-  async getClient(): Promise<LitClient> {
+  getClient(): Promise<LitClient> {
     if (this.litNodeClient) {
       return this.litNodeClient;
     }
     this.litNodeClient = client.connect().then(() => client);
-    return this.litNodeClient;
+    return this.litNodeClient!;
   }
 
   /**
