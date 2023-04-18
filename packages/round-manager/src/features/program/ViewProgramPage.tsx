@@ -12,7 +12,7 @@ import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import { abbreviateAddress } from "../api/utils";
-import { getUTCDate, getUTCTime } from "common";
+import { formatUTCDateAsISOString, getUTCTime } from "common";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useEffect, useState } from "react";
 import NotFoundPage from "../common/NotFoundPage";
@@ -90,11 +90,11 @@ export default function ViewProgram() {
                       data-testid="application-time-period"
                     >
                       <span data-testid="application-start-time-period">
-                        {getUTCDate(round.applicationsStartTime)}
+                        {formatUTCDateAsISOString(round.applicationsStartTime)}
                       </span>
                       <span className="mx-1">-</span>
                       <span data-testid="application-end-time-period">
-                        {getUTCDate(round.applicationsEndTime)}
+                        {formatUTCDateAsISOString(round.applicationsEndTime)}
                       </span>
                     </p>
                     <p className="text-xs text-grey-400">
@@ -125,11 +125,11 @@ export default function ViewProgram() {
                       data-testid="round-time-period"
                     >
                       <span data-testid="round-start-time-period">
-                        {getUTCDate(round.roundStartTime)}
+                        {formatUTCDateAsISOString(round.roundStartTime)}
                       </span>
                       <span className="mx-1">-</span>
                       <span data-testid="round-end-time-period">
-                        {getUTCDate(round.roundEndTime)}
+                        {formatUTCDateAsISOString(round.roundEndTime)}
                       </span>
                     </p>
 

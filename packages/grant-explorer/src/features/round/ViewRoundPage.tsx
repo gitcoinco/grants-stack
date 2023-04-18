@@ -23,7 +23,11 @@ import Footer from "../common/Footer";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import PassportBanner from "../common/PassportBanner";
 import { Button, Input } from "common/src/styles";
-import { getUTCDate, getUTCTime, renderToPlainText } from "common";
+import {
+  formatUTCDateAsISOString,
+  getUTCTime,
+  renderToPlainText,
+} from "common";
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
 
@@ -182,13 +186,17 @@ function AfterRoundStart(props: {
           <div className="flex text-grey-400 mb-3">
             <p className="mr-4 text-sm">
               <span className="mr-1">Round starts on:</span>
-              <span className="mr-1">{getUTCDate(round.roundStartTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundStartTime)}
+              </span>
               <span>{getUTCTime(round.roundStartTime)}</span>
             </p>
             <p className="text-sm">
               <span className="mr-1">Round ends on:</span>
 
-              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundEndTime)}
+              </span>
 
               <span>{getUTCTime(round.roundEndTime)}</span>
             </p>
@@ -400,7 +408,7 @@ function PreRoundPage(props: {
             Application Period:
             <span className="mx-1">
               <span className="mr-1">
-                {getUTCDate(round.applicationsStartTime)}
+                {formatUTCDateAsISOString(round.applicationsStartTime)}
               </span>
 
               <span>( {getUTCTime(round.applicationsStartTime)} )</span>
@@ -408,7 +416,7 @@ function PreRoundPage(props: {
               <span className="mx-1">-</span>
 
               <span className="mr-1">
-                {getUTCDate(round.applicationsEndTime)}
+                {formatUTCDateAsISOString(round.applicationsEndTime)}
               </span>
 
               <span>( {getUTCTime(round.applicationsEndTime)} )</span>
@@ -420,13 +428,17 @@ function PreRoundPage(props: {
           >
             Round Period:
             <span>
-              <span className="mx-1">{getUTCDate(round.roundStartTime)}</span>
+              <span className="mx-1">
+                {formatUTCDateAsISOString(round.roundStartTime)}
+              </span>
 
               <span>( {getUTCTime(round.roundStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
-              <span className="mr-1">{getUTCDate(round.roundEndTime)}</span>
+              <span className="mr-1">
+                {formatUTCDateAsISOString(round.roundEndTime)}
+              </span>
 
               <span>( {getUTCTime(round.roundEndTime)} )</span>
             </span>

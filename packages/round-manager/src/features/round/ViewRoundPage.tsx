@@ -24,7 +24,7 @@ import {
   ProgressStatus,
   Round,
 } from "../api/types";
-import { getUTCDate, getUTCTime } from "common";
+import { formatUTCDateAsISOString, getUTCTime } from "common";
 import AccessDenied from "../common/AccessDenied";
 import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -468,9 +468,11 @@ function ApplicationOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
       <p className="text-sm mr-2 text-grey-400">Applications:</p>
       <div>
         <p className="text-sm">
-          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
+          <span>
+            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
+          </span>
           <span className="mx-2">-</span>
-          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
+          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
         </p>
         <p className="flex justify-center items-center text-sm text-grey-400">
           <span>({(startTime && getUTCTime(startTime)) || "..."})</span>
@@ -491,9 +493,11 @@ function RoundOpenDateRange(props: { startTime?: Date; endTime?: Date }) {
       <p className="text-sm mr-2 text-grey-400">Round:</p>
       <div>
         <p className="flex justify-center items-center text-sm">
-          <span>{(startTime && getUTCDate(startTime)) || "..."}</span>
+          <span>
+            {(startTime && formatUTCDateAsISOString(startTime)) || "..."}
+          </span>
           <span className="mx-2">-</span>
-          <span>{(endTime && getUTCDate(endTime)) || "..."}</span>
+          <span>{(endTime && formatUTCDateAsISOString(endTime)) || "..."}</span>
         </p>
         <p className="flex justify-center items-center text-sm text-grey-400">
           <span>({(startTime && getUTCTime(startTime)) || "..."})</span>

@@ -324,23 +324,18 @@ export const convertStatusToText = (
 /** Returns true if the current javascript context is running inside a Jest test  */
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
 
-export const prefixZero = (i: number): string =>
+export const padSingleDigitNumberWithZero = (i: number): string =>
   i < 10 ? "0" + i : i.toString();
 
-export const getUTCDate = (date: Date): string => {
-  const utcDate = [
-    prefixZero(date.getUTCDate()),
-    prefixZero(date.getUTCMonth() + 1),
-    prefixZero(date.getUTCFullYear()),
-  ];
-
-  return utcDate.join("/");
+export const formatUTCDateAsISOString = (date: Date): string => {
+  const isoString = date.toISOString();
+  return isoString.slice(0, 10).replace(/-/g, "/");
 };
 
 export const getUTCTime = (date: Date): string => {
   const utcTime = [
-    prefixZero(date.getUTCHours()),
-    prefixZero(date.getUTCMinutes()),
+    padSingleDigitNumberWithZero(date.getUTCHours()),
+    padSingleDigitNumberWithZero(date.getUTCMinutes()),
   ];
 
   return utcTime.join(":") + " UTC";
