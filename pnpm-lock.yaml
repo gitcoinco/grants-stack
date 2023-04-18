@@ -332,9 +332,12 @@ importers:
       '@babel/preset-env': ^7.20.2
       '@babel/preset-react': ^7.18.6
       '@babel/preset-typescript': ^7.21.0
+      '@chakra-ui/react': ^2.1.2
       '@craco/craco': ^7.0.0
       '@datadog/browser-logs': ^4.19.0
       '@datadog/browser-rum': ^4.19.0
+      '@emotion/react': ^11
+      '@emotion/styled': ^11
       '@ethersproject/abstract-signer': ^5.7.0
       '@ethersproject/providers': ^5.7.2
       '@faker-js/faker': ^7.5.0
@@ -374,6 +377,7 @@ importers:
       eslint: '>=8.1.0 <9.0.0'
       eslint-config-gitcoin: workspace:*
       ethers: ^5.6.5
+      framer-motion: ^6
       history: ^5.3.0
       html-react-parser: ^3.0.7
       https-browserify: ^1.0.0
@@ -393,6 +397,7 @@ importers:
       react-dom: ^18.1.0
       react-gtm-module: ^2.0.11
       react-hook-form: ^7.31.3
+      react-icons: ^4.7.1
       react-redux: ^8.0.1
       react-router: ^6
       react-router-dom: '6'
@@ -412,9 +417,12 @@ importers:
       web-vitals: ^2.1.0
       webpack: '>=2'
     dependencies:
+      '@chakra-ui/react': 2.4.9_7h642ehufk2ayekpx246qipqne
       '@craco/craco': 7.0.0_iihpyunhlvq2lijfgduptyp3ja
       '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
       '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
+      '@emotion/react': 11.10.5_yxdp3dl3eazy3vwpbmv4fq727a
+      '@emotion/styled': 11.10.5_4erqsq3n444jecyuvaxwc5b3vi
       '@ethersproject/abstract-signer': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@gitcoinco/passport-sdk-verifier': 0.2.2
@@ -442,6 +450,7 @@ importers:
       date-fns: 2.29.3
       eslint: 8.32.0
       ethers: 5.6.5
+      framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
       history: 5.3.0
       html-react-parser: 3.0.8_react@18.2.0
       https-browserify: 1.0.0
@@ -458,6 +467,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-gtm-module: 2.0.11
       react-hook-form: 7.42.1_react@18.2.0
+      react-icons: 4.7.1_react@18.2.0
       react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
       react-router: 6.7.0_react@18.2.0
       react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
@@ -3588,7 +3598,7 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.20.12
-      '@babel/runtime': 7.20.7
+      '@babel/runtime': 7.21.0
       '@emotion/babel-plugin': 11.10.5_@babel+core@7.20.12
       '@emotion/cache': 11.10.5
       '@emotion/serialize': 1.1.1
@@ -3628,7 +3638,7 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.20.12
-      '@babel/runtime': 7.20.7
+      '@babel/runtime': 7.21.0
       '@emotion/babel-plugin': 11.10.5_@babel+core@7.20.12
       '@emotion/is-prop-valid': 1.2.0
       '@emotion/react': 11.10.5_yxdp3dl3eazy3vwpbmv4fq727a
@@ -6585,11 +6595,7 @@ packages:
   /@types/lodash.mergewith/4.6.7:
     resolution: {integrity: sha512-3m+lkO5CLRRYU0fhGRp7zbsGi6+BZj0uTVSwvcKU+nSlhjA9/QRNfuSGnD2mX6hQA7ZbmcCkzk5h4ZYGOtk14A==}
     dependencies:
-      '@types/lodash': 4.14.191
-    dev: false
-
-  /@types/lodash/4.14.191:
-    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
+      '@types/lodash': 4.14.192
     dev: false
 
   /@types/lodash/4.14.192:
@@ -6958,7 +6964,6 @@ packages:
       typescript: 4.9.4
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@typescript-eslint/parser/5.48.2_eslint@8.32.0:
     resolution: {integrity: sha512-38zMsKsG2sIuM5Oi/olurGwYJXzmtdsHhn5mI/pQogP+BjYVkK5iRazCQ8RGS0V+YLk282uWElN70zAAUmaYHw==}
@@ -11349,7 +11354,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -11419,7 +11424,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
+      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -11565,7 +11570,7 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
     dependencies:
-      '@babel/runtime': 7.20.7
+      '@babel/runtime': 7.21.0
       aria-query: 5.1.3
       array-includes: 3.1.6
       array.prototype.flatmap: 1.3.1
