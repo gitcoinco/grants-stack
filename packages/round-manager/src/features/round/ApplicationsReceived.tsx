@@ -288,7 +288,7 @@ export default function ApplicationsReceived() {
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && (
+        {id && applications && applications.length > 0 && (
           <Button
             type="button"
             $variant="outline"
