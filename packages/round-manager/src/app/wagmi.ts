@@ -60,7 +60,7 @@ const mainnetChains = () => {
       symbol: "FTM",
     },
     rpcUrls: {
-      default: "https://rpc.ankr.com/fantom/",
+      default: "https://rpcapi.fantom.network/",
     },
     blockExplorers: {
       default: { name: "ftmscan", url: "https://ftmscan.com" },
@@ -68,7 +68,27 @@ const mainnetChains = () => {
     testnet: false,
   };
 
-  return [chain.mainnet, chain.optimism, fantomMainnet];
+  const optimismMainnet: Chain = {
+    id: 10,
+    name: "Optimism",
+    network: "optimism mainnet",
+    iconUrl:
+      "https://gateway.ipfs.io/ipfs/QmZMAJmvTzfmvmmQd6t8Sy928x9uc5aRtGiNHqLLqvZj9v",
+    nativeCurrency: {
+      decimals: 18,
+      name: "Optimism",
+      symbol: "ETH",
+    },
+    rpcUrls: {
+      default: `https://opt-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_OPTIMISM}`,
+    },
+    blockExplorers: {
+      default: { name: "etherscan", url: "https://optimistic.etherscan.io" },
+    },
+    testnet: false,
+  };
+
+  return [chain.mainnet, fantomMainnet, optimismMainnet];
 };
 
 const allChains: Chain[] =

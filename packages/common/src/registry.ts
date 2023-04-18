@@ -15,7 +15,15 @@ export const fetchProjectOwners = async (
     ProjectRegistryABI,
     provider,
   );
-  return (await projectRegistry.getProjectOwners(projectID)) as string[];
+
+  try {
+   const projectOwners = await projectRegistry.getProjectOwners(projectID);
+    return projectOwners as string[];
+  } catch (err) {
+   // console.log(err);
+    console.log(`Error fetching owners from registry on chain ${chainID} for project ${projectID}`);
+    return [];
+  }
 };
 
 export const addressesByChainID = (chainID: number) => {
