@@ -166,7 +166,10 @@ function AfterRoundStart(props: {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar
+        roundUrlPath={`/round/${chainId}/${roundId}`}
+        isBeforeRoundEndDate={props.isBeforeRoundEndDate}
+      />
       {props.isAfterRoundEndDate && (
         <PassportBanner chainId={chainId} roundId={roundId} />
       )}
@@ -223,6 +226,7 @@ function AfterRoundStart(props: {
             <ProjectList
               projects={projects}
               roundRoutePath={`/round/${chainId}/${roundId}`}
+              isBeforeRoundEndDate={props.isBeforeRoundEndDate}
             />
           )}
         </main>
@@ -235,6 +239,7 @@ function AfterRoundStart(props: {
 const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
+  isBeforeRoundEndDate?: boolean
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
 
@@ -246,6 +251,7 @@ const ProjectList = (props: {
             key={index}
             project={project}
             roundRoutePath={roundRoutePath}
+            isBeforeRoundEndDate={props.isBeforeRoundEndDate}
           />
         );
       })}
@@ -253,7 +259,11 @@ const ProjectList = (props: {
   );
 };
 
-function ProjectCard(props: { project: Project; roundRoutePath: string }) {
+function ProjectCard(props: {
+  project: Project;
+  roundRoutePath: string,
+  isBeforeRoundEndDate?: boolean
+}) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
 
@@ -293,16 +303,18 @@ function ProjectCard(props: { project: Project; roundRoutePath: string }) {
       </Link>
       <CardFooter className="bg-white border-t">
         <CardContent className="text-xs mt-3">
-          <CartButton
-            project={project}
-            isAlreadyInCart={isAlreadyInCart}
-            removeFromCart={() => {
-              handleRemoveProjectsFromCart([project]);
-            }}
-            addToCart={() => {
-              handleAddProjectsToCart([project]);
-            }}
-          />
+          { props.isBeforeRoundEndDate &&
+            <CartButton
+              project={project}
+              isAlreadyInCart={isAlreadyInCart}
+              removeFromCart={() => {
+                handleRemoveProjectsFromCart([project]);
+              }}
+              addToCart={() => {
+                handleAddProjectsToCart([project]);
+              }}
+            />
+          }
         </CardContent>
       </CardFooter>
     </BasicCard>
