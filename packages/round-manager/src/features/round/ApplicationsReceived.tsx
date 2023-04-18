@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Lit } from "../api/lit";
 import { utils } from "ethers";
+import { parse as parseCsv } from "csv-parse";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
 } from "@heroicons/react/outline";
-import { Spinner } from "../common/Spinner";
+import { Spinner, LoadingRing } from "../common/Spinner";
 import {
   BasicCard,
   CardContent,
@@ -57,6 +59,7 @@ export default function ApplicationsReceived() {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
+  const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
 
   const {
     bulkUpdateGrantApplications,
@@ -162,22 +165,98 @@ export default function ApplicationsReceived() {
     }
   };
 
+  async function handleExportCsvClick(id: string) {
+    setIsCsvExportLoading(true);
+
+    type Application = {
+      ["Email Address"]: string;
+    };
+
+    try {
+      const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chain?.id}/rounds/${id}/applications.csv`;
+      // Fetch the CSV data
+      const response = await fetch(remoteUrl);
+      const csvText = await response.text();
+
+      // Parse the CSV data
+      const data: Application[] = await new Promise((resolve, reject) => {
+        parseCsv(
+          csvText,
+          {
+            columns: true,
+          },
+          (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          }
+        );
+      });
+
+      const lit = new Lit({
+        chain: chain.name.toLowerCase(),
+        contract: id,
+      });
+
+      const decryptedData = await Promise.all(
+        data.map(async (row) => {
+          const encryptedEmail: {
+            ciphertext: string;
+            encryptedSymmetricKey: string;
+          } = JSON.parse(row["Email Address"]);
+
+          console.log(encryptedEmail.ciphertext);
+
+          const blob = new Blob([
+            Uint8Array.from(
+              window
+                .atob(encryptedEmail.ciphertext)
+                .split("")
+                .map((x) => x.charCodeAt(0))
+            ),
+          ]);
+
+          const decryptedString = await lit.decryptString(
+            blob,
+            encryptedEmail.encryptedSymmetricKey
+          );
+
+          return { ...row, ["Email Address"]: decryptedString };
+        })
+      );
+
+      console.log(decryptedData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsCsvExportLoading(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center mb-4">
         {id && (
           <Button
             type="button"
-            $as="a"
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
-            href={`${process.env.REACT_APP_ALLO_API_URL}/data/${
-              chain?.id
-            }/rounds/${utils.getAddress(id)}/applications.csv`}
-            download
+            disabled={isCsvExportLoading}
+            onClick={() => handleExportCsvClick(utils.getAddress(id))}
           >
-            <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
-            <span>CSV</span>
+            {isCsvExportLoading ? (
+              <>
+                <LoadingRing className="animate-spin w-3 h-3 inline-block mr-2 -mt-0.5" />
+                <span className="text-grey-400">Exporting...</span>
+              </>
+            ) : (
+              <>
+                <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+                <span>CSV</span>
+              </>
+            )}
           </Button>
         )}
         {pendingApplications && pendingApplications.length > 0 && (
