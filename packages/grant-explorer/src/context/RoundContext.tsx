@@ -115,7 +115,7 @@ export const useRoundById = (
         (round) => round.id === roundId
       );
 
-      if (!existingRound) {
+      if (!existingRound?.token) {
         fetchRoundsById(context.dispatch, chainId, roundId);
       }
     }
