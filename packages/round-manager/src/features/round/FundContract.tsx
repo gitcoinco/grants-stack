@@ -133,10 +133,10 @@ export default function FundContract(props: {
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);
 
   const amountLeftToFund =
-    matchingFunds && matchingFunds - Number(balanceData?.formatted);
+    matchingFunds && matchingFunds - Number(balanceData?.formatted ?? 0);
 
   const amountLeftToFundInUSD =
-    amountLeftToFund && amountLeftToFund * Number(data);
+    amountLeftToFund && amountLeftToFund * Number(data ?? 0);
 
   const roundFeePercentage = props.round?.roundFeePercentage ?? 0;
   const protocolFeePercentage = props.round?.protocolFeePercentage ?? 0;
@@ -269,9 +269,11 @@ export default function FundContract(props: {
           <p className="text-sm w-1/3">Matching pool size:</p>
           <p className="text-sm">
             {matchingFunds} {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">
-              ${matchingFundsInUSD} USD
-            </span>
+            {matchingFundsInUSD && matchingFundsInUSD > 0 ? (
+              <span className="text-sm text-slate-400 ml-2">
+                ${matchingFundsInUSD} USD
+              </span>
+            ): null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -302,7 +304,7 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round.protocolFeePercentage}%</p>
+          <p className="text-sm">{props.round.protocolFeePercentage ?? 0}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="flex flex-row text-sm w-1/3">
@@ -332,15 +334,17 @@ export default function FundContract(props: {
               </ReactTooltip>
             </span>
           </p>
-          <p className="text-sm">{props.round.roundFeePercentage}%</p>
+          <p className="text-sm">{props.round.roundFeePercentage ?? 0}%</p>
         </div>
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Amount in contract:</p>
           <p className="text-sm">
             {contractBalance} {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">
+            {tokenBalanceInUSD && tokenBalanceInUSD > 0 ? (
+              <span className="text-sm text-slate-400 ml-2">
               ${tokenBalanceInUSD} USD
             </span>
+              ): null}
           </p>
         </div>
         <hr className="mt-6 mb-6" />
@@ -349,9 +353,11 @@ export default function FundContract(props: {
           <p className="text-sm">
             {" "}
             {totalAmountLeftToFund} {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">
-              ${amountLeftToFundInUSD} USD
-            </span>
+            {amountLeftToFundInUSD > 0 ? (
+              <span className="text-sm text-slate-400 ml-2">
+                ${amountLeftToFundInUSD} USD
+              </span>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -469,9 +475,11 @@ export default function FundContract(props: {
           <div className="font-bold mb-1">
             {totalAmountLeftToFund} {matchingFundPayoutToken?.name}
           </div>
-          <div className="text-md text-slate-400 mb-6">
-            (${amountInUSD.toFixed(2)} USD)
-          </div>
+          {amountInUSD > 0 ? (
+            <div className="text-md text-slate-400 mb-6">
+              (${amountInUSD.toFixed(2)} USD)
+            </div>
+          ) : null}
         </div>
         <AdditionalGasFeesNote />
       </div>
