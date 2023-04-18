@@ -69,6 +69,7 @@ async function exportAndDownloadCsv(
         csvText,
         {
           columns: true,
+          skip_empty_lines: true,
         },
         (err, data) => {
           if (err) {
