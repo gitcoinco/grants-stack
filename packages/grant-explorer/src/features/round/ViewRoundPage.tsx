@@ -387,7 +387,7 @@ function PreRoundPage(props: {
 
   return (
     <div className="mt-20 flex justify-center">
-      <div className="w-max">
+      <div className="max-w-screen-lg md:w-full">
         <div className="text-center">
           <div className="lg:inline-block md:inline-block"></div>
           <p className="mb-4 text-2xl text-black font-bold">
@@ -474,10 +474,7 @@ function PreRoundPage(props: {
           <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
             {isBeforeApplicationStartDate && (
               <InactiveButton
-                label={`Applications Open ${getUTCDate(
-                  round.applicationsStartTime
-                )}
-                `}
+                label="Apply to Grant Round"
                 testid="applications-open-button"
               />
             )}
@@ -488,7 +485,7 @@ function PreRoundPage(props: {
 
             {isAfterApplicationEndDateAndBeforeRoundStartDate && (
               <InactiveButton
-                label="Applications Closed"
+                label="Application period ended"
                 testid="applications-closed-button"
               />
             )}
@@ -507,7 +504,7 @@ const ApplyButton = (props: { applicationURL: string }) => {
     <Button
       type="button"
       onClick={() => window.open(applicationURL, "_blank")}
-      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded bg-white text-black border-1 md:h-12 border-1 hover:border-violet-400"
+      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded bg-white text-black border-2 border-gray-200 md:h-12 hover:border-violet-400"
       data-testid="apply-button"
     >
       Apply to Grant Round
@@ -521,7 +518,7 @@ const InactiveButton = (props: { label: string; testid: string }) => {
   return (
     <Button
       type="button"
-      className="basis-full items-center justify-center shadow-sm text-sm rounded border-1 md:h-12"
+      className="basis-full items-center justify-center shadow-sm text-sm bg-grey-300 rounded border-1 md:h-12"
       data-testid={testid}
       disabled={true}
     >
