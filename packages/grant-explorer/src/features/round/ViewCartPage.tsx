@@ -270,7 +270,7 @@ export default function ViewCart() {
 
   function ApplyTooltip() {
     return (
-      <>
+      <div className="hidden md:block">
         <InformationCircleIcon
           data-tip
           data-background-color="#5932C4"
@@ -293,13 +293,13 @@ export default function ViewCart() {
             below.
           </p>
         </ReactTooltip>
-      </>
+      </div>
     );
   }
 
   function SummaryContainer() {
     return (
-      <>
+      <div className="order-first md:order-last">
         <div>
           <Summary />
           <Button
@@ -364,7 +364,7 @@ export default function ViewCart() {
           )}
         </div>
         <PayoutModals />
-      </>
+      </div>
     );
   }
 
@@ -395,9 +395,11 @@ export default function ViewCart() {
           <div className="basis-[28%]">
             <h2 className="mt-2 text-xl">Projects</h2>
           </div>
-          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
+          <div className="flex justify-end flex-row gap-2 basis-[72%]">
             <div className="flex gap-4">
-              <p className="mt-3 text-sm amount-text">Amount</p>
+              <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text">
+                Amount
+              </p>
               <Input
                 aria-label={"Donation amount for all projects "}
                 id={"input-donationamount"}
@@ -407,7 +409,7 @@ export default function ViewCart() {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setFixedDonation(Number(e.target.value));
                 }}
-                className="w-24"
+                className="w-16 md:w-24"
               />
               <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
             </div>
@@ -418,7 +420,7 @@ export default function ViewCart() {
                 onClick={() => {
                   updateAllDonations(fixedDonation ?? 0);
                 }}
-                className="float-right md:float-none text-xs px-4 py-2 text-purple-600 border-0"
+                className="float-right md:float-none text-xs px-1 py-2 text-purple-600 border-0"
               >
                 Apply to all
               </Button>
@@ -501,7 +503,8 @@ export default function ViewCart() {
             </div>
           </div>
 
-          <div className="mt-1 flex space-x-2 sm:space-x-4 h-16 pl-4 pt-3">
+          <div className="mt-1 flex space-x-4 h-16 pl-4 pt-3">
+            <div className="md:hidden w-12"></div>
             <Input
               aria-label={
                 "Donation amount for project " +
@@ -552,12 +555,14 @@ export default function ViewCart() {
   function EmptyCart() {
     return (
       <div className="grow block px-[16px] py-4 rounded-lg shadow-lg bg-white border border-violet-400">
-        <div className="flex flex-row justify-between border-b-2 pb-2 gap-3">
+        <div className="flex flex-col md:flex-row justify-between border-b-2 pb-2 gap-3">
           <div className="basis-[28%]">
             <h2 className="mt-2 text-xl">Projects</h2>
           </div>
-          <div className="lg:flex justify-end lg:flex-row gap-2 basis-[72%] ">
-            <p className="mt-3 text-sm amount-text">Amount</p>
+          <div className="flex justify-end flex-row gap-2 basis-[72%]">
+            <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text">
+              Amount
+            </p>
             <Input
               aria-label={"Donation amount for all projects "}
               id={"input-donationamount"}
@@ -567,13 +572,13 @@ export default function ViewCart() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(Number(e.target.value));
               }}
-              className="w-24"
+              className="w-16 md:w-24"
             />
             <PayoutTokenDropdown payoutTokenOptions={payoutTokenOptions} />
             <Button
               type="button"
               $variant="outline"
-              className="text-xs px-4 py-2 text-purple-600 border-0"
+              className="text-xs px-0 md:px-4 py-2 text-purple-600 border-0"
             >
               Apply to all
             </Button>
@@ -648,7 +653,7 @@ export default function ViewCart() {
         projectRegistryId,
         amount,
         projectAddress,
-        applicationIndex
+        applicationIndex,
       });
     }
 
@@ -661,7 +666,7 @@ export default function ViewCart() {
         projectRegistryId: project.projectRegistryId,
         amount: amount.toString(),
         projectAddress: project.recipient,
-        applicationIndex: project.applicationIndex
+        applicationIndex: project.applicationIndex,
       } as CartDonation;
     });
 
@@ -711,7 +716,7 @@ export default function ViewCart() {
                                     <img
                                       src={token.logo}
                                       alt=""
-                                      className="h-6 w-6 flex-shrink-0 rounded-full"
+                                      className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
                                     />
                                   ) : null}
                                   <span
@@ -758,7 +763,7 @@ export default function ViewCart() {
     const { token } = props;
     return (
       <Listbox.Button
-        className="relative w-[130px] cursor-default rounded-md border h-10 border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+        className="relative w-[120px] md:w-[130px] cursor-default rounded-md border h-10 border-gray-300 bg-white py-2 pl-3 md:pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs md:text-sm"
         data-testid="payout-token-select"
       >
         <span className="flex items-center">
@@ -766,15 +771,17 @@ export default function ViewCart() {
             <img
               src={token?.logo}
               alt=""
-              className="h-6 w-6 flex-shrink-0 rounded-full"
+              className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
             />
           ) : null}
           {token?.default ? (
-            <span className="ml-3 block truncate text-gray-500">
+            <span className="ml-3 block truncate text-gray-500 text-sm md:text-md">
               {token?.name}
             </span>
           ) : (
-            <span className="ml-3 block truncate">{token?.name}</span>
+            <span className="ml-3 block truncate text-sm md:text-md">
+              {token?.name}
+            </span>
           )}
         </span>
         <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
