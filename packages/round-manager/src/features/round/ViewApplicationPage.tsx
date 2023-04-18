@@ -84,6 +84,8 @@ export default function ViewApplicationPage() {
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
   const application = filteredApplication[0];
 
+  console.log("application", application)
+
   const {
     bulkUpdateGrantApplications,
     contractUpdatingStatus,
@@ -452,9 +454,9 @@ export default function ViewApplicationPage() {
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       <span className="text-sm text-violet-400 mr-2">
                         Created on:{" "}
-                        {application?.createdAt
+                        {application?.project?.createdAt
                           ? formatDateWithOrdinal(
-                              new Date(Number(application?.createdAt) * 1000)
+                              new Date(Number(application?.project?.createdAt))
                             )
                           : "-"}
                       </span>
