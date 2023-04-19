@@ -1,26 +1,8 @@
 import { Tab } from "@headlessui/react";
-import { Client } from "allo-indexer-client";
-import { utils } from "ethers";
-import useSWR from "swr";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
-import { useWallet } from "../common/Auth";
 import { tabStyles } from "../common/Utils";
-
-const boundFetch = fetch.bind(window);
-
-function useRoundStats(roundId: string) {
-  const { chain } = useWallet();
-  const client = new Client(
-    boundFetch,
-    "https://grants-stack-indexer.fly.dev",
-    chain.id
-  );
-  return useSWR([roundId, "/stats"], ([roundId]) => {
-    return client.getRoundBy("id", utils.getAddress(roundId.toLowerCase()));
-  });
-}
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
