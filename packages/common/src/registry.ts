@@ -2,6 +2,10 @@ import ProjectRegistryABI from "./abis/ProjectRegistry.json";
 import { ethers } from "ethers";
 import { Provider } from "@wagmi/core";
 import { Web3Provider } from "@ethersproject/providers";
+import {
+  Multicall,
+  ContractCallContext,
+} from "ethereum-multicall";
 
 export const fetchProjectOwners = async (
   provider: Provider | Web3Provider,
@@ -17,13 +21,55 @@ export const fetchProjectOwners = async (
   );
 
   try {
-   const projectOwners = await projectRegistry.getProjectOwners(projectID);
+    const projectOwners = await projectRegistry.getProjectOwners(projectID);
     return projectOwners as string[];
   } catch (err) {
-   // console.log(err);
-    console.log(`Error fetching owners from registry on chain ${chainID} for project ${projectID}`);
+    // console.log(err);
+    console.log(
+      `Error fetching owners from registry on chain ${chainID} for project ${projectID}`,
+    );
     return [];
   }
+};
+
+export const fetchMultipleProjectOwners = async (
+  provider: Provider | Web3Provider,
+  chainID: number,
+  projectIDs: number[],
+): Promise<string[][]> => {
+
+  const addresses = addressesByChainID(chainID);
+  const registryAddress = addresses.projectRegistry!;
+
+  const multicall = new Multicall({
+    ethersProvider: provider,
+    tryAggregate: true,
+  });
+
+  const contractCallContext: ContractCallContext[] = [
+    {
+      reference: "projectRegistry",
+      contractAddress: registryAddress,
+      abi: ProjectRegistryABI,
+      calls: [],
+    },
+  ]
+
+  for (const projectID of projectIDs) {
+    contractCallContext[0].calls.push({
+      reference: projectID.toString(),
+      methodName: "getProjectOwners",
+      methodParameters: [projectID],
+    });
+  }
+
+  const results: any = await multicall.call(
+    contractCallContext,
+  );
+
+  return results.results?.projectRegistry ? results.results.projectRegistry.callsReturnContext.map(
+    (result: any) => (result.returnValues ? result.returnValues : []),
+  ) : [[]];
 };
 
 export const addressesByChainID = (chainID: number) => {

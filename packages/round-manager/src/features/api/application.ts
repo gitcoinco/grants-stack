@@ -18,8 +18,9 @@ import { Contract, ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
-// import { verifyApplicationMetadata } from "common/src/verification";
-// import { fetchProjectOwners } from "common/src/registry";
+import { verifyApplicationMetadata } from "common/src/verification";
+import { fetchMultipleProjectOwners } from "common/src/registry";
+import { client } from "../../app/wagmi";
 
 type RoundApplication = {
   id: string;
@@ -169,48 +170,57 @@ export const getApplicationsByRoundId = async (
 
     const grantApplications: GrantApplication[] = [];
 
+    const applicationsGroupedByChain: any = {};
+
     for (const project of res.data.roundApplications) {
       const metadata = await fetchFromIPFS(project.metaPtr.pointer);
       const projectStatus = convertStatus(project.status);
 
-      // const signature = metadata?.signature;
-      const application = metadata.application
-        ? metadata.application
-        : metadata;
+      const projectIdSplits = metadata.application.project.id.split(":");
+      const chainId = projectIdSplits[0];
+      const projectId = projectIdSplits[2];
 
-      // FIXME: commented code 
-      // const projectIdSplits = metadata.application.project.id.split(":");
-      // const chainId = projectIdSplits[0];
-      // const projectId = projectIdSplits[2];
-
-      // const owners = await fetchProjectOwners(
-      //   signerOrProvider,
-      //   chainId,
-      //   projectId,
-      // );
-
-      const isValidMetadata = true;
-      // verifyApplicationMetadata(
-      //   project.project,
-      //   owners,
-      //   metadata,
-      // );
-
-      const isSenderOwner = true;
-        //  owners
-        // .map((owner: string) => owner.toLowerCase())
-        // .includes(project.sender.toLowerCase());
-
-      if (isValidMetadata && isSenderOwner) {
-        grantApplications.push({
-          ...application,
-          status: projectStatus,
-          applicationIndex: project.applicationIndex,
-          id: project.id,
-          projectsMetaPtr: project.round.projectsMetaPtr,
-        });
+      if (!applicationsGroupedByChain[chainId]) {
+        applicationsGroupedByChain[chainId] = [];
       }
+
+      applicationsGroupedByChain[chainId].push({
+        metadata,
+        projectId,
+        applicationIndex: project.applicationIndex,
+        status: projectStatus,
+        id: project.id,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+        sender: project.sender,
+        emittedProjectId: project.project,
+      });
     }
+
+    Object.keys(applicationsGroupedByChain).forEach(async (chain) => {
+      const owners = await fetchMultipleProjectOwners(
+        client.getProvider({ chainId: Number(chain) }),
+        Number(chain),
+        applicationsGroupedByChain[chain].map((app: any) => app.projectId),
+      );
+
+      applicationsGroupedByChain[chain].map(
+        (app: any, index: number) => {
+
+          const isValidMetadata = verifyApplicationMetadata(app.emittedProjectId, owners[index], app.metadata);
+          const isSenderOwner = owners[index]
+            .map((owner: string) => owner.toLowerCase())
+            .includes(app.sender.toLowerCase());
+
+          if (isValidMetadata && isSenderOwner)
+            grantApplications.push({
+              ...app.metadata.application,
+              status: app.status,
+              applicationIndex: app.applicationIndex,
+              id: app.id,
+              projectsMetaPtr: app.projectsMetaPtr,
+            });
+       });
+    });
 
     const grantApplicationsFromContract =
       res.data.roundApplications.length > 0
