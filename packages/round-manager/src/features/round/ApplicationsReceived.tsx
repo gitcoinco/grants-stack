@@ -40,88 +40,83 @@ import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
-import { parse as parseCsv } from "csv-parse";
 import { stringify as stringifyCsv } from "csv-stringify";
-
-const CSV_EXPORT_DECRYPT_FIELDS = ["Email Address"];
 
 async function exportAndDownloadCsv(
   roundId: string,
   chainId: number,
   chainName: string
 ) {
-  const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.csv`;
+  const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
 
   // Fetch the CSV data
   const response = await fetch(remoteUrl);
 
   if (response.status !== 200) {
-    throw new Error(`Failed to fetch CSV data from ${remoteUrl}`);
+    throw new Error(`Failed to fetch applications from ${remoteUrl}`);
   }
 
-  const csvText = await response.text();
-
-  // Parse the CSV data
-  const data: Record<string, string | Promise<string>>[] = await new Promise(
-    (resolve, reject) => {
-      parseCsv(
-        csvText,
-        {
-          columns: true,
-          skip_empty_lines: true,
-        },
-        (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        }
-      );
-    }
-  );
+  const applications = await response.json();
 
   const lit = new Lit({
     chain: chainName.toLowerCase(),
     contract: roundId,
   });
 
-  const decryptedData = await Promise.all(
-    data.map(async (row) => {
-      // start async decrypt fields
-      for (const key of CSV_EXPORT_DECRYPT_FIELDS) {
-        if (!row[key]) {
-          continue;
+  const decryptedData: Record<string, string>[] = [];
+
+  for (const application of applications) {
+    const answers =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      application.metadata?.application.answers.flatMap((answer: any) => {
+        if (answer.answer) {
+          return [[answer.question, answer.answer]];
+        } else if (answer.encryptedAnswer) {
+          const encryptedValue: {
+            ciphertext: string;
+            encryptedSymmetricKey: string;
+          } = answer.encryptedAnswer;
+
+          const blob = new Blob([
+            Uint8Array.from(
+              window
+                .atob(encryptedValue.ciphertext)
+                .split("")
+                .map((x) => x.charCodeAt(0))
+            ),
+          ]);
+
+          return [
+            [
+              answer.question,
+              lit.decryptString(blob, encryptedValue.encryptedSymmetricKey),
+            ],
+          ];
+        } else {
+          return [];
         }
+      }) ?? [];
 
-        const encryptedValue: {
-          ciphertext: string;
-          encryptedSymmetricKey: string;
-        } = JSON.parse(await row[key]);
+    // await for async field decryption
+    for (const answer of answers) {
+      answer[1] = await answer[1];
+    }
 
-        const blob = new Blob([
-          Uint8Array.from(
-            window
-              .atob(encryptedValue.ciphertext)
-              .split("")
-              .map((x) => x.charCodeAt(0))
-          ),
-        ]);
-
-        row[key] = lit.decryptString(
-          blob,
-          encryptedValue.encryptedSymmetricKey
-        );
-      }
-
-      // await for async field decryption
-      for (const key in row) {
-        row[key] = await row[key];
-      }
-
-      return row;
-    })
-  );
+    decryptedData.push({
+      id: application.id,
+      projectId: application.projectId,
+      status: application.status,
+      title: application.metadata?.application?.project?.title,
+      payoutAddress: application.metadata?.application?.recipient,
+      signature: application.metadata?.signature,
+      website: application.metadata?.application?.project?.website,
+      projectTwitter:
+        application.metadata?.application?.project?.projectTwitter,
+      projectGithub: application.metadata?.application?.project?.projectGithub,
+      userGithub: application.metadata?.application?.project?.userGithub,
+      ...Object.fromEntries(answers),
+    });
+  }
 
   const csv = (await new Promise((resolve, reject) => {
     stringifyCsv(decryptedData, { header: true }, (err, data) => {
