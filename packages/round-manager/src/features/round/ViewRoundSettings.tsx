@@ -59,7 +59,7 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
               <DetailsPage round={round} />
             </Tab.Panel>
             <Tab.Panel>
-              <div>Round and App perid</div>
+              <RoundApplicationPeriod round={round} />
             </Tab.Panel>
             <Tab.Panel>
               <div>Funding Settings</div>
@@ -170,7 +170,7 @@ function DetailsPage(props: { round: Round }) {
         What requirements do you have for applicants?
       </span>
       {round.roundMetadata.eligibility?.requirements?.map((req, i) => (
-        <div key={i} className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+        <div key={i} className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
           <div>
             <div
               className={
@@ -190,6 +190,96 @@ function DetailsPage(props: { round: Round }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function RoundApplicationPeriod(props: { round: Round }) {
+  const { round } = props;
+  return (
+    <div className="w-full">
+      <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
+        What are the dates for the Applications and Round voting period(s)?
+      </span>
+      <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Applications
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={`${getUTCDate(
+                round.applicationsStartTime
+              )} ${getUTCTime(round.applicationsStartTime)}`}
+              disabled
+            />
+          </div>
+        </div>
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            &nbsp;
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={`${getUTCDate(
+                round.applicationsEndTime
+              )} ${getUTCTime(round.applicationsEndTime)}`}
+              disabled
+            />
+          </div>
+        </div>
+
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Round
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={`${getUTCDate(round.roundStartTime)} ${getUTCTime(
+                round.roundStartTime
+              )}`}
+              disabled
+            />
+          </div>
+        </div>
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            &nbsp;
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
+                round.roundEndTime
+              )}`}
+              disabled
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
