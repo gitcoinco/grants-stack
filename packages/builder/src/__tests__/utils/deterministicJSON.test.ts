@@ -3,7 +3,7 @@ import {
   objectToDeterministicJSON,
   Obj,
   Result,
-} from "common/src/deterministicJSON";
+} from "../../utils/deterministicJSON";
 
 interface Scenarios {
   input: Obj;
