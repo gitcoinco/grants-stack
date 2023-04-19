@@ -18,8 +18,8 @@ import { Contract, ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
-import { verifyApplicationMetadata } from "common/src/verification";
-import { fetchProjectOwners } from "common/src/registry";
+// import { verifyApplicationMetadata } from "common/src/verification";
+// import { fetchProjectOwners } from "common/src/registry";
 
 type RoundApplication = {
   id: string;
@@ -178,9 +178,10 @@ export const getApplicationsByRoundId = async (
         ? metadata.application
         : metadata;
 
-      const projectIdSplits = metadata.application.project.id.split(":");
-      const chainId = projectIdSplits[0];
-      const projectId = projectIdSplits[2];
+      // FIXME: commented code 
+      // const projectIdSplits = metadata.application.project.id.split(":");
+      // const chainId = projectIdSplits[0];
+      // const projectId = projectIdSplits[2];
 
       // const owners = await fetchProjectOwners(
       //   signerOrProvider,
