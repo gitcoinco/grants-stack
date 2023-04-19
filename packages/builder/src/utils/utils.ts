@@ -5,9 +5,6 @@ import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
 import gnosisABI from "../contracts/abis/gnosis.json";
 
-// Checks if tests are being run jest
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
-
 export const parseRoundToApply = (
   s?: string
 ): { chainID?: string; roundAddress?: string } => {
@@ -59,23 +56,6 @@ export const getProjectURIComponents = (id: string) => {
     registryAddress: split[1],
     id: split[2],
   };
-};
-
-export const getProviderByChainId = (chainId: number) => {
-  const { web3Provider } = global;
-
-  const chainConfig = web3Provider?.chains?.find(
-    // Yes, parameter type for chainId is number, but sometimes we pass it as a string
-    // so adding a cast to Number just in case
-    (i) => i.id === Number(chainId)
-  );
-
-  if (!chainConfig) {
-    throw new Error(`chainConfig not found for chain ID ${chainId}`);
-  }
-
-  // TODO: Create a more robust RPC here to avoid fails
-  return ethers.getDefaultProvider(chainConfig.rpcUrls.default);
 };
 
 export const getAddressType = async (address: string): Promise<AddressType> => {

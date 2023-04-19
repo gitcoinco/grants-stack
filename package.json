@@ -39,6 +39,6 @@
     "lint-staged": "^13.1.0"
   },
   "dependencies": {
-    "turbo": "^1.8.8"
+    "turbo": "^1.9.1"
   }
 }

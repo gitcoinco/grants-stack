@@ -5,6 +5,7 @@ import { GrantApplication } from "../types";
 import { Contract } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import { graphql_fetch } from "common";
+import { fetchProjectOwners } from "common/src/registry";
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
@@ -15,11 +16,22 @@ jest.mock("common", () => ({
   graphql_fetch: jest.fn(),
 }));
 
+jest.mock("common/src/registry", () => ({
+  ...jest.requireActual("common/src/registry"),
+  fetchProjectOwners: jest.fn(),
+}));
+
 jest.mock("ethers");
 
 const signerOrProviderStub = {
   getNetwork: async () => Promise.resolve({ chainId: "chain" }),
 } as unknown as Web3Provider;
+
+const verifyApplicationMetadataSpy = jest.spyOn(
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require("common/src/verification"),
+  "verifyApplicationMetadata"
+);
 
 describe("getApplicationById", () => {
   let expectedApplication: GrantApplication;
@@ -196,6 +208,7 @@ describe("getApplicationsByRoundId", () => {
             round: {
               projectsMetaPtr: expectedProjectsMetaPtr,
             },
+            sender: expectedApplication.recipient,
           },
         ],
       },
@@ -204,10 +217,12 @@ describe("getApplicationsByRoundId", () => {
     (fetchFromIPFS as jest.Mock).mockImplementation((metaptr: string) => {
       if (metaptr === expectedApplicationMetaPtr.pointer) {
         return {
-          round: expectedApplication.round,
-          recipient: expectedApplication.recipient,
-          project: expectedApplication.project,
-          answers: expectedApplication.answers,
+          application: {
+            round: expectedApplication.round,
+            recipient: expectedApplication.recipient,
+            project: expectedApplication.project,
+            answers: expectedApplication.answers,
+          },
         };
       }
       if (metaptr === expectedProjectsMetaPtr.pointer) {
@@ -220,6 +235,12 @@ describe("getApplicationsByRoundId", () => {
       }
     });
 
+    verifyApplicationMetadataSpy.mockReturnValue(true);
+
+    (fetchProjectOwners as jest.Mock).mockReturnValue([
+      expectedApplication.recipient,
+    ]);
+
     const actualApplications = await getApplicationsByRoundId(
       roundId,
       signerOrProviderStub
@@ -230,6 +251,8 @@ describe("getApplicationsByRoundId", () => {
   });
 
   it("should retrieve signed applications given an round id", async () => {
+    verifyApplicationMetadataSpy.mockReturnValue(true);
+
     const expectedApplication = expectedApplications[0];
     const roundId = expectedApplication.round;
     const expectedProjectsMetaPtr = expectedApplication.projectsMetaPtr;
@@ -248,6 +271,7 @@ describe("getApplicationsByRoundId", () => {
             round: {
               projectsMetaPtr: expectedProjectsMetaPtr,
             },
+            sender: expectedApplication.recipient,
           },
         ],
       },
@@ -274,6 +298,9 @@ describe("getApplicationsByRoundId", () => {
         ];
       }
     });
+    (fetchProjectOwners as jest.Mock).mockReturnValue([
+      expectedApplication.recipient,
+    ]);
 
     const actualApplications = await getApplicationsByRoundId(
       roundId,

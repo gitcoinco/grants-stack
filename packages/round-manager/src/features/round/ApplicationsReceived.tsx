@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Lit } from "../api/lit";
 import { utils } from "ethers";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
 } from "@heroicons/react/outline";
-import { Spinner } from "../common/Spinner";
+import { Spinner, LoadingRing } from "../common/Spinner";
 import {
   BasicCard,
   CardContent,
@@ -39,10 +40,120 @@ import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { renderToPlainText } from "common";
 import { useWallet } from "../common/Auth";
+import { parse as parseCsv } from "csv-parse";
+import { stringify as stringifyCsv } from "csv-stringify";
+
+const CSV_EXPORT_DECRYPT_FIELDS = ["Email Address"];
+
+async function exportAndDownloadCsv(
+  roundId: string,
+  chainId: number,
+  chainName: string
+) {
+  const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.csv`;
+
+  // Fetch the CSV data
+  const response = await fetch(remoteUrl);
+
+  if (response.status !== 200) {
+    throw new Error(`Failed to fetch CSV data from ${remoteUrl}`);
+  }
+
+  const csvText = await response.text();
+
+  // Parse the CSV data
+  const data: Record<string, string | Promise<string>>[] = await new Promise(
+    (resolve, reject) => {
+      parseCsv(
+        csvText,
+        {
+          columns: true,
+          skip_empty_lines: true,
+        },
+        (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        }
+      );
+    }
+  );
+
+  const lit = new Lit({
+    chain: chainName.toLowerCase(),
+    contract: roundId,
+  });
+
+  const decryptedData = await Promise.all(
+    data.map(async (row) => {
+      // start async decrypt fields
+      for (const key of CSV_EXPORT_DECRYPT_FIELDS) {
+        if (!row[key]) {
+          continue;
+        }
+
+        const encryptedValue: {
+          ciphertext: string;
+          encryptedSymmetricKey: string;
+        } = JSON.parse(await row[key]);
+
+        const blob = new Blob([
+          Uint8Array.from(
+            window
+              .atob(encryptedValue.ciphertext)
+              .split("")
+              .map((x) => x.charCodeAt(0))
+          ),
+        ]);
+
+        row[key] = lit.decryptString(
+          blob,
+          encryptedValue.encryptedSymmetricKey
+        );
+      }
+
+      // await for async field decryption
+      for (const key in row) {
+        row[key] = await row[key];
+      }
+
+      return row;
+    })
+  );
+
+  const csv = (await new Promise((resolve, reject) => {
+    stringifyCsv(decryptedData, { header: true }, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  })) as string;
+
+  // create a download link and click it
+  const outputBlob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const link = document.createElement("a");
+
+  try {
+    const dataUrl = URL.createObjectURL(outputBlob);
+    link.setAttribute("href", dataUrl);
+    link.setAttribute("download", `applications-${roundId}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+  } finally {
+    document.body.removeChild(link);
+  }
+}
 
 export default function ApplicationsReceived() {
   const { id } = useParams();
-
   const { chain } = useWallet();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -57,6 +168,7 @@ export default function ApplicationsReceived() {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [selected, setSelected] = useState<GrantApplication[]>([]);
+  const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
 
   const {
     bulkUpdateGrantApplications,
@@ -162,22 +274,48 @@ export default function ApplicationsReceived() {
     }
   };
 
+  async function handleExportCsvClick(
+    roundId: string,
+    chainId: number,
+    chainName: string
+  ) {
+    try {
+      setIsCsvExportLoading(true);
+      await exportAndDownloadCsv(roundId, chainId, chainName);
+    } catch (e) {
+      datadogLogs.logger.error(
+        `error: exportApplicationCsv - ${e}, id: ${roundId}`
+      );
+      console.error("exportApplicationCsv", e);
+    } finally {
+      setIsCsvExportLoading(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && (
+        {id && applications && applications.length > 0 && (
           <Button
             type="button"
-            $as="a"
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
-            href={`${process.env.REACT_APP_ALLO_API_URL}/data/${
-              chain?.id
-            }/rounds/${utils.getAddress(id)}/applications.csv`}
-            download
+            disabled={isCsvExportLoading}
+            onClick={() =>
+              handleExportCsvClick(utils.getAddress(id), chain.id, chain.name)
+            }
           >
-            <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
-            <span>CSV</span>
+            {isCsvExportLoading ? (
+              <>
+                <LoadingRing className="animate-spin w-3 h-3 inline-block mr-2 -mt-0.5" />
+                <span className="text-grey-400">Exporting...</span>
+              </>
+            ) : (
+              <>
+                <DownloadIcon className="w-4 h-4 inline -mt-0.5 mr-1" />
+                <span>CSV</span>
+              </>
+            )}
           </Button>
         )}
         {pendingApplications && pendingApplications.length > 0 && (

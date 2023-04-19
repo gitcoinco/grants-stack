@@ -275,13 +275,15 @@ function ReclaimFundsContent(props: {
               minimumFractionDigits: 2,
             })}{" "}
             {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">
-              $
-              {matchingFundsInUSD?.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}{" "}
-              USD
-            </span>
+            {matchingFundsInUSD && matchingFundsInUSD > 0 ? (
+              <span className="text-sm text-slate-400 ml-2">
+                $
+                {matchingFundsInUSD?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                })}{" "}
+                USD
+              </span>
+            ) : null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -291,13 +293,15 @@ function ReclaimFundsContent(props: {
               minimumFractionDigits: 2,
             })}{" "}
             {matchingFundPayoutToken?.name}{" "}
-            <span className="text-sm text-slate-400 ml-2">
-              $
-              {tokenBalanceInUSD?.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}{" "}
-              USD
-            </span>
+            {tokenBalanceInUSD && tokenBalanceInUSD > 0 ? (
+              <span className="text-sm text-slate-400 ml-2">
+                $
+                {tokenBalanceInUSD?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                })}{" "}
+                USD
+              </span>
+            ): null}
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
