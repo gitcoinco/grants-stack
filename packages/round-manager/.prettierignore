@@ -1,4 +1,4 @@
-**/coverage
-**/.turbo
-**/build
-**/dist
+package.json
+node_modules
+coverage
+build

@@ -155,12 +155,11 @@ const fetchApplicationsByRoundId = async (
 
   dispatch({ type: ActionType.SET_LOADING, payload: true });
   getApplicationsByRoundId(roundId, walletProvider)
-    .then((applications) => {
+    .then((applications) =>
       dispatch({
         type: ActionType.SET_ROUND_APPLICATIONS,
         payload: applications,
       })
-    }
     )
     .catch((error) => {
       datadogLogs.logger.error(

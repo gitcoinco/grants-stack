@@ -26,9 +26,7 @@ export default function Rounds() {
     const fullId = `${params.chainId}:${params.registryAddress}:${params.id}`;
     const { rounds } = state;
 
-    const applications = state.projects.applicationData[
-      params.id!
-    ]?.applications?.map((app) => {
+    const applications = state.projects.applications[params.id!]?.map((app) => {
       const roundState = state.rounds[app.roundID];
 
       if (!roundState) {

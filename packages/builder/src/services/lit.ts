@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
 import { Provider } from "@wagmi/core";
-import { isJestRunning } from "common";
+import { isJestRunning } from "../utils/utils";
 import { global } from "../global";
 
 const LitJsSdk = isJestRunning() ? null : require("lit-js-sdk");
