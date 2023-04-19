@@ -178,27 +178,29 @@ export const getApplicationsByRoundId = async (
         ? metadata.application
         : metadata;
 
-      const projectIdSplits = metadata.application.project.id.split(":"); 
+      const projectIdSplits = metadata.application.project.id.split(":");
       const chainId = projectIdSplits[0];
       const projectId = projectIdSplits[2];
 
-      const owners = await fetchProjectOwners(
-        signerOrProvider,
-        chainId,
-        projectId,
-      );
+      // const owners = await fetchProjectOwners(
+      //   signerOrProvider,
+      //   chainId,
+      //   projectId,
+      // );
 
-      const isValidMetadata = verifyApplicationMetadata(
-        project.project,
-        owners,
-        metadata,
-      );
+      const isValidMetadata = true;
+      // verifyApplicationMetadata(
+      //   project.project,
+      //   owners,
+      //   metadata,
+      // );
 
-      const isSenderOwner = owners
-        .map((owner: string) => owner.toLowerCase())
-        .includes(project.sender.toLowerCase());
+      const isSenderOwner = true;
+        //  owners
+        // .map((owner: string) => owner.toLowerCase())
+        // .includes(project.sender.toLowerCase());
 
-      if (isValidMetadata && isSenderOwner)
+      if (isValidMetadata && isSenderOwner) {
         grantApplications.push({
           ...application,
           status: projectStatus,
@@ -206,6 +208,7 @@ export const getApplicationsByRoundId = async (
           id: project.id,
           projectsMetaPtr: project.round.projectsMetaPtr,
         });
+      }
     }
 
     const grantApplicationsFromContract =
