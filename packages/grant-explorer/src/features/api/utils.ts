@@ -9,11 +9,41 @@ export enum ChainId {
   FANTOM_TESTNET_CHAIN_ID = "4002",
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const CHAINS: Record<number, any> = {
+  [ChainId.MAINNET]: {
+    id: ChainId.MAINNET,
+    name: "Mainnet", // TODO get canonical network names
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
+  [ChainId.GOERLI_CHAIN_ID]: {
+    id: ChainId.GOERLI_CHAIN_ID,
+    name: "Goerli", // TODO get canonical network names
+    logo: "./logos/ethereum-eth-logo.svg",
+  },
+  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
+    id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
+    name: "Optimism",
+    logo: "./logos/optimism-logo.svg",
+  },
+  [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
+    id: ChainId.FANTOM_MAINNET_CHAIN_ID,
+    name: "Fantom",
+    logo: "./logos/fantom-logo.svg",
+  },
+  [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
+    id: ChainId.FANTOM_TESTNET_CHAIN_ID,
+    name: "Fantom Testnet",
+    logo: "./logos/fantom-logo.svg",
+  },
+};
+
 export const TokenNamesAndLogos: Record<string, string> = {
   FTM: "./logos/fantom-logo.svg",
   BUSD: "./logos/busd-logo.svg",
   DAI: "./logos/dai-logo.svg",
   ETH: "./logos/ethereum-eth-logo.svg",
+  OP: "./logos/optimism-logo.svg",
 };
 
 export const TokenAndCoinGeckoIds: Record<string, string> = {

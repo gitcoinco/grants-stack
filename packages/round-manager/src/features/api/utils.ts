@@ -3,8 +3,8 @@ import { BigNumber, ethers } from "ethers";
 import { useMemo, useState } from "react";
 import {
   ApplicationMetadata,
-  InputType,
   IPFSObject,
+  InputType,
   MatchingStatsData,
   Program,
 } from "./types";
@@ -67,6 +67,7 @@ export const TokenNamesAndLogos: Record<string, string> = {
   BUSD: "./logos/busd-logo.svg",
   DAI: "./logos/dai-logo.svg",
   ETH: "./logos/ethereum-eth-logo.svg",
+  OP: "./logos/optimism-logo.svg",
 };
 
 export const TokenAndCoinGeckoIds: Record<string, string> = {

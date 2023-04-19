@@ -1,11 +1,10 @@
-import { Link, useParams } from "react-router-dom";
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
-import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
+// import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
+// import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCart } from "../../context/CartContext";
 import CustomerSupport from "./CustomerSupport";
-import NavbarCart from "./NavbarCart";
 import NavBarLogo from "./NavBarLogo";
+import NavbarCart from "./NavbarCart";
 
 export interface NavbarProps {
   roundUrlPath: string;
@@ -15,7 +14,7 @@ export interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
   const [cart] = useCart();
-  const { chainId, roundId } = useParams();
+  // const { chainId, roundId } = useParams();
 
   return (
     <nav className={`bg-white fixed w-full z-10 ${props.customBackground}`}>
