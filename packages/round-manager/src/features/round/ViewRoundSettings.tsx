@@ -2,6 +2,7 @@ import { Tab } from "@headlessui/react";
 import { Client } from "allo-indexer-client";
 import { utils } from "ethers";
 import useSWR from "swr";
+import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { getUTCDate, getUTCTime } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -70,10 +71,10 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
             </div>
           </Tab.List>
         </div>
-        <div className="grid grid-cols-5 grid-rows-2 gap-6">
+        <div className="">
           <Tab.Panels>
             <Tab.Panel>
-              <div>Details</div>
+              <DetailsPage round={round} />
             </Tab.Panel>
             <Tab.Panel>
               <div>Round and App perid</div>
@@ -88,29 +89,125 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   );
 }
 
-type StatsCardProps = {
-  text: string | number;
-  title: string;
-  grayBorder?: boolean;
-};
-
-function StatsCard(props: StatsCardProps) {
+function DetailsPage(props: { round: Round }) {
+  const { round } = props;
+  const { chain } = useNetwork();
   return (
-    <div
-      className={`p-4 border rounded border ${
-        props.grayBorder ? "border-grey-100" : "border-violet-400"
-      } flex flex-col justify-center`}
-    >
-      <span
+    <div className="w-full">
+      <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Round Name
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={round.roundMetadata.name}
+              disabled
+            />
+          </div>
+        </div>
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Program Chain
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={chain?.name}
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <div
         className={
-          "text-sm leading-5 font-semibold pb-1 flex items-center gap-1"
+          "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
         }
       >
-        {props.title}
-      </span>
-      <div className={"text-2xl leading-8 font-normal text-grey-400"}>
-        {props.text}
+        Round Description
       </div>
+      <div className={"leading-8 font-normal text-grey-400"}>
+        <input
+          type="text"
+          className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+          defaultValue={round.roundMetadata.eligibility?.description}
+          disabled
+        />
+      </div>
+      <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
+        Where can applicants reach you and/or your team if support is needed?
+      </span>
+      <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Support Input
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={round.roundMetadata.support?.type}
+              disabled
+            />
+          </div>
+        </div>
+        <div>
+          <div
+            className={
+              "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+            }
+          >
+            Contact Information
+          </div>
+          <div className={"leading-8 font-normal text-grey-400"}>
+            <input
+              type="text"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              defaultValue={round.roundMetadata.support?.info}
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+      <span className="mt-8 inline-flex text-sm text-gray-600 mb-8">
+        What requirements do you have for applicants?
+      </span>
+      {round.roundMetadata.eligibility?.requirements?.map((req, i) => (
+        <div key={i} className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
+          <div>
+            <div
+              className={
+                "text-sm leading-5 font-semibold pb-1 flex items-center gap-1 mb-2"
+              }
+            >
+              Requirement {i + 1}
+            </div>
+            <div className={"leading-8 font-normal text-grey-400"}>
+              <input
+                type="text"
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                defaultValue={req.requirement}
+                disabled
+              />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
