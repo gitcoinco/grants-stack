@@ -284,7 +284,7 @@ export async function deployRoundContract(
     const initMetaPtr = [round.store, round.applicationStore];
 
     const initRoles = [
-      round.operatorWallets?.slice(0, 1),
+      [await signerOrProvider.getAddress()],
       round.operatorWallets,
     ];
 
