@@ -6,32 +6,27 @@ import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import PinataClient from "../services/pinata";
 import { LocalStorage } from "../services/Storage";
 import { Metadata, ProjectRegistryMetadata } from "../types";
-import { getProjectURIComponents } from "../utils/utils";
-import wagmi from "../utils/wagmi";
+import { getProjectURIComponents, getProviderByChainId } from "../utils/utils";
 
 export const GRANT_METADATA_LOADING_URI = "GRANT_METADATA_LOADING_URI";
-
 export interface GrantMetadataLoadingURI {
   type: typeof GRANT_METADATA_LOADING_URI;
   id: string;
 }
 
 export const GRANT_METADATA_LOADING = "GRANT_METADATA_LOADING";
-
 export interface GrantMetadataLoading {
   type: typeof GRANT_METADATA_LOADING;
   id: string;
 }
 
 export const GRANT_METADATA_FETCHED = "GRANT_METADATA_FETCHED";
-
 export interface GrantMetadataFetched {
   type: typeof GRANT_METADATA_FETCHED;
   data: Metadata;
 }
 
 export const GRANT_METADATA_FETCHING_ERROR = "GRANT_METADATA_FETCHING_ERROR";
-
 interface GrantMetadataFetchingError {
   type: typeof GRANT_METADATA_FETCHING_ERROR;
   id: string;
@@ -39,7 +34,6 @@ interface GrantMetadataFetchingError {
 }
 
 export const GRANT_METADATA_ALL_UNLOADED = "GRANT_METADATA_ALL_UNLOADED";
-
 export interface GrantMetadataAllUnloadedAction {
   type: typeof GRANT_METADATA_ALL_UNLOADED;
 }
@@ -201,8 +195,9 @@ export const fetchGrantData =
 
     const { chainId, registryAddress } = getProjectURIComponents(id);
 
+    const chainID = Number(chainId);
     const addresses = { projectRegistry: registryAddress };
-    const appProvider = wagmi.getProvider({ chainId: Number(chainId) });
+    const appProvider = getProviderByChainId(chainID);
 
     let project: ProjectRegistryMetadata;
 

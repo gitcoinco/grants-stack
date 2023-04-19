@@ -448,6 +448,7 @@ export function saveObjectAsJson(filename: string, dataObjToWrite: any) {
   link.remove();
 }
 
+// Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
 
 export const prefixZero = (i: number): string =>

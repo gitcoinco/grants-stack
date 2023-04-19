@@ -30,8 +30,7 @@ export default function Details({
   const props = useSelector((state: RootState) => {
     const { chainId } = params;
 
-    const applications =
-      state.projects.applicationData[params.id!]?.applications || [];
+    const applications = state.projects.applications[params.id!] || [];
 
     return {
       chainId,

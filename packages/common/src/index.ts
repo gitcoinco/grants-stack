@@ -320,6 +320,3 @@ export const convertStatusToText = (
       return "PENDING";
   }
 };
-
-/** Returns true if the current javascript context is running inside a Jest test  */
-export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
