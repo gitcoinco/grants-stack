@@ -170,6 +170,7 @@ export const getApplicationsByRoundId = async (
 
     const grantApplications: GrantApplication[] = [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const applicationsGroupedByChain: any = {};
 
     for (const project of res.data.roundApplications) {
@@ -200,26 +201,30 @@ export const getApplicationsByRoundId = async (
       const owners = await fetchMultipleProjectOwners(
         client.getProvider({ chainId: Number(chain) }),
         Number(chain),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         applicationsGroupedByChain[chain].map((app: any) => app.projectId),
       );
 
-      applicationsGroupedByChain[chain].map(
-        (app: any, index: number) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      applicationsGroupedByChain[chain].map((app: any, index: number) => {
+        const isValidMetadata = verifyApplicationMetadata(
+          app.emittedProjectId,
+          owners[index],
+          app.metadata,
+        );
+        const isSenderOwner = owners[index]
+          .map((owner: string) => owner.toLowerCase())
+          .includes(app.sender.toLowerCase());
 
-          const isValidMetadata = verifyApplicationMetadata(app.emittedProjectId, owners[index], app.metadata);
-          const isSenderOwner = owners[index]
-            .map((owner: string) => owner.toLowerCase())
-            .includes(app.sender.toLowerCase());
-
-          if (isValidMetadata && isSenderOwner)
-            grantApplications.push({
-              ...app.metadata.application,
-              status: app.status,
-              applicationIndex: app.applicationIndex,
-              id: app.id,
-              projectsMetaPtr: app.projectsMetaPtr,
-            });
-       });
+        if (isValidMetadata && isSenderOwner)
+          grantApplications.push({
+            ...app.metadata.application,
+            status: app.status,
+            applicationIndex: app.applicationIndex,
+            id: app.id,
+            projectsMetaPtr: app.projectsMetaPtr,
+          });
+      });
     });
 
     const grantApplicationsFromContract =
