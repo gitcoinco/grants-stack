@@ -1,121 +1,59 @@
 import useSWR from "swr";
 import { useWallet } from "../common/Auth";
-import { Client, Application } from "allo-indexer-client";
+import { Client, Match } from "allo-indexer-client";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
-import { useContractRead } from "wagmi";
-import { roundImplementationContract } from "../api/contracts";
-import {useApplicationByRoundId} from "../../context/application/ApplicationContext";
-import {ApplicationStatus, GrantApplication} from "../api/types";
+import { useMemo } from "react";
 
-const boundFetch = fetch.bind(window);
-
-function useRoundStats(roundId: string) {
+function useAlloIndexerClient(): Client {
   const { chain } = useWallet();
-  const client = new Client(
-    boundFetch,
-    "https://grants-stack-indexer.fly.dev",
-    chain.id
-  );
+
+  return useMemo(() => {
+    return new Client(
+      fetch.bind(window),
+      process.env.REACT_APP_ALLO_API_URL ?? "",
+      chain.id
+    );
+  }, [chain.id]);
+}
+
+function useRound(roundId: string) {
+  const client = useAlloIndexerClient();
   return useSWR([roundId, "/stats"], ([roundId]) => {
-    return client.getRoundBy("id", utils.getAddress(roundId.toLowerCase()));
+    return client.getRoundBy("id", roundId);
   });
 }
 
-function useRoundProjects(roundId: string) {
-  const { chain } = useWallet();
-  const client = new Client(
-    boundFetch,
-    "https://grants-stack-indexer.fly.dev",
-    chain.id
-  );
-  return useSWR([roundId, "/projects"], ([roundId]) => {
-    return client.getRoundApplications(utils.getAddress(roundId.toLowerCase()));
+function useRoundApplications(roundId: string) {
+  const client = useAlloIndexerClient();
+  return useSWR([roundId, "/applications"], ([roundId]) => {
+    return client.getRoundApplications(roundId);
   });
 }
 
-function useRoundVotes(roundId: string, projectId: string | undefined) {
-  const { chain } = useWallet();
-  const client = new Client(
-    boundFetch,
-    "https://grants-stack-indexer.fly.dev",
-    chain.id
-  );
-  return useSWR([roundId, "/votes"], ([roundId]) => {
-    return client.getVotes(
-        utils.getAddress(roundId.toLowerCase()),
-        projectId
-        );
-    });
+function useRoundMatchingFunds(roundId: string) {
+  const client = useAlloIndexerClient();
+  return useSWR([roundId, "/matches"], ([roundId]) => {
+    return client.getRoundMatchingFunds(roundId);
+  });
 }
-
-
-// type Vote = {
-//     id: string;
-//     token: string;
-//     voter: string;
-//     grantAddress: string;
-//     amount: string;
-//     amountUSD: number;
-//     fullProjectId: string;
-//     roundAddress: string;
-//     projectApplicationId: string;
-// }
 
 export default function ViewRoundStats() {
-  const { id: roundId } = useParams();
+  const { id } = useParams();
 
-  const { data: roundStats } = useRoundStats(roundId as string);
-  const { data: projects } = useRoundProjects(roundId as string);
-  let { data: votes } = useRoundVotes(roundId as string, undefined);
+  const roundId = utils.getAddress(id?.toLowerCase() ?? "");
 
-  const { applications, isLoading } = useApplicationByRoundId(roundId!);
+  const { data: round } = useRound(roundId);
+  const { data: applications } = useRoundApplications(roundId);
 
-  const approvedApplications = applications;
-    // const approvedApplications =
-    //     applications?.filter(
-    //         (a: GrantApplication) =>
-    //             a.status === ApplicationStatus.APPROVED.toString()
-    //     ) || [];
+  const approvedApplications = useMemo(() => {
+    return applications && applications.filter((a) => a.status === "APPROVED");
+  }, [applications]);
 
+  const { data: matches } = useRoundMatchingFunds(roundId);
 
-
-    // Hypothetical vote shapes of the indexer client data
-    // votes =
-    //     [
-    //         {
-    //             "id": "0x1eadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-    //             "projectId": "0xA0000000000000000000000000000000000000000000000000000000000001",
-    //             "roundId": "0xA000000000000000000000000000000000000000",
-    //             "token": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    //             "voter": "0x0000000000000000000000000000000000000000",
-    //             "grantAddress": "0x0000000000000000000000000000000000000066",
-    //             "amount": "3000000000000000000",
-    //             "amountUSD": 3
-    //         },
-    //         {
-    //         "id": "0x2deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-    //         "projectId": "0xA0000000000000000000000000000000000000000000000000000000000001",
-    //         "roundId": "0xA000000000000000000000000000000000000000",
-    //         "token": "0x0000000000000000000000000000000000000000",
-    //         "voter": "0x0000000000000000000000000000000000000001",
-    //         "grantAddress": "0x0000000000000000000000000000000000000066",
-    //         "amount": "10000000000000000",
-    //         "amountUSD": 15.7414
-    //         }
-    //     ]
-
-  const acceptedProjectsCount = projects?.filter(
-    (proj: any) => proj.status === "APPROVED"
-  ).length;
-
-  const { data: matchAmount } = useContractRead({
-    addressOrName: roundId as string,
-    contractInterface: roundImplementationContract.abi,
-    functionName: "matchAmount",
-  });
-
-  console.log("matchAmount", matchAmount?.toString());
+  const matchAmount = round?.matchAmount;
+  const matchAmountUSD = round?.matchAmountUSD;
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -126,29 +64,27 @@ export default function ViewRoundStats() {
         <div className={"mr-10 flex items-center "}>Overview</div>
         <StatsCard
           text={
-            roundStats
-              ? new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(roundStats.amountUSD)
-              : "-"
+            round &&
+            new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(round.amountUSD)
           }
           title={"Est. Donations Made"}
         />
         <StatsCard
-          text={matchAmount ? Number(utils.formatEther(matchAmount.toString())).toFixed(2) : "-"}
+          text={
+            matchAmount &&
+            Number(utils.formatEther(matchAmount.toString())).toFixed(2)
+          }
           title={"Matching Funds Available"}
         />
         <StatsCard
-          text={
-            roundStats
-              ? roundStats.uniqueContributors.toLocaleString("en")
-              : "-"
-          }
+          text={round && round.uniqueContributors.toLocaleString("en")}
           title={"Unique Contributors"}
         />
         <StatsCard
-          text={roundStats ? roundStats.votes.toLocaleString("en") : "-"}
+          text={round && round.votes.toLocaleString("en")}
           title={"Number of Contributions"}
         />
         <hr className={"my-10 col-span-5"} />
@@ -183,26 +119,23 @@ export default function ViewRoundStats() {
               </tr>
             </thead>
             <tbody>
-            {
-                // TODO: Filter out projects that are not approved (see above) and relate grantapplication field such that
-                // we can get the project data
-                approvedApplications &&
-                approvedApplications.map((application: GrantApplication) => {
-                    return (
-                        <tr>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                                {application.project?.title}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {0}
-                            </td>
-                            <td className="text-sm leading-5 text-gray-400 text-left">
-                              {0}
-                            </td>
-                        </tr>
-                    );
-                })
-            }
+              {matches &&
+                matches.map((match: Match) => {
+                  return (
+                    <tr>
+                      <td className="text-sm leading-5 text-gray-400 text-left">
+                        {match.projectName}
+                      </td>
+                      <td className="text-sm leading-5 text-gray-400 text-left">
+                        {match.contributorsCount}
+                      </td>
+                      <td className="text-sm leading-5 text-gray-400 text-left">
+                        {matchAmountUSD &&
+                          Math.trunc((match.matched / matchAmountUSD) * 100)}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -211,20 +144,17 @@ export default function ViewRoundStats() {
             grayBorder={true}
             title="Avg. Contribution"
             text={
-              roundStats
-                ? new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }).format(
-                    roundStats.amountUSD / roundStats.uniqueContributors
-                  )
-                : "-"
+              round &&
+              new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(round.amountUSD / round.uniqueContributors)
             }
           />
           <StatsCard
             grayBorder={true}
             title="Participating projects"
-            text={acceptedProjectsCount ?? "Loading..."}
+            text={approvedApplications?.length}
           />
         </div>
       </div>
@@ -233,7 +163,7 @@ export default function ViewRoundStats() {
 }
 
 type StatsCardProps = {
-  text: string | number;
+  text?: string | number;
   title: string;
   grayBorder?: boolean;
 };
@@ -253,7 +183,7 @@ function StatsCard(props: StatsCardProps) {
         {props.title}
       </span>
       <div className={"text-2xl leading-8 font-normal text-grey-400"}>
-        {props.text}
+        {props.text ?? "-"}
       </div>
     </div>
   );
