@@ -19,11 +19,11 @@ export type RoundOverview = {
   roundEndTime: string;
   matchAmount: string;
   token: string;
-  roundMetadata ?: RoundMetadata;
+  roundMetadata?: RoundMetadata;
 }
 
 async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<RoundOverview[]> {
-  
+
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
     const currentTimestamp = Math.floor(Date.now() / 1000);

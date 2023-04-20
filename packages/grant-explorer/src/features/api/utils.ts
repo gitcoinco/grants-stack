@@ -447,6 +447,12 @@ export const getUTCTime = (date: Date): string => {
   return utcTime.join(":") + " UTC";
 };
 
+export const getDaysLeft = (date: number) => {
+  const daysLeftInMs = Number(date) - new Date().getSeconds();
+  const daysLeft = Math.ceil(daysLeftInMs / (1000 * 60 * 60 * 24));
+  return daysLeft;
+}
+
 export const listenForOutsideClicks = ({
   listening,
   setListening,

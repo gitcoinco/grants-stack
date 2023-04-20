@@ -1,10 +1,13 @@
-import { Input } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
-import { ReactComponent as Search } from "../../assets/search-grey.svg";
-import { RoundOverview, getActiveRounds, getRoundsInApplicationPhase } from "../api/rounds";
+import {
+  RoundOverview,
+  getActiveRounds,
+  getRoundsInApplicationPhase,
+} from "../api/rounds";
 import Navbar from "../common/Navbar";
-import RoundCard from "./RoundCard";
+import ActiveRoundsSection from "./ActiveRoundSeciton";
+import ApplyNowSection from "./ApplyNowSection";
 
 const mockroundOverview: RoundOverview[] = [
   {
@@ -21,7 +24,7 @@ const mockroundOverview: RoundOverview[] = [
     applicationsEndTime: "1682380800",
     roundStartTime: "1682467200",
     roundEndTime: "1682812800",
-    matchAmount: "10000000000000000000",
+    matchAmount: "1000",
     token: "0x0000000000000000000000000000000000000000",
   },
   {
@@ -89,7 +92,7 @@ const mockroundOverview: RoundOverview[] = [
     applicationsEndTime: "1685491200",
     roundStartTime: "1685577600",
     roundEndTime: "1692576000",
-    matchAmount: "10000000000000000000000",
+    matchAmount: "1000000",
     token: "0x11fe4b6ae13d2a6055c8d9cf65c55bac32b5d844",
   },
 ];
@@ -97,9 +100,11 @@ const mockroundOverview: RoundOverview[] = [
 console.log("mockroundOverview", mockroundOverview);
 
 const LandingPage = () => {
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<RoundOverview[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
+    RoundOverview[]
+  >([]);
   const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]); // TODO: UPDTE
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,12 +121,10 @@ const LandingPage = () => {
     }
   });
 
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
-
     // const exactMatches = activeRounds?.filter(
     //   (round) =>
     //   round.projectMetadata.title.toLocaleLowerCase() ===
@@ -139,7 +142,7 @@ const LandingPage = () => {
     // setActiveRounds([...exactMatches!, ...nonExactMatches!]);
   };
 
-  // Fetch active rounds 
+  // Fetch active rounds
   useEffect(() => {
     const fetchActiveRounds = async () => {
       setActiveRounds(await getActiveRounds());
@@ -155,107 +158,26 @@ const LandingPage = () => {
     fetchRoundsInApplicationPhase();
   }, []);
 
-
-  const SearchInput = () => {
-    return(
-      <div className="relative">
-        <Search className="absolute h-4 w-4 mt-3 ml-3" />
-        <Input
-          className="w-full lg:w-64 h-8 rounded-full pl-10"
-          type="text"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-    )
-  }
-
-  const SortFilter = () => {
-    return(
-      <div>
-        <span className="text-sm mx-auto md:ml-8">Sort by</span>
-          <select
-            className="border-0 cursor-pointer text-violet-400 text-sm"
-            placeholder="Select Filter"
-          >
-            <option>Round End (Earliest)</option>
-            <option>Round Start (Earliest)</option>
-          </select>
-      </div>
-    )
-  };
-
-  const ApplyNowSection = (props: { roundOverview: RoundOverview[] }) => {
-    return (
-      <div>
-        <div>
-          <p className="text-grey-400 text-2xl">
-            Apply Now
-          </p>
-          <div className="flex flex-col lg:flex-row justify-between">
-            <p className="text-grey-400 mb-2 lg:mb-4 mt-2">
-              Rounds currently accepting applications
-            </p>
-            <a className="cursor-pointer mr-1 text-violet-400 text-sm" href="/">
-              View All ( {props.roundOverview.length.toString()} )
-            </a>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {mockroundOverview.map((round, index) => {
-            return <RoundCard key={index} round={round} />;
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const ActiveRoundsSection = (props: { roundOverview: RoundOverview[] }) => {
-    return (
-      <div className="my-6">
-        <div className="flex flex-col lg:flex-row justify-between">
-          <div className="flex flex-col mt-4">
-            <p className="text-grey-400 text-2xl">
-              All Active Rounds
-              ({props.roundOverview?.length.toString()})
-            </p>
-            <p className="text-grey-400 text-sm mb-4 mt-2">
-              Rounds that are ongoing
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row my-auto">
-            <SearchInput />
-            <SortFilter />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {props.roundOverview?.map((round, index) => {
-            return <RoundCard key={index} round={round} />;
-          })}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
-      <Navbar roundUrlPath={"/"} hideWalletInteraction={true}/>
+      <Navbar roundUrlPath={"/"} hideWalletInteraction={true} />
 
-      <LandingBannerLogo className="w-full h-auto object-cover rounded-t"/>
+      <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
 
       <div className="container px-4 md:px-0 md:mx-auto">
+        <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">
+          Browse through active rounds
+        </h1>
 
-        <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">Browse through active rounds</h1>
+        <ApplyNowSection roundOverview={mockroundOverview} />
 
-        <ApplyNowSection roundOverview={roundsInApplicationPhase} />
-
-        <ActiveRoundsSection roundOverview={activeRounds} />
+        <ActiveRoundsSection
+          setSearchQuery={setSearchQuery}
+          roundOverview={activeRounds}
+          searchQuery={searchQuery}
+        />
       </div>
     </>
   );
-
-}
+};
 export default LandingPage;
