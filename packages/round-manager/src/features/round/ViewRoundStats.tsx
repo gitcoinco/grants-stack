@@ -127,7 +127,7 @@ export default function ViewRoundStats() {
                         {match.projectName}
                       </td>
                       <td className="text-sm leading-5 text-gray-400 text-left">
-                        {match.contributorsCount}
+                        {match.contributionsCount}
                       </td>
                       <td className="text-sm leading-5 text-gray-400 text-left">
                         {matchAmountUSD &&
