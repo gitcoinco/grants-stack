@@ -64,7 +64,7 @@ function RoundBanner() {
   return (
     <div>
       <img
-        className="bg-black h-[120px] w-full object-cover rounded-t"
+        className="bg-black h-[140px] w-full object-cover rounded-t"
         src={BANNER_IMAGE}
         alt="Round Banner"
       />
