@@ -1,10 +1,12 @@
 import useSWR from "swr";
 import { useWallet } from "../common/Auth";
-import { Client } from "allo-indexer-client";
+import { Client, Application } from "allo-indexer-client";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { useContractRead } from "wagmi";
 import { roundImplementationContract } from "../api/contracts";
+import {useApplicationByRoundId} from "../../context/application/ApplicationContext";
+import {ApplicationStatus, GrantApplication} from "../api/types";
 
 const boundFetch = fetch.bind(window);
 
@@ -32,14 +34,79 @@ function useRoundProjects(roundId: string) {
   });
 }
 
+function useRoundVotes(roundId: string, projectId: string | undefined) {
+  const { chain } = useWallet();
+  const client = new Client(
+    boundFetch,
+    "https://grants-stack-indexer.fly.dev",
+    chain.id
+  );
+  return useSWR([roundId, "/votes"], ([roundId]) => {
+    return client.getVotes(
+        utils.getAddress(roundId.toLowerCase()),
+        projectId
+        );
+    });
+}
+
+
+// type Vote = {
+//     id: string;
+//     token: string;
+//     voter: string;
+//     grantAddress: string;
+//     amount: string;
+//     amountUSD: number;
+//     fullProjectId: string;
+//     roundAddress: string;
+//     projectApplicationId: string;
+// }
+
 export default function ViewRoundStats() {
   const { id: roundId } = useParams();
 
   const { data: roundStats } = useRoundStats(roundId as string);
   const { data: projects } = useRoundProjects(roundId as string);
+  let { data: votes } = useRoundVotes(roundId as string, undefined);
+
+  const { applications, isLoading } = useApplicationByRoundId(roundId!);
+
+  const approvedApplications = applications;
+    // const approvedApplications =
+    //     applications?.filter(
+    //         (a: GrantApplication) =>
+    //             a.status === ApplicationStatus.APPROVED.toString()
+    //     ) || [];
+
+
+
+    // Hypothetical vote shapes of the indexer client data
+    // votes =
+    //     [
+    //         {
+    //             "id": "0x1eadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    //             "projectId": "0xA0000000000000000000000000000000000000000000000000000000000001",
+    //             "roundId": "0xA000000000000000000000000000000000000000",
+    //             "token": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    //             "voter": "0x0000000000000000000000000000000000000000",
+    //             "grantAddress": "0x0000000000000000000000000000000000000066",
+    //             "amount": "3000000000000000000",
+    //             "amountUSD": 3
+    //         },
+    //         {
+    //         "id": "0x2deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    //         "projectId": "0xA0000000000000000000000000000000000000000000000000000000000001",
+    //         "roundId": "0xA000000000000000000000000000000000000000",
+    //         "token": "0x0000000000000000000000000000000000000000",
+    //         "voter": "0x0000000000000000000000000000000000000001",
+    //         "grantAddress": "0x0000000000000000000000000000000000000066",
+    //         "amount": "10000000000000000",
+    //         "amountUSD": 15.7414
+    //         }
+    //     ]
 
   const acceptedProjectsCount = projects?.filter(
-    (proj) => proj.status === "APPROVED"
+    (proj: any) => proj.status === "APPROVED"
   ).length;
 
   const { data: matchAmount } = useContractRead({
@@ -47,6 +114,8 @@ export default function ViewRoundStats() {
     contractInterface: roundImplementationContract.abi,
     functionName: "matchAmount",
   });
+
+  console.log("matchAmount", matchAmount?.toString());
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -67,7 +136,7 @@ export default function ViewRoundStats() {
           title={"Est. Donations Made"}
         />
         <StatsCard
-          text={matchAmount ? matchAmount[0] : "-"}
+          text={matchAmount ? Number(utils.formatEther(matchAmount.toString())).toFixed(2) : "-"}
           title={"Matching Funds Available"}
         />
         <StatsCard
@@ -114,23 +183,26 @@ export default function ViewRoundStats() {
               </tr>
             </thead>
             <tbody>
-              {Array(10)
-                .fill(null)
-                .map(() => {
-                  return (
-                    <tr>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        Row 1, Cell 1
-                      </td>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        Row 1, Cell 2
-                      </td>
-                      <td className="text-sm leading-5 text-gray-400 text-left">
-                        Row 1, Cell 3
-                      </td>
-                    </tr>
-                  );
-                })}
+            {
+                // TODO: Filter out projects that are not approved (see above) and relate grantapplication field such that
+                // we can get the project data
+                approvedApplications &&
+                approvedApplications.map((application: GrantApplication) => {
+                    return (
+                        <tr>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                                {application.project?.title}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {0}
+                            </td>
+                            <td className="text-sm leading-5 text-gray-400 text-left">
+                              {0}
+                            </td>
+                        </tr>
+                    );
+                })
+            }
             </tbody>
           </table>
         </div>
