@@ -245,7 +245,10 @@ export default function ViewCart() {
 
   return (
     <>
-      <Navbar roundUrlPath={`/round/${chainId}/${roundId}`} />
+      <Navbar
+        roundUrlPath={`/round/${chainId}/${roundId}`}
+        isBeforeRoundEndDate={isBeforeRoundEndDate}
+      />
       {isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} roundId={roundId} />
       )}

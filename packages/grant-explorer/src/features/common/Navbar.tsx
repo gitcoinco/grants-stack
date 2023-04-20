@@ -9,6 +9,7 @@ import NavbarCart from "./NavbarCart";
 export interface NavbarProps {
   roundUrlPath: string;
   customBackground?: string;
+  isBeforeRoundEndDate?: boolean;
 }
 
 export default function Navbar(props: NavbarProps) {
@@ -36,7 +37,9 @@ export default function Navbar(props: NavbarProps) {
             <div data-testid="connect-wallet-button" id="connect-wallet-button">
               <ConnectButton />
             </div>
-            <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
+            {props.isBeforeRoundEndDate &&
+              <NavbarCart cart={cart} roundUrlPath={props.roundUrlPath} />
+            }
             <CustomerSupport />
           </div>
         </div>
