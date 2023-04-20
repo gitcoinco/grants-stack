@@ -18,11 +18,6 @@ import { MatchingStatsData, ProgressStatus, Round } from "../../api/types";
 import ViewFundGrantees from "../ViewFundGrantees";
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 Object.assign(navigator, {
   clipboard: {

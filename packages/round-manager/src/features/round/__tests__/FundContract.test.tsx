@@ -15,6 +15,7 @@ import {
   useDisconnect,
   useSwitchNetwork,
   useSigner,
+  useNetwork,
 } from "wagmi";
 import { useParams } from "react-router-dom";
 import { useTokenPrice } from "../../api/utils";
@@ -25,11 +26,6 @@ const { TextDecoder } = require("util");
 global.TextDecoder = TextDecoder;
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 let mockRoundData: Round = makeRoundData();
 
@@ -83,10 +79,16 @@ describe("fund contract tab", () => {
     }));
 
     (useSigner as jest.Mock).mockImplementation(() => ({
-      signer: {
+      data: {
         getBalance: () => Promise.resolve("0"),
       },
     }));
+
+    (useNetwork as jest.Mock).mockReturnValue({
+      chain: {
+        id: 0,
+      },
+    });
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(

@@ -14,9 +14,6 @@ const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS);
 
 jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

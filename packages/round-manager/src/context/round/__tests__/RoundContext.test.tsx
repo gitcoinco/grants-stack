@@ -6,10 +6,7 @@ import { getRoundById, listRounds } from "../../../features/api/round";
 import { ProgressStatus, Round } from "../../../features/api/types";
 
 jest.mock("../../../features/api/round");
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+
 jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));

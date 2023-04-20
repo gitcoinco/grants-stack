@@ -21,10 +21,6 @@ jest.mock("../../../features/api/program");
 jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));
-jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 describe("<ReadProgramProvider />", () => {
   beforeEach(() => {

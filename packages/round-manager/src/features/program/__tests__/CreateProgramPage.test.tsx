@@ -12,9 +12,6 @@ import { MemoryRouter } from "react-router-dom";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

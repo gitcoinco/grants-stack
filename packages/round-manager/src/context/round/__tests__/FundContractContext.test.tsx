@@ -11,19 +11,10 @@ import {
   FundContractProvider,
   useFundContract,
 } from "../FundContractContext";
+import { useSigner } from "wagmi";
 
-jest.mock("wagmi");
 jest.mock("../../../features/api/subgraph");
 jest.mock("../../../features/api/application");
-
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
-jest.mock("wagmi", () => ({
-  useSigner: () => ({ data: mockSigner }),
-}));
 
 const testParams: FundContractParams = {
   roundId: "testRoundId",
@@ -38,7 +29,9 @@ const testParams: FundContractParams = {
 
 describe("<FundContractProvider />", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    (useSigner as jest.Mock).mockReturnValue({
+      data: {},
+    });
 
     (fundRoundContract as jest.Mock).mockReturnValue(
       new Promise(() => {
@@ -79,6 +72,10 @@ describe("useFundContract Errors", () => {
   beforeEach(() => {
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {
       /* do nothing.*/
+    });
+
+    (useSigner as jest.Mock).mockReturnValue({
+      data: {},
     });
   });
 

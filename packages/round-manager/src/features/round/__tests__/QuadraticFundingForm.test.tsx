@@ -8,9 +8,6 @@ import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";
 
 jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

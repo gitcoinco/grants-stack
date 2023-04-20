@@ -37,9 +37,6 @@ jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/merklePayoutStrategy");
 jest.mock("../../api/votingStrategy/qfVotingStrategy");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
@@ -117,7 +114,7 @@ describe("<RoundApplicationForm />", () => {
       const continueButton = await screen.findByRole("button", {
         name: /Continue/i,
       });
-      await act( async () => fireEvent.click(continueButton));
+      await act(async () => fireEvent.click(continueButton));
     };
 
     it("shows error modal when saving round application metadata fails", async () => {

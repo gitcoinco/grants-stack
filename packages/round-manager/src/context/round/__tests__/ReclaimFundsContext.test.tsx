@@ -7,7 +7,6 @@ import {
   useReclaimFunds,
 } from "../ReclaimFundsContext";
 
-jest.mock("wagmi");
 jest.mock("../../../features/api/payoutStrategy/merklePayoutStrategy");
 
 const mockSigner = {

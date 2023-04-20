@@ -91,7 +91,7 @@ const mainnetChains = () => {
   return [chain.mainnet, fantomMainnet, optimismMainnet];
 };
 
-const allChains: Chain[] =
+export const allChains: Chain[] =
   process.env.REACT_APP_ENV === "development"
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
@@ -102,7 +102,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
     infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID, priority: 0 }),
     alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID, priority: 1 }),
     publicProvider({ priority: 2 }),
-  ],
+  ]
 );
 
 // Custom wallet connectors: more can be added by going here:

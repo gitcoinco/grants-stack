@@ -13,12 +13,7 @@ import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import ViewRoundPage from "../ViewRoundPage";
 import { useParams } from "react-router-dom";
 
-jest.mock("wagmi");
 jest.mock("../../common/Auth");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

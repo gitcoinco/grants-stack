@@ -67,10 +67,6 @@ const applicationIdOverride = "some-application-id";
 const roundIdOverride = "some-round-id";
 
 jest.mock("@gitcoinco/passport-sdk-verifier");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
-jest.mock("wagmi");
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifier.prototype,
@@ -80,8 +76,8 @@ const verifyCredentialMock = jest.spyOn(
 describe("ViewApplicationPage", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
+    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
   it("should display 404 when there no application is found", () => {

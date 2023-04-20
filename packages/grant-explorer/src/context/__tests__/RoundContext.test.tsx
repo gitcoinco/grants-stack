@@ -7,9 +7,6 @@ import { Round } from "../../features/api/types";
 
 jest.mock("../../features/api/round");
 jest.mock("wagmi");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 describe("<ListRoundProvider />", () => {
   beforeEach(() => {

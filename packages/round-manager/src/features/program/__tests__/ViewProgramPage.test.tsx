@@ -17,9 +17,7 @@ const useParamsFn = () => ({ id: programId });
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 jest.mock("../../api/program");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: useParamsFn,

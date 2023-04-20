@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { render, screen } from "@testing-library/react";
 import ViewRoundPage from "../ViewRoundPage";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
@@ -15,11 +14,6 @@ import { useDisconnect, useSwitchNetwork } from "wagmi";
 import { useParams } from "react-router-dom";
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
-
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 Object.assign(navigator, {
   clipboard: {

@@ -32,9 +32,6 @@ const mockAccount = {
 
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
-jest.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: jest.fn(),
-}));
 
 jest.mock("wagmi", () => ({
   useAccount: () => mockAccount,
