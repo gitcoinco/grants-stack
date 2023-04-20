@@ -30,7 +30,7 @@ const RoundCard = (props: { round: RoundOverview }) => {
             {props.round.roundMetadata?.name}
           </CardTitle>
           <CardDescription data-testid="round-description" className="h-[90px]">
-            {renderToPlainText(props.round.roundMetadata?.eligibility.description!)}
+            {renderToPlainText(props.round.roundMetadata?.eligibility.description ?? "")}
           </CardDescription>
           <p className="mt-4 text-xs" data-testid="days-left">
             {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round

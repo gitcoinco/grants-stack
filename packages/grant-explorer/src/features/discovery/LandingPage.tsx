@@ -203,7 +203,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {props.roundOverview.map((round, index) => {
+          {mockroundOverview.map((round, index) => {
             return <RoundCard key={index} round={round} />;
           })}
         </div>
