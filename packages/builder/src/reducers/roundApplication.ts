@@ -134,7 +134,7 @@ export const roundApplicationReducer = (
       };
     }
 
-    // In case a a round application for a specific round is not found
+    // In case a round application for a specific round is not found
     // we initialize the roundApplication to specify that it has been fetched.
     // If it's undefined it means we didn't fetch it yet.
     case ROUND_APPLICATION_NOT_FOUND: {

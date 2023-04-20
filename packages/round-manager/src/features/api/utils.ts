@@ -401,6 +401,7 @@ export interface ApplicationSchema {
  * This function generates the round application schema to be stored in a decentralized storage
  *
  * @param questions - The metadata of a round application
+ * @param requirements
  * @returns The application schema
  */
 export const generateApplicationSchema = (
@@ -450,28 +451,6 @@ export function saveObjectAsJson(filename: string, dataObjToWrite: any) {
 
 // Checks if tests are being run jest
 export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
-
-export const prefixZero = (i: number): string =>
-  i < 10 ? "0" + i : i.toString();
-
-export const getUTCDate = (date: Date): string => {
-  const utcDate = [
-    prefixZero(date.getUTCDate()),
-    prefixZero(date.getUTCMonth() + 1),
-    prefixZero(date.getUTCFullYear()),
-  ];
-
-  return utcDate.join("/");
-};
-
-export const getUTCTime = (date: Date): string => {
-  const utcTime = [
-    prefixZero(date.getUTCHours()),
-    prefixZero(date.getUTCMinutes()),
-  ];
-
-  return utcTime.join(":") + " UTC";
-};
 
 export function typeToText(s: string) {
   if (s == "address") return "Wallet address";

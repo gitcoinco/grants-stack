@@ -28,6 +28,7 @@ import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
 import _ from "lodash";
+import { classNames } from "common";
 
 const ValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -168,7 +169,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
     <div>
       <div className="md:grid md:grid-cols-3 md:gap-10">
         <div className="md:col-span-1">
-          <p className="text-base leading-6">Details</p>
+          <p className="text-base leading-6">Round Details</p>
           <p className="mt-1 text-sm text-grey-400">
             What is the Round name, when do applications open/close, and when
             does it start and end?
@@ -801,8 +802,4 @@ function ApplicationDatesInformation() {
       </ReactTooltip>
     </>
   );
-}
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
 }

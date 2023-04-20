@@ -288,7 +288,7 @@ const updateApplicationStatusFromContract = async (
   projectsMetaPtr: MetadataPointer,
   filterByStatus?: string
 ) => {
-  // Handle scenario where operator hasn't review any projects in the round
+  // Handle scenario where operator hasn't reviewed any projects in the round
   if (!projectsMetaPtr)
     return filterByStatus
       ? applications.filter(

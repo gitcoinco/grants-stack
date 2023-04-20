@@ -1,3 +1,5 @@
+/*TODO(refactor): why is this file needed? What is it's function beside routing? Can React Router already do this natively?
+ *  If needed - duplicates across RM and GE - dedupe*/
 import { combineReducers, Middleware } from "redux";
 
 import {

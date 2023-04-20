@@ -124,7 +124,7 @@
     "tailwindcss": "^3.0.24"
   },
   "lint-staged": {
-    "*.{ts,tsx,md}": [
+    "*.{ts,tsx}": [
       "prettier --write",
       "pnpm lint:fix"
     ]

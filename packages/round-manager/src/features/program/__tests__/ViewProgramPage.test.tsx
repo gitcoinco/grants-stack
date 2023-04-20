@@ -9,7 +9,7 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Program, ProgressStatus } from "../../api/types";
-import { getUTCDate } from "../../api/utils";
+import { formatUTCDateAsISOString } from "common";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -199,10 +199,12 @@ describe("<ViewProgram />", () => {
         "application-end-time-period"
       );
 
-      const utcApplicationStartTime = getUTCDate(
+      const utcApplicationStartTime = formatUTCDateAsISOString(
         stubRound!.applicationsStartTime
       );
-      const utcApplicationEndTime = getUTCDate(stubRound!.applicationsEndTime);
+      const utcApplicationEndTime = formatUTCDateAsISOString(
+        stubRound!.applicationsEndTime
+      );
 
       expect(applicationStartTimePeriod.textContent).toEqual(
         utcApplicationStartTime
@@ -234,8 +236,10 @@ describe("<ViewProgram />", () => {
         "round-end-time-period"
       );
 
-      const utcRoundStartTime = getUTCDate(stubRound!.roundStartTime);
-      const utcRoundEndTime = getUTCDate(stubRound!.roundEndTime);
+      const utcRoundStartTime = formatUTCDateAsISOString(
+        stubRound!.roundStartTime
+      );
+      const utcRoundEndTime = formatUTCDateAsISOString(stubRound!.roundEndTime);
 
       expect(roundStartTimePeriodElement.textContent).toEqual(
         utcRoundStartTime

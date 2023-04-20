@@ -566,7 +566,7 @@ const ProjectSocials = ({
           inactiveLabel="*Optional"
           value={requirements.github.required}
           handler={async (a: boolean) => {
-            // clear required githubVerification, if github itself is not required
+            // clear required githubVerification, if GitHub itself is not required
             handler([
               ["github", "required", a],
               ["github", "verification", false],

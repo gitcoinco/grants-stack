@@ -320,3 +320,23 @@ export const convertStatusToText = (
       return "PENDING";
   }
 };
+
+/** Returns true if the current javascript context is running inside a Jest test  */
+export const isJestRunning = () => process.env.JEST_WORKER_ID !== undefined;
+
+export const padSingleDigitNumberWithZero = (i: number): string =>
+  i < 10 ? "0" + i : i.toString();
+
+export const formatUTCDateAsISOString = (date: Date): string => {
+  const isoString = date.toISOString();
+  return isoString.slice(0, 10).replace(/-/g, "/");
+};
+
+export const getUTCTime = (date: Date): string => {
+  const utcTime = [
+    padSingleDigitNumberWithZero(date.getUTCHours()),
+    padSingleDigitNumberWithZero(date.getUTCMinutes()),
+  ];
+
+  return utcTime.join(":") + " UTC";
+};
