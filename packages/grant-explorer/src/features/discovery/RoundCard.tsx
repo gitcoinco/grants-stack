@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { renderToPlainText } from "common";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
-import { CHAINS } from "../api/utils";
-import { BasicCard, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../common/styles";
-import { renderToPlainText } from "common";
 import { RoundOverview } from "../api/rounds";
+import { CHAINS } from "../api/utils";
+import { BasicCard, CardContent, CardDescription, CardHeader, CardTitle } from "../common/styles";
 
 const RoundCard = (props: { round: RoundOverview }) => {
 

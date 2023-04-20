@@ -1,16 +1,12 @@
-import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
-import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
-import RoundCard from "./RoundCard";
-import Navbar from "../common/Navbar";
-import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { Input } from "common/src/styles";
+import { useEffect, useState } from "react";
+import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
+import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { RoundOverview, getActiveRounds, getRoundsInApplicationPhase } from "../api/rounds";
+import Navbar from "../common/Navbar";
+import RoundCard from "./RoundCard";
 
-
-// import { RoundOverview } from "../api/rounds";
-
-const mockroundOverview: any[] = [
+const mockroundOverview: RoundOverview[] = [
   {
     id: "0x2ffe6a9176349d8ac2f1d1ed2035cc4e48c4efdc",
     roundMetaPtr: {
@@ -121,6 +117,7 @@ const LandingPage = () => {
   });
 
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterProjectsByTitle = (query: string) => {
     // filter by exact title matches first
     // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"

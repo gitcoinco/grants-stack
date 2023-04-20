@@ -332,7 +332,6 @@ importers:
       '@babel/preset-env': ^7.20.2
       '@babel/preset-react': ^7.18.6
       '@babel/preset-typescript': ^7.21.0
-      '@chakra-ui/react': ^2.1.2
       '@craco/craco': ^7.0.0
       '@datadog/browser-logs': ^4.19.0
       '@datadog/browser-rum': ^4.19.0
@@ -397,7 +396,6 @@ importers:
       react-dom: ^18.1.0
       react-gtm-module: ^2.0.11
       react-hook-form: ^7.31.3
-      react-icons: ^4.7.1
       react-redux: ^8.0.1
       react-router: ^6
       react-router-dom: '6'
@@ -417,7 +415,6 @@ importers:
       web-vitals: ^2.1.0
       webpack: '>=2'
     dependencies:
-      '@chakra-ui/react': 2.4.9_7h642ehufk2ayekpx246qipqne
       '@craco/craco': 7.0.0_iihpyunhlvq2lijfgduptyp3ja
       '@datadog/browser-logs': 4.30.1_7nwqccnzuve4t7hwidkd2in2be
       '@datadog/browser-rum': 4.30.1_25ad6ujv2hpt3baw5lupcax7q4
@@ -467,7 +464,6 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-gtm-module: 2.0.11
       react-hook-form: 7.42.1_react@18.2.0
-      react-icons: 4.7.1_react@18.2.0
       react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
       react-router: 6.7.0_react@18.2.0
       react-router-dom: 6.7.0_biqbaboplfbrettd7655fr4n2y
@@ -6964,6 +6960,7 @@ packages:
       typescript: 4.9.4
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /@typescript-eslint/parser/5.48.2_eslint@8.32.0:
     resolution: {integrity: sha512-38zMsKsG2sIuM5Oi/olurGwYJXzmtdsHhn5mI/pQogP+BjYVkK5iRazCQ8RGS0V+YLk282uWElN70zAAUmaYHw==}
@@ -11354,7 +11351,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       debug: 3.2.7
       eslint: 8.32.0
       eslint-import-resolver-node: 0.3.7
@@ -11424,7 +11421,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
+      '@typescript-eslint/parser': 5.48.2_et5x32uxl7z5ldub3ye5rhlyqm
       array-includes: 3.1.6
       array.prototype.flat: 1.3.1
       array.prototype.flatmap: 1.3.1
@@ -11547,7 +11544,7 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
     dependencies:
-      '@babel/runtime': 7.20.7
+      '@babel/runtime': 7.21.0
       aria-query: 5.1.3
       array-includes: 3.1.6
       array.prototype.flatmap: 1.3.1

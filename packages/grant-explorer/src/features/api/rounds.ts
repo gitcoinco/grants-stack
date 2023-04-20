@@ -34,7 +34,7 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
       { currentTimestamp }
     );
 
-    let rounds: RoundOverview[] = res.data.rounds;
+    const rounds: RoundOverview[] = res.data.rounds;
     rounds.forEach(async (round, index) => {
 
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
@@ -56,7 +56,7 @@ export async function getRoundsInApplicationPhase(): Promise<RoundOverview[]> {
   try {
 
     const chainIds = Object.keys(ChainId)
-    let rounds: RoundOverview[] = [];
+    const rounds: RoundOverview[] = [];
 
     const query = `
       query GetRoundsInApplicationPhase($current_timestamp: Number) {
@@ -80,7 +80,7 @@ export async function getRoundsInApplicationPhase(): Promise<RoundOverview[]> {
     `;
 
     chainIds.forEach(async chainId => {
-      let roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
+      const roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
       rounds.push(...roundsForChainId);
     })
 
@@ -95,7 +95,7 @@ export async function getActiveRounds(): Promise<RoundOverview[]> {
   try {
 
     const chainIds = Object.keys(ChainId)
-    let rounds: RoundOverview[] = [];
+    const rounds: RoundOverview[] = [];
 
     const query = `
       query GetRoundsInApplicationPhase($current_timestamp: Number) {
@@ -119,7 +119,7 @@ export async function getActiveRounds(): Promise<RoundOverview[]> {
     `;
 
     chainIds.forEach(async chainId => {
-      let roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
+      const roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
       rounds.push(...roundsForChainId);
     })
 
