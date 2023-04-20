@@ -46,6 +46,7 @@ type Res = {
 export const getApplicationById = async (
   id: string,
   signerOrProvider: Web3Instance["provider"]
+  signerOrProvider: Web3Instance["provider"]
 ): Promise<GrantApplication> => {
   try {
     const { chainId } = await signerOrProvider.getNetwork();
@@ -75,6 +76,7 @@ export const getApplicationById = async (
       `,
       chainId,
       { id }
+      { id }
     );
 
     const grantApplicationExists = res.data.roundApplications.length > 0;
@@ -88,17 +90,20 @@ export const getApplicationById = async (
       _projectRegistryContract.address!,
       _projectRegistryContract.abi,
       signerOrProvider
+      signerOrProvider
     );
 
     const grantApplications = await fetchApplicationData(
       res,
       id,
       projectRegistry
+      projectRegistry
     );
 
     const grantApplicationsFromContract =
       await updateApplicationStatusFromContract(
         grantApplications,
+        res.data.roundApplications[0].round.projectsMetaPtr
         res.data.roundApplications[0].round.projectsMetaPtr
       );
 
@@ -126,6 +131,7 @@ function convertStatus(status: number) {
 
 export const getApplicationsByRoundId = async (
   roundId: string,
+  signerOrProvider: Web3Provider
   signerOrProvider: Web3Provider
 ): Promise<GrantApplication[]> => {
   try {
@@ -163,12 +169,14 @@ export const getApplicationsByRoundId = async (
       `,
       chainId,
       { roundId }
+      { roundId }
     );
 
     const grantApplications: GrantApplication[] = [];
 
     for (const project of res.data.roundApplications) {
       const metadata = await fetchFromIPFS(project.metaPtr.pointer);
+
 
       const projectStatus = convertStatus(project.status);
 
@@ -184,12 +192,20 @@ export const getApplicationsByRoundId = async (
         id: project.id,
         projectsMetaPtr: project.round.projectsMetaPtr,
       });
+      grantApplications.push({
+        ...application,
+        status: projectStatus,
+        applicationIndex: project.applicationIndex,
+        id: project.id,
+        projectsMetaPtr: project.round.projectsMetaPtr,
+      });
     }
 
     const grantApplicationsFromContract =
       res.data.roundApplications.length > 0
         ? await updateApplicationStatusFromContract(
             grantApplications,
+            res.data.roundApplications[0].round.projectsMetaPtr
             res.data.roundApplications[0].round.projectsMetaPtr
           )
         : grantApplications;
@@ -210,6 +226,7 @@ export const getApplicationsByRoundId = async (
 export const checkGrantApplicationStatus = async (
   id: GrantApplicationId,
   projectsMetaPtr: MetadataPointer
+  projectsMetaPtr: MetadataPointer
 ): Promise<ProjectStatus> => {
   let reviewedApplications: GrantApplication[] = [];
 
@@ -226,6 +243,7 @@ const fetchApplicationData = async (
   res: Res,
   id: string,
   projectRegistry: Contract
+  projectRegistry: Contract
 ): Promise<GrantApplication[]> =>
   Promise.all(
     res.data.roundApplications.map(
@@ -241,6 +259,7 @@ const fetchApplicationData = async (
         if (id) {
           status = await checkGrantApplicationStatus(
             project.id,
+            project.round.projectsMetaPtr
             project.round.projectsMetaPtr
           );
         }
@@ -267,6 +286,8 @@ const fetchApplicationData = async (
         } as GrantApplication;
       }
     )
+      }
+    )
   );
 
 /**
@@ -287,11 +308,13 @@ const updateApplicationStatusFromContract = async (
   applications: GrantApplication[],
   projectsMetaPtr: MetadataPointer,
   filterByStatus?: string
+  filterByStatus?: string
 ) => {
   // Handle scenario where operator hasn't reviewed any projects in the round
   if (!projectsMetaPtr)
     return filterByStatus
       ? applications.filter(
+          (application) => application.status === filterByStatus
           (application) => application.status === filterByStatus
         )
       : applications;
@@ -304,6 +327,7 @@ const updateApplicationStatusFromContract = async (
       // fetch matching application index from contract
       const index = applicationsFromContract.findIndex(
         (applicationFromContract: GrantApplication) =>
+          application.id === applicationFromContract.id
           application.id === applicationFromContract.id
       );
       // update status of application from contract / default to pending
@@ -318,6 +342,7 @@ const updateApplicationStatusFromContract = async (
   if (filterByStatus) {
     return applications.filter(
       (application) => application.status === filterByStatus
+      (application) => application.status === filterByStatus
     );
   }
 
@@ -328,10 +353,12 @@ export const updateApplicationStatuses = async (
   roundId: string,
   signer: Signer,
   statuses: AppStatus[]
+  statuses: AppStatus[]
 ): Promise<{ transactionBlockNumber: number }> => {
   const roundImplementation = new ethers.Contract(
     roundId,
     roundImplementationContract.abi,
+    signer
     signer
   );
 
@@ -354,6 +381,7 @@ export const updateApplicationStatuses = async (
 export const updateApplicationList = async (
   applications: GrantApplication[],
   roundId: string,
+  chainId: number
   chainId: number
 ): Promise<string> => {
   let reviewedApplications = [];
@@ -380,6 +408,7 @@ export const updateApplicationList = async (
           }
         `,
     chainId,
+    { roundId }
     { roundId }
   );
 
@@ -431,6 +460,7 @@ export const fundRoundContract = async (
   signer: Signer,
   payoutToken: PayoutToken,
   amount: BigNumber
+  amount: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -453,6 +483,7 @@ export const fundRoundContract = async (
       payoutToken.address,
       ERC20Contract.abi,
       signer
+      signer
     );
 
     tx = await tokenContract.transfer(roundId, amount);
@@ -474,6 +505,7 @@ export const approveTokenOnContract = async (
   roundId: string,
   tokenAddress: string,
   amount: BigNumber
+  amount: BigNumber
 ): Promise<void> => {
   // checksum conversion
   roundId = ethers.utils.getAddress(roundId);
@@ -482,6 +514,7 @@ export const approveTokenOnContract = async (
   const tokenContract = new ethers.Contract(
     tokenAddress,
     ERC20Contract.abi,
+    signer
     signer
   );
 
