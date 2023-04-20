@@ -5,11 +5,12 @@ import RoundCard from "./RoundCard";
 import Navbar from "../common/Navbar";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 import { Input } from "common/src/styles";
+import { RoundOverview, getActiveRounds, getRoundsInApplicationPhase } from "../api/rounds";
 
 
 // import { RoundOverview } from "../api/rounds";
 
-const mockRoundData: any[] = [
+const mockroundOverview: any[] = [
   {
     id: "0x2ffe6a9176349d8ac2f1d1ed2035cc4e48c4efdc",
     roundMetaPtr: {
@@ -97,12 +98,13 @@ const mockRoundData: any[] = [
   },
 ];
 
-console.log("mockRoundData", mockRoundData);
+console.log("mockroundOverview", mockroundOverview);
 
 const LandingPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeRounds, setActiveRounds] = useState<any[]>(); // TODO: UPDTE
+  const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<RoundOverview[]>([]);
+  const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]); // TODO: UPDTE
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -111,10 +113,10 @@ const LandingPage = () => {
         () => filterProjectsByTitle(searchQuery),
         300
       );
+      // TODO: Figure out how to how to handle this
       return () => clearTimeout(timeOutId);
     } else {
-      const rounds = mockRoundData; // TODO : Update
-      setActiveRounds(rounds);
+      setActiveRounds(activeRounds);
     }
   });
 
@@ -140,19 +142,22 @@ const LandingPage = () => {
     // setActiveRounds([...exactMatches!, ...nonExactMatches!]);
   };
 
-  const { address } = useAccount();
-  // todo: fetch all the round data from the indexer
-  // const [roundData, setRoundData] = useState<RoundOverview[]>([]);
-
+  // Fetch active rounds 
   useEffect(() => {
-    const fetchRounds = async () => {
-      // const roundsForChain = await getRoundsInApplicationPhase();
-      // setRoundData(roundsForChain);
+    const fetchActiveRounds = async () => {
+      setActiveRounds(await getActiveRounds());
     };
+    fetchActiveRounds();
+  }, []);
 
-    fetchRounds();
-  }, [address]);
-  // todo: sort the rounds by application period and then by voting period
+  // Fetch rounds in application phase
+  useEffect(() => {
+    const fetchRoundsInApplicationPhase = async () => {
+      setRoundsInApplicationPhase(await getRoundsInApplicationPhase());
+    };
+    fetchRoundsInApplicationPhase();
+  }, []);
+
 
   const SearchInput = () => {
     return(
@@ -184,7 +189,7 @@ const LandingPage = () => {
     )
   };
 
-  const ApplyNowSection = (props: { roundData: any[] }) => {
+  const ApplyNowSection = (props: { roundOverview: RoundOverview[] }) => {
     return (
       <div>
         <div>
@@ -196,12 +201,12 @@ const LandingPage = () => {
               Rounds currently accepting applications
             </p>
             <a className="cursor-pointer mr-1 text-violet-400 text-sm" href="/">
-              View All ( {props.roundData.length.toString()} )
+              View All ( {props.roundOverview.length.toString()} )
             </a>
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {props.roundData.map((round, index) => {
+          {props.roundOverview.map((round, index) => {
             return <RoundCard key={index} round={round} />;
           })}
         </div>
@@ -209,14 +214,14 @@ const LandingPage = () => {
     );
   };
 
-  const ActiveRoundsSection = (props: { roundData: any[] }) => {
+  const ActiveRoundsSection = (props: { roundOverview: RoundOverview[] }) => {
     return (
       <div className="my-6">
         <div className="flex flex-col lg:flex-row justify-between">
           <div className="flex flex-col mt-4">
             <p className="text-grey-400 text-2xl">
               All Active Rounds
-              ({props.roundData.length.toString()})
+              ({props.roundOverview?.length.toString()})
             </p>
             <p className="text-grey-400 text-sm mb-4 mt-2">
               Rounds that are ongoing
@@ -230,7 +235,7 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {props.roundData.map((round, index) => {
+          {props.roundOverview?.map((round, index) => {
             return <RoundCard key={index} round={round} />;
           })}
         </div>
@@ -248,9 +253,9 @@ const LandingPage = () => {
 
         <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">Browse through active rounds</h1>
 
-        <ApplyNowSection roundData={mockRoundData} />
+        <ApplyNowSection roundOverview={roundsInApplicationPhase} />
 
-        <ActiveRoundsSection roundData={mockRoundData} />
+        <ActiveRoundsSection roundOverview={activeRounds} />
       </div>
     </>
   );

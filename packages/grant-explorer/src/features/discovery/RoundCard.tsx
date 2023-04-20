@@ -1,24 +1,22 @@
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
-// import { RoundOverview } from "../api/rounds";
 import { CHAINS } from "../api/utils";
 import { BasicCard, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../common/styles";
+import { renderToPlainText } from "common";
+import { RoundOverview } from "../api/rounds";
 
-const RoundCard = (props: { round: any }) => {
+const RoundCard = (props: { round: RoundOverview }) => {
 
   const { chain } = useNetwork();
-  const roundEndTime = props.round && Number(props.round.roundEndTime);
-  const daysLeftInMs = roundEndTime - new Date().getSeconds();
-  const daysLeft = Math.ceil(daysLeftInMs / (1000 * 60 * 60 * 24));
-  const matchAmount = 100;
-  const token = "ETH";
+
+  const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
+  const token = "ETH"; // TODO: add util function to convert props.round.token
   const approvedApplicationsCount = 10;
-  const roundName = "Round Name";
 
   return (
     <BasicCard className="w-full mb-3">
       <Link
-        to="/round/id" // TODO: replace with actual round id
+        to="/round/${}" // TODO: replace with actual round id
         data-testid="round-card"
       >
         <CardHeader>
@@ -26,15 +24,11 @@ const RoundCard = (props: { round: any }) => {
         </CardHeader>
 
         <CardContent>
-          <CardTitle data-testid="round-title">
-            {roundName}
+          <CardTitle data-testid="round-name">
+            {props.round.roundMetadata?.name}
           </CardTitle>
           <CardDescription data-testid="round-description" className="h-[90px]">
-            {/* {renderToPlainText(project.projectMetadata.description)} */}
-            Round description here lorem ipsum dolor sit amet consectetur.
-            Magna pulvinar sit tincidunt viverra lectus malesuada et.
-            Elementum eros lacus felis et et nisl eget nisl eu. Fringilla
-            lorem libero vel ut orci varius iaculis augue pulvinar.
+            {renderToPlainText(props.round.roundMetadata?.eligibility.description!)}
           </CardDescription>
           <p className="mt-4 text-xs" data-testid="days-left">
             {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
@@ -47,7 +41,7 @@ const RoundCard = (props: { round: any }) => {
         <CardContent className="text-xs mt-3 pb-0">
           <RoundCardStat
             chainId={chain!.id}
-            matchAmount={matchAmount}
+            matchAmount={props.round.matchAmount}
             token={token}
             approvedApplicationsCount={approvedApplicationsCount}
           />
@@ -75,7 +69,7 @@ function RoundBanner() {
 function RoundCardStat(
   props: {
     chainId: number;
-    matchAmount: number;
+    matchAmount: string;
     token: string;
     approvedApplicationsCount: number;
   }
@@ -100,6 +94,12 @@ function RoundCardStat(
       </div>
     </div>
   );
+}
+
+const getDaysLeft = (date: number) => {
+  const daysLeftInMs = Number(date) - new Date().getSeconds();
+  const daysLeft = Math.ceil(daysLeftInMs / (1000 * 60 * 60 * 24));
+  return daysLeft;
 }
 
 export default RoundCard;

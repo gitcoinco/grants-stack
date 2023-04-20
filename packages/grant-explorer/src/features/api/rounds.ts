@@ -9,7 +9,7 @@ interface GetRoundOverviewResult {
   };
 }
 
-type RoundOverview = {
+export type RoundOverview = {
   id: string;
   roundMetaPtr: MetadataPointer;
   applicationMetaPtr: MetadataPointer;
@@ -19,7 +19,7 @@ type RoundOverview = {
   roundEndTime: string;
   matchAmount: string;
   token: string;
-  name ?: string;
+  roundMetadata ?: RoundMetadata;
 }
 
 async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<RoundOverview[]> {
@@ -40,7 +40,8 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
         round.roundMetaPtr.pointer
       );
-      rounds[index].name = roundMetadata.name;
+      rounds[index].roundMetadata = roundMetadata;
+
     });
 
     return rounds;
