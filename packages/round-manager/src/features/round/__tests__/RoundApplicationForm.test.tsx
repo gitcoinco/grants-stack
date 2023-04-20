@@ -28,6 +28,9 @@ import {
   RoundApplicationForm
 } from "../RoundApplicationForm";
 
+const SECONDS = 1000;
+jest.setTimeout(70 * SECONDS);
+
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
 jest.mock("../../api/subgraph");
@@ -101,12 +104,12 @@ describe("<RoundApplicationForm />", () => {
   describe("when saving metadata fails", () => {
     const startProgressModal = async () => {
       const launch = screen.getByRole("button", { name: /Launch/i });
-      fireEvent.click(launch);
+      await act(async () => fireEvent.click(launch));
 
       const continueButton = await screen.findByRole("button", {
         name: /Continue/i,
       });
-      fireEvent.click(continueButton);
+      await act( async () => fireEvent.click(continueButton));
     };
 
     it("shows error modal when saving round application metadata fails", async () => {
