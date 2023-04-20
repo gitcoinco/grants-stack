@@ -1,8 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from "react";
-import { FiSearch } from 'react-icons/fi';
+import { ReactComponent as LandingBannerLogo } from "../../assets/landing-banner.svg";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import RoundCard from "./RoundCard";
+import Navbar from "../common/Navbar";
+import { ReactComponent as Search } from "../../assets/search-grey.svg";
+import { Input } from "common/src/styles";
+
+
 // import { RoundOverview } from "../api/rounds";
 
 const mockRoundData: any[] = [
@@ -96,6 +100,46 @@ const mockRoundData: any[] = [
 console.log("mockRoundData", mockRoundData);
 
 const LandingPage = () => {
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeRounds, setActiveRounds] = useState<any[]>(); // TODO: UPDTE
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (searchQuery) {
+      const timeOutId = setTimeout(
+        () => filterProjectsByTitle(searchQuery),
+        300
+      );
+      return () => clearTimeout(timeOutId);
+    } else {
+      const rounds = mockRoundData; // TODO : Update
+      setActiveRounds(rounds);
+    }
+  });
+
+
+  const filterProjectsByTitle = (query: string) => {
+    // filter by exact title matches first
+    // e.g if searchString is "ether" then "ether grant" comes before "ethereum grant"
+
+    // const exactMatches = activeRounds?.filter(
+    //   (round) =>
+    //   round.projectMetadata.title.toLocaleLowerCase() ===
+    //     query.toLocaleLowerCase()
+    // );
+    // const nonExactMatches = projects?.filter(
+    //   (project) =>
+    //     project.projectMetadata.title
+    //       .toLocaleLowerCase()
+    //       .includes(query.toLocaleLowerCase()) &&
+    //     project.projectMetadata.title.toLocaleLowerCase() !==
+    //       query.toLocaleLowerCase()
+    // );
+    // // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // setActiveRounds([...exactMatches!, ...nonExactMatches!]);
+  };
+
   const { address } = useAccount();
   // todo: fetch all the round data from the indexer
   // const [roundData, setRoundData] = useState<RoundOverview[]>([]);
@@ -110,107 +154,106 @@ const LandingPage = () => {
   }, [address]);
   // todo: sort the rounds by application period and then by voting period
 
-  console.log("Landing Page => ", { address });
+  const SearchInput = () => {
+    return(
+      <div className="relative">
+        <Search className="absolute h-4 w-4 mt-3 ml-3" />
+        <Input
+          className="w-full lg:w-64 h-8 rounded-full pl-10"
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+    )
+  }
 
-  return (
-    <div className="">
-      {/* <LandingHeader /> */}
-      <TitleSection />
-      <hr className="text-grey-100 mx-4 my-8" />
+  const SortFilter = () => {
+    return(
       <div>
-        <ApplyNowSection roundData={mockRoundData} />
+        <span className="ml-8">Sort by</span>
+          <select
+            className="border-0 cursor-pointer text-violet-400 underline"
+            placeholder="Select Filter"
+          >
+            <option>Round End (Earliest)</option>
+            <option>Round Start (Earliest)</option>
+          </select>
       </div>
+    )
+  };
+
+  const ApplyNowSection = (props: { roundData: any[] }) => {
+    return (
       <div>
-        <AllActviveRoundsSection roundData={mockRoundData} />
-      </div>
-    </div>
-  );
-};
-
-const TitleSection = () => {
-  return (
-    <div className="mt-96">
-      <span className="md:text-[30px] text-[24px] text-grey-500 mx-4">
-        Browse through active rounds
-      </span>
-    </div>
-  );
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ApplyNowSection = (props: { roundData: any[] }) => {
-  return (
-    <div className="mx-4">
-      <div>
-        <span className="text-grey-400 md:text-[24] text-[20px]">
-          Apply Now
-        </span>
-        <div className="flex flex-row items-center justify-between">
-          <span className="text-grey-400 mb-4 mt-2">
-            Rounds currently accepting applications
-          </span>
-          <a className="cursor-pointer mr-1 text-violet-400 underline" href="/">
-            View All ({props.roundData.length.toString()})
-          </a>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
-        {props.roundData.map((round, index) => {
-          return <RoundCard key={index} round={round} />;
-        })}
-      </div>
-    </div>
-  );
-};
-
-// todo: finish the onclick event handler
-const SearchInput = () => {
-  return (
-    <div className="relative w-64">
-      <input
-        type="search"
-        placeholder="Search..."
-        className="border border-gray-400 rounded-md pl-10 pr-4 py-2 w-full focus:outline-none focus:border-violet-500"
-      />
-      <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-    </div>
-  )
-}
-
-const AllActviveRoundsSection = (props: { roundData: any[] }) => {
-  return (
-    <div className="mx-4 my-6">
-      <div className="flex justify-between items-center mb-1">
-        <div className="flex flex-col my-4">
-          <span className="text-grey-400 md:text-[24] text-[20px]">
-            All Active Rounds<span> ({props.roundData.length.toString()})</span>
-          </span>
-          <span className="text-grey-400 mb-4 mt-2">Rounds that are ongoing</span>
-        </div>
-
-        {/* todo: search/sort feature */}
         <div>
-          <div className="flex items-center justify-between">
-            {/* <SearchInput /> */}
-            <span className="ml-8">Sort by</span>
-            <select
-              className="border-0 cursor-pointer text-violet-400 underline"
-              placeholder="Select Filter"
-            >
-              <option>Round End (Earliest)</option>
-              <option>Round Start (Earliest)</option>
-            </select>
+          <span className="text-grey-400 text-2xl">
+            Apply Now
+          </span>
+          <div className="flex flex-row items-center justify-between">
+            <span className="text-grey-400 mb-4 mt-2">
+              Rounds currently accepting applications
+            </span>
+            <a className="cursor-pointer mr-1 text-violet-400 text-sm" href="/">
+              View All ( {props.roundData.length.toString()} )
+            </a>
           </div>
         </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
+          {props.roundData.map((round, index) => {
+            return <RoundCard key={index} round={round} />;
+          })}
+        </div>
       </div>
+    );
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
-        {props.roundData.map((round, index) => {
-          return <RoundCard key={index} round={round} />;
-        })}
+  const ActiveRoundsSection = (props: { roundData: any[] }) => {
+    return (
+      <div className="my-6">
+        <div className="flex justify-between items-center mb-1">
+          <div className="flex flex-col my-4">
+            <span className="text-grey-400 text-2xl">
+              All Active Rounds
+              ({props.roundData.length.toString()})
+            </span>
+            <span className="text-grey-400 text-sm mb-4 mt-2">
+              Rounds that are ongoing
+            </span>
+          </div>
+
+          <div className="flex">
+            <SearchInput />
+            <SortFilter />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
+          {props.roundData.map((round, index) => {
+            return <RoundCard key={index} round={round} />;
+          })}
+        </div>
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <>
+      <Navbar roundUrlPath={"/"} hideWalletInteraction={true}/>
+
+      <LandingBannerLogo className="w-full object-cover rounded-t" />
+
+      <div className="container mx-auto">
+
+        <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">Browse through active rounds</h1>
+
+        <ApplyNowSection roundData={mockRoundData} />
+
+        <ActiveRoundsSection roundData={mockRoundData} />
+      </div>
+    </>
   );
-};
 
+}
 export default LandingPage;
