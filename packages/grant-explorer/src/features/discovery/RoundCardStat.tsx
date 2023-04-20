@@ -1,11 +1,13 @@
 import { CHAINS } from "../api/utils";
 
-function RoundCardStat(props: {
+type RoundCardStatProps = {
   chainId: number;
   matchAmount: string;
   token: string;
   approvedApplicationsCount: number;
-}) {
+};
+
+function RoundCardStat(props: RoundCardStatProps) {
   return (
     <div className="flex justify-between mb-4">
       <div className="flex text-xs my-auto">

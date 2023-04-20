@@ -1,7 +1,11 @@
 import { RoundOverview } from "../api/rounds";
 import RoundCard from "./RoundCard";
 
-const ApplyNowSection = (props: { roundOverview: RoundOverview[] }) => {
+type ApplyNow = {
+  roundOverview: RoundOverview[];
+};
+
+const ApplyNowSection = (props: ApplyNow) => {
   return (
     <div>
       <div>

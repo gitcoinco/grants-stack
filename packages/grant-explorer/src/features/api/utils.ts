@@ -53,6 +53,7 @@ export const TokenAndCoinGeckoIds: Record<string, string> = {
   ETH: "ethereum",
 };
 
+// todo: reafactor this to use the getPayoutTokenOptions function, seems redundant
 export const payoutTokens = [
   {
     name: "DAI",
