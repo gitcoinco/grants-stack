@@ -172,9 +172,9 @@ const LandingPage = () => {
   const SortFilter = () => {
     return(
       <div>
-        <span className="ml-8">Sort by</span>
+        <span className="text-sm mx-auto md:ml-8">Sort by</span>
           <select
-            className="border-0 cursor-pointer text-violet-400 underline"
+            className="border-0 cursor-pointer text-violet-400 text-sm"
             placeholder="Select Filter"
           >
             <option>Round End (Earliest)</option>
@@ -188,13 +188,13 @@ const LandingPage = () => {
     return (
       <div>
         <div>
-          <span className="text-grey-400 text-2xl">
+          <p className="text-grey-400 text-2xl">
             Apply Now
-          </span>
-          <div className="flex flex-row items-center justify-between">
-            <span className="text-grey-400 mb-4 mt-2">
+          </p>
+          <div className="flex flex-col lg:flex-row justify-between">
+            <p className="text-grey-400 mb-2 lg:mb-4 mt-2">
               Rounds currently accepting applications
-            </span>
+            </p>
             <a className="cursor-pointer mr-1 text-violet-400 text-sm" href="/">
               View All ( {props.roundData.length.toString()} )
             </a>
@@ -212,18 +212,18 @@ const LandingPage = () => {
   const ActiveRoundsSection = (props: { roundData: any[] }) => {
     return (
       <div className="my-6">
-        <div className="flex justify-between items-center mb-1">
-          <div className="flex flex-col my-4">
-            <span className="text-grey-400 text-2xl">
+        <div className="flex flex-col lg:flex-row justify-between">
+          <div className="flex flex-col mt-4">
+            <p className="text-grey-400 text-2xl">
               All Active Rounds
               ({props.roundData.length.toString()})
-            </span>
-            <span className="text-grey-400 text-sm mb-4 mt-2">
+            </p>
+            <p className="text-grey-400 text-sm mb-4 mt-2">
               Rounds that are ongoing
-            </span>
+            </p>
           </div>
 
-          <div className="flex">
+          <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput />
             <SortFilter />
           </div>
@@ -242,9 +242,9 @@ const LandingPage = () => {
     <>
       <Navbar roundUrlPath={"/"} hideWalletInteraction={true}/>
 
-      <LandingBannerLogo className="w-full object-cover rounded-t" />
+      <LandingBannerLogo className="w-full h-auto object-cover rounded-t"/>
 
-      <div className="container mx-auto">
+      <div className="container px-4 md:px-0 md:mx-auto">
 
         <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">Browse through active rounds</h1>
 
