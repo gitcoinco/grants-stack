@@ -165,7 +165,7 @@ export const getApplicationsByRoundId = async (
         }
       `,
       chainId,
-      { roundId },
+      { roundId: roundId.toLowerCase() },
     );
 
     const grantApplications: GrantApplication[] = [];
@@ -197,7 +197,7 @@ export const getApplicationsByRoundId = async (
       });
     }
 
-    Object.keys(applicationsGroupedByChain).forEach(async (chain) => {
+    for (const chain of Object.keys(applicationsGroupedByChain)) {
       const owners = await fetchMultipleProjectOwners(
         client.getProvider({ chainId: Number(chain) }),
         Number(chain),
@@ -206,17 +206,20 @@ export const getApplicationsByRoundId = async (
       );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      applicationsGroupedByChain[chain].map((app: any, index: number) => {
+      for (let i = 0; i < applicationsGroupedByChain[chain].length; i++) {
+        const app = applicationsGroupedByChain[chain][i];
+        const owner = owners[i];
+
         const isValidMetadata = verifyApplicationMetadata(
           app.emittedProjectId,
-          owners[index],
+          owner,
           app.metadata,
         );
-        const isSenderOwner = owners[index]
+        const isSenderOwner = owner
           .map((owner: string) => owner.toLowerCase())
           .includes(app.sender.toLowerCase());
 
-        if (isValidMetadata && isSenderOwner)
+        if (isValidMetadata && isSenderOwner) {
           grantApplications.push({
             ...app.metadata.application,
             status: app.status,
@@ -224,18 +227,11 @@ export const getApplicationsByRoundId = async (
             id: app.id,
             projectsMetaPtr: app.projectsMetaPtr,
           });
-      });
-    });
+        }
+      }
+    }
 
-    const grantApplicationsFromContract =
-      res.data.roundApplications.length > 0
-        ? await updateApplicationStatusFromContract(
-            grantApplications,
-            res.data.roundApplications[0].round.projectsMetaPtr,
-          )
-        : grantApplications;
-
-    return grantApplicationsFromContract;
+    return grantApplications;
   } catch (error) {
     console.error("getApplicationsByRoundId", error);
     throw error;
@@ -375,8 +371,6 @@ export const updateApplicationStatuses = async (
     roundImplementationContract.abi,
     signer,
   );
-
-  console.log("Updating application statuses...", statuses);
 
   const tx = await roundImplementation.setApplicationStatuses(statuses);
 
