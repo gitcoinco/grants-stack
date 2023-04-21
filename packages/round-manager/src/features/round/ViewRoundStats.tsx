@@ -53,7 +53,6 @@ export default function ViewRoundStats() {
   const { data: matches } = useRoundMatchingFunds(roundId);
 
   const matchAmountUSD = round?.matchAmountUSD;
-  console.log(round);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
