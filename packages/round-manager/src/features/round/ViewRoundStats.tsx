@@ -52,8 +52,8 @@ export default function ViewRoundStats() {
 
   const { data: matches } = useRoundMatchingFunds(roundId);
 
-  const matchAmount = round?.matchAmount;
   const matchAmountUSD = round?.matchAmountUSD;
+  console.log(round);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -73,10 +73,7 @@ export default function ViewRoundStats() {
           title={"Est. Donations Made"}
         />
         <StatsCard
-          text={
-            matchAmount &&
-            Number(utils.formatEther(matchAmount.toString())).toFixed(2)
-          }
+          text={matchAmountUSD && matchAmountUSD.toFixed(2)}
           title={"Matching Funds Available"}
         />
         <StatsCard
@@ -171,7 +168,7 @@ type StatsCardProps = {
 function StatsCard(props: StatsCardProps) {
   return (
     <div
-      className={`p-4 border rounded border ${
+      className={`p-4 border rounded ${
         props.grayBorder ? "border-grey-100" : "border-violet-400"
       } flex flex-col justify-center`}
     >
