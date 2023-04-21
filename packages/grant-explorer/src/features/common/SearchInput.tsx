@@ -5,7 +5,7 @@ import { ReactComponent as Search } from "../../assets/search-grey.svg";
 export type SortFilterDropdownProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: any;
-}
+};
 
 export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
   return (

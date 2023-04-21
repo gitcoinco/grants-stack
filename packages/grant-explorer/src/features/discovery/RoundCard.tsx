@@ -16,7 +16,6 @@ type RoundCardProps = {
 };
 
 const RoundCard = (props: RoundCardProps) => {
-
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
   const payoutTokens = getPayoutTokenOptions(props.round.chainId);
   const payoutToken = payoutTokens.find(

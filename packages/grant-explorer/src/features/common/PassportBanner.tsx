@@ -29,6 +29,7 @@ export default function PassportBanner(props: {
     PassportState.LOADING
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { round } = useRoundById(chainId!, roundId!);
 
   useEffect(() => {
@@ -161,34 +162,6 @@ export default function PassportBanner(props: {
     </>
   );
 
-  const InvalidPassportButton = () => (
-    <>
-      <button
-        className="ml-3 font-medium text-sm underline mr-1.5"
-        data-testid="visit-passport-button"
-        onClick={() =>
-          navigate(`/round/${chainId}/${roundId}/passport/connect`)
-        }
-      >
-        Please configure your Gitcoin Passport
-      </button>
-      <svg
-        width="16"
-        height="14"
-        viewBox="0 0 16 14"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8.29289 0.292893C8.68342 -0.0976311 9.31658 -0.0976311 9.70711 0.292893L15.7071 6.29289C16.0976 6.68342 16.0976 7.31658 15.7071 7.70711L9.70711 13.7071C9.31658 14.0976 8.68342 14.0976 8.29289 13.7071C7.90237 13.3166 7.90237 12.6834 8.29289 12.2929L12.5858 8L1 8C0.447716 8 0 7.55229 0 7C0 6.44772 0.447716 6 1 6H12.5858L8.29289 1.70711C7.90237 1.31658 7.90237 0.683418 8.29289 0.292893Z"
-          fill="#0E0333"
-        />
-      </svg>
-    </>
-  );
-
   const AlertIcon = () => {
     return (
       <div className="flex justify-center items-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
@@ -205,6 +178,7 @@ export default function PassportBanner(props: {
       color: "bg-purple-200",
       testId: "wallet-not-connected",
       body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         round!.roundEndTime
       )}.`,
       button: <ConnectWalletButton />,
@@ -223,6 +197,7 @@ export default function PassportBanner(props: {
       color: "bg-yelllow-100",
       testId: "match-ineligible",
       body: `Your Gitcoin Passport is not currently eligible for donation matching. Please update by ${getUTCDateTime(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         round!.roundEndTime
       )}.`,
       button: <UpdateScoreButton />,
@@ -239,6 +214,7 @@ export default function PassportBanner(props: {
       color: "bg-yellow-100",
       testId: "invalid-passport",
       body: `You don't have a Gitcoin Passport. Please create one by ${getUTCDateTime(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         round!.roundEndTime
       )}.`,
       button: <CreatePassportButton />,

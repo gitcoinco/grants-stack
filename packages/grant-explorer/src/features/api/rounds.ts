@@ -21,13 +21,15 @@ export type RoundOverview = {
   matchAmount: string;
   token: string;
   roundMetadata?: RoundMetadata;
-}
+};
 
-async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<RoundOverview[]> {
-
+async function fetchRoundsByTimestamp(
+  query: string,
+  chainId: string
+): Promise<RoundOverview[]> {
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-    const currentTimestamp = (Math.floor(Date.now() / 1000)).toString();
+    const currentTimestamp = Math.floor(Date.now() / 1000).toString();
 
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
@@ -41,7 +43,6 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
 
     const rounds: RoundOverview[] = res.data.rounds;
     rounds.forEach(async (round: RoundOverview, index) => {
-
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
         round.roundMetaPtr.pointer
       );
@@ -50,7 +51,6 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
     });
 
     return rounds;
-
   } catch (error) {
     console.log("error: fetchRoundsByTimestamp", error);
     return [];
@@ -59,14 +59,17 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
 
 function getActiveChainIds() {
   const activeChainIds: string[] = [];
-  const isProduction = process.env.REACT_APP_ENV === 'production';
+  const isProduction = process.env.REACT_APP_ENV === "production";
 
   for (const chainId of Object.values(ChainId)) {
-    if (isProduction && [
-      ChainId.GOERLI_CHAIN_ID,
-      ChainId.FANTOM_MAINNET_CHAIN_ID,
-      ChainId.FANTOM_TESTNET_CHAIN_ID
-    ].includes(chainId as ChainId)) {
+    if (
+      isProduction &&
+      [
+        ChainId.GOERLI_CHAIN_ID,
+        ChainId.FANTOM_MAINNET_CHAIN_ID,
+        ChainId.FANTOM_TESTNET_CHAIN_ID,
+      ].includes(chainId as ChainId)
+    ) {
       continue;
     }
     activeChainIds.push(chainId.toString());
@@ -75,10 +78,12 @@ function getActiveChainIds() {
   return activeChainIds;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getRoundsInApplicationPhase(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
+export async function getRoundsInApplicationPhase(): Promise<{
+  isLoading: boolean;
+  error: unknown;
+  rounds: RoundOverview[];
+}> {
   try {
-
     const chainIds = getActiveChainIds();
 
     const rounds: RoundOverview[] = [];
@@ -120,12 +125,15 @@ export async function getRoundsInApplicationPhase(): Promise<{ isLoading: boolea
       isLoading: false,
       error,
       rounds: [],
-    }
+    };
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getActiveRounds(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
+export async function getActiveRounds(): Promise<{
+  isLoading: boolean;
+  error: unknown;
+  rounds: RoundOverview[];
+}> {
   try {
     let isLoading = true;
     const chainIds = getActiveChainIds();
@@ -171,6 +179,6 @@ export async function getActiveRounds(): Promise<{ isLoading: boolean; error: an
       isLoading: false,
       error,
       rounds: [],
-    }
+    };
   }
 }
