@@ -152,6 +152,7 @@ const LandingPage = () => {
       console.log("Not being set", activeRounds.length);
     };
     fetchActiveRounds();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch rounds in application phase
@@ -164,7 +165,7 @@ const LandingPage = () => {
 
   return (
     <>
-      <Navbar roundUrlPath={"/"} hideWalletInteraction={true} />
+      <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
 
       <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
 
