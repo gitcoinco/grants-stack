@@ -340,3 +340,13 @@ export const getUTCTime = (date: Date): string => {
 
   return utcTime.join(":") + " UTC";
 };
+
+export const getUTCDate = (date: Date): string => {
+  const utcDate = [
+    padSingleDigitNumberWithZero(date.getUTCDate()),
+    padSingleDigitNumberWithZero(date.getUTCMonth() + 1),
+    padSingleDigitNumberWithZero(date.getUTCFullYear()),
+  ];
+
+  return utcDate.join("/");
+};

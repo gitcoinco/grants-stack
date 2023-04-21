@@ -1,8 +1,9 @@
 import { Tab } from "@headlessui/react";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
-import { getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
+import { payoutTokens } from "../api/utils";
 import { horizontalTabStyles } from "../common/Utils";
+import { getUTCDate, getUTCTime } from "common";
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
