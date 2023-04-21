@@ -351,6 +351,7 @@ export const getUTCDate = (date: Date): string => {
   return utcDate.join("/");
 };
 
+
 export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };

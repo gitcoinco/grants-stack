@@ -1,42 +1,12 @@
-import useSWR from "swr";
-import { useWallet } from "../common/Auth";
-import { Client, Match } from "allo-indexer-client";
+import { Match } from "allo-indexer-client";
 import { useParams } from "react-router-dom";
 import { utils } from "ethers";
 import { useMemo } from "react";
-
-function useAlloIndexerClient(): Client {
-  const { chain } = useWallet();
-
-  return useMemo(() => {
-    return new Client(
-      fetch.bind(window),
-      process.env.REACT_APP_ALLO_API_URL ?? "",
-      chain.id
-    );
-  }, [chain.id]);
-}
-
-function useRound(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/stats"], ([roundId]) => {
-    return client.getRoundBy("id", roundId);
-  });
-}
-
-function useRoundApplications(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/applications"], ([roundId]) => {
-    return client.getRoundApplications(roundId);
-  });
-}
-
-function useRoundMatchingFunds(roundId: string) {
-  const client = useAlloIndexerClient();
-  return useSWR([roundId, "/matches"], ([roundId]) => {
-    return client.getRoundMatchingFunds(roundId);
-  });
-}
+import {
+  useRound,
+  useRoundApplications,
+  useRoundMatchingFunds,
+} from "@/src/hooks";
 
 export default function ViewRoundStats() {
   const { id } = useParams();

@@ -28,7 +28,7 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { classNames } from "common";
 
-export default function ViewRoundResults(props: {
+export default function ViewRoundResults_old(props: {
   round: Round | undefined;
   chainId: number;
   roundId: string | undefined;
@@ -98,6 +98,7 @@ function InformationContent(props: {
     isError,
   } = useFetchMatchingDistributionFromContract(props.roundId);
 
+  /* TODO: this doesn't have to be state, can be just a simple variable. */
   useEffect(() => {
     if (distributionMetaPtr !== "") {
       setUseFetchDistributionFromContract(true);
@@ -112,6 +113,7 @@ function InformationContent(props: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     props.roundId!
   );
+
   const matchingData: MatchingStatsData[] | undefined = data?.map((data) => {
     const project = props.round?.approvedProjects?.filter(
       (project) =>
@@ -162,6 +164,7 @@ function InformationContent(props: {
   );
 }
 
+/*TODO: check if this can be merged with the other ErrorMessage*/
 function ErrorMessage() {
   return (
     <div className="flex flex-center flex-col mx-auto h-screen items-center text-center mt-32">
@@ -335,6 +338,7 @@ function InformationTable(props: {
         </table>
       </div>
 
+      {/* TODO: use the condition && <Component /> pattern instead of ternary operator */}
       {!props.isCustom ? (
         <div className="relative mt-4 mb-8 pb-8">
           <Button
@@ -351,6 +355,7 @@ function InformationTable(props: {
           </Button>
         </div>
       ) : null}
+      {/* TODO: see above */}
       {payoutReady ? (
         <>
           <div className="flex justify-end">
@@ -594,7 +599,104 @@ function FinalizeRound(props: {
   );
 }
 
-function UploadJSON(props: {
+function CustomOrDefaultRadioGroup(props: {
+  useDefault: boolean;
+  setUseDefault: (value: boolean) => void;
+}) {
+  return (
+    <RadioGroup
+      value={props.useDefault}
+      onChange={props.setUseDefault}
+      data-testid="custom-or-default-test-id"
+    >
+      <RadioGroup.Label>
+        Use default finalized matching stats or upload your own?
+      </RadioGroup.Label>
+      <div>
+        <RadioGroup.Option value={true} data-testid="default-radio-test-id">
+          {({ checked, active }) => (
+            <span className="flex items-center text-sm pt-4">
+              <span
+                className={classNames(
+                  checked
+                    ? "bg-indigo-600 border-transparent"
+                    : "bg-white border-gray-300",
+                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                  "h-4 w-4 rounded-full border flex items-center justify-center"
+                )}
+                aria-hidden="true"
+              >
+                <span className="rounded-full bg-white w-1.5 h-1.5" />
+              </span>
+              <RadioGroup.Label
+                as="span"
+                className="ml-3 block text-sm text-gray-700"
+              >
+                Use Default
+              </RadioGroup.Label>
+            </span>
+          )}
+        </RadioGroup.Option>
+        <RadioGroup.Option value={false} data-testid="custom-radio-test-id">
+          {({ checked, active }) => (
+            <span className="flex items-center text-sm pt-4">
+              <span
+                className={classNames(
+                  checked
+                    ? "bg-indigo-600 border-transparent"
+                    : "bg-white border-gray-300",
+                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                  "h-4 w-4 rounded-full border flex items-center justify-center"
+                )}
+                aria-hidden="true"
+              >
+                <span className="rounded-full bg-white w-1.5 h-1.5" />
+              </span>
+              <RadioGroup.Label
+                as="span"
+                className="ml-3 block text-sm text-gray-700"
+              >
+                Upload my own JSON
+              </RadioGroup.Label>
+            </span>
+          )}
+        </RadioGroup.Option>
+      </div>
+    </RadioGroup>
+  );
+}
+
+function InfoModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        You have only one chance to finalize distribution for your round.
+        <br />
+        Please make sure that the final distribution is correct.
+        <br />
+        You will not be able to make changes after finalizing.
+      </p>
+    </div>
+  );
+}
+
+function ReadyForPayoutModalBody() {
+  return (
+    <div className="text-sm text-grey-400 gap-16">
+      <p className="text-sm">
+        Upon finalizing round results, they'll be permanently locked in the
+        smart contract, ensuring distribution integrity on the blockchain.
+      </p>
+
+      <p className="text-sm mt-4">
+        Please verify results before confirming, as you'll acknowledge their
+        accuracy and accept the permanent locking of the distribution.
+      </p>
+    </div>
+  );
+}
+
+export function UploadJSON(props: {
   matchingData: MatchingStatsData[] | undefined;
   setCustomMatchingData: (
     customMatchingStats: MatchingStatsData[] | undefined
@@ -761,103 +863,6 @@ function UploadJSON(props: {
           </span>
         </p>
       )}
-    </div>
-  );
-}
-
-function CustomOrDefaultRadioGroup(props: {
-  useDefault: boolean;
-  setUseDefault: (value: boolean) => void;
-}) {
-  return (
-    <RadioGroup
-      value={props.useDefault}
-      onChange={props.setUseDefault}
-      data-testid="custom-or-default-test-id"
-    >
-      <RadioGroup.Label>
-        Use default finalized matching stats or upload your own?
-      </RadioGroup.Label>
-      <div>
-        <RadioGroup.Option value={true} data-testid="default-radio-test-id">
-          {({ checked, active }) => (
-            <span className="flex items-center text-sm pt-4">
-              <span
-                className={classNames(
-                  checked
-                    ? "bg-indigo-600 border-transparent"
-                    : "bg-white border-gray-300",
-                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                  "h-4 w-4 rounded-full border flex items-center justify-center"
-                )}
-                aria-hidden="true"
-              >
-                <span className="rounded-full bg-white w-1.5 h-1.5" />
-              </span>
-              <RadioGroup.Label
-                as="span"
-                className="ml-3 block text-sm text-gray-700"
-              >
-                Use Default
-              </RadioGroup.Label>
-            </span>
-          )}
-        </RadioGroup.Option>
-        <RadioGroup.Option value={false} data-testid="custom-radio-test-id">
-          {({ checked, active }) => (
-            <span className="flex items-center text-sm pt-4">
-              <span
-                className={classNames(
-                  checked
-                    ? "bg-indigo-600 border-transparent"
-                    : "bg-white border-gray-300",
-                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
-                  "h-4 w-4 rounded-full border flex items-center justify-center"
-                )}
-                aria-hidden="true"
-              >
-                <span className="rounded-full bg-white w-1.5 h-1.5" />
-              </span>
-              <RadioGroup.Label
-                as="span"
-                className="ml-3 block text-sm text-gray-700"
-              >
-                Upload my own JSON
-              </RadioGroup.Label>
-            </span>
-          )}
-        </RadioGroup.Option>
-      </div>
-    </RadioGroup>
-  );
-}
-
-function InfoModalBody() {
-  return (
-    <div className="text-sm text-grey-400 gap-16">
-      <p className="text-sm">
-        You have only one chance to finalize distribution for your round.
-        <br />
-        Please make sure that the final distribution is correct.
-        <br />
-        You will not be able to make changes after finalizing.
-      </p>
-    </div>
-  );
-}
-
-function ReadyForPayoutModalBody() {
-  return (
-    <div className="text-sm text-grey-400 gap-16">
-      <p className="text-sm">
-        Upon finalizing round results, they'll be permanently locked in the
-        smart contract, ensuring distribution integrity on the blockchain.
-      </p>
-
-      <p className="text-sm mt-4">
-        Please verify results before confirming, as you'll acknowledge their
-        accuracy and accept the permanent locking of the distribution.
-      </p>
     </div>
   );
 }

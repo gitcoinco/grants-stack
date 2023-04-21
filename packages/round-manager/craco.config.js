@@ -30,6 +30,11 @@ if (process.env.REACT_APP_ENV === "production") {
 
 module.exports = {
   webpack: {
+    /* This is needed for paths in tsconfig.json to work, allowing imports like
+     * @/src/something.ts */
+    alias: {
+      "@": path.resolve(__dirname, "."),
+    },
     configure: {
       devtool: "source-map", // Source map generation must be turned on
       module: {
