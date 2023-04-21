@@ -33,7 +33,7 @@ import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
-import { tabStyles } from "../common/Utils";
+import { horizontalTabStyles, verticalTabStyles } from "../common/Utils";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
@@ -132,7 +132,7 @@ export default function ViewRoundPage() {
                       className="flex flex-col h-max"
                       data-testid="side-nav-bar"
                     >
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -151,7 +151,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -171,7 +171,7 @@ export default function ViewRoundPage() {
                         )}
                       </Tab>
 
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -188,7 +188,7 @@ export default function ViewRoundPage() {
                         )}
                       </Tab>
 
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -204,7 +204,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -223,7 +223,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -242,7 +242,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -346,11 +346,6 @@ function GrantApplications(props: {
   font-normal
 `;
 
-  const tabStyles = (selected: boolean) =>
-    selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
-      : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
-
   return (
     <div>
       {props.isRoundsFetched && (
@@ -360,7 +355,7 @@ function GrantApplications(props: {
               <div className="justify-end grow relative">
                 <Tab.List className="border-b mb-6 flex items-center justify-between">
                   <div className="space-x-8">
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Received
@@ -375,7 +370,7 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Approved
@@ -390,7 +385,7 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Rejected

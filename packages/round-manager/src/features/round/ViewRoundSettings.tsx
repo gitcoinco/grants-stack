@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import { useNetwork } from "wagmi";
 import { Round } from "../api/types";
 import { getUTCDate, getUTCTime, payoutTokens } from "../api/utils";
-import { tabStyles } from "../common/Utils";
+import { horizontalTabStyles } from "../common/Utils";
 
 export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const { round } = props;
@@ -13,7 +13,7 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
   const roundStartDateTime = round.roundStartTime
     ? `${getUTCDate(round.roundStartTime)} ${getUTCTime(
         round.roundStartTime
-      )} UTC`
+      )}`
     : "...";
 
   return (
@@ -29,21 +29,21 @@ export default function ViewRoundSettings(props: { round: Round | undefined }) {
         <div className="justify-end grow relative">
           <Tab.List className="border-b mb-6 flex items-center justify-between">
             <div className="space-x-8">
-              <Tab className={({ selected }) => tabStyles(selected)}>
+              <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                 {({ selected }) => (
                   <div className={selected ? "text-violet-500" : ""}>
                     Round Details
                   </div>
                 )}
               </Tab>
-              <Tab className={({ selected }) => tabStyles(selected)}>
+              <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                 {({ selected }) => (
                   <div className={selected ? "text-violet-500" : ""}>
                     Round & Application Period
                   </div>
                 )}
               </Tab>
-              <Tab className={({ selected }) => tabStyles(selected)}>
+              <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                 {({ selected }) => (
                   <div className={selected ? "text-violet-500" : ""}>
                     Funding Settings
@@ -88,7 +88,7 @@ function DetailsPage(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.name}
               disabled
             />
@@ -105,7 +105,7 @@ function DetailsPage(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={chain?.name}
               disabled
             />
@@ -122,7 +122,7 @@ function DetailsPage(props: { round: Round }) {
       <div className={"leading-8 font-normal text-grey-400"}>
         <input
           type="text"
-          className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+          className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
           defaultValue={round.roundMetadata.eligibility?.description}
           disabled
         />
@@ -142,7 +142,7 @@ function DetailsPage(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.support?.type}
               disabled
             />
@@ -159,7 +159,7 @@ function DetailsPage(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={round.roundMetadata.support?.info}
               disabled
             />
@@ -182,7 +182,7 @@ function DetailsPage(props: { round: Round }) {
             <div className={"leading-8 font-normal text-grey-400"}>
               <input
                 type="text"
-                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+                className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
                 defaultValue={req.requirement}
                 disabled
               />
@@ -213,7 +213,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={`${getUTCDate(
                 round.applicationsStartTime
               )} ${getUTCTime(round.applicationsStartTime)}`}
@@ -232,7 +232,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={`${getUTCDate(
                 round.applicationsEndTime
               )} ${getUTCTime(round.applicationsEndTime)}`}
@@ -252,7 +252,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={`${getUTCDate(round.roundStartTime)} ${getUTCTime(
                 round.roundStartTime
               )}`}
@@ -271,7 +271,7 @@ function RoundApplicationPeriod(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={`${getUTCDate(round.roundEndTime)} ${getUTCTime(
                 round.roundEndTime
               )}`}
@@ -316,7 +316,7 @@ function Funding(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={matchingFundPayoutToken.name}
               disabled
             />
@@ -387,7 +387,7 @@ function Funding(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={
                 round.roundMetadata.quadraticFundingConfig.matchingCapAmount ??
                 0
@@ -453,7 +453,7 @@ function Funding(props: { round: Round }) {
           <div className={"leading-8 font-normal text-grey-400"}>
             <input
               type="text"
-              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
+              className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50"
               defaultValue={
                 round.roundMetadata.quadraticFundingConfig
                   .minDonationThresholdAmount ?? 0
