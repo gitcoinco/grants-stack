@@ -34,7 +34,7 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
       { currentTimestamp }
     );
 
-    if(!res.data || !res.data.rounds) {
+    if (!res.data || !res.data.rounds) {
       return [];
     }
 
@@ -122,10 +122,10 @@ export async function getActiveRounds(): Promise<RoundOverview[]> {
       }
     `;
 
-    chainIds.forEach(async chainId => {
-      const roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
+    for (let i = 0; i < chainIds.length; i++) {
+      const roundsForChainId = await fetchRoundsByTimestamp(query, chainIds[i]);
       rounds.push(...roundsForChainId);
-    })
+    }
 
     return rounds;
   } catch (error) {
