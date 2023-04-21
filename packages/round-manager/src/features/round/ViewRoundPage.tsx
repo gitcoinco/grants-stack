@@ -1,6 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Tab } from "@headlessui/react";
 import {
+  AdjustmentsIcon,
   ArrowCircleRightIcon,
   CalendarIcon,
   ChartBarIcon,
@@ -32,6 +33,7 @@ import Footer from "../common/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { Spinner } from "../common/Spinner";
+import { horizontalTabStyles, verticalTabStyles } from "../common/Utils";
 import ApplicationsApproved from "./ApplicationsApproved";
 import ApplicationsReceived from "./ApplicationsReceived";
 import ApplicationsRejected from "./ApplicationsRejected";
@@ -39,6 +41,7 @@ import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
 import ViewRoundResults from "./ViewRoundResults";
+import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 
 export default function ViewRoundPage() {
@@ -56,11 +59,6 @@ export default function ViewRoundPage() {
 
   const [roundExists, setRoundExists] = useState(true);
   const [hasAccess, setHasAccess] = useState(true);
-
-  const tabStyles = (selected: boolean) =>
-    selected
-      ? "whitespace-nowrap py-4 px-1 text-sm outline-none"
-      : "text-grey-400 hover:text-gray-700 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
   useEffect(() => {
     if (isRoundsFetched) {
@@ -134,7 +132,7 @@ export default function ViewRoundPage() {
                       className="flex flex-col h-max"
                       data-testid="side-nav-bar"
                     >
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -153,7 +151,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -172,7 +170,25 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <AdjustmentsIcon className="h-6 w-6 mr-2" />
+                            <span className="mt-0.5" data-testid="round-stats">
+                              Round Settings
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -188,7 +204,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -207,7 +223,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -226,7 +242,7 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
-                      <Tab className={({ selected }) => tabStyles(selected)}>
+                      <Tab className={({ selected }) => verticalTabStyles(selected)}>
                         {({ selected }) => (
                           <div
                             className={
@@ -259,6 +275,9 @@ export default function ViewRoundPage() {
                     </Tab.Panel>
                     <Tab.Panel>
                       <FundContract round={round} roundId={id} />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewRoundSettings round={round} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewRoundStats />
@@ -327,11 +346,6 @@ function GrantApplications(props: {
   font-normal
 `;
 
-  const tabStyles = (selected: boolean) =>
-    selected
-      ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
-      : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
-
   return (
     <div>
       {props.isRoundsFetched && (
@@ -341,7 +355,7 @@ function GrantApplications(props: {
               <div className="justify-end grow relative">
                 <Tab.List className="border-b mb-6 flex items-center justify-between">
                   <div className="space-x-8">
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Received
@@ -356,7 +370,7 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Approved
@@ -371,7 +385,7 @@ function GrantApplications(props: {
                         </div>
                       )}
                     </Tab>
-                    <Tab className={({ selected }) => tabStyles(selected)}>
+                    <Tab className={({ selected }) => horizontalTabStyles(selected)}>
                       {({ selected }) => (
                         <div className={selected ? "text-violet-500" : ""}>
                           Rejected
