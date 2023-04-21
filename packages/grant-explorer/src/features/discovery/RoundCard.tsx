@@ -34,7 +34,7 @@ const RoundCard = (props: RoundCardProps) => {
     <BasicCard className="w-full">
       <Link to={`/round/${props.round.id}`} data-testid="round-card">
         <CardHeader>
-          <RoundBanner />
+          <RoundBanner roundId={props.round.id}/>
         </CardHeader>
 
         <CardContent>

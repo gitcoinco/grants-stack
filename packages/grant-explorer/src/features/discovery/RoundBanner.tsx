@@ -1,17 +1,36 @@
-function RoundBanner() {
-    // todo: update to store in repo, these expire.
-    const BANNER_IMAGE = "https://s3-alpha-sig.figma.com/img/c71c/562a/94d2299f9156d7042db50416393a5b35?Expires=1682899200&Signature=B6jQh~BCXJo5H5Vx6OOP9nrsz9AuuH1y9xwtS36e2iO5j-2MBcSO4o2Ld45Eam1kh4wYxoVqEtDwB9Z0L3z69Xyk79vHw-SxVhTiSJTWM6RHR-ud1MSvZGGz-EiYr05TF7FeCKauQb3hOvtyBLs-w5kUpcThcTPBR8Lgq7nPHCQAPZJUnEnDnu7zwj-5qK64A6bVqHtvl8upKV1aFeDodi5W6dN8T-O~~B1bsRzWsLnsdowQfxgeUZ8ZWkg803YRV8XRMUbAlXN4~GZV2DV3SbJZDkQqB~o~PNPcERinOAz7BGrNK0IEykFTONeqhlrZGkADuVhdW08QQ5dVbyhPYw__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4"
-  
-    return (
-      <div>
-        <img
-          className="bg-black h-[140px] w-full object-cover rounded-t"
-          src={BANNER_IMAGE}
-          alt="Round Banner"
-        />
-      </div>
-    );
-  }
+import { ethers } from "ethers";
+import { ReactComponent as Stock1 } from "../../assets/landing/stock1.svg";
+import { ReactComponent as Stock2 } from "../../assets/landing/stock2.svg";
+import { ReactComponent as Stock3 } from "../../assets/landing/stock3.svg";
+import { ReactComponent as Stock4 } from "../../assets/landing/stock4.svg";
+import { ReactComponent as Stock5 } from "../../assets/landing/stock5.svg";
+import { ReactComponent as Stock6 } from "../../assets/landing/stock6.svg";
+import { ReactComponent as Stock7 } from "../../assets/landing/stock7.svg";
 
-  export default RoundBanner;
-  
+function generateRandomNumber(address: string) {
+  const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(address));
+  const randomByte = parseInt(hash.slice(2, 4), 16); // get the second byte of the hash
+  const randomNumber = (randomByte % 7) + 1;
+  return randomNumber;
+}
+
+function RoundBanner(props: {
+  roundId: string;
+}) {
+
+  const stockId = generateRandomNumber(props.roundId);
+
+  return (
+    <div>
+      {stockId === 1 && <Stock1 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 2 && <Stock2 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 3 && <Stock3 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 4 && <Stock4 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 5 && <Stock5 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 6 && <Stock6 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+      {stockId === 7 && <Stock7 className="bg-black h-[140px] w-full object-cover rounded-t"/>}
+    </div>
+  );
+}
+
+export default RoundBanner;

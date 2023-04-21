@@ -26,7 +26,7 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
 
   try {
     const chainIdEnumValue = ChainId[chainId as keyof typeof ChainId];
-    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const currentTimestamp = (Math.floor(Date.now() / 1000)).toString();
 
     const res: GetRoundOverviewResult = await graphql_fetch(
       query,
@@ -34,8 +34,12 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
       { currentTimestamp }
     );
 
+    if(!res.data || !res.data.rounds) {
+      return [];
+    }
+
     const rounds: RoundOverview[] = res.data.rounds;
-    rounds.forEach(async (round, index) => {
+    rounds.forEach(async (round: RoundOverview, index) => {
 
       const roundMetadata: RoundMetadata = await fetchFromIPFS(
         round.roundMetaPtr.pointer
@@ -59,10 +63,10 @@ export async function getRoundsInApplicationPhase(): Promise<RoundOverview[]> {
     const rounds: RoundOverview[] = [];
 
     const query = `
-      query GetRoundsInApplicationPhase($current_timestamp: Number) {
+      query GetRoundsInApplicationPhase($currentTimestamp: String) {
         rounds(where: {
-          applicationsStartTime_lt: $current_timestamp 
-          applicationsEndTime_gt: $current_timestamp
+          applicationsStartTime_lt: $currentTimestamp
+          applicationsEndTime_gt: $currentTimestamp
         }) {
           id
           roundMetaPtr {
@@ -98,10 +102,10 @@ export async function getActiveRounds(): Promise<RoundOverview[]> {
     const rounds: RoundOverview[] = [];
 
     const query = `
-      query GetRoundsInApplicationPhase($current_timestamp: Number) {
+      query GetRoundsInApplicationPhase($currentTimestamp: String) {
         rounds(where: {
-          roundStartTime_lt: $current_timestamp 
-          roundEndTime_gt: $current_timestamp
+          roundStartTime_lt: $currentTimestamp
+          roundEndTime_gt: $currentTimestamp
         }) {
           id
           roundMetaPtr {

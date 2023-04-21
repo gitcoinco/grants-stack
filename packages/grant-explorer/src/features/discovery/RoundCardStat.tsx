@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { CHAINS } from "../api/utils";
 
 type RoundCardStatProps = {
@@ -8,6 +9,10 @@ type RoundCardStatProps = {
 };
 
 function RoundCardStat(props: RoundCardStatProps) {
+
+  const matchAmount = BigNumber.from(props.matchAmount);
+  const matchAmountNormalized = matchAmount.div('1000000000000000000');
+
   return (
     <div className="flex justify-between mb-4">
       <div className="flex text-xs my-auto">
@@ -16,7 +21,7 @@ function RoundCardStat(props: RoundCardStatProps) {
         </span>
         <span className="mx-1">|</span>
         <span className="mr-1" data-testid="match-amount">
-          {props.matchAmount}
+          {matchAmountNormalized.toString()}
         </span>
         <span data-testid="match-token">{props.token} match amount</span>
       </div>
