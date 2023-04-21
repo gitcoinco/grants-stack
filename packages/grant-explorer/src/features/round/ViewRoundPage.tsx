@@ -174,7 +174,7 @@ function AfterRoundStart(props: {
         roundUrlPath={`/round/${chainId}/${roundId}`}
         isBeforeRoundEndDate={props.isBeforeRoundEndDate}
       />
-      {props.isAfterRoundEndDate && (
+      {props.isBeforeRoundEndDate && (
         <PassportBanner chainId={chainId} roundId={roundId} />
       )}
       {props.isAfterRoundEndDate && (
@@ -247,7 +247,7 @@ function AfterRoundStart(props: {
 const ProjectList = (props: {
   projects: Project[];
   roundRoutePath: string;
-  isBeforeRoundEndDate?: boolean
+  isBeforeRoundEndDate?: boolean;
 }): JSX.Element => {
   const { projects, roundRoutePath } = props;
 
@@ -269,8 +269,8 @@ const ProjectList = (props: {
 
 function ProjectCard(props: {
   project: Project;
-  roundRoutePath: string,
-  isBeforeRoundEndDate?: boolean
+  roundRoutePath: string;
+  isBeforeRoundEndDate?: boolean;
 }) {
   const { project, roundRoutePath } = props;
   const projectRecipient = project.recipient.slice(0, 6);
@@ -311,7 +311,7 @@ function ProjectCard(props: {
       </Link>
       <CardFooter className="bg-white border-t">
         <CardContent className="text-xs mt-3">
-          { props.isBeforeRoundEndDate &&
+          {props.isBeforeRoundEndDate && (
             <CartButton
               project={project}
               isAlreadyInCart={isAlreadyInCart}
@@ -322,7 +322,7 @@ function ProjectCard(props: {
                 handleAddProjectsToCart([project]);
               }}
             />
-          }
+          )}
         </CardContent>
       </CardFooter>
     </BasicCard>
