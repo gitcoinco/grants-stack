@@ -1,17 +1,15 @@
-import {
-  ArrowTopRightOnSquareIcon,
-  CheckBadgeIcon,
-  ExclamationCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
+import { getUTCDateTime } from "common";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ReactComponent as PassportLogo } from "../../assets/passport-logo.svg";
+import { useRoundById } from "../../context/RoundContext";
 import {
-  fetchPassport,
   PassportResponse,
   PassportState,
+  fetchPassport,
 } from "../api/passport";
 
 export default function PassportBanner(props: {
@@ -30,6 +28,9 @@ export default function PassportBanner(props: {
   const [passportState, setPassportState] = useState<PassportState>(
     PassportState.LOADING
   );
+
+  const { round } = useRoundById(chainId!, roundId!);
+
   useEffect(() => {
     setPassportState(PassportState.LOADING);
 
@@ -101,7 +102,41 @@ export default function PassportBanner(props: {
         View score
       </button>
       <div className="pl-1">
-        <ArrowTopRightOnSquareIcon className="h-4 w-4 relative text-gray-900 items-center" />
+        <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
+      </div>
+    </>
+  );
+
+  const UpdateScoreButton = () => (
+    <>
+      <button
+        className="ml-3 font-medium text-sm underline"
+        data-testid="view-score-button"
+        onClick={() =>
+          navigate(`/round/${chainId}/${roundId}/passport/connect`)
+        }
+      >
+        Update score
+      </button>
+      <div className="pl-1">
+        <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
+      </div>
+    </>
+  );
+
+  const CreatePassportButton = () => (
+    <>
+      <button
+        className="ml-3 font-medium text-sm underline"
+        data-testid="view-score-button"
+        onClick={() =>
+          navigate(`/round/${chainId}/${roundId}/passport/connect`)
+        }
+      >
+        Create your Gitcoin Passport
+      </button>
+      <div className="pl-1">
+        <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
       </div>
     </>
   );
@@ -120,6 +155,9 @@ export default function PassportBanner(props: {
       >
         Connect your wallet to verify
       </button>
+      <div className="pl-1">
+        <ArrowRightIcon className="h-4 w-4 relative text-gray-900 items-center" />
+      </div>
     </>
   );
 
@@ -151,6 +189,14 @@ export default function PassportBanner(props: {
     </>
   );
 
+  const AlertIcon = () => {
+    return (
+      <div className="flex justify-center items-center h-7 w-7 relative text-white items-center rounded-full bg-yellow-400">
+        <ExclamationCircleIcon className="fill-yellow-400 stroke-yellow-100 h-4 w-4 relative text-white items-center rounded-full" />
+      </div>
+    );
+  };
+
   const bannerConfig = {
     [PassportState.NOT_CONNECTED]: {
       icon: (
@@ -158,7 +204,9 @@ export default function PassportBanner(props: {
       ),
       color: "bg-purple-200",
       testId: "wallet-not-connected",
-      body: "In order for your donations to be matched, you must first verify your Gitcoin Passport.",
+      body: `Want to make sure your donations get matched? Verify your Gitcoin Passport by ${getUTCDateTime(
+        round!.roundEndTime
+      )}.`,
       button: <ConnectWalletButton />,
     },
     [PassportState.MATCH_ELIGIBLE]: {
@@ -171,13 +219,13 @@ export default function PassportBanner(props: {
       button: <ViewScoreButton />,
     },
     [PassportState.MATCH_INELIGIBLE]: {
-      icon: (
-        <XCircleIcon className="fill-pink-400 stroke-pink-100 h-7 w-7 relative text-white items-center rounded-full" />
-      ),
-      color: "bg-pink-100",
+      icon: <AlertIcon />,
+      color: "bg-yelllow-100",
       testId: "match-ineligible",
-      body: "Your Gitcoin Passport does not have the score needed to be eligible for donation matching.",
-      button: <ViewScoreButton />,
+      body: `Your Gitcoin Passport is not currently eligible for donation matching. Please update by ${getUTCDateTime(
+        round!.roundEndTime
+      )}.`,
+      button: <UpdateScoreButton />,
     },
     [PassportState.LOADING]: {
       icon: <PassportLogo className="animate-spin opacity-75" />,
@@ -187,28 +235,13 @@ export default function PassportBanner(props: {
       button: null,
     },
     [PassportState.INVALID_PASSPORT]: {
-      icon: (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="24" height="24" rx="12" fill="#FFCC00" />
-          <path
-            d="M8.40015 15.5999L15.6001 8.3999M8.40015 8.3999L15.6001 15.5999"
-            stroke="#FFF8DB"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
+      icon: <AlertIcon />,
       color: "bg-yellow-100",
       testId: "invalid-passport",
-      body: "Gitcoin Passport score not detected.",
-      button: <InvalidPassportButton />,
+      body: `You don't have a Gitcoin Passport. Please create one by ${getUTCDateTime(
+        round!.roundEndTime
+      )}.`,
+      button: <CreatePassportButton />,
     },
     [PassportState.ERROR]: {
       icon: (
