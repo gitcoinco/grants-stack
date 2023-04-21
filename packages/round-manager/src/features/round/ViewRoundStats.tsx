@@ -122,7 +122,7 @@ export default function ViewRoundStats() {
               {matches &&
                 matches.map((match: Match) => {
                   return (
-                    <tr>
+                    <tr key={match.applicationId}>
                       <td className="text-sm leading-5 text-gray-400 text-left">
                         {match.projectName}
                       </td>
