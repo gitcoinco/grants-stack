@@ -56,7 +56,8 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
   }
 }
 
-export async function getRoundsInApplicationPhase(): Promise<RoundOverview[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getRoundsInApplicationPhase(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
   try {
 
     const chainIds = Object.keys(ChainId)
@@ -83,21 +84,30 @@ export async function getRoundsInApplicationPhase(): Promise<RoundOverview[]> {
       }
     `;
 
-    chainIds.forEach(async chainId => {
-      const roundsForChainId = await fetchRoundsByTimestamp(query, chainId);
+    for (let i = 0; i < chainIds.length; i++) {
+      const roundsForChainId = await fetchRoundsByTimestamp(query, chainIds[i]);
       rounds.push(...roundsForChainId);
-    })
+    }
 
-    return rounds;
+    return {
+      isLoading: false,
+      error: undefined,
+      rounds,
+    };
   } catch (error) {
     console.error("getRoundsInApplicationPhase", error);
-    throw Error("Unable to fetch rounds");
+    return {
+      isLoading: false,
+      error,
+      rounds: [],
+    }
   }
 }
 
-export async function getActiveRounds(): Promise<RoundOverview[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getActiveRounds(): Promise<{ isLoading: boolean; error: any; rounds: RoundOverview[] }> {
   try {
-
+    let isLoading = true;
     const chainIds = Object.keys(ChainId)
     const rounds: RoundOverview[] = [];
 
@@ -127,9 +137,20 @@ export async function getActiveRounds(): Promise<RoundOverview[]> {
       rounds.push(...roundsForChainId);
     }
 
-    return rounds;
+    const error = undefined;
+    isLoading = false;
+
+    return {
+      isLoading,
+      error,
+      rounds,
+    };
   } catch (error) {
     console.error("getActiveRounds", error);
-    throw Error("Unable to fetch rounds");
+    return {
+      isLoading: false,
+      error,
+      rounds: [],
+    }
   }
 }

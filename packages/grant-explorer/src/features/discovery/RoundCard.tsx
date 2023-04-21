@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { renderToPlainText } from "common";
-import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { RoundOverview } from "../api/rounds";
 import { getDaysLeft, getPayoutTokenOptions } from "../api/utils";
@@ -17,7 +16,7 @@ import RoundCardStat from "./RoundCardStat";
 
 type RoundCardProps = {
   round: RoundOverview;
-}
+};
 
 const RoundCard = (props: RoundCardProps) => {
   const { chain } = useNetwork();
@@ -32,9 +31,13 @@ const RoundCard = (props: RoundCardProps) => {
 
   return (
     <BasicCard className="w-full">
-      <Link to={`/round/${props.round.id}`} data-testid="round-card">
+      <a
+        target="_blank"
+        href={`https://manager.gitcoin.co/#/round/${props.round.id}`}
+        data-testid="round-card"
+      >
         <CardHeader>
-          <RoundBanner roundId={props.round.id}/>
+          <RoundBanner roundId={props.round.id} />
         </CardHeader>
 
         <CardContent>
@@ -50,7 +53,7 @@ const RoundCard = (props: RoundCardProps) => {
             {daysLeft} {daysLeft === 1 ? "day" : "days"} left in round
           </p>
         </CardContent>
-      </Link>
+      </a>
 
       <div className="bg-white">
         <div className="border-t w-11/12 ml-4" />

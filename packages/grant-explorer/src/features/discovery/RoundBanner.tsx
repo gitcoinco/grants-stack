@@ -5,27 +5,25 @@ import { ReactComponent as Stock3 } from "../../assets/landing/stock3.svg";
 import { ReactComponent as Stock4 } from "../../assets/landing/stock4.svg";
 import { ReactComponent as Stock5 } from "../../assets/landing/stock5.svg";
 import { ReactComponent as Stock6 } from "../../assets/landing/stock6.svg";
-import {
-  ReactComponent as Stock10,
-  ReactComponent as Stock11,
-  ReactComponent as Stock12,
-  ReactComponent as Stock13,
-  ReactComponent as Stock14,
-  ReactComponent as Stock15,
-  ReactComponent as Stock16,
-  ReactComponent as Stock17,
-  ReactComponent as Stock18,
-  ReactComponent as Stock19,
-  ReactComponent as Stock20,
-  ReactComponent as Stock21,
-  ReactComponent as Stock22,
-  ReactComponent as Stock23,
-  ReactComponent as Stock24,
-  ReactComponent as Stock25,
-  ReactComponent as Stock7,
-  ReactComponent as Stock8,
-  ReactComponent as Stock9,
-} from "../../assets/landing/stock7.svg";
+import { ReactComponent as Stock7 } from "../../assets/landing/stock7.svg";
+import { ReactComponent as Stock8 } from "../../assets/landing/stock8.svg";
+import { ReactComponent as Stock9 } from "../../assets/landing/stock9.svg";
+import { ReactComponent as Stock10 } from "../../assets/landing/stock10.svg";
+import { ReactComponent as Stock11 } from "../../assets/landing/stock11.svg";
+import { ReactComponent as Stock12 } from "../../assets/landing/stock12.svg";
+import { ReactComponent as Stock13 } from "../../assets/landing/stock13.svg";
+import { ReactComponent as Stock14 } from "../../assets/landing/stock14.svg";
+import { ReactComponent as Stock15 } from "../../assets/landing/stock15.svg";
+import { ReactComponent as Stock16 } from "../../assets/landing/stock16.svg";
+import { ReactComponent as Stock17 } from "../../assets/landing/stock17.svg";
+import { ReactComponent as Stock18 } from "../../assets/landing/stock18.svg";
+import { ReactComponent as Stock19 } from "../../assets/landing/stock19.svg";
+import { ReactComponent as Stock20 } from "../../assets/landing/stock20.svg";
+import { ReactComponent as Stock21 } from "../../assets/landing/stock21.svg";
+import { ReactComponent as Stock22 } from "../../assets/landing/stock22.svg";
+import { ReactComponent as Stock23 } from "../../assets/landing/stock23.svg";
+import { ReactComponent as Stock24 } from "../../assets/landing/stock24.svg";
+import { ReactComponent as Stock25 } from "../../assets/landing/stock25.svg";
 
 function generateRandomNumber(address: string) {
   const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(address));
