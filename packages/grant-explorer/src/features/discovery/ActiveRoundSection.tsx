@@ -19,7 +19,7 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
   return (
     <div className="my-6">
       <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col mt-4 justify-items-center">
           <p className="text-grey-400 text-2xl">
             All Active Rounds{" "}
             {activeRoundsCount > 0 ? `(${activeRoundsCount})` : null}
@@ -27,12 +27,13 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
           <p className="text-grey-400 text-sm mb-4 mt-2">
             Rounds that are ongoing
           </p>
+          {props.isLoading ? (
+            <div className="flex flex-col lg:flex-row my-auto">
+              <Spinner />
+            </div>
+          ) : null}
         </div>
-        {props.isLoading ? (
-          <div className="flex flex-col lg:flex-row my-auto">
-            <Spinner />
-          </div>
-        ) : activeRoundsCount > 0 ? (
+        {!props.isLoading && activeRoundsCount > 0 ? (
           <div className="flex flex-col lg:flex-row my-auto">
             <SearchInput
               searchQuery={props.searchQuery}
@@ -46,15 +47,17 @@ const ActiveRoundsSection = (props: ActiveRounds) => {
           </div>
         ) : null}
       </div>
-      {activeRoundsCount > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 md:gap-6">
-          {props.roundOverview?.map((round, index) => {
-            return <RoundCard key={index} round={round} />;
-          })}
-        </div>
-      ) : (
-        <NoRounds type={"active"} />
-      )}
+      <div>
+        {activeRoundsCount > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-3 md:gap-6">
+            {props.roundOverview?.slice(0, 4).map((round, index) => {
+              return <RoundCard key={index} round={round} />;
+            })}
+          </div>
+        ) : !props.isLoading ? (
+          <NoRounds type={"active"} />
+        ) : null}
+      </div>
     </div>
   );
 };

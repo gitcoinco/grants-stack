@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { renderToPlainText } from "common";
+import { renderToPlainText, truncateDescription } from "common";
 import { useNetwork } from "wagmi";
 import { RoundOverview } from "../api/rounds";
 import { getDaysLeft, getPayoutTokenOptions } from "../api/utils";
@@ -45,8 +45,11 @@ const RoundCard = (props: RoundCardProps) => {
             {props.round.roundMetadata?.name}
           </CardTitle>
           <CardDescription data-testid="round-description" className="h-[90px]">
-            {renderToPlainText(
-              props.round.roundMetadata?.eligibility.description ?? ""
+            {truncateDescription(
+              renderToPlainText(
+                props.round.roundMetadata?.eligibility.description ?? ""
+              ),
+              240
             )}
           </CardDescription>
           <p className="mt-4 text-xs" data-testid="days-left">

@@ -33,15 +33,16 @@ export const CardContent = tw.div`
 
 export const CardTitle = tw.p`
   w-full
-  my-2
-  text-sm
+  mt-14
+  text-[16px]
   font-normal
   text-ellipsis
   line-clamp-2
 `;
 
 export const CardDescription = tw.p`
-  text-xs
+  mt-2
+  text-[14px]
   text-ellipsis
   line-clamp-4
   text-grey-400

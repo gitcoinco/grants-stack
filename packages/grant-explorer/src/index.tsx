@@ -1,36 +1,36 @@
 import "./browserPatches";
 
+import { ReduxRouter } from "@lagunovsky/redux-react-router";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { RoundProvider } from "./context/RoundContext";
 import { Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
 
 import { store } from "./app/store";
 import { chains, client as WagmiClient } from "./app/wagmi";
-import reportWebVitals from "./reportWebVitals";
 import history from "./history";
+import reportWebVitals from "./reportWebVitals";
 
 import "./index.css";
 
 // Routes
+import { CartProvider } from "./context/CartContext";
+import { QFDonationProvider } from "./context/QFDonationContext";
+import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
-import AccessDenied from "./features/common/AccessDenied";
-import ViewRound from "./features/round/ViewRoundPage";
-import ViewProjectDetails from "./features/round/ViewProjectDetails";
-import { CartProvider } from "./context/CartContext";
-import ViewCart from "./features/round/ViewCartPage";
-import PassportConnect from "./features/round/PassportConnect";
-import { QFDonationProvider } from "./context/QFDonationContext";
-import ThankYou from "./features/round/ThankYou";
 import LandingPage from "./features/discovery/LandingPage";
+import PassportConnect from "./features/round/PassportConnect";
+import ThankYou from "./features/round/ThankYou";
+import ViewCart from "./features/round/ViewCartPage";
+import ViewProjectDetails from "./features/round/ViewProjectDetails";
+import ViewRound from "./features/round/ViewRoundPage";
 
 // Initialize sentry
 initSentry();
