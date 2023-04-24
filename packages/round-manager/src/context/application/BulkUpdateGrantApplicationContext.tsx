@@ -158,16 +158,16 @@ function fetchStatuses(rowIndex: number, applications: GrantApplication[]) {
   return statuses;
 }
 
-function createFullRow(statuses: Status[] | undefined) {
+function createFullRow(statuses: Status[]) {
   let fullRow = BigInt(0);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   for (const statusObj of statuses!) {
-    const { index, status } = statusObj;
+    const { index: columnIndex, status } = statusObj;
 
-    if (index >= 0 && index < 128 && status >= 0 && status <= 3) {
+    if (columnIndex >= 0 && columnIndex < 128 && status >= 0 && status <= 3) {
       const statusBigInt = BigInt(status);
-      const shiftedStatus = statusBigInt << BigInt(index * 2);
+      const shiftedStatus = statusBigInt << BigInt(columnIndex * 2);
       fullRow |= shiftedStatus;
     } else {
       throw new Error("Invalid index or status value");
@@ -186,9 +186,6 @@ async function _bulkUpdateGrantApplication({
   resetToInitialState(context);
 
   try {
-    const statusRows: AppStatus[] | undefined = [];
-    let statuses: Status[] | undefined = [];
-
     const updatedApplications = applications.map((application) => {
       let newStatus = application.status;
 
@@ -204,22 +201,22 @@ async function _bulkUpdateGrantApplication({
       return { ...application, status: newStatus };
     });
 
-    const rowIndex = selectedApplications.map((application) => {
-      if (application.applicationIndex === 0) {
-        return 0;
-      }
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return 128 % application.applicationIndex!;
-    });
+    const rowsToUpdate = Array.from(
+      new Set(
+        selectedApplications.map((application) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return Math.floor(application.applicationIndex! / 128);
+        })
+      )
+    );
 
-    // remove duplicates from rowIndex & sort it
-    const uniqueRowIndex = Array.from(new Set(rowIndex));
+    const statusRows: AppStatus[] = [];
 
-    for (let i = 0; i < uniqueRowIndex.length; i++) {
-      statuses = fetchStatuses(uniqueRowIndex[i], updatedApplications);
+    for (let i = 0; i < rowsToUpdate.length; i++) {
+      const rowStatuses = fetchStatuses(rowsToUpdate[i], updatedApplications);
       statusRows.push({
-        index: uniqueRowIndex[i],
-        statusRow: createFullRow(statuses),
+        index: rowsToUpdate[i],
+        statusRow: createFullRow(rowStatuses),
       });
     }
 
