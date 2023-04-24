@@ -15,7 +15,7 @@ const LandingPage = () => {
   const [roundsInApplicationPhase, setRoundsInApplicationPhase] = useState<
     RoundOverview[]
   >([]);
-  const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]); // TODO: UPDTE
+  const [activeRounds, setActiveRounds] = useState<RoundOverview[]>([]);
   const [applyRoundsLoading, setApplyRoundsLoading] = useState<boolean>(true);
   const [activeRoundsLoading, setActiveRoundsLoading] = useState<boolean>(true);
 
@@ -83,7 +83,7 @@ const LandingPage = () => {
       <Navbar roundUrlPath={"/"} showWalletInteraction={false} />
       <LandingBannerLogo className="w-full h-auto object-cover rounded-t" />
       <div className="container px-4 md:px-0 md:mx-auto">
-        <h1 className="text-3xl mt-11 mb-5 border-b-2 pb-4">
+        <h1 className="text-3xl mt-11 mb-10 border-b-2 pb-4">
           Browse through active rounds
         </h1>
         <ApplyNowSection isLoading={applyRoundsLoading} roundOverview={roundsInApplicationPhase} />

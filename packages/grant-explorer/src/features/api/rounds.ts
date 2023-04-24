@@ -11,6 +11,7 @@ interface GetRoundOverviewResult {
 
 export type RoundOverview = {
   id: string;
+  chainId: string;
   roundMetaPtr: MetadataPointer;
   applicationMetaPtr: MetadataPointer;
   applicationsStartTime: string;
@@ -45,7 +46,7 @@ async function fetchRoundsByTimestamp(query: string, chainId: string): Promise<R
         round.roundMetaPtr.pointer
       );
       rounds[index].roundMetadata = roundMetadata;
-
+      rounds[index].chainId = chainId;
     });
 
     return rounds;

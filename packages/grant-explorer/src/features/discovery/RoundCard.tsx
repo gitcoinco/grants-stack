@@ -22,7 +22,7 @@ const RoundCard = (props: RoundCardProps) => {
   const { chain } = useNetwork();
 
   const daysLeft = getDaysLeft(Number(props.round.roundEndTime));
-  const payoutTokens = getPayoutTokenOptions(chain!.id.toString());
+  const payoutTokens = getPayoutTokenOptions(props.round.chainId);
   const payoutToken = payoutTokens.find(
     (token) => token.address === props.round.token
   );
@@ -62,7 +62,7 @@ const RoundCard = (props: RoundCardProps) => {
         <div className="border-t w-11/12 ml-4" />
         <CardContent className="text-xs mt-3 pb-0">
           <RoundCardStat
-            chainId={chain!.id}
+            chainId={Number(props.round.chainId)}
             matchAmount={props.round.matchAmount}
             token={payoutToken?.name ?? "ETH"}
             approvedApplicationsCount={approvedApplicationsCount}
